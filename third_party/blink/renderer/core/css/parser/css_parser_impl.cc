@@ -721,7 +721,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         id != CSSAtRuleID::kCSSAtRuleLayer &&      // [css-cascade-5]
         id != CSSAtRuleID::kCSSAtRuleScope &&      // [css-cascade-6]
         id != CSSAtRuleID::kCSSAtRuleStartingStyle &&
-        id != CSSAtRuleID::kCSSAtRuleViewTransitions) {
+        id != CSSAtRuleID::kCSSAtRuleViewTransition) {
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
     }
@@ -779,8 +779,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     DCHECK_LE(allowed_rules, kRegularRules);
 
     switch (id) {
-      case CSSAtRuleID::kCSSAtRuleViewTransitions:
-        return ConsumeViewTransitionsRule(stream);
+      case CSSAtRuleID::kCSSAtRuleViewTransition:
+        return ConsumeViewTransitionRule(stream);
       case CSSAtRuleID::kCSSAtRuleContainer:
         return ConsumeContainerRule(stream, nesting_type,
                                     parent_rule_for_nesting);
@@ -1685,7 +1685,7 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
   return MakeGarbageCollected<StyleRuleScope>(*style_scope, std::move(rules));
 }
 
-StyleRuleViewTransitions* CSSParserImpl::ConsumeViewTransitionsRule(
+StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
     CSSParserTokenStream& stream) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -1696,23 +1696,23 @@ StyleRuleViewTransitions* CSSParserImpl::ConsumeViewTransitionsRule(
   }
 
   if (!prelude.AtEnd()) {
-    return nullptr;  // Parse error; @view-transitions prelude should be empty
+    return nullptr;  // Parse error; @view-transition prelude should be empty
   }
 
   CSSParserTokenStream::BlockGuard guard(stream);
 
   if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kViewTransitions,
+    observer_->StartRuleHeader(StyleRule::kViewTransition,
                                prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kViewTransitions,
+  ConsumeDeclarationList(stream, StyleRule::kViewTransition,
                          CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
 
-  return MakeGarbageCollected<StyleRuleViewTransitions>(
+  return MakeGarbageCollected<StyleRuleViewTransition>(
       *CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
@@ -2154,7 +2154,7 @@ void CSSParserImpl::ConsumeDeclarationList(
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||
-      rule_type == StyleRule::kViewTransitions || rule_type == StyleRule::kTry;
+      rule_type == StyleRule::kViewTransition || rule_type == StyleRule::kTry;
   bool use_observer = observer_ && is_observer_rule_type;
   if (use_observer) {
     observer_->StartRuleBody(stream.Offset());
@@ -2374,7 +2374,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                             rule_type == StyleRule::kFontPaletteValues ||
                             rule_type == StyleRule::kProperty ||
                             rule_type == StyleRule::kCounterStyle ||
-                            rule_type == StyleRule::kViewTransitions;
+                            rule_type == StyleRule::kViewTransition;
 
   uint64_t id = parsing_descriptor
                     ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())

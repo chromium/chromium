@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITIONS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITIONS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
 
-class CORE_EXPORT StyleRuleViewTransitions : public StyleRuleBase {
+class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
  public:
-  explicit StyleRuleViewTransitions(CSSPropertyValueSet&);
-  StyleRuleViewTransitions(const StyleRuleViewTransitions&);
-  ~StyleRuleViewTransitions();
+  explicit StyleRuleViewTransition(CSSPropertyValueSet&);
+  StyleRuleViewTransition(const StyleRuleViewTransition&);
+  ~StyleRuleViewTransition();
 
   const CSSValue* GetNavigationTrigger() const;
   void SetNavigationTrigger(const CSSValue* new_value);
 
-  StyleRuleViewTransitions* Copy() const {
-    return MakeGarbageCollected<StyleRuleViewTransitions>(*this);
+  StyleRuleViewTransition* Copy() const {
+    return MakeGarbageCollected<StyleRuleViewTransition>(*this);
   }
 
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
@@ -34,12 +34,12 @@ class CORE_EXPORT StyleRuleViewTransitions : public StyleRuleBase {
 };
 
 template <>
-struct DowncastTraits<StyleRuleViewTransitions> {
+struct DowncastTraits<StyleRuleViewTransition> {
   static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsViewTransitionsRule();
+    return rule.IsViewTransitionRule();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITIONS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITION_H_

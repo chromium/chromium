@@ -141,7 +141,7 @@ enum RuleSetFlags {
   kFontPaletteValuesRules = 1 << 6,
   kPositionFallbackRules = 1 << 7,
   kFontFeatureValuesRules = 1 << 8,
-  kViewTransitionsRules = 1 << 9
+  kViewTransitionRules = 1 << 9
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -173,8 +173,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     if (!rule_set->PositionFallbackRules().empty()) {
       flags |= kPositionFallbackRules;
     }
-    if (!rule_set->ViewTransitionsRules().empty()) {
-      flags |= kViewTransitionsRules;
+    if (!rule_set->ViewTransitionRules().empty()) {
+      flags |= kViewTransitionRules;
     }
   }
   return flags;
@@ -2371,14 +2371,13 @@ RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
       CSSDefaultStyleSheets::ScreenEval());
 }
 
-void StyleEngine::UpdateViewTransitionsOptIn() {
+void StyleEngine::UpdateViewTransitionOptIn() {
   bool cross_document_enabled = false;
 
   // TODO(https://crbug.com/1463966): This will likely need to change to a
   // CSSValueList if we want to support multiple tokens as a trigger.
-  if (view_transitions_rule_) {
-    if (const CSSValue* value =
-            view_transitions_rule_->GetNavigationTrigger()) {
+  if (view_transition_rule_) {
+    if (const CSSValue* value = view_transition_rule_->GetNavigationTrigger()) {
       cross_document_enabled = To<CSSIdentifierValue>(value)->GetValueID() ==
                                CSSValueID::kCrossDocumentSameOrigin;
     }
@@ -2796,11 +2795,11 @@ void StyleEngine::ApplyRuleSetChanges(
     MarkPositionFallbackStylesDirty();
   }
 
-  if (changed_rule_flags & kViewTransitionsRules) {
+  if (changed_rule_flags & kViewTransitionRules) {
     // Since a shadow-tree isn't an independent navigable, @view-transition
     // doesn't apply within one.
     if (tree_scope.RootNode().IsDocumentNode()) {
-      AddViewTransitionsRules(new_style_sheets);
+      AddViewTransitionRules(new_style_sheets);
     }
   }
 
@@ -3051,16 +3050,15 @@ bool StyleEngine::UserKeyframeStyleShouldOverride(
                                          new_rule->GetCascadeLayer()) <= 0;
 }
 
-void StyleEngine::AddViewTransitionsRules(
-    const ActiveStyleSheetVector& sheets) {
+void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
   if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
     return;
   }
-  view_transitions_rule_.Clear();
+  view_transition_rule_.Clear();
 
   for (const ActiveStyleSheet& active_sheet : sheets) {
     RuleSet* rule_set = active_sheet.second;
-    if (!rule_set || rule_set->ViewTransitionsRules().empty()) {
+    if (!rule_set || rule_set->ViewTransitionRules().empty()) {
       continue;
     }
 
@@ -3068,17 +3066,16 @@ void StyleEngine::AddViewTransitionsRules(
         document_->GetScopedStyleResolver()
             ? document_->GetScopedStyleResolver()->GetCascadeLayerMap()
             : nullptr;
-    for (auto& rule : rule_set->ViewTransitionsRules()) {
-      if (!view_transitions_rule_ || !layer_map ||
-          layer_map->CompareLayerOrder(
-              view_transitions_rule_->GetCascadeLayer(),
-              rule->GetCascadeLayer()) <= 0) {
-        view_transitions_rule_ = rule;
+    for (auto& rule : rule_set->ViewTransitionRules()) {
+      if (!view_transition_rule_ || !layer_map ||
+          layer_map->CompareLayerOrder(view_transition_rule_->GetCascadeLayer(),
+                                       rule->GetCascadeLayer()) <= 0) {
+        view_transition_rule_ = rule;
       }
     }
   }
 
-  UpdateViewTransitionsOptIn();
+  UpdateViewTransitionOptIn();
 }
 
 void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
@@ -4188,7 +4185,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
-  visitor->Trace(view_transitions_rule_);
+  visitor->Trace(view_transition_rule_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);

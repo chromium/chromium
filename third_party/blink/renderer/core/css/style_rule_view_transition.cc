@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/style_rule_view_transitions.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 
 #include "base/auto_reset.h"
 #include "base/memory/values_equivalent.h"
@@ -12,26 +12,26 @@
 
 namespace blink {
 
-StyleRuleViewTransitions::StyleRuleViewTransitions(
+StyleRuleViewTransition::StyleRuleViewTransition(
     CSSPropertyValueSet& properties)
-    : StyleRuleBase(kViewTransitions),
+    : StyleRuleBase(kViewTransition),
       navigation_trigger_(
           properties.GetPropertyCSSValue(CSSPropertyID::kNavigationTrigger)) {}
 
-StyleRuleViewTransitions::StyleRuleViewTransitions(
-    const StyleRuleViewTransitions&) = default;
+StyleRuleViewTransition::StyleRuleViewTransition(
+    const StyleRuleViewTransition&) = default;
 
-StyleRuleViewTransitions::~StyleRuleViewTransitions() = default;
+StyleRuleViewTransition::~StyleRuleViewTransition() = default;
 
-const CSSValue* StyleRuleViewTransitions::GetNavigationTrigger() const {
+const CSSValue* StyleRuleViewTransition::GetNavigationTrigger() const {
   return navigation_trigger_.Get();
 }
 
-void StyleRuleViewTransitions::SetNavigationTrigger(const CSSValue* new_value) {
+void StyleRuleViewTransition::SetNavigationTrigger(const CSSValue* new_value) {
   navigation_trigger_ = new_value;
 }
 
-void StyleRuleViewTransitions::TraceAfterDispatch(
+void StyleRuleViewTransition::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(layer_);
   visitor->Trace(navigation_trigger_);

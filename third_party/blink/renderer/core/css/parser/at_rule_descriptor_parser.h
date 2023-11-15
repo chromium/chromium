@@ -46,9 +46,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtFontPaletteValuesDescriptor(AtRuleDescriptorID,
                                                       CSSParserTokenRange&,
                                                       const CSSParserContext&);
-  static CSSValue* ParseAtViewTransitionsDescriptor(AtRuleDescriptorID,
-                                                    CSSParserTokenRange&,
-                                                    const CSSParserContext&);
+  static CSSValue* ParseAtViewTransitionDescriptor(AtRuleDescriptorID,
+                                                   CSSParserTokenRange&,
+                                                   const CSSParserContext&);
 };
 
 }  // namespace blink

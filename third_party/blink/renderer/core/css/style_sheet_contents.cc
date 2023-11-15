@@ -664,7 +664,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kFontFeature:
       case StyleRuleBase::kPositionFallback:
       case StyleRuleBase::kTry:
-      case StyleRuleBase::kViewTransitions:
+      case StyleRuleBase::kViewTransition:
         break;
       case StyleRuleBase::kCounterStyle:
         if (To<StyleRuleCounterStyle>(rule)

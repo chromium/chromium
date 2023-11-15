@@ -70,7 +70,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kPositionFallback,
     kTry,
     kStartingStyle,
-    kViewTransitions,
+    kViewTransition,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -107,7 +107,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
   bool IsStartingStyleRule() const { return GetType() == kStartingStyle; }
-  bool IsViewTransitionsRule() const { return GetType() == kViewTransitions; }
+  bool IsViewTransitionRule() const { return GetType() == kViewTransition; }
   bool IsConditionRule() const {
     return GetType() == kContainer || GetType() == kMedia ||
            GetType() == kSupports || GetType() == kStartingStyle;

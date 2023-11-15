@@ -3962,7 +3962,7 @@ enum WebFeature {
   kV8RTCEncodedVideoFrame_SetMetadata_Method = 4623,
   kV8RTCEncodedVideoFrame_SetTimestamp_Method = 4624,
   kV8RTCEncodedAudioFrame_SetTimestamp_Method = 4625,
-  kCSSAtRuleViewTransitions = 4626,
+  kCSSAtRuleViewTransition = 4626,
   kSharedDictionaryUsedWithSharedBrotli = 4627,
   kSharedDictionaryUsedWithSharedZstd = 4628,
   kZstdContentEncoding = 4629,

@@ -871,7 +871,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kKeyframe:
       case StyleRule::kFontFeature:
       case StyleRule::kTry:
-      case StyleRule::kViewTransitions:
+      case StyleRule::kViewTransition:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -953,7 +953,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kTryRule:
-      case CSSRule::kViewTransitionsRule:
+      case CSSRule::kViewTransitionRule:
       case CSSRule::kFontPaletteValuesRule:
         result->push_back(rule);
         break;

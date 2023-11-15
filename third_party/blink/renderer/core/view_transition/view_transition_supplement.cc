@@ -327,12 +327,12 @@ void ViewTransitionSupplement::WillInsertBody() {
   auto* document = GetSupplementable();
   CHECK(document);
 
-  // Update active styles will compute the @view-transitions
+  // Update active styles will compute the @view-transition
   // navigation-trigger opt in.
   // TODO(https://crbug.com/1463966): This is probably a bit of a heavy hammer.
   // In the long term, we probably don't want to make this decision at
   // WillInsertBody or, if we do, we could look specifically for
-  // @view-transitions rather than all rules.
+  // @view-transition rather than all rules.
   document->GetStyleEngine().UpdateActiveStyle();
 
   // If the opt-in is enabled, then there's nothing to do in this function.

@@ -702,9 +702,9 @@ void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   position_fallback_rules_.push_back(rule);
 }
 
-void RuleSet::AddViewTransitionsRule(StyleRuleViewTransitions* rule) {
+void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule) {
   need_compaction_ = true;
-  view_transitions_rules_.push_back(rule);
+  view_transition_rules_.push_back(rule);
 }
 
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
@@ -749,10 +749,10 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
       counter_style_rule->SetCascadeLayer(cascade_layer);
       AddCounterStyleRule(counter_style_rule);
-    } else if (auto* view_transitions_rule =
-                   DynamicTo<StyleRuleViewTransitions>(rule)) {
-      view_transitions_rule->SetCascadeLayer(cascade_layer);
-      AddViewTransitionsRule(view_transitions_rule);
+    } else if (auto* view_transition_rule =
+                   DynamicTo<StyleRuleViewTransition>(rule)) {
+      view_transition_rule->SetCascadeLayer(cascade_layer);
+      AddViewTransitionRule(view_transition_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {
       position_fallback_rule->SetCascadeLayer(cascade_layer);
@@ -1287,7 +1287,7 @@ void RuleSet::CompactRules() {
   counter_style_rules_.shrink_to_fit();
   position_fallback_rules_.shrink_to_fit();
   layer_intervals_.shrink_to_fit();
-  view_transitions_rules_.shrink_to_fit();
+  view_transition_rules_.shrink_to_fit();
   bloom_hash_backing_.shrink_to_fit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -1402,7 +1402,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(font_face_rules_);
   visitor->Trace(font_palette_values_rules_);
   visitor->Trace(font_feature_values_rules_);
-  visitor->Trace(view_transitions_rules_);
+  visitor->Trace(view_transition_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);

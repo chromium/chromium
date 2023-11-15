@@ -5,7 +5,7 @@
 [
   Exposed=Window,
   RuntimeEnabled=ViewTransitionOnNavigation
-] interface CSSViewTransitionsRule : CSSRule {
+] interface CSSViewTransitionRule : CSSRule {
   [SetterCallWith=ExecutionContext] attribute CSSOMString navigationTrigger;
 };
 

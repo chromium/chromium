@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITIONS_RULE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITIONS_RULE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITION_RULE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITION_RULE_H_
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -12,14 +12,14 @@
 namespace blink {
 
 class ExecutionContext;
-class StyleRuleViewTransitions;
+class StyleRuleViewTransition;
 
-class CSSViewTransitionsRule final : public CSSRule {
+class CSSViewTransitionRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSViewTransitionsRule(StyleRuleViewTransitions*, CSSStyleSheet*);
-  ~CSSViewTransitionsRule() override = default;
+  CSSViewTransitionRule(StyleRuleViewTransition*, CSSStyleSheet*);
+  ~CSSViewTransitionRule() override = default;
 
   String cssText() const override;
   void Reattach(StyleRuleBase*) override;
@@ -31,18 +31,18 @@ class CSSViewTransitionsRule final : public CSSRule {
   void setNavigationTrigger(const ExecutionContext*, const String&);
 
  private:
-  CSSRule::Type GetType() const override { return kViewTransitionsRule; }
+  CSSRule::Type GetType() const override { return kViewTransitionRule; }
 
-  Member<StyleRuleViewTransitions> view_transitions_rule_;
+  Member<StyleRuleViewTransition> view_transition_rule_;
 };
 
 template <>
-struct DowncastTraits<CSSViewTransitionsRule> {
+struct DowncastTraits<CSSViewTransitionRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.GetType() == CSSRule::kViewTransitionsRule;
+    return rule.GetType() == CSSRule::kViewTransitionRule;
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITIONS_RULE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VIEW_TRANSITION_RULE_H_

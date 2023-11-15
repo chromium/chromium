@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/css_view_transitions_rule.h"
+#include "third_party/blink/renderer/core/css/css_view_transition_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -12,22 +12,22 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
-#include "third_party/blink/renderer/core/css/style_rule_view_transitions.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-CSSViewTransitionsRule::CSSViewTransitionsRule(
-    StyleRuleViewTransitions* initial_rule,
+CSSViewTransitionRule::CSSViewTransitionRule(
+    StyleRuleViewTransition* initial_rule,
     CSSStyleSheet* parent)
-    : CSSRule(parent), view_transitions_rule_(initial_rule) {}
+    : CSSRule(parent), view_transition_rule_(initial_rule) {}
 
-String CSSViewTransitionsRule::cssText() const {
+String CSSViewTransitionRule::cssText() const {
   StringBuilder result;
 
-  result.Append("@view-transitions { ");
+  result.Append("@view-transition { ");
 
   String navigation_trigger = navigationTrigger();
   if (!navigation_trigger.empty()) {
@@ -41,15 +41,15 @@ String CSSViewTransitionsRule::cssText() const {
   return result.ReleaseString();
 }
 
-String CSSViewTransitionsRule::navigationTrigger() const {
-  if (const CSSValue* value = view_transitions_rule_->GetNavigationTrigger()) {
+String CSSViewTransitionRule::navigationTrigger() const {
+  if (const CSSValue* value = view_transition_rule_->GetNavigationTrigger()) {
     return value->CssText();
   }
 
   return String();
 }
 
-void CSSViewTransitionsRule::setNavigationTrigger(
+void CSSViewTransitionRule::setNavigationTrigger(
     const ExecutionContext* execution_context,
     const String& text) {
   CSSStyleSheet* style_sheet = parentStyleSheet();
@@ -60,7 +60,7 @@ void CSSViewTransitionsRule::setNavigationTrigger(
   CSSParserTokenRange token_range(tokens);
   AtRuleDescriptorID descriptor_id = AtRuleDescriptorID::NavigationTrigger;
   CSSValue* new_value =
-      AtRuleDescriptorParser::ParseAtViewTransitionsDescriptor(
+      AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
           descriptor_id, token_range, context);
   if (!new_value) {
     return;
@@ -72,20 +72,20 @@ void CSSViewTransitionsRule::setNavigationTrigger(
     return;
   }
 
-  view_transitions_rule_->SetNavigationTrigger(new_value);
+  view_transition_rule_->SetNavigationTrigger(new_value);
 
   if (Document* document = style_sheet->OwnerDocument()) {
-    document->GetStyleEngine().UpdateViewTransitionsOptIn();
+    document->GetStyleEngine().UpdateViewTransitionOptIn();
   }
 }
 
-void CSSViewTransitionsRule::Reattach(StyleRuleBase* rule) {
+void CSSViewTransitionRule::Reattach(StyleRuleBase* rule) {
   CHECK(rule);
-  view_transitions_rule_ = To<StyleRuleViewTransitions>(rule);
+  view_transition_rule_ = To<StyleRuleViewTransition>(rule);
 }
 
-void CSSViewTransitionsRule::Trace(Visitor* visitor) const {
-  visitor->Trace(view_transitions_rule_);
+void CSSViewTransitionRule::Trace(Visitor* visitor) const {
+  visitor->Trace(view_transition_rule_);
   CSSRule::Trace(visitor);
 }
 
