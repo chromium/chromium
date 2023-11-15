@@ -17,7 +17,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "on_device_model.mojom.ModelAssets"
-          cpp = "on_device_model::ModelAssets"
+          cpp = "::on_device_model::ModelAssets"
           move_only = true
         },
       ]
