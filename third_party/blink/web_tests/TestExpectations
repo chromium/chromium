@@ -2626,6 +2626,7 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] external/wpt/fledge/tentative/direct-from-seller-signals.https.window.html?6-10 [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-095.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/checkbox-appearance-native-vertical-lr-baseline.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/checkbox-appearance-native-vertical-rl-baseline.optional.html [ Failure ]

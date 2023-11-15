@@ -13,7 +13,7 @@ AUTH_REQUIRED_EVENT = "network.authRequired"
 
 @pytest.mark.asyncio
 async def test_subscribe_status(
-    bidi_session, new_tab, subscribe_events, wait_for_event, url
+    bidi_session, new_tab, subscribe_events, wait_for_event, wait_for_future_safe, url
 ):
     await subscribe_events(events=[AUTH_REQUIRED_EVENT])
 
@@ -39,7 +39,7 @@ async def test_subscribe_status(
         wait="none",
     )
 
-    await on_auth_required
+    await wait_for_future_safe(on_auth_required)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": auth_url}

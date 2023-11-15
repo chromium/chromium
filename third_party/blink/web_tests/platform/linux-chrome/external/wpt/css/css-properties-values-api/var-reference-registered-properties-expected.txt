@@ -15,6 +15,15 @@ This is a testharness.js-based test.
 [PASS] Invalid fallback invalidates var()-reference [<length>, red]
 [PASS] Invalid fallback invalidates var()-reference [<length> | none, nolength]
 [PASS] Invalid fallback invalidates var()-reference [<length>, var(--novar)]
+[FAIL] Fallback must adhere to registered syntax [<length>, 10px]
+  assert_equals: expected "10px" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length> | none, none]
+  assert_equals: expected "none" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length>, var(--length-1)]
+  assert_equals: expected "20px" but got "0px"
+[PASS] Invalid fallback is not used [<length>, red]
+[PASS] Invalid fallback is not used [<length> | none, nolength]
+[PASS] Invalid fallback is not used [<color>, var(--length-1)]
 [PASS] Empty universal custom property can be substituted with var()
 Harness: the test ran to completion.
 

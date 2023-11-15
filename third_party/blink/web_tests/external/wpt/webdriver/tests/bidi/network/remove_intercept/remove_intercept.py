@@ -79,7 +79,7 @@ async def test_remove_intercept(
     # The next request should not be blocked
     on_response_completed = wait_for_event("network.responseCompleted")
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=text_url, wait="complete")
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     # Assert the network events have the expected interception properties
     assert len(before_request_sent_events) == 2
