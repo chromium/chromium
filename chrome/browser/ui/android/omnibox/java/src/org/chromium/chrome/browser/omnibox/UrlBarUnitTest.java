@@ -5,7 +5,16 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -14,6 +23,7 @@ import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -42,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
@@ -50,8 +61,13 @@ import java.util.Collections;
 
 /** Unit tests for the URL bar UI component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "w100dp-h50dp")
+@Config(
+        qualifiers = "w100dp-h50dp",
+        shadows = {UrlBarUnitTest.UrlBarShadowLayout.class, UrlBarUnitTest.UrlBarShadowPaint.class})
 public class UrlBarUnitTest {
+    private static final int URL_BAR_WIDTH = 100;
+    private static final int URL_BAR_HEIGHT = 10;
+
     private UrlBar mUrlBar;
     public @Rule TestRule mFeaturesProcessorRule = new JUnitProcessor();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -72,7 +88,7 @@ public class UrlBarUnitTest {
     private final int mNumberOfVisibleCharacters = 20;
 
     @Implements(Layout.class)
-    public static class ShadowLayout {
+    public static class UrlBarShadowLayout {
         @Implementation
         public float getPrimaryHorizontal(int offset) {
             return (float) offset * 5;
@@ -87,7 +103,7 @@ public class UrlBarUnitTest {
     }
 
     @Implements(Paint.class)
-    public static class MyShadowPaint extends ShadowPaint {
+    public static class UrlBarShadowPaint extends ShadowPaint {
         @Implementation
         public int getOffsetForAdvance(
                 CharSequence text,
@@ -103,12 +119,39 @@ public class UrlBarUnitTest {
 
     @Before
     public void setUp() {
-        mUrlBar = spy(new UrlBarApi26(ContextUtils.getApplicationContext(), null));
+        var ctx =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_AppCompat);
+        mUrlBar = spy(new UrlBarApi26(ctx, null));
         mUrlBar.setDelegate(mUrlBarDelegate);
+    }
 
-        LayoutParams params =
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mUrlBar.setLayoutParams(params);
+    /** Force reset text layout. */
+    private void resetTextLayout() {
+        mUrlBar.nullLayouts();
+        assertNull(mUrlBar.getLayout());
+    }
+
+    /**
+     * Simulate measure() and layout() pass on the view. Ensures view size and text layout are
+     * resolved.
+     */
+    private void measureAndLayoutUrlBarForSize(int width, int height) {
+        // Measure and layout the Url bar.
+        mUrlBar.setLayoutParams(new LayoutParams(width, height));
+        mUrlBar.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        mUrlBar.layout(0, 0, width, height);
+
+        // Sanity check: new layout should be available.
+        assertNotNull(mUrlBar.getLayout());
+        assertFalse(mUrlBar.isLayoutRequested());
+    }
+
+    /** Resize the UrlBar to its default size for testing. */
+    private void measureAndLayoutUrlBar() {
+        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH, URL_BAR_HEIGHT);
     }
 
     @Test
@@ -185,6 +228,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
     public void testTruncation_LongUrl() {
+        measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         String text = mUrlBar.getText().toString();
@@ -203,6 +247,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
     public void testTruncation_LongTld_ScrollToTld() {
+        measureAndLayoutUrlBar();
         String url = mLongDomain + mShortPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mLongDomain.length());
         String text = mUrlBar.getText().toString();
@@ -212,6 +257,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
     public void testTruncation_LongTld_ScrollToBeginning() {
+        measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
         String text = mUrlBar.getText().toString();
@@ -221,6 +267,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
     public void testTruncation_NoTruncationForWrapContent() {
+        measureAndLayoutUrlBar();
         LayoutParams previousLayoutParams = mUrlBar.getLayoutParams();
         LayoutParams params =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -254,21 +301,10 @@ public class UrlBarUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_TABLETS)
-    @Config(
-            qualifiers = "w600dp-h820dp",
-            shadows = {ShadowLayout.class, MyShadowPaint.class})
+    @Config(qualifiers = "sw600dp")
     public void testNoVisibleHintCalculationForTablets_noHistogramRecords() {
-        // Ensure that Views and Layouts aren't null.
-        mUrlBar.measure(
-                MeasureSpec.makeMeasureSpec(820, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(20, MeasureSpec.EXACTLY));
-        mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
-
-        // Avoid short circuiting in scrollDisplayText().
-        doReturn(false).when(mUrlBar).isLayoutRequested();
-
-        String url = mShortDomain + mLongPath;
-        mUrlBar.setText(url);
+        measureAndLayoutUrlBar();
+        mUrlBar.setText(mShortDomain + mLongPath);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -280,19 +316,13 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowLayout.class, MyShadowPaint.class})
     public void testVisibleHintCalculationHistograms() {
-        // Ensure that Views and Layouts aren't null.
-        mUrlBar.measure(
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(10, MeasureSpec.EXACTLY));
-        mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
-
-        // Avoid short circuiting in scrollDisplayText().
-        doReturn(false).when(mUrlBar).isLayoutRequested();
-
-        String url = mShortDomain + mLongPath;
-        mUrlBar.setText(url);
+        // Note: this test always assumed unstyled size of the Omnibox.
+        // The recorded test values differ when actual theming is applied.
+        // For that reason, we re-set the UrlBar to unstyled variant.
+        mUrlBar = spy(new UrlBarApi26(ContextUtils.getApplicationContext(), null));
+        measureAndLayoutUrlBar();
+        mUrlBar.setText(mShortDomain + mLongPath);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -306,18 +336,20 @@ public class UrlBarUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
-    public void testSetLengtHistogram_noTruncation() {
+    public void testSetLengthHistogram_noTruncation() {
+        measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Omnibox.SetText.TextLength", url.length());
-        mUrlBar.setText(url);
+        mUrlBar.setText(mShortDomain + mLongPath);
         histogramWatcher.assertExpected();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
     public void testSetLengtHistogram_withTruncation() {
+        measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
 
         HistogramWatcher histogramWatcher =
@@ -325,5 +357,175 @@ public class UrlBarUnitTest {
                         "Omnibox.SetText.TextLength", mNumberOfVisibleCharacters);
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void
+            scrollToBeginning_fallBackToDefaultWhenLayoutUnavailable_ltrLayout_noText_ltrHint() {
+        // Explicitly invalidate text layouts. This could happen for a number of reasons.
+        // This is also the implicit default value until text is measured, but don't rely on this.
+        doReturn(View.LAYOUT_DIRECTION_LTR).when(mUrlBar).getLayoutDirection();
+        mUrlBar.setHint("hint text");
+        resetTextLayout();
+
+        // As long as layouts are not available, no action should be taken.
+        // This is typically the case when the text view or content is manipulated in some way and
+        // has not yet completed the full measure/layout cycle.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // LTR layout always scrolls to 0, because that's the natural origin of LTR text.
+        measureAndLayoutUrlBar();
+        verify(mUrlBar).scrollTo(0, 0);
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate request to update scroll type with no changes of scroll type, text, or view
+        // size. This should avoid recalculations and simply re-set the scroll position.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollToTLD();
+        verify(mUrlBar, never()).scrollToBeginning();
+        verify(mUrlBar).scrollTo(0, 0);
+    }
+
+    @Test
+    public void
+            scrollToBeginning_fallBackToDefaultWhenLayoutUnavailable_rtlLayout_noText_ltrHint() {
+        // Explicitly invalidate text layouts. This could happen for a number of reasons.
+        // This is also the implicit default value until text is measured, but don't rely on this.
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mUrlBar).getLayoutDirection();
+        mUrlBar.setHint("hint text");
+        resetTextLayout();
+
+        // As long as layouts are not available, no action should be taken.
+        // This is typically the case when the text view or content is manipulated in some way and
+        // has not yet completed the full measure/layout cycle.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // RTL layouts should scroll to 0 too, because that's the natural origin of LTR text.
+        measureAndLayoutUrlBar();
+        verify(mUrlBar).scrollTo(0, 0);
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate request to update scroll type with no changes of scroll type, text, or view
+        // size. This should avoid recalculations and simply re-set the scroll position.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollToTLD();
+        verify(mUrlBar, never()).scrollToBeginning();
+        verify(mUrlBar).scrollTo(0, 0);
+    }
+
+    @Test
+    public void
+            scrollToBeginning_fallBackToDefaultWhenLayoutUnavailable_ltrLayout_noText_rtlHint() {
+        // Explicitly invalidate text layouts. This could happen for a number of reasons.
+        // This is also the implicit default value until text is measured, but don't rely on this.
+        doReturn(View.LAYOUT_DIRECTION_LTR).when(mUrlBar).getLayoutDirection();
+        mUrlBar.setHint("טקסט רמז");
+        resetTextLayout();
+
+        // As long as layouts are not available, no action should be taken.
+        // This is typically the case when the text view or content is manipulated in some way and
+        // has not yet completed the full measure/layout cycle.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // LTR layout always scrolls to 0, even if the hint text is RTL. View hierarchy dictates the
+        // layout direction.
+        measureAndLayoutUrlBar();
+        verify(mUrlBar).scrollTo(0, 0);
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate request to update scroll type with no changes of scroll type, text, or view
+        // size. This should avoid recalculations and simply re-set the scroll position.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollToTLD();
+        verify(mUrlBar, never()).scrollToBeginning();
+        verify(mUrlBar).scrollTo(0, 0);
+    }
+
+    @Test
+    public void
+            scrollToBeginning_fallBackToDefaultWhenLayoutUnavailable_rtlLayout_noText_rtlHint() {
+        // Explicitly invalidate text layouts. This could happen for a number of reasons.
+        // This is also the implicit default value until text is measured, but don't rely on this.
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mUrlBar).getLayoutDirection();
+        mUrlBar.setHint("טקסט רמז");
+        resetTextLayout();
+
+        // As long as layouts are not available, no action should be taken.
+        // This is typically the case when the text view or content is manipulated in some way and
+        // has not yet completed the full measure/layout cycle.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // RTL layout should position RTL text at an appropriate offset relative to view end.
+        measureAndLayoutUrlBar();
+        verify(mUrlBar).scrollTo(not(eq(0)), eq(0));
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate request to update scroll type with no changes of scroll type, text, or view
+        // size. This should avoid recalculations and simply re-set the scroll position.
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        verify(mUrlBar, never()).scrollToTLD();
+        verify(mUrlBar, never()).scrollToBeginning();
+        verify(mUrlBar).scrollTo(not(eq(0)), eq(0));
+    }
+
+    @Test
+    public void layout_noScrollWithNoSizeChanges() {
+        // Initialize the URL bar. Verify test conditions.
+        mUrlBar.setText(mShortDomain);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        measureAndLayoutUrlBar();
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate layout re-entry.
+        // We know the url bar has no pending scroll request, and we apply the same size.
+        measureAndLayoutUrlBar();
+        verify(mUrlBar, never()).scrollDisplayText(anyInt());
+    }
+
+    @Test
+    public void layout_noScrollWhenHeightChanges() {
+        // Initialize the URL bar. Verify test conditions.
+        mUrlBar.setText(mShortDomain);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        measureAndLayoutUrlBar();
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate layout re-entry.
+        // We change the height of the view which should not affect scroll position.
+        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH, URL_BAR_HEIGHT + 1);
+        verify(mUrlBar, never()).scrollDisplayText(anyInt());
+    }
+
+    @Test
+    public void layout_updateScrollWhenWidthChanges() {
+        // Initialize the URL bar. Verify test conditions.
+        mUrlBar.setText(mShortDomain);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING);
+        measureAndLayoutUrlBar();
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        clearInvocations(mUrlBar);
+
+        // Simulate layout re-entry.
+        // We change the width, which may impact scroll position.
+        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH + 1, URL_BAR_HEIGHT);
+        verify(mUrlBar).scrollDisplayText(anyInt());
     }
 }
