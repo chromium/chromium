@@ -850,12 +850,6 @@
       name: "CSSContentVisibilityImpliesContainIntrinsicSizeAuto",
       status: "stable",
     },
-    // Ablation study to try to measure very roughly memory savings from not saving
-    // pretokenized strings in CSS custom properties.
-    {
-      name: "CSSCustomPropertiesAblation",
-      // Off by default.
-    },
     {
       name: "CSSDisplayAnimation",
       status: "stable",

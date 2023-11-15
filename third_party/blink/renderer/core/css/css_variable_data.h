@@ -31,14 +31,12 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // already, e.g. because you extracted them while tokenizing (see
   // ExtractFeatures()) or got them from another CSSVariableData instance during
   // substitution.
-  static scoped_refptr<CSSVariableData> Create(
-      StringView original_text,
-      int num_tokens_for_ablation,  // -1 for no experiment.
-      bool is_animation_tainted,
-      bool needs_variable_resolution,
-      bool has_font_units,
-      bool has_root_font_units,
-      bool has_line_height_units) {
+  static scoped_refptr<CSSVariableData> Create(StringView original_text,
+                                               bool is_animation_tainted,
+                                               bool needs_variable_resolution,
+                                               bool has_font_units,
+                                               bool has_root_font_units,
+                                               bool has_line_height_units) {
     if (original_text.length() > kMaxVariableBytes) {
       // This should have been blocked off during variable substitution.
       NOTREACHED();
@@ -49,23 +47,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
         sizeof(CSSVariableData) + (original_text.Is8Bit()
                                        ? original_text.length()
                                        : 2 * original_text.length());
-    if (num_tokens_for_ablation >= 0) {
-      // Allocate more memory for studying the difference between
-      // storing the tokens or not. (We don't measure the CPU costs
-      // or savings, since that rapidly becomes complex when considering
-      // that the old code didn't actually give the right result.)
-      // We used to need an AtomicString for backing string tokens;
-      // we don't model its contents nor costs in the global table.
-      // We also used a separate String object for original_text,
-      // but we don't consider memory allocator overhead. Finally,
-      // there's a token counter and the actual tokens.
-      //
-      // We also moved some elements around to save on padding
-      // and similar, but we don't model this.
-      bytes_needed += sizeof(AtomicString) + sizeof(String) +
-                      sizeof(wtf_size_t) +
-                      num_tokens_for_ablation * sizeof(CSSParserToken);
-    }
     void* buf = WTF::Partitions::FastMalloc(
         bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
     return base::AdoptRef(new (buf) CSSVariableData(
