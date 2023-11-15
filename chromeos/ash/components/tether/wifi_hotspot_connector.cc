@@ -143,7 +143,14 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
     return;
   }
 
-  if (network->connectable() && !has_initiated_connection_to_current_network_) {
+  // We use "visible" to determine if the network can be connected to, rather
+  // than "connectable". In the aftermath of b/302621170, it was discovered
+  // "connectable" only refers to the service having a SSID and password set.
+  // As the service is configured earlier, that check will always pass, even
+  // if the service wasn't discovered by a scan. "Visible", by contrast, is
+  // used by the UI to determine if the service should be shown. If it's shown,
+  // we know it has been discovered by a fresh scan.
+  if (network->visible() && !has_initiated_connection_to_current_network_) {
     // Set |has_initiated_connection_to_current_network_| to true to ensure that
     // this code path is only run once per connection attempt. Without this
     // field, the association and connection code below would be re-run multiple
