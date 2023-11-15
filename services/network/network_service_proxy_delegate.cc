@@ -239,6 +239,15 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   }
   if (IsForIpProtection() && IsProxyForIpProtection(proxy_chain)) {
     if (ipp_config_cache_) {
+      // Temporarily support a pre-shared key for access to proxyB.
+      if (chain_index == 1) {
+        std::string proxy_b_psk = net::features::kIpPrivacyProxyBPsk.Get();
+        if (!proxy_b_psk.empty()) {
+          vlog("adding proxyB PSK");
+          extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
+                                   base::StrCat({"Preshared ", proxy_b_psk}));
+        }
+      }
       absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
           ipp_config_cache_->GetAuthToken(chain_index);
       if (token) {

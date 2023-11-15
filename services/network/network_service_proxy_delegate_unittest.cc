@@ -271,6 +271,35 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
   EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
 }
 
+TEST_F(NetworkServiceProxyDelegateTest, AddsPskToTunnelRequest) {
+  std::map<std::string, std::string> parameters;
+  parameters["IpPrivacyProxyBPsk"] = "seekrit";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  auto config =
+      NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
+  auto delegate = CreateDelegate(std::move(config));
+
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetProxyList({{"proxya", "proxyb"}});
+  delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
+
+  net::HttpRequestHeaders headers;
+  auto proxy_chain = net::ProxyChain(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", absl::nullopt),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxyb", absl::nullopt)});
+  delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/0, &headers);
+  EXPECT_THAT(headers, testing::Not(Contain("Proxy-Authorization",
+                                            "Preshared seekrit")));
+
+  delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/1, &headers);
+  EXPECT_THAT(headers, Contain("Proxy-Authorization", "Preshared seekrit"));
+}
+
 TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("https://proxy");
