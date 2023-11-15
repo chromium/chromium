@@ -158,6 +158,19 @@ class RetroactivePairingDetectorImpl final
   // |message_streams_| if a MessageStream exists for the device.
   void RemoveExpiredDevicesFromStoredDeviceData();
 
+  // Gets or creates a Gatt connection to |device|.
+  void CreateGattConnection(device::BluetoothDevice* device);
+
+  // Internal method called when creating a FastPairGattServiceClient.
+  void OnGattClientInitializedCallback(device::BluetoothDevice* device,
+                                       absl::optional<PairFailure> failure);
+
+  // Internal method called to retrieve the model ID of a device.
+  void OnReadModelId(
+      const std::string& address,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
+
   // The classic pairing addresses of potential Retroactive Pair supported
   // devices that are found in the adapter. We have to store them and wait for a
   // MessageStream instance to be created for the device in order to fully
