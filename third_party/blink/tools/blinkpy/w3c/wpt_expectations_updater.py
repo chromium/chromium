@@ -192,19 +192,6 @@ class WPTExpectationsUpdater:
         #     }
         # }
 
-        # And then we merge results for different platforms that had the same results.
-        for test_name, platform_result in test_expectations.items():
-            # platform_result is a dict mapping platforms to results.
-            test_expectations[test_name] = self.merge_same_valued_keys(
-                platform_result)
-
-        # At this point, test_expectations looks like: {
-        #     'test-with-failing-result': {
-        #         (config1, config2): SimpleTestResult,
-        #         (config3,): AnotherSimpleTestResult
-        #     }
-        # }
-
         # Do not create expectations for tests which should have baseline
         tests_to_rebaseline, test_expectations = self.get_tests_to_rebaseline(
             test_expectations)
@@ -441,56 +428,6 @@ class WPTExpectationsUpdater:
                 target[key] = source[key]
         return target
 
-    def merge_same_valued_keys(self, dictionary):
-        """Merges keys in dictionary with same value.
-
-        Traverses through a dict and compares the values of keys to one another.
-        If the values match, the keys are combined to a tuple and the previous
-        keys are removed from the dict.
-
-        Args:
-            dictionary: A dictionary with a dictionary as the value.
-
-        Returns:
-            A new dictionary with updated keys to reflect matching values of keys.
-            Example: {
-                'one': {'foo': 'bar'},
-                'two': {'foo': 'bar'},
-                'three': {'foo': 'bar'}
-            }
-            is converted to a new dictionary with that contains
-            {('one', 'two', 'three'): {'foo': 'bar'}}
-        """
-        merged_dict = {}
-        matching_value_keys = set()
-        keys = sorted(dictionary.keys())
-        while keys:
-            current_key = keys[0]
-            found_match = False
-            if current_key == keys[-1]:
-                merged_dict[tuple([current_key])] = dictionary[current_key]
-                keys.remove(current_key)
-                break
-            current_result_set = set(dictionary[current_key].actual.split())
-            for next_item in keys[1:]:
-                if (current_result_set ==
-                        set(dictionary[next_item].actual.split())):
-                    found_match = True
-                    matching_value_keys.update([current_key, next_item])
-
-                if next_item == keys[-1]:
-                    if found_match:
-                        merged_dict[
-                            tuple(sorted(matching_value_keys))] = dictionary[current_key]
-                        keys = [
-                            k for k in keys if k not in matching_value_keys
-                        ]
-                    else:
-                        merged_dict[tuple([current_key])] = dictionary[current_key]
-                        keys.remove(current_key)
-            matching_value_keys = set()
-        return merged_dict
-
     def get_expectations(self, result, test_name=''):
         """Returns a set of test expectations based on the result of a test.
 
@@ -593,13 +530,11 @@ class WPTExpectationsUpdater:
                 self.port.configuration_specifier_macros().items()
             }
             editor = SystemConfigurationEditor(expectations, path, macros)
-            for configs, result in test_expectations[test].items():
-                versions = set()
-                for config in configs:
-                    specifier = self.host.builders.version_specifier_for_port_name(
-                        config.port_name)
-                    if specifier:
-                        versions.add(specifier)
+            for config, result in test_expectations[test].items():
+                version = self.host.builders.version_specifier_for_port_name(
+                    config.port_name)
+                if not version:
+                    continue
                 statuses = self.get_expectations(result, test)
                 # Avoid writing flag-specific expectations redundant with
                 # generic ones.
@@ -607,12 +542,11 @@ class WPTExpectationsUpdater:
                         test).results:
                     continue
                 change += editor.update_versions(
-                    test,
-                    versions,
+                    test, {version},
                     statuses,
                     reason=result.bug,
                     marker=self.MARKER_COMMENT[len('# '):])
-                change += editor.merge_versions(test)
+            change += editor.merge_versions(test)
         if not change.lines_added:
             _log.info(
                 'No lines to write to %s.',
@@ -844,7 +778,7 @@ class WPTExpectationsUpdater:
 
         Args:
             test_results: A dictionary of failing test results, mapping test
-                names to lists of platforms to SimpleTestResult.
+                names to platforms to SimpleTestResult.
 
         Returns:
             A pair: A set of tests to be rebaselined, and a modified copy of
@@ -854,19 +788,20 @@ class WPTExpectationsUpdater:
         new_test_results = copy.deepcopy(test_results)
         tests_to_rebaseline = set()
         for test_name in test_results:
-            for platforms, result in test_results[test_name].items():
+            for platform, result in test_results[test_name].items():
                 if self.can_rebaseline(test_name, result):
                     # We always assume rebaseline is successful, so we delete
                     # the line if Failure is the only result, otherwise we
                     # change Failure to Pass.
                     # TODO: consider rebaseline failed scenario in future
                     self.update_test_results_for_rebaselined_test(
-                        new_test_results, test_name, platforms)
+                        new_test_results, test_name, platform)
                     tests_to_rebaseline.add(test_name)
 
         return sorted(tests_to_rebaseline), new_test_results
 
-    def update_test_results_for_rebaselined_test(self, test_results, test_name, platforms):
+    def update_test_results_for_rebaselined_test(self, test_results, test_name,
+                                                 platform):
         """Update test results if we successfully rebaselined a test
 
         After rebaseline, a failed test will now pass. And if 'PASS' is the
@@ -875,17 +810,18 @@ class WPTExpectationsUpdater:
         improve this logic in future once rebaseline-cl can tell which test
         it failed to rebaseline.
         """
-        result = test_results[test_name][platforms]
+        result = test_results[test_name][platform]
         actual = set(result.actual.split(' '))
         if 'FAIL' in actual:
             actual.remove('FAIL')
             actual.add('PASS')
             if len(actual) == 1:
-                del test_results[test_name][platforms]
+                del test_results[test_name][platform]
             else:
-                test_results[test_name][platforms] = SimpleTestResult(expected=result.expected,
-                                                                      actual=' '.join(sorted(actual)),
-                                                                      bug=result.bug)
+                test_results[test_name][platform] = SimpleTestResult(
+                    expected=result.expected,
+                    actual=' '.join(sorted(actual)),
+                    bug=result.bug)
 
     def can_rebaseline(self, test_name, result):
         """Checks if a test can be rebaselined.

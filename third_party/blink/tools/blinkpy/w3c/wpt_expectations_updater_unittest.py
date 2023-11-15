@@ -485,42 +485,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
-    def test_merge_same_valued_keys_all_match(self):
-        updater = WPTExpectationsUpdater(self.mock_host())
-        self.assertEqual(
-            updater.merge_same_valued_keys({
-                'one': SimpleTestResult(actual='FAIL TIMEOUT',
-                                        expected='FAIL',
-                                        bug=''),
-                'two': SimpleTestResult(actual='TIMEOUT FAIL',
-                                        expected='TIMEOUT',
-                                        bug='')
-            }), {('one', 'two'): SimpleTestResult(actual='FAIL TIMEOUT',
-                                                  expected='FAIL',
-                                                  bug='')})
-
-    def test_merge_same_valued_keys_one_mismatch(self):
-        updater = WPTExpectationsUpdater(self.mock_host())
-        self.assertEqual(
-            updater.merge_same_valued_keys({
-                'one': SimpleTestResult(actual='FAIL TIMEOUT',
-                                        expected='FAIL',
-                                        bug=''),
-                'two': SimpleTestResult(actual='TIMEOUT FAIL',
-                                        expected='TIMEOUT',
-                                        bug=''),
-                'three': SimpleTestResult(actual='TIMEOUT',
-                                          expected='FAIL',
-                                          bug='')
-            }), {
-                ('one', 'two'): SimpleTestResult(actual='FAIL TIMEOUT',
-                                                 expected='FAIL',
-                                                 bug=''),
-                ('three',): SimpleTestResult(actual='TIMEOUT',
-                                             expected='FAIL',
-                                             bug='')
-            })
-
     def test_get_expectations(self):
         updater = WPTExpectationsUpdater(self.mock_host())
         # Positional arguments of SimpleTestResult: (expected, actual, bug)
@@ -601,13 +565,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         updater.write_to_test_expectations({
             'external/wpt/test/foo.html': {
-                (DesktopConfig(port_name='test-win-win7'), ):
+                DesktopConfig(port_name='test-win-win7'):
                 SimpleTestResult(expected='FAIL',
                                  actual='FAIL TIMEOUT',
                                  bug='crbug.com/123'),
             },
             'external/wpt/test/bar.html': {
-                (DesktopConfig(port_name='test-win-win7'), ):
+                DesktopConfig(port_name='test-win-win7'):
                 SimpleTestResult(expected='TIMEOUT',
                                  actual='FAIL TIMEOUT',
                                  bug='crbug.com/123'),
@@ -636,19 +600,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         results = {
             'external/wpt/reftest.html': {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='FAIL',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
             },
             'external/wpt/test/path.html': {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='FAIL',
                                  actual='CRASH',
                                  bug='crbug.com/123'),
             },
             'external/wpt/test/zzzz.html': {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='PASS',
                                  actual='CRASH',
                                  bug='crbug.com/123'),
@@ -683,11 +647,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(self.mock_host())
         results = {
             'fake/test/path.html': {
-                tuple([DesktopConfig(port_name='test-mac-mac10.10')]):
+                DesktopConfig(port_name='test-mac-mac10.10'):
                 SimpleTestResult(expected='FAIL',
                                  actual='PASS',
                                  bug='crbug.com/123'),
-                tuple([DesktopConfig(port_name='two')]):
+                DesktopConfig(port_name='two'):
                 SimpleTestResult(expected='FAIL',
                                  actual='PASS',
                                  bug='crbug.com/123'),
@@ -706,23 +670,23 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(self.mock_host())
         results = {
             'external/wpt/test/zzzz.html': {
-                tuple([DesktopConfig(port_name='test-mac-mac10.10')]):
+                DesktopConfig(port_name='test-mac-mac10.10'):
                 SimpleTestResult(expected='PASS',
                                  actual='TEXT',
                                  bug='crbug.com/123'),
             },
             'virtual/foo/external/wpt/test/zzzz.html': {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='FAIL',
                                  actual='PASS',
                                  bug='crbug.com/123'),
-                tuple([DesktopConfig(port_name='test-mac-mac10.11')]):
+                DesktopConfig(port_name='test-mac-mac10.11'):
                 SimpleTestResult(expected='FAIL',
                                  actual='TIMEOUT',
                                  bug='crbug.com/123'),
             },
             'unrelated/test.html': {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='FAIL',
                                  actual='PASS',
                                  bug='crbug.com/123'),
@@ -753,7 +717,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         results = {
             'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
             {
-                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                DesktopConfig(port_name='test-linux-trusty'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
@@ -774,16 +738,17 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(self.mock_host())
         updater.write_to_test_expectations({
             'external/wpt/x/y.html': {
-                (DesktopConfig(port_name='test-mac-mac10.10'), ):
+                DesktopConfig(port_name='test-mac-mac10.10'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
             },
             'external/wpt/x/z.html': {
-                (
-                    DesktopConfig(port_name='test-mac-mac10.10'),
-                    DesktopConfig(port_name='test-win-win7'),
-                ):
+                DesktopConfig(port_name='test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-win-win7'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
@@ -827,11 +792,15 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         updater.write_to_test_expectations({
             'external/wpt/test.html': {
-                (
-                    DesktopConfig('test-mac-mac10.10'),
-                    DesktopConfig('test-win-win7'),
-                    DesktopConfig('test-win-win10'),
-                ):
+                DesktopConfig('test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-win-win7'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-win-win10'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
@@ -845,12 +814,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         updater.write_to_test_expectations({
             'external/wpt/test.html': {
-                (
-                    DesktopConfig('test-mac-mac10.10'),
-                    DesktopConfig('test-mac-mac10.11'),
-                    DesktopConfig('test-win-win7'),
-                    DesktopConfig('test-win-win10'),
-                ):
+                DesktopConfig('test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-mac-mac10.11'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-win-win7'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-win-win10'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
@@ -875,20 +851,25 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         updater.write_to_test_expectations({
             'external/wpt/test.html': {
-                (
-                    DesktopConfig(port_name='test-win-win7'),
-                    DesktopConfig(port_name='test-win-win10'),
-                    DesktopConfig(port_name='test-mac-mac10.10'),
-                ):
+                DesktopConfig(port_name='test-win-win7'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-win-win10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-mac-mac10.10'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
             },
             'external/wpt/another.html': {
-                (
-                    DesktopConfig(port_name='test-win-win7'),
-                    DesktopConfig(port_name='test-win-win10'),
-                ):
+                DesktopConfig(port_name='test-win-win7'):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-win-win10'):
                 SimpleTestResult(expected='PASS',
                                  actual='FAIL',
                                  bug='crbug.com/123'),
@@ -1090,9 +1071,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater._relative_to_web_test_dir = lambda test_path: test_path
         updater.cleanup_test_expectations_files()
 
-        test_expectations = {'external/wpt/fake/file/path.html': {
-            tuple([DesktopConfig(port_name='test-linux-trusty')]):
-            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
+        test_expectations = {
+            'external/wpt/fake/file/path.html': {
+                DesktopConfig(port_name='test-linux-trusty'):
+                SimpleTestResult(actual='PASS',
+                                 expected='',
+                                 bug='crbug.com/123')
+            }
+        }
         skip_path = host.port_factory.get().path_to_never_fix_tests_file()
         skip_value_origin = host.filesystem.read_text_file(skip_path)
 
@@ -1136,9 +1122,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater._relative_to_web_test_dir = lambda test_path: test_path
         updater.cleanup_test_expectations_files()
 
-        test_expectations = {'external/wpt/fake/file/path.html': {
-            tuple([DesktopConfig(port_name='test-linux-trusty')]):
-            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
+        test_expectations = {
+            'external/wpt/fake/file/path.html': {
+                DesktopConfig(port_name='test-linux-trusty'):
+                SimpleTestResult(actual='PASS',
+                                 expected='',
+                                 bug='crbug.com/123')
+            }
+        }
         skip_path = host.port_factory.get().path_to_never_fix_tests_file()
         skip_value_origin = host.filesystem.read_text_file(skip_path)
 
@@ -1175,9 +1166,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.write_text_file(expectations_path,
                                         WPTExpectationsUpdater.MARKER_COMMENT + '\n')
         updater = WPTExpectationsUpdater(host)
-        test_expectations = {'external/wpt/fake/file/path.html': {
-            tuple([DesktopConfig(port_name='test-linux-trusty')]):
-            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
+        test_expectations = {
+            'external/wpt/fake/file/path.html': {
+                DesktopConfig(port_name='test-linux-trusty'):
+                SimpleTestResult(actual='PASS',
+                                 expected='',
+                                 bug='crbug.com/123')
+            }
+        }
         skip_path = host.port_factory.get().path_to_never_fix_tests_file()
         skip_value_origin = host.filesystem.read_text_file(skip_path)
 
@@ -1200,9 +1196,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             raw_exps + '\n' +
             'crbug.com/111 [ Trusty ] foo/bar.html [ Failure ]\n')
         updater = WPTExpectationsUpdater(host)
-        test_expectations = {'external/wpt/fake/file/path.html': {
-            tuple([DesktopConfig(port_name='test-linux-trusty')]):
-            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
+        test_expectations = {
+            'external/wpt/fake/file/path.html': {
+                DesktopConfig(port_name='test-linux-trusty'):
+                SimpleTestResult(actual='PASS',
+                                 expected='',
+                                 bug='crbug.com/123')
+            }
+        }
         skip_path = host.port_factory.get().path_to_never_fix_tests_file()
         skip_value_origin = host.filesystem.read_text_file(skip_path)
 
@@ -1394,15 +1395,18 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         results = {
             'external/wpt/x-manual.html': {
-                (
-                    DesktopConfig('test-linux-precise'),
-                    DesktopConfig('test-linux-trusty'),
-                    DesktopConfig('test-mac-mac10.10'),
-                    DesktopConfig('test-mac-mac10.11'),
-                    DesktopConfig('test-win-win7'),
-                    DesktopConfig('test-win-win10'),
-                ):
-                SimpleTestResult(expected='PASS', actual='MISSING', bug='')
+                DesktopConfig('test-linux-precise'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
+                DesktopConfig('test-linux-trusty'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
+                DesktopConfig('test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
+                DesktopConfig('test-mac-mac10.11'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
+                DesktopConfig('test-win-win7'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
+                DesktopConfig('test-win-win10'):
+                SimpleTestResult(expected='PASS', actual='MISSING', bug=''),
             }
         }
         tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(results)
@@ -1423,14 +1427,18 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         results = {
             'external/wpt/x.html': {
-                (
-                    DesktopConfig(port_name='test-linux-precise'),
-                    DesktopConfig(port_name='test-linux-trusty'),
-                    DesktopConfig(port_name='test-mac-mac10.10'),
-                ):
+                DesktopConfig(port_name='test-linux-precise'):
                 SimpleTestResult(expected='PASS',
                                  actual='TEXT',
-                                 bug='crbug.com/123')
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-linux-trusty'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
+                DesktopConfig(port_name='test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
             }
         }
         line_dict = updater.write_to_test_expectations(results)
@@ -1543,16 +1551,26 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         results = {
             'external/wpt/x.html': {
-                (
-                    DesktopConfig('test-linux-precise'),
-                    DesktopConfig('test-linux-trusty'),
-                    DesktopConfig('test-mac-mac10.10'),
-                    DesktopConfig('test-mac-mac10.11'),
-                    DesktopConfig('test-win-win7'),
-                ):
+                DesktopConfig('test-linux-precise'):
                 SimpleTestResult(expected='PASS',
                                  actual='TEXT',
-                                 bug='crbug.com/123')
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-linux-trusty'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-mac-mac10.10'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-mac-mac10.11'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
+                DesktopConfig('test-win-win7'):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
             }
         }
         line_dict = updater.write_to_test_expectations(results)
