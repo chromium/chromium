@@ -366,6 +366,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.LegacyResourceTypeFilterItemSelected"
+    enum="DevToolsLegacyResourceTypeFilterItemSelected"
+    expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records when a resource type is selected in the Network panel's legacy
+    filter bar.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.LegacyResourceTypeFilterNumberOfSelectedChanged"
+    enum="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged"
+    expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records the number of selected resource types in the Network panel's legacy
+    filter bar.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.LighthouseCategoryUsed"
     enum="DevToolsLighthouseCategoryUsed" expires_after="2024-09-14">
   <owner>asraine@chromium.org</owner>
