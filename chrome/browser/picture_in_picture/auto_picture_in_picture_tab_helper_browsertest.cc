@@ -12,10 +12,12 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,6 +27,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
@@ -33,6 +36,8 @@
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/test/button_test_api.h"
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
@@ -291,15 +296,14 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
   }
 
-  void SetContentSettingEnabled(content::WebContents* web_contents,
-                                bool enabled) {
+  void SetContentSetting(content::WebContents* web_contents,
+                         ContentSetting content_setting) {
     GURL url = web_contents->GetLastCommittedURL();
-    ContentSetting setting =
-        enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
     HostContentSettingsMapFactory::GetForProfile(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()))
         ->SetContentSettingDefaultScope(
-            url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE, setting);
+            url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+            content_setting);
   }
 
   void OverrideURL(const GURL& url) {
@@ -342,6 +346,18 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     rwh->ForwardGestureEvent(gesture_event);
 
     rwh->RemoveInputEventObserver(&input_observer);
+  }
+
+  void PerformMouseClickOnButton(views::Button* button) {
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  }
+
+  content::VideoPictureInPictureWindowController* window_controller(
+      content::WebContents* web_contents) {
+    return content::VideoPictureInPictureWindowController::
+        GetOrCreateVideoPictureInPictureController(web_contents);
   }
 
  protected:
@@ -526,6 +542,60 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   ASSERT_TRUE(setting_helper);
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       OverlayViewRemovedWhenHidden) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoPipPage(browser());
+  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  WaitForAudioFocusGained();
+
+  // Set content setting to CONTENT_SETTING_ASK.
+  auto* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SetContentSetting(original_web_contents, CONTENT_SETTING_ASK);
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(original_web_contents);
+
+  // There should not currently be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+  // The tab helper should not report that we are, or would be, in auto-pip.
+  EXPECT_FALSE(tab_helper->AreAutoPictureInPicturePreconditionsMet());
+  EXPECT_FALSE(tab_helper->IsInAutoPictureInPicture());
+
+  {
+    // Open and switch to a new tab.
+    content::MediaStartStopObserver enter_pip_observer(
+        original_web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+
+  // A picture-in-picture window of the correct type should automatically
+  // open.
+  EXPECT_TRUE(original_web_contents->HasPictureInPictureVideo());
+
+  // Get the video pip window controller and video overlay window.
+  auto* const video_pip_window_controller =
+      window_controller(original_web_contents);
+  auto* const video_overlay_window = static_cast<VideoOverlayWindowViews*>(
+      video_pip_window_controller->GetWindowForTesting());
+
+  // Get AutoPipSettingView "allow once" button and click it.
+  auto* allow_once_button = views::Button::AsButton(
+      video_overlay_window->get_overlay_view_for_testing()
+          ->get_view_for_testing()
+          ->GetWidget()
+          ->GetContentsView()
+          ->GetViewByID(
+              static_cast<int>(AutoPipSettingView::UiResult::kAllowOnce)));
+  PerformMouseClickOnButton(allow_once_button);
+
+  // Verify that the AutoPipSettingOverlay view has been removed.
+  EXPECT_EQ(nullptr, video_overlay_window->get_overlay_view_for_testing());
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        DoesNotCloseManuallyOpenedPip) {
   // Load a page that registers for autopip.
@@ -680,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   GetUserMediaAndAccept(original_web_contents);
 
   // Disable the AUTO_PICTURE_IN_PICTURE content setting.
-  SetContentSettingEnabled(original_web_contents, false);
+  SetContentSetting(original_web_contents, CONTENT_SETTING_BLOCK);
 
   // There should not currently be a picture-in-picture window.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
@@ -705,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 
   // Re-enable the content setting.
-  SetContentSettingEnabled(original_web_contents, true);
+  SetContentSetting(original_web_contents, CONTENT_SETTING_ALLOW);
 
   // Switch back to the second tab.
   content::MediaStartStopObserver enter_pip_observer(

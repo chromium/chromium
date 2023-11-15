@@ -8,4 +8,7 @@ specific_include_rules = {
     "+chrome/browser/ui/views/overlay/toggle_microphone_button.h",
     "+chrome/browser/ui/views/overlay/video_overlay_window_views.h",
   ],
+  "auto_picture_in_picture_tab_helper_browsertest\.cc": [
+    "+chrome/browser/ui/views/overlay/video_overlay_window_views.h",
+  ],
 }

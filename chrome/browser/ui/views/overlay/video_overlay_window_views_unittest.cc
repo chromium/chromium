@@ -49,6 +49,7 @@ constexpr gfx::Size kSizeBigEnoughForBubble(400, 300);
 }  // namespace
 
 using testing::_;
+using ::testing::Return;
 
 // Mock of AutoPipSettingOverlayView. Used for injection during tests.
 class MockOverlayView : public AutoPipSettingOverlayView {
@@ -59,21 +60,23 @@ class MockOverlayView : public AutoPipSettingOverlayView {
                                   gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}
-  MOCK_METHOD(void,
-              ShowBubble,
-              (gfx::NativeView parent, PipWindowType pip_window_type),
-              (override));
+  MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
+
+  void SetWantsEvent(bool wants_event) { wants_event_ = wants_event; }
 
   bool WantsEvent(const gfx::Point& point_in_screen) override {
     // Consume any event we're given.  The goal is to make sure we're given the
     // opportunity to take an event.
-    return true;
+    return wants_event_;
   }
 
   gfx::Size GetBubbleSize() const override {
     // Return something that's bigger than the minimum.
     return kBubbleSize;
   }
+
+ private:
+  bool wants_event_ = false;
 };
 
 class TestVideoPictureInPictureWindowController
@@ -603,6 +606,7 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayViewIsSizedCorrectly) {
 TEST_F(VideoOverlayWindowViewsTest, OverlayViewCanBeClicked) {
   // Make sure that the overlay view is z-ordered to get input events.
   auto* overlay_view = SetOverlayView();
+  overlay_view->SetWantsEvent(true);
 
   // Add a button!
   base::MockRepeatingCallback<void(const ui::Event&)> cb;
@@ -624,7 +628,8 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayViewCanBeClicked) {
 TEST_F(VideoOverlayWindowViewsTest, OverlayWindowBlocksInput) {
   // Make sure that the playback controls don't receive input events while the
   // overlay view is visible.
-  SetOverlayView();
+  auto* overlay_view = SetOverlayView();
+  overlay_view->SetWantsEvent(true);
   overlay_window().ShowInactive();
 
   // When the play/pause controls are visible, closing via the close button
@@ -650,4 +655,23 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayWindowFitsInMinimumSize) {
   // When the overlay view is hidden, the minimum size should return to normal.
   overlay_view->SetVisible(false);
   EXPECT_EQ(overlay_window().GetMinimumSize(), kMinWindowSize);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayWindowStopsBlockingInput) {
+  auto* overlay_view = SetOverlayView();
+  overlay_window().ShowInactive();
+
+  // Make sure that the overlay window blocks input, when the overlay view does
+  // not want events.
+  const auto close_controls_center_point =
+      overlay_window().GetCloseControlsBounds().CenterPoint();
+  overlay_view->SetWantsEvent(false);
+  EXPECT_FALSE(overlay_window().ControlsHitTestContainsPoint(
+      close_controls_center_point));
+
+  // Make sure that the overlay window stops blocking input, when the overlay
+  // view wants event.
+  overlay_view->SetWantsEvent(true);
+  EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
+      close_controls_center_point));
 }
