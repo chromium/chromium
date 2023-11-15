@@ -343,9 +343,12 @@ html.pointer-active #directory-tree xf-tree-item >
 }
 
 /* Splitter. */
-/* Prevent the slot children (tree and table list) to appear before its host. */
+/* Prevent the slot children (tree and table list) to show in the wrong position
+   before host web component resolves. */
 .splitter:not(:defined) {
-  display: none;
+  column-gap: 24px;
+  display: flex;
+  width: 100%;
 }
 
 .splitter {
