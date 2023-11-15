@@ -148,7 +148,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
 
   private async updateAppList_(): Promise<void> {
     const apps = (await this.mojoInterfaceProvider_.getApps()).apps;
-    this.appList_ = apps.filter(app => hasMicrophonePermission(app));
+    this.appList_ = apps.filter(hasMicrophonePermission);
   }
 
   private async updateMicrophoneList_(): Promise<void> {

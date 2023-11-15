@@ -488,6 +488,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"privacyHubPermissionDeniedText", IDS_APP_MANAGEMENT_PERMISSION_DENIED},
       {"noAppCanUseMicText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT},
+      {"noAppCanUseCameraText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT},
       {"blockedForAllText", IDS_OS_SETTINGS_PRIVACY_HUB_BLOCKED_FOR_ALL_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

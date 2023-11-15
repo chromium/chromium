@@ -6,8 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
 import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
-import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
+import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -17,6 +16,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {FakeMediaDevices} from '../fake_media_devices.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
+import {createApp} from './privacy_hub_app_permission_test_util.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 type App = appPermissionHandlerMojom.App;
@@ -316,15 +316,6 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         privacyHubMicrophoneSubpage.i18n('noAppCanUseMicText'),
         getNoAppHasAccessTextSection()!.textContent!.trim());
   });
-
-  function createApp(
-      id: string, name: string, permissionType: PermissionType,
-      permissionValue: TriState): App {
-    const app: App = {id, name, type: AppType.kWeb, permissions: {}};
-    app.permissions[permissionType] = createTriStatePermission(
-        permissionType, permissionValue, /*is_managed=*/ false);
-    return app;
-  }
 
   function initializeObserver(): Promise<void> {
     return fakeHandler.whenCalled('addObserver');
