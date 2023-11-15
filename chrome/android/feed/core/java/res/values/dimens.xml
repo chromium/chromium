@@ -9,5 +9,5 @@ found in the LICENSE file.
   <!-- Card dimensions. -->
   <dimen name="feed_suggestion_card_action_min_height">48dp</dimen>
 
-  <dimen name="signin_promo_lateral_paddings">20dp</dimen>
+  <dimen name="signin_promo_lateral_paddings">16dp</dimen>
 </resources>
