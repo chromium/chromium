@@ -639,7 +639,7 @@ const Extension* FindExtensionByHostId(content::BrowserContext* browser_context,
   }
 
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
-  DCHECK(registry);  // WillExecuteCode and WillUpdateContentScriptsInRenderer
+  DCHECK(registry);  // WillExecuteCode and DidUpdateScriptsInRenderer
                      // shouldn't happen during shutdown.
 
   const Extension* extension =
@@ -922,13 +922,13 @@ void ScriptInjectionTracker::WillExecuteCode(
 }
 
 // static
-void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
+void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
     base::PassKey<UserScriptLoader> pass_key,
     const mojom::HostID& host_id,
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT(
-      "extensions", "ScriptInjectionTracker::WillUpdateScriptsInRenderer",
+      "extensions", "ScriptInjectionTracker::DidUpdateScriptsInRenderer",
       ChromeTrackEvent::kRenderProcessHost, process,
       ChromeTrackEvent::kChromeExtensionId, ExtensionIdForTracing(host_id.id));
 
@@ -975,7 +975,7 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
   } else {
     TRACE_EVENT_INSTANT("extensions",
                         "ScriptInjectionTracker::"
-                        "WillUpdateScriptsInRenderer - no matches",
+                        "DidUpdateScriptsInRenderer - no matches",
                         ChromeTrackEvent::kRenderProcessHost, process,
                         ChromeTrackEvent::kChromeExtensionId,
                         ExtensionIdForTracing(host_id.id));

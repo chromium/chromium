@@ -256,8 +256,13 @@ void UserScriptLoader::OnRenderProcessHostCreated(
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
           browser_context_, process_host->GetBrowserContext()))
     return;
-  if (initial_load_complete())
-    SendUpdate(process_host, shared_memory_);
+  if (initial_load_complete()) {
+    SendUpdateResult update_result = SendUpdate(process_host, shared_memory_);
+    if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
+      ScriptInjectionTracker::DidUpdateScriptsInRenderer(
+          base::PassKey<UserScriptLoader>(), host_id_, *process_host);
+    }
+  }
 }
 
 bool UserScriptLoader::ScriptsMayHaveChanged() const {
@@ -429,10 +434,15 @@ void UserScriptLoader::OnScriptsLoaded(
   // We've got scripts ready to go.
   shared_memory_ = std::move(shared_memory);
 
+  std::vector<int> ids_of_newly_notified_processes;
   for (content::RenderProcessHost::iterator i(
            content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
-    SendUpdate(i.GetCurrentValue(), shared_memory_);
+    content::RenderProcessHost* process = i.GetCurrentValue();
+    SendUpdateResult update_result = SendUpdate(process, shared_memory_);
+    if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
+      ids_of_newly_notified_processes.push_back(process->GetID());
+    }
   }
 
   for (auto& observer : observers_)
@@ -444,26 +454,44 @@ void UserScriptLoader::OnScriptsLoaded(
   loaded_callbacks.splice(loaded_callbacks.end(), loading_callbacks_);
   for (auto& callback : loaded_callbacks)
     std::move(callback).Run(this, /*error=*/absl::nullopt);
+
+  // Notify `ScriptInjectionTracker` at the very end - *after* all the observers
+  // and callbacks above have already been run. In particular, this needs to
+  // happen after `ExtensionUserScriptLoader::OnDynamicScriptsAdded` has been
+  // called if needed (see also https://crbug.com/1439642).
+  for (const int& process_id : ids_of_newly_notified_processes) {
+    // It's theoretically possible the process was destroyed by one of the
+    // callbacks or observers above.
+    content::RenderProcessHost* process =
+        content::RenderProcessHost::FromID(process_id);
+    if (process) {
+      ScriptInjectionTracker::DidUpdateScriptsInRenderer(
+          base::PassKey<UserScriptLoader>(), host_id_, *process);
+    }
+  }
 }
 
-void UserScriptLoader::SendUpdate(
+UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory) {
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
-          browser_context_, process->GetBrowserContext()))
-    return;
+          browser_context_, process->GetBrowserContext())) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   // If the process is being started asynchronously, early return.  We'll end up
   // calling InitUserScripts when it's created which will call this again.
   base::ProcessHandle handle = process->GetProcess().Handle();
-  if (!handle)
-    return;
+  if (!handle) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   base::ReadOnlySharedMemoryRegion region_for_process =
       shared_memory.Duplicate();
-  if (!region_for_process.IsValid())
-    return;
+  if (!region_for_process.IsValid()) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   // If the process only hosts guest frames, then those guest frames share the
   // same embedder/owner. In this case, only scripts from allowlisted hosts or
@@ -479,18 +507,17 @@ void UserScriptLoader::SendUpdate(
         process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
 
     DCHECK(found_owner);
-    if (owner_host != host_id().id)
-      return;
+    if (owner_host != host_id().id) {
+      return SendUpdateResult::kNoActionTaken;
+    }
   }
-
-  ScriptInjectionTracker::WillUpdateScriptsInRenderer(
-      base::PassKey<UserScriptLoader>(), host_id_, *process);
 
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())
           ->GetRenderer(process);
   renderer->UpdateUserScripts(std::move(region_for_process),
                               mojom::HostID::New(host_id().type, host_id().id));
+  return SendUpdateResult::kRendererHasBeenNotified;
 }
 
 }  // namespace extensions

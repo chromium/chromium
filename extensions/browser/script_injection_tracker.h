@@ -115,8 +115,9 @@ class ScriptInjectionTracker {
                               content::RenderFrameHost* frame,
                               const Extension& extension);
 
-  // Called before the given renderer `process` is notified about new scripts.
-  static void WillUpdateScriptsInRenderer(
+  // Called right after the given renderer `process` is notified about new
+  // scripts.
+  static void DidUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader> pass_key,
       const mojom::HostID& host_id,
       content::RenderProcessHost& process);
