@@ -28,6 +28,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrefetchReusableBodySizeLimit;
 
+BASE_DECLARE_FEATURE(kPrefetchNIKScope);
+
 }  // namespace content::features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

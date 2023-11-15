@@ -305,4 +305,8 @@ size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits() {
   return std::max(0, max);
 }
 
+bool PrefetchNIKScopeEnabled() {
+  return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
+}
+
 }  // namespace content

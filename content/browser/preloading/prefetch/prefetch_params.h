@@ -138,6 +138,9 @@ size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
 // PrefetchNewLimits is enabled).
 size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
 
+// Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
+bool PrefetchNIKScopeEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
