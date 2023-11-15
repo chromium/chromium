@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -17,12 +18,12 @@ TEST(ArcTracingGraphicsModelTest, IncludesCommitTimestamps) {
 
   ArcTracingGraphicsModel model;
   ArcTracingModel common;
-  TraceTimestamps timestamps;
+  PresentFramesTracer present_frames;
 
   for (int commit_ts : kCommitsAbsoluteMs) {
-    timestamps.AddCommit(base::TimeTicks::FromUptimeMillis(commit_ts));
+    present_frames.AddCommit(base::TimeTicks::FromUptimeMillis(commit_ts));
   }
-  model.Build(common, std::move(timestamps));
+  model.Build(common, present_frames);
 
   ASSERT_EQ(model.view_buffers().size(), 1ul);
   auto& buffer_events = model.view_buffers().begin()->second.buffer_events();

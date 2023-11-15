@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 
 namespace arc {
 
@@ -441,24 +442,12 @@ bool ArcTracingGraphicsModel::ViewId::operator==(const ViewId& other) const {
   return task_id == other.task_id && activity == other.activity;
 }
 
-TraceTimestamps::TraceTimestamps() = default;
-
-TraceTimestamps::~TraceTimestamps() = default;
-
-void TraceTimestamps::AddCommit(base::TimeTicks commit_ts) {
-  commits.emplace_back((commit_ts - base::TimeTicks()).InMicroseconds());
-}
-
-void TraceTimestamps::AddPresent(base::TimeTicks present_ts) {
-  presents.emplace_back((present_ts - base::TimeTicks()).InMicroseconds());
-}
-
 ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
 
 ArcTracingGraphicsModel::~ArcTracingGraphicsModel() = default;
 
 bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
-                                    const TraceTimestamps& timestamps) {
+                                    const PresentFramesTracer& present_frames) {
   Reset();
 
   // TODO(b/296595454): Remove the mapping mechanism as it was only needed
@@ -471,10 +460,10 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   auto& buffer_events =
       view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)].buffer_events();
   buffer_events.emplace_back();
-  for (int64_t ticks : timestamps.commits) {
+  for (int64_t ticks : present_frames.commits()) {
     buffer_events[0].emplace_back(EventType::kExoSurfaceCommit, ticks);
   }
-  for (int64_t ticks : timestamps.presents) {
+  for (int64_t ticks : present_frames.presents()) {
     chrome_top_level_.global_events().emplace_back(
         EventType::kChromeOSPresentationDone, ticks);
   }

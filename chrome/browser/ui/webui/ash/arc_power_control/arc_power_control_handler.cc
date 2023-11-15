@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
@@ -101,7 +102,7 @@ base::Value BuildTracingModel(
   graphics_model.set_skip_structure_validation();
   graphics_model.set_platform(base::GetLinuxDistro());
   graphics_model.set_timestamp(timestamp);
-  graphics_model.Build(common_model, arc::TraceTimestamps() /* commits */);
+  graphics_model.Build(common_model, arc::PresentFramesTracer() /* commits */);
 
   return base::Value(graphics_model.Serialize());
 }

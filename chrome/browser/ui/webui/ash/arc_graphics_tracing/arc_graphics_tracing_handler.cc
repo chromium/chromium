@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,7 +71,7 @@ struct ArcGraphicsTracingHandler::ActiveTrace {
   // with absl::optional.
   absl::optional<base::OneShotTimer> stop_timer;
 
-  arc::TraceTimestamps stamps;
+  arc::PresentFramesTracer present_frames;
 };
 
 namespace {
@@ -181,7 +182,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
                                      &common_model.system_model());
 
   trace->model.set_skip_structure_validation();
-  if (!trace->model.Build(common_model, trace->stamps)) {
+  if (!trace->model.Build(common_model, trace->present_frames)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
@@ -370,10 +371,8 @@ void ArcGraphicsTracingHandler::OnCommit(exo::Surface* surface) {
     return;
   }
 
-  active_trace_->stamps.AddCommit(SystemTicksNow());
-  surface->RequestPresentationCallback(
-      base::BindRepeating(&ArcGraphicsTracingHandler::RecordPresentedFrame,
-                          weak_ptr_factory_.GetWeakPtr()));
+  active_trace_->present_frames.AddCommit(SystemTicksNow());
+  active_trace_->present_frames.ListenForPresent(surface);
 }
 
 void ArcGraphicsTracingHandler::UpdateActiveArcWindowInfo() {
@@ -533,17 +532,6 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
                      std::move(trace), model_path),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcGraphicsTracingHandler::RecordPresentedFrame(
-    const gfx::PresentationFeedback& frame) {
-  if (frame.failed()) {
-    VLOG(5) << "Presentation failed";
-  } else if (frame.timestamp == base::TimeTicks()) {
-    VLOG(5) << "Discarded frame";
-  } else if (active_trace_) {
-    active_trace_->stamps.AddPresent(frame.timestamp);
-  }
 }
 
 void ArcGraphicsTracingHandler::OnGraphicsModelReady(

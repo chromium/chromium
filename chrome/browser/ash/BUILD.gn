@@ -626,6 +626,8 @@ source_set("ash") {
     "arc/tracing/arc_value_event.h",
     "arc/tracing/arc_value_event_trimmer.cc",
     "arc/tracing/arc_value_event_trimmer.h",
+    "arc/tracing/present_frames_tracer.cc",
+    "arc/tracing/present_frames_tracer.h",
     "arc/tts/arc_tts_service.cc",
     "arc/tts/arc_tts_service.h",
     "arc/user_session/arc_user_session_service.cc",
