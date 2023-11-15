@@ -285,6 +285,14 @@ VisitSegmentDatabase::QuerySegmentUsage(
   return results;
 }
 
+bool VisitSegmentDatabase::DeleteSegmentDataOlderThan(base::Time older_than) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM segment_usage WHERE time_slot < ?"));
+  statement.BindTime(0, older_than.LocalMidnight());
+
+  return statement.Run();
+}
+
 bool VisitSegmentDatabase::DeleteSegmentForURL(URLID url_id) {
   sql::Statement delete_usage(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM segment_usage WHERE segment_id IN "

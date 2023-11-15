@@ -641,6 +641,8 @@ void ExpireHistoryBackend::DoExpireIteration() {
         base::Days(internal::kOnDemandFaviconIsOldAfterDays));
   }
 
+  ExpireOldSegmentData(GetCurrentExpirationTime());
+
   ScheduleExpire();
 }
 
@@ -670,6 +672,12 @@ bool ExpireHistoryBackend::ExpireSomeOldHistory(
                          DeletionInfo::Reason::kOther);
 
   return more_to_expire;
+}
+
+void ExpireHistoryBackend::ExpireOldSegmentData(base::Time end_time) {
+  if (main_db_) {
+    main_db_->DeleteSegmentDataOlderThan(end_time);
+  }
 }
 
 void ExpireHistoryBackend::ParanoidExpireHistory() {

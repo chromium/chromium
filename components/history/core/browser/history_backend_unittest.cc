@@ -216,7 +216,6 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::UpdateVisitDuration;
 
   using HistoryBackend::db_;
-  using HistoryBackend::expirer_;
   using HistoryBackend::favicon_backend_;
   using HistoryBackend::recent_redirects_;
 
@@ -1038,7 +1037,7 @@ TEST_F(HistoryBackendTest, URLsNoLongerBookmarked) {
   history_client_.AddBookmark(row2.url());
 
   // Delete url 2.
-  backend_->expirer_.DeleteURL(row2.url(), base::Time::Max());
+  backend_->expire_backend()->DeleteURL(row2.url(), base::Time::Max());
   EXPECT_FALSE(backend_->db_->GetRowForURL(row2.url(), nullptr));
   VisitVector visits;
   backend_->db_->GetVisitsForURL(row2_id, &visits);
@@ -3717,6 +3716,34 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
       most_visited,
       ElementsAre(MostVisitedURL(GURL("http://example1.com"), kSomeTitle),
                   MostVisitedURL(GURL("http://example5.com"), kSomeTitle)));
+}
+
+TEST_F(HistoryBackendTest, ExpireSegmentData) {
+  ASSERT_TRUE(backend_.get());
+
+  {
+    HistoryAddPageArgs args;
+    args.url = GURL("http://example.com");
+    args.time = base::Time::Now() - base::Days(365);
+    args.transition = ui::PAGE_TRANSITION_TYPED;
+    args.consider_for_ntp_most_visited = true;
+    backend_->AddPage(args);
+  }
+  {
+    HistoryAddPageArgs args;
+    args.url = GURL("http://example2.com");
+    args.time = base::Time::Now() - base::Days(50);
+    args.transition = ui::PAGE_TRANSITION_TYPED;
+    args.consider_for_ntp_most_visited = true;
+    backend_->AddPage(args);
+  }
+
+  EXPECT_EQ(2u, backend_->QueryMostVisitedURLs(100).size());
+  backend_->expire_backend()->ExpireOldSegmentData(base::Time::Now() -
+                                                   base::Days(100));
+  EXPECT_THAT(backend_->QueryMostVisitedURLs(100),
+              ElementsAre(MostVisitedURL(GURL("http://example2.com"),
+                                         std::u16string())));
 }
 
 TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
