@@ -81,8 +81,7 @@ If you need to reproduce a test case that involves specific HTTP headers, do thi
 
 1. Make a copy of [page_load_in_process_fuzzer_seed_corpus/network.textproto](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/fuzzing/page_load_in_process_fuzzer_seed_corpus/network.textproto)
 2. Edit as necessary to give the headers you need
-3. Assuming an output directory of `out/Release` and that you've called the file `testcase.textproto`, `python3 tools/protoc_wrapper/protoc_convert.py --protoc out/Release/protoc --infile testcase.textproto --outfile testcase.binarypb --encode=test.fuzzing.page_load_fuzzing.FuzzCase -I . chrome/test/fuzzing/page_load_in_process_fuzzer.proto`
-3. Go to the ClusterFuzz [upload page]((https://clusterfuzz.com/upload-testcase))
+3. Go to the ClusterFuzz [upload page](https://clusterfuzz.com/upload-testcase)
 4. Select `libfuzzer_chrome_asan` for the job
 5. Select `page_load_in_process_fuzzer` for the fuzzer
-6. Upload `testcase.binarypb` as the test case.
+6. Upload `network.textproto` as the test case.

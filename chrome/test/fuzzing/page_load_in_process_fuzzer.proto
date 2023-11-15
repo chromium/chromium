@@ -25,14 +25,15 @@ message NetworkResource {
   WhichServer which_server = 1;
   // The path to request on the http(s) server. Should start with /
   string path = 2;
-  // The HTTP status which will be presented in the response.
+  // The HTTP status which will be presented in the response, e.g. 200
   uint32 http_status = 3;
   // Custom headers in the HTTP response.
   repeated CustomHeader custom_headers = 4;
   // The Content-Type to be returned.
   string content_type = 5;
-  // The textual reason string to go along with the HTTP status code.
-  optional string reason = 6;
+  // The textual reason string to go along with the HTTP status code,
+  // for example, "OK"
+  string reason = 6;
   // The body of the response.
   // The strings $HTTPS_ORIGIN1, $HTTPS_ORIGIN2, $HTTP_ORIGIN1 and $HTTP_ORIGIN2
   // will be substituted with the root URIs for the test servers.

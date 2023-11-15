@@ -143,9 +143,7 @@ PageLoadInProcessFuzzer::DoHandleHTTPRequest(
       for (const auto& header : network_resource.custom_headers()) {
         response->AddCustomHeader(header.key(), header.value());
       }
-      if (network_resource.has_reason()) {
-        response->set_reason(network_resource.reason());
-      }
+      response->set_reason(network_resource.reason());
       if (network_resource.has_body()) {
         response->set_content(SubstituteServersInBody(network_resource.body()));
       }
