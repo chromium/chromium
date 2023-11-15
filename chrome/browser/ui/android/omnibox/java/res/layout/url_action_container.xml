@@ -29,9 +29,6 @@ found in the LICENSE file.
             android:visibility="invisible"
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />
 
-    <!-- This is a short term solution to have 2 Lens buttons in this xml to
-         support different position variants in experiment.
-         TODO(b/182195615): only keep one Lens button after the experiment. -->
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/lens_camera_button"
             style="@style/LocationBarActionButton"
