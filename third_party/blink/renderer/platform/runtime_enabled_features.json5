@@ -861,9 +861,10 @@
       status: "stable",
     },
     {
+      // crbug.com/880802
       name: "CssDisplayRuby",
       depends_on: ["RubySimplePairing"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSDynamicRangeLimit",
