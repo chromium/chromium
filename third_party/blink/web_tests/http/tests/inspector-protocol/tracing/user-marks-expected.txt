@@ -55,7 +55,9 @@ Object: {
 		startTime: number
 	}
 	cat: string
-	id: string
+	id2: {
+		local: string
+	}
 	name: string
 	ph: string
 	pid: number

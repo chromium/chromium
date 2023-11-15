@@ -80,7 +80,7 @@
   tracingHelper.logEventShape(userTimings[0]);
   testRunner.log(`Phase of begin event: ${userTimings[0].ph}`);
   testRunner.log(`Phase of end event: ${userTimings[1].ph}`);
-  if (userTimings[0].id === userTimings[1].id) {
+  if (userTimings[0].id2.local === userTimings[1].id2.local) {
     testRunner.log('user timing event ids are equal.');
   }
 
