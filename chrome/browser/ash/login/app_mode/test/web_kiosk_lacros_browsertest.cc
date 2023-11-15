@@ -24,7 +24,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, RegularOnlineKiosk) {
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
-IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, RecoverFromLacrosCrash) {
+// TODO(crbug.com/1501438): Reenable the test.
+IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, DISABLED_RecoverFromLacrosCrash) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
