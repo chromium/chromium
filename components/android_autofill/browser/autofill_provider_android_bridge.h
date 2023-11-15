@@ -59,6 +59,9 @@ class AutofillProviderAndroidBridge {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller) = 0;
 
+  // Sends a prefill request to the Android Autofill framework.
+  virtual void SendPrefillRequest(FormDataAndroid& form) = 0;
+
   // Starts a new Autofill session for `form` and `field`.
   virtual void StartAutofillSession(FormDataAndroid& form,
                                     const FieldInfo& field,

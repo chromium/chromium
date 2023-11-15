@@ -73,7 +73,8 @@ class AutofillProviderAndroid : public AutofillProvider,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override;
   void OnHidePopup(AndroidAutofillManager* manager) override;
-  void OnServerPredictionsAvailable(FormGlobalId form) override;
+  void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
+                                    FormGlobalId form_id) override;
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override;
 
@@ -133,6 +134,21 @@ class AutofillProviderAndroid : public AutofillProvider,
   // Returns whether prefill requests are supported. This depends on the
   // Android version.
   bool ArePrefillRequestsSupported() const;
+
+  // Sends a prefill request to the Autofill framework if all the below
+  // conditions are met:
+  // 1. Prefill requests are supported (correct SDK version & feature flag).
+  // 2. No prefill request has been sent so far, since the framework only
+  // supports caching a single form at a time.
+  // 3. There is no ongoing Autofill session. This is to ensure that the
+  // `onProvideAutofillStructure` callback from the framework does not confuse
+  // information requests for caching and for the current Autofill session.
+  // 4. The form is predicted to be a login form.
+  void MaybeSendPrefillRequest(const AndroidAutofillManager& manager,
+                               FormGlobalId form_id);
+
+  // The form for which a prefill request has been sent.
+  std::unique_ptr<FormDataAndroid> cached_form_;
 
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;

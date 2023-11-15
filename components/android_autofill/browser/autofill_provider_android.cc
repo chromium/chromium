@@ -17,8 +17,11 @@
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -138,6 +141,8 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
+  // TODO(crbug.com/1502097): Check whether this form has been cached but not
+  // interacted with since the caching and, if so, use its session id.
   form_ = std::make_unique<FormDataAndroid>(form, GetSessionId());
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
@@ -349,14 +354,17 @@ void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
 }
 
 void AutofillProviderAndroid::OnServerPredictionsAvailable(
-    FormGlobalId form) {
+    AndroidAutofillManager& manager,
+    FormGlobalId form_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!form_ || form_->form().global_id() != form) {
+  MaybeSendPrefillRequest(manager, form_id);
+
+  if (!form_ || form_->form().global_id() != form_id) {
     return;
   }
 
   CHECK(manager_);
-  const FormStructure* form_structure = manager_->FindCachedFormById(form);
+  const FormStructure* form_structure = manager_->FindCachedFormById(form_id);
   if (!form_structure) {
     return;
   }
@@ -445,6 +453,43 @@ bool AutofillProviderAndroid::ArePrefillRequestsSupported() const {
              kMinimumSdkVersionForPrefillRequests &&
          base::FeatureList::IsEnabled(
              features::kAndroidAutofillPrefillRequestsForLoginForms);
+}
+
+void AutofillProviderAndroid::MaybeSendPrefillRequest(
+    const AndroidAutofillManager& manager,
+    FormGlobalId form_id) {
+  if (!ArePrefillRequestsSupported()) {
+    return;
+  }
+
+  // Return if there has already been a cache request or if there is already an
+  // ongoing Autofill session.
+  if (cached_form_ || form_) {
+    return;
+  }
+
+  // Check whether the form is likely to be a login form.
+  const FormStructure* const form_structure =
+      manager.FindCachedFormById(form_id);
+  if (!form_structure) {
+    return;
+  }
+
+  // TODO(crbug.com/1502099): Improve this simple heuristic by including and
+  // using `password_manager::FormDataParser`.
+  if (!base::ranges::any_of(
+          *form_structure, [](const std::unique_ptr<AutofillField>& field) {
+            return field->server_type() == ServerFieldType::PASSWORD ||
+                   (field->server_type() == ServerFieldType::NO_SERVER_DATA &&
+                    field->form_control_type ==
+                        FormControlType::kInputPassword);
+          })) {
+    return;
+  }
+  cached_form_ = std::make_unique<FormDataAndroid>(form_structure->ToFormData(),
+                                                   GetSessionId());
+  cached_form_->UpdateFieldTypes(*form_structure);
+  bridge_->SendPrefillRequest(*cached_form_);
 }
 
 }  // namespace autofill

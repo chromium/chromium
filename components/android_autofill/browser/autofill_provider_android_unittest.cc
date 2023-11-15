@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -24,11 +25,13 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -46,6 +49,7 @@ using ::testing::UnorderedElementsAre;
 using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
 using test::CreateFormDataForFrame;
 using test::CreateTestCreditCardFormData;
+using test::CreateTestFormField;
 using test::CreateTestPersonalInformationFormData;
 
 auto EqualsFieldInfo(size_t index) {
@@ -60,6 +64,21 @@ auto EqualsFormData(const FormData& expected) {
         return FormData::DeepEqual(expected, actual.form());
       },
       true);
+}
+
+FormData CreateTestLoginForm() {
+  FormData form;
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"login_form";
+  form.url = GURL("https://foo.com/form.html");
+  form.action = GURL("https://foo.com/submit.html");
+  form.main_frame_origin = url::Origin::Create(form.url);
+  form.fields = {
+      CreateTestFormField(/*label=*/"Username", /*name=*/"username",
+                          /*value=*/"", FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"Password", /*name=*/"password",
+                          /*value=*/"", FormControlType::kInputPassword)};
+  return form;
 }
 
 class TestAndroidAutofillManager : public AndroidAutofillManager {
@@ -119,6 +138,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
               AttachToJavaAutofillProvider,
               (JNIEnv*, const base::android::JavaRef<jobject>&),
               (override));
+  MOCK_METHOD(void, SendPrefillRequest, (FormDataAndroid&), (override));
   MOCK_METHOD(void,
               StartAutofillSession,
               (FormDataAndroid&, const FieldInfo&, bool),
@@ -471,6 +491,143 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
               OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
   content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
       ->Detach();
+}
+
+// Tests that no prefill requests are sent on Android versions prior to U even
+// if all other requirements are satisfied.
+TEST_F(AutofillProviderAndroidTest, NoPrefillRequestOnVersionsPriorToU) {
+  // This test only makes sense on Android versions smaller than U.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+
+  // No prefill request is ever sent.
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+}
+
+// Tests that a prefill request is sent if all requirements for it are
+// satisfied.
+TEST_F(AutofillProviderAndroidTest, SendPrefillRequest) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+
+  // Upon receiving server predictions a prefill request should be sent.
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+}
+
+// Tests that no prefill request is sent if the feature is disabled.
+TEST_F(AutofillProviderAndroidTest, NoPrefillRequestWithoutFeature) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+
+  // Upon receiving server predictions a prefill request should be sent.
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+}
+
+// Tests that no prefill request is if there is already an ongoing Autofill
+// session.
+TEST_F(AutofillProviderAndroidTest, NoPrefillRequestIfOngoingSession) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData pi_form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({pi_form}, /*removed_forms=*/{});
+  EXPECT_CALL(provider_bridge(), StartAutofillSession);
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      pi_form, pi_form.fields.front());
+
+  FormData login_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{});
+  ASSERT_TRUE(
+      android_autofill_manager().FindCachedFormById(login_form.global_id()));
+
+  // No prefill request is ever sent.
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form.global_id());
+}
+
+// Tests that no prefill request is if there is already an ongoing Autofill
+// session.
+TEST_F(AutofillProviderAndroidTest, NoSecondPrefillRequest) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData login_form1 =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form1}, /*removed_forms=*/{});
+  ASSERT_TRUE(
+      android_autofill_manager().FindCachedFormById(login_form1.global_id()));
+
+  FormData login_form2 =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form2}, /*removed_forms=*/{});
+  ASSERT_TRUE(
+      android_autofill_manager().FindCachedFormById(login_form2.global_id()));
+  // The helper method should generate different ids every time it is called.
+  ASSERT_FALSE(FormData::DeepEqual(login_form1, login_form2));
+
+  EXPECT_CALL(provider_bridge(),
+              SendPrefillRequest(EqualsFormData(login_form1)));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form1.global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form2.global_id());
 }
 
 class AutofillProviderAndroidTestHidingLogic

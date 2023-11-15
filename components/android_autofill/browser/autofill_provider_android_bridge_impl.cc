@@ -63,6 +63,16 @@ void AutofillProviderAndroidBridgeImpl::AttachToJavaAutofillProvider(
       env, obj, reinterpret_cast<intptr_t>(this));
 }
 
+void AutofillProviderAndroidBridgeImpl::SendPrefillRequest(
+    FormDataAndroid& form) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  // TODO(crbug.com/1502091): Actually call Java.
+}
+
 void AutofillProviderAndroidBridgeImpl::StartAutofillSession(
     FormDataAndroid& form,
     const FieldInfo& field,
