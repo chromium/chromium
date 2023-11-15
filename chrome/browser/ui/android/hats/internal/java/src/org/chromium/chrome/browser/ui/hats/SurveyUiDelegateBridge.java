@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import android.content.res.Resources;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageWrapper;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Glue code between C++ and Java for passing SurveyUiDelegate.
@@ -39,6 +42,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
         var tabModelSelector = TabModelSelectorSupplier.getValueOrNullFrom(windowAndroid);
         if (tabModelSelector == null) return null;
 
+        populateDefaultValuesForMessageWrapper(messageWrapper, windowAndroid);
         MessageSurveyUiDelegate delegate = new MessageSurveyUiDelegate(
                 messageWrapper.getMessageProperties(), messageDispatcher, tabModelSelector,
                 SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
@@ -53,6 +57,14 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
     @VisibleForTesting
     static SurveyUiDelegateBridge create(long nativePointer) {
         return new SurveyUiDelegateBridge(nativePointer, null);
+    }
+
+    @VisibleForTesting
+    private static void populateDefaultValuesForMessageWrapper(
+            MessageWrapper input, WindowAndroid windowAndroid) {
+        Resources res = windowAndroid.getContext().get().getResources();
+        PropertyModel model = input.getMessageProperties();
+        MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(res, model);
     }
 
     private SurveyUiDelegateBridge(long nativePointer, @Nullable SurveyUiDelegate delegate) {

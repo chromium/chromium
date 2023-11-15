@@ -43,11 +43,14 @@ android_library("message_ui_delegate_java") {
     "//base:base_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/messages/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+  resources_package = "org.chromium.chrome.browser.ui.hats"
 }
 
 robolectric_library("junit") {

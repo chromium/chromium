@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import android.content.res.Resources;
+import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -134,6 +137,33 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
 
         mState = State.NOT_STARTED;
+    }
+
+    /**
+     * Create a message model with default title, icon, and button text used for survey, if they are
+     * not provided in the input model.
+     *
+     * @param resources {@link Resources} used to retrieve string and icon.
+     * @param model The input model.
+     * @return The model with title / icon / primary button text to be used.
+     */
+    public static PropertyModel populateDefaultValuesForSurveyMessage(
+            Resources resources, @NonNull PropertyModel model) {
+        if (model.get(MessageBannerProperties.ICON_RESOURCE_ID) == 0) {
+            model.set(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.fre_product_logo);
+            model.set(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
+        }
+        if (TextUtils.isEmpty(model.get(MessageBannerProperties.TITLE))) {
+            model.set(
+                    MessageBannerProperties.TITLE,
+                    resources.getString(R.string.chrome_survey_message_title));
+        }
+        if (TextUtils.isEmpty(model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT))) {
+            model.set(
+                    MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                    resources.getString(R.string.chrome_survey_message_button));
+        }
+        return model;
     }
 
     @Override
