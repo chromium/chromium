@@ -7160,6 +7160,10 @@ test("unit_tests") {
     }
   }
 
+  if (is_chrome_branded) {
+    deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
+  }
+
   if (is_mac) {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
