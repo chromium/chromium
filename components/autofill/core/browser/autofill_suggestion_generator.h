@@ -208,14 +208,14 @@ class AutofillSuggestionGenerator {
       ServerFieldType trigger_field_type);
 
   // Creates nested/child suggestions for `suggestion` with the `profile`
-  // information. Uses `trigger_field_type_group` to define what group filling
+  // information. Uses `trigger_field_type` to define what group filling
   // suggestion to add (name, address or phone). The existence of child
   // suggestions defines whether the autofill popup will have submenus.
   // `last_targeted_fields` specified the last set of fields target by the user.
   // When not present, we default to full form.
   void AddGranularFillingChildSuggestions(
-      FieldTypeGroup trigger_field_type_group,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      ServerFieldType trigger_field_type,
       const AutofillProfile& profile,
       Suggestion& suggestion);
 

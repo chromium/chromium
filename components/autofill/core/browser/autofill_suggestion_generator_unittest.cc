@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -55,6 +56,7 @@ namespace autofill {
 namespace {
 
 using testing::Field;
+using testing::IsEmpty;
 using testing::Matcher;
 
 constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
@@ -73,7 +75,8 @@ Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
 Matcher<Suggestion> EqualsSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
-    ServerFieldType field_by_field_filling_type_used) {
+    std::optional<ServerFieldType> field_by_field_filling_type_used =
+        std::nullopt) {
   return AllOf(
       Field(&Suggestion::popup_item_id, id),
       Field(&Suggestion::main_text,
@@ -1081,6 +1084,7 @@ class AutofillChildrenSuggestionsGenenarationTest
         {&profile}, field_types, last_targeted_fields, trigger_field_type,
         /*trigger_field_max_length=*/0);
   }
+
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
@@ -1088,6 +1092,20 @@ class AutofillChildrenSuggestionsGenenarationTest
     return CreateSuggestionWithChildrenFromProfile(
         profile, last_targeted_fields, trigger_field_type,
         {trigger_field_type});
+  }
+
+  std::u16string GetFormattedInternationalNumber() {
+    return base::UTF8ToUTF16(i18n::FormatPhoneForDisplay(
+        base::UTF16ToUTF8(
+            profile().GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale())),
+        base::UTF16ToUTF8(profile().GetRawInfo(ADDRESS_HOME_COUNTRY))));
+  }
+
+  std::u16string GetFormattedNationalNumber() {
+    return base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
+        base::UTF16ToUTF8(
+            profile().GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale())),
+        base::UTF16ToUTF8(profile().GetRawInfo(ADDRESS_HOME_COUNTRY))));
   }
 
   const AutofillProfile& profile() const { return profile_; }
@@ -1202,10 +1220,11 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
                            profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
                            ADDRESS_HOME_ZIP),
           EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsSuggestion(
-              PopupItemId::kFieldByFieldFilling,
-              profile().GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale()),
-              PHONE_HOME_WHOLE_NUMBER),
+          // Triggering field is not a phone number, international phone number
+          // should be shown to the user.
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           GetFormattedInternationalNumber(),
+                           PHONE_HOME_WHOLE_NUMBER),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
                            profile().GetInfo(EMAIL_ADDRESS, app_locale()),
                            EMAIL_ADDRESS),
@@ -1292,8 +1311,9 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 // scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
 // user expressed intent to use their phone number their phone number on a
 // "random" field.
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
-       CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField) {
+TEST_F(
+    AutofillChildrenSuggestionsGenenarationTest,
+    CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Intenational) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, PHONE_HOME_WHOLE_NUMBER);
 
@@ -1314,9 +1334,84 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
   // 12. edit profile
   // 13. delete address
   ASSERT_EQ(13U, suggestions[0].children.size());
-  EXPECT_THAT(
-      suggestions[0].children[8],
-      Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
+
+  // Triggering field is international phone number type, international phone
+  // number should be shown to the user.
+  EXPECT_THAT(suggestions[0].children[8],
+              EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
+                               GetFormattedInternationalNumber()));
+  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
+}
+
+// Asserts that when the triggering field is a phone field, the phone number
+// suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
+// scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
+// user expressed intent to use their phone number on a "random" field.
+TEST_F(
+    AutofillChildrenSuggestionsGenenarationTest,
+    CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_CountryCode) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, PHONE_HOME_COUNTRY_CODE);
+
+  ASSERT_EQ(1U, suggestions.size());
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
+
+  // Triggering field is phone number country code, international phone number
+  // should be shown to the user.
+  EXPECT_THAT(suggestions[0].children[8],
+              EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
+                               GetFormattedInternationalNumber()));
+  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
+}
+
+// Asserts that when the triggering field is a phone field, the phone number
+// suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
+// scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
+// user expressed intent to use their phone number their phone number on a
+// "random" field.
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+       CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Local) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, PHONE_HOME_CITY_AND_NUMBER);
+
+  ASSERT_EQ(1U, suggestions.size());
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
+  // Triggering field is local phone number type, local phone number should
+  // be shown to the user.
+  EXPECT_THAT(suggestions[0].children[8],
+              EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
+                               GetFormattedNationalNumber()));
+  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
 }
 
 // Same as above but for email fields.

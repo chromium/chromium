@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -311,22 +312,40 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 }
 
 // Adds contact related child suggestions (i.e email and phone number) to
-// build autofill popup submenu. The param `trigger_field_type_group` refers to
-// the triggering field group (clicked by the users) and is used to define
-// whether the phone number and email suggestions  will behave as
-// `PopupItemId::kFieldByFieldFilling` or as
+// build autofill popup submenu. The param `trigger_field_type` refers to the
+// field clicked by the user and affects whether international or local phone
+// number will be shown to the user in the suggestion. The field type group of
+// the `trigger_field_type` is used to define whether the phone number and email
+// suggestions will behave as `PopupItemId::kFieldByFieldFilling` or as
 // `PopupItemId::kFillFullPhoneNumber`/`PopupItemId::kFillFullEmail`
 // respectively. When the triggering field group matches the type of the field
-// we are adding, the suggestion will be of group filling type, other field by
-// field.
-void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
+// we are adding, the suggestion will be of group filling type, other than field
+// by field.
+void AddContactChildSuggestions(ServerFieldType trigger_field_type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
+  const FieldTypeGroup trigger_field_type_group =
+      GroupTypeOfServerFieldType(trigger_field_type);
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
-    Suggestion phone_number_suggestion(
-        profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
+    const bool use_local_phone_number =
+        trigger_field_type_group == FieldTypeGroup::kPhone &&
+        trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
+        trigger_field_type != PHONE_HOME_COUNTRY_CODE;
+    std::string suggestion_main_text;
+    if (use_local_phone_number) {
+      suggestion_main_text = i18n::FormatPhoneNationallyForDisplay(
+          base::UTF16ToUTF8(
+              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
+          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
+    } else {
+      suggestion_main_text = i18n::FormatPhoneForDisplay(
+          base::UTF16ToUTF8(
+              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
+          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
+    }
+    Suggestion phone_number_suggestion(base::UTF8ToUTF16(suggestion_main_text));
     const bool is_phone_field =
         trigger_field_type_group == FieldTypeGroup::kPhone;
     phone_number_suggestion.popup_item_id =
@@ -842,8 +861,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
-      AddGranularFillingChildSuggestions(trigger_field_type_group,
-                                         last_targeted_fields, *profile,
+      AddGranularFillingChildSuggestions(last_targeted_fields,
+                                         trigger_field_type, *profile,
                                          suggestions.back());
     }
   }
@@ -1011,16 +1030,18 @@ std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
 }
 
 void AutofillSuggestionGenerator::AddGranularFillingChildSuggestions(
-    FieldTypeGroup trigger_field_type_group,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    ServerFieldType trigger_field_type,
     const AutofillProfile& profile,
     Suggestion& suggestion) {
-  std::string app_locale = personal_data_->app_locale();
+  const FieldTypeGroup trigger_field_type_group =
+      GroupTypeOfServerFieldType(trigger_field_type);
+  const std::string app_locale = personal_data_->app_locale();
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
   AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,
                              suggestion);
-  AddContactChildSuggestions(trigger_field_type_group, profile, app_locale,
+  AddContactChildSuggestions(trigger_field_type, profile, app_locale,
                              suggestion);
   AddFooterChildSuggestions(profile, last_targeted_fields, suggestion);
 }
