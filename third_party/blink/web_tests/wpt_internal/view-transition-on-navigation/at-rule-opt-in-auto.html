@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<title>View Transitions: @view-transition opt in for cross-document-same-origin</title>
+<title>View Transitions: @view-transition opt in for auto</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:bokan@chromium.org">
-<link rel="match" href="at-rule-opt-in-cross-document-same-origin-ref.html">
+<link rel="match" href="at-rule-opt-in-auto-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <style>
 @view-transition {
-  navigation-trigger: cross-document-same-origin;
+  navigation: auto;
 }
 
 html {
@@ -16,7 +16,7 @@ html {
 </style>
 <script>
 function runTest() {
-  const url = "resources/at-rule-opt-in-cross-document-same-origin.html";
+  const url = "resources/at-rule-opt-in-auto.html";
   window.location.replace(new URL(url, window.location));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));

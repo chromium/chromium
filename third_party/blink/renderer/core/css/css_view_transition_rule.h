@@ -26,9 +26,9 @@ class CSSViewTransitionRule final : public CSSRule {
 
   void Trace(Visitor*) const override;
 
-  String navigationTrigger() const;
+  String navigation() const;
 
-  void setNavigationTrigger(const ExecutionContext*, const String&);
+  void setNavigation(const ExecutionContext*, const String&);
 
  private:
   CSSRule::Type GetType() const override { return kViewTransitionRule; }

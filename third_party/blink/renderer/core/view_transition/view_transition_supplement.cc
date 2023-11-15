@@ -328,7 +328,7 @@ void ViewTransitionSupplement::WillInsertBody() {
   CHECK(document);
 
   // Update active styles will compute the @view-transition
-  // navigation-trigger opt in.
+  // navigation opt in.
   // TODO(https://crbug.com/1463966): This is probably a bit of a heavy hammer.
   // In the long term, we probably don't want to make this decision at
   // WillInsertBody or, if we do, we could look specifically for

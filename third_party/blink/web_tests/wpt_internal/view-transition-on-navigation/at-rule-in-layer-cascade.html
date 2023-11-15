@@ -9,17 +9,17 @@
 
 @layer inertA {
   @view-transition {
-    navigation-trigger: none;
+    navigation: none;
   }
 }
 @layer active {
   @view-transition {
-    navigation-trigger: cross-document-same-origin;
+    navigation: auto;
   }
 }
 @layer inertB {
   @view-transition {
-    navigation-trigger: none;
+    navigation: none;
   }
 }
 </style>

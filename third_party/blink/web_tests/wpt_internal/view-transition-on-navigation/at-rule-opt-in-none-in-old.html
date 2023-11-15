@@ -7,7 +7,7 @@
 <script src="/common/reftest-wait.js"></script>
 <style>
 @view-transition {
-  navigation-trigger: none;
+  navigation: none;
 }
 html {
   background: blue;
@@ -15,7 +15,7 @@ html {
 </style>
 <script>
 function runTest() {
-  const url = "resources/at-rule-opt-in-cross-document-same-origin.html";
+  const url = "resources/at-rule-opt-in-auto.html";
   window.location.replace(new URL(url, window.location));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));

@@ -23,7 +23,7 @@ test(function () {
     assert_true(rule instanceof CSSViewTransitionRule);
     assert_equals(rule.type, 0);
     assert_equals(rule.cssText, "@view-transition { }");
-    assert_equals(rule.navigationTrigger, '');
+    assert_equals(rule.navigation, '');
 
   });
 }, "CSSViewTransitionRule is correctly parsed and accessible via CSSOM.");
@@ -32,29 +32,29 @@ test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: cross-document-same-origin;
+        navigation: auto;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
     assert_equals(rule.cssText,
-        "@view-transition { navigation-trigger: cross-document-same-origin; }");
-    assert_equals(rule.navigationTrigger, 'cross-document-same-origin');
+        "@view-transition { navigation: auto; }");
+    assert_equals(rule.navigation, 'auto');
 
   });
-}, "`navigation-trigger: cross-document-same-origin` is correctly parsed.");
+}, "`navigation: auto` is correctly parsed.");
 
 test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: none;
+        navigation: none;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
-    assert_equals(rule.cssText, "@view-transition { navigation-trigger: none; }");
-    assert_equals(rule.navigationTrigger, 'none');
+    assert_equals(rule.cssText, "@view-transition { navigation: none; }");
+    assert_equals(rule.navigation, 'none');
   });
-}, "`navigation-trigger: none` is correctly parsed.");
+}, "`navigation: none` is correctly parsed.");
 
 test(function () {
   resetStateAndTest(() => {
@@ -70,50 +70,50 @@ test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: foo;
+        navigation: foo;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
     assert_equals(rule.cssText, "@view-transition { }");
   });
-}, "Invalid navigation-trigger fails to parse.");
+}, "Invalid `navigation` value fails to parse.");
 
 test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: none !important;
+        navigation: none !important;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
     assert_equals(rule.cssText, "@view-transition { }");
   });
-}, "navigation-trigger with !important flag should fail to parse.");
+}, "`navigation` with !important flag should fail to parse.");
 
 test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: none;
+        navigation: none;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
-    rule.navigationTrigger = "cross-document-same-origin";
-    assert_equals(rule.navigationTrigger, "cross-document-same-origin");
+    rule.navigation = "auto";
+    assert_equals(rule.navigation, "auto");
   });
-}, "navigation-trigger attribute can be set.");
+}, "`navigation` descriptor can be set.");
 
 test(function () {
   resetStateAndTest(() => {
     document.styleSheets[0].insertRule(`
       @view-transition {
-        navigation-trigger: none;
+        navigation: none;
       }
     `);
     let rule = document.styleSheets[0].cssRules[0];
-    rule.navigationTrigger = "foo";
-    assert_equals(rule.navigationTrigger, "none");
+    rule.navigation = "foo";
+    assert_equals(rule.navigation, "none");
   });
-}, "navigation-trigger doesn't set invalid token.");
+}, "Cannot set invalid value to `navigation` descriptor");
 
 </script>

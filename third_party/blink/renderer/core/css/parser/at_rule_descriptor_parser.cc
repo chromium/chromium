@@ -473,11 +473,11 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
     const CSSParserContext& context) {
   CSSValue* parsed_value = nullptr;
   switch (id) {
-    case AtRuleDescriptorID::NavigationTrigger:
+    case AtRuleDescriptorID::Navigation:
       range.ConsumeWhitespace();
       parsed_value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kCrossDocumentSameOrigin,
-                                          CSSValueID::kNone>(range);
+          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
+              range);
       break;
     default:
       break;

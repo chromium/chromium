@@ -16,8 +16,8 @@ class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
   StyleRuleViewTransition(const StyleRuleViewTransition&);
   ~StyleRuleViewTransition();
 
-  const CSSValue* GetNavigationTrigger() const;
-  void SetNavigationTrigger(const CSSValue* new_value);
+  const CSSValue* GetNavigation() const;
+  void SetNavigation(const CSSValue* new_value);
 
   StyleRuleViewTransition* Copy() const {
     return MakeGarbageCollected<StyleRuleViewTransition>(*this);
@@ -30,7 +30,7 @@ class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
 
  private:
   Member<const CascadeLayer> layer_;
-  Member<const CSSValue> navigation_trigger_;
+  Member<const CSSValue> navigation_;
 };
 
 template <>

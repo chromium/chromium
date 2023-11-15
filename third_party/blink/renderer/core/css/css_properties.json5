@@ -6918,7 +6918,7 @@
       is_property: false,
     },
     {
-      name: "navigation-trigger",
+      name: "navigation",
       is_descriptor: true,
       is_property: false,
       runtime_flag: "ViewTransitionOnNavigation",

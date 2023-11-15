@@ -14,7 +14,7 @@ if (!is_new_page) {
     const shadow = host.attachShadow({ mode: "open" });
     const style = document.createElement("style");
     style.textContent = `@view-transition {
-      navigation-trigger: cross-document-same-origin;
+      navigation: auto;
     }`;
     shadow.appendChild(style);
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -27,7 +27,7 @@ if (!is_new_page) {
   // <body> can be a shadow root.
   const style = document.createElement("style");
   style.textContent = `@view-transition {
-    navigation-trigger: cross-document-same-origin;
+    navigation: auto;
   }`;
   document.head.appendChild(style);
   promise_test(() => {

@@ -15,26 +15,25 @@ namespace blink {
 StyleRuleViewTransition::StyleRuleViewTransition(
     CSSPropertyValueSet& properties)
     : StyleRuleBase(kViewTransition),
-      navigation_trigger_(
-          properties.GetPropertyCSSValue(CSSPropertyID::kNavigationTrigger)) {}
+      navigation_(properties.GetPropertyCSSValue(CSSPropertyID::kNavigation)) {}
 
 StyleRuleViewTransition::StyleRuleViewTransition(
     const StyleRuleViewTransition&) = default;
 
 StyleRuleViewTransition::~StyleRuleViewTransition() = default;
 
-const CSSValue* StyleRuleViewTransition::GetNavigationTrigger() const {
-  return navigation_trigger_.Get();
+const CSSValue* StyleRuleViewTransition::GetNavigation() const {
+  return navigation_.Get();
 }
 
-void StyleRuleViewTransition::SetNavigationTrigger(const CSSValue* new_value) {
-  navigation_trigger_ = new_value;
+void StyleRuleViewTransition::SetNavigation(const CSSValue* new_value) {
+  navigation_ = new_value;
 }
 
 void StyleRuleViewTransition::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(layer_);
-  visitor->Trace(navigation_trigger_);
+  visitor->Trace(navigation_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

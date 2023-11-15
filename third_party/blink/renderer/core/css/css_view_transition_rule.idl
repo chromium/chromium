@@ -6,6 +6,6 @@
   Exposed=Window,
   RuntimeEnabled=ViewTransitionOnNavigation
 ] interface CSSViewTransitionRule : CSSRule {
-  [SetterCallWith=ExecutionContext] attribute CSSOMString navigationTrigger;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString navigation;
 };
 

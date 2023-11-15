@@ -29,10 +29,10 @@ String CSSViewTransitionRule::cssText() const {
 
   result.Append("@view-transition { ");
 
-  String navigation_trigger = navigationTrigger();
-  if (!navigation_trigger.empty()) {
-    result.Append("navigation-trigger: ");
-    result.Append(navigation_trigger);
+  String navigation_value = navigation();
+  if (!navigation_value.empty()) {
+    result.Append("navigation: ");
+    result.Append(navigation_value);
     result.Append("; ");
   }
 
@@ -41,15 +41,15 @@ String CSSViewTransitionRule::cssText() const {
   return result.ReleaseString();
 }
 
-String CSSViewTransitionRule::navigationTrigger() const {
-  if (const CSSValue* value = view_transition_rule_->GetNavigationTrigger()) {
+String CSSViewTransitionRule::navigation() const {
+  if (const CSSValue* value = view_transition_rule_->GetNavigation()) {
     return value->CssText();
   }
 
   return String();
 }
 
-void CSSViewTransitionRule::setNavigationTrigger(
+void CSSViewTransitionRule::setNavigation(
     const ExecutionContext* execution_context,
     const String& text) {
   CSSStyleSheet* style_sheet = parentStyleSheet();
@@ -58,7 +58,7 @@ void CSSViewTransitionRule::setNavigationTrigger(
   CSSTokenizer tokenizer(text);
   auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange token_range(tokens);
-  AtRuleDescriptorID descriptor_id = AtRuleDescriptorID::NavigationTrigger;
+  AtRuleDescriptorID descriptor_id = AtRuleDescriptorID::Navigation;
   CSSValue* new_value =
       AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
           descriptor_id, token_range, context);
@@ -67,12 +67,12 @@ void CSSViewTransitionRule::setNavigationTrigger(
   }
 
   const auto* id = DynamicTo<CSSIdentifierValue>(new_value);
-  if (!id || (id->GetValueID() != CSSValueID::kCrossDocumentSameOrigin &&
+  if (!id || (id->GetValueID() != CSSValueID::kAuto &&
               id->GetValueID() != CSSValueID::kNone)) {
     return;
   }
 
-  view_transition_rule_->SetNavigationTrigger(new_value);
+  view_transition_rule_->SetNavigation(new_value);
 
   if (Document* document = style_sheet->OwnerDocument()) {
     document->GetStyleEngine().UpdateViewTransitionOptIn();

@@ -1736,8 +1736,8 @@
     "inverted",
     // none
 
-    // navigation-trigger
-    "cross-document-same-origin",
+    // @view-transition navigation
+    // auto
     // none
 
     // container-type

@@ -45941,7 +45941,7 @@ Called by update_use_counter_css.py.-->
   <int value="765" label="position-fallback-bounds"/>
   <int value="766" label="transition-behavior"/>
   <int value="767" label="text-autospace"/>
-  <int value="768" label="navigation-trigger"/>
+  <int value="768" label="navigation"/>
   <int value="769" label="dynamic-range-limit"/>
   <int value="770" label="field-sizing"/>
   <int value="771" label="text-spacing-trim"/>
