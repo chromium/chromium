@@ -12,11 +12,26 @@
 #include <stdio.h>
 
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
+#include "components/variations/service/variations_field_trial_creator_base.h"
 #include "components/variations/service/variations_service_client.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
+inline constexpr char kSafeSeedSwitch[] = "use-safe-seed";
+inline constexpr char kEnterpriseEnrolledSwitch[] = "enterprise-enrolled";
+inline constexpr char kLocalStatePathSwitch[] = "local-state-path";
+
+// CreateLocalState creates an instance of a PrefService based on the json
+// contents of |local_state_path|.
+// Largely exposed for testing.
+std::unique_ptr<PrefService> CreateLocalState(
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const base::FilePath& local_state_path,
+    // Read-only by default to avoid inadvertent modifications.
+    bool read_only = true);
 
 class CrosVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -44,22 +59,38 @@ class CrosVariationsServiceClient : public VariationsServiceClient {
   version_info::Channel GetChannel() override;
 };
 
-// Retrieve a ClientFilterableState struct based on process's command-line.
-std::unique_ptr<ClientFilterableState> GetClientFilterableState();
-
 struct SafeSeed {
-  bool use_safe_seed = false;
+  bool use_safe_seed = false;  // use the data in |seed_data| or ignore it?
   featured::SeedDetails seed_data;
 };
 
 // Read the safe seed data from |stream|, if and only if the command-line
 // indicates that we should use the safe seed.
+// Returns nullopt if reading the safe seed failed, but we wanted one.
+// Otherwise, returns a SafeSeed struct, with the |use_safe_seed| field
+// indicating whether to use the associated data in |seed_data|.
 std::optional<SafeSeed> GetSafeSeedData(FILE* stream);
 
+// Return a CrOSVariationsFieldTrialCreator for either the safe seed or the
+// local-state-based seed, depending on whether |safe_seed_details| has a safe
+// seed specified.
+CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
+    PrefService* local_state,
+    CrosVariationsServiceClient* client,
+    const std::optional<featured::SeedDetails>& safe_seed_details);
+
 // Evaluate the seed state, writing serialized computed output to stdout.
-// Reads a proto from |stream| for data like safe seed.
+// In most cases, this will read seed state from the local state file as
+// specified in kLocalStatePathSwitch, defaulting to a common fallback,
+// kDefaultLocalStatePath.
+// If kSafeSeedSwitch is specified, read SeedDetails from |in_stream| for safe
+// seed and associated data.
+// Writes a serialized ComputedState proto to |out_stream|.
 // Return values are standard for main methods (EXIT_SUCCESS / EXIT_FAILURE).
-int EvaluateSeedMain(FILE* stream);
+int EvaluateSeedMain(
+    FILE* in_stream,
+    FILE* out_stream,
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
 }  // namespace variations::cros_early_boot::evaluate_seed
 

@@ -4,31 +4,102 @@
 
 #include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
+#include "base/base_switches.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/strings/strcat.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/branding_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#include "components/metrics/metrics_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/variations_service.h"
+#include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_switches.h"
+#include "components/variations/variations_test_utils.h"
+#include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
+namespace {
+// Representation of:
+//
+// serial_number:
+// "SMCi1oYXNoLzNhZGYxZmE3NjU1NDVhMmE3YmFhYWZiMmE4MzY4YWY4NjljN2UzNzgSAiAA#NlincGzr4JI="
+// version: "hash/3adf1fa765545a2a7baaafb2a8368af869c7e378"
+// Study data:
+// name: "EarlyBootStudy"
+// consistency: PERMANENT
+// experiment: {
+//   name: "Enabled"
+//   probability_weight: 100
+//   feature_association: {
+//     enable_feature: "CrOSEarlyBootTestFeature"
+//   }
+//   param: {
+//     name: "baz"
+//     value: "quux"
+//   }
+// }
+
+const char kEarlyBootTestSeed_Uncompressed[] =
+    "CldTTUNpMW9ZWE5vTHpOaFpHWXhabUUzTmpVMU5EVmhNbUUzWW1GaFlXWmlNbUU0TXpZNFlXWT"
+    "ROamxqTjJVek56Z1NCQmg1SUFBPSNObGluY0d6cjRKST0SSAoORWFybHlCb290U3R1ZHk4AUo0"
+    "CgdFbmFibGVkEGQyCwoDYmF6EgRxdXV4YhoKGENyT1NFYXJseUJvb3RUZXN0RmVhdHVyZSItaG"
+    "FzaC8zYWRmMWZhNzY1NTQ1YTJhN2JhYWFmYjJhODM2OGFmODY5YzdlMzc4";
+
+const char kEarlyBootTestSeed_Compressed[] =
+    "H4sIAAAAAAAAAD3LQW+CMBgA0CwuMemSxXAyHrfzskALdAcP4qpipB4Qsdy+SlkhIBlCgv31u+"
+    "3dH0rjaF3arbjw9mC4zrZizBqGeZXY/Puso4Zh0Wy0SLMyahiJjCAiFYRXdcWdxHDzEweBdsPV"
+    "avnO6/J23ZqO7MOltUOvDLr6EbRtH/dD/qBPe4Km7AayVvksd17QRIKxnn+HYZQLNF93x/h/nN"
+    "S93yjoh069fWi4608MeWEX4HuuS1xwwJcAUEgHKPYoFNT7uvoK+/QP+y9VX9IAAAA=";
+
+const char kEarlyBootTestSeed_Signature[] =
+    "MEYCIQDKAjErS8+3NkSOv9tGTeoqGxc3sjie/secLtlfI8qj7wIhAJ02TwZ07Ijdl6V/izOdDk"
+    "n8Ro5D1nVUI6raiapKze/n";
+
+const char* kEarlyBootTestSeed_StudyNames[] = {"EarlyBootStudy"};
+
+const SignedSeedData kEarlyBootTestData{
+    kEarlyBootTestSeed_StudyNames, kEarlyBootTestSeed_Uncompressed,
+    kEarlyBootTestSeed_Compressed, kEarlyBootTestSeed_Signature};
+
+std::unique_ptr<ClientFilterableState> GetBasicClientFilterableState() {
+  CrosVariationsServiceClient client;
+  TestingPrefServiceSimple prefs;
+  metrics::MetricsService::RegisterPrefs(prefs.registry());
+  ::variations::VariationsService::RegisterPrefs(prefs.registry());
+  CrOSVariationsFieldTrialCreator creator =
+      GetFieldTrialCreator(&prefs, &client, /*safe_seed_details=*/std::nullopt);
+
+  return creator.GetClientFilterableStateForVersion(version_info::GetVersion());
+}
+
+}  // namespace
+
 using ::base::test::EqualsProto;
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--enterprise-enrolled"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
-  EXPECT_TRUE(state->IsEnterprise());
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      kEnterpriseEnrolledSwitch);
+  CrosVariationsServiceClient client;
+  EXPECT_TRUE(client.IsEnterprise());
 }
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_NotEnrolled) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
-  EXPECT_FALSE(state->IsEnterprise());
+  CrosVariationsServiceClient client;
+  EXPECT_FALSE(client.IsEnterprise());
 }
 
 struct Param {
@@ -45,10 +116,12 @@ class VariationsCrosEvaluateSeedGetChannel
 
 TEST_P(VariationsCrosEvaluateSeedGetChannel,
        GetClientFilterableState_Channel_Override) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed",
-       base::StrCat({"--fake-variations-channel=", GetParam().channel_name})});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kFakeVariationsChannel, GetParam().channel_name);
+
+  std::unique_ptr<ClientFilterableState> state =
+      GetBasicClientFilterableState();
   EXPECT_EQ(GetParam().channel, state->channel);
 }
 
@@ -64,7 +137,9 @@ TEST_P(VariationsCrosEvaluateSeedGetChannel,
   base::test::ScopedChromeOSVersionInfo lsb_info(lsb_release, lsb_release_time);
 
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
+
+  std::unique_ptr<ClientFilterableState> state =
+      GetBasicClientFilterableState();
   EXPECT_EQ(GetParam().channel, state->channel);
 }
 
@@ -72,7 +147,9 @@ TEST_P(VariationsCrosEvaluateSeedGetChannel,
 // Verify that we use unknown channel on non-branded builds.
 TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_Channel_NotBranded) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
+
+  std::unique_ptr<ClientFilterableState> state =
+      GetBasicClientFilterableState();
   EXPECT_EQ(Study::UNKNOWN, state->channel);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -84,7 +161,7 @@ INSTANTIATE_TEST_SUITE_P(
                                 {"Dev", "dev", Study::DEV},
                                 {"Canary", "canary", Study::CANARY},
                                 {"Unknown", "testimage", Study::UNKNOWN}}),
-    [](const testing::TestParamInfo<
+    [](const ::testing::TestParamInfo<
         VariationsCrosEvaluateSeedGetChannel::ParamType>& info) {
       return info.param.test_name;
     });
@@ -92,14 +169,14 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(PLATFORM_CFM)
 TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
-  EXPECT_EQ(Study::MEET_DEVICE, state->form_factor);
+  CrosVariationsServiceClient client;
+  EXPECT_EQ(Study::MEET_DEVICE, client.GetCurrentFormFactor());
 }
 #else   // BUILDFLAG(PLATFORM_CFM)
 TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
-  EXPECT_EQ(Study::DESKTOP, state->form_factor);
+  CrosVariationsServiceClient client;
+  EXPECT_EQ(Study::DESKTOP, client.GetCurrentFormFactor());
 }
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
@@ -129,8 +206,8 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
   FILE* stream = fmemopen(text.data(), text.size(), "r");
   ASSERT_NE(stream, nullptr);
 
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--use-safe-seed"});
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   auto data = GetSafeSeedData(stream);
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(data.value().use_safe_seed);
@@ -163,8 +240,8 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
   FILE* stream = fmemopen(text.data(), text.size(), "w");
   ASSERT_NE(stream, nullptr);
 
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--use-safe-seed"});
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   auto data = GetSafeSeedData(stream);
   EXPECT_FALSE(data.has_value());
 }
@@ -175,29 +252,202 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailParse) {
   FILE* stream = fmemopen(text.data(), text.size(), "r");
   ASSERT_NE(stream, nullptr);
 
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--use-safe-seed"});
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   auto data = GetSafeSeedData(stream);
   ASSERT_FALSE(data.has_value());
 }
 
 // If flag is on and reading fails, should return nullopt.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead_Null) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--use-safe-seed"});
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   auto data = GetSafeSeedData(nullptr);
   EXPECT_FALSE(data.has_value());
 }
 
-TEST(VariationsCrosEvaluateSeed, Main_NoFlag) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
-  EXPECT_EQ(0, EvaluateSeedMain(nullptr));
+class VariationsCrosEvaluateSeedMainTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(local_state_.Create());
+    base::FilePath path = local_state_.path();
+    ASSERT_TRUE(base::WriteFile(path, "{}"));
+
+    local_state_prefs_ = CreateLocalState(
+        task_environment_.GetMainThreadTaskRunner(), path, /*read_only=*/false);
+    // By default, write a common seed that doesn't have our special experiments
+    // (e.g. CrOSEarlyBootTestFeature) in it.
+    WriteSeedData(local_state_prefs_.get(), ::variations::kTestSeedData,
+                  kRegularSeedPrefKeys);
+    // Ensure that the write persists and the executor finishes executing it.
+    task_environment_.RunUntilIdle();
+
+    ASSERT_TRUE(out_file_.Create());
+
+    // These tests validate the setup features and field trials: initialize
+    // them to null on each test to mimic fresh startup.
+    scoped_feature_list_.InitWithNullFeatureAndFieldTrialLists();
+
+    // Set up command command-line switches for all subsequent tests.
+    base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableFieldTrialTestingConfig);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+        kLocalStatePathSwitch, local_state_.path());
+  }
+
+  void TearDown() override {
+    // Tear down VariationsIdsProvider so it doesn't CHECK-fail on subsequent
+    // tests.
+    variations::VariationsIdsProvider::DestroyInstanceForTesting();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempFile local_state_;
+  base::ScopedTempFile out_file_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<PrefService> local_state_prefs_;
+};
+
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag) {
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
+                                task_environment_.GetMainThreadTaskRunner()));
 }
 
-TEST(VariationsCrosEvaluateSeed, Main_NoStdin) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"evaluate_seed", "--use-safe-seed"});
-  EXPECT_EQ(1, EvaluateSeedMain(nullptr));
+// Verify that EvaluateSeedMain respects kEnableFeatures.
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_EnableFeatures) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ::switches::kEnableFeatures, "CrOSEarlyBootTestFeature:foo/bar");
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
+                                task_environment_.GetMainThreadTaskRunner()));
+
+  // Check that the feature was correctly serialized.
+  std::string serialized_proto;
+  ASSERT_TRUE(base::ReadFileToString(out_file_.path(), &serialized_proto));
+
+  featured::ComputedState read_output;
+  ASSERT_TRUE(read_output.ParseFromString(serialized_proto));
+  ASSERT_EQ(read_output.overrides_size(), 1);
+  const featured::FeatureOverride& feature = read_output.overrides(0);
+  EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
+  EXPECT_TRUE(feature.enabled());
+  // These names are auto-generated from the feature name in
+  // base/feature_list.cc in ParseEnableFeatures().
+  EXPECT_EQ(feature.trial_name(), "StudyCrOSEarlyBootTestFeature");
+  EXPECT_EQ(feature.group_name(), "GroupCrOSEarlyBootTestFeature");
+  ASSERT_EQ(feature.params_size(), 1);
+  EXPECT_EQ(feature.params(0).key(), "foo");
+  EXPECT_EQ(feature.params(0).value(), "bar");
+}
+
+// Verify that EvaluateSeedMain respects kForceFieldTrials and
+// kForceFieldTrialParams.
+TEST_F(VariationsCrosEvaluateSeedMainTest,
+       Main_NoSafeSeedFlag_ForceFieldTrials) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ::switches::kForceFieldTrials, "ATrial/AGroup/");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kForceFieldTrialParams, "ATrial.AGroup:foo/bar");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ::switches::kEnableFeatures, "CrOSEarlyBootTestFeature<ATrial");
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
+                                task_environment_.GetMainThreadTaskRunner()));
+
+  // Check that the feature was correctly serialized.
+  std::string serialized_proto;
+  ASSERT_TRUE(base::ReadFileToString(out_file_.path(), &serialized_proto));
+
+  featured::ComputedState read_output;
+  ASSERT_TRUE(read_output.ParseFromString(serialized_proto));
+  ASSERT_EQ(read_output.overrides_size(), 1);
+  const featured::FeatureOverride& feature = read_output.overrides(0);
+  EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
+  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.trial_name(), "ATrial");
+  EXPECT_EQ(feature.group_name(), "AGroup");
+  ASSERT_EQ(feature.params_size(), 1);
+  EXPECT_EQ(feature.params(0).key(), "foo");
+  EXPECT_EQ(feature.params(0).value(), "bar");
+}
+
+// Test that evaluating a seed normally works (i.e. no safe mode, no override
+// flags, just reading the seed from local state).
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_NormalSeed) {
+  WriteSeedData(local_state_prefs_.get(), kEarlyBootTestData,
+                kRegularSeedPrefKeys);
+  task_environment_.RunUntilIdle();
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
+                                task_environment_.GetMainThreadTaskRunner()));
+
+  // Check that the feature was correctly serialized.
+  std::string serialized_proto;
+  ASSERT_TRUE(base::ReadFileToString(out_file_.path(), &serialized_proto));
+
+  featured::ComputedState read_output;
+  ASSERT_TRUE(read_output.ParseFromString(serialized_proto));
+  ASSERT_EQ(read_output.overrides_size(), 1);
+  const featured::FeatureOverride& feature = read_output.overrides(0);
+  EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
+  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.trial_name(), "EarlyBootStudy");
+  EXPECT_EQ(feature.group_name(), "Enabled");
+  ASSERT_EQ(feature.params_size(), 1);
+  EXPECT_EQ(feature.params(0).key(), "baz");
+  EXPECT_EQ(feature.params(0).value(), "quux");
+}
+
+// Test that evaluating a safe seed works (with no filters).
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
+
+  featured::SeedDetails safe_seed;
+  safe_seed.set_b64_compressed_data(kEarlyBootTestSeed_Compressed);
+  safe_seed.set_signature(kEarlyBootTestSeed_Signature);
+  std::string text;
+  safe_seed.SerializeToString(&text);
+  FILE* in_stream = fmemopen(text.data(), text.size(), "r");
+  ASSERT_NE(in_stream, nullptr);
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(0, EvaluateSeedMain(in_stream, out_stream,
+                                task_environment_.GetMainThreadTaskRunner()));
+
+  // Check that the feature was correctly serialized.
+  std::string serialized_proto;
+  ASSERT_TRUE(base::ReadFileToString(out_file_.path(), &serialized_proto));
+
+  featured::ComputedState read_output;
+  ASSERT_TRUE(read_output.ParseFromString(serialized_proto));
+  ASSERT_EQ(read_output.overrides_size(), 1);
+  const featured::FeatureOverride& feature = read_output.overrides(0);
+  EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
+  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.trial_name(), "EarlyBootStudy");
+  EXPECT_EQ(feature.group_name(), "Enabled");
+  ASSERT_EQ(feature.params_size(), 1);
+  EXPECT_EQ(feature.params(0).key(), "baz");
+  EXPECT_EQ(feature.params(0).value(), "quux");
+}
+
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoStdin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(1, EvaluateSeedMain(nullptr, nullptr,
+                                task_environment_.GetMainThreadTaskRunner()));
 }
 
 }  // namespace variations::cros_early_boot::evaluate_seed

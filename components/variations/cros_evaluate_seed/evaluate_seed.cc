@@ -6,24 +6,169 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/pref_service_factory.h"
+#include "components/variations/cros_evaluate_seed/cros_safe_seed_manager.h"
+#include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
+#include "components/variations/cros_evaluate_seed/early_boot_enabled_state_provider.h"
+#include "components/variations/cros_evaluate_seed/early_boot_safe_seed.h"
+#include "components/variations/platform_field_trials.h"
 #include "components/variations/proto/study.pb.h"
-#include "components/variations/service/variations_field_trial_creator.h"
+#include "components/variations/service/variations_service.h"
+#include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_seed_store.h"
+#include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
 namespace {
-constexpr char kSafeSeedSwitch[] = "use-safe-seed";
-constexpr char kEnterpriseEnrolledSwitch[] = "enterprise-enrolled";
+// Test-only feature. TODO(b/297870545): remove.
+constexpr char kTestFeatureName[] = "CrOSEarlyBootTestFeature";
+BASE_FEATURE(kTestFeature, kTestFeatureName, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
+
+bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
+                         SafeSeed&& safe_seed,
+                         featured::ComputedState* computed_state) {
+  std::optional<featured::SeedDetails> safe_seed_details;
+  if (safe_seed.use_safe_seed) {
+    computed_state->mutable_used_seed()->CopyFrom(safe_seed.seed_data);
+    safe_seed_details = std::move(safe_seed.seed_data);
+  }
+
+  CrosVariationsServiceClient client;
+  auto field_trial_creator =
+      GetFieldTrialCreator(local_state.get(), &client, safe_seed_details);
+
+  // In the null seed case, featured just won't exec() evaluate_seed.
+  SeedType seed_type =
+      safe_seed.use_safe_seed ? SeedType::kSafeSeed : SeedType::kRegularSeed;
+  CrOSSafeSeedManager safe_seed_manager(seed_type);
+
+  EarlyBootEnabledStateProvider enabled_state_provider;
+
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          local_state.get(), &enabled_state_provider,
+          /*backup_registry_key=*/std::wstring(),
+          // Don't use a separate directory for safe mode prefs.
+          /*user_data_dir=*/base::FilePath(),
+          metrics::StartupVisibility::kForeground);
+  metrics_state_manager->InstantiateFieldTrialList();
+
+  auto feature_list = std::make_unique<base::FeatureList>();
+
+  variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+
+  variations::PlatformFieldTrials platform_field_trials;
+
+  if (!field_trial_creator.SetUpFieldTrials(
+          // TODO(http://b/297251107): implement overrides via chrome://flags.
+          /*variation_ids=*/std::vector<std::string>(),
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              variations::switches::kForceVariationIds),
+          /*extra_overrides=*/
+          std::vector<base::FeatureList::FeatureOverrideInfo>(),
+          std::move(feature_list), metrics_state_manager.get(),
+          &platform_field_trials, &safe_seed_manager,
+          /*add_entropy_source_to_variations_ids=*/false)) {
+    LOG(ERROR) << "Failed to set up field trials!";
+    return false;
+  }
+
+  if (seed_type == SeedType::kRegularSeed) {
+    // TODO(b/297870545): Expand CrOSSafeSeedManager and extract compressed
+    // b64'd seed from it, along with all other state.
+  }
+
+  // TODO(b/297870545): serialize correctly.
+  // ideally, we want:
+  // * Early-boot features that have trials associated (and have them correctly
+  //   associated)
+  // * Early-boot features that do not have trials associated (e.g. those
+  //   manually specified by --enable-features)
+  // * (Early-boot?) trials that do not have features associated (e.g. for
+  //   uniformity trials)
+  // We also do not want to mark the trial as active yet, but given that
+  // evaluate_seed will not report anything to UMA that isn't urgent.
+
+  // The below code is placeholder and solely in place for tests to be able
+  // to verify that we're doing something.
+  // b/297870545 will address us replacing the below code with something more
+  // permanent, which will not request specific state for individual
+  // base::Feature objects, so the caching logic won't be necessary.
+
+  // Since |kTestFeature| is static, the same instance will be reused across the
+  // tests. We need to make sure that the cached value for the feature's enabled
+  // state is not reused, so we invalidate the cache.
+  // TODO(b/297870545): remove this once we're not checking for specific
+  // features manually.
+  static uint16_t caching_context = 1;
+  base::FeatureList::GetInstance()->SetCachingContextForTesting(  // IN-TEST
+      caching_context++);
+  featured::FeatureOverride* feature = computed_state->add_overrides();
+  feature->set_name(kTestFeatureName);
+  feature->set_enabled(base::FeatureList::IsEnabled(kTestFeature));
+  base::FieldTrial* field_trial =
+      base::FeatureList::GetFieldTrial(kTestFeature);
+  if (field_trial) {
+    feature->set_trial_name(field_trial->trial_name());
+    feature->set_group_name(field_trial->GetGroupNameWithoutActivation());
+  }
+  std::map<std::string, std::string> params;
+  if (base::GetFieldTrialParamsByFeature(kTestFeature, &params)) {
+    for (const auto& [k, v] : params) {
+      featured::Param* param = feature->add_params();
+      param->set_key(k);
+      param->set_value(v);
+    }
+  }
+  return true;
+}
 }  // namespace
 
+// Largely copied from
+// content/shell/browser/shell_content_browser_client.cc's CreateLocalState.
+std::unique_ptr<PrefService> CreateLocalState(
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const base::FilePath& local_state_path,
+    bool read_only) {
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+
+  metrics::MetricsService::RegisterPrefs(pref_registry.get());
+  ::variations::VariationsService::RegisterPrefs(pref_registry.get());
+
+  PrefServiceFactory pref_service_factory;
+  auto local_state_pref_store = base::MakeRefCounted<JsonPrefStore>(
+      local_state_path, /*pref_filter=*/nullptr, task_runner, read_only);
+  auto error = local_state_pref_store->ReadPrefs();
+  if (error != JsonPrefStore::PREF_READ_ERROR_NONE) {
+    LOG(ERROR) << "failed to read prefs " << error;
+    return nullptr;
+  }
+
+  pref_service_factory.set_user_prefs(local_state_pref_store);
+
+  return pref_service_factory.Create(pref_registry);
+}
 base::Version CrosVariationsServiceClient::GetVersionForSimulation() {
   // TODO(mutexlox): Get the version that will be used on restart instead of
   // the current version IF this is necessary. (We may not need simulations for
@@ -69,23 +214,6 @@ bool CrosVariationsServiceClient::IsEnterprise() {
       kEnterpriseEnrolledSwitch);
 }
 
-std::unique_ptr<ClientFilterableState> GetClientFilterableState() {
-  CrosVariationsServiceClient client;
-
-  // TODO(b/263975722): Properly use VariationsServiceClient and
-  // VariationsFieldTrialCreator::GetClientFilterableStateForVersion.
-  auto state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([](bool enrolled) { return enrolled; },
-                     client.IsEnterprise()),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
-
-  state->channel =
-      ConvertProductChannelToStudyChannel(client.GetChannelForVariations());
-  state->form_factor = client.GetCurrentFormFactor();
-
-  return state;
-}
-
 std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
   featured::SeedDetails safe_seed;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSafeSeedSwitch)) {
@@ -100,22 +228,77 @@ std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
       LOG(ERROR) << "Failed to parse proto from input";
       return std::nullopt;
     }
-    return SafeSeed{true, safe_seed};
+    return SafeSeed{true, std::move(safe_seed)};
   }
-  return SafeSeed{false, safe_seed};
+  return SafeSeed{false, std::move(safe_seed)};
 }
 
-int EvaluateSeedMain(FILE* stream) {
-  std::optional<SafeSeed> safe_seed = GetSafeSeedData(stream);
+CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
+    PrefService* local_state,
+    CrosVariationsServiceClient* client,
+    const std::optional<featured::SeedDetails>& safe_seed_details) {
+  std::unique_ptr<VariationsSafeSeedStore> safe_seed;
+  if (safe_seed_details.has_value()) {
+    safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
+  } else {
+    safe_seed =
+        std::make_unique<VariationsSafeSeedStoreLocalState>(local_state);
+  }
+  auto seed_store =
+      std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
+
+  return CrOSVariationsFieldTrialCreator(client, std::move(seed_store));
+}
+
+int EvaluateSeedMain(
+    FILE* in_stream,
+    FILE* out_stream,
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
+  std::optional<SafeSeed> safe_seed = GetSafeSeedData(in_stream);
   if (!safe_seed.has_value()) {
     LOG(ERROR) << "Failed to read seed from stdin";
     return EXIT_FAILURE;
   }
 
-  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
+  // TODO(b/303882431): Set this up properly without races.
+  base::FilePath local_state_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kLocalStatePathSwitch);
+  if (local_state_path.empty()) {
+    local_state_path = base::FilePath(kDefaultLocalStatePath);
+  }
 
-  // TODO(b/263975722): Implement this binary.
-  (void)state;
+  std::unique_ptr<PrefService> local_state =
+      CreateLocalState(task_runner, local_state_path);
+  if (!local_state) {
+    LOG(ERROR) << "Failed to create local_state";
+    return EXIT_FAILURE;
+  }
+
+  featured::ComputedState computed_state;
+  if (!DetermineTrialState(std::move(local_state), std::move(safe_seed.value()),
+                           &computed_state)) {
+    LOG(ERROR) << "Failed to determine trial state; will use defaults";
+    return EXIT_FAILURE;
+  }
+
+  base::File out = base::FILEToFile(out_stream);
+  if (!out.IsValid()) {
+    LOG(ERROR) << "Failed to open output";
+    return EXIT_FAILURE;
+  }
+
+  std::string out_str;
+  if (!computed_state.SerializeToString(&out_str)) {
+    LOG(ERROR) << "Failed to serialize state";
+    return EXIT_FAILURE;
+  }
+
+  if (!out.WriteAtCurrentPosAndCheck(
+          base::as_bytes(base::make_span(out_str.data(), out_str.size())))) {
+    LOG(ERROR) << "Failed to write to output";
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }
