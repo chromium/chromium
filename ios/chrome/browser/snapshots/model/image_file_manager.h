@@ -31,7 +31,7 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // possible to pass a non-empty path via `legacyPath`. If present, then it
 // will be moved to `storagePath`.
 //
-// TODO(crbug.com/1383087): Remove `legacyPath` when the storage for all users
+// TODO(crbug.com/1501850): Remove `legacyPath` when the storage for all users
 // has been migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
                          legacyPath:(const base::FilePath&)legacyPath
@@ -80,7 +80,7 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 
 // Returns the file path of the image for `snapshotID`.
-// TODO(crbug.com/1383087): Remove this when the storage for all users has been
+// TODO(crbug.com/1501850): Remove this when the storage for all users has been
 // migrated.
 - (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
 
