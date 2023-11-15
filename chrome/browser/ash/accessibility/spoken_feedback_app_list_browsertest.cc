@@ -1071,6 +1071,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
   sm_.ExpectSpeech("Not checked");
   sm_.ExpectSpeech("Websites including pages you've visited and open pages");
 
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
   sm_.Replay();
 }
 

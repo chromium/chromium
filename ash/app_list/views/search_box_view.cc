@@ -834,6 +834,7 @@ void SearchBoxView::ShowFilterMenu() {
       view_delegate_);
 
   filter_menu_adapter_->ShowFilterMenu(this);
+  RecordSearchCategoryFilterMenuOpened();
 }
 
 void SearchBoxView::OnFilterMenuClosed() {
@@ -841,6 +842,8 @@ void SearchBoxView::OnFilterMenuClosed() {
   if (HasSearch()) {
     TriggerSearch();
   }
+
+  RecordSearchCategoryEnableState(GetSearchCategoryEnableState());
 }
 
 views::MenuItemView* SearchBoxView::GetFilterMenuItemByCategory(
@@ -1732,6 +1735,31 @@ ui::SimpleMenuModel* SearchBoxView::BuildFilterMenuModel() {
 std::vector<AppListSearchControlCategory>
 SearchBoxView::GetToggleableCategories() {
   return view_delegate_->GetToggleableCategories();
+}
+
+CategoryEnableStateMap SearchBoxView::GetSearchCategoryEnableState() {
+  auto toggleable_categories = GetToggleableCategories();
+  CategoryEnableStateMap category_to_state;
+
+  // Initialize the map.
+  for (int i = base::to_underlying(AppListSearchControlCategory::kMinValue);
+       i <= base::to_underlying(AppListSearchControlCategory::kMaxValue); ++i) {
+    auto category = static_cast<AppListSearchControlCategory>(i);
+    // Cannot toggle is not a category.
+    if (category == AppListSearchControlCategory::kCannotToggle) {
+      continue;
+    }
+
+    category_to_state[category] = SearchCategoryEnableState::kNotAvailable;
+  }
+
+  // Set the enable states for toggleable categories.
+  for (auto category : toggleable_categories) {
+    category_to_state[category] = view_delegate_->IsCategoryEnabled(category)
+                                      ? SearchCategoryEnableState::kEnabled
+                                      : SearchCategoryEnableState::kDisabled;
+  }
+  return category_to_state;
 }
 
 BEGIN_METADATA(SearchBoxView)

@@ -29,7 +29,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -625,6 +627,7 @@ TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
 }
 
 TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
+  base::HistogramTester histogram_tester;
   GetAppListTestHelper()->ShowAppList();
   auto* app_list_client = GetAppListTestHelper()->app_list_client();
 
@@ -638,8 +641,15 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
   views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
   EXPECT_TRUE(filter_button->GetVisible());
+  histogram_tester.ExpectBucketCount(kSearchCategoryFilterMenuOpened,
+                                     /*sample=*/1, /*expected_count=*/0);
   LeftClickOn(filter_button);
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+  // Verify that the filter open count metric is recorded.
+  histogram_tester.ExpectBucketCount(kSearchCategoryFilterMenuOpened,
+                                     /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kSearchCategoryFilterMenuOpened,
+                                    /*expected_count=*/1);
 
   // Set up the search callback to notify that the search is triggered.
   bool is_search_triggered = false;
@@ -685,6 +695,41 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetSearchBoxView()->IsFilterMenuOpen());
   EXPECT_TRUE(is_search_triggered);
+
+  auto histogram_name = [](std::string category) {
+    return base::StrCat({kSearchCategoriesEnableStateHeader, category});
+  };
+
+  // Verify the states of each category is recorded. Apps and Web categories are
+  // toggled to be disabled and Files stays enabled. Other categories are not
+  // available.
+  histogram_tester.ExpectBucketCount(histogram_name("Apps"),
+                                     SearchCategoryEnableState::kDisabled, 1);
+  histogram_tester.ExpectBucketCount(histogram_name("Files"),
+                                     SearchCategoryEnableState::kEnabled, 1);
+  histogram_tester.ExpectBucketCount(histogram_name("Web"),
+                                     SearchCategoryEnableState::kDisabled, 1);
+  histogram_tester.ExpectBucketCount(histogram_name("AppShortcuts"),
+                                     SearchCategoryEnableState::kNotAvailable,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name("Games"), SearchCategoryEnableState::kNotAvailable, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name("Helps"), SearchCategoryEnableState::kNotAvailable, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name("Images"), SearchCategoryEnableState::kNotAvailable, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name("PlayStore"), SearchCategoryEnableState::kNotAvailable, 1);
+
+  histogram_tester.ExpectTotalCount(histogram_name("Apps"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("AppShortcuts"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("Files"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("Games"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("Helps"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("Images"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("PlayStore"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name("Web"), 1);
+  histogram_tester.ExpectTotalCount(kSearchCategoryFilterMenuOpened, 1);
 
   // Reset the search callback.
   app_list_client->set_search_callback(TestAppListClient::SearchCallback());

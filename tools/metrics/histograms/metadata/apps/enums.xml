@@ -176,6 +176,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Ignore"/>
 </enum>
 
+<enum name="AppListSearchCategoryState">
+  <int value="0" label="Not Available"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
 <enum name="AppListSearchResult">
   <int value="0" label="OMNIBOX_DEPRECATED"/>
   <int value="1" label="APP_DEPRECATED"/>

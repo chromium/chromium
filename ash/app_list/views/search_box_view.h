@@ -275,6 +275,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // toggle.
   std::vector<AppListSearchControlCategory> GetToggleableCategories();
 
+  // Returns a map of enable states for each category, including the
+  // non-toggleable ones. The result is used for metrics.
+  CategoryEnableStateMap GetSearchCategoryEnableState();
+
   // Tracks whether the search result page view is visible.
   bool search_result_page_visible_ = false;
 

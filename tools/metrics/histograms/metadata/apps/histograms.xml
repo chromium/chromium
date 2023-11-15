@@ -150,6 +150,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Launch" summary="launch"/>
 </variants>
 
+<variants name="SearchCategory">
+  <variant name="Apps" summary="installed apps"/>
+  <variant name="AppShortcut" summary="shortcut for installed apps"/>
+  <variant name="Files" summary="local and Google Drive files"/>
+  <variant name="Games" summary="system settings"/>
+  <variant name="Helps" summary="help articles"/>
+  <variant name="Images" summary="image results"/>
+  <variant name="PlayStore" summary="play store suggestions"/>
+  <variant name="Web" summary="webpages"/>
+</variants>
+
 <variants name="SearchView">
   <variant name="AnswerCard" summary="answer card"/>
   <variant name="AppsSearch" summary="app tiles search"/>
@@ -1035,6 +1046,39 @@ chromium-metrics-reviews@google.com.
     AnswerCardSeen. Emitted if an answer card is displayed for some threshold
     period of time, and the user then dismisses the launcher without launching a
     result.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.Search.SearchCategoriesEnableState.{SearchCategory}"
+    enum="AppListSearchCategoryState" expires_after="2024-07-31">
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the enable state for each SearchCategory when the states are
+    commited by closing the search category filter menu and the search is
+    refreshed. The total counts of the states are the same across all search
+    categories so comparing the enabling proportion makes sense.
+
+    Not Available: The category is not available for users, which means that
+    users can not see search results that belong to this category and neither
+    see this option in the search category filter menu.
+
+    Enabled: The category is available and enabled for users. This is the
+    default value if users don't toggle the category option in the menu.
+
+    Disabled: The category is available but manually disabled by users.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.SearchCategoryFilterMenuOpenedCount"
+    units="count" expires_after="2024-07-31">
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records how many times users open the search category filter menu in
+    launcher search. Emitted when users open the menu. Note that only bucket
+    &quot;1&quot; is used for the counting and other buckets should be 0.
   </summary>
 </histogram>
 
