@@ -653,9 +653,9 @@ void CSSBasicShapeXYWHValue::Validate() const {
   DCHECK(x_);
   DCHECK(y_);
   DCHECK(width_);
-  DCHECK_GT(width_->GetFloatValue(), 0);
+  DCHECK_GE(width_->GetFloatValue(), 0);
   DCHECK(height_);
-  DCHECK_GT(height_->GetFloatValue(), 0);
+  DCHECK_GE(height_->GetFloatValue(), 0);
 }
 
 }  // namespace cssvalue
