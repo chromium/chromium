@@ -15,7 +15,7 @@
 #   e.g. build_script_outputs = [ "crate/src/gen/gen_stuff.rs" ]
 #
 # group: One of 'safe', 'sandbox', or 'test. This indicates where the library
-#   is allowed to be used and where its GN rules will be written. 
+#   is allowed to be used and where its GN rules will be written.
 #   TODO(danakj): What is the default? It should probably be 'sandbox'?
 #
 #   'safe': The library satisfies the rule-of-2 and can be used in any process.
@@ -34,6 +34,8 @@ remove_crates = ['cc', 'link-cplusplus']
 group = 'test'
 
 [crate.clap]
+# These files are included from source files and are thus required as part of
+# building the crate.
 extra_input_roots = ['../README.md']
 extra_src_roots = ['../examples']
 

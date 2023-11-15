@@ -542,8 +542,8 @@ fn generate_for_third_party_ng(
 
     let third_party_deps = dependencies.iter().filter(|dep| !dep.is_local).collect::<Vec<_>>();
 
-    // Check that all resolved third party deps are available. First, collect
-    // the set of third-party dependencies vendored in the Rust source package.
+    // Check that all resolved third-party deps are available. First, collect
+    // the set of vendored crates.
     let vendored_crates: HashSet<VendoredCrate> = crates::collect_std_vendored_crates(
         &paths.third_party_cargo_root.join(paths.rust_src_vendor_subdir),
     )
@@ -551,10 +551,8 @@ fn generate_for_third_party_ng(
     .into_iter()
     .collect();
 
-    // Collect vendored dependencies, and also check that all resolved
-    // dependencies point to our Rust source package. Build rules will be
-    // generated for these crates separately from std, alloc, and core which
-    // need special treatment.
+    // Verify that each required dependency is part of the set of vendored
+    // crates.
     for dep in third_party_deps.iter() {
         vendored_crates
             .get(&VendoredCrate { name: dep.package_name.clone(), version: dep.version.clone() })
@@ -578,8 +576,8 @@ fn generate_for_third_party_ng(
         })
         .collect();
 
-    // If there are multiple crates with the same epoch, this is unexpected. Bail
-    // out.
+    // If there are multiple crates with the same epoch, this is unexpected.
+    // Bail out.
     {
         let mut found = HashSet::new();
         for dep in &dependencies {
