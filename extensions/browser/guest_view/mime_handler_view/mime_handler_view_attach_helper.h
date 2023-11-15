@@ -7,11 +7,9 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -63,7 +61,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
       const std::string& mime_type,
       const std::string& stream_id,
       const std::string& internal_id,
-      base::OnceClosure resume_load = base::DoNothing());
+      base::OnceClosure resume_load);
 
   MimeHandlerViewAttachHelper(const MimeHandlerViewAttachHelper&) = delete;
   MimeHandlerViewAttachHelper& operator=(const MimeHandlerViewAttachHelper&) =
