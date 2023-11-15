@@ -18,6 +18,10 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -307,11 +311,44 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
         std::move(dependencies));
   }
 }
+
+void SharedImageInterfaceProxy::UpdateSharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+    const Mailbox& mailbox) {
+  base::AutoLock lock(lock_);
+
+  std::vector<SyncToken> dependencies =
+      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
+  // Register fence in gpu process in first update.
+  auto [token_it, inserted] =
+      registered_fence_tokens_.insert(d3d_shared_fence->GetDXGIHandleToken());
+  if (inserted) {
+    gfx::GpuFenceHandle fence_handle;
+    fence_handle.Adopt(d3d_shared_fence->CloneSharedHandle());
+
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewRegisterDxgiFence(
+                mojom::RegisterDxgiFenceParams::New(
+                    mailbox, d3d_shared_fence->GetDXGIHandleToken(),
+                    std::move(fence_handle)))),
+        std::move(dependencies));
+  }
+
+  last_flush_id_ = host_->EnqueueDeferredMessage(
+      mojom::DeferredRequestParams::NewSharedImageRequest(
+          mojom::DeferredSharedImageRequest::NewUpdateDxgiFence(
+              mojom::UpdateDxgiFenceParams::New(
+                  mailbox, d3d_shared_fence->GetDXGIHandleToken(),
+                  d3d_shared_fence->GetFenceValue()))),
+      std::move(dependencies));
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void SharedImageInterfaceProxy::UpdateSharedImage(const SyncToken& sync_token,
                                                   const Mailbox& mailbox) {
-  UpdateSharedImage(sync_token, nullptr, mailbox);
+  UpdateSharedImage(sync_token, std::unique_ptr<gfx::GpuFence>(), mailbox);
 }
 
 void SharedImageInterfaceProxy::UpdateSharedImage(

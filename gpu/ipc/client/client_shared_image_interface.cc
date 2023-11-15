@@ -14,6 +14,10 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 
 ClientSharedImageInterface::ClientSharedImageInterface(
@@ -183,6 +187,13 @@ void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
   proxy_->CopyToGpuMemoryBuffer(sync_token, mailbox);
+}
+
+void ClientSharedImageInterface::UpdateSharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+    const Mailbox& mailbox) {
+  proxy_->UpdateSharedImage(sync_token, std::move(d3d_shared_fence), mailbox);
 }
 #endif
 

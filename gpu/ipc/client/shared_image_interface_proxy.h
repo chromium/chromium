@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
@@ -17,6 +18,12 @@
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
+
+#if BUILDFLAG(IS_WIN)
+namespace gfx {
+class D3DSharedFence;
+}
+#endif
 
 namespace viz {
 class SharedImageFormat;
@@ -94,6 +101,9 @@ class SharedImageInterfaceProxy {
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);
+  void UpdateSharedImage(const SyncToken& sync_token,
+                         scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+                         const Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)
 
   void UpdateSharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
@@ -166,6 +176,11 @@ class SharedImageInterfaceProxy {
   base::flat_map<Mailbox, SharedImageInfo> mailbox_infos_ GUARDED_BY(lock_);
 
   const gpu::SharedImageCapabilities capabilities_;
+
+#if BUILDFLAG(IS_WIN)
+  base::flat_set<gfx::DXGIHandleToken> registered_fence_tokens_
+      GUARDED_BY(lock_);
+#endif
 };
 
 }  // namespace gpu

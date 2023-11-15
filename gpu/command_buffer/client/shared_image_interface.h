@@ -36,6 +36,10 @@ namespace gfx {
 class ColorSpace;
 class GpuFence;
 class Size;
+
+#if BUILDFLAG(IS_WIN)
+class D3DSharedFence;
+#endif
 }  // namespace gfx
 
 namespace viz {
@@ -311,6 +315,16 @@ class GPU_EXPORT SharedImageInterface {
       gfx::BufferUsage usage,
       bool register_with_image_pipe) = 0;
 #endif  // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_WIN)
+  // Update fence between processes. Register D3DSharedFence in GPU process
+  // first and then use DXGIHandleToken to identify the fence between processes
+  // and pass signaled fence value from current process to GPU process.
+  virtual void UpdateSharedImage(
+      const SyncToken& sync_token,
+      scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+      const Mailbox& mailbox);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Generates an unverified SyncToken that is released after all previous
   // commands on this interface have executed on the service side.

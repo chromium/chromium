@@ -10,6 +10,10 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
@@ -137,5 +141,14 @@ SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
 
   return std::move(buffer);
 }
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageInterface::UpdateSharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+    const Mailbox& mailbox) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu

@@ -97,6 +97,9 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;
+  void UpdateSharedImage(const SyncToken& sync_token,
+                         scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+                         const Mailbox& mailbox) override;
 #endif
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,
