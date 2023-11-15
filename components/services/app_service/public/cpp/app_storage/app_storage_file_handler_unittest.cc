@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 
+#include <limits.h>
 #include <memory>
 #include <vector>
 
@@ -148,6 +149,10 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                          /*is_managed=*/true);
     app2->allow_close = false;
+    app2->app_size_in_bytes = ULLONG_MAX;
+    app2->data_size_in_bytes = ULLONG_MAX - 1;
+    app2->supported_locales = {"a", "b", "c"};
+    app2->selected_locale = "c";
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.

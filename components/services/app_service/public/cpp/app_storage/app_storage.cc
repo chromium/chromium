@@ -194,6 +194,15 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
 
   IS_APP_VALUE_CHANGED(run_on_os_login)
   IS_APP_VALUE_CHANGED(allow_close)
+  IS_APP_VALUE_CHANGED(app_size_in_bytes)
+  IS_APP_VALUE_CHANGED(data_size_in_bytes)
+
+  if (!app->supported_locales.empty() &&
+      app->supported_locales != it->second->supported_locales) {
+    return true;
+  }
+
+  IS_APP_VALUE_CHANGED(selected_locale);
 
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;

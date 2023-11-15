@@ -204,6 +204,10 @@ class AppStorageTest : public testing::Test {
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                          /*is_managed=*/false);
     app2->allow_close = false;
+    app2->app_size_in_bytes = 1024;
+    app2->data_size_in_bytes = 2048;
+    app2->supported_locales = {"a", "b", "c"};
+    app2->selected_locale = "a";
 
     apps.push_back(std::move(app2));
 
@@ -235,6 +239,10 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(run_on_os_login,
                RunOnOsLogin(RunOnOsLoginMode::kNotRun, /*is_managed=*/false))
   MODIFY_FIELD(allow_close, false)
+  MODIFY_FIELD(app_size_in_bytes, 512)
+  MODIFY_FIELD(data_size_in_bytes, 0)
+  MODIFY_FIELD(supported_locales, {"aa"})
+  MODIFY_FIELD(selected_locale, "aa")
 
   void ModifyIconKey(absl::optional<IconKey> icon_key) {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
@@ -402,6 +410,10 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(run_on_os_login, RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                                     /*is_managed=*/false));
   VERIFY_MODIFY_FIELD(allow_close, false);
+  VERIFY_MODIFY_FIELD(app_size_in_bytes, 512);
+  VERIFY_MODIFY_FIELD(data_size_in_bytes, 0);
+  VERIFY_MODIFY_FIELD(supported_locales, {"aa"});
+  VERIFY_MODIFY_FIELD(selected_locale, "aa");
 
   // Verify for the none icon effect.
   IconKey icon_key1(IconEffects::kNone);
