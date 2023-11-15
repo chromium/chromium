@@ -1749,7 +1749,7 @@
     },
     {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeNegativeTargeting",
