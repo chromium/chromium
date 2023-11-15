@@ -119,9 +119,8 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  const std::string hash = base::SHA1HashString(url);
-  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
-  return encoded_hash + kCacheFileExt;
+  auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+  return base::HexEncode(hash) + kCacheFileExt;
 }
 
 std::vector<std::string> GetImageUrlsToProcess(

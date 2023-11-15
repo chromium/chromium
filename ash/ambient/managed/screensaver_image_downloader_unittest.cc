@@ -89,8 +89,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+    const std::string encoded_hash = base::HexEncode(hash);
     return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
   }
 

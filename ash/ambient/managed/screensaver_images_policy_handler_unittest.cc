@@ -267,11 +267,10 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
   void ResetScreensaverImagesPolicyHandler() { policy_handler_.reset(); }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
     return temp_dir_.GetPath()
         .AppendASCII(GetParam().base_directory)
-        .AppendASCII(encoded_hash + kCacheFileExt);
+        .AppendASCII(base::HexEncode(hash) + kCacheFileExt);
   }
 };
 

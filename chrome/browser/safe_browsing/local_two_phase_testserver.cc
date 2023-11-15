@@ -32,8 +32,8 @@ namespace {
 // Computes the SHA-1 of input string, and returns it as an ASCII-encoded string
 // of hex characters.
 std::string SHA1HexEncode(const std::string& in) {
-  std::string raw_sha1 = base::SHA1HashString(in);
-  return base::ToLowerASCII(base::HexEncode(raw_sha1.c_str(), raw_sha1.size()));
+  return base::ToLowerASCII(
+      base::HexEncode(base::SHA1HashSpan(base::as_bytes(base::make_span(in)))));
 }
 
 const char kStartHeader[] = "x-goog-resumable";
