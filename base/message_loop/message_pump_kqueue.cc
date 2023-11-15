@@ -462,6 +462,7 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
 bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
   bool did_work = false;
 
+  delegate->BeginNativeWorkBeforeDoWork();
   for (size_t i = 0; i < count; ++i) {
     auto* event = &events_[i];
     if (event->filter == EVFILT_READ || event->filter == EVFILT_WRITE) {

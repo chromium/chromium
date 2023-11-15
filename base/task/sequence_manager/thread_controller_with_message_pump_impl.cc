@@ -51,6 +51,10 @@ BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
+             "AvoidScheduleWorkDuringNativeEventProcessing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // If enabled, deactivate the high resolution timer immediately in DoWork(),
 // instead of waiting for next DoIdleWork.
@@ -67,6 +71,7 @@ BASE_FEATURE(kAlwaysUseHighResTimers,
 #endif
 
 std::atomic_bool g_run_tasks_by_batches = false;
+std::atomic_bool g_avoid_schedule_calls_during_native_event_processing = false;
 
 base::TimeDelta GetLeewayForWakeUp(absl::optional<WakeUp> wake_up) {
   if (!wake_up || wake_up->delay_policy == subtle::DelayPolicy::kPrecise) {
@@ -81,6 +86,9 @@ base::TimeDelta GetLeewayForWakeUp(absl::optional<WakeUp> wake_up) {
 void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
   g_run_tasks_by_batches.store(FeatureList::IsEnabled(kRunTasksByBatches),
                                std::memory_order_relaxed);
+  g_avoid_schedule_calls_during_native_event_processing.store(
+      FeatureList::IsEnabled(kAvoidScheduleWorkDuringNativeEventProcessing),
+      std::memory_order_relaxed);
 #if BUILDFLAG(IS_WIN)
   g_use_less_high_res_timers.store(
       FeatureList::IsEnabled(kUseLessHighResTimers), std::memory_order_relaxed);
@@ -186,6 +194,17 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
     }
     pump_->ScheduleWork();
   }
+}
+void ThreadControllerWithMessagePumpImpl::BeginNativeWorkBeforeDoWork() {
+  if (!g_avoid_schedule_calls_during_native_event_processing.load(
+          std::memory_order_relaxed)) {
+    return;
+  }
+  in_native_work_batch_ = true;
+
+  // Reuse the deduplicator facility to indicate that there is no need for
+  // ScheduleWork() until the next time we look for work.
+  work_deduplicator_.OnWorkStarted();
 }
 
 void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
@@ -296,6 +315,10 @@ void ThreadControllerWithMessagePumpImpl::OnEndWorkItemImpl(
 }
 
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
+  // DoWork is guaranteed to be called after native work batches and before
+  // wait.
+  CHECK(!in_native_work_batch_);
+
   // In most cases, DoIdleWork() will already have cleared the
   // `hang_watch_scope_` but in some cases where the native side of the
   // MessagePump impl is instrumented, it's possible to get a BeforeWait()
@@ -310,6 +333,8 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
+  in_native_work_batch_ = false;
+
 #if BUILDFLAG(IS_WIN)
   // We've been already in a wakeup here. Deactivate the high res timer of OS
   // immediately instead of waiting for next DoIdleWork().
