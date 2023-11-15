@@ -170,6 +170,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
   // as input. ShouldShowCustomTabBar is currently implemented to be used after
   // navigation has committed.
   if (app_controller->ShouldShowCustomTabBar()) {
+    label_->layer()->GetAnimator()->StopAnimating();
     return;
   }
   StartFadeAnimation();
