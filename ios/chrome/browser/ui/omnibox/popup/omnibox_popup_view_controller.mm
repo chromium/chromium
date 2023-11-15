@@ -373,8 +373,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
       leadingPadding += CGRectGetMinX(omniboxFrame);
     }
 
-    self.tableView.contentInset =
-        UIEdgeInsetsMakeDirected(0, leadingPadding, kBottomPadding, 0);
     self.tableView.directionalLayoutMargins =
         NSDirectionalEdgeInsetsMake(0, leadingPadding, kBottomPadding, 0);
   }
