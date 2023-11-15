@@ -27,16 +27,15 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
-#include "media/base/decoder_buffer.h"
 #include "media/base/decoder_buffer_queue.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_log.h"
@@ -409,7 +408,8 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   const MediaTracksUpdatedCB media_tracks_updated_cb_;
 
-  std::map<MediaTrack::Id, FFmpegDemuxerStream*> track_id_to_demux_stream_map_;
+  base::flat_map<MediaTrack::Id, FFmpegDemuxerStream*>
+      track_id_to_demux_stream_map_;
 
   const bool is_local_file_;
 

@@ -927,6 +927,9 @@ FFmpegDemuxer::~FFmpegDemuxer() {
   // there are no outstanding WeakPtrs by the time we reach here.
   DCHECK(!weak_factory_.HasWeakPtrs());
 
+  // Clear `streams_` before `glue_` below since they may reference it.
+  streams_.clear();
+
   // There may be outstanding tasks in the blocking pool which are trying to use
   // these members, so release them in sequence with any outstanding calls. The
   // earlier call to Abort() on |data_source_| prevents further access to it.
