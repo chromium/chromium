@@ -782,6 +782,7 @@ class FormDataImporterTest : public FormDataImporterTestBase,
             features::kAutofillEnableSupportForAddressOverflow,
             features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
             features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+            features::kAutofillEnableParsingOfStreetLocation,
         },
         {});
   }

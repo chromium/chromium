@@ -405,11 +405,12 @@ bool AddressField::ParseAddressFieldSequence(
     // a street location typically contains strings that match the regular
     // expressions for a street name as well.
     if (!street_location_ &&
-        // TODO(crbug.com/1474308) Gate this behind a feature flag.
         // TODO(crbug.com/1474308) Find a better way to gate street location
         // support. This is easy to confuse with with an address line 1 field.
         // This is currently allowlisted for MX which prefers pairs of
         // street location and address overflow fields.
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableParsingOfStreetLocation) &&
         client_country == GeoIpCountryCode("MX") &&
         ParseFieldSpecifics(scanner, kStreetLocationRe,
                             kStreetLocationMatchType, street_location_patterns,

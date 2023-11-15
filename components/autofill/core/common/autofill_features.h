@@ -58,6 +58,8 @@ BASE_DECLARE_FEATURE(kAutofillEnableSupportForBetweenStreetsOrLandmark);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForLandmark);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableParsingOfStreetLocation);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPredictionsForAutocompleteUnrecognized);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>

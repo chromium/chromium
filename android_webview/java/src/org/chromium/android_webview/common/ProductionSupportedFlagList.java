@@ -287,6 +287,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_LANDMARK,
                 "When enabled, Autofill supports landmark fields."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_PARSING_OF_STREET_LOCATION,
+                "When enabled, Autofill supports parsing fields as street locations."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_APARTMENT_NUMBERS,
                 "When enabled, Autofill supports apartment number fields."),
         Flag.baseFeature(
