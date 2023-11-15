@@ -639,14 +639,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenPasswordBottomSheetExpand \
-  DISABLED_testOpenPasswordBottomSheetExpand
-#else
-#define MAYBE_testOpenPasswordBottomSheetExpand \
-  testOpenPasswordBottomSheetExpand
-#endif
-- (void)MAYBE_testOpenPasswordBottomSheetExpand {
+- (void)DISABLED_testOpenPasswordBottomSheetExpand {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -761,14 +754,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenPasswordBottomSheetNoUsername \
-  DISABLED_testOpenPasswordBottomSheetNoUsername
-#else
-#define MAYBE_testOpenPasswordBottomSheetNoUsername \
-  testOpenPasswordBottomSheetNoUsername
-#endif
-- (void)MAYBE_testOpenPasswordBottomSheetNoUsername {
+- (void)DISABLED_testOpenPasswordBottomSheetNoUsername {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
