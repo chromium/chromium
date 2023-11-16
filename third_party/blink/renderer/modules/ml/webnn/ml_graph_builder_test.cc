@@ -40,6 +40,32 @@ TEST_F(MLGraphBuilderTest, InputTest) {
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
   {
+    // Test building a 0-D scalar input without presenting dimensions.
+    auto* desc = MLOperandDescriptor::Create();
+    desc->setType(V8MLOperandType::Enum::kFloat32);
+    auto* input = builder->input("input", desc, scope.GetExceptionState());
+    EXPECT_NE(input, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({}));
+    EXPECT_EQ(input->Name(), "input");
+  }
+  {
+    // Test building a 0-D scalar input with empty dimensions.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    EXPECT_NE(input, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({}));
+    EXPECT_EQ(input->Name(), "input");
+  }
+  {
     // Test building a 2-D input without errors.
     auto* input =
         BuildInput(builder, "input", {3, 4}, V8MLOperandType::Enum::kFloat32,
@@ -74,17 +100,6 @@ TEST_F(MLGraphBuilderTest, InputTest) {
               "Invalid operand descriptor: All dimensions should be positive.");
   }
   {
-    // Test throwing exception if the dimensions is empty.
-    auto* input =
-        BuildInput(builder, "input", {}, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    EXPECT_EQ(input, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid operand descriptor: The dimensions is empty.");
-  }
-  {
     // Test throwing exception if the number of elements is too large.
     // Set the dimensions that let the number of elements be 2 * SIZE_MAX.
     auto* input = BuildInput(
@@ -116,6 +131,32 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
   MLGraphBuilder* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
+  {
+    // Test building a 0-D scalar constant without presenting dimensions.
+    auto* desc = MLOperandDescriptor::Create();
+    desc->setType(V8MLOperandType::Enum::kFloat32);
+    NotShared<DOMArrayBufferView> buffer_view =
+        CreateDOMArrayBufferView(1, V8MLOperandType::Enum::kFloat32);
+    auto* constant =
+        builder->constant(desc, buffer_view, scope.GetExceptionState());
+    EXPECT_NE(constant, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({}));
+  }
+  {
+    // Test building a 0-D scalar constant with empty dimensions.
+    auto* constant = BuildConstant(builder, {}, V8MLOperandType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    EXPECT_NE(constant, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({}));
+  }
   {
     // Test building a 2-D constant without errors.
     auto* constant =
@@ -360,6 +401,27 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
     uint32_t axis = 2;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The axis must be in the range [0, N-1] where N is the rank of "
+              "input tensor.");
+  }
+  {
+    // Test throwing exception when concat with two 0-D scalars.
+    Vector<uint32_t> input_a_shape({});
+    Vector<uint32_t> input_b_shape({});
+    Vector<uint32_t> output_shape({2});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
@@ -2400,6 +2462,25 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
     EXPECT_EQ(p_relu->Options(), nullptr);
   }
   {
+    // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {}.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope = BuildConstant(builder, {}, V8MLOperandType::Enum::kFloat32,
+                                scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* p_relu = output->Operator();
+    EXPECT_NE(p_relu, nullptr);
+    EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
+    EXPECT_EQ(p_relu->IsConnected(), true);
+    EXPECT_EQ(p_relu->Options(), nullptr);
+  }
+  {
     // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {2,
     // 5}.
     Vector<uint32_t> input_shape({3, 2, 5});
@@ -2750,6 +2831,21 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
   }
   {
+    // Test building gemm with setting optional input C.
+    // The output dimensions of a * b would be {2, 4} and
+    // c_dimensions is a scalar.
+    auto* a = BuildInput(builder, "a", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {3, 4}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* options = MLGemmOptions::Create();
+    auto* c = BuildInput(builder, "c", {}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    options->setC(c);
+    auto* output = BuildGemm(scope, builder, a, b, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
     // Test building gemm with aTranspose = true, bTranspose = true.
     // The output dimensions of a * b would be {2, 4} and
     // c_dimension {2, 3} is incompatible with {2, 4}.
@@ -2931,6 +3027,17 @@ TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
   }
   {
+    // Testing building add with two input dimensions - {4, 2, 4} and {}.
+    auto* a =
+        BuildInput(builder, "a", {4, 2, 4}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* output = BuildElementWiseBinary(scope, builder,
+                                          ElementWiseBinaryKind::kAdd, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
+  }
+  {
     // Test throwing exception when the input shapes are not broadcastable.
     auto* a = BuildInput(builder, "a", {4, 2}, V8MLOperandType::Enum::kFloat32,
                          scope.GetExceptionState());
@@ -3076,6 +3183,14 @@ struct ElementWiseUnaryTester {
 
 TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   V8TestingScope scope;
+  {
+    // Test building element-wise exp for scalar input.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kExp,
+        .input_info = {.type = V8MLOperandType::Enum::kFloat32,
+                       .dimensions = {}}}
+        .Test(scope);
+  }
   {
     // Test building element-wise abs.
     ElementWiseUnaryTester<float>{
@@ -3401,7 +3516,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       EXPECT_EQ(options->keepDimensions(), false);
       auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
       CheckReduceOutput(input, output, reduce_kind);
-      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
     }
     {
       // Test reduce with keepDimensions = true.
@@ -3521,6 +3636,36 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                    scope.GetExceptionState());
     auto* output =
         builder->reshape(input, {absl::nullopt}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
+    auto* reshape = output->Operator();
+    EXPECT_NE(reshape, nullptr);
+    EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
+    EXPECT_EQ(reshape->IsConnected(), true);
+  }
+  {
+    // Test reshaping a 1-D 1-element tensor to scalar.
+    auto* input =
+        BuildInput(builder, "input", {1}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = builder->reshape(input, {}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
+    auto* reshape = output->Operator();
+    EXPECT_NE(reshape, nullptr);
+    EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
+    EXPECT_EQ(reshape->IsConnected(), true);
+  }
+  {
+    // Test reshaping a scalar to 1-D 1-element tensor.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = builder->reshape(input, {1}, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
@@ -4115,7 +4260,13 @@ struct ExpandTester {
 
 TEST_F(MLGraphBuilderTest, ExpandTest) {
   V8TestingScope scope;
-  // TODO(crbug.com/1273291): Expand the 0-D scalar to N-D tensor.
+  {
+    // Test building expand 0-D scalar to 3-D tensor.
+    ExpandTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .new_shape = {3, 4, 5}}
+        .Test(scope);
+  }
   {
     // Test building expand with the new shapes that are the same as input.
     ExpandTester<float>{
@@ -4261,6 +4412,20 @@ TEST_F(MLGraphBuilderTest, PadTest) {
     EXPECT_EQ(options->value(), 0);
     auto* output = BuildPad(scope, builder, input, {1, 2}, {1, 2}, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 7}));
+  }
+  {
+    // Test throwing error when building pad for scalar input.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLPadOptions::Create();
+    auto* output =
+        builder->pad(input, {}, {}, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should not be a scalar.");
   }
   {
     // Test throwing error when the length of beginningPadding is not equal to
@@ -4477,6 +4642,19 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     EXPECT_EQ(slice->Options(), nullptr);
   }
   {
+    // Test building slice a scalar.
+    Vector<uint32_t> input_shape({});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* output = builder->slice(input, {0}, {1}, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should not be a scalar.");
+  }
+  {
     // Test throwing error when the length of sizes is not equal to the rank of
     // the input tensor.
     Vector<uint32_t> input_shape({3, 4, 5});
@@ -4620,6 +4798,23 @@ TEST_F(MLGraphBuilderTest, Split) {
     EXPECT_EQ(split->SplitSizes(), splits);
     EXPECT_EQ(split->Kind(), MLOperator::OperatorKind::kSplit);
     EXPECT_EQ(split->IsConnected(), true);
+  }
+  {
+    // Test throwing exception when splitting a scalar.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    const uint32_t splits = 2;
+    auto* options = MLSplitOptions::Create();
+    auto outputs =
+        builder->split(input, splits, options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The axis must be in the range [0, N-1] where N is the rank of the "
+        "input tensor.");
   }
   {
     // Test throwing exception when axis is larger than input rank.

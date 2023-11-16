@@ -237,31 +237,6 @@ void WebNNGraphDMLImplTest::SetUp() {
   SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
 }
 
-// Test building and computing a DML graph with single operator clamp.
-TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
-  // Build the mojom graph info.
-  GraphInfoBuilder builder;
-  uint64_t input_operand_id = builder.BuildInput(
-      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput(
-      "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildClamp(input_operand_id, output_operand_id, 0, 3);
-
-  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
-  std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
-                                   -9, -10, -11, -12, 13, 14, 15, 16,
-                                   17, 18,  19,  20,  21, 22, 23, 24};
-  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
-  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
-                  named_outputs);
-
-  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
-            std::vector<float>({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}));
-}
-
 struct ClampAttributes {
   float min_value;
   float max_value;
@@ -828,6 +803,22 @@ struct ElementWiseBinaryTester {
 // Test building and computing a DML graph with single operator element-wise
 // binary.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
+  // Test building and computing a DML graph with single operator add for 0-D
+  // scalars.
+  {
+    ElementWiseBinaryTester<float>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {},
+                .values = {1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {},
+                .values = {6}},
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {7}}}
+        .Test();
+  }
   // Test building and computing a DML graph with single operator add.
   {
     ElementWiseBinaryTester<float>{
@@ -841,6 +832,22 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {7, 7, 7, 7, 7, 7}}}
+        .Test();
+  }
+  // Test building and computing a DML graph with single operator add using
+  // broadcasting from 0-D scalar.
+  {
+    ElementWiseBinaryTester<float>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {},
+                .values = {1}},
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {2, 3, 4, 5, 6, 7}}}
         .Test();
   }
   // Test building and computing a DML graph with single operator add using
@@ -1075,6 +1082,10 @@ struct ElementWiseUnaryTester {
 
 // Test building and computing a DML graph with element-wise unary operator.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
+  OperandInfo<float_t> test_operand_info_float32_scalar{
+      .type = mojom::Operand::DataType::kFloat32,
+      .dimensions = {},
+      .values = {2}};
   OperandInfo<float_t> test_operand_info_float32{
       .type = mojom::Operand::DataType::kFloat32,
       .dimensions = {1, 2, 3, 1},
@@ -1136,6 +1147,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
   }
   {
     ElementWiseUnaryTester<float>{
+        .input = test_operand_info_float32_scalar,
+        .kind = mojom::ElementWiseUnary::Kind::kIdentity,
+        .output = test_operand_info_float32_scalar}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
         .input = test_operand_info_float32,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_float32}
@@ -1167,6 +1185,18 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
         .input = test_operand_info_uint8,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_uint8}
+        .Test();
+  }
+  {
+    // Test Sqrt with 0-D scalar input.
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {4}},
+        .kind = mojom::ElementWiseUnary::Kind::kSqrt,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {2}}}
         .Test();
   }
   {
@@ -1825,60 +1855,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithSplitAndReshape) {
 }
 
 template <typename T>
-struct UnaryOperatorTester {
-  mojom::Operation::Tag tag;
-  OperandInfo<T> input;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> leaky_relu_alpha;
-  OperandInfo<float> output;
-  void Test() {
-    // Build the graph with mojo type.
-    GraphInfoBuilder builder;
-    uint64_t input_operand_id =
-        builder.BuildInput("input", input.dimensions, input.type);
-    uint64_t output_operand_id =
-        builder.BuildOutput("output", output.dimensions, output.type);
-    switch (tag) {
-      case mojom::Operation::Tag::kElu:
-        CHECK(elu_alpha);
-        builder.BuildElu(input_operand_id, output_operand_id,
-                         elu_alpha.value());
-        break;
-      case mojom::Operation::Tag::kLeakyRelu:
-        CHECK(leaky_relu_alpha);
-        builder.BuildLeakyRelu(input_operand_id, output_operand_id,
-                               leaky_relu_alpha.value());
-        break;
-      case mojom::Operation::Tag::kRelu:
-        builder.BuildRelu(input_operand_id, output_operand_id);
-        break;
-      case mojom::Operation::Tag::kSigmoid:
-        builder.BuildSigmoid(input_operand_id, output_operand_id);
-        break;
-      case mojom::Operation::Tag::kSoftmax:
-        builder.BuildSoftmax(input_operand_id, output_operand_id);
-        break;
-      case mojom::Operation::Tag::kTanh:
-        builder.BuildTanh(input_operand_id, output_operand_id);
-        break;
-      default:
-        NOTREACHED();
-    }
-
-    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
-    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
-    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
-                    named_outputs);
-
-    VerifyFloatDataIsEqual(
-        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-        output.values);
-  }
-};
-
-template <typename T>
 struct PadTester {
   OperandInfo<T> input;
   std::vector<uint32_t> beginning_padding;
@@ -2018,8 +1994,114 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPad) {
   }
 }
 
+template <typename T>
+struct UnaryOperatorTester {
+  mojom::Operation::Tag tag;
+  OperandInfo<T> input;
+  absl::optional<float> clamp_min_value;
+  absl::optional<float> clamp_max_value;
+  absl::optional<float> elu_alpha;
+  absl::optional<float> leaky_relu_alpha;
+  OperandInfo<float> output;
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    switch (tag) {
+      case mojom::Operation::Tag::kClamp:
+        CHECK(clamp_min_value);
+        CHECK(clamp_max_value);
+        builder.BuildClamp(input_operand_id, output_operand_id,
+                           clamp_min_value.value(), clamp_max_value.value());
+        break;
+      case mojom::Operation::Tag::kElu:
+        CHECK(elu_alpha);
+        builder.BuildElu(input_operand_id, output_operand_id,
+                         elu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kLeakyRelu:
+        CHECK(leaky_relu_alpha);
+        builder.BuildLeakyRelu(input_operand_id, output_operand_id,
+                               leaky_relu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kRelu:
+        builder.BuildRelu(input_operand_id, output_operand_id);
+        break;
+      case mojom::Operation::Tag::kSigmoid:
+        builder.BuildSigmoid(input_operand_id, output_operand_id);
+        break;
+      case mojom::Operation::Tag::kSoftmax:
+        builder.BuildSoftmax(input_operand_id, output_operand_id);
+        break;
+      case mojom::Operation::Tag::kTanh:
+        builder.BuildTanh(input_operand_id, output_operand_id);
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
+};
+
+// Test building and computing a DML graph with single operator clamp.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
+  {
+    // Test clamp for 4-D tensor input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kClamp,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4},
+                  .values = {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  23,  24}},
+        .clamp_min_value = 0,
+        .clamp_max_value = 3,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4},
+                   .values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                              3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}}}
+        .Test();
+  }
+  {
+    // Test clamp for 0-D scalar input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kClamp,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {24}},
+        .clamp_min_value = 0,
+        .clamp_max_value = 3,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {3}}}
+        .Test();
+  }
+}
+
 // Test building and computing a DML graph with single operator sigmoid.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSigmoid) {
+  // Test sigmoid with a 0-D scalar input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {0.5}}}
+        .Test();
+  }
   // Test sigmoid with a 1d input.
   {
     UnaryOperatorTester<float>{
@@ -2077,6 +2159,18 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSigmoid) {
 
 // Test building and computing a DML graph with single operator tanh.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorTanh) {
+  // Test tanh with a 0-D scalar input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kTanh,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {-1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {-0.76159418}}}
+        .Test();
+  }
   // Test tanh with a 1d input.
   {
     UnaryOperatorTester<float>{
@@ -2602,6 +2696,32 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorReduce) {
                                    .values = {14, 77}}}
         .Test();
   }
+  // Test reduceSum with all axes and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {0, 1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kSum,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1},
+                                   .values = {21}}}
+        .Test();
+  }
+  // Test reduceSum with all axes and keep_dimensions = false.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {0, 1},
+                        .keep_dimensions = false,
+                        .kind = mojom::Reduce::Kind::kSum,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {},
+                                   .values = {21}}}
+        .Test();
+  }
 }
 
 struct GemmAttributes {
@@ -2743,7 +2863,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
                     .values = {1, 2, 3, 4}},
         .input_c =
             OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
+                               .dimensions = {},
                                .values = {1}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 2},

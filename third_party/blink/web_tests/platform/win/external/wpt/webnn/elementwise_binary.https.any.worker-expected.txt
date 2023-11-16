@@ -64,8 +64,8 @@ Found 126 tests; 56 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
 [FAIL] pow float32 5D base tensor and 5D integer exponent tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[PASS] pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / sync
-[PASS] pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / sync
+[PASS] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar / sync
+[PASS] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar / sync
 [FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
 [FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync
@@ -188,9 +188,9 @@ Found 126 tests; 56 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] pow float32 5D base tensor and 5D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / async
+[FAIL] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / async
+[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

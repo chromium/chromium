@@ -371,6 +371,16 @@ TEST_P(MLGraphTestMojo, ClampTest) {
         .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
         .Test(*this, scope, builder);
   }
+  {
+    // Test clamp operator with scalar.
+    ClampTester{
+        .input = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {}},
+        .options = {0.0, 6.0},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kUint8,
+                             .dimensions = {}},
+        .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
+        .Test(*this, scope, builder);
+  }
 }
 
 struct ConcatTester {
@@ -1072,6 +1082,15 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test element-wise add operator for two 0-D scalars.
+    ElementWiseBinaryTester{
+        .lhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .rhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test element-wise add operator for two 1-D tensors.
     ElementWiseBinaryTester{
         .lhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
@@ -1193,6 +1212,15 @@ TEST_P(MLGraphTestMojo, EluTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
+  {
+    // Test elu operator for 0-D tensor with default options.
+    EluTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_alpha = 1}
+        .Test(*this, scope, builder);
+  }
   {
     // Test elu operator for 1-D tensor with default options.
     EluTester{
@@ -1406,6 +1434,30 @@ TEST_P(MLGraphTestMojo, GemmTest) {
              .b_transpose = false}}
         .Test(*this, scope, builder);
   }
+  {
+    // Test building gemm with setting scalar C.
+    GemmTester{
+        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {3, 4}},
+        .options =
+            {
+                .c = OperandInfoBlink{.type = V8MLOperandType::Enum::kFloat32,
+                                      .dimensions = {}},
+                .alpha = 2.0,
+                .beta = 3.0,
+            },
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}},
+        .expected_attributes =
+            {.c = OperandInfoMojo{.type =
+                                      blink_mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {}},
+             .alpha = 2.0,
+             .beta = 3.0,
+             .a_transpose = false,
+             .b_transpose = false}}
+        .Test(*this, scope, builder);
+  }
 }
 
 struct LeakyReluTester {
@@ -1482,6 +1534,15 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
+  {
+    // Test leaky relu operator for 0-D scalar with default options.
+    LeakyReluTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_alpha = 0.01}
+        .Test(*this, scope, builder);
+  }
   {
     // Test leaky relu operator for 1-D tensor with default options.
     LeakyReluTester{
@@ -2196,6 +2257,14 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test relu operator for 0-D scalar.
+    ReluTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test relu operator for 1-D tensor.
     ReluTester{
         .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
@@ -2442,6 +2511,24 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test reshaping 1-D tensor to 0-D scalar.
+    ReshapeTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {1}},
+        .new_shape = {},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test reshaping 0-D scalar to 1-D tensor.
+    ReshapeTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .new_shape = {1},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {1}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test reshaping 2-D tensor to 1-D tensor.
     ReshapeTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
                             .dimensions = {2, 2}},
@@ -2577,6 +2664,14 @@ TEST_P(MLGraphTestMojo, FloatingPointUnaryTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
+  {
+    // Test unary operator for 0-D scalar.
+    FloatingPointUnaryTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
   {
     // Test unary operator for 1-D tensor.
     FloatingPointUnaryTester{
@@ -2975,7 +3070,7 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
         .input = {.type = V8MLOperandType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 4}},
         .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1}},
+                             .dimensions = {}},
         .expected_axes = {0, 1, 2, 3},
         .expected_keep_dimensions = false}
         .Test(*this, scope, builder);
@@ -3051,6 +3146,17 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
+  {
+    // Test scalar constant operand.
+    ConstantTester<float>{
+        .constant = {.type = V8MLOperandType::Enum::kFloat32,
+                     .dimensions = {},
+                     .values = {1.0}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}},
+        .expected_constant_data = {1.0}}
+        .Test(*this, scope, builder);
+  }
   {
     // Test Constant operand for Float32 data type.
     ConstantTester<float>{

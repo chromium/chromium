@@ -2009,16 +2009,12 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
-    // Test reduce operator with axes = {0, ..., N-1} and default
-    // keep_dimensions.
-    // TODO(crbug.com/1273291): Update the output_dimensions to {} after spec
-    // issue https://github.com/webmachinelearning/webnn/issues/390 is resolved.
     ReduceTester{.kind = mojom::Reduce::Kind::kMin,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {2, 3, 4, 5}},
                  .axes = {0, 1, 2, 3},
                  .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1}},
+                            .dimensions = {}},
                  .expected = true}
         .Test();
   }

@@ -118,9 +118,9 @@ Found 63 tests; 0 PASS, 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] pow float32 5D base tensor and 5D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-[FAIL] pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / async
+[FAIL] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / async
+[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

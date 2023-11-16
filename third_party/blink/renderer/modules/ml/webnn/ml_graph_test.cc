@@ -81,6 +81,21 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
   SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
+    // Test element-wise add operator for two 0-D scalars.
+    // The expected results should be the sum of the values of the two input
+    // scalars.
+    ElementWiseBinaryTester<float>{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+                .dimensions = {},
+                .values = {2.0}},
+        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                .dimensions = {},
+                .values = {3.0}},
+        .expected = {5.0}}
+        .Test(*this, scope);
+  }
+  {
     // Test element-wise add operator for two 1-D tensors.
     // The expected results should be the sum of the values of the two input
     // tensors, element-wise.
@@ -106,6 +121,20 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
                 .dimensions = {2, 2},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {6.0, 8.0, 10.0, 12.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise add operator for 0-D scalar broadcasting to 2-D
+    // tensor.
+    ElementWiseBinaryTester<float>{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+                .dimensions = {2, 2},
+                .values = {1.0, 2.0, 3.0, 4.0}},
+        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                .dimensions = {},
+                .values = {5.0}},
+        .expected = {6.0, 7.0, 8.0, 9.0}}
         .Test(*this, scope);
   }
   {
@@ -269,7 +298,7 @@ TEST_P(MLGraphTest, PowTest) {
                              .dimensions = {1, 2, 2, 1},
                              .values = {1.0, 2.0, 3.0, 4.0}},
                      .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                             .dimensions = {1},
+                             .dimensions = {},
                              .values = {2.0}},
                      .expected = {1.0, 4.0, 9.0, 16.0}}
         .Test(*this, scope);
@@ -280,7 +309,7 @@ TEST_P(MLGraphTest, PowTest) {
                              .dimensions = {1, 2, 2, 1},
                              .values = {1.0, 4.0, 9.0, 16.0}},
                      .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                             .dimensions = {1},
+                             .dimensions = {},
                              .values = {0.5}},
                      .expected = {1.0, 2.0, 3.0, 4.0}}
         .Test(*this, scope);
@@ -372,6 +401,17 @@ struct ElementWiseUnaryTester {
 TEST_P(MLGraphTest, ElementWiseUnaryTest) {
   SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
+  {
+    // Test element-wise abs operator for a 0-D scalar.
+    // The expected results should be the absolute value of the input scalar.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kAbs,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {-2.0}},
+        .expected = {2.0}}
+        .Test(*this, scope);
+  }
   {
     // Test element-wise abs operator for a 1-D tensor.
     // The expected results should be the absolute value of the input tensor,
@@ -537,6 +577,14 @@ TEST_P(MLGraphTest, ReluTest) {
         .Test(*this, scope);
   }
   {
+    // Test relu operator for 0-D scalar.
+    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                .dimensions = {},
+                                .values = {-1.0}},
+                      .expected = {0.0}}
+        .Test(*this, scope);
+  }
+  {
     // Test relu operator for 2-D tensor.
     ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
                                 .dimensions = {2, 2},
@@ -616,6 +664,15 @@ TEST_P(MLGraphTest, LeakyReluTest) {
                                      .dimensions = {1, 2, 2, 1},
                                      .values = {10, 5, -100, 0}},
                            .expected = {10, 5, -20, 0}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test leakyRelu operator for scalar input.
+    auto* options = MLLeakyReluOptions::Create();
+    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                     .dimensions = {},
+                                     .values = {-100}},
+                           .expected = {-1}}
         .Test(*this, scope, options);
   }
 }
@@ -821,6 +878,17 @@ TEST_P(MLGraphTest, ClampTest) {
                                  .dimensions = {1, 2, 2, 1},
                                  .values = {-10.0, -0.5, 0.5, 10.0}},
                        .expected = {0.0, 0.0, 0.5, 6.0}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test clamp operator for scalar input.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMinValue(0.0);
+    options->setMaxValue(6.0);
+    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {},
+                                 .values = {10.0}},
+                       .expected = {6.0}}
         .Test(*this, scope, options);
   }
 }
@@ -1295,6 +1363,14 @@ TEST_P(MLGraphTest, HardSwishTest) {
         .Test(*this, scope);
   }
   {
+    // Test hardSwish operator for 0-D scalar.
+    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                              .dimensions = {},
+                              .values = {0.6}},
+                    .expected = {0.36}}
+        .Test(*this, scope);
+  }
+  {
     // Test hardSwish operator for 2-D tensor.
     HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
                               .dimensions = {2, 2},
@@ -1438,6 +1514,24 @@ struct ReshapeTester {
 TEST_P(MLGraphTest, ReshapeTest) {
   SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
+  {
+    // Test reshaping 1-D 1-element tensor to 0-D scalar.
+    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {1},
+                                   .values = {1.0}},
+                         .new_shape = {},
+                         .expected_output_shape = {}}
+        .Test(*this, scope);
+  }
+  {
+    // Test reshaping 0-D scalar to 1-D 1-element tensor.
+    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {},
+                                   .values = {1.0}},
+                         .new_shape = {1},
+                         .expected_output_shape = {1}}
+        .Test(*this, scope);
+  }
   {
     // Test reshaping 2-D tensor to 1-D tensor.
     ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,

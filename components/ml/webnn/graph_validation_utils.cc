@@ -667,6 +667,9 @@ base::expected<Operand, std::string> ValidatePadAndInferOutput(
   // Validate the beginning_padding and ending_padding.
   const auto input_shape = input.dimensions;
   auto input_rank = input_shape.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
+  }
   if (beginning_padding.size() != input_rank) {
     return base::unexpected(
         "The length of beginningPadding must be "
@@ -1144,11 +1147,11 @@ SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
 base::expected<Operand, std::string> ValidateSliceAndInferOutput(
     const Operand& input,
     const SliceAttributes& attributes) {
-  if (!attributes.sizes.size()) {
-    return base::unexpected("The length of sizes must be not be zero.");
+  const auto input_rank = input.dimensions.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
   }
 
-  const auto input_rank = input.dimensions.size();
   if (attributes.starts.size() != input_rank) {
     return base::unexpected(
         "The length of starts must be equal to the rank of the input tensor.");
@@ -1231,21 +1234,12 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
       }
     }
   }
-  // Currently, WebNN doesn't support using empty dimensions to represent a
-  // scalar. An issue has been filed to track it -
-  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
-  // set output_shape to {1} to represent a scalar output.
-  if (output_shape.size() == 0) {
-    output_shape.push_back(1);
-  }
   return Operand(input.data_type, std::move(output_shape));
 }
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
-  if (dimensions.empty()) {
-    return base::unexpected("The dimensions is empty.");
-  }
+  // Empty dimensions represents a scalar whose number of elements is 1.
   base::CheckedNumeric<size_t> checked_number_of_elements = 1;
   for (auto& d : dimensions) {
     if (d == 0) {

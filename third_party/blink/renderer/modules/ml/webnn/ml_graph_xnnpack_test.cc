@@ -332,7 +332,7 @@ TEST_P(MLGraphXnnpackTest, PowTest) {
   auto* input0 =
       BuildInput(builder, "input0", {1, 2, 2, 1},
                  V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-  auto* input1 = BuildConstant(builder, {1}, V8MLOperandType::Enum::kFloat32,
+  auto* input1 = BuildConstant(builder, {}, V8MLOperandType::Enum::kFloat32,
                                Vector<float>({3.0}), scope.GetExceptionState());
   auto* output = BuildElementWiseBinary(
       scope, builder, ElementWiseBinaryKind::kPow, input0, input1);
@@ -1133,6 +1133,47 @@ TEST_P(MLGraphXnnpackTest, TanhTest) {
                          .dimensions = {2, 2},
                          .values = {-2.0, 2.0, -3.0, 3.0}}}
         .Test(*this, scope);
+  }
+}
+
+TEST_P(MLGraphXnnpackTest, PreluTest) {
+  V8TestingScope scope;
+  {
+    // Test throwing exception when slope is not a constant.
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", {2, 2}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* slope_operand =
+        BuildInput(builder, "slope", {2}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
+    auto [graph, exception] =
+        BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_EQ(graph, nullptr);
+    EXPECT_EQ(exception->message(),
+              "Slope should be defined as a constant operand.");
+  }
+  {
+    // Test throwing exception when slope is a scalar.
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", {2, 2}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* slope_operand =
+        BuildConstant(builder, {}, V8MLOperandType::Enum::kFloat32,
+                      Vector<float>({0.1}), scope.GetExceptionState());
+    auto* output_operand =
+        builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
+    auto [graph, exception] =
+        BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_EQ(graph, nullptr);
+    EXPECT_EQ(exception->message(), "Slope should not be a scalar.");
   }
 }
 

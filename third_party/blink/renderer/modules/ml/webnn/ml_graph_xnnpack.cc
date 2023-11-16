@@ -971,11 +971,7 @@ xnn_status DefineXnnNodeForElementWiseBinary(
         error_message = "Operand b should be defined as a constant for pow.";
         return xnn_status_unsupported_parameter;
       }
-      // A scalar can be represented by empty dimensions which is still under WG
-      // discussion. An issue has been filed to track it -
-      // https://github.com/webmachinelearning/webnn/issues/390.
-      if (operand_b->Dimensions().size() != 1 ||
-          operand_b->Dimensions()[0] != 1) {
+      if (operand_b->Dimensions().size() != 0) {
         error_message = "Pow only supports scalar operand b.";
         return xnn_status_unsupported_parameter;
       }
@@ -1334,6 +1330,10 @@ xnn_status DefineXnnNodeForPRelu(xnn_subgraph_t subgraph,
     return xnn_status_invalid_parameter;
   }
   const auto slope_rank = slope->Dimensions().size();
+  if (slope_rank == 0) {
+    error_message = "Slope should not be a scalar.";
+    return xnn_status_unsupported_parameter;
+  }
   for (wtf_size_t i = 0; i < slope_rank - 1; i++) {
     if (slope->Dimensions()[i] != 1) {
       error_message =

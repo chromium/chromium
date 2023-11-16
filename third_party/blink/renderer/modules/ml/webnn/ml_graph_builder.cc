@@ -518,8 +518,8 @@ MLContext* MLGraphBuilder::GetContext() const {
 MLOperand* MLGraphBuilder::input(String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
-  // If no dimensions, it represents a scalar. Set dimensions to {1}.
-  Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
+  // If no dimensions, it represents a scalar. Set dimensions to empty.
+  Vector<uint32_t> dimensions = desc->getDimensionsOr({});
   auto input_operand = MLOperand::ValidateAndCreateInput(
       this, desc->type().AsEnum(), std::move(dimensions), std::move(name));
   if (!input_operand.has_value()) {
@@ -534,8 +534,8 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
   String error_message;
-  // If no dimensions, it represents a scalar. Set dimensions to {1}.
-  Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
+  // If no dimensions, it represents a scalar. Set dimensions to empty.
+  Vector<uint32_t> dimensions = desc->getDimensionsOr({});
   auto constant_operand = MLOperand::ValidateAndCreateConstant(
       this, desc->type().AsEnum(), std::move(dimensions), buffer_view.Get());
   if (!constant_operand.has_value()) {
@@ -1017,36 +1017,34 @@ MLOperand* MLGraphBuilder::reshape(
     const Vector<absl::optional<uint32_t>>& new_shape,
     ExceptionState& exception_state) {
   absl::optional<wtf_size_t> null_dim_index = absl::nullopt;
+  // Setting the initial number of elements to 1 would cover the 0-D scalar with
+  // empty dimensions.
   base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
-  Vector<uint32_t> output_shape;
-  if (new_shape.size() == 0) {
-    // The empty new shape means reshaping to scalar, set output shape to {1}.
-    output_shape = {1};
-  } else {
-    output_shape.resize(new_shape.size());
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reshape, only one
-    // component of new shape can be the special value of null.
-    for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
-      auto dim = new_shape[i];
-      if (!dim) {
-        if (null_dim_index) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kDataError,
-              "Only one component of new shape can be null.");
-          return nullptr;
-        }
-        null_dim_index = i;
-      } else {
-        if (dim.value() == 0) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kDataError,
-              "The value of new shape should not be 0.");
-          return nullptr;
-        }
-        checked_newshape_number_of_elements *= dim.value();
-        output_shape[i] = dim.value();
+  Vector<uint32_t> output_shape(new_shape.size());
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reshape, only one
+  // component of new shape can be the special value of null.
+  //
+  // TODO(crbug.com/1502361): Drop the special null value support.
+  for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
+    auto dim = new_shape[i];
+    if (!dim) {
+      if (null_dim_index) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataError,
+            "Only one component of new shape can be null.");
+        return nullptr;
       }
+      null_dim_index = i;
+    } else {
+      if (dim.value() == 0) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataError,
+            "The value of new shape should not be 0.");
+        return nullptr;
+      }
+      checked_newshape_number_of_elements *= dim.value();
+      output_shape[i] = dim.value();
     }
   }
   size_t newshape_number_of_elements;
