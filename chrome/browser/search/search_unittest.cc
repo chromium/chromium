@@ -38,7 +38,6 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
@@ -379,7 +378,7 @@ TEST_F(SearchTest,
   hosts["foo.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
 
-  if (supervised_user::IsURLFilteringEnabled(*profile()->GetPrefs())) {
+  if (supervised_user_service->IsURLFilteringEnabled()) {
     EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
               GetNewTabPageURL(profile()));
     GURL new_tab_url(chrome::kChromeUINewTabURL);

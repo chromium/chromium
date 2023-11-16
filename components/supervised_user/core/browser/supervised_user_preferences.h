@@ -38,9 +38,6 @@ bool IsSafeSitesEnabled(const PrefService& pref_service);
 // parental controls and the platform supports Family Link supervision features.
 bool IsSubjectToParentalControls(const PrefService& pref_service);
 
-// Returns true if the URL filtering parental control is enabled.
-bool IsURLFilteringEnabled(const PrefService& pref_service);
-
 // Returns true if the extensions permissions parental control is enabled.
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
 

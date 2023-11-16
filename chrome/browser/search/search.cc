@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -32,7 +31,6 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
 #include "components/supervised_user/core/common/supervised_user_utils.h"
@@ -141,13 +139,15 @@ bool IsNTPOrRelatedURLHelper(const GURL& url, Profile* profile) {
                                     IsMatchingServiceWorker(url, new_tab_url));
 }
 
-bool IsURLAllowedForSupervisedUser(const GURL& url, Profile& profile) {
+bool IsURLAllowedForSupervisedUser(const GURL& url, Profile* profile) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (!supervised_user::IsURLFilteringEnabled(*profile.GetPrefs())) {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  if (!supervised_user_service ||
+      !supervised_user_service->IsURLFilteringEnabled()) {
     return true;
   }
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(&profile);
+
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service->GetURLFilter();
   if (url_filter->GetFilteringBehaviorForURL(url) ==
@@ -197,9 +197,8 @@ struct NewTabURLDetails {
       return NewTabURLDetails(local_url, NEW_TAB_URL_NOT_SET);
     if (!search_provider_url.SchemeIsCryptographic())
       return NewTabURLDetails(local_url, NEW_TAB_URL_INSECURE);
-    if (!IsURLAllowedForSupervisedUser(search_provider_url, CHECK_DEREF(profile))) {
+    if (!IsURLAllowedForSupervisedUser(search_provider_url, profile))
       return NewTabURLDetails(local_url, NEW_TAB_URL_BLOCKED);
-    }
 
     return NewTabURLDetails(search_provider_url, NEW_TAB_URL_VALID);
   }
