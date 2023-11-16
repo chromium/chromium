@@ -26,7 +26,6 @@ static_js_files = [
   # Files Common:
   "file_manager/common/js/array_data_model.js",
   "file_manager/common/js/async_util.js",
-  "file_manager/common/js/error_counter.js",
   "file_manager/common/js/glitch.js",
   "file_manager/common/js/file_type.js",
   "file_manager/common/js/files_app_entry_types.js",
@@ -177,6 +176,7 @@ ts_files = [
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/dialog_type.ts",
   "file_manager/common/js/entry_utils.ts",
+  "file_manager/common/js/error_counter.ts",
   "file_manager/common/js/file_tasks.ts",
   "file_manager/common/js/file_types_base.ts",
   "file_manager/common/js/flags.ts",

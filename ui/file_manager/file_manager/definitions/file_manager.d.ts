@@ -34,6 +34,7 @@ declare global {
     appID: string;
     fileManager: FileManager;
     IN_TEST: boolean;
+    JSErrorCount: number;
     store: Store;
     /** Log action data in the console for debugging purpose. */
     DEBUG_STORE: boolean;
