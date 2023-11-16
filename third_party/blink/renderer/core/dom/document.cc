@@ -3855,10 +3855,6 @@ void Document::ImplicitClose() {
   if (SvgExtensions())
     AccessSVGExtensions().StartAnimations();
 
-  if (lazy_load_image_observer_) {
-    lazy_load_image_observer_->DocumentOnLoadFinished(this);
-  }
-
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp)) {
     if (auto* observer =

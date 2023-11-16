@@ -123,17 +123,19 @@ bool IsDescendantOrSameDocument(Document& subject, Document& root) {
 
 }  // namespace
 
-LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
-  use_margin_ =
-      !RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled() ||
-      root_document.LoadEventFinished();
-}
+LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {}
 
 void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
                                                         Element* element) {
   if (!lazy_load_intersection_observer_) {
-    CreateLazyLoadIntersectionObserver(root_document);
+    lazy_load_intersection_observer_ = IntersectionObserver::Create(
+        {Length::Fixed(GetLazyLoadingImageMarginPx(*root_document))},
+        {std::numeric_limits<float>::min()}, root_document,
+        WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
   }
+
   lazy_load_intersection_observer_->observe(element);
 }
 
@@ -303,47 +305,6 @@ void LazyLoadImageObserver::OnVisibilityChanged(
   }
 }
 
-void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
-  if (!RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled()) {
-    return;
-  }
-  if (use_margin_) {
-    return;
-  }
-
-  use_margin_ = true;
-
-  if (lazy_load_intersection_observer_) {
-    // Intersection observer doesn't support dynamic margin changes so we just
-    // create a new one.
-    CreateLazyLoadIntersectionObserver(root_document);
-  }
-}
-
-void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
-    Document* root_document) {
-  int margin = GetLazyLoadingImageMarginPx(*root_document);
-  IntersectionObserver* new_observer = IntersectionObserver::Create(
-      /* (root) margin */ {Length::Fixed(margin)},
-      /* thresholds */ {std::numeric_limits<float>::min()},
-      /* document */ root_document,
-      /* callback */
-      WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                         WrapWeakPersistent(this)),
-      /* ukm_metric_id */
-      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
-
-  if (lazy_load_intersection_observer_) {
-    for (const IntersectionObservation* observation :
-         lazy_load_intersection_observer_->Observations()) {
-      new_observer->observe(observation->Target());
-    }
-    lazy_load_intersection_observer_->disconnect();
-  }
-
-  lazy_load_intersection_observer_ = new_observer;
-}
-
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
   visitor->Trace(visibility_metrics_observer_);
@@ -351,10 +312,6 @@ void LazyLoadImageObserver::Trace(Visitor* visitor) const {
 
 int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
     const Document& document) {
-  if (!use_margin_) {
-    return 0;
-  }
-
   const Settings* settings = document.GetSettings();
   if (!settings) {
     return 0;

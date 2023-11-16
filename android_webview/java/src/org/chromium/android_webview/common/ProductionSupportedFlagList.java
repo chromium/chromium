@@ -505,9 +505,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(BlinkFeatures.ONE_PASS_RASTER_INVALIDATION),
         Flag.baseFeature(
-                BlinkFeatures.DELAY_OUT_OF_VIEWPORT_LAZY_IMAGES,
-                "Delays out-of-viewport lazy loaded images."),
-        Flag.baseFeature(
                 ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
                 "Disable to turn off the new SurfaceSync Fullscreen path."),
         Flag.baseFeature(
