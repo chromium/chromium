@@ -418,6 +418,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (par_res != H265Parser::kOk) {
           SET_ERROR_AND_RETURN();
         }
+        // TODO(crbug.com/1495665): Technically, we should cache a map of vps_id
+        // to aux_alpha_layer_id, and look up the aux_alpha_layer_id for each
+        // NALU.
+        aux_alpha_layer_id_ = parser_.GetVPS(vps_id)->aux_alpha_layer_id;
         accelerator_->ProcessVPS(
             parser_.GetVPS(vps_id),
             base::span<const uint8_t>(
@@ -677,12 +681,6 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
 
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
-
-  const H265VPS* vps = parser_.GetVPS(sps->sps_video_parameter_set_id);
-  if (!vps) {
-    return H265Accelerator::Status::kFail;
-  }
-  aux_alpha_layer_id_ = vps->aux_alpha_layer_id;
 
   return accelerator_->SubmitSlice(
       sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
