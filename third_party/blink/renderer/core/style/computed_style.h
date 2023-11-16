@@ -1445,7 +1445,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Outline utility functions.
   // HasOutline is insufficient to determine whether Node has an outline.
-  // Use NGOutlineUtils::HasPaintedOutline instead.
+  // Use HasPaintedOutline() instead.
   bool HasOutline() const {
     return OutlineWidth() > 0 && OutlineStyle() > EBorderStyle::kHidden;
   }

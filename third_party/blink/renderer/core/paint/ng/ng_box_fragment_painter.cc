@@ -670,7 +670,7 @@ void NGBoxFragmentPainter::PaintObject(
   }
 
   if (ShouldPaintSelfOutline(paint_phase)) {
-    if (NGOutlineUtils::HasPaintedOutline(style, fragment.GetNode())) {
+    if (HasPaintedOutline(style, fragment.GetNode())) {
       NGFragmentPainter(fragment, GetDisplayItemClient())
           .PaintOutline(paint_info, paint_offset, style);
     }

@@ -212,7 +212,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
   }
 
   return ComputeIsAbsoluteContainer(&style) ||
-         NGOutlineUtils::HasPaintedOutline(style, GetNode()) ||
+         HasPaintedOutline(style, GetNode()) ||
          CanBeHitTestTargetPseudoNodeStyle(style);
 }
 

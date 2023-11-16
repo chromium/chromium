@@ -17,7 +17,7 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset,
                                      const ComputedStyle& style_to_use) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  DCHECK(NGOutlineUtils::HasPaintedOutline(style_to_use, fragment.GetNode()));
+  DCHECK(HasPaintedOutline(style_to_use, fragment.GetNode()));
   VectorOutlineRectCollector collector;
   LayoutObject::OutlineInfo info;
   fragment.AddSelfOutlineRects(
