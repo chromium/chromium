@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_SOURCE_PROVIDER_H_
 #define COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_SOURCE_PROVIDER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 
@@ -75,7 +76,7 @@ class FakeVideoSourceProvider
       device_infos_;
 
   base::OnceClosure on_replied_with_source_infos_;
-  GetVideoSourceCallback on_get_video_source_;
+  GetVideoSourceCallback on_get_video_source_ = base::DoNothing();
 };
 
 }  // namespace media_effects

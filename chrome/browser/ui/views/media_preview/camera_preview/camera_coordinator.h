@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_CAMERA_PREVIEW_CAMERA_COORDINATOR_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
+#include "chrome/browser/ui/views/media_preview/camera_preview/camera_selector_combobox_model.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "ui/views/view_tracker.h"
 
@@ -21,23 +23,26 @@ class CameraCoordinator {
   CameraCoordinator& operator=(const CameraCoordinator&) = delete;
   ~CameraCoordinator();
 
- private:
-  friend class CameraCoordinatorTest;
+  // Invoked from the ViewController when a combobox selection has been made.
+  void OnVideoSourceChanged(std::optional<size_t> selected_index);
 
+  const CameraSelectorComboboxModel& GetComboboxModelForTest() const {
+    return combobox_model_;
+  }
+
+ private:
   // `device_infos` is  a list of connected devices. When a new device
   // gets connected or a device gets disconnected, this function is called to
   // with the new list.
   void OnVideoSourceInfosReceived(
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
 
-  // Invoked from the ViewController when a combobox selection has been made.
-  void OnVideoSourceChanged(const VideoSourceInfo& video_source_info);
-
   void ResetViewController();
 
   CameraMediator camera_mediator_;
   views::ViewTracker camera_view_tracker_;
   CameraSelectorComboboxModel combobox_model_;
+  std::string active_device_id_;
   std::optional<CameraViewController> camera_view_controller_;
 };
 

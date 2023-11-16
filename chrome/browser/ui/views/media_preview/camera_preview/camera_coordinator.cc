@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,10 +29,9 @@ CameraCoordinator::CameraCoordinator(views::View& parent_view,
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_controller_`.
   camera_view_controller_.emplace(
-      *camera_view,
+      *camera_view, needs_borders, combobox_model_,
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
-                          base::Unretained(this)),
-      needs_borders, combobox_model_);
+                          base::Unretained(this)));
 }
 
 CameraCoordinator::~CameraCoordinator() = default;
@@ -47,20 +45,31 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
   std::vector<VideoSourceInfo> relevant_device_infos;
   relevant_device_infos.reserve(device_infos.size());
   for (const auto& device_info : device_infos) {
-    relevant_device_infos.emplace_back(
-        device_info.descriptor.device_id,
-        base::UTF8ToUTF16(device_info.descriptor.GetNameAndModel()),
-        device_info.supported_formats);
+    relevant_device_infos.emplace_back(device_info);
   }
 
+  if (relevant_device_infos.empty()) {
+    active_device_id_.clear();
+  }
   camera_view_controller_->UpdateVideoSourceInfos(
       std::move(relevant_device_infos));
 }
 
 void CameraCoordinator::OnVideoSourceChanged(
-    const VideoSourceInfo& video_source_info) {
+    std::optional<size_t> selected_index) {
+  if (!selected_index.has_value()) {
+    return;
+  }
+
+  const auto& device_info =
+      combobox_model_.GetDeviceInfoAt(selected_index.value());
+  if (active_device_id_ == device_info.id) {
+    return;
+  }
+
+  active_device_id_ = device_info.id;
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
-  camera_mediator_.BindVideoSource(video_source_info.id,
+  camera_mediator_.BindVideoSource(device_info.id,
                                    video_source.BindNewPipeAndPassReceiver());
   // TODO(ahmedmoussa): `video_source` is to be passed to
   // VideoStreamCoordiantor. Done in the following CL.
