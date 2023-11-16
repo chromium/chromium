@@ -3126,7 +3126,6 @@ targets.legacy_basic_suite(
             args = [
                 "--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features",
             ],
-            ci_only = True,
             swarming = targets.swarming(
                 shards = 14,
             ),

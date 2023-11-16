@@ -4899,6 +4899,18 @@
       'win10-code-coverage',
     ],
   },
+  'webgpu_cts_compat_tests': {
+    'modifications': {
+      # TODO(crbug.com/1483449): Enable on Intel trybots once there is
+      # sufficient capacity.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+      'Dawn Linux x64 Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+    },
+  },
   'webgpu_cts_tests': {
     'modifications': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
