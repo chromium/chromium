@@ -49,7 +49,7 @@ class SmbHandlerTest : public ash::smb_client::SmbServiceBaseTest {
 };
 
 TEST_F(SmbHandlerTest, NoSmbMountedBeforeWithSmbServiceNotAvailable) {
-  handler_ = std::make_unique<TestSmbHandler>(profile);
+  handler_ = std::make_unique<TestSmbHandler>(profile());
   handler_->set_web_ui(&web_ui_);
   handler_->RegisterMessages();
   handler_->AllowJavascriptForTesting();
@@ -58,11 +58,11 @@ TEST_F(SmbHandlerTest, NoSmbMountedBeforeWithSmbServiceNotAvailable) {
 }
 
 TEST_F(SmbHandlerTest, NoSmbMountedBeforeWithSmbServiceAvailable) {
-  handler_ = std::make_unique<TestSmbHandler>(profile);
+  handler_ = std::make_unique<TestSmbHandler>(profile());
   if (!smb_service) {
     // Create smb service.
     smb_service = std::make_unique<smb_client::SmbService>(
-        profile, std::make_unique<base::SimpleTestTickClock>());
+        profile(), std::make_unique<base::SimpleTestTickClock>());
   }
 
   handler_->SetSmbServiceForTesting(smb_service.get());
@@ -74,8 +74,8 @@ TEST_F(SmbHandlerTest, NoSmbMountedBeforeWithSmbServiceAvailable) {
 }
 
 TEST_F(SmbHandlerTest, SmbMountedBeforeWithSmbServiceAvailable) {
-  handler_ = std::make_unique<TestSmbHandler>(profile);
-  CreateService(profile);
+  handler_ = std::make_unique<TestSmbHandler>(profile());
+  CreateService(profile());
   WaitForSetupComplete();
 
   // Add a share

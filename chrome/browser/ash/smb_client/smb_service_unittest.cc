@@ -28,7 +28,7 @@ inline constexpr char kMountPath2[] = "/share/mount/second_path";
 class SmbServiceWithSmbfsTest : public SmbServiceBaseTest {};
 
 TEST_F(SmbServiceWithSmbfsTest, InvalidUrls) {
-  CreateService(profile);
+  CreateService(profile());
 
   ExpectInvalidUrl("");
   ExpectInvalidUrl("foo");
@@ -43,7 +43,7 @@ TEST_F(SmbServiceWithSmbfsTest, InvalidUrls) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, InvalidSsoUrls) {
-  CreateService(profile);
+  CreateService(profile());
 
   ExpectInvalidSsoUrl("\\\\192.168.1.1\\foo");
   ExpectInvalidSsoUrl("\\\\[0:0:0:0:0:0:0:1]\\foo");
@@ -54,7 +54,7 @@ TEST_F(SmbServiceWithSmbfsTest, InvalidSsoUrls) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, Mount) {
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
 
   mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
@@ -124,7 +124,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
   EXPECT_EQ(share->share_url().ToString(), kShareUrl);
 
   // Check that the share was saved.
-  SmbPersistedShareRegistry registry(profile);
+  SmbPersistedShareRegistry registry(profile());
   absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   ASSERT_TRUE(info);
   EXPECT_EQ(info->share_url().ToString(), kShareUrl);
@@ -143,7 +143,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
 
   mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
@@ -195,7 +195,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
   run_loop.Run();
 
   // Check that the share was saved.
-  SmbPersistedShareRegistry registry(profile);
+  SmbPersistedShareRegistry registry(profile());
   absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   ASSERT_TRUE(info);
   EXPECT_EQ(info->share_url().ToString(), kShareUrl);
@@ -212,10 +212,10 @@ TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
   auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
   ASSERT_TRUE(parsed_shares);
-  profile->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
-                           *parsed_shares);
+  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+                             *parsed_shares);
 
-  CreateService(profile);
+  CreateService(profile());
 
   mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
   MockSmbFsImpl smbfs_impl(smbfs_remote.BindNewPipeAndPassReceiver());
@@ -261,10 +261,10 @@ TEST_F(SmbServiceWithSmbfsTest, MountInvalidPreconfigured) {
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured"}])";
   auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
   ASSERT_TRUE(parsed_shares);
-  profile->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
-                           *parsed_shares);
+  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+                             *parsed_shares);
 
-  CreateService(profile);
+  CreateService(profile());
 
   base::RunLoop run_loop;
   smb_service->SetRestoredShareMountDoneCallbackForTesting(
@@ -281,13 +281,13 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
   const std::vector<uint8_t> kSalt = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   // Save share in profile.
   {
-    SmbPersistedShareRegistry registry(profile);
+    SmbPersistedShareRegistry registry(profile());
     SmbShareInfo info(SmbUrl(kShareUrl), kDisplayName, kTestUser, kTestDomain,
                       false /* use_kerberos */, kSalt);
     registry.Save(info);
   }
 
-  CreateService(profile);
+  CreateService(profile());
 
   mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
   MockSmbFsImpl smbfs_impl(smbfs_remote.BindNewPipeAndPassReceiver());
@@ -344,7 +344,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
   smb_service->UnmountSmbFs(base::FilePath(kMountPath));
   run_loop2.Run();
 
-  SmbPersistedShareRegistry registry(profile);
+  SmbPersistedShareRegistry registry(profile());
   absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
   EXPECT_TRUE(registry.GetAll().empty());
@@ -354,13 +354,13 @@ TEST_F(SmbServiceWithSmbfsTest, MountInvalidSaved) {
   const std::vector<uint8_t> kSalt = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   // Save an (invalid) share in profile. This can't occur in practice.
   {
-    SmbPersistedShareRegistry registry(profile);
+    SmbPersistedShareRegistry registry(profile());
     SmbShareInfo info(SmbUrl(kInvalidShareUrl), kDisplayName, kTestUser,
                       kTestDomain, /*use_kerberos=*/false, kSalt);
     registry.Save(info);
   }
 
-  CreateService(profile);
+  CreateService(profile());
 
   base::RunLoop run_loop;
   smb_service->SetRestoredShareMountDoneCallbackForTesting(
@@ -377,7 +377,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
   // The maximum number of smbfs shares that can be mounted simultaneously.
   // Should match the definition in smb_service.cc.
   const size_t kMaxSmbFsShares = 16;
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
 
   // Check: It is possible to mount the maximum number of shares.
@@ -405,7 +405,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, GetSmbFsShareForPath) {
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
 
   std::ignore = MountBasicShare(kSharePath, kMountPath,
@@ -437,7 +437,7 @@ TEST_F(SmbServiceWithSmbfsTest, GetSmbFsShareForPath) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, MountDuplicate) {
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
 
   std::ignore = MountBasicShare(kSharePath, kMountPath,
@@ -460,7 +460,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountDuplicate) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, IsAnySmbShareAdded) {
-  CreateService(profile);
+  CreateService(profile());
   WaitForSetupComplete();
   EXPECT_FALSE(smb_service->IsAnySmbShareConfigured());
 
@@ -479,10 +479,10 @@ TEST_F(SmbServiceWithSmbfsTest, IsAnySmbShareConfigured) {
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
   auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
   ASSERT_TRUE(parsed_shares);
-  profile->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
-                           *parsed_shares);
+  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+                             *parsed_shares);
 
-  CreateService(profile);
+  CreateService(profile());
   EXPECT_TRUE(smb_service->IsAnySmbShareConfigured());
 }
 

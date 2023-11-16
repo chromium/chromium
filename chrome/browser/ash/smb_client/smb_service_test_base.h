@@ -115,16 +115,16 @@ class SmbServiceBaseTest : public testing::Test {
 
   std::unique_ptr<SmbService> smb_service;
 
-  // Not owned.
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile =
-      nullptr;
+  TestingProfile* profile() { return profile_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+      nullptr;
   raw_ptr<disks::FakeDiskMountManager, DanglingUntriaged | ExperimentalAsh>
-      disk_mount_manager_;
+      disk_mount_manager_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
