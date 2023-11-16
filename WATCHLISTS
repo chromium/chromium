@@ -1339,6 +1339,11 @@
                   'ios/chrome/browser/widget_kit|'\
                   'ios/chrome/widget_kit_extension',
     },
+    'ip_protection': {
+      'filepath': 'chrome/browser/ip_protection/' \
+                  '|services/network/ip_protection_' \
+                  '|services/network/network_service_proxy_delegate',
+    },
     'kiosk': {
       'filepath': 'chrome/browser/chromeos/app_mode/'\
                   '|chrome/browser/ash/app_mode/'\
@@ -2892,6 +2897,9 @@
                      'marq+watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
+    'ip_protection': ['djmitche@chromium.org',
+                      'awillia@chromium.org',
+                      'brgoldstein@google.com'],
     'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
     'libaom': ['fgalligan@chromium.org',
