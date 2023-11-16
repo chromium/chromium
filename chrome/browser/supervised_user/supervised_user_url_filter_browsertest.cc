@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,7 +63,7 @@ using content::WebContents;
 namespace {
 
 // Tests filtering for supervised users.
-class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
+class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
  public:
   // Indicates whether the interstitial should proceed or not.
   enum InterstitialAction {
@@ -70,7 +71,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     INTERSTITIAL_DONTPROCEED,
   };
 
-  SupervisedUserURLFilterTest() {
+  SupervisedUserURLFilterTestBase() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
     feature_list_.InitWithFeatures(
@@ -78,13 +79,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
          supervised_user::kSupervisedPrefsControlledBySupervisedStore},
         {features::kHttpsUpgrades});
   }
-  ~SupervisedUserURLFilterTest() override { feature_list_.Reset(); }
-
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
+  ~SupervisedUserURLFilterTestBase() override { feature_list_.Reset(); }
 
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
@@ -132,10 +127,15 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     run_loop.Run();  // Will go until ...Complete calls Quit.
   }
 
+  supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
+    return supervision_mixin_.api_mock_setup_mixin().api_mock();
+  }
+
   supervised_user::SupervisedUserService* GetSupervisedUserService() const {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
@@ -196,13 +196,37 @@ class TabClosingObserver : public TabStripModelObserver {
   raw_ptr<content::WebContents> contents_;
 };
 
+using UseProtoFetcher = base::StrongAlias<class UseProtoFetcherTag, bool>;
+class SupervisedUserURLFilterTest
+    : public SupervisedUserURLFilterTestBase,
+      public ::testing::WithParamInterface<UseProtoFetcher> {
+ public:
+  SupervisedUserURLFilterTest() {
+    if (UseProtoFetcher()) {
+      proto_api_feature_list_.InitAndEnableFeature(
+          supervised_user::kEnableProtoApiForClassifyUrl);
+    } else {
+      proto_api_feature_list_.InitAndDisableFeature(
+          supervised_user::kEnableProtoApiForClassifyUrl);
+    }
+  }
+
+ private:
+  bool UseProtoFetcher() const { return GetParam().value(); }
+  base::test::ScopedFeatureList proto_api_feature_list_;
+};
+
 // Navigates to a page in a new tab, then blocks it (which makes the
 // interstitial page behave differently from the preceding test, where the
 // navigation is blocked before it commits). The expected behavior is the same
 // though: the tab should be closed when going back.
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   WebContents* prev_tab = tab_strip->GetActiveWebContents();
+
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
 
   // Open URL in a new tab.
   GURL test_url("http://www.example.com/simple.html");
@@ -249,11 +273,15 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
 
 // Tests that we don't end up canceling an interstitial (thereby closing the
 // whole tab) by attempting to show a second one above it.
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Open URL in a new tab.
   GURL test_url("http://www.example.com/simple.html");
+
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -290,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Ensure navigation completes.
@@ -299,6 +327,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
@@ -329,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   EXPECT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterTest,
                        ClosingBlockedTabDoesNotCrash) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -338,7 +369,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
@@ -363,8 +396,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterTest, BlockThenUnblock) {
   GURL test_url("http://www.example.com/simple.html");
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* web_contents =
@@ -410,11 +446,19 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   EXPECT_FALSE(ShownPageIsInterstitial(browser()));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserURLFilterTest,
+    ::testing::Values(UseProtoFetcher(true), UseProtoFetcher(false)),
+    [](const ::testing::TestParamInfo<UseProtoFetcher>& info) {
+      return info.param.value() ? "ProtoFetcher" : "JsonFetcher";
+    });
+
 // Tests the filter mode in which all sites are blocked by default.
-class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTest {
+class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTestBase {
  public:
   void SetUpOnMainThread() override {
-    SupervisedUserURLFilterTest::SetUpOnMainThread();
+    SupervisedUserURLFilterTestBase::SetUpOnMainThread();
     Profile* profile = browser()->profile();
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service =
@@ -636,12 +680,16 @@ class SupervisedUserURLFilterPrerenderingTest
 };
 
 // Tests that prerendering doesn't check SupervisedUserURLFilter.
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
   MockSupervisedUserURLFilterObserver observer(
       GetSupervisedUserService()->GetURLFilter());
 
   GURL test_url("http://www.example.com/simple.html");
   EXPECT_CALL(observer, OnURLChecked).Times(1);
+  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+  }
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   testing::Mock::VerifyAndClearExpectations(&observer);
 
@@ -669,4 +717,13 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
   EXPECT_CALL(observer, OnURLChecked).Times(1);
   prerender_helper().NavigatePrimaryPage(prerender_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserURLFilterPrerenderingTest,
+    ::testing::Values(UseProtoFetcher(true), UseProtoFetcher(false)),
+    [](const ::testing::TestParamInfo<UseProtoFetcher>& info) {
+      return info.param.value() ? "ProtoFetcher" : "JsonFetcher";
+    });
+
 }  // namespace
