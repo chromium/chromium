@@ -50,7 +50,7 @@ class MimeHandlerViewContainerManager
       public PostMessageSupport::Delegate {
  public:
   static void BindReceiver(
-      int32_t routing_id,
+      content::RenderFrame* render_frame,
       mojo::PendingAssociatedReceiver<mojom::MimeHandlerViewContainerManager>
           receiver);
   // Returns the container manager associated with |render_frame|. If none

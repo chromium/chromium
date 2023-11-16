@@ -41,12 +41,9 @@ RenderFrameMap* GetRenderFrameMap() {
 
 // static
 void MimeHandlerViewContainerManager::BindReceiver(
-    int32_t routing_id,
+    content::RenderFrame* render_frame,
     mojo::PendingAssociatedReceiver<mojom::MimeHandlerViewContainerManager>
         receiver) {
-  auto* render_frame = content::RenderFrame::FromRoutingID(routing_id);
-  if (!render_frame)
-    return;
   auto* manager = Get(render_frame, true /* create_if_does_not_exist */);
   manager->receivers_.Add(manager, std::move(receiver));
 }

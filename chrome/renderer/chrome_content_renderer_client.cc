@@ -697,7 +697,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       ->AddInterface<extensions::mojom::MimeHandlerViewContainerManager>(
           base::BindRepeating(
               &extensions::MimeHandlerViewContainerManager::BindReceiver,
-              render_frame->GetRoutingID()));
+              base::Unretained(render_frame)));
 #endif
 
   // Owned by |render_frame|.
