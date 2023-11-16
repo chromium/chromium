@@ -87,7 +87,7 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   DCHECK(ellipsis_text_);
   DCHECK(ellipsis_shape_result_.get());
   line_box->AddChild(
-      *ellipsized_layout_object, NGStyleVariant::kEllipsis,
+      *ellipsized_layout_object, StyleVariant::kEllipsis,
       std::move(ellipsis_shape_result_), ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),

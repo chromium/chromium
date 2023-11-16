@@ -223,7 +223,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
     if (UNLIKELY(items.FirstLineText() && !first_line_text_content_)) {
       // Don't reuse previous items if they have different `::first-line` style
       // but |this| doesn't. Reaching here means that computed style doesn't
-      // change, but |FragmentItem| has wrong |NGStyleVariant|.
+      // change, but |FragmentItem| has wrong |StyleVariant|.
       return AddPreviousItemsResult();
     }
   } else {

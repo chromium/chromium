@@ -2558,9 +2558,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline const ComputedStyle* Style(bool first_line) const;
   inline const ComputedStyle& StyleRef(bool first_line) const;
 
-  const ComputedStyle& EffectiveStyle(NGStyleVariant style_variant) const {
+  const ComputedStyle& EffectiveStyle(StyleVariant style_variant) const {
     NOT_DESTROYED();
-    return style_variant == NGStyleVariant::kStandard
+    return style_variant == StyleVariant::kStandard
                ? StyleRef()
                : SlowEffectiveStyle(style_variant);
   }
@@ -3541,7 +3541,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
   }
 
-  const ComputedStyle& SlowEffectiveStyle(NGStyleVariant style_variant) const;
+  const ComputedStyle& SlowEffectiveStyle(StyleVariant style_variant) const;
 
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to

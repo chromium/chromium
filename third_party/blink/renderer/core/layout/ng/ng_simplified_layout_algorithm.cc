@@ -51,7 +51,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   if (is_block_flow && !physical_fragment.IsFieldsetContainer()) {
     container_builder_.SetIsInlineFormattingContext(
         Node().IsInlineFormattingContextRoot());
-    container_builder_.SetStyleVariant(physical_fragment.StyleVariant());
+    container_builder_.SetStyleVariant(physical_fragment.GetStyleVariant());
 
     if (result.SubtreeModifiedMarginStrut())
       container_builder_.SetSubtreeModifiedMarginStrut();
@@ -87,7 +87,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     // Only block-flow layout sets the following fields.
     DCHECK(physical_fragment.IsFormattingContextRoot());
     DCHECK(!Node().IsInlineFormattingContextRoot());
-    DCHECK_EQ(physical_fragment.StyleVariant(), NGStyleVariant::kStandard);
+    DCHECK_EQ(physical_fragment.GetStyleVariant(), StyleVariant::kStandard);
 
     DCHECK(!result.SubtreeModifiedMarginStrut());
     DCHECK(result.EndMarginStrut().IsEmpty());

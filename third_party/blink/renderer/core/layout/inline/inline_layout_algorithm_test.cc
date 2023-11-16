@@ -90,16 +90,16 @@ TEST_F(InlineLayoutAlgorithmTest, TypesForFirstLine) {
       *To<LayoutBlockFlow>(GetLayoutObjectByElementId("normal")));
   normal.MoveToFirstLine();
   EXPECT_FALSE(normal.Current()->LineBoxFragment()->IsEmptyLineBox());
-  EXPECT_EQ(normal.Current().StyleVariant(), NGStyleVariant::kFirstLine);
-  EXPECT_EQ(normal.Current()->LineBoxFragment()->StyleVariant(),
-            NGStyleVariant::kFirstLine);
+  EXPECT_EQ(normal.Current().GetStyleVariant(), StyleVariant::kFirstLine);
+  EXPECT_EQ(normal.Current()->LineBoxFragment()->GetStyleVariant(),
+            StyleVariant::kFirstLine);
 
   InlineCursor empty(*To<LayoutBlockFlow>(GetLayoutObjectByElementId("empty")));
   empty.MoveToFirstLine();
   EXPECT_TRUE(empty.Current()->LineBoxFragment()->IsEmptyLineBox());
-  EXPECT_EQ(empty.Current().StyleVariant(), NGStyleVariant::kFirstLine);
-  EXPECT_EQ(empty.Current()->LineBoxFragment()->StyleVariant(),
-            NGStyleVariant::kFirstLine);
+  EXPECT_EQ(empty.Current().GetStyleVariant(), StyleVariant::kFirstLine);
+  EXPECT_EQ(empty.Current()->LineBoxFragment()->GetStyleVariant(),
+            StyleVariant::kFirstLine);
 }
 
 TEST_F(InlineLayoutAlgorithmTest, TypesForBlockInInline) {

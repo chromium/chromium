@@ -2450,16 +2450,16 @@ bool LayoutObject::IsSelectable() const {
 }
 
 const ComputedStyle& LayoutObject::SlowEffectiveStyle(
-    NGStyleVariant style_variant) const {
+    StyleVariant style_variant) const {
   NOT_DESTROYED();
   switch (style_variant) {
-    case NGStyleVariant::kStandard:
+    case StyleVariant::kStandard:
       return StyleRef();
-    case NGStyleVariant::kFirstLine:
+    case StyleVariant::kFirstLine:
       if (IsInline() && IsAtomicInlineLevel())
         return StyleRef();
       return FirstLineStyleRef();
-    case NGStyleVariant::kEllipsis:
+    case StyleVariant::kEllipsis:
       // The ellipsis is styled according to the line style.
       // https://www.w3.org/TR/css-overflow-3/#ellipsing-details
       // Use first-line style if exists since most cases it is the first line.

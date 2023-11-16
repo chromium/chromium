@@ -53,7 +53,7 @@ class CORE_EXPORT NGFragmentBuilder {
     DCHECK(style_);
     return *style_;
   }
-  void SetStyleVariant(NGStyleVariant style_variant) {
+  void SetStyleVariant(StyleVariant style_variant) {
     style_variant_ = style_variant;
   }
 
@@ -513,7 +513,7 @@ class CORE_EXPORT NGFragmentBuilder {
         space_(space),
         style_(style),
         writing_direction_(writing_direction),
-        style_variant_(NGStyleVariant::kStandard) {
+        style_variant_(StyleVariant::kStandard) {
     DCHECK(style_);
     layout_object_ = node.GetLayoutBox();
   }
@@ -554,7 +554,7 @@ class CORE_EXPORT NGFragmentBuilder {
   const NGConstraintSpace& space_;
   const ComputedStyle* style_;
   WritingDirectionMode writing_direction_;
-  NGStyleVariant style_variant_;
+  StyleVariant style_variant_;
   NGPhysicalFragment::NGBoxType box_type_ =
       NGPhysicalFragment::NGBoxType::kNormalBox;
   LogicalSize size_;

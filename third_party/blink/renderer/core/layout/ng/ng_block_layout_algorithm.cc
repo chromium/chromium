@@ -1172,7 +1172,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
     container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
   if (ConstraintSpace().UseFirstLineStyle())
-    container_builder_.SetStyleVariant(NGStyleVariant::kFirstLine);
+    container_builder_.SetStyleVariant(StyleVariant::kFirstLine);
 
   return container_builder_.ToBoxFragment();
 }

@@ -296,11 +296,11 @@ class CORE_EXPORT NGPhysicalFragment
   // (0, 0).
   PhysicalRect LocalRect() const { return {{}, size_}; }
 
-  NGStyleVariant StyleVariant() const {
-    return static_cast<NGStyleVariant>(style_variant_);
+  StyleVariant GetStyleVariant() const {
+    return static_cast<StyleVariant>(style_variant_);
   }
   bool UsesFirstLineStyle() const {
-    return StyleVariant() == NGStyleVariant::kFirstLine;
+    return GetStyleVariant() == StyleVariant::kFirstLine;
   }
 
   // Returns the style for this fragment.
@@ -310,7 +310,7 @@ class CORE_EXPORT NGPhysicalFragment
   // incorrect, use |BaseDirection()| instead, and 2) margin/border/padding,
   // background etc. do not apply to the line box.
   const ComputedStyle& Style() const {
-    return layout_object_->EffectiveStyle(StyleVariant());
+    return layout_object_->EffectiveStyle(GetStyleVariant());
   }
 
   const Document& GetDocument() const {
@@ -777,7 +777,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   const uint8_t type_ : 1;           // NGFragmentType
   const uint8_t sub_type_ : 4;       // NGBoxType, NGTextType, or NGLineBoxType
-  const uint8_t style_variant_ : 2;  // NGStyleVariant
+  const uint8_t style_variant_ : 2;  // StyleVariant
   const uint8_t is_hidden_for_paint_ : 1;
   uint8_t : 0;  // NOLINT, zero-length bitfield used to allow the compiler to
                 // split memory locations. If the above bitfields are part of

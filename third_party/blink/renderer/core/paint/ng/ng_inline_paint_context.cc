@@ -65,7 +65,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
         : inline_context_(inline_context),
           stop_at_(stop_at),
           saved_decorating_boxes_(saved_decorating_boxes),
-          style_variant_(ToParentStyleVariant(item.StyleVariant())) {
+          style_variant_(ToParentStyleVariant(item.GetStyleVariant())) {
       DCHECK(inline_context_);
       DCHECK(stop_at_);
     }
@@ -212,7 +212,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     const Vector<AppliedTextDecoration, 1>* stop_at_;
     absl::optional<InlineCursor> line_cursor_;
     DecoratingBoxList* saved_decorating_boxes_;
-    NGStyleVariant style_variant_;
+    StyleVariant style_variant_;
   };
 
   const wtf_size_t push_count =

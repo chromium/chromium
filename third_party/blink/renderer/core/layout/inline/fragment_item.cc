@@ -53,7 +53,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
       const_traced_type_(kNone),
       type_(kText),
       sub_type_(static_cast<unsigned>(inline_item.TextType())),
-      style_variant_(static_cast<unsigned>(inline_item.StyleVariant())),
+      style_variant_(static_cast<unsigned>(inline_item.GetStyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(inline_item.Direction())),
       ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
@@ -71,7 +71,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
 
 FragmentItem::FragmentItem(const LayoutObject& layout_object,
                            TextItemType text_type,
-                           NGStyleVariant style_variant,
+                           StyleVariant style_variant,
                            TextDirection direction,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const String& text_content,
@@ -102,7 +102,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
                            bool is_hidden_for_paint)
     : FragmentItem(*inline_item.GetLayoutObject(),
                    inline_item.TextType(),
-                   inline_item.StyleVariant(),
+                   inline_item.GetStyleVariant(),
                    inline_item.Direction(),
                    std::move(shape_result),
                    text_content,
@@ -116,7 +116,7 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
       const_traced_type_(kLineItem),
       type_(kLine),
       sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
-      style_variant_(static_cast<unsigned>(line.StyleVariant())),
+      style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
       is_hidden_for_paint_(false),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
       ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
@@ -132,7 +132,7 @@ FragmentItem::FragmentItem(const NGPhysicalBoxFragment& box,
       layout_object_(box.GetLayoutObject()),
       const_traced_type_(kBoxItem),
       type_(kBox),
-      style_variant_(static_cast<unsigned>(box.StyleVariant())),
+      style_variant_(static_cast<unsigned>(box.GetStyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
       ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
@@ -1169,14 +1169,14 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
       break;
   }
   ostream << " ";
-  switch (item.StyleVariant()) {
-    case NGStyleVariant::kStandard:
+  switch (item.GetStyleVariant()) {
+    case StyleVariant::kStandard:
       ostream << "Standard";
       break;
-    case NGStyleVariant::kFirstLine:
+    case StyleVariant::kFirstLine:
       ostream << "FirstLine";
       break;
-    case NGStyleVariant::kEllipsis:
+    case StyleVariant::kEllipsis:
       ostream << "Ellipsis";
       break;
   }

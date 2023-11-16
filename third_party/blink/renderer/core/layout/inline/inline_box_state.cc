@@ -837,7 +837,7 @@ const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
                            {style.GetWritingMode(), TextDirection::kLtr});
   box.SetInitialFragmentGeometry(fragment_geometry);
   box.SetBoxType(NGPhysicalFragment::kInlineBox);
-  box.SetStyleVariant(item->StyleVariant());
+  box.SetStyleVariant(item->GetStyleVariant());
 
   if (UNLIKELY(is_opaque)) {
     box.SetIsOpaque();

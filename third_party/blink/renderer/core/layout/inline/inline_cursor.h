@@ -34,7 +34,7 @@ class NGInlinePaintContext;
 class NGPhysicalBoxFragment;
 class Node;
 class ShapeResultView;
-enum class NGStyleVariant;
+enum class StyleVariant;
 struct LayoutSelectionStatus;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -106,9 +106,9 @@ class CORE_EXPORT InlineCursorPosition {
   bool IsHiddenForPaint() const { return item_->IsHiddenForPaint(); }
 
   // |ComputedStyle| and related functions.
-  NGStyleVariant StyleVariant() const { return item_->StyleVariant(); }
+  StyleVariant GetStyleVariant() const { return item_->GetStyleVariant(); }
   bool UsesFirstLineStyle() const {
-    return StyleVariant() == NGStyleVariant::kFirstLine;
+    return GetStyleVariant() == StyleVariant::kFirstLine;
   }
   const ComputedStyle& Style() const { return item_->Style(); }
 

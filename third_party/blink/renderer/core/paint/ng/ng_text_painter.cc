@@ -543,7 +543,7 @@ void NGTextPainter::PaintSvgDecorationsOnlyLineThrough(
 NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
     const LayoutSVGInlineText& svg_inline_text,
     const ComputedStyle& style,
-    NGStyleVariant style_variant,
+    StyleVariant style_variant,
     PaintFlags paint_flags) {
   return svg_text_paint_state_.emplace(svg_inline_text, style, style_variant,
                                        paint_flags);
@@ -564,7 +564,7 @@ NGTextPainter::SvgTextPaintState* NGTextPainter::GetSvgState() {
 NGTextPainter::SvgTextPaintState::SvgTextPaintState(
     const LayoutSVGInlineText& layout_svg_inline_text,
     const ComputedStyle& style,
-    NGStyleVariant style_variant,
+    StyleVariant style_variant,
     PaintFlags paint_flags)
     : layout_svg_inline_text_(layout_svg_inline_text),
       style_(style),
@@ -590,7 +590,7 @@ const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
   // set.
   const LayoutObject* result = InlineText().Parent();
   while (result) {
-    if (style_variant_ == NGStyleVariant::kFirstLine) {
+    if (style_variant_ == StyleVariant::kFirstLine) {
       if (const ComputedStyle* style = result->FirstLineStyle()) {
         if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
           break;

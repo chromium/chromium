@@ -35,7 +35,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
    public:
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
-                      NGStyleVariant style_variant,
+                      StyleVariant style_variant,
                       PaintFlags paint_flags);
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
@@ -59,7 +59,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
     const ComputedStyle& style_;
     absl::optional<AffineTransform> shader_transform_;
     absl::optional<Color> text_match_color_;
-    NGStyleVariant style_variant_ = NGStyleVariant::kStandard;
+    StyleVariant style_variant_ = StyleVariant::kStandard;
     PaintFlags paint_flags_ = PaintFlag::kNoFlag;
     bool is_painting_selection_ = false;
     friend class NGTextPainter;
@@ -113,7 +113,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
-                                 NGStyleVariant style_variant,
+                                 StyleVariant style_variant,
                                  PaintFlags paint_flags);
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText& svg_inline_text,
                                  const ComputedStyle& style,

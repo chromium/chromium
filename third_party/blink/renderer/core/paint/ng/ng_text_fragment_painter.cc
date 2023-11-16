@@ -438,7 +438,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
-        *svg_inline_text, style, text_item.StyleVariant(),
+        *svg_inline_text, style, text_item.GetStyleVariant(),
         paint_info.GetPaintFlags());
 
     if (scaling_factor != 1.0f) {

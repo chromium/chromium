@@ -691,7 +691,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
                          line_info->EndItemIndex());
 
   if (line_info->UseFirstLineStyle())
-    container_builder_.SetStyleVariant(NGStyleVariant::kFirstLine);
+    container_builder_.SetStyleVariant(StyleVariant::kFirstLine);
 
   // Even if we have something in-flow, it may just be empty items that
   // shouldn't trigger creation of a line. Exit now if that's the case.

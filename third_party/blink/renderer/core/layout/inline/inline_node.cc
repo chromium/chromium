@@ -1539,7 +1539,7 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
 
   first_line_items->items.AppendVector(data->items);
   for (auto& item : first_line_items->items) {
-    item.SetStyleVariant(NGStyleVariant::kFirstLine);
+    item.SetStyleVariant(StyleVariant::kFirstLine);
   }
   if (data->segments) {
     first_line_items->segments = data->segments->Clone();
