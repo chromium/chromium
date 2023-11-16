@@ -29,25 +29,19 @@ const size_t kNumPrinters = 2;
 const char kDevicePrintersContentsJson[] = R"json(
 [
   {
-    "id": "First",
+    "guid": "First",
     "display_name": "LexaPrint",
     "description": "Laser on the test shelf",
-    "manufacturer": "LexaPrint, Inc.",
-    "model": "MS610de",
     "uri": "ipp://192.168.1.5",
     "ppd_resource": {
       "effective_model": "MS610de"
     }
   }, {
-    "id": "Second",
+    "guid": "Second",
     "display_name": "Color Laser",
     "description": "The printer next to the water cooler.",
-    "manufacturer": "Printer Manufacturer",
-    "model":"Color Laser 2004",
     "uri":"ipps://print-server.intranet.example.com:443/ipp/cl2k4",
-    "uuid":"1c395fdb-5d93-4904-b246-b2c046e79d12",
     "ppd_resource":{
-      "effective_manufacturer": "MakesPrinters",
       "effective_model": "ColorLaser2k4"
     }
   }
@@ -57,7 +51,7 @@ const char kDevicePrintersContentsJson[] = R"json(
 
 class DevicePrintersExternalDataHandlerTest : public testing::Test {
  protected:
-  DevicePrintersExternalDataHandlerTest() {}
+  DevicePrintersExternalDataHandlerTest() = default;
 
   // testing::Test
   void SetUp() override {
