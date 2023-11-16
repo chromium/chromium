@@ -959,12 +959,6 @@ constexpr bool operator==(const expected<T, E>& x, const U& v) noexcept {
 }
 
 template <typename T, typename E, typename U>
-  requires(!std::is_void_v<T>)
-constexpr bool operator==(const U& v, const expected<T, E>& x) noexcept {
-  return x == v;
-}
-
-template <typename T, typename E, typename U>
 constexpr bool operator==(const expected<T, E>& x, const ok<U>& o) noexcept {
   if constexpr (std::is_void_v<T> && std::is_void_v<U>) {
     return x.has_value();
@@ -975,61 +969,10 @@ constexpr bool operator==(const expected<T, E>& x, const ok<U>& o) noexcept {
   }
 }
 
-template <typename T, typename E, typename U>
-constexpr bool operator==(const ok<U>& o, const expected<T, E>& x) noexcept {
-  return x == o;
-}
-
 template <typename T, typename E, typename G>
 constexpr bool operator==(const expected<T, E>& x,
                           const unexpected<G>& e) noexcept {
   return !x.has_value() && x.error() == e.error();
-}
-
-template <typename T, typename E, typename G>
-constexpr bool operator==(const unexpected<G>& e,
-                          const expected<T, E>& x) noexcept {
-  return x == e;
-}
-
-template <typename T, typename E, typename U, typename G>
-constexpr bool operator!=(const expected<T, E>& x,
-                          const expected<U, G>& y) noexcept {
-  return !(x == y);
-}
-
-template <typename T, typename E, typename U>
-  requires(!std::is_void_v<T>)
-constexpr bool operator!=(const expected<T, E>& x, const U& v) noexcept {
-  return !(x == v);
-}
-
-template <typename T, typename E, typename U>
-  requires(!std::is_void_v<T>)
-constexpr bool operator!=(const U& v, const expected<T, E>& x) noexcept {
-  return !(v == x);
-}
-
-template <typename T, typename E, typename U>
-constexpr bool operator!=(const expected<T, E>& x, const ok<U>& o) noexcept {
-  return !(x == o);
-}
-
-template <typename T, typename E, typename U>
-constexpr bool operator!=(const ok<U>& o, const expected<T, E>& x) noexcept {
-  return !(o == x);
-}
-
-template <typename T, typename E, typename G>
-constexpr bool operator!=(const expected<T, E>& x,
-                          const unexpected<G>& e) noexcept {
-  return !(x == e);
-}
-
-template <typename T, typename E, typename G>
-constexpr bool operator!=(const unexpected<G>& e,
-                          const expected<T, E>& x) noexcept {
-  return !(e == x);
 }
 
 }  // namespace base
