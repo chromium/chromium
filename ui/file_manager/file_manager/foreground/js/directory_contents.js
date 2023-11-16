@@ -232,7 +232,7 @@ export class SearchV2ContentScanner extends ContentScanner {
       console.warn(`Missing FileData for ${entry.toURL()}`);
       return entry;
     }
-    return fileData.entry;
+    return /** @type {DirectoryEntry} */ (fileData.entry);
   }
 
   /**

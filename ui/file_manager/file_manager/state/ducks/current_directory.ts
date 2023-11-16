@@ -94,7 +94,7 @@ function changeDirectoryReducer(currentState: State, payload: {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         tasks: [],
         policyDefaultHandlerStatus: undefined,
@@ -212,9 +212,11 @@ function updateSelectionReducer(currentState: State, payload: {
       selection.fileCount++;
     }
 
+    const metadata = fileData.metadata;
+
     // Update hostedCount to undefined if any entry doesn't have the metadata
     // yet.
-    const isHosted = fileData.metadata?.hosted;
+    const isHosted = metadata?.hosted;
     if (isHosted === undefined) {
       selection.hostedCount = undefined;
     } else {
@@ -223,15 +225,12 @@ function updateSelectionReducer(currentState: State, payload: {
       }
     }
 
-    // Update offlineCachedCount to undefined if any entry doesn't have the
-    // metadata yet.
-    const isOfflineCached = fileData.metadata?.offlineCached;
-    if (isOfflineCached === undefined) {
-      selection.offlineCachedCount = undefined;
-    } else {
-      if (selection.offlineCachedCount !== undefined && isOfflineCached) {
-        selection.offlineCachedCount++;
-      }
+    // If no availableOffline property, then assume it's available.
+    const isOfflineCached =
+        (metadata?.availableOffline === undefined ||
+         metadata?.availableOffline);
+    if (isOfflineCached) {
+      selection.offlineCachedCount++;
     }
   }
 

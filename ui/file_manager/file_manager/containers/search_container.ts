@@ -8,6 +8,7 @@ import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import type {FakeEntry} from '../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
@@ -141,8 +142,9 @@ function createRecencyOptions(state: State): XfOption[] {
 function createFileCategoryOptions(state: State): XfOption[] {
   let fileCategory = chrome.fileManagerPrivate.FileCategory.ALL;
   if (isInRecent(state.currentDirectory)) {
-    fileCategory =
-        state.allEntries[state.currentDirectory!.key].entry.fileCategory;
+    const entry =
+        state.allEntries[state.currentDirectory!.key]!.entry as FakeEntry;
+    fileCategory = entry.fileCategory!;
   }
   return [
     {

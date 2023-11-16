@@ -70,7 +70,7 @@ export function testChangeDirectoryFromEmpty() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -121,7 +121,7 @@ export function testChangeDirectoryTwice() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -160,7 +160,7 @@ export function testChangeSelection() {
       dirCount: 1,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 1,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -184,6 +184,7 @@ export function testChangeSelection() {
   want.selection.keys = [file.toURL(), subDir.toURL()];
   want.selection.dirCount = 1;
   want.selection.fileCount = 1;
+  want.selection.offlineCachedCount = 2;
   assertStateEquals(want, store.getState().currentDirectory);
 }
 
@@ -210,7 +211,7 @@ export function testChangeDirectoryContent() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -285,7 +286,7 @@ export function testComputeHasDlpDisabledFiles() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,

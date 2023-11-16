@@ -87,7 +87,7 @@ export function getEmptyState(): State {
     volumes: {},
     uiEntries: [],
     folderShortcuts: [],
-    androidApps: [],
+    androidApps: {},
     bulkPinning: undefined,
     preferences: undefined,
   };

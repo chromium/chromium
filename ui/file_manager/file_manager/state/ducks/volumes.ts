@@ -108,12 +108,13 @@ export function convertVolumeInfoAndMetadataToVolume(
 export function updateVolume(
     state: State, volumeId: VolumeId, changes: Partial<Volume>): Volume|
     undefined {
-  if (!state.volumes[volumeId]) {
+  const volume = state.volumes[volumeId];
+  if (!volume) {
     console.warn(`Volume not found in the store: ${volumeId}`);
     return;
   }
   return {
-    ...state.volumes[volumeId],
+    ...volume,
     ...changes,
   };
 }
@@ -139,7 +140,7 @@ function addVolumeReducer(currentState: State, payload: {
 
   // Update isEjectable/shouldDelayLoadingChildren fields in the FileData.
   currentState.allEntries[volumeRootKey] = {
-    ...currentState.allEntries[volumeRootKey],
+    ...currentState.allEntries[volumeRootKey]!,
     isEjectable:
         (volumeInfo.source === VolumeManagerCommon.Source.DEVICE &&
          volumeInfo.volumeType !== VolumeManagerCommon.VolumeType.MTP) ||
@@ -312,7 +313,7 @@ function addVolumeReducer(currentState: State, payload: {
     }
 
     currentState.allEntries[driveRootEntryListKey] = {
-      ...getFileData(currentState, driveRootEntryListKey),
+      ...getFileData(currentState, driveRootEntryListKey)!,
       children: driveRootFileDataChildren,
     };
     volume.prefixKey = driveFakeRoot.toURL();
@@ -375,14 +376,14 @@ function addVolumeReducer(currentState: State, payload: {
       volume.prefixKey = parentEntry.toURL();
       // For sub-partition from a removable volume, its children icon should be
       // UNKNOWN_REMOVABLE, and it shouldn't be ejectable.
-      const fileData = getFileData(currentState, volumeRootKey);
+      const fileData = getFileData(currentState, volumeRootKey)!;
       currentState.allEntries[volumeRootKey] = {
         ...fileData,
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       };
       currentState.allEntries[parentKey] = {
-        ...getFileData(currentState, parentKey),
+        ...getFileData(currentState, parentKey)!,
         // Removable devices with group, its parent should always be ejectable.
         isEjectable: true,
         children: sortEntries(parentEntry, partitionChildEntries)
@@ -490,7 +491,7 @@ function updateIsInteractiveVolumeReducer(currentState: State, payload: {
   volumeId: VolumeId,
   isInteractive: boolean,
 }): State {
-  const volumes = {
+  const volumes: typeof State['volumes'] = {
     ...currentState.volumes,
   };
 

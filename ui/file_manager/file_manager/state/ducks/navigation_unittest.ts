@@ -671,7 +671,7 @@ export async function testUpdateNavigationEntry(done: () => void) {
 
   // Expect MyFiles entry is expanded in the store.
   await waitDeepEquals(
-      store, true, (state) => state.allEntries[myFilesEntryKey].expanded);
+      store, true, (state) => state.allEntries[myFilesEntryKey]?.expanded);
 
   done();
 }

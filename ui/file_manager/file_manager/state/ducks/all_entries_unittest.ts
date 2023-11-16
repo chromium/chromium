@@ -127,7 +127,7 @@ export function testCacheEntries() {
 
   // Cache a directory via changeDirectory.
   cd(store, dir1);
-  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, dir1);
   assertTrue(resultEntry.isDirectory);
@@ -138,7 +138,7 @@ export function testCacheEntries() {
 
   // Cache a file via changeSelection.
   changeSelection(store, [file1]);
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, file1);
   assertFalse(resultEntry.isDirectory);
@@ -149,7 +149,7 @@ export function testCacheEntries() {
   const recentRoot =
       new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
   cd(store, recentRoot);
-  resultEntry = store.getState().allEntries[recentRoot.toURL()];
+  resultEntry = store.getState().allEntries[recentRoot.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, recentRoot);
   assertTrue(resultEntry.isDirectory);
@@ -162,7 +162,7 @@ export function testCacheEntries() {
           VolumeManagerCommon.VolumeType.DOWNLOADS)!;
   const volumeEntry = new VolumeEntry(volumeInfo);
   cd(store, volumeEntry);
-  resultEntry = store.getState().allEntries[volumeEntry.toURL()];
+  resultEntry = store.getState().allEntries[volumeEntry.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, volumeEntry);
   assertTrue(resultEntry.isDirectory);
@@ -183,14 +183,14 @@ export function testUpdateMetadata() {
   // Cache a directory via changeDirectory.
   cd(store, dir1);
   assertEquals(1, allEntriesSize(store.getState()));
-  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  let resultEntry = store.getState().allEntries[dir1.toURL()]!;
   assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
   // Cache a file via changeSelection.
   changeSelection(store, [file1]);
   assertEquals(2, allEntriesSize(store.getState()));
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
@@ -200,15 +200,15 @@ export function testUpdateMetadata() {
   metadata.isDlpRestricted = true;
   updMetadata(store, [{entry: file1, metadata}, {entry: file2, metadata}]);
 
-  resultEntry = store.getState().allEntries[dir1.toURL()];
+  resultEntry = store.getState().allEntries[dir1.toURL()]!;
   assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   assertTrue(!!resultEntry.metadata.isDlpRestricted);
 
-  resultEntry = store.getState().allEntries[file2.toURL()];
+  resultEntry = store.getState().allEntries[file2.toURL()]!;
   assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
   assertTrue(!!resultEntry.metadata.isDlpRestricted);
 }
@@ -255,8 +255,7 @@ export function testGetMyFilesCreateEntryList() {
   const currentState = getEmptyState();
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
   // Expect entry list is created in place.
-  const myFilesFileData: FileData =
-      currentState.allEntries[myFilesEntryListKey];
+  const myFilesFileData = currentState.allEntries[myFilesEntryListKey]!;
   assertNotEquals(undefined, myFilesFileData);
   const myFIlesEntryList = myFilesFileData.entry as EntryList;
   assertEquals(
@@ -303,7 +302,7 @@ export async function testAddChildEntries(done: () => void) {
   await waitDeepEquals(store, want1, (state) => state.allEntries);
 
   // Set shouldDelayLoadingChildren=true for /a/2.
-  store.getState().allEntries[a2Entry.toURL()].shouldDelayLoadingChildren =
+  store.getState().allEntries[a2Entry.toURL()]!.shouldDelayLoadingChildren =
       true;
   // Dispatch an action to add child entries for /a/2.
   const bEntry = fileSystem.entries['/a/2/b']!;
@@ -547,7 +546,7 @@ export async function testReadSubDirectories(done: () => void) {
     [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
     [cDirEntry.toURL()]: convertEntryToFileData(cDirEntry),
   };
-  want[downloadsEntry.toURL()].children =
+  want[downloadsEntry.toURL()]!.children =
       [aDirEntry.toURL(), cDirEntry.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
@@ -596,10 +595,10 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
     [dirEntry1.toURL()]: convertEntryToFileData(dirEntry1),
     [dirEntry2.toURL()]: convertEntryToFileData(dirEntry2),
   };
-  want[downloadsEntry.toURL()].children =
+  want[downloadsEntry.toURL()]!.children =
       [aDirEntry.toURL(), bDirEntry.toURL()];
-  want[aDirEntry.toURL()].children = [dirEntry1.toURL()];
-  want[bDirEntry.toURL()].children = [dirEntry2.toURL()];
+  want[aDirEntry.toURL()]!.children = [dirEntry1.toURL()];
+  want[bDirEntry.toURL()]!.children = [dirEntry2.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
 
@@ -711,7 +710,7 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
     [offlineEntry.toURL()]: convertEntryToFileData(offlineEntry),
     // /team_drives/ won't be here because it doesn't have children.
   };
-  want[driveRootEntryList.toURL()].children = [
+  want[driveRootEntryList.toURL()]!.children = [
     driveEntry.toURL(),
     computersEntry.toURL(),
     sharedWithMeEntry.toURL(),

@@ -216,7 +216,7 @@ export class DirectoryModel extends EventTarget {
     if (state.currentDirectory?.status === PropStatus.STARTED) {
       newURL = /** @type {string} */ (newURL);
       const entry =
-          state.allEntries[newURL] ? state.allEntries[newURL].entry : null;
+          state.allEntries[newURL] ? state.allEntries[newURL]?.entry : null;
 
       if (!entry) {
         // TODO(lucmult): Fix potential race condition in this await/then.

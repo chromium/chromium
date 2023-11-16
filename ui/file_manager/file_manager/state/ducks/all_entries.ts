@@ -86,8 +86,7 @@ function clearCachedEntriesReducer(state: State): State {
 
   // For all expanded entries, we need to keep them and all their direct
   // children.
-  for (const key of Object.keys(entries)) {
-    const fileData = entries[key];
+  for (const [key, fileData] of Object.entries(entries)) {
     if (fileData.expanded) {
       entriesToKeep.add(key);
       if (fileData.children) {
@@ -286,7 +285,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
 function appendEntry(state: State, entry: Entry|FilesAppEntry) {
   const allEntries = state.allEntries || {};
   const key = entry.toURL();
-  const existingFileData = allEntries[key] || {};
+  const existingFileData: Partial<FileData> = allEntries[key] || {};
 
   // Some client code might dispatch actions based on
   // `volume.resolveDisplayRoot()` which is a DirectoryEntry instead of a
@@ -298,7 +297,7 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
     return;
   }
 
-  const fileData = convertEntryToFileData(entry);
+  const fileData = convertEntryToFileData(entry)!;
 
   allEntries[key] = {
     ...fileData,
@@ -328,7 +327,7 @@ export function updateFileData(
     return;
   }
   const newFileData = {
-    ...state.allEntries[key],
+    ...state.allEntries[key]!,
     ...changes,
   };
   state.allEntries[key] = newFileData;
@@ -400,7 +399,7 @@ function updateMetadataReducer(currentState: State, payload: {
 
   for (const entryMetadata of payload.metadata) {
     const key = entryMetadata.entry.toURL();
-    const fileData = currentState.allEntries[key];
+    const fileData = currentState.allEntries[key]!;
     const metadata = {...fileData.metadata, ...entryMetadata.metadata};
     currentState.allEntries[key] = {
       ...fileData,
@@ -484,7 +483,7 @@ function addChildEntriesReducer(currentState: State, payload: {
   const newEntryKeys = entries.map(entry => entry.toURL());
   // Add children to the parent entry item.
   const parentFileData: FileData = {
-    ...allEntries[parentKey],
+    ...allEntries[parentKey]!,
     children: newEntryKeys,
   };
   // We mark all the children's shouldDelayLoadingChildren if the parent entry
@@ -492,7 +491,7 @@ function addChildEntriesReducer(currentState: State, payload: {
   if (parentFileData.shouldDelayLoadingChildren) {
     for (const entryKey of newEntryKeys) {
       allEntries[entryKey] = {
-        ...allEntries[entryKey],
+        ...allEntries[entryKey]!,
         shouldDelayLoadingChildren: true,
       };
     }

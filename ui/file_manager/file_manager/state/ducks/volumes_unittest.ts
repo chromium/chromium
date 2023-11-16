@@ -512,7 +512,7 @@ export async function testAddDisabledDriveVolume(done: () => void) {
     const driveVolumeEntry =
         getEntry(store.getState(), driveVolumeInfo.displayRoot.toURL()) as
         VolumeEntry;
-    const driveVolume = state.volumes[driveVolumeInfo.volumeId];
+    const driveVolume = state.volumes[driveVolumeInfo.volumeId]!;
     return driveFakeRootEntryList && driveFakeRootEntryList.disabled === true &&
         driveVolumeEntry && driveVolumeEntry.disabled === true && driveVolume &&
         driveVolume.isDisabled === true;
@@ -693,10 +693,10 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
       VolumeManagerCommon.RootType.REMOVABLE,
       partition1VolumeMetadata.devicePath);
   parentEntry.addEntry(partition1VolumeEntry);
-  initialState.volumes[partition1Volume.volumeId].prefixKey =
+  initialState.volumes[partition1Volume.volumeId]!.prefixKey =
       parentEntry.toURL();
   parentEntry.addEntry(partition2VolumeEntry);
-  initialState.volumes[partition2Volume.volumeId].prefixKey =
+  initialState.volumes[partition2Volume.volumeId]!.prefixKey =
       parentEntry.toURL();
   const parentFileData = convertEntryToFileData(parentEntry);
   parentFileData.children =

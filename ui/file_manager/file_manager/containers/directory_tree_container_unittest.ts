@@ -177,6 +177,7 @@ function addAndroidAppToStore(state: State) {
     packageName: 'com.test.app1',
     activityName: 'Activity1',
     iconSet: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
+    icon: '',
   };
 }
 

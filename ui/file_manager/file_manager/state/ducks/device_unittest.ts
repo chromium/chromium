@@ -42,7 +42,7 @@ export async function testUpdateDeviceConnection(done: () => void) {
   assertEquals(
       chrome.fileManagerPrivate.DeviceConnectionState.ONLINE,
       store.getState().device.connection);
-  assertFalse(store.getState().volumes[odfsVolume.volumeId].isDisabled);
+  assertFalse(store.getState().volumes[odfsVolume.volumeId]!.isDisabled);
   assertFalse(odfsVolumeFileData.disabled);
   assertFalse(odfsVolumeEntry.disabled);
 

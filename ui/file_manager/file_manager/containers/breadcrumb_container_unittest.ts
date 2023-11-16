@@ -44,7 +44,7 @@ export function testPathWithSlash(done: () => void) {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,

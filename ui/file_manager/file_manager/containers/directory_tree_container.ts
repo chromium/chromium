@@ -199,7 +199,7 @@ export class DirectoryTreeContainer {
     // FileData/AndroidAppData changes in the store, re-render the corresponding
     // navigation item.
     for (const [key, {fileData, androidAppData}] of this.navigationRootMap_) {
-      const newAndroidAppData = androidApps[key];
+      const newAndroidAppData = androidApps[key]!;
       const navigationRoot = this.navigationRoots_.find(
           navigationRoot => navigationRoot.key === key)!;
       if (navigationRoot.type === NavigationType.ANDROID_APPS) {
@@ -261,7 +261,7 @@ export class DirectoryTreeContainer {
       }
       const isAndroidApp = navigationRoot.type === NavigationType.ANDROID_APPS;
       const fileData = getFileData(state, navigationRoot.key);
-      const androidAppData = androidApps[navigationRoot.key];
+      const androidAppData = androidApps[navigationRoot.key]!;
       // The states here might be lost after `insertBefore`, we need to store
       // it here and restore it later if needed.
       const isFocused = document.activeElement === navigationRootItem;

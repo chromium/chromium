@@ -20,7 +20,7 @@ export class MetadataModelInterface {
 
   /**
    * Obtains metadata cache for entries.
-   * @param {!Array<!Entry>} entries Entries.
+   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
    * @param {!Array<string>} names Metadata property names to be obtained.
    * @return {!Array<!MetadataItem>}
    */
