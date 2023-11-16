@@ -316,6 +316,7 @@ class BASE_EXPORT TimeDelta {
   }
 
   // Comparison operators.
+  friend constexpr bool operator==(TimeDelta, TimeDelta) = default;
   friend constexpr std::strong_ordering operator<=>(TimeDelta,
                                                     TimeDelta) = default;
 
@@ -467,9 +468,9 @@ class TimeBase {
   }
 
   // Comparison operators
-  friend constexpr std::strong_ordering operator<=>(
-      const TimeBase<TimeClass>&,
-      const TimeBase<TimeClass>&) = default;
+  friend constexpr bool operator==(const TimeBase&, const TimeBase&) = default;
+  friend constexpr std::strong_ordering operator<=>(const TimeBase&,
+                                                    const TimeBase&) = default;
 
  protected:
   constexpr explicit TimeBase(int64_t us) : us_(us) {}
