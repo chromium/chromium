@@ -40,14 +40,9 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
   if (!web_frame) {
     return throttles;
   }
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromWebFrame(web_frame);
-  if (!render_frame) {
-    return throttles;
-  }
   auto rules = content_renderer_client_
-                   ->GetWebEngineRenderFrameObserverForRenderFrameId(
-                       render_frame->GetRoutingID())
+                   ->GetWebEngineRenderFrameObserverForFrameToken(
+                       local_frame_token.value())
                    ->url_request_rules_receiver()
                    ->GetCachedRules();
   if (rules) {
