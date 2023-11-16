@@ -212,7 +212,7 @@
     Looking for available eSIM profiles
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
-   This may cause your mobile network to disconnect for a few minutes.
+   This may cause your mobile network to disconnect for a few minutes
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_DISCOVERY_PAGE_TITLE" desc="Title message informing user that they can choose a profile from the list below to download.">
     Choose an eSIM profile to download
