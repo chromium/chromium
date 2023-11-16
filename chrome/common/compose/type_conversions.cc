@@ -35,7 +35,7 @@ optimization_guide::proto::ComposeTone ComposeTone(compose::mojom::Tone tone) {
 }
 
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   if (result.has_value()) {
     return compose::mojom::ComposeStatus::kOk;
   }

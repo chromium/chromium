@@ -61,6 +61,46 @@ class MockModelExecutor
                    callback));
 };
 
+class MockSession
+    : public optimization_guide::OptimizationGuideModelExecutor::Session {
+ public:
+  MOCK_METHOD(void, SetDisconnectHandler, (base::OnceClosure on_disconnect));
+  MOCK_METHOD(void,
+              AddContext,
+              (const google::protobuf::MessageLite& request_metadata));
+  MOCK_METHOD(
+      void,
+      ExecuteModel,
+      (const google::protobuf::MessageLite& request_metadata,
+       optimization_guide::
+           OptimizationGuideModelExecutionResultStreamingCallback callback));
+};
+
+// A wrapper that passes through calls to the underlying MockSession. Allows for
+// easily mocking calls with a single session object.
+class MockSessionWrapper
+    : public optimization_guide::OptimizationGuideModelExecutor::Session {
+ public:
+  explicit MockSessionWrapper(MockSession& session) : session_(session) {}
+
+  void SetDisconnectHandler(base::OnceClosure on_disconnect) override {
+    session_->SetDisconnectHandler(std::move(on_disconnect));
+  }
+  void AddContext(
+      const google::protobuf::MessageLite& request_metadata) override {
+    session_->AddContext(request_metadata);
+  }
+  void ExecuteModel(
+      const google::protobuf::MessageLite& request_metadata,
+      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+          callback) override {
+    session_->ExecuteModel(request_metadata, std::move(callback));
+  }
+
+ private:
+  raw_ref<MockSession> session_;
+};
+
 class MockComposeDialog : public compose::mojom::ComposeDialog {
  public:
   MOCK_METHOD(void,
@@ -84,10 +124,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
 
-    ON_CALL(model_executor(), ExecuteModel(_, _, _))
-        .WillByDefault(testing::WithArg<2>(testing::Invoke(
+    ON_CALL(model_executor_, StartSession(_)).WillByDefault([&] {
+      return std::make_unique<MockSessionWrapper>(session());
+    });
+    ON_CALL(session(), ExecuteModel(_, _))
+        .WillByDefault(testing::WithArg<1>(testing::Invoke(
             [&](optimization_guide::
-                    OptimizationGuideModelExecutionResultCallback callback) {
+                    OptimizationGuideModelExecutionResultStreamingCallback
+                        callback) {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(std::move(callback),
@@ -144,7 +188,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   ChromeComposeClient& client() { return *client_; }
-  MockModelExecutor& model_executor() { return model_executor_; }
+  MockSession& session() { return session_; }
 
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
   autofill::FormFieldData& field_data() { return field_data_; }
@@ -180,20 +224,22 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  optimization_guide::proto::ComposeRequest ComposeRequest(
-      std::string user_input) {
+  optimization_guide::proto::ComposePageMetadata ComposePageMetadata() {
     optimization_guide::proto::ComposePageMetadata page_metadata;
     page_metadata.set_page_url(GetPageUrl().spec());
     page_metadata.set_page_title(base::UTF16ToUTF8(
         browser()->tab_strip_model()->GetWebContentsAt(0)->GetTitle()));
+    return page_metadata;
+  }
 
+  optimization_guide::proto::ComposeRequest ComposeRequest(
+      std::string user_input) {
     optimization_guide::proto::ComposeRequest request;
     request.set_user_input(user_input);
     request.set_tone(
         optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
     request.set_length(
         optimization_guide::proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
-    *request.mutable_page_metadata() = std::move(page_metadata);
 
     optimization_guide::proto::ComposeRequest::GenerateParams generate_params;
     generate_params.set_user_input(user_input);
@@ -210,12 +256,16 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return response;
   }
 
-  optimization_guide::proto::Any OptimizationGuideResponse(
-      const optimization_guide::proto::ComposeResponse compose_response) {
+  optimization_guide::StreamingResponse OptimizationGuideResponse(
+      const optimization_guide::proto::ComposeResponse compose_response,
+      bool is_complete = true) {
     optimization_guide::proto::Any any;
     any.set_type_url(kTypeURL);
     compose_response.SerializeToString(any.mutable_value());
-    return any;
+    return optimization_guide::StreamingResponse{
+        .response = any,
+        .is_complete = is_complete,
+    };
   }
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
@@ -225,6 +275,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  private:
   raw_ptr<ChromeComposeClient> client_;
   testing::NiceMock<MockModelExecutor> model_executor_;
+  testing::NiceMock<MockSession> session_;
   testing::NiceMock<MockComposeDialog> compose_dialog_;
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
@@ -239,10 +290,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
   ShowDialogAndBindMojo();
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -273,14 +325,141 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 0);
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      optimization_guide::features::kOptimizationGuideOnDeviceModel);
+  base::HistogramTester histogram_tester;
+
+  const std::string input = "a user typed this";
+  optimization_guide::proto::ComposeRequest context_request;
+  *context_request.mutable_page_metadata() = ComposePageMetadata();
+  EXPECT_CALL(session(), AddContext(EqualsProto(context_request)));
+  EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input)), _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            // Start with a partial response.
+            callback.Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
+                                          /*is_complete=*/false),
+                nullptr);
+            // Then send the full response.
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback),
+                               OptimizationGuideResponse(
+                                   ComposeResponse(true, "Cucumbers")),
+                               nullptr));
+          })));
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), input, /*rewrite=*/false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucu", result->result);
+
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+
+  // Check that a single response result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+                                      compose::mojom::ComposeStatus::kOk, 1);
+  // Check that a single response duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
+  // Check that no response duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      optimization_guide::features::kOptimizationGuideOnDeviceModel);
+  base::HistogramTester histogram_tester;
+
+  const std::string input = "a user typed this";
+  const std::string input2 = "another input";
+  optimization_guide::proto::ComposeRequest context_request;
+  *context_request.mutable_page_metadata() = ComposePageMetadata();
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      original_callback;
+  EXPECT_CALL(session(), AddContext(EqualsProto(context_request)));
+  EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input)), _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            // Save the callback to call later.
+            original_callback = callback;
+            // Start with a partial response.
+            callback.Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
+                                          /*is_complete=*/false),
+                nullptr);
+          })));
+  EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input2)), _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            // First call the original callback. This should be ignored.
+            original_callback.Run(
+                OptimizationGuideResponse(ComposeResponse(true, "old")),
+                nullptr);
+            // Start with a partial response.
+            callback.Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
+          })));
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), input,
+                          /*rewrite=*/false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucu", result->result);
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), input2,
+                          /*rewrite=*/false);
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+
+  // Check that a single response result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+                                      compose::mojom::ComposeStatus::kOk, 1);
+  // Check that a single response duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
+  // Check that no response duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto matcher = EqualsProto(ComposeRequest(user_input));
-  EXPECT_CALL(model_executor(), ExecuteModel(_, matcher, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -303,10 +482,11 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
 
 TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
   ShowDialogAndBindMojo();
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 base::unexpected(
                     optimization_guide::OptimizationGuideModelExecutionError::
@@ -336,12 +516,13 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
 // response. In this case the response will be absl::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   ShowDialogAndBindMojo();
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            optimization_guide::proto::Any any;
-            std::move(callback).Run(base::ok(any), nullptr);
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(optimization_guide::StreamingResponse(),
+                                    nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -377,7 +558,7 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
 
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
@@ -398,7 +579,7 @@ TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
   client().SetModelExecutorForTest(nullptr);
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
       .WillOnce(
@@ -417,10 +598,11 @@ TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
 TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -479,10 +661,11 @@ TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
 // Tests that same saved WebUI state is returned after compose().
 TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
   ShowDialogAndBindMojo();
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -516,10 +699,11 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
   // URL.
   BindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -759,10 +943,11 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
   base::test::TestFuture<const std::u16string&> accept_callback;
   ShowDialogAndBindMojo(accept_callback.GetCallback());
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
@@ -932,7 +1117,7 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {
   base::test::TestFuture<void> execute_model_future;
   // Make model execution hang
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+  EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
 
   std::u16string selected_text = u"ŧëśŧĩňĝ âľpħâ ƅřâɤō ĉħâŗľĩë";
@@ -957,7 +1142,7 @@ TEST_F(ChromeComposeClientTest, TestAutoCompose) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   std::u16string words(compose::GetComposeConfig().input_max_chars - 3, u'a');
   words += u" b c";
@@ -974,7 +1159,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooFewWords) {
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
   std::u16string words(40, u'a');
   words += u" b";
   SetSelection(words);
@@ -987,7 +1172,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooFewWords) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooManyWords) {
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   std::u16string words = u"b";
   // Words should be the max plus 1.
@@ -1004,7 +1189,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooManyWords) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1022,7 +1207,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
 }
 
 TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
   SetSelection(u"a");  // too short to cause auto compose.
 
   ShowDialogAndBindMojo();
@@ -1042,7 +1227,7 @@ TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   base::test::TestFuture<void> execute_model_future;
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+  EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
 
   SetSelection(u"a");  // too short to cause auto compose.

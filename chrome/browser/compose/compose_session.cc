@@ -84,6 +84,11 @@ ComposeSession::ComposeSession(
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
   current_state_->style = compose::mojom::StyleModifiers::New();
+  if (executor_) {
+    session_ = executor_->StartSession(
+        optimization_guide::proto::ModelExecutionFeature::
+            MODEL_EXECUTION_FEATURE_COMPOSE);
+  }
 }
 
 ComposeSession::~ComposeSession() {
@@ -120,7 +125,7 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
   current_state_->has_pending_request = true;
   current_state_->style = std::move(style);
   // TODO(b/300974056): Move this to the overall feature-enabled check.
-  if (!executor_ ||
+  if (!session_ ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
@@ -131,23 +136,22 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
   compose_count_ += 1;
 
   if (skip_inner_text_ || inner_text_.has_value()) {
-    ComposeWithInnerText(input, rewrite, inner_text_.value_or(""));
+    ComposeWithSession(input, rewrite);
   } else {
     // Prepare the compose call, which will be invoked when inner text
     // extraction is completed.
     continue_compose_ =
-        base::BindOnce(&ComposeSession::ComposeWithInnerText,
+        base::BindOnce(&ComposeSession::ComposeWithSession,
                        weak_ptr_factory_.GetWeakPtr(), input, rewrite);
   }
 }
 
-void ComposeSession::ComposeWithInnerText(const std::string& input,
-                                          bool rewrite,
-                                          const std::string& inner_text) {
-  optimization_guide::proto::ComposePageMetadata page_metadata;
-  page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
-  page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
-  page_metadata.set_page_inner_text(inner_text);
+void ComposeSession::ComposeWithSession(const std::string& input,
+                                        bool rewrite) {
+  if (skip_inner_text_) {
+    // Make sure context is added for sessions with no inner text.
+    AddPageContentToSession("");
+  }
 
   optimization_guide::proto::ComposeRequest request;
   // TODO(b/310022952) Remove once backend handles new generate and rewrite
@@ -176,20 +180,24 @@ void ComposeSession::ComposeWithInnerText(const std::string& input,
     *request.mutable_generate_params() = std::move(generate_params);
   }
 
-  *request.mutable_page_metadata() = std::move(page_metadata);
   base::TimeTicks request_start = base::TimeTicks::Now();
-  executor_->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE,
-      request,
-      base::BindOnce(&ComposeSession::ModelExecutionCallback,
-                     weak_ptr_factory_.GetWeakPtr(), request_start));
+  request_id_++;
+  session_->ExecuteModel(
+      request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   request_start, request_id_));
 }
 
 void ComposeSession::ModelExecutionCallback(
     base::TimeTicks request_start,
-    optimization_guide::OptimizationGuideModelExecutionResult result,
+    int request_id,
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  // A new request has been issued, ignore this one.
+  if (request_id != request_id_) {
+    return;
+  }
+
   base::TimeDelta request_delta = base::TimeTicks::Now() - request_start;
   current_state_->has_pending_request = false;
 
@@ -203,7 +211,7 @@ void ComposeSession::ModelExecutionCallback(
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.value());
+      optimization_guide::proto::ComposeResponse>(result->response);
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
@@ -211,15 +219,21 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
-  // Log successful response status.
-  LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
-  compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
+  DCHECK(result->is_complete ||
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kOptimizationGuideOnDeviceModel));
 
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
   current_state_->response = ui_response->Clone();
-  SaveLastOKStateToUndoStack();
+  if (result->is_complete) {
+    // Log successful response status.
+    LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
+    compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
+
+    SaveLastOKStateToUndoStack();
+  }
   ui_response->undo_available = !undo_states_.empty();
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(std::move(ui_response));
@@ -340,11 +354,27 @@ void ComposeSession::SaveLastOKStateToUndoStack() {
   last_ok_state_ = current_state_->Clone();
 }
 
+void ComposeSession::AddPageContentToSession(const std::string& inner_text) {
+  if (!session_) {
+    return;
+  }
+  optimization_guide::proto::ComposePageMetadata page_metadata;
+  page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
+  page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
+  page_metadata.set_page_inner_text(inner_text);
+
+  optimization_guide::proto::ComposeRequest request;
+  *request.mutable_page_metadata() = std::move(page_metadata);
+
+  session_->AddContext(request);
+}
+
 void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
     const std::string& inner_text) {
   inner_text_ = inner_text;
+  AddPageContentToSession(inner_text);
   if (!continue_compose_.is_null()) {
-    std::move(continue_compose_).Run(inner_text);
+    std::move(continue_compose_).Run();
   }
 }
 

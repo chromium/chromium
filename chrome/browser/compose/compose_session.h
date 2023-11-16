@@ -112,14 +112,15 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
       base::TimeTicks request_start,
-      optimization_guide::OptimizationGuideModelExecutionResult result,
+      int request_id,
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  // Adds page content to the session context.
+  void AddPageContentToSession(const std::string& inner_text);
 
-  // ComposeWithInnerText can either be called synchronously or on a later event
+  // ComposeWithSession can either be called synchronously or on a later event
   // loop
-  void ComposeWithInnerText(const std::string& input,
-                            bool rewrite,
-                            const std::string& inner_text);
+  void ComposeWithSession(const std::string& input, bool rewrite);
 
   void UpdateInnerTextAndContinueComposeIfNecessary(
       const std::string& inner_text);
@@ -155,6 +156,13 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
 
+  // A session which allows for building context and streaming output.
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session_;
+  // This is incremented every request to avoid handling responses from previous
+  // requests.
+  int request_id_ = 0;
+
   bool skip_inner_text_ = false;
 
   // Logging counters.
@@ -165,7 +173,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   InnerTextExtractor inner_text_extractor_;
   std::optional<std::string> inner_text_;
 
-  base::OnceCallback<void(const std::string&)> continue_compose_;
+  base::OnceClosure continue_compose_;
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
 

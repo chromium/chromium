@@ -14,7 +14,8 @@ using Status = compose::mojom::ComposeStatus;
 
 TEST(ComposeTypeConversions, OptimizationGuideHasResult) {
   Status result = ComposeStatusFromOptimizationGuideResult(
-      Result(optimization_guide::proto::Any()));
+      optimization_guide::StreamingResponse{
+          .response = optimization_guide::proto::Any()});
   ASSERT_EQ(Status::kOk, result);
 }
 

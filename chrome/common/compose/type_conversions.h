@@ -13,6 +13,6 @@ optimization_guide::proto::ComposeLength ComposeLength(
     compose::mojom::Length length);
 optimization_guide::proto::ComposeTone ComposeTone(compose::mojom::Tone tone);
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    optimization_guide::OptimizationGuideModelExecutionResult result);
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result);
 
 #endif  // CHROME_COMMON_COMPOSE_TYPE_CONVERSIONS_H_
