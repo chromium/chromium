@@ -35,6 +35,8 @@ chromium-metrics-reviews@google.com.
   <variant name="InfobarTypeAutofillAddressProfile"
       summary="Recorded for Autofill Address Infobar."/>
   <variant name="InfobarTypeConfirm" summary="Recorded for Confirm Messages."/>
+  <variant name="InfobarTypeParcelTracking"
+      summary="Recorded for Parcel Tracking Infobar."/>
   <variant name="InfobarTypePasswordSave"
       summary="Recorded for Save Password Infobar."/>
   <variant name="InfobarTypePasswordUpdate"
