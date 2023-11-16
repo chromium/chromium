@@ -6,7 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeHelpContentList, fakeSearchRequest, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {HelpContentList, SearchResponse} from 'chrome://os-feedback/feedback_types.js';
+import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
+import {SearchResponse} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 

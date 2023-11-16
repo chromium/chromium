@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {HelpContentProviderInterface, SearchRequest, SearchResponse} from './feedback_types.js';
+import {HelpContentProviderInterface, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview

@@ -6,8 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {FeedbackServiceProviderInterface, HelpContentProviderInterface} from 'chrome://os-feedback/feedback_types.js';
 import {getFeedbackServiceProvider, getHelpContentProvider, setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {FeedbackServiceProviderInterface, HelpContentProviderInterface} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeMojoProviderTestSuite', () => {

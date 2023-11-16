@@ -4,20 +4,21 @@
 
 import './help_resources_icons.js';
 import './strings.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';
+import {SearchResult} from './feedback_types.js';
+import {HelpContent, HelpContentType} from './os_feedback_ui.mojom-webui.js';
 
 
 /**

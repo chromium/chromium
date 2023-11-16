@@ -4,9 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {fakeFeedbackContext} from './fake_data.js';
-import {FakeFeedbackServiceProvider} from './fake_feedback_service_provider.js';
-import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
+import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview

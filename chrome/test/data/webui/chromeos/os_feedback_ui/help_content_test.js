@@ -5,8 +5,9 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeHelpContentList, fakePopularHelpContentList} from 'chrome://os-feedback/fake_data.js';
-import {HelpContentList, HelpContentType, SearchResult} from 'chrome://os-feedback/feedback_types.js';
+import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
 import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
+import {HelpContentType} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

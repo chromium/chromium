@@ -14,9 +14,9 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * The host of untrusted child page.

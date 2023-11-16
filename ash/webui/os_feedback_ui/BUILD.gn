@@ -32,7 +32,3 @@ static_library("os_feedback_ui") {
     "//ui/webui",
   ]
 }
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
-}
