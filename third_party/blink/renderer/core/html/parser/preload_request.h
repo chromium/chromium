@@ -151,8 +151,8 @@ class CORE_EXPORT PreloadRequest {
     is_potentially_lcp_influencer_ = flag;
   }
 
-  void SetSharedStorageWritable(bool eligible) {
-    shared_storage_writable_ = eligible;
+  void SetSharedStorageWritableOptedIn(bool opted_in) {
+    shared_storage_writable_opted_in_ = opted_in;
   }
 
   bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
@@ -212,7 +212,7 @@ class CORE_EXPORT PreloadRequest {
   bool is_attribution_reporting_eligible_img_or_script_ = false;
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
-  bool shared_storage_writable_ = false;
+  bool shared_storage_writable_opted_in_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

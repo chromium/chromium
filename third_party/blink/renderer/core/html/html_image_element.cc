@@ -397,6 +397,12 @@ void HTMLImageElement::ParseAttribute(
           mojom::blink::ConsoleMessageLevel::kError,
           WebString::FromUTF8("sharedStorageWritable: sharedStorage operations "
                               "are only available in secure contexts.")));
+    } else if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          WebString::FromUTF8("sharedStorageWritable: sharedStorage operations "
+                              "are not available for opaque origins.")));
     } else if (!params.new_value.IsNull()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kSharedStorageAPI_Image_Attribute);
