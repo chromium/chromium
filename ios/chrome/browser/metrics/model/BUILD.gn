@@ -27,3 +27,14 @@ source_set("model") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("eg_test_support+eg2") {
+  testonly = true
+  sources = [ "metrics_app_interface.h" ]
+  public_deps = [ "//ios/chrome/browser/metrics:eg_test_support+eg2" ]
+}
+
+source_set("metrics_internal") {
+  sources = [ "new_tab_page_uma.h" ]
+  public_deps = [ "//ios/chrome/browser/metrics:metrics_internal" ]
+}
