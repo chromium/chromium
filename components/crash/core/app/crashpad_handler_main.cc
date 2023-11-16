@@ -19,9 +19,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-#include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
-#include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"
-#include "components/allocation_recorder/crash_handler/user_stream_data_source.h"
+#include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"  // nogncheck
+#include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"  // nogncheck
+#include "components/allocation_recorder/crash_handler/user_stream_data_source.h"  // nogncheck
 #endif
 
 extern "C" {

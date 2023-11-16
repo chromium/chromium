@@ -23,6 +23,7 @@ import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/allocation_recorder/testing/testing.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
@@ -1421,6 +1422,11 @@ if (is_android) {
         "//chrome/android/features/dev_ui:java",
         "//chrome/android/modules/dev_ui/provider:java",
       ]
+    }
+
+    if (enable_allocation_trace_recorder_integration_tests) {
+      sources += [ "../browser/allocation_recorder_browsertest.cc" ]
+      deps += [ "//components/allocation_recorder/testing" ]
     }
   }
 
@@ -2924,6 +2930,11 @@ if (!is_android) {
         "//components/services/screen_ai:test_support",
         "//components/services/screen_ai/public/mojom",
       ]
+    }
+
+    if (enable_allocation_trace_recorder_integration_tests) {
+      sources += [ "../browser/allocation_recorder_browsertest.cc" ]
+      deps += [ "//components/allocation_recorder/testing" ]
     }
 
     if (!is_chromeos_lacros) {
