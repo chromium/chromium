@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
@@ -64,32 +65,27 @@ class DefaultIntentPickerBrowserTest
     return IntentPickerBubbleView::intent_picker_bubble();
   }
 
-  void NavigateViaLinkClick(Browser* browser,
-                            const GURL& url,
-                            LinkTarget link_target = LinkTarget::SELF) {
-    ClickLinkAndWait(GetWebContents(), url, link_target, std::string());
-  }
-
-  bool AwaitIntentPickerTabHelperIconUpdateComplete() {
+  testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete() {
     base::test::TestFuture<void> future;
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
     tab_helper->SetIconUpdateCallbackForTesting(  // IN-TEST
         future.GetCallback(), /*include_latest_navigation=*/true);
     if (!future.Wait()) {
-      ADD_FAILURE() << "Intent picker app did not resolve an applicable app.";
-      return false;
+      return testing::AssertionFailure()
+             << "Intent picker app did not resolve an applicable app.";
     }
-    return true;
+    return testing::AssertionSuccess();
   }
 
-  bool WaitForIntentPickerToShow() {
-    if (!AwaitIntentPickerTabHelperIconUpdateComplete()) {
-      return false;
+  testing::AssertionResult WaitForIntentPickerToShow() {
+    auto result = AwaitIntentPickerTabHelperIconUpdateComplete();
+    if (!result) {
+      return result;
     }
     IntentChipButton* intent_picker_icon = GetIntentPickerIcon();
     if (!intent_picker_icon) {
-      ADD_FAILURE() << "Intent picker icon does not exist.";
-      return false;
+      return testing::AssertionFailure()
+             << "Intent picker icon does not exist.";
     }
 
     if (!intent_picker_icon->GetVisible()) {
@@ -97,30 +93,31 @@ class DefaultIntentPickerBrowserTest
           intent_picker_icon);
       intent_chip_visibility_observer.WaitForChipToBeVisible();
       if (!intent_picker_icon->GetVisible()) {
-        ADD_FAILURE() << "Intent picker icon never became visible.";
-        return false;
+        return testing::AssertionFailure()
+               << "Intent picker icon never became visible.";
       }
     }
-    EXPECT_TRUE(intent_picker_icon->GetVisible());
 
-    return true;
+    return testing::AssertionSuccess();
   }
 
-  bool ClickIntentPickerChip() {
-    if (!WaitForIntentPickerToShow()) {
-      return false;
+  testing::AssertionResult ClickIntentPickerChip() {
+    auto result = WaitForIntentPickerToShow();
+    if (!result) {
+      return result;
     }
 
     views::test::ButtonTestApi test_api(GetIntentPickerIcon());
     test_api.NotifyClick(ui::MouseEvent(
         ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-    return true;
+    return testing::AssertionSuccess();
   }
 
-  bool ClickIntentPickerAndWaitForBubble() {
-    if (!WaitForIntentPickerToShow()) {
-      return false;
+  testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
+    auto result = WaitForIntentPickerToShow();
+    if (!result) {
+      return result;
     }
 
     views::NamedWidgetShownWaiter intent_picker_bubble_shown(
@@ -132,13 +129,13 @@ class DefaultIntentPickerBrowserTest
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
     if (!intent_picker_bubble_shown.WaitIfNeededAndGet()) {
-      ADD_FAILURE() << "Intent picker bubble did not appear after click.";
-      return false;
+      return testing::AssertionFailure()
+             << "Intent picker bubble did not appear after click.";
     }
 
     EXPECT_NE(intent_picker_bubble(), nullptr)
         << "intent picker not initialized";
-    return true;
+    return testing::AssertionSuccess();
   }
 
   size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
@@ -192,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
                        IntentPickerBubbleAcceptCorrectActions) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
-  NavigateViaLinkClick(browser(), GetNestedPageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
   EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
 
   base::UserActionTester user_action_tester;
@@ -226,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
                        IntentPickerBubbleCancel) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
-  NavigateViaLinkClick(browser(), GetNestedPageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
   intent_picker_bubble()->CancelDialog();
@@ -241,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
                        IntentPickerBubbleIgnored) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
-  NavigateViaLinkClick(browser(), GetNestedPageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
   // Opening a new tab should ignore the current intent picker view.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -25,10 +26,10 @@ class LinkCapturingJobTest : public WebAppTest,
   const GURL kTestAppCapturablePage = GURL("https://example.com/page.html");
 
   LinkCapturingJobTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing,
-        {{features::kLinksCapturedByDefault.name,
-          (GetParam() ? "true" : "false")}});
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            /*override_captures_by_default=*/GetParam()),
+        {});
   }
   ~LinkCapturingJobTest() override = default;
 

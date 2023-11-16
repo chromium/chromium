@@ -116,18 +116,11 @@ class WebAppNavigationBrowserTest : public WebAppControllerBrowserTest {
   // Navigates the active tab in |browser| to the launching page.
   void NavigateToLaunchingPage(Browser* browser);
 
-  // Checks that no new windows are opened after running |action| and that the
-  // existing |browser| window is still the active one and navigated to
-  // |target_url|. Returns true if there were no errors.
-  bool TestActionDoesNotOpenAppWindow(Browser* browser,
-                                      const GURL& target_url,
-                                      base::OnceClosure action);
-
-  // Checks that no new windows are opened after running |action| and that the
-  // main browser window is still the active one and navigated to |target_url|.
-  // Returns true if there were no errors.
-  bool TestTabActionDoesNotOpenAppWindow(const GURL& target_url,
-                                         base::OnceClosure action);
+  // Checks that no new windows are opened after clicking on a link to the given
+  // `target_url` in the current active web contents of the `browser`.
+  bool ExpectLinkClickNotCapturedIntoAppBrowser(Browser* browser,
+                                                const GURL& target_url,
+                                                const std::string& rel = "");
 
   net::EmbeddedTestServer& https_server() { return https_server_; }
 
