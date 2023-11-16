@@ -212,8 +212,7 @@ void PersistentWindowController::OnDidProcessDisplayChanges(
 
   if (display::Screen::GetScreen()) {
     for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-      is_landscape_orientation_map_[display.id()] =
-          chromeos::IsDisplayLayoutHorizontal(display);
+      is_landscape_orientation_map_[display.id()] = display.is_landscape();
     }
   }
 }
@@ -224,8 +223,7 @@ void PersistentWindowController::OnFirstSessionStarted() {
   }
 
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    is_landscape_orientation_map_[display.id()] =
-        chromeos::IsDisplayLayoutHorizontal(display);
+    is_landscape_orientation_map_[display.id()] = display.is_landscape();
   }
 }
 
@@ -333,8 +331,8 @@ void PersistentWindowController::
     // `kLandscapeSecondary` will be treated the same in this case since
     // window's bounds should be the same in each landscape orientation. Same
     // for portrait screen orientation.
-    if (chromeos::IsDisplayLayoutHorizontal(display_manager->GetDisplayForId(
-            display_id)) == info->is_landscape()) {
+    if (display_manager->GetDisplayForId(display_id).is_landscape() ==
+        info->is_landscape()) {
       window->SetBounds(info->window_bounds_in_screen());
       ++window_restored_count;
     }

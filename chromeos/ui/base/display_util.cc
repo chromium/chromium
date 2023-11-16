@@ -14,7 +14,7 @@ OrientationType GetDisplayNaturalOrientation(const display::Display& display) {
   // width > height for ROTATE_90 and ROTATE_270 indicates portrait layout at
   // ROTATE_0 which is the natural orientation.
   display::Display::Rotation rotation = display.rotation();
-  bool is_landscape = display.size().width() > display.size().height();
+  bool is_landscape = display.is_landscape();
   if (rotation == display::Display::ROTATE_90 ||
       rotation == display::Display::ROTATE_270) {
     is_landscape = !is_landscape;
@@ -107,11 +107,6 @@ bool IsPortraitOrientation(OrientationType type) {
   return type == OrientationType::kPortrait ||
          type == OrientationType::kPortraitPrimary ||
          type == OrientationType::kPortraitSecondary;
-}
-
-bool IsDisplayLayoutHorizontal(const display::Display& display) {
-  DCHECK(display.is_valid());
-  return display.size().width() > display.size().height();
 }
 
 bool IsDisplayLayoutPrimary(const display::Display& display) {

@@ -604,8 +604,9 @@ void DefaultState::UpdateBoundsFromState(
           window_state->window(), state_type_, *window_state->snap_ratio());
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
-          chromeos::IsDisplayLayoutHorizontal(
-              display::Screen::GetScreen()->GetDisplayNearestWindow(window))
+          display::Screen::GetScreen()
+                  ->GetDisplayNearestWindow(window)
+                  .is_landscape()
               ? SplitViewMetricsController::DeviceOrientation::kLandscape
               : SplitViewMetricsController::DeviceOrientation::kPortrait);
       break;

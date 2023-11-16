@@ -606,17 +606,16 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
 }
 
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
-  const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          frame_->GetNativeWindow()));
+  const bool is_landscape =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(frame_->GetNativeWindow())
+          .is_landscape();
   SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
-                 is_horizontal_display
-                     ? chromeos::kWindowControlLeftSnappedIcon
-                     : chromeos::kWindowControlTopSnappedIcon);
+                 is_landscape ? chromeos::kWindowControlLeftSnappedIcon
+                              : chromeos::kWindowControlTopSnappedIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
-                 is_horizontal_display
-                     ? chromeos::kWindowControlRightSnappedIcon
-                     : chromeos::kWindowControlBottomSnappedIcon);
+                 is_landscape ? chromeos::kWindowControlRightSnappedIcon
+                              : chromeos::kWindowControlBottomSnappedIcon);
 }
 
 void FrameCaptionButtonContainerView::UpdateFloatButton() {

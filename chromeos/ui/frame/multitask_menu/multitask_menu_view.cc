@@ -191,8 +191,9 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
 
   // The display orientation. This determines whether menu is in
   // landscape/portrait mode.
-  const bool is_portrait_mode = !chromeos::IsDisplayLayoutHorizontal(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+  const bool is_portrait_mode = !display::Screen::GetScreen()
+                                     ->GetDisplayNearestWindow(window)
+                                     .is_landscape();
 
   // Half button.
   if (buttons & kHalfSplit) {
@@ -344,9 +345,9 @@ bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     // Update the visual appearance of the split buttons. The callbacks will be
     // updated in `PartialButtonPressed()`.
     partial_button_->UpdateButtons(/*is_portrait_mode=*/
-                                   !chromeos::IsDisplayLayoutHorizontal(
-                                       display::Screen::GetScreen()
-                                           ->GetDisplayNearestWindow(window_)),
+                                   !display::Screen::GetScreen()
+                                        ->GetDisplayNearestWindow(window_)
+                                        .is_landscape(),
                                    is_reversed_);
   }
 

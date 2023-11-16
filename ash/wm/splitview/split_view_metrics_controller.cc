@@ -145,7 +145,7 @@ std::string GetHistogramNameWithDeviceUIMode(std::string prefix) {
 
 SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
     const display::Display& display) {
-  return chromeos::IsDisplayLayoutHorizontal(display)
+  return display.is_landscape()
              ? SplitViewMetricsController::DeviceOrientation::kLandscape
              : SplitViewMetricsController::DeviceOrientation::kPortrait;
 }

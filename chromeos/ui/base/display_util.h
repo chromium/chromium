@@ -46,10 +46,6 @@ bool IsLandscapeOrientation(OrientationType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsPortraitOrientation(OrientationType type);
 
-// Returns true if the current layout of |display| is horizontal.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-bool IsDisplayLayoutHorizontal(const display::Display& display);
-
 // Returns true if the current layout of |display| is primary.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsDisplayLayoutPrimary(const display::Display& display);
