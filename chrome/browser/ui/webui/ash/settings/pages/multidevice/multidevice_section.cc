@@ -12,6 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -385,8 +386,6 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source_ = html_source;
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"multidevicePageTitle", IDS_SETTINGS_MULTIDEVICE},
-      {"multideviceMenuItemDescription",
-       IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION},
       {"multideviceMenuItemDescriptionPhoneConnected",
        IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED},
       {"multideviceMenuItemDescriptionDeviceNameMissing",
@@ -537,6 +536,17 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (::features::IsNameEnabled()) {
+    html_source->AddString(
+        "multideviceMenuItemDescription",
+        NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+            IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PH));
+  } else {
+    html_source->AddLocalizedString(
+        "multideviceMenuItemDescription",
+        IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION);
+  }
 
   html_source->AddBoolean("multideviceAllowedByPolicy",
                           multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(

@@ -4633,6 +4633,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION" desc="Description for the Multidevice menu item in the left menu when no phone connected.">
     Phone Hub, Nearby Share
   </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PH" desc="Feature name placeholder: Description for the Multidevice menu item in the left menu when no phone connected.">
+    Phone Hub, <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED" desc="Description for the Multidevice menu item in the left menu when there is a phone connected.">
     Connected to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
   </message>
