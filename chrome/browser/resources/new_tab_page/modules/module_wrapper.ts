@@ -90,7 +90,10 @@ export class ModuleWrapperElement extends PolymerElement {
       intersectionPerdecage =
           Math.floor(Math.max(intersectionPerdecage, intersectionRatio * 10));
     }, {threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]});
-    window.addEventListener('unload', () => {
+    // Use `pagehide` rather than `unload` because unload is being deprecated.
+    // `pagehide` fires with the same timing and is safe to use since NTP never
+    // enters back/forward-cache.
+    window.addEventListener('pageload', () => {
       recordPerdecage(
           'NewTabPage.Modules.ImpressionRatio', intersectionPerdecage);
       recordPerdecage(
