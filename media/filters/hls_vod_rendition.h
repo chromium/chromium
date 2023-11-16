@@ -7,6 +7,7 @@
 
 #include "base/moving_window.h"
 #include "media/filters/hls_rendition.h"
+#include "media/formats/hls/segment_stream.h"
 
 namespace media {
 
@@ -34,43 +35,25 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   void Stop() override;
 
  private:
-  struct SegmentInfo {
-    scoped_refptr<hls::MediaSegment> segment;
-
-    // The absolute timestamps that this segment would be presented at.
-    base::TimeDelta absolute_start;
-    base::TimeDelta absolute_end;
-
-    // What index in |segments_| this informational struct is stored.
-    size_t index = 0;
-
-    SegmentInfo();
-    SegmentInfo(const SegmentInfo&);
-    ~SegmentInfo();
-  };
-
-  struct PendingSegment {
-    ~PendingSegment();
-    std::unique_ptr<HlsDataSourceStream> stream;
-    size_t index = 0;
-    PendingSegment(std::unique_ptr<HlsDataSourceStream> stream, size_t index);
-    PendingSegment(const PendingSegment&) = delete;
-  };
+  // A pending segment consists of the stream from which network data is fetched
+  // and the time to which the parser should run until.
+  using PendingSegment =
+      std::tuple<std::unique_ptr<HlsDataSourceStream>, base::TimeDelta>;
 
   // Clears old data and returns the amount of time taken to do so, in order to
   // aid the delay calculations.
   base::TimeDelta ClearOldSegments(base::TimeDelta media_time);
   void FetchNext(base::OnceClosure cb, base::TimeDelta required_time);
 
-  // Loads the given segment.
-  void LoadSegment(SegmentInfo* segment,
-                   base::TimeDelta fetch_required_time,
-                   base::OnceClosure cb);
+  // Continues loading from a stored pending network request.
   void FetchMoreDataFromPendingStream(base::OnceClosure cb,
                                       base::TimeDelta fetch_required_time);
+
+  // Appends and parses data on network read. Will additionally set a pending
+  // request if there is more to read.
   void OnSegmentData(base::OnceClosure cb,
                      base::TimeDelta fetch_required_time,
-                     size_t segment_index,
+                     base::TimeDelta parse_end,
                      base::TimeTicks net_req_start,
                      HlsDataSourceProvider::ReadResult result);
 
@@ -81,17 +64,15 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   raw_ptr<ManifestDemuxerEngineHost> engine_host_;
   raw_ptr<HlsRenditionHost> rendition_host_;
 
+  std::unique_ptr<hls::SegmentStream> segments_;
+
   // The chunk demuxer role for this rendition.
   std::string role_;
-
-  // A list of all segments, which is used for seeking and calculating offsets.
-  std::vector<SegmentInfo> segments_;
 
   // The parser offset timestamp for this stream.
   base::TimeDelta parse_offset_;
 
-  // Manifests should declare an upper limit on the length of segments.
-  base::TimeDelta segment_duration_upper_limit_;
+  // Total duration of the playback.
   base::TimeDelta duration_;
 
   // If this is set, then use it to get more data. Otherwise, fetch another
@@ -100,9 +81,6 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
 
   // Record the time it takes to download content.
   base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_;
-
-  // Fetch segments in order always.
-  std::vector<SegmentInfo>::iterator fetch_queue_;
 
   bool set_stream_end_ = false;
 
