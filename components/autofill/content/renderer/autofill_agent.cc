@@ -690,14 +690,14 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
     previewed_elements_ = form_util::ApplyFormAction(
-        form, last_queried_element_, action_type, action_persistence);
+        form.fields, last_queried_element_, action_type, action_persistence);
   } else {
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
     bool filled_some_fields =
-        !form_util::ApplyFormAction(form, last_queried_element_, action_type,
-                                    action_persistence)
+        !form_util::ApplyFormAction(form.fields, last_queried_element_,
+                                    action_type, action_persistence)
              .empty();
 
     if (!last_queried_element_.Form().IsNull()) {

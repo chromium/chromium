@@ -2335,7 +2335,7 @@ std::optional<FormData> FindFormForContentEditable(
 }
 
 std::vector<WebFormControlElement> ApplyFormAction(
-    const FormData& form,
+    base::span<const FormFieldData> fields,
     const WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence) {
@@ -2350,7 +2350,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
     return {};
   }
   const bool num_elements_matches_num_fields =
-      control_elements.size() == form.fields.size();
+      control_elements.size() == fields.size();
   UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
                         num_elements_matches_num_fields);
 
@@ -2392,7 +2392,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
   // * Send the blur event.
   // * For each other element, focus -> autofill -> blur.
   // * Send the focus event for the initially focused element.
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : fields) {
     auto it = SearchInSortedVector(field, control_elements);
     if (it == control_elements.end()) {
       continue;

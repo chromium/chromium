@@ -349,11 +349,11 @@ bool FindFormAndFieldForFormControlElement(
 std::optional<FormData> FindFormForContentEditable(
     const blink::WebElement& content_editable);
 
-// Fills or previews the form represented by `form`.
+// Fills or previews the fields represented by `fields`.
 // `initiating_element` is the element that initiated the autofill process.
-// Returns the filled elements.
+// Returns the filled blink elements.
 std::vector<blink::WebFormControlElement> ApplyFormAction(
-    const FormData& form,
+    base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence);

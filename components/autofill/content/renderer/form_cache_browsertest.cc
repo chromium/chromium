@@ -434,7 +434,7 @@ void FillAndCheckState(
     value_to_fill->is_autofilled = true;
   }
 
-  form_util::ApplyFormAction(values_to_fill, autofill_initiating_element,
+  form_util::ApplyFormAction(values_to_fill.fields, autofill_initiating_element,
                              mojom::ActionType::kFill,
                              mojom::ActionPersistence::kFill);
 
@@ -509,11 +509,11 @@ TEST_F(FormCacheBrowserTest,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("myForm")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  FormData values_to_fill = forms.updated_forms[0];
-  values_to_fill.fields[0].value = u"John";
-  values_to_fill.fields[0].is_autofilled = true;
-  values_to_fill.fields[1].value = u"Smith";
-  values_to_fill.fields[1].is_autofilled = true;
+  std::vector<FormFieldData> values_to_fill = forms.updated_forms[0].fields;
+  values_to_fill[0].value = u"John";
+  values_to_fill[0].is_autofilled = true;
+  values_to_fill[1].value = u"Smith";
+  values_to_fill[1].is_autofilled = true;
 
   auto fname =
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
