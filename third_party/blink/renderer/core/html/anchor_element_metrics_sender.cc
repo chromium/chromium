@@ -114,6 +114,7 @@ void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
   // Add this element to the set of elements that we will try to report after
   // the next layout.
   anchor_elements_to_report_.insert(&element);
+  RegisterForLifecycleNotifications();
 }
 
 void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
@@ -157,7 +158,6 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   DCHECK(document.IsInOutermostMainFrame());
   DCHECK(clock_);
 
-  document.View()->RegisterForLifecycleNotifications(this);
   intersection_observer_ = IntersectionObserver::Create(
       {}, {INTERSECTION_RATIO_THRESHOLD}, &document,
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
@@ -205,8 +205,8 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
     return;
   }
 
-  for (auto entry : entries) {
-    Element* element = entry->target();
+  for (const auto& entry : entries) {
+    const Element* element = entry->target();
     const HTMLAnchorElement& anchor_element =
         IsA<HTMLAreaElement>(*element) ? To<HTMLAreaElement>(*element)
                                        : To<HTMLAnchorElement>(*element);
@@ -214,10 +214,12 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
       // The anchor is leaving the viewport.
       EnqueueLeftViewport(anchor_element);
     } else {
-      //  The anchor is visible.
+      // The anchor is visible.
       EnqueueEnteredViewport(anchor_element);
     }
   }
+
+  RegisterForLifecycleNotifications();
 }
 
 base::TimeTicks AnchorElementMetricsSender::NavigationStart(
@@ -346,6 +348,17 @@ void AnchorElementMetricsSender::EnqueueEnteredViewport(
   entered_viewport_messages_.push_back(std::move(msg));
 }
 
+void AnchorElementMetricsSender::RegisterForLifecycleNotifications() {
+  if (is_registered_for_lifecycle_notifications_) {
+    return;
+  }
+
+  if (LocalFrameView* view = GetSupplementable()->View()) {
+    view->RegisterForLifecycleNotifications(this);
+    is_registered_for_lifecycle_notifications_ = true;
+  }
+}
+
 void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
   // Check that layout is stable. If it is, we can report pending
@@ -408,6 +421,11 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   // into the DOM later or if they enter the viewport.
   anchor_elements_to_report_.clear();
   MaybeUpdateMetrics();
+
+  DCHECK_EQ(&local_frame_view, GetSupplementable()->View());
+  DCHECK(is_registered_for_lifecycle_notifications_);
+  GetSupplementable()->View()->UnregisterFromLifecycleNotifications(this);
+  is_registered_for_lifecycle_notifications_ = false;
 }
 
 void AnchorElementMetricsSender::MaybeUpdateMetrics() {
