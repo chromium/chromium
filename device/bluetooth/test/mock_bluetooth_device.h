@@ -155,8 +155,6 @@ class MockBluetoothDevice : public BluetoothDevice {
 
   void SetPaired(bool paired) { paired_ = paired; }
 
-  void SetType(device::BluetoothTransport transport) { transport_ = transport; }
-
  private:
   uint32_t bluetooth_class_;
   absl::optional<std::string> name_;
@@ -164,7 +162,6 @@ class MockBluetoothDevice : public BluetoothDevice {
   BluetoothDevice::UUIDSet uuids_;
   bool connected_;
   bool paired_;
-  device::BluetoothTransport transport_;
 
   // Used by tests to save callbacks that will be run in the future.
   base::queue<base::OnceClosure> pending_callbacks_;
