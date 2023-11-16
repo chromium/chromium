@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_H_
 
+#include <optional>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -56,7 +56,7 @@ class PasswordReuseDetectionManager
   void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      absl::optional<password_manager::PasswordHashData>
+      std::optional<password_manager::PasswordHashData>
           reused_protected_password_hash,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
@@ -70,7 +70,7 @@ class PasswordReuseDetectionManager
   void OnKeyPressed(const std::u16string& text, bool is_committed);
   // Determines the type of password being reused.
   password_manager::metrics_util::PasswordType GetReusedPasswordType(
-      absl::optional<password_manager::PasswordHashData>
+      std::optional<password_manager::PasswordHashData>
           reused_protected_password_hash,
       size_t match_domain_count);
 

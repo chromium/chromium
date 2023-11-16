@@ -4,8 +4,8 @@
 
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
+#include <optional>
+
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -155,7 +155,7 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
   PasswordReuseDetectionManager manager(&client_);
 
   // Simulate that reuse found.
-  manager.OnReuseCheckDone(true, 0ul, absl::nullopt, {{"https://example.com"}},
+  manager.OnReuseCheckDone(true, 0ul, std::nullopt, {{"https://example.com"}},
                            0, std::string(), 0);
 
   // Expect no checking of reuse.
@@ -246,7 +246,7 @@ TEST_F(PasswordReuseDetectionManagerTest,
   EXPECT_CALL(client_,
               CheckProtectedPasswordEntry(_, _, reused_credentials, _, _, _));
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/absl::nullopt,
+                           /*reused_protected_password_hash=*/std::nullopt,
                            reused_credentials, /*saved_passwords=*/1,
                            /*domain=*/std::string(),
                            /*reused_password_hash=*/0);
