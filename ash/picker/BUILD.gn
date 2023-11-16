@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("picker") {
+  sources = [
+    "views/picker_view.cc",
+    "views/picker_view.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  deps = [ "//ui/gfx" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "views/picker_view_unittest.cc" ]
+
+  deps = [
+    ":picker",
+    "//ash:test_support",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

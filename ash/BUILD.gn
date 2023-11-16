@@ -3852,6 +3852,7 @@ test("ash_unittests") {
     "//ash/in_session_auth",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",
+    "//ash/picker:unit_tests",
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//ash/public/cpp:unit_tests",
