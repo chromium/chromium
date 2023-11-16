@@ -392,6 +392,20 @@ void NavigationPredictor::SetTaskRunnerForTesting(
   navigation_start_ = NowTicks();
 }
 
+// static
+bool NavigationPredictor::disable_renderer_metric_sending_delay_for_testing_ =
+    false;
+
+// static
+void NavigationPredictor::DisableRendererMetricSendingDelayForTesting() {
+  disable_renderer_metric_sending_delay_for_testing_ = true;
+}
+
+void NavigationPredictor::ShouldSkipUpdateDelays(
+    ShouldSkipUpdateDelaysCallback callback) {
+  std::move(callback).Run(disable_renderer_metric_sending_delay_for_testing_);
+}
+
 void NavigationPredictor::ReportAnchorElementClick(
     blink::mojom::AnchorElementClickPtr click) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

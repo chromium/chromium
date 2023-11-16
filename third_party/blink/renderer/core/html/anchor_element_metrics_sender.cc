@@ -137,6 +137,11 @@ bool AnchorElementMetricsSender::AssociateInterface() {
       metrics_host_.BindNewPipeAndPassReceiver(
           document->GetExecutionContext()->GetTaskRunner(
               TaskType::kInternalDefault)));
+
+  metrics_host_->ShouldSkipUpdateDelays(
+      WTF::BindOnce(&AnchorElementMetricsSender::SetShouldSkipUpdateDelays,
+                    WrapWeakPersistent(this)));
+
   return true;
 }
 
@@ -172,6 +177,20 @@ void AnchorElementMetricsSender::SetTickClockForTesting(
 }
 
 void AnchorElementMetricsSender::FireUpdateTimerForTesting() {
+  if (update_timer_.IsActive()) {
+    update_timer_.Stop();
+  }
+  UpdateMetrics(&update_timer_);
+}
+
+void AnchorElementMetricsSender::SetShouldSkipUpdateDelays(
+    bool should_skip_for_testing) {
+  if (!should_skip_for_testing) {
+    return;
+  }
+
+  should_skip_update_delays_for_testing_ = true;
+
   if (update_timer_.IsActive()) {
     update_timer_.Stop();
   }
@@ -393,7 +412,10 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
 
 void AnchorElementMetricsSender::MaybeUpdateMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!update_timer_.IsActive()) {
+  if (should_skip_update_delays_for_testing_) {
+    DCHECK(!update_timer_.IsActive());
+    UpdateMetrics(&update_timer_);
+  } else if (!update_timer_.IsActive()) {
     update_timer_.StartOneShot(kUpdateMetricsTimeGap, FROM_HERE);
   }
 }

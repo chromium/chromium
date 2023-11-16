@@ -56,6 +56,8 @@ class NavigationPredictor
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* clock);
 
+  static void DisableRendererMetricSendingDelayForTesting();
+
  private:
   friend class MockNavigationPredictorForTesting;
   using AnchorId = base::StrongAlias<class AnchorId, uint32_t>;
@@ -87,6 +89,7 @@ class NavigationPredictor
   void ProcessPointerEventUsingMLModel(
       blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event)
       override;
+  void ShouldSkipUpdateDelays(ShouldSkipUpdateDelaysCallback callback) override;
 
   void OnMLModelExecutionTimerFired();
 
@@ -173,6 +176,8 @@ class NavigationPredictor
   base::CancelableTaskTracker scoring_model_task_tracker_;
 
   raw_ptr<const base::TickClock> clock_;
+
+  static bool disable_renderer_metric_sending_delay_for_testing_;
 
   base::OneShotTimer ml_model_execution_timer_;
 

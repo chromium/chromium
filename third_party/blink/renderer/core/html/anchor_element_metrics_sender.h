@@ -128,6 +128,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Sends the metrics update, immediately.
   void UpdateMetrics(TimerBase*);
 
+  void SetShouldSkipUpdateDelays(bool should_skip_for_testing);
+
   base::TimeTicks NavigationStart(const HTMLAnchorElement& element);
 
   // Mock timestamp for navigation start used for testing.
@@ -140,6 +142,9 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   // Used to limit the rate at which update IPCs are sent by UpdateMetrics.
   HeapTaskRunnerTimer<AnchorElementMetricsSender> update_timer_;
+  // If `should_skip_update_delays_for_testing_` becomes true, the rate limiting
+  // is no longer done.
+  bool should_skip_update_delays_for_testing_ = false;
 
   WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
 
