@@ -1,0 +1,45 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
+
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill::autofill_metrics {
+
+namespace {
+
+using ObservationType = ProfileTokenQuality::ObservationType;
+
+class ProfileTokenQualityMetricsTest : public testing::Test {
+ private:
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackProfileTokenQuality};
+};
+
+TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationCount) {
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(ADDRESS_HOME_STATE,
+                      ObservationType::kEditedToSimilarValue);
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileTokenQualityMetrics({&profile});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile", 2, 1);
+}
+
+}  // namespace
+
+}  // namespace autofill::autofill_metrics

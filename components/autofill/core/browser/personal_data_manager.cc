@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
+#include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -2284,6 +2285,7 @@ void PersonalDataManager::LogStoredDataMetrics() const {
 
   const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
+  autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
   if (base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
     autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                      app_locale_);

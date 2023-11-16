@@ -3605,6 +3605,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile"
+    units="Observations" expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the total number of observations stored for a profile. Emitted once
+    per profile at Chrome profile start-up.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProgressDialog.{FlowType}.Result"
     enum="BooleanCanceled" expires_after="2024-07-01">
   <owner>siashah@chromium.org</owner>
