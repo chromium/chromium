@@ -121,8 +121,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     // CreateVideoTrack will trigger StartDone.
     return MediaStreamVideoTrack::CreateVideoTrack(
         video_capturer_source_, adapter_settings, noise_reduction,
-        is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
-        absl::nullopt, false,
+        is_screencast, min_frame_rate, nullptr, false,
         WTF::BindOnce(&MediaStreamVideoCapturerSourceTest::StartDone,
                       base::Unretained(this)),
         enabled);

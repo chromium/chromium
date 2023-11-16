@@ -21,6 +21,7 @@ blink_modules_sources("mediastream") {
     "dom_window_media_stream.h",
     "identifiability_metrics.cc",
     "identifiability_metrics.h",
+    "image_capture_device_settings.h",
     "input_device_info.cc",
     "input_device_info.h",
     "local_media_stream_audio_source.cc",

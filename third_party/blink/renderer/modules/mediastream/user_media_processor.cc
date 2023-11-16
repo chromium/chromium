@@ -498,8 +498,10 @@ MediaStreamComponent* UserMediaProcessor::RequestInfo::CreateAndStartVideoTrack(
   return MediaStreamVideoTrack::CreateVideoTrack(
       native_source, video_capture_settings_.track_adapter_settings(),
       video_capture_settings_.noise_reduction(), is_video_content_capture_,
-      video_capture_settings_.min_frame_rate(), video_capture_settings_.pan(),
-      video_capture_settings_.tilt(), video_capture_settings_.zoom(),
+      video_capture_settings_.min_frame_rate(),
+      video_capture_settings_.image_capture_device_settings()
+          ? &*video_capture_settings_.image_capture_device_settings()
+          : nullptr,
       pan_tilt_zoom_allowed(),
       WTF::BindOnce(&UserMediaProcessor::RequestInfo::OnTrackStarted,
                     WrapWeakPersistent(this)),

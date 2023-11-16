@@ -91,8 +91,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
     bool enabled = true;
     return MediaStreamVideoTrack::CreateVideoTrack(
         mock_stream_video_source_, adapter_settings, noise_reduction,
-        is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
-        absl::nullopt, false,
+        is_screencast, min_frame_rate, nullptr, false,
         WTF::BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
                       base::Unretained(this)),
         enabled);

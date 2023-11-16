@@ -89,6 +89,7 @@ class MediaConstraintsPrivate final
 
   bool IsUnconstrained() const;
   const MediaTrackConstraintSetPlatform& Basic() const;
+  MediaTrackConstraintSetPlatform& MutableBasic();
   const Vector<MediaTrackConstraintSetPlatform>& Advanced() const;
   const String ToString() const;
 
@@ -125,6 +126,10 @@ bool MediaConstraintsPrivate::IsUnconstrained() const {
 }
 
 const MediaTrackConstraintSetPlatform& MediaConstraintsPrivate::Basic() const {
+  return basic_;
+}
+
+MediaTrackConstraintSetPlatform& MediaConstraintsPrivate::MutableBasic() {
   return basic_;
 }
 
@@ -198,6 +203,10 @@ bool LongConstraint::IsUnconstrained() const {
   return !has_min_ && !has_max_ && !has_exact_ && !has_ideal_;
 }
 
+void LongConstraint::ResetToUnconstrained() {
+  *this = LongConstraint(GetName());
+}
+
 String LongConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
@@ -240,6 +249,10 @@ bool DoubleConstraint::IsUnconstrained() const {
   return !has_min_ && !has_max_ && !has_exact_ && !has_ideal_;
 }
 
+void DoubleConstraint::ResetToUnconstrained() {
+  *this = DoubleConstraint(GetName());
+}
+
 String DoubleConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
@@ -276,6 +289,10 @@ const Vector<String>& StringConstraint::Exact() const {
 
 const Vector<String>& StringConstraint::Ideal() const {
   return ideal_;
+}
+
+void StringConstraint::ResetToUnconstrained() {
+  *this = StringConstraint(GetName());
 }
 
 String StringConstraint::ToString() const {
@@ -333,6 +350,10 @@ bool BooleanConstraint::IsUnconstrained() const {
   return !has_ideal_ && !has_exact_;
 }
 
+void BooleanConstraint::ResetToUnconstrained() {
+  *this = BooleanConstraint(GetName());
+}
+
 String BooleanConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
@@ -359,11 +380,13 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       device_id("deviceId"),
       disable_local_echo("disableLocalEcho"),
       suppress_local_audio_playback("suppressLocalAudioPlayback"),
+      group_id("groupId"),
+      display_surface("displaySurface"),
       pan("pan"),
       tilt("tilt"),
       zoom("zoom"),
-      group_id("groupId"),
-      display_surface("displaySurface"),
+      torch("torch"),
+      background_blur("backgroundBlur"),
       media_stream_source("mediaStreamSource"),
       render_to_associated_sink("chromeRenderToAssociatedSink"),
       goog_echo_cancellation("googEchoCancellation"),
@@ -400,6 +423,8 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &pan,
           &tilt,
           &zoom,
+          &torch,
+          &background_blur,
           &render_to_associated_sink,
           &goog_echo_cancellation,
           &goog_experimental_echo_cancellation,
@@ -510,6 +535,11 @@ void MediaConstraints::Initialize(
 const MediaTrackConstraintSetPlatform& MediaConstraints::Basic() const {
   DCHECK(!IsNull());
   return private_->Basic();
+}
+
+MediaTrackConstraintSetPlatform& MediaConstraints::MutableBasic() {
+  DCHECK(!IsNull());
+  return private_->MutableBasic();
 }
 
 const Vector<MediaTrackConstraintSetPlatform>& MediaConstraints::Advanced()

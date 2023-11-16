@@ -61,6 +61,8 @@
 namespace blink {
 namespace media_constraints_impl {
 
+namespace {
+
 // A naked value is treated as an "ideal" value in the basic constraints,
 // but as an exact value in "advanced" constraints.
 // https://w3c.github.io/mediacapture-main/#constrainable-interface
@@ -606,6 +608,16 @@ bool ValidateAndCopyConstraintSet(
                                   constraint_buffer.zoom);
   }
 
+  if (constraints_in->hasTorch()) {
+    CopyBooleanConstraint(constraints_in->torch(), naked_treatment,
+                          constraint_buffer.torch);
+  }
+
+  if (constraints_in->hasBackgroundBlur()) {
+    CopyBooleanConstraint(constraints_in->backgroundBlur(), naked_treatment,
+                          constraint_buffer.background_blur);
+  }
+
   if (constraints_in->hasDisplaySurface()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->displaySurface(), naked_treatment,
@@ -620,67 +632,6 @@ bool ValidateAndCopyConstraintSet(
                           constraint_buffer.suppress_local_audio_playback);
   }
   return true;
-}
-
-MediaConstraints ConvertTrackConstraintsToMediaConstraints(
-    const MediaTrackConstraints* constraints_in,
-    String& error_message) {
-  MediaTrackConstraintSetPlatform constraint_buffer;
-  Vector<MediaTrackConstraintSetPlatform> advanced_buffer;
-  if (!ValidateAndCopyConstraintSet(constraints_in,
-                                    NakedValueDisposition::kTreatAsIdeal,
-                                    constraint_buffer, error_message)) {
-    return MediaConstraints();
-  }
-  if (constraints_in->hasAdvanced()) {
-    for (const auto& element : constraints_in->advanced()) {
-      MediaTrackConstraintSetPlatform advanced_element;
-      if (!ValidateAndCopyConstraintSet(element,
-                                        NakedValueDisposition::kTreatAsExact,
-                                        advanced_element, error_message)) {
-        return MediaConstraints();
-      }
-      advanced_buffer.push_back(advanced_element);
-    }
-  }
-  MediaConstraints constraints;
-  constraints.Initialize(constraint_buffer, advanced_buffer);
-  return constraints;
-}
-
-MediaConstraints Create(ExecutionContext* context,
-                        const MediaTrackConstraints* constraints_in,
-                        String& error_message) {
-  MediaConstraints standard_form =
-      ConvertTrackConstraintsToMediaConstraints(constraints_in, error_message);
-  if (standard_form.IsNull()) {
-    return standard_form;
-  }
-  if (constraints_in->hasOptional() || constraints_in->hasMandatory()) {
-    if (!standard_form.IsUnconstrained()) {
-      UseCounter::Count(context, WebFeature::kMediaStreamConstraintsOldAndNew);
-      error_message =
-          "Malformed constraint: Cannot use both optional/mandatory and "
-          "specific or advanced constraints.";
-      return MediaConstraints();
-    }
-    Vector<NameValueStringConstraint> optional;
-    Vector<NameValueStringConstraint> mandatory;
-    if (!Parse(constraints_in, optional, mandatory)) {
-      error_message = "Malformed constraints object.";
-      return MediaConstraints();
-    }
-    UseCounter::Count(context, WebFeature::kMediaStreamConstraintsNameValue);
-    return CreateFromNamedConstraints(context, mandatory, optional);
-  }
-  UseCounter::Count(context, WebFeature::kMediaStreamConstraintsConformant);
-  return standard_form;
-}
-
-MediaConstraints Create() {
-  MediaConstraints constraints;
-  constraints.Initialize();
-  return constraints;
 }
 
 template <class T>
@@ -882,6 +833,13 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setTilt(ConvertBooleanOrDouble(input.tilt, naked_treatment));
   if (!input.zoom.IsUnconstrained())
     output->setZoom(ConvertBooleanOrDouble(input.zoom, naked_treatment));
+  if (!input.torch.IsUnconstrained()) {
+    output->setTorch(ConvertBoolean(input.torch, naked_treatment));
+  }
+  if (!input.background_blur.IsUnconstrained()) {
+    output->setBackgroundBlur(
+        ConvertBoolean(input.background_blur, naked_treatment));
+  }
   if (!input.suppress_local_audio_playback.IsUnconstrained()) {
     output->setSuppressLocalAudioPlayback(
         ConvertBoolean(input.suppress_local_audio_playback, naked_treatment));
@@ -889,6 +847,69 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   // TODO(hta): Decide the future of the nonstandard constraints.
   // If they go forward, they need to be added here.
   // https://crbug.com/605673
+}
+
+}  // namespace
+
+MediaConstraints ConvertTrackConstraintsToMediaConstraints(
+    const MediaTrackConstraints* constraints_in,
+    String& error_message) {
+  MediaTrackConstraintSetPlatform constraint_buffer;
+  Vector<MediaTrackConstraintSetPlatform> advanced_buffer;
+  if (!ValidateAndCopyConstraintSet(constraints_in,
+                                    NakedValueDisposition::kTreatAsIdeal,
+                                    constraint_buffer, error_message)) {
+    return MediaConstraints();
+  }
+  if (constraints_in->hasAdvanced()) {
+    for (const auto& element : constraints_in->advanced()) {
+      MediaTrackConstraintSetPlatform advanced_element;
+      if (!ValidateAndCopyConstraintSet(element,
+                                        NakedValueDisposition::kTreatAsExact,
+                                        advanced_element, error_message)) {
+        return MediaConstraints();
+      }
+      advanced_buffer.push_back(advanced_element);
+    }
+  }
+  MediaConstraints constraints;
+  constraints.Initialize(constraint_buffer, advanced_buffer);
+  return constraints;
+}
+
+MediaConstraints Create(ExecutionContext* context,
+                        const MediaTrackConstraints* constraints_in,
+                        String& error_message) {
+  MediaConstraints standard_form =
+      ConvertTrackConstraintsToMediaConstraints(constraints_in, error_message);
+  if (standard_form.IsNull()) {
+    return standard_form;
+  }
+  if (constraints_in->hasOptional() || constraints_in->hasMandatory()) {
+    if (!standard_form.IsUnconstrained()) {
+      UseCounter::Count(context, WebFeature::kMediaStreamConstraintsOldAndNew);
+      error_message =
+          "Malformed constraint: Cannot use both optional/mandatory and "
+          "specific or advanced constraints.";
+      return MediaConstraints();
+    }
+    Vector<NameValueStringConstraint> optional;
+    Vector<NameValueStringConstraint> mandatory;
+    if (!Parse(constraints_in, optional, mandatory)) {
+      error_message = "Malformed constraints object.";
+      return MediaConstraints();
+    }
+    UseCounter::Count(context, WebFeature::kMediaStreamConstraintsNameValue);
+    return CreateFromNamedConstraints(context, mandatory, optional);
+  }
+  UseCounter::Count(context, WebFeature::kMediaStreamConstraintsConformant);
+  return standard_form;
+}
+
+MediaConstraints Create() {
+  MediaConstraints constraints;
+  constraints.Initialize();
+  return constraints;
 }
 
 MediaTrackConstraints* ConvertConstraints(const MediaConstraints& input) {

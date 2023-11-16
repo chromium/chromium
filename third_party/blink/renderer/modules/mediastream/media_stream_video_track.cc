@@ -789,9 +789,7 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
     const absl::optional<bool>& noise_reduction,
     bool is_screencast,
     const absl::optional<double>& min_frame_rate,
-    const absl::optional<double>& pan,
-    const absl::optional<double>& tilt,
-    const absl::optional<double>& zoom,
+    const ImageCaptureDeviceSettings* image_capture_device_settings,
     bool pan_tilt_zoom_allowed,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled) {
@@ -800,7 +798,7 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
       source->Owner(),
       std::make_unique<MediaStreamVideoTrack>(
           source, adapter_settings, noise_reduction, is_screencast,
-          min_frame_rate, pan, tilt, zoom, pan_tilt_zoom_allowed,
+          min_frame_rate, image_capture_device_settings, pan_tilt_zoom_allowed,
           std::move(callback), enabled));
   return WebMediaStreamTrack(component);
 }
@@ -860,9 +858,7 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
     const absl::optional<bool>& noise_reduction,
     bool is_screen_cast,
     const absl::optional<double>& min_frame_rate,
-    const absl::optional<double>& pan,
-    const absl::optional<double>& tilt,
-    const absl::optional<double>& zoom,
+    const ImageCaptureDeviceSettings* image_capture_device_settings,
     bool pan_tilt_zoom_allowed,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled)
@@ -871,9 +867,10 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       noise_reduction_(noise_reduction),
       is_screencast_(is_screen_cast),
       min_frame_rate_(min_frame_rate),
-      pan_(pan),
-      tilt_(tilt),
-      zoom_(zoom),
+      image_capture_device_settings_(
+          image_capture_device_settings
+              ? absl::make_optional(*image_capture_device_settings)
+              : absl::nullopt),
       pan_tilt_zoom_allowed_(pan_tilt_zoom_allowed),
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
@@ -930,8 +927,10 @@ MediaStreamVideoTrack::CreateFromComponent(
   return std::make_unique<MediaStreamVideoTrack>(
       native_source, original_track->adapter_settings(),
       original_track->noise_reduction(), original_track->is_screencast(),
-      original_track->min_frame_rate(), original_track->pan(),
-      original_track->tilt(), original_track->zoom(),
+      original_track->min_frame_rate(),
+      original_track->image_capture_device_settings()
+          ? &*original_track->image_capture_device_settings()
+          : nullptr,
       original_track->pan_tilt_zoom_allowed(),
       MediaStreamVideoSource::ConstraintsOnceCallback(), component->Enabled());
 }

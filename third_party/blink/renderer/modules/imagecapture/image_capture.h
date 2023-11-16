@@ -130,16 +130,16 @@ class MODULES_EXPORT ImageCapture final
                              bool result);
   void OnMojoTakePhoto(ScriptPromiseResolver*, media::mojom::blink::BlobPtr);
 
-  // If getUserMedia contains either pan, tilt, or zoom constraints, the
+  // If getUserMedia contains Image Capture constraints, the
   // corresponding settings will be set when image capture is created.
-  void SetPanTiltZoomSettingsFromTrack(
+  void SetVideoTrackDeviceSettingsFromTrack(
       base::OnceClosure callback,
       media::mojom::blink::PhotoStatePtr photo_state);
-  // Update local track settings and capabilities once pan, tilt, and zoom
+  // Update local track settings and capabilities once Image Capture
   // settings have been set. |done_callback| will be called when settings and
   // capabilities are retrieved.
-  void OnSetPanTiltZoomSettingsFromTrack(base::OnceClosure done_callback,
-                                         bool result);
+  void OnSetVideoTrackDeviceSettingsFromTrack(base::OnceClosure done_callback,
+                                              bool result);
   // Update local track settings and capabilities and call
   // |initialized_callback| to indicate settings and capabilities have been
   // retrieved.

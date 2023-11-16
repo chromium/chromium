@@ -151,8 +151,8 @@ class MediaStreamVideoTrackTest
     const bool enabled = true;
     WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
         mock_source_, adapter_settings, absl::optional<bool>(), false, 0.0,
-        absl::nullopt, absl::nullopt, absl::nullopt, false,
-        WebPlatformMediaStreamSource::ConstraintsOnceCallback(), enabled);
+        nullptr, false, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+        enabled);
     if (!source_started_) {
       mock_source_->StartMockedSource();
       source_started_ = true;
