@@ -4,6 +4,8 @@
 
 #include "components/media_router/common/providers/cast/certificate/net_trust_store.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,6 +19,7 @@
 #include "net/cert/pki/path_builder.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/openscreen/src/cast/common/public/trust_store.h"
 
 namespace {
 
@@ -62,7 +65,7 @@ std::unique_ptr<openscreen::cast::TrustStore> TrustStore::CreateInstanceForTest(
 
 // static
 std::unique_ptr<openscreen::cast::TrustStore>
-TrustStore::CreateInstanceFromPemFile(absl::string_view file_path) {
+TrustStore::CreateInstanceFromPemFile(std::string_view file_path) {
   std::string pem_data;
   CHECK(base::ReadFileToString(base::FilePath::FromASCII(base::StringPiece(
                                    file_path.data(), file_path.size())),
