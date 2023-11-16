@@ -22,25 +22,33 @@ namespace {
 constexpr std::string_view kHistogramPrefix = "Autofill.ProfileTokenQuality.";
 
 // Emits Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile, which
-// counts the total number of observations over all supported types of the
-// profile. To prevent double counting additional types, only stored supported
-// types are considered.
-void LogStoredObservationCount(const AutofillProfile& profile) {
-  ServerFieldTypeSet supported_types;
-  profile.GetSupportedTypes(&supported_types);
+// counts the total number of observations over all `types`.
+void LogStoredObservationCount(const AutofillProfile& profile,
+                               const ServerFieldTypeSet& types) {
   size_t total_observations = 0;
-  for (ServerFieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
-    // Some types are only supported in profiles of certain countries.
-    if (supported_types.contains(type)) {
-      total_observations +=
-          profile.token_quality().GetObservationTypesForFieldType(type).size();
-    }
+  for (ServerFieldType type : types) {
+    total_observations +=
+        profile.token_quality().GetObservationTypesForFieldType(type).size();
   }
-  // `total_observations` can be up to ProfileTokenQuality::
-  // kMaxObservationsPerToken * (number of stored and supported types).
   base::UmaHistogramCounts1000(
       base::StrCat({kHistogramPrefix, "StoredObservationsCount.PerProfile"}),
       total_observations);
+}
+
+// Emits Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}, for every
+// Type in `types`. It tracks the different observation types available for that
+// Type.
+void LogStoredObservationsPerType(const AutofillProfile& profile,
+                                  const ServerFieldTypeSet& types) {
+  for (ServerFieldType type : types) {
+    for (ProfileTokenQuality::ObservationType observation :
+         profile.token_quality().GetObservationTypesForFieldType(type)) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({kHistogramPrefix, "StoredObservationTypes.",
+                        FieldTypeToStringView(type)}),
+          observation);
+    }
+  }
 }
 
 }  // namespace
@@ -52,7 +60,16 @@ void LogStoredProfileTokenQualityMetrics(
     return;
   }
   for (const AutofillProfile* profile : profiles) {
-    LogStoredObservationCount(*profile);
+    // Observations are only stored for `stored_types`. Additional supported
+    // types default to their corresponding storeable type. Since some
+    // `stored_types` are only supported in profiles of certain countries,
+    // intersect the two sets.
+    ServerFieldTypeSet relevant_types;
+    profile->GetSupportedTypes(&relevant_types);
+    relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
+
+    LogStoredObservationCount(*profile, relevant_types);
+    LogStoredObservationsPerType(*profile, relevant_types);
   }
 }
 

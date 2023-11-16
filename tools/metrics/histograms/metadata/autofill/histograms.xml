@@ -329,6 +329,44 @@ chromium-metrics-reviews@google.com.
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
+<variants name="AutofillProfile.StorableTypes">
+  <variant name="ADDRESS_HOME_ADMIN_LEVEL2"/>
+  <variant name="ADDRESS_HOME_APT"/>
+  <variant name="ADDRESS_HOME_APT_NUM"/>
+  <variant name="ADDRESS_HOME_APT_TYPE"/>
+  <variant name="ADDRESS_HOME_BETWEEN_STREETS"/>
+  <variant name="ADDRESS_HOME_BETWEEN_STREETS_1"/>
+  <variant name="ADDRESS_HOME_BETWEEN_STREETS_2"/>
+  <variant name="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
+  <variant name="ADDRESS_HOME_CITY"/>
+  <variant name="ADDRESS_HOME_COUNTRY"/>
+  <variant name="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
+  <variant name="ADDRESS_HOME_FLOOR"/>
+  <variant name="ADDRESS_HOME_HOUSE_NUMBER"/>
+  <variant name="ADDRESS_HOME_LANDMARK"/>
+  <variant name="ADDRESS_HOME_OTHER_SUBUNIT"/>
+  <variant name="ADDRESS_HOME_OVERFLOW"/>
+  <variant name="ADDRESS_HOME_OVERFLOW_AND_LANDMARK"/>
+  <variant name="ADDRESS_HOME_SORTING_CODE"/>
+  <variant name="ADDRESS_HOME_STATE"/>
+  <variant name="ADDRESS_HOME_STREET_ADDRESS"/>
+  <variant name="ADDRESS_HOME_STREET_LOCATION"/>
+  <variant name="ADDRESS_HOME_STREET_NAME"/>
+  <variant name="ADDRESS_HOME_SUBPREMISE"/>
+  <variant name="ADDRESS_HOME_ZIP"/>
+  <variant name="COMPANY_NAME"/>
+  <variant name="EMAIL_ADDRESS"/>
+  <variant name="NAME_FIRST"/>
+  <variant name="NAME_FULL"/>
+  <variant name="NAME_LAST"/>
+  <variant name="NAME_LAST_CONJUNCTION"/>
+  <variant name="NAME_LAST_FIRST"/>
+  <variant name="NAME_LAST_SECOND"/>
+  <variant name="NAME_MIDDLE"/>
+  <variant name="NAME_SUFFIX"/>
+  <variant name="PHONE_HOME_WHOLE_NUMBER"/>
+</variants>
+
 <variants name="AutofillProfileCategory">
   <variant name="AccountChrome"
       summary="kAccount profiles originating from Chrome"/>
@@ -3614,6 +3652,18 @@ chromium-metrics-reviews@google.com.
     Records the total number of observations stored for a profile. Emitted once
     per profile at Chrome profile start-up.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}"
+    enum="AutofillProfileTokenQualityObservationType" expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records which observation types are stored. Emitted once per profile and
+    storable type at Chrome profile start-up. For additional supported types,
+    consulte the metric of the corresponding storable type.
+  </summary>
+  <token key="Type" variants="AutofillProfile.StorableTypes"/>
 </histogram>
 
 <histogram name="Autofill.ProgressDialog.{FlowType}.Result"

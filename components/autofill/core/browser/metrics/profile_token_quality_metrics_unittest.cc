@@ -40,6 +40,28 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationCount) {
       "Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile", 2, 1);
 }
 
+TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationsPerType) {
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kEditedFallback);
+  test_api(profile.token_quality())
+      .AddObservation(ADDRESS_HOME_STATE,
+                      ObservationType::kEditedToSimilarValue);
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileTokenQualityMetrics({&profile});
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ProfileTokenQuality.StoredObservationTypes.NAME_FIRST"),
+      base::BucketsAre(base::Bucket(ObservationType::kAccepted, 1),
+                       base::Bucket(ObservationType::kEditedFallback, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileTokenQuality.StoredObservationTypes.ADDRESS_HOME_STATE",
+      ObservationType::kEditedToSimilarValue, 1);
+}
+
 }  // namespace
 
 }  // namespace autofill::autofill_metrics

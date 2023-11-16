@@ -445,6 +445,9 @@ enum ServerFieldType {
   // * tools/typescript/definitions/autofill_private.d.ts
   // Please update `tools/metrics/histograms/enums.xml` by executing
   // `tools/metrics/histograms/update_autofill_enums.py`.
+  // If the newly added type is a storable type of AutofillProfile, update
+  // AutofillProfile.StorableTypes in
+  // tools/metrics/histograms/metadata/autofill/histograms.xml.
   MAX_VALID_FIELD_TYPE = 161,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)

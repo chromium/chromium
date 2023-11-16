@@ -5373,6 +5373,18 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
 </enum>
 
+<enum name="AutofillProfileTokenQualityObservationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="PartiallyAccepted"/>
+  <int value="3" label="EditedToSimilarValue"/>
+  <int value="4" label="EditedToDifferentTokenOfSameProfile"/>
+  <int value="5" label="EditedToSameTokenOfOtherProfile"/>
+  <int value="6" label="EditedToDifferentTokenOfOtherProfile"/>
+  <int value="7" label="EditedValueCleared"/>
+  <int value="8" label="EditedFallback"/>
+</enum>
+
 <enum name="AutofillProviderPackageName">
   <int value="0" label="Unknown"/>
   <int value="1" label="Autofill with Google"/>

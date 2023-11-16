@@ -48,6 +48,8 @@ class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled
   // field at form submission.
+  // Keep in sync with AutofillProfileTokenQualityObservationType in
+  // tools/metrics/histograms/enums.xml.
   enum class ObservationType : uint8_t {
     // An observation type that this client doesn't understand. This is possible
     // if a newer client synced a new enum value that this client doesn't
