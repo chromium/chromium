@@ -733,6 +733,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4856841893565072365">Bar Menu Isih Pintar</translation>
 <translation id="4860895144060829044">Hubungi</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4883824756452868502">Kesan Unit</translation>
 <translation id="488785315393301722">Tunjukkan Butiran</translation>
 <translation id="4894963374040315706">Langkah ini membolehkan anda membuat carian menggunakan suara anda</translation>
 <translation id="489903206070130262">Tab Terbuka Anda Yang Terakhir</translation>
@@ -856,8 +857,10 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5551897871312988470">Tawaran untuk Menterjemah</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="555749644339804659">Menyemak kata laluan…</translation>
+<translation id="5559567453458728487">Tukar unit ukuran yang ditemukan pada web</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5572684875078967866">Storan Maklumat</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Jejaki Pakej Ini}other{Jejaki Semua Pakej}}</translation>
 <translation id="5597915316964418992">Buka Grid Tab</translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
@@ -1120,6 +1123,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6781260999953472352">Hidupkan Penyegerakan?</translation>
 <translation id="6781405765516175232">Untuk pilihan laluan, ketik “Dapatkan Arah”.</translation>
 <translation id="6785453220513215166">Menghantar laporan ranap sistem…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Nyahjejak Pakej Ini}other{Nyahjejak Semua Pakej}}</translation>
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="6797885426782475225">Carian Suara</translation>
 <translation id="6800349425672670802">Anda boleh mengakses semua tab terbuka anda daripada Penukar Tab.</translation>

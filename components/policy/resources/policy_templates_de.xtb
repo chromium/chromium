@@ -8117,7 +8117,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, umfasst der generierte K
           Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt entweder der globale Standardwert der Richtlinie „<ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />“, sofern konfiguriert, oder die persönliche Konfiguration des Nutzers zum Einsatz.
 
           Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="7904584382309857420">Diese Richtlinie wurde in M121 entfernt. Sie diente dazu, Remote Attestation für das Gerät zu aktivieren und zu deaktivieren, allerdings war diese Einstellung standardmäßig aktiviert.
+<translation id="7904584382309857420">Diese Richtlinie wurde in M121 entfernt. Sie diente dazu, Remote Attestation für das Gerät zu aktivieren und zu deaktivieren. Diese Einstellung ist jetzt jedoch standardmäßig aktiviert.
 
 Ist diese Richtlinie aktiviert, ist Remote Attestation für das Gerät erlaubt. Ein Zertifikat wird automatisch erstellt und auf den Geräteverwaltungsserver hochgeladen.
 

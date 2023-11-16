@@ -4195,6 +4195,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4261429981378979799">Uzantı izinleri</translation>
 <translation id="4262004481148703251">Uyarıyı kapat</translation>
 <translation id="4263223596040212967">Klavye düzeninizi kontrol edip tekrar deneyin.</translation>
+<translation id="4265301768135164545">eSIM profilini <ph name="BEGIN_LINK" />manuel olarak<ph name="END_LINK" /> da oluşturabilirsiniz.</translation>
 <translation id="426564820080660648">Güncellemeleri kontrol etmek için lütfen Ethernet, Kablosuz veya mobil veri kullanın.</translation>
 <translation id="426652736638196239">Bu IBAN yalnızca bu cihaza kaydedilecek</translation>
 <translation id="4266679478228765574">Klasörleri kaldırmak paylaşımı durdurur, ancak dosyaları silmez.</translation>
@@ -9731,6 +9732,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8676313779986170923">Geri bildirim gönderdiğiniz için teşekkür ederiz.</translation>
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
+<translation id="8676985325915861058">Atla ve yeni profil oluştur</translation>
 <translation id="8677212948402625567">Tümünü daralt...</translation>
 <translation id="8678192320753081984">Hedeflenmiş saldırı riskiyle karşı karşıya olan kullanıcılar için Google'ın en güçlü hesap güvenliğini sağlar</translation>
 <translation id="8678378565142776698">Yeniden başlat ve otomatik güncellemeleri al</translation>

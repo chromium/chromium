@@ -316,6 +316,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{ಪಠ್ಯ}one{# ಪಠ್ಯಗಳು}other{# ಪಠ್ಯಗಳು}}</translation>
 <translation id="1236009322878349843">ಫೋನ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1239594683407221485">'ಫೈಲ್‌ಗಳು' ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಾಧನದ ವಿಷಯವನ್ನು ಅನ್ವೇಷಿಸಿ.</translation>
+<translation id="1239841552505950173">ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1240903469550363138">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನೋಡಿ.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="124116460088058876">ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು</translation>
@@ -464,6 +465,7 @@
 <translation id="1362865166188278099">ಯಾಂತ್ರಿಕ ಸಮಸ್ಯೆ. ಪ್ರಿಂಟರ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1363585519747660921">USB ಪ್ರಿಂಟರ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬೇಕಾಗಿದೆ</translation>
 <translation id="136378536198524553">ಎನರ್ಜಿ ಸೇವರ್ ಆನ್ ಆಗಿದೆ</translation>
+<translation id="136522805455656552">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನೀವು ವಿಶ್ವಾಸಾರ್ಹ ಮೂಲಗಳು ಮತ್ತು ಡೆವಲಪರ್‌ಗಳಿಂದ ಮಾತ್ರ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ರನ್ ಮಾಡಬೇಕು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕು. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">ನೀವು ಈ ಸೈಟ್‌ಗೆ ಕೊನೆಯ ಬಾರಿ ಭೇಟಿ ನೀಡಿದ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಎಡಿಟ್ ಮಾಡಿ:</translation>
 <translation id="1372841398847029212">ನಿಮ್ಮ ಖಾತೆಗೆ ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -737,6 +739,7 @@
 <translation id="1572266655485775982">ವೈ-ಫೈ ಸಕ್ರಿಯ</translation>
 <translation id="1572876035008611720">ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ</translation>
 <translation id="1573127087832371028">ಸಮಸ್ಯೆಯ ಕುರಿತು ವಿವರಿಸಿ</translation>
+<translation id="1575036763505533001">ಕಸ್ಟಮೈಸ್ Chrome ಸೈಡ್ ಪ್ಯಾನೆಲ್</translation>
 <translation id="1575741822946219011">ಭಾಷೆಗಳು ಮತ್ತು ಇನ್‌ಪುಟ್‌ಗಳು</translation>
 <translation id="1576594961618857597">ಡಿಫಾಲ್ಟ್ ಬಿಳಿ ಅವತಾರ್</translation>
 <translation id="1576729678809834061">ಈ ಹುಡುಕಾಟ ಫಲಿತಾಂಶವನ್ನು ವರದಿ ಮಾಡಿ</translation>
@@ -1850,6 +1853,7 @@
 <translation id="2402226831639195063">ಟೋನ್‌ಗಳು</translation>
 <translation id="2405887402346713222">ಸಾಧನ ಮತ್ತು ಘಟಕದ ಕ್ರಮ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="2406153734066939945">ಈ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಇದರ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
+<translation id="2407671304279211586">DNS ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2408018932941436077">ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2408955596600435184">ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2409268599591722235">ಪ್ರಾರಂಭಿಸೋಣ</translation>
@@ -3165,6 +3169,7 @@
 <translation id="3445925074670675829">USB-C ಸಾಧನ</translation>
 <translation id="3446274660183028131">Windows ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು Parallels Desktop ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="344630545793878684">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹಲವಾರು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಓದಿ</translation>
+<translation id="3446548199318150462">ಹೊಸ ಡೆಸ್ಕ್‌ಟಾಪ್ ವಿನ್ಯಾಸವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. ಕಸ್ಟಮೈಸ್ Chrome ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಸಹ ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
 <translation id="3447644283769633681">ಮೂರನೇ-ವ್ಯಕ್ತಿಯ ಎಲ್ಲ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3448492834076427715">ಖಾತೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
@@ -4256,6 +4261,7 @@
 <translation id="4298660926525614540">ತೆಗೆದುಹಾಕಬಹುದಾದ ಸಂಗ್ರಹಣೆಯ ಹೆಸರುಗಳು</translation>
 <translation id="4299022904780065004">ಹೊಸ &amp;ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4301671483919369635">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಈ ಪುಟಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ. ಅವರ ಜೊತೆಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}one{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}other{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}}</translation>
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
@@ -4725,6 +4731,7 @@
 <translation id="4667027203988048332">ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:</translation>
 <translation id="4668279686271488041">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಜಾಹೀರಾತು-ಮಾಪನ ಡೇಟಾವನ್ನು ನಿಯಮಿತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">ಅಭಿನಂದನೆಗಳು! <ph name="APP_NAME" /> ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4672759829555593783">ಈಗ <ph name="FILE_NAME" /> ತೆರೆದಿದೆ</translation>
 <translation id="4673442866648850031">ಸ್ಟೈಲಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಸ್ಟೈಲಸ್ ಪರಿಕರಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4673785607287397025">ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಮಸ್ಯೆಯಾಗುತ್ತಿದೆ. ನಿಮ್ಮ Chromecast ಮತ್ತು ಕಂಪ್ಯೂಟರ್ ಒಂದೇ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿವೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -5495,6 +5502,7 @@
 <translation id="5297082477358294722">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ. ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="5297946558563358707">ಬೇರೊಬ್ಬರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಗೌಪ್ಯತೆ ಕಣ್ಣಿನ ಐಕಾನ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5298219193514155779">ಇವರಿಂದ ಥೀಮ್ ರಚಿಸಲಾಗಿದೆ</translation>
+<translation id="5298315677001348398">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮುಂದುವರಿಯಲು ಮತ್ತು ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಲು ಈ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಅನುಮತಿಸಲು ನೀವು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="5299109548848736476">ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="5299558715747014286">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5300426565656326054">ಬ್ರೌಸರ್-ಆಧಾರಿತ ಜಾಹೀರಾತು ವೈಯಕ್ತಿಕಗೊಳಿಸುವಿಕೆ</translation>
@@ -7997,9 +8005,11 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">ಅಮಾನ್ಯ ಸಂಯೋಜನೆ</translation>
 <translation id="7329154610228416156">ಸೈನ್‌ ಇನ್‌ ವಿಫಲಗೊಂಡಿದೆ ಏಕೆಂದರೆ ಅದು ಸುರಕ್ಷಿತವಲ್ಲದ URL (<ph name="BLOCKED_URL" />) ಬಳಸುವಂತೆ ಕಾನ್ಫಿಗರ್‌‌ ಮಾಡಲಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="7330533963640151632"><ph name="USER_NAME" /> ಖಾತೆಯ ಅಡಿಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿರುವ <ph name="USER_EMAIL" /> ಅವರ ಸಾಧನಕ್ಕಾಗಿ <ph name="FEATURE_NAME" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7332053360324989309">ಮೀಸಲು ಕೆಲಸಗಾರ: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಮತ್ತು ಮರುಸ್ಥಾಪಿಸಿ</translation>
+<translation id="7335436113423103413">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಏಕೀಕೃತ ಸೈಡ್ ಪ್ಯಾನೆಲ್‌ನಿಂದ Chrome ನ ಹೊಂದಾಣಿಕೆಯ ಕಾರ್ಯಚಟುವಟಿಕೆಯನ್ನು ಬಳಸುವ ಸಾಮರ್ಥ್ಯವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="7335974957018254119">ಈ ಭಾಷೆಗಳಿಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="7336799713063880535">ಸೂಚನೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7338630283264858612">ಸಾಧನದ ಕ್ರಮ ಸಂಖ್ಯೆ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
@@ -8666,6 +8676,7 @@
 <translation id="7828642077514646543">ದೋಷ: ಪ್ರಮಾಣಪತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7829877209233347340">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸುವುದಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿ ನೀಡುವುದಕ್ಕೆ ಪೋಷಕರಿಗೆ ಹೇಳಿ</translation>
 <translation id="7830833461614351956">ತೆರೆಯಲು <ph name="NUM_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಕಾಪಿ ಮಾಡಬೇಕೆ?</translation>
+<translation id="783088158898934992">ಆ್ಯಪ್ ಭಾಷೆ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ಗೆ ರಿಯಾಯಿತಿ ಕಂಡುಬಂದರೆ, ನೀವು ಅದನ್ನು ಈ ಪುಟದಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="7833720883933317473">ಉಳಿಸಲಾದ ಕಸ್ಟಮ್ ಪದಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>

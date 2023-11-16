@@ -4072,6 +4072,10 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph
 <translation id="4389073105055031853">Kullanıcıların tüm sertifikaları yönetmelerine izin ver</translation>
 <translation id="4389091865841123886">TPM mekanizmasıyla uzaktan doğrulamayı yapılandırın.</translation>
 <translation id="4389113579547582722">App Store puan promosyonunun gösterilmesine izin ver</translation>
+<translation id="4395619678972620537">Politika etkinleştirilirse WebRTC eş bağlantıları, TLS/DTLS (DTLS 1.0, TLS 1.0, TLS 1.1) protokollerinin eski sürümlerine geçebilir.
+      Bu politika devre dışı bırakılır veya ayarlanmazsa bu TLS/DTLS sürümleri devre dışı bırakılır.
+
+      Bu politika <ph name="PRODUCT_NAME" /> M121 sürümünde kaldırıldı.</translation>
 <translation id="439661169333921592">Giriş ekranında klavye odağını vurgulamayı devre dışı bırak</translation>
 <translation id="4397045637922200204">Hesap kurtarmayı devre dışı bırak</translation>
 <translation id="4397464099112037398">Varsayılan pencere yerleşimi izni ayarı</translation>
@@ -8714,6 +8718,19 @@ Politika, Devre Dışı değerine ayarlanırsa sayfa engellenir.</translation>
 <translation id="8269238942896230153">Yönetilen hesapların birincil hesap olması zorunlu tutulur ve profil oluşturulurken mevcut tarama verilerinin içe aktarılmasına izin verilir.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Bağlantı etkin olduğunda ana makine masaüstünde bağlantıyla ilgili kullanıcı arayüzünü etkinleştir</translation>
+<translation id="8272422063636310696">Eski teknolojilerin kullanıldığı bir sayfanın URL'sine göre raporlanıp raporlanmayacağını kontrol eder.
+
+Politika ayarlandığında rapor oluşturmak ve yüklemek için izin verilenler listesindeki bir girişle eşleşen ön eke sahip URL'ler kullanılır. Eşleşmeyen URL'ler yoksayılır.
+Politika ayarlanmaz veya boş bir listeye ayarlanırsa rapor oluşturulmaz.
+
+Eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır. Aşağıdaki istisnalar geçerlidir:
+ * "*" joker karakteri desteklenmez.
+ * Şema, bağlantı noktası ve sorgu yoksayılır.
+ * İzin verilenler listesine en fazla 100 URL eklenebilir
+
+<ph name="PRODUCT_NAME" /> için bu politika yalnızca makine <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> ile kaydettirildiğinde geçerli olur.
+
+Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features adresinde bulabilirsiniz.</translation>
 <translation id="8273183018575414926">Progresif Web Uygulamaları</translation>
 <translation id="8274603902181597201">Kullanıcının ecryptfs ana dizinini sil ve yeni bir ext4-encrypted ana diziniyle başla.</translation>
 <translation id="8274926413890711289">Ayrıntılı raporlama kontrollerini etkinleştir</translation>

@@ -4053,6 +4053,13 @@ Khi bạn đặt chính sách này thành Disabled (Tắt), thì người dùng 
 <translation id="4389073105055031853">Cho phép người dùng quản lý tất cả chứng chỉ</translation>
 <translation id="4389091865841123886">Định cấu hình chứng thực từ xa với cơ chế TPM.</translation>
 <translation id="4389113579547582722">Cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
+<translation id="4395619678972620537">Nếu bạn bật chính sách này, các kết nối ngang hàng WebRTC có thể hạ cấp xuống phiên bản 
+      lỗi thời của các giao thức TLS/DTLS (DTLS 1.0, TLS 1.0 và TLS 1.1).
+      Khi bạn tắt hoặc không đặt chính sách này, các phiên bản TLS/DTLS này sẽ
+      tắt.
+
+      Chính sách này đã bị loại bỏ trong phiên bản M121 của
+      <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Tắt tính năng làm nổi bật tiêu điểm bằng bàn phím trên màn hình đăng nhập</translation>
 <translation id="4397045637922200204">Huỷ kích hoạt dịch vụ khôi phục tài khoản</translation>
 <translation id="4397464099112037398">Chế độ cài đặt quyền kiểm soát Vị trí cửa sổ mặc định</translation>
@@ -8737,6 +8744,19 @@ Nếu bạn tắt chính sách, thì trang sẽ bị chặn.</translation>
 <translation id="8269238942896230153">Tài khoản được quản lý phải là tài khoản chính và người dùng có thể nhập dữ liệu duyệt web hiện có tại thời điểm tạo hồ sơ</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Bật giao diện người dùng liên quan đến kết nối trên màn hình máy chủ khi đang có kết nối</translation>
+<translation id="8272422063636310696">Kiểm soát việc một trang sử dụng công nghệ cũ có được báo cáo dựa trên URL của trang đó hay không.
+
+Khi bạn đặt chính sách này, các URL có tiền tố khớp với một mục nhập trong danh sách cho phép sẽ được dùng để tạo báo cáo và tải lên. Các URL không khớp sẽ bị bỏ qua.
+Nếu bạn không đặt hoặc đặt chính sách này thành danh sách trống, thì sẽ không có báo cáo nào được tạo.
+
+Mẫu so khớp sẽ có định dạng giống như các mẫu của chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />", được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dưới đây là một vài trường hợp ngoại lệ:
+ * Không hỗ trợ ký tự đại diện "*".
+ * Giản đồ, cổng và truy vấn bị bỏ qua.
+ * Có thể thêm tối đa 100 URL vào danh sách cho phép,
+
+Đối với <ph name="PRODUCT_NAME" />, chính sách này chỉ có hiệu lực khi đăng ký máy bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Bạn có thể xem thêm thông tin về công nghệ cũ tại https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">Ứng dụng web tiến bộ</translation>
 <translation id="8274603902181597201">Xóa thư mục chính ecryptf của người dùng và bắt đầu bằng một thư mục chính mới được mã hóa ext4.</translation>
 <translation id="8274926413890711289">Bật các biện pháp kiểm soát báo cáo chi tiết</translation>

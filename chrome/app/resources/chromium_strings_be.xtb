@@ -241,7 +241,6 @@
 <translation id="549669000822060376">Пачакайце, пакуль Chromium усталюе апошнія абнаўленні сістэмы.</translation>
 <translation id="5496810170689441661">Chromium спрабуе змяніць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="5527463683072221100">Адкрываць PDF-файлы ў Chromium</translation>
-<translation id="555273495373124701">Каб даныя браўзера Chromium былі даступныя на ўсіх вашых прыладах, увайдзіце ва ўліковы запіс</translation>
 <translation id="5614091477838198795">Калі гэты параметр уключаны, будзе выконвацца таксама выхад з вашага ўліковага запісу ў Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ёсць абнаўленне Chromium}=1{Ёсць абнаўленне Chromium}one{Абнаўленне Chromium выйшла # дзень таму}few{Абнаўленне Chromium выйшла # дні таму}many{Абнаўленне Chromium выйшла # дзён таму}other{Абнаўленне Chromium выйшла # дня таму}}</translation>
 <translation id="5643865575100044307">Заўсёды выдаляць даныя сайтаў з прылады пры закрыцці Chromium</translation>
@@ -395,7 +394,6 @@
 <translation id="7937630085815544518">Вы ўваходзілі ва ўліковы запіс Chromium як <ph name="USER_EMAIL_ADDRESS" />. Для паўторнага ўваходу выкарыстоўвайце той жа самы ўліковы запіс.</translation>
 <translation id="7975919845073681630">Гэта другасны ўсталяваны экзэмпляр Chromium – яго нельга зрабіць стандартным браўзерам.</translation>
 <translation id="7997934263947464652">Пашырэнні, праграмы і тэмы з невядомых крыніц могуць прычыніць шкоду вашай прыладзе. Chromium рэкамендуе ўсталёўваць іх толькі з наступнай крыніцы: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
-<translation id="800195749539500647">Выкарыстоўвайце ўсе магчымасці Chromium</translation>
 <translation id="8013436988911883588">Як толькі Chromium атрымае дазвол, вэб-сайты змогуць запытваць у вас доступ.</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>

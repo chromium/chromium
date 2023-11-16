@@ -502,6 +502,7 @@
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
 <translation id="3714981814255182093">Отворете ја Лентата за пребарување</translation>
 <translation id="3716182511346448902">Страницава користи премногу меморија, па Chrome ја паузираше.</translation>
+<translation id="3720422586473670527">Не, фала</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3737319253362202215">Поставки за превод</translation>
 <translation id="3737402728074743863">За да го користите уредов како безбедносен клуч, поставете заклучување екран</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Се презема датотека…}one{Се преземаат # датотека…}other{Се преземаат # датотеки…}}</translation>
 <translation id="5210286577605176222">Скокнете на претходната картичка</translation>
 <translation id="5210365745912300556">Затвори ја картичката</translation>
+<translation id="5216863793077689658">Вашата активност во „Увиди за страниците“ е зачувана во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5226378907213531272">Екранот ќе се отклучува при секое користење на автомобилот</translation>
 <translation id="5227554086496586518">Допрете за да ги видите резултатите од пребарувањето</translation>

@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">แถบเมนูของการจัดเรียงอัจฉริยะ</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4881695831933465202">เปิด</translation>
+<translation id="4883824756452868502">ตรวจหาหน่วย</translation>
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
 <translation id="4894963374040315706">ช่วยให้คุณค้นหาด้วยเสียงได้</translation>
 <translation id="489903206070130262">แท็บที่เปิดล่าสุด</translation>
@@ -856,8 +857,10 @@
 <translation id="5551897871312988470">เสนอการแปล</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="555749644339804659">กำลังตรวจสอบรหัสผ่าน…</translation>
+<translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
 <translation id="5572684875078967866">พื้นที่เก็บข้อมูล</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{ติดตามพัสดุนี้}other{ติดตามพัสดุทั้งหมด}}</translation>
 <translation id="5597915316964418992">เปิดตารางกริดของแท็บ</translation>
 <translation id="560322036295180549">ปิดโดยองค์กรของคุณ</translation>
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
@@ -1120,6 +1123,7 @@
 <translation id="6781260999953472352">เปิดการซิงค์ไหม</translation>
 <translation id="6781405765516175232">สำหรับตัวเลือกเส้นทาง ให้แตะ "ขอเส้นทาง"</translation>
 <translation id="6785453220513215166">กำลังส่งรายงานข้อขัดข้อง...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{ยกเลิกการติดตามพัสดุนี้}other{ยกเลิกการติดตามพัสดุทั้งหมด}}</translation>
 <translation id="6790502149545262384">เร็วๆ นี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="6797885426782475225">ค้นหาด้วยเสียง</translation>
 <translation id="6800349425672670802">คุณเข้าถึงแท็บที่เปิดอยู่ทั้งหมดได้จากตัวสลับแท็บ</translation>

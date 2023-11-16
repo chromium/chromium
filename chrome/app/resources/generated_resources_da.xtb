@@ -4213,6 +4213,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4261429981378979799">Tilladelser for udvidelser</translation>
 <translation id="4262004481148703251">Luk advarsel</translation>
 <translation id="4263223596040212967">Tjek dit tastaturlayout, og prøv igen.</translation>
+<translation id="4265301768135164545">Du kan også konfigurere en eSIM-profil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Du kan søge efter opdateringer via Ethernet, Wi-Fi eller mobildata.</translation>
 <translation id="426652736638196239">Dette IBAN gemmes kun på denne enhed</translation>
 <translation id="4266679478228765574">Fjernelse af mapper stopper delingen, men sletter ikke filerne.</translation>
@@ -9751,6 +9752,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8676313779986170923">Tak for din feedback.</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
+<translation id="8676985325915861058">Spring over, og opret ny profil</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
 <translation id="8678192320753081984">Giver Googles stærkeste kontobeskyttelse til personer, der er sårbare over for målrettede angreb</translation>
 <translation id="8678378565142776698">Genstart, og få automatiske opdateringer</translation>

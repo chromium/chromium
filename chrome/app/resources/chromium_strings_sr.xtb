@@ -209,6 +209,7 @@
 <translation id="4677944499843243528">Изгледа да се профил користи у неком другом Chromium процесу (<ph name="PROCESS_ID" />) на неком другом рачунару (<ph name="HOST_NAME" />). Chromium је закључао профил да не би био оштећен. Ако сте сигурни да ниједан други процес не користи овај профил, можете да откључате профил и поново покренете Chromium.</translation>
 <translation id="4680828127924988555">Откажи инсталацију</translation>
 <translation id="4708774505295300557">Неко се претходно пријавио на Chromium на овом рачунару као <ph name="ACCOUNT_EMAIL_LAST" />. Направите новог Chromium корисника да би информације биле раздвојене.</translation>
+<translation id="4724676981607797757">Инсталација није успела због неподржане грешке протокола.</translation>
 <translation id="4746050847053251315">Желите ли ипак да затворите Chromium?</translation>
 <translation id="4748217263233248895">Посебно безбедносно ажурирање за Chromium је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
 <translation id="4765210420921718862">Можете да се предомислите у било ком тренутку у подешавањима Chromium-а. Пробе се обављају паралелно уз тренутни начин приказивања огласа, па нећете одмах видети промене.</translation>
@@ -241,7 +242,6 @@
 <translation id="549669000822060376">Сачекајте да Chromium инсталира најновија ажурирања система.</translation>
 <translation id="5496810170689441661">Chromium покушава да измени лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="5527463683072221100">Отварајте PDF-ове у Chromium-у</translation>
-<translation id="555273495373124701">Пријавите се да бисте објављивали Chromium садржај на свим уређајима</translation>
 <translation id="5614091477838198795">Када је ово укључено, бићете и одјављени из Chromium-а</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ажурирање за Chromium је доступно}=1{Ажурирање за Chromium је доступно}one{Ажурирање за Chromium је доступно већ # дан}few{Ажурирање за Chromium је доступно већ # дана}other{Ажурирање за Chromium је доступно већ # дана}}</translation>
 <translation id="5643865575100044307">Увек избришите податке о сајтовима са уређаја када затворите Chromium</translation>
@@ -280,6 +280,7 @@
 <translation id="6145820983052037069">Овде можете да прелазите са једног Chromium профила на други</translation>
 <translation id="615103374448673771">Ако дозволите колачиће, Chromium може да их користи када предучитава странице</translation>
 <translation id="6175304430031192654">У зависности од подешавања, Chromium може да шаље и колачиће и актуелни URL</translation>
+<translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6183079672144801177">Уверите се да сте пријављени у Chromium на уређају <ph name="TARGET_DEVICE_NAME" /> и пробајте да пошаљете поново.</translation>
 <translation id="6212496753309875659">Овај рачунар већ има новију верзију Chromium-а. Ако софтвер не функционише, деинсталирајте Chromium и покушајте поново.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Поново ћемо покренути Chromium}=1{Поново ћемо покренути Chromium за 1 секунду}one{Поново ћемо покренути Chromium за # секунду}few{Поново ћемо покренути Chromium за # секунде}other{Поново ћемо покренути Chromium за # секунди}}</translation>
@@ -346,6 +347,7 @@
 <translation id="6981396265751285733">Када је укључено, Chromium ослобађа меморију са неактивних картица. То активним картицама и другим апликацијама пружа више рачунарских ресурса и одржава Chromium брзим. Неактивне картице се аутоматски поново активирају када се вратите на њих.</translation>
 <translation id="6985329841647292029">Chromium ОС услови</translation>
 <translation id="6990124437352146030">Chromium тражи дозволу да приступи микрофону за овај сајт</translation>
+<translation id="7011190694940573312">Инсталирање није успело зато што ова верзија оперативног система није подржана.</translation>
 <translation id="7024536598735240744">Грешка при отпакивању: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>
 <translation id="705851970750939768">Ажурирај Chromium</translation>
@@ -396,9 +398,9 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7937630085815544518">Били сте пријављени на Chromium као <ph name="USER_EMAIL_ADDRESS" />. Користите исти налог да бисте се поново пријавили.</translation>
 <translation id="7975919845073681630">Ово је секундарна инсталација Chromium-а па не можете да га подесите као подразумевани прегледач.</translation>
 <translation id="7997934263947464652">Додаци, апликације и теме из непознатих извора могу да нашкоде уређају. Chromium препоручује да их инсталирате само из: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
-<translation id="800195749539500647">Користите Chromium на најбољи начин</translation>
 <translation id="8013436988911883588">Када Chromium добије приступ, веб-сајтови ће моћи да затраже приступ.</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">Инсталирање није успело зато што рачунар не испуњава минималне захтеве за хардвер.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium-у треба дозвола за локацију за овај сајт</translation>
 <translation id="8133124826068723441">Chromium ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
@@ -464,5 +466,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
 <translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
+<translation id="983803489796659991">Инсталација није успела зато што сервер за ажурирање нема никакве хеширане податке за апликацију.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

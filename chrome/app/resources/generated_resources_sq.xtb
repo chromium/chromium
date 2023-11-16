@@ -4195,6 +4195,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4261429981378979799">Lejet e shtesave</translation>
 <translation id="4262004481148703251">Hiq paralajmërimin</translation>
 <translation id="4263223596040212967">Kontrollo strukturën e tastierës dhe provo përsëri.</translation>
+<translation id="4265301768135164545">Mund të konfigurosh gjithashtu një profil të kartës eSIM <ph name="BEGIN_LINK" />në mënyrë manuale<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Për të kontrolluar për përditësime, përdor Ethernet, Wi-Fi ose të dhënat celulare.</translation>
 <translation id="426652736638196239">Ky numër IBAN do të ruhet vetëm në këtë pajisje</translation>
 <translation id="4266679478228765574">Heqja e dosjeve do të ndalojë ndarjen, por nuk do të fshijë skedarët.</translation>
@@ -9728,6 +9729,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8676313779986170923">Faleminderit për dërgimin e komentit.</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
+<translation id="8676985325915861058">Kapërce dhe konfiguro një profil të ri</translation>
 <translation id="8677212948402625567">Palosi të gjitha...</translation>
 <translation id="8678192320753081984">I ofron Google sigurinë më të fortë të llogarisë për personat që janë në rrezik të sulmeve të personalizuara</translation>
 <translation id="8678378565142776698">Rinis dhe merr përditësimet automatike</translation>

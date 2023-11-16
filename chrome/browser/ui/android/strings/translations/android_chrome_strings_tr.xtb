@@ -502,6 +502,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="371230970611282515">Tehlikeli etkinlikleri meydana gelmeden önce tahmin ederek sizi uyarır.</translation>
 <translation id="3714981814255182093">Bulma Çubuğu'nu açar</translation>
 <translation id="3716182511346448902">Bu sayfa, bellekte çok fazla yer kapladığından Chrome tarafından duraklatıldı.</translation>
+<translation id="3720422586473670527">Hayır, teşekkürler</translation>
 <translation id="3721119614952978349">Siz ve Google</translation>
 <translation id="3737319253362202215">Çeviri ayarları</translation>
 <translation id="3737402728074743863">Bu cihazı güvenlik anahtarı olarak kullanmak için ekran kilidi ayarlayın</translation>
@@ -799,6 +800,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Dosya indiriliyor…}other{# dosya indiriliyor…}}</translation>
 <translation id="5210286577605176222">Önceki sekmeye gider</translation>
 <translation id="5210365745912300556">Sekmeyi kapat</translation>
+<translation id="5216863793077689658">Page Insights'taki etkinliğiniz <ph name="BEGIN_LINK" />Google Hesabınıza<ph name="END_LINK" /> kaydedilir.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5226378907213531272">Arabayı her kullandığınızda ekranınızın kilidini açarsınız</translation>
 <translation id="5227554086496586518">Arama sonuçlarını görmek için dokunun</translation>

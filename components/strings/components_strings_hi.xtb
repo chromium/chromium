@@ -304,7 +304,7 @@
 
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">एडमिन, <ph name="DATE" /> को <ph name="TIME" /> बजे आपके डिवाइस को रीस्टार्ट करेगा</translation>
-<translation id="1564634006476980707">खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
+<translation id="1564634006476980707">इस खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> जोड़ें</translation>
@@ -3757,7 +3757,7 @@
 <translation id="8490137692873530638">स्टैकर 10</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> को लोड होने में बहुत ज़्यादा समय लगा.</translation>
-<translation id="8502972004418241366">इस साइट पर अपनी <ph name="PERMISSION" /> का इस्तेमाल करने के लिए, आपको Chrome को ऐक्सेस देना होगा</translation>
+<translation id="8502972004418241366">इस साइट पर <ph name="PERMISSION" /> का इस्तेमाल करने के लिए, आपको Chrome को ऐक्सेस देना होगा</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8504928302600319133">कंप्यूटर हार्डवेयर</translation>

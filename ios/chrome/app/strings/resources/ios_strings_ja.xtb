@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">スマートソート メニューバー</translation>
 <translation id="4860895144060829044">通話</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4883824756452868502">単位の検出</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="4894963374040315706">音声を使って検索できます</translation>
 <translation id="489903206070130262">最後に開いたタブ</translation>
@@ -856,8 +857,10 @@
 <translation id="5551897871312988470">翻訳するか尋ねる</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="555749644339804659">パスワードを確認しています…</translation>
+<translation id="5559567453458728487">ウェブで見つかった測定単位を変換する</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5572684875078967866">情報容量</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{この荷物を追跡}other{すべての荷物を追跡}}</translation>
 <translation id="5597915316964418992">タブグリッドを開きます</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
@@ -1120,6 +1123,7 @@
 <translation id="6781260999953472352">同期をオンにしますか？</translation>
 <translation id="6781405765516175232">経路オプションを表示するには、[ルート検索] をタップします。</translation>
 <translation id="6785453220513215166">クラッシュレポートを送信しています...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{この荷物の追跡を停止}other{すべての荷物の追跡を停止}}</translation>
 <translation id="6790502149545262384">まもなく、新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
 <translation id="6797885426782475225">音声検索</translation>
 <translation id="6800349425672670802">開いているすべてのタブにタブ切り替え機能からアクセスできます。</translation>

@@ -315,6 +315,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{текстуална порука}one{# текстуална порука}few{# текстуалне поруке}other{# текстуалних порука}}</translation>
 <translation id="1236009322878349843">Измените телефон</translation>
 <translation id="1239594683407221485">Истражите садржај уређаја у апликацији Датотеке.</translation>
+<translation id="1239841552505950173">Покрени апликацију</translation>
 <translation id="1240903469550363138">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />услове коришћења услуге<ph name="END_LINK2" /> за овај сајт.</translation>
 <translation id="1241066500170667906">Изаберите статус експеримента за <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Још језика</translation>
@@ -463,6 +464,7 @@
 <translation id="1362865166188278099">Механички проблем. Проверите штампач</translation>
 <translation id="1363585519747660921">USB штампач треба да се конфигурише</translation>
 <translation id="136378536198524553">Уштеда енергије је укључена</translation>
+<translation id="136522805455656552">Да бисте заштитили уређај, треба да покрећете и инсталирате софтвер само из поузданих извора и од поузданих програмера. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">Linux није подржан на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">Прегледајте и измените фајлове од последње посете овом сајту:</translation>
 <translation id="1372841398847029212">Синхронизујте са налогом</translation>
@@ -731,6 +733,7 @@
 <translation id="1572266655485775982">Омогући WiFi</translation>
 <translation id="1572876035008611720">Унесите имејл</translation>
 <translation id="1573127087832371028">Опишите проблем</translation>
+<translation id="1575036763505533001">Прилагодите Chrome бочну таблу</translation>
 <translation id="1575741822946219011">Језици и уноси</translation>
 <translation id="1576594961618857597">Подразумевани бели аватар</translation>
 <translation id="1576729678809834061">Пријавите овај резултат претраге</translation>
@@ -3155,6 +3158,7 @@
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
 <translation id="3446274660183028131">Покрените Parallels Desktop да бисте инсталирали Windows.</translation>
 <translation id="344630545793878684">Читање ваших података на више веб-сајтова</translation>
+<translation id="3446548199318150462">Омогућава нови дизајн екрана. Морате да омогућите и прилагођавање Chrome бочне табле.</translation>
 <translation id="3447644283769633681">Блокирај све колачиће трећих страна</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> се пребацује на <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ажурирај налог</translation>
@@ -4245,6 +4249,7 @@
 <translation id="4298660926525614540">Називи преносивих меморија</translation>
 <translation id="4299022904780065004">Нови &amp;прозор без архивирања</translation>
 <translation id="4301671483919369635">Ова страница може да мења датотеке</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# контакт није доступан. Да бисте користили функцију <ph name="FEATURE_NAME" /> са њим, у контакте додајте имејл адресе повезане са његовим Google налогом.}one{# контакт није доступан. Да бисте користили функцију <ph name="FEATURE_NAME" /> са њима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}few{# контакта нису доступна. Да бисте користили функцију <ph name="FEATURE_NAME" /> са њима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}other{# контаката није доступно. Да бисте користили функцију <ph name="FEATURE_NAME" /> са њима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}}</translation>
 <translation id="4303079906735388947">Подесите нови PIN за безбедносни кључ</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4305402730127028764">Копирај на: <ph name="DEVICE_NAME" /></translation>
@@ -4714,6 +4719,7 @@
 <translation id="4667027203988048332">Који подаци се користе:</translation>
 <translation id="4668279686271488041">Подаци мерења огласа се редовно бришу са уређаја</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">Честитамо! Апликација <ph name="APP_NAME" /> је инсталирана на уређају</translation>
 <translation id="4672759829555593783">Отворите <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">Отварај алатке за писаљку када се писаљка уклони</translation>
 <translation id="4673785607287397025">Проблем при повезивању. Уверите се да су Chromecast и рачунар на истој мрежи и пробајте поново.</translation>
@@ -5483,6 +5489,7 @@
 <translation id="5297082477358294722">Лозинка је сачувана. Прегледајте сачуване лозинке и управљајте њима са <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Када вам неко други погледа екран, приказује се икона за приватност са оком у доњем десном углу екрана</translation>
 <translation id="5298219193514155779">Тему је направио/ла</translation>
+<translation id="5298315677001348398">Желите да наставите и дозволите овом софтверу да уноси измене на уређају?</translation>
 <translation id="5299109548848736476">Не прати</translation>
 <translation id="5299558715747014286">Приказ група картица и управљање њима</translation>
 <translation id="5300426565656326054">Персонализација огласа на основу прегледача</translation>
@@ -7985,9 +7992,11 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Неважећа комбинација</translation>
 <translation id="7329154610228416156">Пријављивање није успело јер је конфигурисано за коришћење небезбедног URL-а (<ph name="BLOCKED_URL" />). Контактирајте администратора.</translation>
+<translation id="7330533963640151632">Подешавања функције <ph name="FEATURE_NAME" /> за уређај који користи <ph name="USER_NAME" />. Дели се помоћу налога <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + стрелица надоле</translation>
 <translation id="7332053360324989309">Наменски обрађивач: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Правите резервне копије апликација и подешавања и враћајте их</translation>
+<translation id="7335436113423103413">Омогућава коришћење функције прилагођавања Chrome-а на обједињеној бочној табли на страници нове картице.</translation>
 <translation id="7335974957018254119">Користите проверу правописа за:</translation>
 <translation id="7336799713063880535">Обавештења су блокирана.</translation>
 <translation id="7338630283264858612">Серијски број уређаја је неважећи.</translation>
@@ -8656,6 +8665,7 @@
 <translation id="7828642077514646543">Грешка: Дешифровање сертификата није успело</translation>
 <translation id="7829877209233347340">Затражи од родитеља да се пријави да би дао дозволу за додавање школског налога</translation>
 <translation id="7830833461614351956">Желите да копирате <ph name="NUM_OF_FILES" /> фајл(ов)а у <ph name="CLOUD_PROVIDER" /> да бисте их отворили?</translation>
+<translation id="783088158898934992">Језик апликације</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Ако Google пронађе попуст, видећете га на овој страници</translation>
 <translation id="7833720883933317473">Сачуване прилагођене речи ће се појавити овде</translation>
@@ -10334,6 +10344,7 @@
 <translation id="9115932142612197835">Ово подешавање не мења доступност Google преводиоца или Објектива</translation>
 <translation id="9116799625073598554">Апликација за прављење белешки</translation>
 <translation id="9117030152748022724">Управљајте апликацијама</translation>
+<translation id="9120362425083889527">Инсталација није успела. Пробајте поново или затворите овај прозор</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />За најбољи доживљај инсталирајте <ph name="DEVICE_OS" /> на интерни диск. Можете и да га инсталирате касније са екрана за пријављивање.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако нисте спремни за инсталацију, можете да га покренете са USB-а да бисте га испробали. Тиме ћете задржати постојећи ОС и податке, али можда ћете приметити ограничења у погледу меморијског простора и перформанси.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Отвори као закачену картицу</translation>

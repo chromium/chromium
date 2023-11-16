@@ -315,6 +315,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{텍스트}other{텍스트 #개}}</translation>
 <translation id="1236009322878349843">휴대전화 수정</translation>
 <translation id="1239594683407221485">파일 앱에서 기기의 콘텐츠를 탐색하세요.</translation>
+<translation id="1239841552505950173">애플리케이션 시작</translation>
 <translation id="1240903469550363138">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />의 실험 상태 선택</translation>
 <translation id="124116460088058876">다른 언어</translation>
@@ -463,6 +464,7 @@
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
 <translation id="136378536198524553">에너지 절약 모드 사용 중</translation>
+<translation id="136522805455656552">기기를 안전하게 보호하려면 신뢰할 수 있는 출처 및 개발자의 소프트웨어만 실행하고 설치해야 합니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">사용 중인 <ph name="DEVICE_TYPE" />에서 Linux가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">이 사이트를 마지막으로 방문했을 때의 파일을 보고 수정합니다.</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
@@ -735,6 +737,7 @@
 <translation id="1572266655485775982">Wi-Fi 사용</translation>
 <translation id="1572876035008611720">이메일을 입력하세요.</translation>
 <translation id="1573127087832371028">문제 설명</translation>
+<translation id="1575036763505533001">Chrome 측면 패널 맞춤설정</translation>
 <translation id="1575741822946219011">언어 및 입력</translation>
 <translation id="1576594961618857597">기본 흰색 아바타</translation>
 <translation id="1576729678809834061">검색결과 신고</translation>
@@ -3174,6 +3177,7 @@
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
+<translation id="3446548199318150462">새 데스크톱 디자인을 사용 설정합니다. Chrome 측면 패널 맞춤설정도 사용 설정해야 합니다.</translation>
 <translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" />에서 <ph name="DEVICE_NAME" /> 기기로 전송 중</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
@@ -4262,6 +4266,7 @@
 <translation id="4298660926525614540">이동식 저장소 이름</translation>
 <translation id="4299022904780065004">새 시크릿 창(&amp;I)</translation>
 <translation id="4301671483919369635">이 페이지에서 파일을 수정할 수 있습니다.</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{연락처 #개와 연결할 수 없습니다. 해당 연락처와 <ph name="FEATURE_NAME" /> 기능을 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 내 연락처에 추가하세요.}other{연락처 #개와 연결할 수 없습니다. 해당 연락처와 <ph name="FEATURE_NAME" /> 기능을 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 내 연락처에 추가하세요.}}</translation>
 <translation id="4303079906735388947">보안 키의 새로운 PIN을 설정하세요.</translation>
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />(으)로 복사</translation>
@@ -4732,6 +4737,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4667027203988048332">사용되는 데이터:</translation>
 <translation id="4668279686271488041">광고 측정 데이터가 기기에서 정기적으로 삭제됩니다.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">축하합니다! 기기에 <ph name="APP_NAME" /> 앱이 설치되었습니다</translation>
 <translation id="4672759829555593783">지금 <ph name="FILE_NAME" /> 열기</translation>
 <translation id="4673442866648850031">스타일러스가 분리되면 스타일러스 도구가 열립니다.</translation>
 <translation id="4673785607287397025">연결하는 중에 문제가 발생했습니다. Chromecast와 컴퓨터가 같은 네트워크에 연결되어 있는지 확인한 후 다시 시도해 주세요.</translation>
@@ -5501,6 +5507,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5297082477358294722">비밀번호가 저장되었습니다. <ph name="SAVED_PASSWORDS_STORE" />에서 저장된 비밀번호를 보고 관리하세요.</translation>
 <translation id="5297946558563358707">다른 사람이 내 화면을 보면 화면 오른쪽 하단에 개인 정보 보호 눈 모양 아이콘이 표시됩니다.</translation>
 <translation id="5298219193514155779">테마 제작자</translation>
+<translation id="5298315677001348398">계속 진행하여 이 소프트웨어가 기기를 변경할 수 있도록 허용하시겠습니까?</translation>
 <translation id="5299109548848736476">추적 안함</translation>
 <translation id="5299558715747014286">탭 그룹 확인 및 관리</translation>
 <translation id="5300426565656326054">브라우저 기반 광고 개인 최적화</translation>
@@ -7999,9 +8006,11 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />명)</translation>
 <translation id="7328867076235380839">잘못된 조합입니다</translation>
 <translation id="7329154610228416156">보안되지 않은 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되어 있기 때문에 로그인할 수 없습니다. 관리자에게 문의하세요.</translation>
+<translation id="7330533963640151632"><ph name="USER_EMAIL" /> 계정에서 공유하는 <ph name="USER_NAME" />님의 기기에 관한 <ph name="FEATURE_NAME" /> 설정입니다.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
 <translation id="7332053360324989309">전용 작업자: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">앱과 설정 백업 및 복원하기</translation>
+<translation id="7335436113423103413">새 탭 페이지에서 통합 측면 패널의 Chrome 맞춤설정 기능을 사용하는 기능을 사용 설정합니다.</translation>
 <translation id="7335974957018254119">맞춤법 검사 사용</translation>
 <translation id="7336799713063880535">알림 차단됨</translation>
 <translation id="7338630283264858612">기기 일련번호가 잘못되었습니다.</translation>
@@ -8669,6 +8678,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7828642077514646543">오류: 인증서를 디코딩할 수 없습니다</translation>
 <translation id="7829877209233347340">부모님에게 로그인하여 학교 계정을 추가할 권한을 부여해 달라고 요청하세요.</translation>
 <translation id="7830833461614351956">파일 <ph name="NUM_OF_FILES" />개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
+<translation id="783088158898934992">앱 언어</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google에서 할인 가격을 찾으면 이 페이지에 표시됩니다.</translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>

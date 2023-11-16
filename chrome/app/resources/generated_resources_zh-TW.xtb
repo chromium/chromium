@@ -1842,6 +1842,7 @@
 <translation id="2402226831639195063">音調</translation>
 <translation id="2405887402346713222">裝置和元件序號</translation>
 <translation id="2406153734066939945">要刪除這個設定檔和相關資料嗎？</translation>
+<translation id="2407671304279211586">選取 DNS 供應商</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2409268599591722235">開始使用</translation>
@@ -4196,6 +4197,7 @@
 <translation id="4261429981378979799">擴充功能權限</translation>
 <translation id="4262004481148703251">忽略警告</translation>
 <translation id="4263223596040212967">請檢查你的鍵盤配置，然後再試一次。</translation>
+<translation id="4265301768135164545">你也可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 卡設定檔</translation>
 <translation id="426564820080660648">如要檢查更新，請使用 Wi-Fi 或行動數據。</translation>
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
@@ -9728,6 +9730,7 @@
 <translation id="8676313779986170923">感謝你提供意見。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
+<translation id="8676985325915861058">略過並設定新設定檔</translation>
 <translation id="8677212948402625567">全部收合...</translation>
 <translation id="8678192320753081984">為容易遭受針對性攻擊的使用者提供 Google 最強大的帳戶安全防護功能</translation>
 <translation id="8678378565142776698">重新啟動並取得自動更新</translation>
@@ -10323,6 +10326,7 @@
 <translation id="9115932142612197835">這項設定不會影響 Google 翻譯或智慧鏡頭的可用性</translation>
 <translation id="9116799625073598554">筆記應用程式</translation>
 <translation id="9117030152748022724">管理應用程式</translation>
+<translation id="9120362425083889527">無法完成安裝。請再試一次或關閉這個視窗</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內部磁碟。你也可以之後再透過登入畫面安裝。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用此作業系統。這種做法可保留現有作業系統和資料，但儲存空間及效能可能會有所限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>

@@ -239,7 +239,6 @@
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
-<translation id="555273495373124701">Увійдіть, щоб мати доступ до своїх даних Chromium на всіх пристроях</translation>
 <translation id="5614091477838198795">Якщо перемикач увімкнено, ви також автоматично вийдете зі свого облікового запису в Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
 <translation id="5643865575100044307">Завжди видаляти дані сайтів із пристрою, коли ви закриваєте Chromium</translation>
@@ -394,7 +393,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7937630085815544518">Ви ввійшли в Chromium як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7975919845073681630">Це додаткове встановлення Chromium. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
 <translation id="7997934263947464652">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chromium – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
-<translation id="800195749539500647">Користуйтеся всіма можливостями Chromium</translation>
 <translation id="8013436988911883588">Коли Chromium отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>

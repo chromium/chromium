@@ -241,7 +241,6 @@
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
-<translation id="555273495373124701">Најавете се за да ги добиете вашите работи на Chromium на сите уреди</translation>
 <translation id="5614091477838198795">Кога е вклучено, ќе се одјавите и од Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
 <translation id="5643865575100044307">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
@@ -396,7 +395,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7937630085815544518">Бевте најавени на Chromium како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
 <translation id="7975919845073681630">Ова е второстепена инсталација на Chromium и затоа не може да биде стандарден прелистувач.</translation>
 <translation id="7997934263947464652">Екстензии, апликации и теми од непознати извори може да му наштетат на вашиот уред. Chromium препорачува да ги инсталирате само од <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
-<translation id="800195749539500647">Извлечете го максимумот од Chromium</translation>
 <translation id="8013436988911883588">Ако Chromium има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome за тестирање</translation>

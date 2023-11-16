@@ -4012,6 +4012,10 @@ Se viene disattivato, gli utenti non possono monitorare i loro pacchetti su <ph 
 <translation id="4389073105055031853">Consenti agli utenti di gestire tutti i certificati</translation>
 <translation id="4389091865841123886">Configura l'attestazione da remoto con meccanismo TPM.</translation>
 <translation id="4389113579547582722">Consenti la visualizzazione della promozione di valutazione dell'App Store</translation>
+<translation id="4395619678972620537">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
+      Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
+
+      Questo criterio è stato rimosso nella versione M121 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso</translation>
 <translation id="4397045637922200204">Disattiva recupero dell'account</translation>
 <translation id="4397464099112037398">Impostazione predefinita dell'autorizzazione per il posizionamento delle finestre</translation>
@@ -8610,6 +8614,19 @@ Se il criterio viene disattivato, la pagina verrà bloccata.</translation>
 <translation id="8269238942896230153">Un account gestito deve essere un account principale. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
+<translation id="8272422063636310696">Consente di controllare se una pagina che utilizza tecnologie precedenti verrà inclusa nel report in base al relativo URL.
+
+Se il criterio viene configurato, gli URL il cui prefisso corrisponde a una voce della lista consentita verranno utilizzati per generare il report e caricarlo. Gli URL senza corrispondenza verranno ignorati.
+Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non verrà generato alcun report.
+
+Per i pattern corrispondenti viene usato un formato simile a quello utilizzato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
+ * Nessun supporto del carattere jolly "*".
+ * Schema, porta e query vengono ignorati.
+ * Puoi aggiungere al massimo 100 URL nella lista consentita.
+
+Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">App web progressive</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
 <translation id="8274926413890711289">Attiva i controlli di reporting granulare</translation>

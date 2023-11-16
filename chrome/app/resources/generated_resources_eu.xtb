@@ -4197,6 +4197,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4261429981378979799">Luzapenen baimenak</translation>
 <translation id="4262004481148703251">Baztertu abisua</translation>
 <translation id="4263223596040212967">Egiaztatu teklatuaren diseinua egokia dela eta saiatu berriro.</translation>
+<translation id="4265301768135164545">Era berean, <ph name="BEGIN_LINK" />eskuz<ph name="END_LINK" /> konfigura dezakezu eSIMaren profil bat</translation>
 <translation id="426564820080660648">Eguneratzeak bilatzeko, erabili Ethernet-, wifi- edo datu-konexioa.</translation>
 <translation id="426652736638196239">Gailu honetan soilik gordeko da IBANa</translation>
 <translation id="4266679478228765574">Karpetak kenduz gero, haiek partekatzeari utziko zaio, baina ez dira ezabatuko fitxategiak.</translation>
@@ -9727,6 +9728,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8676313779986170923">Eskerrik asko oharrak bidaltzeagatik.</translation>
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>
+<translation id="8676985325915861058">Saltatu eta konfiguratu beste profil bat</translation>
 <translation id="8677212948402625567">Tolestu guztiak…</translation>
 <translation id="8678192320753081984">Google-ren kontuaren segurtasun sendoena eskaintzen du, eraso bideratuak jasotzeko arriskuan dauden pertsonentzat</translation>
 <translation id="8678378565142776698">Berrezarri eta jaso eguneratze automatikoak</translation>

@@ -237,7 +237,6 @@
 <translation id="549669000822060376">Подождите, пока Chromium устанавливает последние обновления системы</translation>
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
-<translation id="555273495373124701">Выполните вход, чтобы сохраняемые в Chromium данные были доступны на всех ваших устройствах.</translation>
 <translation id="5614091477838198795">Также выполняется выход из Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
 <translation id="5643865575100044307">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>
@@ -389,7 +388,6 @@
 <translation id="7937630085815544518">Ранее вы входили в Chromium как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
 <translation id="7975919845073681630">Это дополнительная установка Chromium. Его нельзя сделать браузером по умолчанию.</translation>
 <translation id="7997934263947464652">Расширения, приложения и темы из неизвестных источников могут навредить устройству. Рекомендуем скачивать подобное ПО только из <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
-<translation id="800195749539500647">Максимально эффективная работа с Chromium</translation>
 <translation id="8013436988911883588">Когда вы предоставите доступ Chromium, веб-сайты также смогут запрашивать у вас доступ.</translation>
 <translation id="80471789339884597">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите все открытые браузеры.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome для тестирования</translation>

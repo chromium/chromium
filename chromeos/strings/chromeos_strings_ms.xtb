@@ -30,6 +30,7 @@
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
+<translation id="1195784767091936222">Hidupkan mod gelap automatik</translation>
 <translation id="1196959502276349371">Versi <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Mainkan/Jeda</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
@@ -278,6 +279,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Peranti disambungkan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alih keluar halaman?}=1{Alih keluar halaman {PAGE_NUMBER}?}other{Alih keluar halaman {PAGE_NUMBER}?}}</translation>
+<translation id="3136905423678675159">Hidupkan mod gelap automatik?</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data mudah alih</translation>
 <translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
@@ -357,6 +359,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
+<translation id="3754384069690464321">Untuk hasil yang terbaik dengan hiasan latar ini, sila hidupkan mod gelap automatik. Anda boleh menukar hiasan latar tersebut pada apl pada bila-bila masa.</translation>
 <translation id="3771294271822695279">Fail Video</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="380097101658023925">kawalan rgb</translation>

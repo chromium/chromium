@@ -4203,6 +4203,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4261429981378979799">Laienduste load</translation>
 <translation id="4262004481148703251">Loobu hoiatusest</translation>
 <translation id="4263223596040212967">Kontrollige klaviatuuripaigutust ja proovige uuesti.</translation>
+<translation id="4265301768135164545">Saate eSIM-i profiili seadistada ka <ph name="BEGIN_LINK" />käsitsi<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Kasutage värskenduste otsimiseks Etherneti, WiFi-ühendust või mobiilset andmesidet.</translation>
 <translation id="426652736638196239">IBAN salvestatakse ainult sellesse seadmesse</translation>
 <translation id="4266679478228765574">Kaustade eemaldamisel lõpetatakse jagamine, kuid faile ei kustutata.</translation>
@@ -9739,6 +9740,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8676313779986170923">Täname teid tagasiside saatmise eest!</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
+<translation id="8676985325915861058">Jäta vahele ja loo uus profiil</translation>
 <translation id="8677212948402625567">Ahenda kõik ...  </translation>
 <translation id="8678192320753081984">Pakub sihitud rünnakute ohus olevatele inimestele Google'i konto tugevaimat turvafunktsiooni</translation>
 <translation id="8678378565142776698">Taaskäivita ja hangi automaatsed värskendused</translation>

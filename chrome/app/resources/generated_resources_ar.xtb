@@ -317,6 +317,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
 <translation id="1236009322878349843">تعديل بيانات الهاتف</translation>
 <translation id="1239594683407221485">يمكنك استكشاف محتوى الجهاز في تطبيق الملفات.</translation>
+<translation id="1239841552505950173">تشغيل التطبيق</translation>
 <translation id="1240903469550363138">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. ويمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="1241066500170667906">اختَر حالة ميزة "<ph name="EXPERIMENT_NAME" />" التجريبية.</translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
@@ -465,6 +466,7 @@
 <translation id="1362865166188278099">هناك مشكلة ميكانيكية. يُرجى التحقُّق من الطابعة.</translation>
 <translation id="1363585519747660921">‏طابعة USB بحاجة إلى الضبط</translation>
 <translation id="136378536198524553">وضع "توفير الطاقة" مفعَّل</translation>
+<translation id="136522805455656552">يجب عدم تشغيل أو تثبيت البرامج إلا من مصادر موثوق بها ومطوّرين موثوق بهم للحفاظ على أمان الجهاز. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">‏لا يتوافق نظام التشغيل Linux مع <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">عرض وتعديل الملفات التي تم منحها أذونات خلال آخر مرة زرت فيها هذا الموقع الإلكتروني:</translation>
 <translation id="1372841398847029212">المزامنة مع حسابك</translation>
@@ -734,6 +736,7 @@
 <translation id="1572266655485775982">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="1572876035008611720">أدخل بريدك الإلكتروني</translation>
 <translation id="1573127087832371028">وصف المشكلة</translation>
+<translation id="1575036763505533001">‏تخصيص اللوحة الجانبية في Chrome</translation>
 <translation id="1575741822946219011">اللغات وأساليب الإدخال</translation>
 <translation id="1576594961618857597">الصورة الرمزية التلقائية البيضاء</translation>
 <translation id="1576729678809834061">الإبلاغ عن نتيجة البحث هذه</translation>
@@ -3161,6 +3164,7 @@
 <translation id="3445925074670675829">‏جهاز USB-C</translation>
 <translation id="3446274660183028131">‏يُرجى تشغيل نظام Parallels Desktop لتثبيت نظام التشغيل Windows.</translation>
 <translation id="344630545793878684">قراءة بياناتك على عدد من المواقع الإلكترونية</translation>
+<translation id="3446548199318150462">‏يعمل هذا الإعداد على تفعيل تصميم سطح المكتب الجديد. ويجب أيضًا تفعيل خيار "تخصيص اللوحة الجانبية في Chrome".</translation>
 <translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط للأطراف الثالثة</translation>
 <translation id="3447797901512053632">جارٍ بث <ph name="TAB_NAME" /> على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">تعديل الحساب</translation>
@@ -4199,6 +4203,7 @@
 <translation id="4261429981378979799">أذونات الإضافة</translation>
 <translation id="4262004481148703251">إغلاق التحذير</translation>
 <translation id="4263223596040212967">يُرجى التحقق من تنسيق لوحة المفاتيح وإعادة المحاولة.</translation>
+<translation id="4265301768135164545">‏يمكنك أيضًا إعداد ملف شخصي لشريحة eSIM <ph name="BEGIN_LINK" />يدويًا<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">‏للتحقق من وجود تحديثات، يُرجى استخدام شبكة Ethernet أو Wi-Fi أو بيانات الجوّال.</translation>
 <translation id="426652736638196239">‏سيتم حفظ رقم الحساب هذا بصيغة IBAN على هذا الجهاز فقط.</translation>
 <translation id="4266679478228765574">وستؤدي إزالة المجلدات إلى إيقاف المشاركة ولكنها لن تحذف الملفات.</translation>
@@ -4248,6 +4253,7 @@
 <translation id="4298660926525614540">أسماء مساحات التخزين القابلة للإزالة</translation>
 <translation id="4299022904780065004">نافذة جديدة &amp;للتصفُّح المتخفي</translation>
 <translation id="4301671483919369635">يتم السماح لهذه الصفحة بتعديل الملفات.</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{‏جهة اتصال واحدة غير متوفِّرة. لاستخدام "<ph name="FEATURE_NAME" />" مع جهة الاتصال هذه، أضِف إلى جهات اتصالك عنوان البريد الإلكتروني المرتبط بحسابها على Google.}zero{‏# جهة اتصال غير متوفِّرة. لاستخدام "<ph name="FEATURE_NAME" />" مع جهات الاتصال هذه، أضِف إلى جهات اتصالك عناوين البريد الإلكتروني المرتبطة بحساباتها على Google.}two{‏جهتا اتصال غير متوفِّرتَين. لاستخدام "<ph name="FEATURE_NAME" />" مع جهتَي الاتصال هاتين، أضِف إلى جهات اتصالك عنوانَي البريد الإلكتروني المرتبطَين بحسابيهما على Google.}few{‏# جهات اتصال غير متوفِّرة. لاستخدام "<ph name="FEATURE_NAME" />" مع جهات الاتصال هذه، أضِف إلى جهات اتصالك عناوين البريد الإلكتروني المرتبطة بحساباتها على Google.}many{‏# جهة اتصال غير متوفِّرة. لاستخدام "<ph name="FEATURE_NAME" />" مع جهات الاتصال هذه، أضِف إلى جهات اتصالك عناوين البريد الإلكتروني المرتبطة بحساباتها على Google.}other{‏# جهة اتصال غير متوفِّرة. لاستخدام "<ph name="FEATURE_NAME" />" مع جهات الاتصال هذه، أضِف إلى جهات اتصالك عناوين البريد الإلكتروني المرتبطة بحساباتها على Google.}}</translation>
 <translation id="4303079906735388947">إعداد رقم تعريف شخصي جديد لمفتاح الأمان</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4305402730127028764">نسخ إلى <ph name="DEVICE_NAME" /></translation>
@@ -4717,6 +4723,7 @@
 <translation id="4667027203988048332">البيانات التي يتم استخدامها:</translation>
 <translation id="4668279686271488041">يتم بانتظام حذف بيانات "قياس أداء الإعلانات" من جهازك.</translation>
 <translation id="4668929960204016307">،</translation>
+<translation id="4670909875730475086">تم تثبيت "<ph name="APP_NAME" />" على جهازك بنجاح.</translation>
 <translation id="4672759829555593783">فتح الملف "<ph name="FILE_NAME" />" الآن</translation>
 <translation id="4673442866648850031">فتح أدوات قلم الشاشة عندما تتم إزالة قلم الشاشة</translation>
 <translation id="4673785607287397025">‏حدثت مشكلة أثناء الاتصال. تأكَّد من أنّ جهاز Chromecast وجهاز الكمبيوتر متصلان بالشبكة نفسها، ثم أعِد المحاولة.</translation>
@@ -5486,6 +5493,7 @@
 <translation id="5297082477358294722">تم حفظ كلمة المرور. يمكنك عرض كلمات المرور المحفوظة وإدارتها في <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">حينما يتطفل أحدهم على محتوى شاشتك، يظهر رمز الخصوصية على شكل عين في أسفل يسار الشاشة.</translation>
 <translation id="5298219193514155779">مظهر أنشأه</translation>
+<translation id="5298315677001348398">هل تريد المتابعة والسماح لهذا البرنامج بإجراء تغييرات على جهازك؟</translation>
 <translation id="5299109548848736476">عدم التعقب</translation>
 <translation id="5299558715747014286">عرض مجموعات علامات التبويب وإدارتها</translation>
 <translation id="5300426565656326054">تخصيص الإعلانات حسب المتصفِّح</translation>
@@ -7993,9 +8001,11 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">مجموعة غير صالحة</translation>
 <translation id="7329154610228416156">‏فشل تسجيل الدخول نظرًا لأنه قد تم ضبطه على استخدام عنوان URL غير آمن <ph name="BLOCKED_URL" />. يُرجى الاتصال بالمسؤول.</translation>
+<translation id="7330533963640151632">إعدادات "<ph name="FEATURE_NAME" />" لجهاز "<ph name="USER_NAME" />" الذي تتم مشاركته ضمن الحساب <ph name="USER_EMAIL" /></translation>
 <translation id="7331646370422660166">‏‫alt + السهم المتّجه للأسفل</translation>
 <translation id="7332053360324989309">عامل مُخصّص: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">الاحتفاظ بنسخة احتياطية من التطبيقات والإعدادات واستعادتها</translation>
+<translation id="7335436113423103413">‏يتيح هذا الإعداد إمكانية استخدام وظيفة "تخصيص Chrome" من اللوحة الجانبية الموحّدة في صفحة "علامة تبويب جديدة".</translation>
 <translation id="7335974957018254119">استخدام التدقيق الإملائي للّغة</translation>
 <translation id="7336799713063880535">تم حظر الإشعارات.</translation>
 <translation id="7338630283264858612">الرقم التسلسلي للجهاز غير صالح.</translation>
@@ -8663,6 +8673,7 @@
 <translation id="7828642077514646543">خطأ: يتعذّر فك ترميز الشهادة.</translation>
 <translation id="7829877209233347340">اطلب من أحد الوالدَين تسجيل الدخول لمنح إذن إضافة حساب المدرسة.</translation>
 <translation id="7830833461614351956">هل تريد نسخ <ph name="NUM_OF_FILES" /> ملف إلى <ph name="CLOUD_PROVIDER" /> وفتحه؟</translation>
+<translation id="783088158898934992">لغة التطبيق</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏ستعرض هذه الصفحة أي خصم يعثر عليه Google.</translation>
 <translation id="7833720883933317473">ستظهر هنا الكلمات المُخصصة المحفوظة</translation>
@@ -9744,6 +9755,7 @@
 <translation id="8676313779986170923">شكرًا لك على إرسال الملاحظات.</translation>
 <translation id="8676374126336081632">محو الإرسال</translation>
 <translation id="8676770494376880701">تمّ توصيل شاحن منخفض الطاقة</translation>
+<translation id="8676985325915861058">التخطّي وإعداد ملف شخصي جديد</translation>
 <translation id="8677212948402625567">تصغير الكل...</translation>
 <translation id="8678192320753081984">‏يوفِّر أعلى مستويات الحماية من Google لحسابات المستخدمين المعرضين لخطر الهجمات الموجّهة.</translation>
 <translation id="8678378565142776698">إعادة التشغيل والحصول على التحديثات التلقائية</translation>
@@ -10343,6 +10355,7 @@
 <translation id="9115932142612197835">‏لا يغيّر هذا الإعداد مدى توفّر ميزتَيْ "ترجمة Google" أو "عدسة Google".</translation>
 <translation id="9116799625073598554">تطبيق تدوين الملاحظات</translation>
 <translation id="9117030152748022724">إدارة تطبيقاتك</translation>
+<translation id="9120362425083889527">تعذَّر إكمال التثبيت. يُرجى إعادة المحاولة أو إغلاق هذه النافذة.</translation>
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />للحصول على أفضل تجربة، ثبِّت نظام التشغيل <ph name="DEVICE_OS" /> على القرص الداخلي لجهازك. ويمكنك أيضًا تثبيت نظام التشغيل لاحقًا من خلال شاشة تسجيل الدخول.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />في حال لم تكن مستعدًا لإجراء التثبيت، يمكنك تجربته من خلال تشغيله على محرّك أقراص USB. وسيؤدي هذا الإجراء إلى الإبقاء على نظام التشغيل الحالي وبياناته، ولكن قد تواجهك بعض القيود المتعلقة بمساحة التخزين والأداء.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">فتح كعلامة تبويب مثبتة</translation>

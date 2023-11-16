@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}}</translation>
 <translation id="7153618581592392745">આછો જાંબલી</translation>
 <translation id="7156870133441232244">સર્વરને TLS 1.2 અથવા તે પછીના વર્ઝન પર અપગ્રેડ કરવું જોઈએ.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}one{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}other{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}}</translation>
 <translation id="7160999678034985039">કૃપા કરીને તમારું કાર્ય સાચવો અને જ્યારે તમે તૈયાર હો, ત્યારે અપડેટ શરૂ કરો.</translation>
 <translation id="7163295244162773898">{0,plural, =1{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}one{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}other{શું ગોપનીય ફાઇલો કૉપિ કરીએ?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>

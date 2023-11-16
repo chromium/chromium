@@ -238,7 +238,6 @@
 <translation id="549669000822060376">‏وقتی Chromium جدیدترین به‌روزرسانی‌های سیستم را نصب می‌کند، لطفاً صبر کنید.</translation>
 <translation id="5496810170689441661">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="5527463683072221100">‏باز کردن فایل‌های PDF در Chromium</translation>
-<translation id="555273495373124701">‏برای دریافت محتوای Chromium در همه دستگاه‌ها، به سیستم وارد شوید</translation>
 <translation id="5614091477838198795">‏وقتی روشن باشد، از سیستم Chromium نیز خارج خواهید شد</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏به‌روزرسانی Chromium دردسترس است}=1{‏به‌روزرسانی Chromium دردسترس است}one{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}other{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}}</translation>
 <translation id="5643865575100044307">‏داده‌های سایت همواره بعداز بستن Chromium از دستگاه حذف شود</translation>
@@ -343,6 +342,7 @@
 <translation id="6981396265751285733">‏وقتی روشن باشد، Chromium حافظه را از برگه‌های غیرفعال آزاد می‌کند. با این کار، منابع بیشتری در رایانه به برگه‌ها و سایر برنامه‌ها اختصاص داده می‌شود و سرعت Chromium حفظ می‌شود. هرزمان به برگه‌های غیرفعال برگردید، به‌طور خودکار دوباره فعال می‌شوند.</translation>
 <translation id="6985329841647292029">‏شرایط ChromiumOS</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
+<translation id="7011190694940573312">نصب انجام نشد زیرا این نسخه از سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="7024536598735240744">خطای لغو فشرده‌سازی: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">نصب متوقف شد.</translation>
 <translation id="705851970750939768">‏به‌روزرسانی Chromium</translation>
@@ -392,9 +392,9 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="7997934263947464652">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chromium توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
-<translation id="800195749539500647">‏بیشترین بهره را از Chromium ببرید</translation>
 <translation id="8013436988911883588">‏وقتی Chromium دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="80471789339884597">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید همه مرورگرها را بازراه‌اندازی کنید.</translation>
+<translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">‏Chromium برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="8133124826068723441">‏ChromiumOS نتوانست داده‌هایتان را همگام‌سازی کند زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
