@@ -92,18 +92,18 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Enterprise_UserSessionType">
   <variant name="AffiliatedUserSession"
-      summary="The local user is affiliated to the organisation."/>
+      summary="The local user is affiliated to the organization."/>
   <variant name="AutoLaunchedKioskSession"
       summary="The local session is auto launched kiosk."/>
   <variant name="GuestSession"
-      summary="The local guest session is not managed by an organisation."/>
+      summary="The local guest session is not managed by an organization."/>
   <variant name="ManagedGuestSession"
-      summary="The local guest session is managed by an organisation."/>
+      summary="The local guest session is managed by an organization."/>
   <variant name="ManuallyLaunchedKioskSession"
       summary="The local session is manually launched kiosk"/>
   <variant name="NoUserSession" summary="There is no user."/>
   <variant name="UnaffiliatedUserSession"
-      summary="The local user is not affiliated to the organisation."/>
+      summary="The local user is not affiliated to the organization."/>
   <variant name="UnknownUserSession" summary="user session is unknown."/>
 </variants>
 
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
-    Captures an error that occured while trying to get signals from the
+    Captures an error that occurred while trying to get signals from the
     CrowdStrike agent.
   </summary>
 </histogram>
@@ -2212,7 +2212,7 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     Records whether browser unenrollment via DMToken deletion completed
-    succcessfully after attempting to delete the token.
+    successfully after attempting to delete the token.
   </summary>
 </histogram>
 
@@ -2275,8 +2275,8 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
-    Records whether a browser unenrollment was completed succcessfully by
-    writing an invalid DMToken to storage or not.
+    Records whether a browser unenrollment was completed successfully by writing
+    an invalid DMToken to storage or not.
   </summary>
 </histogram>
 
@@ -2333,7 +2333,7 @@ chromium-metrics-reviews@google.com.
     This includes tasks such as getting the list of downloaded images, checking
     that the list has a minimal amount of images, decoding them, etc. Note this
     measurement does not include the lock screen inactivity timeout. The metric
-    would be emitted when the first two images are loaded succcessfully.
+    would be emitted when the first two images are loaded successfully.
   </summary>
 </histogram>
 
@@ -2422,8 +2422,8 @@ chromium-metrics-reviews@google.com.
     Record summary of sources of all policies. It's recorded ever 24 hours and
     at startup.
 
-    This does not include user cloud policy and some speicial policy sources
-    like enterprise_default.
+    This does not include user cloud policy and some special policy sources like
+    enterprise_default.
   </summary>
 </histogram>
 
@@ -2567,9 +2567,9 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     The Http statuses returned by the server when trying to get the
-    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
-    This is recorded after trying to the the policy value, when the status is
-    available.
+    ManagedAccountsSigninRestriction policy value for individual dasher
+    accounts. This is recorded after trying to the the policy value, when the
+    status is available.
   </summary>
 </histogram>
 
@@ -2579,8 +2579,8 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     The network errors that happen when trying to get the
-    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
-    This is recorded every time after trying to the the policy value.
+    ManagedAccountsSigninRestriction policy value for individual dasher
+    accounts. This is recorded every time after trying to the the policy value.
   </summary>
 </histogram>
 
@@ -2603,12 +2603,12 @@ chromium-metrics-reviews@google.com.
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
-    A regular user session starts when a user signs in using his/her user
-    account. It stops when the user signs out. Session length is the duration
-    between the start and stop events. It is recorded during signing out and
-    reported on the next chrome run. This metric tracks the recorded session
-    length on an enrolled device rouned down to the nearest 10-minute bucket and
-    capped at 24 hours.
+    A regular user session starts when a user signs in using their user account.
+    It stops when the user signs out. Session length is the duration between the
+    start and stop events. It is recorded during signing out and reported on the
+    next chrome run. This metric tracks the recorded session length on an
+    enrolled device rounded down to the nearest 10-minute bucket and capped at
+    24 hours.
   </summary>
 </histogram>
 
@@ -2936,7 +2936,7 @@ chromium-metrics-reviews@google.com.
   <owner>pmarko@chromium.org</owner>
   <summary>
     Duration between when the construction of the policy stack for a user
-    profile starts and when its initialization gets untrottled.
+    profile starts and when its initialization gets unthrottled.
 
     Only reported on ChromeOS Ash, only for managed users who are primary users
     in the given session. The values are capped at around 5 seconds, and
