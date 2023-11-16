@@ -39,18 +39,17 @@ namespace {
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
 
-constexpr int kNumberOfQueryChipsWithAssistantChip = 3;
-constexpr int kNumberOfQueryChipsWithoutAssistantChip = 4;
+constexpr int kNumberOfQueryChips = 3;
 
 constexpr char16_t kTitleTextPlaceholder[] = u"Title text";
 constexpr char16_t kDescriptionTextPlaceholder[] = u"Description text";
 
 constexpr char16_t kChipWeatherQueryPlaceholder[] = u"Weather";
-constexpr char16_t kChipShortcutQueryPlaceholder[] = u"Screen Saver";
-constexpr char16_t kChipCalculationQueryPlaceholder[] = u"50+96/5";
-constexpr char16_t kChipUnitConversionQueryPlaceholder[] = u"1 inch in cm";
-constexpr char16_t kChipTranslationQueryPlaceholder[] = u"Hello in Spanish";
-constexpr char16_t kChipDefinitionQueryPlaceholder[] = u"impromptu definition";
+constexpr char16_t kChipUnitConversionQuery1Placeholder[] = u"5 ft in m";
+constexpr char16_t kChipUnitConversionQuery2Placeholder[] = u"90°F in C";
+constexpr char16_t kChipTranslationQueryPlaceholder[] = u"Hi in French";
+constexpr char16_t kChipDefinitionQueryPlaceholder[] = u"Define zenith";
+constexpr char16_t kChipCalculationQueryPlaceholder[] = u"50+94/5";
 constexpr char16_t kChipStockQueryPlaceholder[] = u"S&P 500";
 
 constexpr char16_t kAssistantButtonPlaceholder[] = u"Go to Assistant";
@@ -72,15 +71,17 @@ constexpr gfx::Insets kInnerBackgroundInsetsTablet = gfx::Insets::VH(16, 16);
 
 constexpr int kBackgroundRadiusTablet = 16;
 
-std::vector<std::u16string> GetQueryChips(int num_of_chips) {
-  std::vector<std::u16string> chips = {
-      kChipWeatherQueryPlaceholder,     kChipShortcutQueryPlaceholder,
-      kChipCalculationQueryPlaceholder, kChipUnitConversionQueryPlaceholder,
-      kChipTranslationQueryPlaceholder, kChipDefinitionQueryPlaceholder,
-      kChipStockQueryPlaceholder};
-  CHECK_GE(static_cast<int>(chips.size()), num_of_chips);
+std::vector<std::u16string> GetQueryChips() {
+  std::vector<std::u16string> chips = {kChipWeatherQueryPlaceholder,
+                                       kChipUnitConversionQuery1Placeholder,
+                                       kChipUnitConversionQuery2Placeholder,
+                                       kChipTranslationQueryPlaceholder,
+                                       kChipDefinitionQueryPlaceholder,
+                                       kChipCalculationQueryPlaceholder,
+                                       kChipStockQueryPlaceholder};
+  CHECK_GE(static_cast<int>(chips.size()), kNumberOfQueryChips);
   base::RandomShuffle(chips.begin(), chips.end());
-  chips.resize(num_of_chips);
+  chips.resize(kNumberOfQueryChips);
   return chips;
 }
 
@@ -203,13 +204,8 @@ void LauncherSearchIphView::OpenAssistantPage() {
 }
 
 void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
-  // In Launcher zero state, we show 3 query chips + Assistant chip.
-  // In Assistant zero state, we show 4 query chips.
-  int num_of_chips = show_assistant_chip_
-                         ? kNumberOfQueryChipsWithAssistantChip
-                         : kNumberOfQueryChipsWithoutAssistantChip;
   int query_chip_view_id = ViewId::kChipStart;
-  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
+  for (const std::u16string& query : GetQueryChips()) {
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(query);
@@ -223,11 +219,8 @@ void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
 }
 
 void LauncherSearchIphView::ShuffleChipsQuery() {
-  int num_of_chips = show_assistant_chip_
-                         ? kNumberOfQueryChipsWithAssistantChip
-                         : kNumberOfQueryChipsWithoutAssistantChip;
   size_t chip_index = 0;
-  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
+  for (const std::u16string& query : GetQueryChips()) {
     CHECK_LT(chip_index, chips_.size());
     auto chip = chips_[chip_index++];
     chip->SetText(query);
