@@ -798,11 +798,6 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
         return;
       }
 
-      // If `add_esim_entry_` is added, don't show the no mobile network label.
-      if (ShouldAddESimEntry()) {
-        RemoveAndResetViewIfExists(&mobile_status_message_);
-        return;
-      }
       CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS,
                                         &mobile_status_message_);
       return;

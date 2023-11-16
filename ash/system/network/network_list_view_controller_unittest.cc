@@ -707,7 +707,7 @@ TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   EXPECT_TRUE(GetAddESimEntry()->GetVisible());
   EXPECT_EQ(GetAddESimEntry()->GetTooltipText(),
             l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
-  ASSERT_THAT(GetMobileStatusMessage(), IsNull());
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
 
   // Add eSIM button is not enabled when inhibited.
   properties->inhibit_reason = InhibitReason::kResettingEuiccMemory;
@@ -1141,14 +1141,10 @@ TEST_P(NetworkListViewControllerTest,
   cros_network()->SetDeviceProperties(properties.Clone());
 
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  // If add eSim entry is shown, no mobile network message should show.
-  if (GetAddESimEntry()) {
-    ASSERT_THAT(GetMobileStatusMessage(), IsNull());
-  } else {
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
-              GetMobileStatusMessage()->label()->GetText());
-  }
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
+            GetMobileStatusMessage()->label()->GetText());
+
   CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
 
@@ -1165,13 +1161,9 @@ TEST_P(NetworkListViewControllerTest,
   cros_network()->ClearNetworksAndDevices();
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  if (GetAddESimEntry()) {
-    ASSERT_THAT(GetMobileStatusMessage(), IsNull());
-  } else {
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
-              GetMobileStatusMessage()->label()->GetText());
-  }
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
+            GetMobileStatusMessage()->label()->GetText());
 
   EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
@@ -1187,13 +1179,10 @@ TEST_P(NetworkListViewControllerTest,
   cros_network()->SetDeviceProperties(properties.Clone());
 
   // Message is shown when uninhibited.
-  if (GetAddESimEntry()) {
-    ASSERT_THAT(GetMobileStatusMessage(), IsNull());
-  } else {
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
-              GetMobileStatusMessage()->label()->GetText());
-  }
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
+            GetMobileStatusMessage()->label()->GetText());
+
   CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
 
