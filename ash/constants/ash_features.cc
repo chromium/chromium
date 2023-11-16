@@ -1268,6 +1268,11 @@ BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
              "GlanceablesV2ClassroomTeacherView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables glanceables on time management surface for calendar.
+BASE_FEATURE(kGlanceablesV2CalendarView,
+             "GlanceablesV2CalendarView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing error messages for glanceables bubbles.
 BASE_FEATURE(kGlanceablesV2ErrorMessage,
              "GlanceablesV2ErrorMessage",
@@ -3487,6 +3492,10 @@ bool AreGlanceablesV2EnabledForTrustedTesters() {
 
 bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ClassroomTeacherView);
+}
+
+bool IsGlanceablesV2CalendarViewEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView);
 }
 
 bool IsGlanceablesV2ErrorMessageEnabled() {

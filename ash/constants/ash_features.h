@@ -408,6 +408,8 @@ BASE_DECLARE_FEATURE(kGlanceablesV2TrustedTesters);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesV2ClassroomTeacherView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGlanceablesV2CalendarView);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesV2ErrorMessage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementStableLaunch);
@@ -1017,6 +1019,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2EnabledForTrustedTesters();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesV2ClassroomTeacherViewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGlanceablesV2CalendarViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesV2ErrorMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();

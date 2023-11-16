@@ -3752,6 +3752,9 @@ extern const char kFuseBoxDebugDescription[];
 extern const char kGlanceablesV2Name[];
 extern const char kGlanceablesV2Description[];
 
+extern const char kGlanceablesV2CalendarViewName[];
+extern const char kGlanceablesV2CalendarViewDescription[];
+
 extern const char kHelpAppAppsListName[];
 extern const char kHelpAppAppsListDescription[];
 

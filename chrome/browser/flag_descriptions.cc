@@ -6527,6 +6527,10 @@ const char kGlanceablesV2Name[] = "Glanceables";
 const char kGlanceablesV2Description[] =
     "Enables Glanceables on the Calendar surface.";
 
+const char kGlanceablesV2CalendarViewName[] = "GlanceablesCalendarView";
+const char kGlanceablesV2CalendarViewDescription[] =
+    "Enables the new Calendar for Glanceables UI.";
+
 const char kHelpAppAppsListName[] = "Help App apps list";
 const char kHelpAppAppsListDescription[] =
     "If enabled, the Help app will render the Apps List page and entry point.";
