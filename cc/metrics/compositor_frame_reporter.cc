@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -1853,6 +1854,8 @@ void CompositorFrameReporter::SetPartialUpdateDecider(
   DCHECK(partial_update_dependents_.empty());
   has_partial_update_ = true;
   partial_update_decider_ = decider->GetWeakPtr();
+  size_t size = decider->partial_update_dependents_.size();
+  base::debug::Alias(&size);
   decider->partial_update_dependents_.push_back(GetWeakPtr());
 }
 
