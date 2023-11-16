@@ -1,12 +1,48 @@
-diff --color -rupN nss-3.49.1/nss/lib/softoken/pkcs11.c nss-3.49.1.new/nss/lib/softoken/pkcs11.c
---- nss-3.49.1/nss/lib/softoken/pkcs11.c	2020-01-13 17:14:10.000000000 +0000
-+++ nss-3.49.1.new/nss/lib/softoken/pkcs11.c	2022-10-25 23:12:08.233648045 +0000
-@@ -4783,7 +4783,7 @@ sftk_searchDatabase(SFTKDBHandle *handle
-     CK_RV crv;
-     int objectListSize = search->array_size - search->size;
-     CK_OBJECT_HANDLE *array = &search->handles[search->size];
--    SDBFind *find;
-+    SDBFind *find = NULL;
-     CK_ULONG count;
- 
-     crv = sftkdb_FindObjectsInit(handle, pTemplate, ulCount, &find);
+diff --git a/lib/freebl/freebl.gyp b/lib/freebl/freebl.gyp
+index 2b8182e..9bfbb87 100644
+--- a/nss/lib/freebl/freebl.gyp
++++ b/nss/lib/freebl/freebl.gyp
+@@ -16,19 +16,6 @@
+       'dependencies': [
+         '<(DEPTH)/exports.gyp:nss_exports'
+       ],
+-      'conditions': [
+-        [ 'cc_is_clang==1', {
+-          'cflags': [
+-            '-no-integrated-as',
+-          ],
+-          'cflags_mozilla': [
+-            '-no-integrated-as',
+-          ],
+-          'asflags_mozilla': [
+-            '-no-integrated-as',
+-          ],
+-        }],
+-      ],
+     },
+     {
+       'target_name': 'intel-gcm-wrap_c_lib',
+diff --git a/lib/freebl/freebl_base.gypi b/lib/freebl/freebl_base.gypi
+index f7f03bd..3a0a16a 100644
+--- a/nss/lib/freebl/freebl_base.gypi
++++ b/nss/lib/freebl/freebl_base.gypi
+@@ -74,19 +74,6 @@
+             'mpi/mpi_amd64_gas.s',
+             'mpi/mp_comba.c',
+           ],
+-          'conditions': [
+-            [ 'cc_is_clang==1 and fuzz!=1 and coverage!=1', {
+-              'cflags': [
+-                '-no-integrated-as',
+-              ],
+-              'cflags_mozilla': [
+-                '-no-integrated-as',
+-              ],
+-              'asflags_mozilla': [
+-                '-no-integrated-as',
+-              ],
+-            }],
+-          ],
+         }],
+         [ 'target_arch=="ia32"', {
+           'sources': [

@@ -8,8 +8,8 @@ import argparse
 import ast
 import errno
 import fcntl
+import multiprocessing
 import os
-import platform
 import glob
 import re
 import shlex
@@ -101,12 +101,7 @@ class InstrumentedPackageBuilder(object):
         # libappindicator1 needs this.
         self._build_env["CSC"] = "/usr/bin/mono-csc"
 
-    def shell_call(self,
-                   command,
-                   env=None,
-                   cwd=None,
-                   ignore_ret_code=False,
-                   shell=False):
+    def shell_call(self, command, env=None, cwd=None, shell=False):
         """Wrapper around subprocess.Popen().
 
         Calls command with specific environment and verbosity using
@@ -121,10 +116,6 @@ class InstrumentedPackageBuilder(object):
             cwd=cwd,
         )
         stdout = child.communicate()[0].decode("utf-8")
-        if ignore_ret_code:
-            if self._verbose:
-                print(stdout)
-            return stdout
         if self._verbose or child.returncode:
             print(stdout)
         if child.returncode:
@@ -256,7 +247,7 @@ class InstrumentedPackageBuilder(object):
         # .pc files are not needed.
         self.shell_call(["rm", "-rf", "%s/pkgconfig" % self.temp_libdir()])
 
-    def make(self, args, env=None, cwd=None, ignore_ret_code=False):
+    def make(self, args, env=None, cwd=None):
         """Invokes `make'.
 
         Invokes `make' with the specified args, using self._build_env and
@@ -266,10 +257,7 @@ class InstrumentedPackageBuilder(object):
             cwd = self._source_dir
         if env is None:
             env = self._build_env
-        self.shell_call(["make"] + args,
-                        env=env,
-                        cwd=cwd,
-                        ignore_ret_code=ignore_ret_code)
+        self.shell_call(["make"] + args, env=env, cwd=cwd)
 
     def make_install(self, args, **kwargs):
         """Invokes `make install'."""
@@ -535,41 +523,30 @@ class CmakeBuilder(InstrumentedPackageBuilder):
 
 class NSSBuilder(InstrumentedPackageBuilder):
     def build_and_install(self):
-        # NSS uses a build system that's different from configure/make/install. All
-        # flags must be passed as arguments to make.
-        make_args = [
-            # Do an optimized build.
-            "BUILD_OPT=1",
-            # CFLAGS/CXXFLAGS should not be used, as doing so overrides the flags in
-            # the makefile completely. The only way to append our flags is to tack
-            # them onto CC/CXX.
-            'CC="%s %s"' % (self._build_env["CC"], self._build_env["CFLAGS"]),
-            'CXX="%s %s"' %
-            (self._build_env["CXX"], self._build_env["CXXFLAGS"]),
-            # We need to override ZDEFS_FLAG at least to avoid -Wl,-z,defs, which
-            # is not compatible with sanitizers. We also need some way to pass
-            # LDFLAGS without overriding the defaults. Conveniently, ZDEF_FLAG is
-            # always appended to link flags when building NSS on Linux, so we can
-            # just add our LDFLAGS here.
-            'ZDEFS_FLAG="-Wl,-z,nodefs %s"' % self._build_env["LDFLAGS"],
-            "NSPR_INCLUDE_DIR=/usr/include/nspr",
-            "NSPR_LIB_DIR=%s" % self.dest_libdir(),
-            "NSS_ENABLE_ECC=1",
-        ]
-        if platform.architecture()[0] == "64bit":
-            make_args.append("USE_64=1")
-
-        # Make sure we don't override the default flags in the makefile.
-        for variable in ["CFLAGS", "CXXFLAGS", "LDFLAGS"]:
-            del self._build_env[variable]
+        try:
+            with multiprocessing.Semaphore():
+                pass
+        except (OSError, PermissionError):
+            raise Exception('/dev/shm must be mounted')
 
         # Hardcoded paths.
         temp_dir = os.path.join(self._source_dir, "nss")
-        temp_libdir = os.path.join(temp_dir, "lib")
+        temp_libdir = os.path.join(self._source_dir, "dist", "Release", "lib")
 
-        # The build happens in <source_dir>/nss.  Building fails after all
-        # the required DSOs have been built, so ignore the error.
-        self.make(make_args, cwd=temp_dir, ignore_ret_code=True)
+        self.shell_call(
+            [
+                os.path.join(temp_dir, "build.sh"),
+                "--gyp",
+                "--opt",
+                "--msan",
+                "--no-zdefs",
+                "--system-nspr",
+                "-Dsign_libs=0"
+                "-Ddisable_tests=1",
+            ],
+            cwd=temp_dir,
+            env=self._build_env,
+        )
 
         self.fix_rpaths(temp_libdir)
 
