@@ -14,7 +14,7 @@ SimpleURLLoaderTestHelper::SimpleURLLoaderTestHelper() {}
 
 SimpleURLLoaderTestHelper::~SimpleURLLoaderTestHelper() {}
 
-network::SimpleURLLoader::BodyAsStringCallback
+network::SimpleURLLoader::BodyAsStringCallbackDeprecated
 SimpleURLLoaderTestHelper::GetCallback() {
   DCHECK(!callback_created_);
   callback_created_ = true;

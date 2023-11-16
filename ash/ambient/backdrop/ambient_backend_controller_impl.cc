@@ -326,10 +326,11 @@ class BackdropURLLoader {
 
   // Starts downloading the proto. |request_body| is a serialized proto and
   // will be used as the upload body if it is a POST request.
-  void Start(std::unique_ptr<network::ResourceRequest> resource_request,
-             const absl::optional<std::string>& request_body,
-             const net::NetworkTrafficAnnotationTag& traffic_annotation,
-             network::SimpleURLLoader::BodyAsStringCallback callback) {
+  void Start(
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      const absl::optional<std::string>& request_body,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback) {
     // No ongoing downloading task.
     DCHECK(!simple_loader_);
 
@@ -350,8 +351,9 @@ class BackdropURLLoader {
 
  private:
   // Called when the download completes.
-  void OnUrlDownloaded(network::SimpleURLLoader::BodyAsStringCallback callback,
-                       std::unique_ptr<std::string> response_body) {
+  void OnUrlDownloaded(
+      network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback,
+      std::unique_ptr<std::string> response_body) {
     loader_factory_.reset();
 
     if (simple_loader_->NetError() == net::OK && response_body) {

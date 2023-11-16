@@ -50,8 +50,9 @@ void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
 }
 
 void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
-  network::SimpleURLLoader::BodyAsStringCallback callback = base::BindOnce(
-      &BitmapFetcher::OnSimpleLoaderComplete, weak_factory_.GetWeakPtr());
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback =
+      base::BindOnce(&BitmapFetcher::OnSimpleLoaderComplete,
+                     weak_factory_.GetWeakPtr());
 
   // Early exit to handle data URLs.
   if (url_.SchemeIs(url::kDataScheme)) {

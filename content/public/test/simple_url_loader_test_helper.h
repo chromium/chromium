@@ -27,9 +27,9 @@ class SimpleURLLoaderTestHelper {
 
   ~SimpleURLLoaderTestHelper();
 
-  // Returns a BodyAsStringCallback for use with a SimpleURLLoader. May be
-  // called only once.
-  network::SimpleURLLoader::BodyAsStringCallback GetCallback();
+  // Returns a BodyAsStringCallbackDeprecated for use with a SimpleURLLoader.
+  // May be called only once.
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated GetCallback();
 
   // Waits until the callback returned by GetCallback() is invoked.
   void WaitForCallback();
