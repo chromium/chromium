@@ -5,10 +5,11 @@
 import 'chrome://personalization/strings.m.js';
 
 import {DefaultUserImage, Paths, UserImage, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {baseSetup, initElement, teardownElement, toString16} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
 
@@ -127,7 +128,7 @@ suite('UserPreviewElementTest', function() {
         url: {
           url: 'https://www.gstatic.com/',
         },
-        title: toString16('the remains of the day'),
+        title: stringToMojoString16('the remains of the day'),
         index: 1,
       },
     };
@@ -207,10 +208,10 @@ suite('UserPreviewElementTest', function() {
 
     const deprecatedDefaultImage: DefaultUserImage = {
       index: 2,
-      title: toString16('title'),
+      title: stringToMojoString16('title'),
       url: {url: 'data://test_url'},
       sourceInfo: {
-        author: toString16('author example'),
+        author: stringToMojoString16('author example'),
         website: {url: 'website example'},
       },
     };

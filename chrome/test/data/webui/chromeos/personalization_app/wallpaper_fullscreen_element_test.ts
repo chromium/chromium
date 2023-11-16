@@ -8,10 +8,11 @@ import 'chrome://personalization/strings.m.js';
 
 import {CurrentWallpaper, DailyRefreshType, DisplayableImage, GooglePhotosPhoto, OnlineImageType, WallpaperFullscreenElement, WallpaperImage, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {baseSetup, initElement, toString16} from './personalization_app_test_utils.js';
+import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -192,7 +193,7 @@ suite('WallpaperFullscreenElementTest', function() {
      pendingSelectedImage: {
        id: 'test_id',
        name: 'asdf',
-       date: toString16('February'),
+       date: stringToMojoString16('February'),
        url: {url: ''},
      } as GooglePhotosPhoto,
      shouldShow: true,
