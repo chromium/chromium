@@ -100,6 +100,8 @@ void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
 void SyncServiceAndroidBridge::OnSyncShutdown(syncer::SyncService* sync) {
   native_sync_service_->RemoveObserver(this);
   Java_SyncServiceImpl_destroy(AttachCurrentThread(), java_ref_);
+  // Not worth resetting `native_sync_service_`, it owns this object and will
+  // destroy it shortly.
 }
 
 void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
