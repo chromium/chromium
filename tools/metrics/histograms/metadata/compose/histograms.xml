@@ -95,6 +95,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Session.ComposeCount.{Status}" units="count"
+    expires_after="2024-03-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of Compose requests for {Status} sessions. Recorded once
+    per session when it is closed or distroyed.
+  </summary>
+  <token key="Status">
+    <variant name="Accepted"/>
+    <variant name="Ignored"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.Session.DialogShownCount.{Status}" units="count"
+    expires_after="2024-03-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times the Compose dialog is shown in an {Status}
+    session. Recorded once per session when it is closed or distroyed.
+  </summary>
+  <token key="Status">
+    <variant name="Accepted"/>
+    <variant name="Ignored"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.Session.UndoCount.{Status}" units="count"
+    expires_after="2024-03-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times undo is done during an {Status} session.
+    Recorded once per session when it is closed or distroyed.
+  </summary>
+  <token key="Status">
+    <variant name="Accepted"/>
+    <variant name="Ignored"/>
+  </token>
+</histogram>
+
 <histogram name="Compose.SessionCloseReason"
     enum="ComposeSessionCloseReasonType" expires_after="2024-11-01">
   <owner>petewil@chromium.org</owner>

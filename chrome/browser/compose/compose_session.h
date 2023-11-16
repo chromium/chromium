@@ -85,8 +85,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Non-ComposeSessionPageHandler Methods
 
-  // Begins a Compose session, calling Compose immediately if the initial input
-  // is valid.
+  // Notifies the session that a new dialog is opening and starts refreshing
+  // inner text. Calls Compose immediately if the initial input is valid.
   void InitializeWithText(const std::optional<std::string>& text);
 
   // Saves the last OK response state to the undo stack.
@@ -156,6 +156,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   ComposeCallback callback_;
 
   bool skip_inner_text_ = false;
+
+  // Logging counters.
+  int compose_count_ = 0;
+  int dialog_shown_count_ = 0;
+  int undo_count_ = 0;
 
   InnerTextExtractor inner_text_extractor_;
   std::optional<std::string> inner_text_;

@@ -17,6 +17,9 @@ extern const char kComposeDialogSelectionLength[];
 extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
+extern const char kComposeSessionComposeCount[];
+extern const char kComposeSessionDialogShownCount[];
+extern const char kComposeSessionUndoCount[];
 extern const char kComposeShowStatus[];
 
 // Enum for calculating the CTR of the Compose context menu item.
@@ -63,7 +66,11 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
 
-void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
+// Log session based meterics at when a session ends.
+void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
+                                   int compose_count,
+                                   int dialog_shown_count,
+                                   int undo_count);
 
 // Log the time taken for the dialog to be fully shown and interactable.
 void LogComposeDialogOpenLatency(base::TimeDelta duration);

@@ -87,7 +87,8 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
-  LogComposeSessionCloseReason(close_reason_);
+  LogComposeSessionCloseMetrics(close_reason_, compose_count_,
+                                dialog_shown_count_, undo_count_);
 
   // If we have a modeling quality log entry, upload it.
   if (modeling_log_entry_) {
@@ -125,6 +126,10 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
+
+  // Increase compose count regradless of status of request.
+  compose_count_ += 1;
+
   if (skip_inner_text_ || inner_text_.has_value()) {
     ComposeWithInnerText(input, rewrite, inner_text_.value_or(""));
   } else {
@@ -271,6 +276,10 @@ void ComposeSession::Undo(UndoCallback callback) {
     std::move(callback).Run(nullptr);
     return;
   }
+
+  // Only increase undo count if there are states to undo.
+  undo_count_ += 1;
+
   compose::mojom::ComposeStatePtr undo_state = std::move(undo_states_.top());
   undo_states_.pop();
   if (!undo_state->response ||
@@ -296,6 +305,7 @@ void ComposeSession::OpenBugReportingLink() {
 
 void ComposeSession::InitializeWithText(
     const std::optional<std::string>& text) {
+  dialog_shown_count_ += 1;
   RefreshInnerText();
 
   // If no text provided (even an empty string), then we are reopening without

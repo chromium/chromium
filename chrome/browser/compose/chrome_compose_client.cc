@@ -132,12 +132,12 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:
       SetSessionCloseReason(
-          compose::ComposeSessionCloseReason::kAcceptedSuggestion);
+          compose::ComposeSessionCloseReason::kCloseButtonPressed);
       RemoveActiveSession();
       break;
     case compose::mojom::CloseReason::kInsertButton:
       SetSessionCloseReason(
-          compose::ComposeSessionCloseReason::kCloseButtonPressed);
+          compose::ComposeSessionCloseReason::kAcceptedSuggestion);
       RemoveActiveSession();
       break;
   }

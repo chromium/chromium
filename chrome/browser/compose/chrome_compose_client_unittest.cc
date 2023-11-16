@@ -826,20 +826,92 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
 
 TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   ShowDialogAndBindMojo();
+
+  // Simulate three compose request.
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  response = compose_future().Take();
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  response = compose_future().Take();
+
+  // Show the dialog a second time.
+  ShowDialogAndBindMojo();
+
+  // Simulate two undos.
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  page_handler()->Undo(undo_future.GetCallback());
+  state = undo_future.Take();
+
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
   histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 0,  // close button pressed
+                                 1,  // Close button pressed.
                                  1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionComposeCount + std::string(".Ignored"),
+      3,  // Expect that three Compose calls were recorded.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionUndoCount + std::string(".Ignored"),
+      2,  // Expect that two undos were done.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
+      2,  // Expect that the dialog was shown twice.
+      1);
 }
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   ShowDialogAndBindMojo();
+
+  // Simulate three compose request.
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  response = compose_future().Take();
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
+                          /*rewrite=*/false);
+  response = compose_future().Take();
+
+  // Show the dialog a second time.
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+
+  // Show the dialog a third time.
+  ShowDialogAndBindMojo();
+
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
   histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 1,  // Accept button pressed
+                                 0,  // Accept button pressed.
                                  1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionComposeCount + std::string(".Accepted"),
+      3,  // Expect that three Compose calls were recorded.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionUndoCount + std::string(".Accepted"),
+      1,  // Expect that one undo was done.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionDialogShownCount + std::string(".Accepted"),
+      3,  // Expect that the dialog was shown twice.
+      1);
 }
 
 TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
@@ -850,7 +922,7 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
   NavigateAndCommit(web_contents(), next_page);
 
   histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 2,  // lost focus
+                                 2,  // Ended implicitly.
                                  1);
 }
 
