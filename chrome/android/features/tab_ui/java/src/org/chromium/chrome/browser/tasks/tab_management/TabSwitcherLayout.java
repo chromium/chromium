@@ -1016,7 +1016,7 @@ public class TabSwitcherLayout extends Layout {
         final ConditionalAnimationRunner conditionalAnimationRunner =
                 new ConditionalAnimationRunner(
                         (bitmap, tabListCanShowQuickly) -> {
-                            if (bitmap == null) {
+                            if (bitmap == null || source.isEmpty()) {
                                 mTabToSwitcherAnimation = null;
                                 postHiding();
                                 mTabJavaView.reset(fullscreenRect);
