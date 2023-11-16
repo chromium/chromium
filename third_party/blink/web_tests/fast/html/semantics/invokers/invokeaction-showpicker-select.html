@@ -14,6 +14,9 @@
 <script>
 promise_test(async (t) => {
   await test_driver.click(invokerbutton);
+  await new Promise(resolve => {
+    requestAnimationFrame(resolve);
+  });
   assert_true(internals.isSelectPopupVisible(invokee), "Picker is opened.");
   invokee.remove();
 }, `invoking select with showPicker action should show picker`)
