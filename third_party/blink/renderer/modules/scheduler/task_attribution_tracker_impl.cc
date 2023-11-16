@@ -61,7 +61,7 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
 }
 
 template <typename F>
-TaskAttributionTracker::AncestorStatus
+absl::optional<TaskAttributionId>
 TaskAttributionTrackerImpl::IsAncestorInternal(
     ScriptState* script_state,
     F is_ancestor,
@@ -70,7 +70,7 @@ TaskAttributionTrackerImpl::IsAncestorInternal(
   if (!script_state->World().IsMainWorld()) {
     // As RunningTask will not return a TaskAttributionInfo for
     // non-main-world tasks, there's no point in testing their ancestry.
-    return AncestorStatus::kNotAncestor;
+    return absl::nullopt;
   }
 
   const TaskAttributionInfo* current_task =
@@ -79,24 +79,25 @@ TaskAttributionTrackerImpl::IsAncestorInternal(
   while (current_task) {
     const TaskAttributionInfo* parent_task = current_task->Parent();
     if (is_ancestor(current_task->Id())) {
-      return AncestorStatus::kAncestor;
+      return current_task->Id();
     }
     current_task = parent_task;
   }
-  return AncestorStatus::kNotAncestor;
+  return absl::nullopt;
 }
 
 TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
     ScriptState* script_state,
     TaskAttributionId ancestor_id) {
-  return IsAncestorInternal(
+  absl::optional<TaskAttributionId> task_id = IsAncestorInternal(
       script_state,
       [&](const TaskAttributionId& task_id) { return task_id == ancestor_id; },
       /*task=*/nullptr);
+  return !task_id ? AncestorStatus::kNotAncestor : AncestorStatus::kAncestor;
 }
 
-TaskAttributionTracker::AncestorStatus
-TaskAttributionTrackerImpl::HasAncestorInSet(
+absl::optional<TaskAttributionId>
+TaskAttributionTrackerImpl::GetAncestorFromSet(
     ScriptState* script_state,
     const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
     const TaskAttributionInfo& task) {
@@ -139,7 +140,7 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (Observer* observer : observers_) {
     if (observer->GetExecutionContext() == execution_context) {
-      observer->OnCreateTaskScope(*running_task_);
+      observer->OnCreateTaskScope(*running_task_, script_state);
     }
   }
 

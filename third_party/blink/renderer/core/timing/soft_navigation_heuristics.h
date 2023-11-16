@@ -28,21 +28,23 @@ class SoftNavigationHeuristics
   virtual ~SoftNavigationHeuristics() = default;
   static SoftNavigationHeuristics* From(LocalDOMWindow&);
 
+  enum class EventScopeType { Keyboard, Click, Navigate };
+
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
 
   // The class's API.
   void UserInitiatedInteraction(ScriptState*,
-                                bool is_unfocused_keyboard_event,
+                                EventScopeType,
                                 bool is_new_interaction);
-  void ClickEventEnded(ScriptState*);
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
   bool ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
+  void OnCreateTaskScope(scheduler::TaskAttributionInfo&,
+                         ScriptState*) override;
   void OnTaskDisposal(const scheduler::TaskAttributionInfo&) override;
   ExecutionContext* GetExecutionContext() override;
 
@@ -50,48 +52,72 @@ class SoftNavigationHeuristics
                    uint64_t painted_area,
                    bool is_modified_by_soft_navigation);
 
+  void SetCurrentEventParameters(EventScopeType type, bool is_new_interaction) {
+    is_current_event_new_interaction_ = is_new_interaction;
+    current_event_type_ = type;
+    pending_interaction_timestamp_ =
+        is_new_interaction ? base::TimeTicks::Now() : base::TimeTicks();
+  }
+
  private:
-  void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
-  void CheckSoftNavigationConditions();
-  void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
   enum FlagType : uint8_t {
     kURLChange,
     kMainModification,
   };
   using FlagTypeSet = base::EnumSet<FlagType, kURLChange, kMainModification>;
+  struct PerInteractionData {
+    // The timestamp just before the event responding to the user's interaction
+    // started processing. In case of multiple events for a single interaction
+    // (e.g. a keyboard key press resulting in keydown, keypress, and keyup),
+    // this timestamp would be the time before processing started on the first
+    // event.
+    base::TimeTicks user_interaction_timestamp;
+    FlagTypeSet flag_set;
+    String url;
+  };
 
-  bool IsCurrentTaskDescendantOfClickEventHandler(ScriptState*);
-  bool SetFlagIfDescendantAndCheck(ScriptState*,
-                                   FlagType,
-                                   bool run_descendent_check);
+  void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
+  void CheckSoftNavigationConditions(PerInteractionData& data);
+  void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
+
+  absl::optional<scheduler::TaskAttributionId>
+  GetUserInteractionAncestorTaskIfAny(ScriptState*);
+  absl::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
+      ScriptState*,
+      FlagType);
   void ResetHeuristic();
   void ResetPaintsIfNeeded(ScriptState*);
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntry(LocalFrame*);
 
-  // Here we need a HashSet as we could have more than 1 task reacting to a user
-  // interaction. E.g. a click event and a navigate event handler, or 3
-  // different keyboard events handlers.
+  PerInteractionData* GetCurrentInteractionData(scheduler::TaskAttributionId);
+
   WTF::HashSet<scheduler::TaskAttributionIdType>
       potential_soft_navigation_task_ids_;
   size_t disposed_soft_navigation_tasks_ = 0;
-  WTF::HashMap<scheduler::TaskAttributionIdType, bool>
+  WTF::HashMap<scheduler::TaskAttributionIdType,
+               absl::optional<scheduler::TaskAttributionId>>
       soft_navigation_descendant_cache_;
-  FlagTypeSet flag_set_;
   bool did_reset_paints_ = false;
   bool did_commit_previous_paints_ = false;
-  String url_;
-  // The timestamp just before the event responding to the user's interaction
-  // started processing. In case of multiple events for a single interaction
-  // (e.g. a keyboard key press resulting in keydown, keypress, and keyup), this
-  // timestamp would be the time before processing started on the first event.
-  base::TimeTicks user_interaction_timestamp_;
+  WTF::HashMap<scheduler::TaskAttributionIdType, PerInteractionData>
+      interaction_task_id_to_interaction_data_;
+  base::TimeTicks pending_interaction_timestamp_;
+  absl::optional<scheduler::TaskAttributionId>
+      last_soft_navigation_ancestor_task_;
+  PerInteractionData soft_navigation_interaction_data_;
+  WTF::HashMap<scheduler::TaskAttributionIdType,
+               scheduler::TaskAttributionIdType>
+      task_id_to_interaction_task_id_;
   uint32_t soft_navigation_count_ = 0;
   uint64_t softnav_painted_area_ = 0;
   uint64_t initial_painted_area_ = 0;
   uint64_t viewport_area_ = 0;
+  scheduler::TaskAttributionIdType last_interaction_task_id_ = 0;
   bool soft_navigation_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;
+  bool is_current_event_new_interaction_ = false;
+  EventScopeType current_event_type_;
 };
 
 // This class defines a scope that would cover click or navigation related
@@ -101,13 +127,9 @@ class SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
                            ScriptState* script_state,
-                           bool is_unfocused_keyboard_event,
-                           bool is_new_interaction)
-      : heuristics_(heuristics), script_state_(script_state) {
-    heuristics->UserInitiatedInteraction(
-        script_state, is_unfocused_keyboard_event, is_new_interaction);
-  }
-  ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
+                           SoftNavigationHeuristics::EventScopeType type,
+                           bool is_new_interaction);
+  ~SoftNavigationEventScope();
 
  private:
   Persistent<SoftNavigationHeuristics> heuristics_;

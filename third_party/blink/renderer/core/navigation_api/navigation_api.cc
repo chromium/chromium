@@ -591,6 +591,7 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   if (frame->IsOutermostMainFrame()) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window_);
+
     heuristics->SameDocumentNavigationStarted(script_state);
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
@@ -817,9 +818,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // as potential soft navigation tasks.
     soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
         soft_navigation_heuristics, script_state,
-        /*is_unfocused_keydown=*/false, /*is_new_interaction=*/true);
-
-    soft_navigation_heuristics->SameDocumentNavigationStarted(script_state);
+        SoftNavigationHeuristics::EventScopeType::Navigate,
+        /*is_new_interaction=*/true);
   }
   auto* navigate_event = NavigateEvent::Create(
       window_, event_type_names::kNavigate, init, controller);
