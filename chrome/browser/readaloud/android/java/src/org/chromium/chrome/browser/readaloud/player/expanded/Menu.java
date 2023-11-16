@@ -41,7 +41,7 @@ public class Menu extends LinearLayout {
         return addItem(itemId, iconId, label, action, "");
     }
 
-    MenuItem addItem(
+    public MenuItem addItem(
             int itemId,
             int iconId,
             String label,
@@ -64,16 +64,6 @@ public class Menu extends LinearLayout {
         mLastItemIndex = index;
 
         mItemIdToIndex.put(itemId, index);
-
-        // TODO toggle too
-        if (action == MenuItem.Action.RADIO) {
-            item.setChangeListener(
-                    (view, value) -> {
-                        if (value) {
-                            onRadioButtonSelected(itemId);
-                        }
-                    });
-        }
         return item;
     }
 

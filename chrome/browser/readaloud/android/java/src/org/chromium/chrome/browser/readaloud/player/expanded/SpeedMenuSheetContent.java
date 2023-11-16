@@ -50,25 +50,14 @@ class SpeedMenuSheetContent extends MenuSheetContent {
     private void setUp() {
         float currentSpeed = mModel.get(PlayerProperties.SPEED);
         for (int i = 0; i < mSpeeds.length; i++) {
-            String speedString = speedFormatter(mSpeeds[i]);
-            MenuItem item =
-                    mMenu.addItem(
-                            i,
-                            0,
-                            mContext.getResources()
-                                    .getString(R.string.readaloud_speed, speedString),
-                            MenuItem.Action.RADIO,
-                            mContext.getResources()
-                                    .getString(R.string.readaloud_speed, speedString));
-            if (mSpeeds[i] == currentSpeed && item != null) {
+            String speedString =
+                    mContext.getResources()
+                            .getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
+            MenuItem item = mMenu.addItem(i, 0, speedString, MenuItem.Action.RADIO, speedString);
+            if (mSpeeds[i] == currentSpeed) {
                 item.setValue(true);
             }
         }
-        mMenu.setItemClickHandler(this::onClick);
-    }
-
-    private void onClick(int itemId) {
-        ((ExpandedPlayerSheetContent) mParent).setSpeed(mSpeeds[itemId]);
     }
 
     void setInteractionHandler(InteractionHandler handler) {

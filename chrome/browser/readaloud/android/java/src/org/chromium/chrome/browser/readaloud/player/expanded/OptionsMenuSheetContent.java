@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -24,6 +25,7 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     private static final String TAG = "ReadAloudOptions";
     private final Context mContext;
     private final PropertyModel mModel;
+    private VoiceMenuSheetContent mVoiceSheet;
 
     @IntDef({Item.VOICE, Item.TRANSLATE, Item.HIGHLIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -87,11 +89,23 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         super.notifySheetClosed();
     }
 
+    @Nullable
+    VoiceMenuSheetContent getVoiceMenu() {
+        return mVoiceSheet;
+    }
+
     private void onClick(int itemId) {
         switch (itemId) {
             case Item.VOICE:
-                Log.i(TAG, "Voice menu item not implemented.");
-                // TODO: open voice sheet
+                if (mVoiceSheet == null) {
+                    mVoiceSheet =
+                            new VoiceMenuSheetContent(
+                                    mContext,
+                                    /* parent= */ this,
+                                    getBottomSheetController(),
+                                    mModel);
+                }
+                openSheet(mVoiceSheet);
                 break;
 
             case Item.TRANSLATE:

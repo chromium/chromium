@@ -1,0 +1,78 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.readaloud.player.expanded;
+
+import android.content.Context;
+
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.HashMap;
+import java.util.List;
+
+/** Bottom sheet content for Read Aloud voices menu. */
+class VoiceMenuSheetContent extends MenuSheetContent {
+    private final Context mContext;
+    private PlaybackVoice[] mVoices;
+    private HashMap<String, Integer> mVoiceIdToMenuItemId;
+    private InteractionHandler mInteractionHandler;
+
+    VoiceMenuSheetContent(
+            Context context,
+            BottomSheetContent parent,
+            BottomSheetController bottomSheetController,
+            PropertyModel model) {
+        super(context, parent, bottomSheetController, R.string.readaloud_voice_menu_title);
+        mContext = context;
+        mVoiceIdToMenuItemId = new HashMap<>();
+        mMenu.setRadioTrueHandler(this::onItemSelected);
+        setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+    }
+
+    void setVoices(List<PlaybackVoice> voices) {
+        assert voices != null : "Can't populate voice menu with null voice list. Invalid language?";
+        mMenu.clearItems();
+        mVoices = new PlaybackVoice[voices.size()];
+
+        int id = 0;
+        for (PlaybackVoice voice : voices) {
+            MenuItem item =
+                    mMenu.addItem(
+                            id, /* iconId= */ 0, voice.getDescription(), MenuItem.Action.RADIO);
+            item.addPlayButton();
+            mVoices[id] = voice;
+            mVoiceIdToMenuItemId.put(voice.getVoiceId(), id);
+            ++id;
+        }
+    }
+
+    void setVoiceSelection(String voiceId) {
+        Integer id = mVoiceIdToMenuItemId.get(voiceId);
+        assert id != null : "Selected voice that is missing from menu";
+
+        // Let menu handle unchecking the existing selection.
+        mMenu.getItem(id.intValue()).setValue(true);
+    }
+
+    void setInteractionHandler(InteractionHandler handler) {
+        mInteractionHandler = handler;
+        mMenu.setPlayButtonClickHandler(
+                (itemId) -> {
+                    handler.onPreviewVoiceClick(mVoices[itemId]);
+                });
+    }
+
+    private void onItemSelected(int itemId) {
+        if (mInteractionHandler == null) {
+            return;
+        }
+        mInteractionHandler.onVoiceSelected(mVoices[itemId]);
+    }
+}

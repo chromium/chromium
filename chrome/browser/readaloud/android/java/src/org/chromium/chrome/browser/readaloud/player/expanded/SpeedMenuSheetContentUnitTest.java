@@ -70,11 +70,12 @@ public class SpeedMenuSheetContentUnitTest {
 
     @Test
     public void testOnClick() {
+        mContent.setInteractionHandler(mHandler);
         assertTrue(mMenu.getItem(0).getChildAt(0).performClick());
-        verify(mBottomSheetContent).setSpeed(0.5f);
+        verify(mHandler).onSpeedChange(0.5f);
 
         assertTrue(mMenu.getItem(7).getChildAt(0).performClick());
-        verify(mBottomSheetContent).setSpeed(4.0f);
+        verify(mHandler).onSpeedChange(4.0f);
     }
 
     @Test

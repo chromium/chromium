@@ -29,7 +29,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
-    private static final float DEFAULT_INITIAL_SPEED = 1f;
     // Note: if these times need to change, the "back 10" and "forward 30" icons
     // should also be changed.
     private static final int BACK_SECONDS = 10;
@@ -83,7 +82,6 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
-        setSpeed(DEFAULT_INITIAL_SPEED);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
     }
 
@@ -196,6 +194,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public void showOptionsMenu() {
         mBottomSheetController.hideContent(this, /* animate= */ false);
         mBottomSheetController.requestShowContent(mOptionsMenu, /* animate= */ true);
+    }
+
+    @Nullable
+    VoiceMenuSheetContent getVoiceMenu() {
+        if (mOptionsMenu == null) {
+            return null;
+        }
+        return mOptionsMenu.getVoiceMenu();
     }
 
     public void notifySheetClosed() {

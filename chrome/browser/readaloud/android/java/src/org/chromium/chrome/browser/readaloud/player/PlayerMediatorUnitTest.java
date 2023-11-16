@@ -345,6 +345,7 @@ public class PlayerMediatorUnitTest {
         verify(mPlayback).setRate(0.5f);
         mMediator.onSpeedChange(2f);
         assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
+        assertEquals(2f, mModel.get(PlayerProperties.SPEED), /* delta= */ 0f);
     }
 
     @Test

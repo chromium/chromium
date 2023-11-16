@@ -95,6 +95,8 @@ public class ExpandedPlayerSheetContentUnitTest {
                         mContext, mBottomSheetController, mContentView, mModel);
         mContent.setOptionsMenuSheetContent(mOptionsMenu);
         mContent.setSpeedMenuSheetContent(mSpeedMenu);
+        // PlayerMediator is responsible for setting initial speed.
+        mContent.setSpeed(1f);
     }
 
     @Test

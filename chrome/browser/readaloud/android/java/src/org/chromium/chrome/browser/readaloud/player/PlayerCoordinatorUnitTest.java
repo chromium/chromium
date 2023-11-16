@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.expanded.Menu;
+import org.chromium.chrome.browser.readaloud.player.expanded.MenuItem;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
@@ -115,6 +116,9 @@ public class PlayerCoordinatorUnitTest {
                 .findViewById(R.id.readaloud_expanded_player_seek_bar);
 
         doReturn(mMenu).when(mLayoutInflater).inflate(eq(R.layout.readaloud_menu), any());
+        doReturn(Mockito.mock(MenuItem.class))
+                .when(mMenu)
+                .addItem(anyInt(), anyInt(), any(), anyInt(), any());
         doReturn(Mockito.mock(TextView.class)).when(mMenu).findViewById(anyInt());
         doReturn(mResources).when(mActivity).getResources();
         doReturn("").when(mResources).getString(anyInt(), anyInt());

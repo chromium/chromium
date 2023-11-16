@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** MenuItem is a view that can be used for all Read Aloud player menu item variants. */
-class MenuItem extends FrameLayout {
+public class MenuItem extends FrameLayout {
     private static final String TAG = "ReadAloudMenuItem";
 
     /** Menu item actions that show up as widgets at the end. */

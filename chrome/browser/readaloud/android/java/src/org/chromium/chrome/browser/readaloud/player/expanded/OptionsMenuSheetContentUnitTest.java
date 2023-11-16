@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
@@ -56,5 +60,18 @@ public class OptionsMenuSheetContentUnitTest {
         assertTrue(mMenu.getItem(Item.VOICE) != null);
         assertTrue(mMenu.getItem(Item.TRANSLATE) != null);
         assertTrue(mMenu.getItem(Item.HIGHLIGHT) != null);
+    }
+
+    @Test
+    public void testClickVoiceMenu() {
+        assertNull(mContent.getVoiceMenu());
+
+        ((Menu) mContent.getContentView())
+                .getItem(OptionsMenuSheetContent.Item.VOICE)
+                .getChildAt(0)
+                .performClick();
+        assertNotNull(mContent.getVoiceMenu());
+        verify(mBottomSheetController).hideContent(eq(mContent), eq(false));
+        verify(mBottomSheetController).requestShowContent(eq(mContent.getVoiceMenu()), eq(true));
     }
 }

@@ -167,6 +167,8 @@ class PlayerMediator implements InteractionHandler {
         } else {
             mDelegate.setHighlighterMode(Mode.TEXT_HIGHLIGHTING_MODE_WORD);
         }
+        // Reflect speed change in UI.
+        mModel.set(PlayerProperties.SPEED, newSpeed);
     }
 
     @Override
