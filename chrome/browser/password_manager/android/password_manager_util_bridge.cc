@@ -8,6 +8,15 @@
 #include "components/prefs/android/pref_service_android.h"
 
 using password_manager_android_util::CanUseUPMBackend;
+using password_manager_android_util::UsesUPMForLocal;
+
+jboolean JNI_PasswordManagerUtilBridge_UsesUpmForLocal(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_pref_service) {
+  PrefService* pref_service =
+      PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
+  return UsesUPMForLocal(pref_service);
+}
 
 // Called via JNI when it's necessary to check that the user is either syncing
 // and enrolled in UPM or not syncing and ready to use local UPM.
