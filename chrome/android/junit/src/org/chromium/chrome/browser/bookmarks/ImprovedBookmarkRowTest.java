@@ -328,4 +328,10 @@ public class ImprovedBookmarkRowTest {
         mImprovedBookmarkRow.cancelAnimation();
         assertFalse(mImprovedBookmarkRow.hasTransientState());
     }
+
+    @Test
+    public void testClick() {
+        mImprovedBookmarkRow.performClick();
+        verify(mOpenBookmarkCallback).run();
+    }
 }
