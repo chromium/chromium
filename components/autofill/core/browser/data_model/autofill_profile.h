@@ -119,6 +119,12 @@ class AutofillProfile : public AutofillDataModel {
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 
+  // Every `GetSupportedType()` is either a storable type or has a corresponding
+  // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable
+  // type ADDRESS_HOME_STREET_ADDRESS.
+  // This function returns the storable type of the given `type`.
+  ServerFieldType GetStorableTypeOf(ServerFieldType type) const;
+
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 

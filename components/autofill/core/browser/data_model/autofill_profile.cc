@@ -441,6 +441,22 @@ void AutofillProfile::GetSupportedTypes(
   }
 }
 
+ServerFieldType AutofillProfile::GetStorableTypeOf(ServerFieldType type) const {
+  const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
+  if (group == FieldTypeGroup::kAddress) {
+    return address_.GetStructuredAddress().GetStorableTypeOf(type).value_or(
+        type);
+  } else if (group == FieldTypeGroup::kName) {
+    return name_.GetStructuredName().GetStorableTypeOf(type).value_or(type);
+  } else if (group == FieldTypeGroup::kPhone) {
+    // The only storable phone number type is PHONE_HOME_WHOLE_NUMBER.
+    return PHONE_HOME_WHOLE_NUMBER;
+  } else {
+    // The other FieldTypeGroups only support storable types.
+    return type;
+  }
+}
+
 bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
   ServerFieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);

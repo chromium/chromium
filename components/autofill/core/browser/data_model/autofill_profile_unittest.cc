@@ -1665,6 +1665,19 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
               testing::UnorderedElementsAreArray(expected_raw_types));
 }
 
+TEST(AutofillProfileTest, GetStorableTypeOf) {
+  AutofillProfile profile;
+  // Test that additional types are mapped to their stored types
+  EXPECT_EQ(profile.GetStorableTypeOf(ADDRESS_HOME_LINE1),
+            ADDRESS_HOME_STREET_ADDRESS);
+  EXPECT_EQ(profile.GetStorableTypeOf(NAME_MIDDLE_INITIAL), NAME_MIDDLE);
+  EXPECT_EQ(profile.GetStorableTypeOf(PHONE_HOME_CITY_CODE),
+            PHONE_HOME_WHOLE_NUMBER);
+  // Test that stored types are returned as-is.
+  EXPECT_EQ(profile.GetStorableTypeOf(ADDRESS_HOME_STATE), ADDRESS_HOME_STATE);
+  EXPECT_EQ(profile.GetStorableTypeOf(COMPANY_NAME), COMPANY_NAME);
+}
+
 enum Expectation { GREATER, LESS };
 struct ProfileRankingTestCase {
   const int use_count_a;

@@ -329,10 +329,6 @@ Several important subsets of ServerFieldTypes exist:
     derived types below.
   * Since parsing and formatting are not necessarily inverse operations, most
     supported types of AutofillProfile are stored.
-* Derived types of AutofillProfile: The relative complement of stored types in
-  the supported types of AutofillProfile. Every derived type is derived directly
-  from a stored type. The set of derived types and their corresponding stored
-  types are listed [here](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/profile_token_quality.cc;l=32-62;drc=c50f718fc17e5a616359370bb4bbe9e702934aa1).
 * Setting-visible types of AutofillProfiles: The types shown in the "Addresses
   and more" settings UI. They correspond to the top-level types of the
   hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.

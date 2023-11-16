@@ -255,6 +255,19 @@ void AddressComponent::GetTypes(bool storable_only,
   }
 }
 
+std::optional<ServerFieldType> AddressComponent::GetStorableTypeOf(
+    ServerFieldType type) const {
+  if (IsSupportedType(type)) {
+    return storage_type_;
+  }
+  for (const std::unique_ptr<AddressComponent>& subcomponent : subcomponents_) {
+    if (auto storeable_type = subcomponent->GetStorableTypeOf(type)) {
+      return storeable_type;
+    }
+  }
+  return std::nullopt;
+}
+
 const ServerFieldTypeSet AddressComponent::GetAdditionalSupportedFieldTypes()
     const {
   constexpr ServerFieldTypeSet additional_supported_field_types;
