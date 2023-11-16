@@ -37458,6 +37458,7 @@ from previous Chrome versions.
   <int value="-1355717940" label="WebViewPowerSchedulerThrottleIdle:enabled"/>
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
+  <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
   <int value="-1353897328" label="FileTransferEnterpriseConnectorUI:disabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
@@ -41959,6 +41960,7 @@ from previous Chrome versions.
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
+  <int value="794100639" label="CameraAppAutoQRDetection:enabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798414711" label="BorealisForceDoubleScale:enabled"/>

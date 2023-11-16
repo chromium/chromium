@@ -5952,6 +5952,11 @@ const char kCrostiniUseLxd5Description[] =
     "Uses LXD version 5 instead of the default version. WARNING: Once this is "
     "set you can't unset it without deleting your entire container";
 
+const char kCameraAppAutoQRDetectionName[] =
+    "Camera App Auto QR Code Detection";
+const char kCameraAppAutoQRDetectionDescription[] =
+    "Enable this flag to detect QR code in Camera app Photo mode.";
+
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =

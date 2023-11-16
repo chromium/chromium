@@ -6,5 +6,5 @@
  * Name of the chrome flags.
  */
 export enum Flag {
-  PLACEHOLDER_FLAG = '',
+  AUTO_QR = 'auto_qr',
 }

@@ -961,6 +961,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "camera-app-autoqr-detection",
+    "owners": [ "dorahkim@chromium.org", "chromeos-camera-app-eng@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",
