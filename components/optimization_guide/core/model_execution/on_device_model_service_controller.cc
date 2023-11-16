@@ -14,21 +14,27 @@
 namespace optimization_guide {
 namespace {
 
+using StartSessionFn = base::RepeatingCallback<
+    mojo::PendingRemote<on_device_model::mojom::Session>()>;
+
 class OnDeviceSession
     : public optimization_guide::OptimizationGuideModelExecutor::Session,
       public on_device_model::mojom::StreamingResponder {
  public:
   explicit OnDeviceSession(
-      mojo::PendingRemote<on_device_model::mojom::Session> session,
+      StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
       const OnDeviceModelExecutionConfigInterpreter* config_interpreter)
-      : session_(std::move(session)),
-        feature_(feature),
-        config_interpreter_(config_interpreter) {}
+      : feature_(feature),
+        config_interpreter_(config_interpreter),
+        start_session_fn_(std::move(start_session_fn)) {
+    // Prewarm the initial session to make sure the service is started.
+    GetOrCreateSession();
+  }
   ~OnDeviceSession() override = default;
 
   void SetDisconnectHandler(base::OnceClosure on_disconnect) override {
-    session_.set_disconnect_handler(std::move(on_disconnect));
+    on_disconnect_ = std::move(on_disconnect);
   }
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -41,8 +47,12 @@ class OnDeviceSession
       LOG(ERROR) << "Error constructing input string.";
       return;
     }
+
     // TODO(b/304890244): Handle passing context until request comes in.
-    session_->AddContext(
+
+    // Only the latest context is used, so restart the mojo session here.
+    session_.reset();
+    GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
             input->input_string, /*max_tokens=*/1024,
             /*token_offset=*/std::nullopt, input->should_ignore_input_context),
@@ -62,10 +72,10 @@ class OnDeviceSession
     }
 
     // Make sure to cancel any pending response.
-    Reset();
+    ResetResponse();
 
     callback_ = std::move(callback);
-    session_->Execute(
+    GetOrCreateSession().Execute(
         on_device_model::mojom::InputOptions::New(
             input->input_string,
             /*max_tokens=*/std::nullopt, /*token_offset=*/std::nullopt,
@@ -83,11 +93,26 @@ class OnDeviceSession
 
   void OnComplete() override {
     SendResponse(/*is_complete=*/true);
-    Reset();
+    ResetResponse();
   }
 
  private:
-  void Reset() {
+  on_device_model::mojom::Session& GetOrCreateSession() {
+    if (!session_) {
+      session_.Bind(start_session_fn_.Run());
+      session_.set_disconnect_handler(base::BindOnce(
+          &OnDeviceSession::OnDisconnect, base::Unretained(this)));
+    }
+    return *session_;
+  }
+
+  void OnDisconnect() {
+    if (on_disconnect_) {
+      std::move(on_disconnect_).Run();
+    }
+  }
+
+  void ResetResponse() {
     receiver_.reset();
     callback_.Reset();
     current_response_ = "";
@@ -102,7 +127,7 @@ class OnDeviceSession
                       kGenericFailure)),
           nullptr);
     }
-    Reset();
+    ResetResponse();
   }
 
   void SendResponse(bool is_complete) {
@@ -129,6 +154,8 @@ class OnDeviceSession
   mojo::Remote<on_device_model::mojom::Session> session_;
   const proto::ModelExecutionFeature feature_;
   raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
+  base::OnceClosure on_disconnect_;
+  StartSessionFn start_session_fn_;
 
   // These fields handle the currently active response.
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
@@ -160,6 +187,15 @@ OnDeviceModelServiceController::StartSession(
       !config_interpreter_->HasConfigForFeature(feature)) {
     return nullptr;
   }
+  return std::make_unique<OnDeviceSession>(
+      // base::Unretained is safe because |this| is owned by a KeyedService.
+      base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
+                          base::Unretained(this)),
+      feature, config_interpreter_.get());
+}
+
+mojo::PendingRemote<on_device_model::mojom::Session>
+OnDeviceModelServiceController::StartMojoSession() {
   if (!model_remote_) {
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -172,8 +208,7 @@ OnDeviceModelServiceController::StartSession(
   }
   mojo::PendingRemote<on_device_model::mojom::Session> session;
   model_remote_->StartSession(session.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<OnDeviceSession>(std::move(session), feature,
-                                           config_interpreter_.get());
+  return session;
 }
 
 void OnDeviceModelServiceController::OnModelAssetsLoaded(

@@ -54,6 +54,9 @@ class OnDeviceModelServiceController {
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
 
+  // Makes sure the service is running and starts a mojo session.
+  mojo::PendingRemote<on_device_model::mojom::Session> StartMojoSession();
+
   // Invoked at the end of model load, to continue with model execution.
   void OnLoadModelResult(const std::optional<std::string>& error);
 

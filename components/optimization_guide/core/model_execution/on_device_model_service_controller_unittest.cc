@@ -25,15 +25,8 @@ namespace optimization_guide {
 constexpr proto::ModelExecutionFeature kFeature =
     proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
 
-class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel,
-                          public on_device_model::mojom::Session {
+class FakeOnDeviceSession : public on_device_model::mojom::Session {
  public:
-  // on_device_model::mojom::OnDeviceModel:
-  void StartSession(
-      mojo::PendingReceiver<on_device_model::mojom::Session> session) override {
-    receivers_.Add(this, std::move(session));
-  }
-
   // on_device_model::mojom::Session:
   void AddContext(on_device_model::mojom::InputOptionsPtr input,
                   mojo::PendingRemote<on_device_model::mojom::ContextClient>
@@ -55,7 +48,18 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel,
 
  private:
   std::vector<std::string> context_;
-  mojo::ReceiverSet<on_device_model::mojom::Session> receivers_;
+};
+
+class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
+ public:
+  // on_device_model::mojom::OnDeviceModel:
+  void StartSession(
+      mojo::PendingReceiver<on_device_model::mojom::Session> session) override {
+    receivers_.Add(std::make_unique<FakeOnDeviceSession>(), std::move(session));
+  }
+
+ private:
+  mojo::UniqueReceiverSet<on_device_model::mojom::Session> receivers_;
 };
 
 class FakeOnDeviceModelService
@@ -204,11 +208,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
   const std::vector<std::string> expected_responses = {
-      "Context: context:foo\n",
-      "Context: context:foo\nContext: context:bar\n",
-      "Context: context:foo\nContext: context:bar\nInput: execute:baz\n",
+      "Context: context:bar\n",
+      "Context: context:bar\nInput: execute:baz\n",
   };
-  EXPECT_EQ(*response_received_, expected_responses[2]);
+  EXPECT_EQ(*response_received_, expected_responses[1]);
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
