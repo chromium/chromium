@@ -48,10 +48,6 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR);
 }
 
-void LocalPasswordSetupHandler::ShowLocalPasswordSetupSuccess() {
-  CallExternalAPI("showLocalPasswordSetupSuccess");
-}
-
 void LocalPasswordSetupHandler::ShowLocalPasswordSetupFailure() {
   CallExternalAPI("showLocalPasswordSetupFailure");
 }

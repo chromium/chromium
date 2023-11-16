@@ -89,7 +89,7 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
   }
 
   get EXTERNAL_API() {
-    return ['showLocalPasswordSetupSuccess', 'showLocalPasswordSetupFailure'];
+    return ['showLocalPasswordSetupFailure'];
   }
 
   defaultUIStep() {
