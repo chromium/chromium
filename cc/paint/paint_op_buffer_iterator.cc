@@ -8,15 +8,19 @@ namespace cc {
 
 namespace {
 
-// When |op| is a nested PaintOpBuffer, this returns the PaintOp inside
-// that buffer if the buffer contains a single drawing op, otherwise it
-// returns null. This searches recursively if the PaintOpBuffer contains only
-// another PaintOpBuffer.
+// When |op| is a DrawRecordOp, this returns the PaintOp inside that record if
+// it contains (recursively) a single drawing op, otherwise it returns |op| if
+// it's a drawing op, or nullptr.
 static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
   if (!op->IsDrawOp())
     return nullptr;
   while (op->GetType() == PaintOpType::kDrawRecord) {
     auto* draw_record_op = static_cast<const DrawRecordOp*>(op);
+    if (draw_record_op->record.empty()) {
+      // We could omit this empty DrawRecordOp (as well as the enclosing
+      // SaveLayerAlphaOp/RestoreOp), but the case is very rare.
+      return nullptr;
+    }
     if (draw_record_op->record.size() > 1) {
       // If there's more than one op, then we need to keep the
       // SaveLayer.

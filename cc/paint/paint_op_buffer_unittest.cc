@@ -4265,4 +4265,18 @@ TEST(IteratorTest, CompositeOffsetBoolCheck) {
   EXPECT_FALSE(++offset_iter);
 }
 
+TEST(IteratorTest, PlaybackFoldingIteratorEmptyDrawRecordInSaveLayerAlpha) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveLayerAlphaOp>(0.5f);
+  buffer.push<DrawRecordOp>(PaintRecord());
+  buffer.push<RestoreOp>();
+  PaintOpBuffer::PlaybackFoldingIterator iter(buffer, /*offsets=*/nullptr);
+  // We could optimize PlaybackFoldingIterator by omitting all paint operations,
+  // but because the case is very rare, we just expect no crash.
+  EXPECT_TRUE(iter);
+  EXPECT_TRUE(++iter);
+  EXPECT_TRUE(++iter);
+  EXPECT_FALSE(++iter);
+}
+
 }  // namespace cc
