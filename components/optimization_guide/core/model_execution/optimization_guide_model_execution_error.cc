@@ -86,6 +86,7 @@ bool OptimizationGuideModelExecutionError::transient() const {
     case ModelExecutionError::kRequestThrottled:
     case ModelExecutionError::kGenericFailure:
     case ModelExecutionError::kRetryableError:
+    case ModelExecutionError::kCancelled:
       return true;
     case ModelExecutionError::kUnknown:
       NOTREACHED();

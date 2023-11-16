@@ -14,6 +14,8 @@
 namespace optimization_guide {
 namespace {
 
+using ModelExecutionError =
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 using StartSessionFn = base::RepeatingCallback<void(
     mojo::PendingReceiver<on_device_model::mojom::Session>)>;
 
@@ -48,6 +50,9 @@ class OnDeviceSession
       return;
     }
 
+    // Cancel any pending response.
+    OnError(ModelExecutionError::kCancelled);
+
     // TODO(b/304890244): Handle passing context until request comes in.
 
     // Only the latest context is used, so restart the mojo session here.
@@ -72,7 +77,7 @@ class OnDeviceSession
     }
 
     // Make sure to cancel any pending response.
-    ResetResponse();
+    OnError(ModelExecutionError::kCancelled);
 
     callback_ = std::move(callback);
     GetOrCreateSession().Execute(
@@ -82,7 +87,8 @@ class OnDeviceSession
             input->should_ignore_input_context),
         receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
-        base::BindOnce(&OnDeviceSession::OnError, base::Unretained(this)));
+        base::BindOnce(&OnDeviceSession::OnError, base::Unretained(this),
+                       ModelExecutionError::kCancelled));
   }
 
   // on_device_model::mojom::StreamingResponder:
@@ -118,13 +124,12 @@ class OnDeviceSession
     current_response_ = "";
   }
 
-  void OnError() {
+  void OnError(ModelExecutionError error) {
     if (callback_) {
       callback_.Run(
           base::unexpected(
               OptimizationGuideModelExecutionError::FromModelExecutionError(
-                  OptimizationGuideModelExecutionError::ModelExecutionError::
-                      kGenericFailure)),
+                  error)),
           nullptr);
     }
     ResetResponse();
@@ -138,7 +143,7 @@ class OnDeviceSession
     auto output = config_interpreter_->ConstructOutputMetadata(
         feature_, current_response_);
     if (!output) {
-      OnError();
+      OnError(ModelExecutionError::kGenericFailure);
       return;
     }
 

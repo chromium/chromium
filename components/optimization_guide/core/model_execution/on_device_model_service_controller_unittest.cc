@@ -243,8 +243,41 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(response_error_);
-  EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
-                                  ModelExecutionError::kGenericFailure);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session, "foo");
+  AddContext(*session, "bar");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session, "foo");
+  ExecuteModel(*session, "bar");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_, "Input: execute:bar\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRecoversAfterDisconnect) {

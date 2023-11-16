@@ -64,7 +64,7 @@ GURL GetModelExecutionServiceURL() {
 }
 
 // Session which passes through all ExecuteModel() calls to the underlying
-// ModelExecutionManager.
+// ModelExecutionManager and saves context passed to AddContext().
 class PassthroughSession : public OptimizationGuideModelExecutor::Session {
  public:
   PassthroughSession(proto::ModelExecutionFeature feature,
@@ -74,12 +74,16 @@ class PassthroughSession : public OptimizationGuideModelExecutor::Session {
   // OptimizationGuideModelExecutor::Session:
   void SetDisconnectHandler(base::OnceClosure on_disconnect) override {}
   void AddContext(
-      const google::protobuf::MessageLite& request_metadata) override {}
+      const google::protobuf::MessageLite& request_metadata) override {
+    context_.reset(request_metadata.New());
+    context_->CheckTypeAndMergeFrom(request_metadata);
+  }
   void ExecuteModel(const google::protobuf::MessageLite& request_metadata,
                     OptimizationGuideModelExecutionResultStreamingCallback
                         callback) override {
+    auto request = MergeContext(request_metadata);
     execution_manager_->ExecuteModel(
-        feature_, request_metadata,
+        feature_, *request,
         base::BindOnce(
             [](OptimizationGuideModelExecutionResultStreamingCallback callback,
                OptimizationGuideModelExecutionResult result,
@@ -100,6 +104,22 @@ class PassthroughSession : public OptimizationGuideModelExecutor::Session {
   }
 
  private:
+  // Returns a new message created by merging `request` into `context_`. This is
+  // a bit tricky since we don't know the type of MessageLite.
+  std::unique_ptr<google::protobuf::MessageLite> MergeContext(
+      const google::protobuf::MessageLite& request) {
+    // Create a message of the correct type.
+    auto message = base::WrapUnique(request.New());
+    // First merge in the current context.
+    if (context_) {
+      message->CheckTypeAndMergeFrom(*context_);
+    }
+    // Then merge in the request.
+    message->CheckTypeAndMergeFrom(request);
+    return message;
+  }
+
+  std::unique_ptr<google::protobuf::MessageLite> context_;
   proto::ModelExecutionFeature feature_;
   raw_ref<ModelExecutionManager> execution_manager_;
 };

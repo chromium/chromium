@@ -33,9 +33,11 @@ class OptimizationGuideModelExecutionError {
     kFiltered,
     // Response was disabled.
     kDisabled,
+    // The request was cancelled.
+    kCancelled,
 
     // Insert new values before this line.
-    kMaxValue = kDisabled
+    kMaxValue = kCancelled
   };
 
   static OptimizationGuideModelExecutionError FromHttpStatusCode(

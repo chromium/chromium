@@ -54,6 +54,7 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
     case ModelExecutionError::kUnsupportedLanguage:
     case ModelExecutionError::kFiltered:
     case ModelExecutionError::kDisabled:
+    case ModelExecutionError::kCancelled:
       return compose::mojom::ComposeStatus::kNotSuccessful;
   }
 }

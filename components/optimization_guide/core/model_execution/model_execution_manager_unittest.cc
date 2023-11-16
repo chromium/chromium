@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -16,16 +17,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
-
-using base::test::TestMessage;
-
 namespace {
 
-constexpr char kOptimizationGuideServiceUrl[] =
-    "https://optimization-guide-server.com/?key=foo_key";
+using ::base::test::TestMessage;
+using ::testing::HasSubstr;
 
 TestMessage BuildTestMessage(const std::string& test_message_str) {
   TestMessage test_message;
@@ -59,7 +58,7 @@ class ModelExecutionManagerTest : public testing::Test {
   bool SimulateResponse(const std::string& content,
                         net::HttpStatusCode http_status) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kOptimizationGuideServiceUrl, content, http_status,
+        kOptimizationGuideServiceModelExecutionDefaultURL, content, http_status,
         network::TestURLLoaderFactory::kUrlMatchPrefix);
   }
 
@@ -79,6 +78,16 @@ class ModelExecutionManagerTest : public testing::Test {
     return model_execution_manager_.get();
   }
 
+  void CheckPendingRequestMessage(const std::string& message) {
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+    auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    auto body_bytes = pending_request->request.request_body->elements()
+                          ->at(0)
+                          .As<network::DataElementBytes>()
+                          .AsStringPiece();
+    EXPECT_THAT(body_bytes, HasSubstr(message));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -91,7 +100,7 @@ class ModelExecutionManagerTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
-  base::test::TestMessage test_message;
+  TestMessage test_message;
   test_message.set_test("some test");
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
@@ -105,11 +114,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
             run_loop->Quit();
           },
           &run_loop));
-  run_loop.RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
-  base::test::TestMessage test_message;
+  TestMessage test_message;
   test_message.set_test("some test");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -129,12 +138,12 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
           &run_loop));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
-  SimulateSuccessfulResponse();
-  run_loop.RunUntilIdle();
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
-  base::test::TestMessage test_message;
+  TestMessage test_message;
   test_message.set_test("some test");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -157,8 +166,95 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
           &run_loop));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
-  SimulateSuccessfulResponse();
-  run_loop.RunUntilIdle();
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
+}
+
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelWithPassthroughSessionAddContext) {
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  // Message is added through AddContext().
+  TestMessage test_message;
+  test_message.set_test("some test");
+  session->AddContext(test_message);
+  // ExecuteModel() uses empty message.
+  session->ExecuteModel(
+      TestMessage(),
+      base::BindRepeating(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelStreamingExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            run_loop->Quit();
+          },
+          &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  CheckPendingRequestMessage("some test");
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
+}
+
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelWithPassthroughSessionMultipleAddContext) {
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  TestMessage test_message;
+  test_message.set_test("first test");
+  session->AddContext(test_message);
+
+  test_message.set_test("second test");
+  session->AddContext(test_message);
+  // ExecuteModel() uses empty message.
+  session->ExecuteModel(
+      TestMessage(),
+      base::BindRepeating(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelStreamingExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            run_loop->Quit();
+          },
+          &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  CheckPendingRequestMessage("second test");
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
+}
+
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelWithPassthroughSessionExecuteOverridesAddContext) {
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  // First message is added through AddContext().
+  TestMessage test_message;
+  test_message.set_test("some test");
+  session->AddContext(test_message);
+  // ExecuteModel() adds a different message.
+  test_message.set_test("other test");
+  session->ExecuteModel(
+      test_message,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelStreamingExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            run_loop->Quit();
+          },
+          &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  CheckPendingRequestMessage("other test");
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
 }
 
 }  // namespace

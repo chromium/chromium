@@ -54,16 +54,24 @@ class OptimizationGuideModelExecutor {
    public:
     virtual ~Session() = default;
 
-    // Listens for session disconnect.
+    // Listens for session disconnect. Disconnects may happen if the backing
+    // model service crashes. Clients should add back context in this case.
     virtual void SetDisconnectHandler(base::OnceClosure on_disconnect) = 0;
 
     // Adds context to this session. This will be saved for future Execute()
-    // calls.
+    // calls. Calling multiple times will replace previous calls to
+    // AddContext(). Calling this while a ExecuteModel() call is still streaming
+    // a response will cancel the ongoing ExecuteModel() call by calling its
+    // `callback` with the kCancelled error.
     virtual void AddContext(
         const google::protobuf::MessageLite& request_metadata) = 0;
 
     // Execute the model with `request_metadata` and streams the result to
-    // `callback`.
+    // `callback`. The execute call will include context from the last
+    // AddContext() call. Data provided to the last AddContext() call does not
+    // need to be provided here. Calling this while another ExecuteModel() call
+    // is still streaming a response will cancel the previous call by calling
+    // `callback` with the kCancelled error.
     virtual void ExecuteModel(
         const google::protobuf::MessageLite& request_metadata,
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
