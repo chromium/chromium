@@ -124,6 +124,10 @@ class OpenerHeuristicTabHelper
   void EmitPostPopupCookieAccess(const ukm::SourceId& source_id,
                                  const content::CookieAccessDetails& details,
                                  absl::optional<PopupsStateValue> value);
+  // Check whether `source_render_frame_host` is a valid popup initiator frame,
+  // per the experiment flags.
+  bool PassesIframeInitiatorCheck(
+      content::RenderFrameHost* source_render_frame_host);
 
   // WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;

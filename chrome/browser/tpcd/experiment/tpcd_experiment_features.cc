@@ -89,6 +89,8 @@ const char kTpcdBackfillPopupHeuristicsGrantsName[] =
     "TpcdBackfillPopupHeuristicsGrants";
 const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
     "TpcdPopupHeuristicDisableForAdTaggedPopups";
+const char kTpcdPopupHeuristicEnableForIframeInitiatorName[] =
+    "TpcdPopupHeuristicEnableForIframeInitiator";
 const char kTpcdWriteRedirectHeuristicGrantsName[] =
     "TpcdWriteRedirectHeuristicGrants";
 const char kTpcdRedirectHeuristicRequireABAFlowName[] =
@@ -114,6 +116,12 @@ const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
 const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
     &content_settings::features::kTpcdHeuristicsGrants,
     kTpcdPopupHeuristicDisableForAdTaggedPopupsName, false};
+
+const base::FeatureParam<EnableForIframeTypes>
+    kTpcdPopupHeuristicEnableForIframeInitiator{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        kTpcdPopupHeuristicEnableForIframeInitiatorName,
+        EnableForIframeTypes::kNone, &kEnableForIframeTypesOptions};
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
