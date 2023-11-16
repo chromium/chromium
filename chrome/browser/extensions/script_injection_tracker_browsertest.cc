@@ -1264,8 +1264,16 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 }
 
 // Regression test for https://crbug.com/1439642.
+// TODO(crbug.com/1502769): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ContentScriptViaScriptingApiWhileIdle \
+  DISABLED_ContentScriptViaScriptingApiWhileIdle
+#else
+#define MAYBE_ContentScriptViaScriptingApiWhileIdle \
+  ContentScriptViaScriptingApiWhileIdle
+#endif
 IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
-                       ContentScriptViaScriptingApiWhileIdle) {
+                       MAYBE_ContentScriptViaScriptingApiWhileIdle) {
   // The test orchestrates the following sequence of events.
   //
   // Step 1: `DidFinishNavigation` for a.com/iframe_cross_site.html
