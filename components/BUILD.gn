@@ -474,6 +474,9 @@ test("components_unittests") {
       "//components/policy/content:unit_tests",
       "//components/query_tiles:unit_tests",
       "//components/reporting/resources:unit_tests",
+      "//components/safe_browsing/content/browser/password_protection:password_protection_unittest",
+      "//components/safe_browsing/content/browser/triggers:unit_tests",
+      "//components/safe_browsing/content/browser/web_ui:unit_tests",
       "//components/services/heap_profiling:unit_tests",
       "//components/services/storage:tests",
       "//components/session_proto_db:unit_tests",
@@ -550,9 +553,6 @@ test("components_unittests") {
 
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.
-      "//components/safe_browsing/content/browser/password_protection:password_protection_unittest",
-      "//components/safe_browsing/content/browser/triggers:unit_tests",
-      "//components/safe_browsing/content/browser/web_ui:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
       "//components/services/paint_preview_compositor:unit_tests",
