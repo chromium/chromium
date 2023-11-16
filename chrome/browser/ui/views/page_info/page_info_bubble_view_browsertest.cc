@@ -1166,14 +1166,28 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSiteSettingsBrowserTest,
 }
 
 class PageInfoBubbleViewBrowserTestCookiesSubpage
-    : public base::test::WithFeatureOverride,
-      public PageInfoBubbleViewBrowserTest {
+    : public PageInfoBubbleViewBrowserTest,
+      public testing::WithParamInterface<
+          testing::tuple</*is_3pcd_enabled*/ bool,
+                         /*is_user_bypass_ui_enabled*/ bool>> {
  public:
-  PageInfoBubbleViewBrowserTestCookiesSubpage()
-      : base::test::WithFeatureOverride(
-            content_settings::features::kUserBypassUI) {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  PageInfoBubbleViewBrowserTestCookiesSubpage() {
+    std::vector<base::test::FeatureRef>
+        enabled_features = {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        disabled_features = {};
+    if (Is3pcdEnabled()) {
+      enabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
+    if (IsUserBypassUIEnabled()) {
+      enabled_features.push_back(content_settings::features::kUserBypassUI);
+    } else {
+      disabled_features.push_back(content_settings::features::kUserBypassUI);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -1221,12 +1235,18 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
     // The preference should only be recorded when blocking 3P cookies.
     const bool block_third_party =
+        base::FeatureList::IsEnabled(
+            content_settings::features::kTrackingProtection3pcd) ||
         prefs_->GetInteger(prefs::kCookieControlsMode) ==
-        static_cast<int>(
-            content_settings::CookieControlsMode::kBlockThirdParty);
+            static_cast<int>(
+                content_settings::CookieControlsMode::kBlockThirdParty);
     EXPECT_EQ(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened),
               block_third_party);
   }
+
+  bool Is3pcdEnabled() { return testing::get<0>(GetParam()); }
+
+  bool IsUserBypassUIEnabled() { return testing::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1235,29 +1255,25 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
       mock_privacy_sandbox_service_;
 };
 
-class PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage
-    : public PageInfoBubbleViewBrowserTestCookiesSubpage {
- public:
-  PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage() {
-    feature_list_.InitAndDisableFeature(
-        content_settings::features::kTrackingProtection3pcd);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewBrowserTestCookiesSubpage,
+                         testing::ValuesIn(
+                             /*{is_3pcd_enabled, is_user_bypass_ui_enabled}*/
+                             std::vector<testing::tuple<bool, bool>>{
+                                 {false, true},
+                                 {false, false},
+                                 {true, true}}));
 
 // Checks if there is correct number of buttons in cookies subpage when fps are
-// blocked and third party cookies are allowed(in settings) and checks if the
-// metrics for opening cookies dialog work properly.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage,
+// blocked and based on the third party cookies state (dependent on 3PCD) and
+// checks if the metrics for opening cookies dialog work properly.
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ClickingCookieDialogButton) {
-  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
   OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
 
   // FPS blocked and 3pc allowed -> button for opening cookie dialog +
   // separator.
-  size_t kExpectedChildren = IsParamFeatureEnabled() ? 2 : 1;
+  size_t kExpectedChildren = IsUserBypassUIEnabled() ? 2 : 1;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1284,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
-  if (IsParamFeatureEnabled()) {
+  if (IsUserBypassUIEnabled()) {
     size_t kExpectedChildren = 3;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
@@ -1336,7 +1352,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
-  if (IsParamFeatureEnabled()) {
+  if (IsUserBypassUIEnabled()) {
     size_t kExpectedChildren = 2;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
@@ -1388,21 +1404,20 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 }
 
 // Checks if there is a correct number of buttons in cookies subpage when fps
-// are allowed and third party cookies are allowed(in settings) and click on
-// link in description of cookies subapge.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage,
+// are allowed and based on third party cookies state (dependent on 3PCD) and
+// click on link in description of cookies subapge.
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        LinkInDescriptionForCookiesSettings) {
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
   std::u16string fps_owner = u"example";
-  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
   // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button and
   // separator.
-  size_t kExpectedChildren = IsParamFeatureEnabled() ? 3 : 2;
+  size_t kExpectedChildren = IsUserBypassUIEnabled() ? 3 : 2;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1521,9 +1536,3 @@ IN_PROC_BROWSER_TEST_F(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW) +
           u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PageInfoBubbleViewBrowserTestCookiesSubpage);
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage);
