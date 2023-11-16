@@ -11,7 +11,6 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -1487,7 +1486,7 @@ void AutofillAgent::OnProvisionallySaveForm(
       }
       WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
       if (!doc.IsNull()) {
-        base::EraseIf(
+        std::erase_if(
             formless_elements_user_edited_,
             [&doc](const FieldRendererId field_id) {
               WebFormControlElement field =

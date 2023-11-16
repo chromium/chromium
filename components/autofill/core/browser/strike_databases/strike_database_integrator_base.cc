@@ -204,7 +204,7 @@ void StrikeDatabaseIntegratorBase::ClearStrikesForKeys(
 std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
     const std::string& key) const {
   std::string prefix = GetProjectPrefix() + kKeyDeliminator;
-  if (!base::StartsWith(key, prefix)) {
+  if (!key.starts_with(prefix)) {
     return std::string();
   }
   return key.substr(prefix.length(), std::string::npos);

@@ -87,7 +87,7 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
     for (const std::unique_ptr<AutofillProfile>& profile : profile_ptrs) {
       deduped_profiles.push_back(*profile);
     }
-    base::EraseIf(deduped_profiles, [&](const AutofillProfile& profile) {
+    std::erase_if(deduped_profiles, [&](const AutofillProfile& profile) {
       return profiles_to_delete.contains(profile.guid());
     });
     return deduped_profiles;

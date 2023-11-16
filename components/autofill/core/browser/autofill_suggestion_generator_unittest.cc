@@ -8,7 +8,6 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1627,8 +1626,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   // `profile2`.
   FormFieldData triggering_field;
   triggering_field.value = profile1.GetRawInfo(NAME_FIRST);
-  ASSERT_FALSE(base::StartsWith(profile2.GetRawInfo(NAME_FIRST),
-                                profile1.GetRawInfo(NAME_FIRST)));
+  ASSERT_FALSE(profile2.GetRawInfo(NAME_FIRST)
+                   .starts_with(profile1.GetRawInfo(NAME_FIRST)));
 
   // Expect that regular suggestions filter.
   EXPECT_EQ(suggestion_generator()

@@ -930,7 +930,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_FieldRemoval) {
   FormGlobalId removed_form = GetMockedForm("leaf").global_id();
   EXPECT_THAT(ff.EraseForms(std::array{removed_form}),
               ElementsAre(GetMockedForm("main").global_id()));
-  base::EraseIf(
+  std::erase_if(
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
   MockFlattening({{"main"}, {"inner"}});
@@ -955,7 +955,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   FormGlobalId removed_form = GetMockedForm("inner").global_id();
   EXPECT_THAT(ff.EraseForms(std::array{removed_form}),
               ElementsAre(GetMockedForm("main").global_id()));
-  base::EraseIf(
+  std::erase_if(
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
   GetDriverOfForm("leaf").set_sub_root(true);

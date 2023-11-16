@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -136,7 +135,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
   CHECK_EQ(form_structure.field_count(), form_data.fields.size());
 
   std::vector<AutofillProfile*> other_profiles = pdm.GetProfiles();
-  base::EraseIf(other_profiles, [&](AutofillProfile* p) {
+  std::erase_if(other_profiles, [&](AutofillProfile* p) {
     return p->guid() == profile_->guid();
   });
 

@@ -30,7 +30,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -1512,7 +1511,7 @@ bool OwnedOrUnownedFormToFormData(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
     }
   }
-  base::EraseIf(form->child_frames, [](const auto& child_frame) {
+  std::erase_if(form->child_frames, [](const auto& child_frame) {
     return absl::visit([](const auto& token) { return token.is_empty(); },
                        child_frame.token);
   });
@@ -1542,8 +1541,7 @@ bool ScriptModifiedUsernameAcceptable(
   const auto typed_lowercase = base::i18n::ToLower(typed_value);
   // If the page-generated value is just a completion of the typed value, that's
   // likely acceptable.
-  if (base::StartsWith(lowercase, typed_lowercase,
-                       base::CompareCase::SENSITIVE)) {
+  if (lowercase.starts_with(typed_lowercase)) {
     return true;
   }
   if (typed_lowercase.size() >= kMinMatchSize &&

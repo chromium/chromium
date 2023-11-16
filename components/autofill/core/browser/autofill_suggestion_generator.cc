@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -683,8 +682,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
     return false;
   }
 
-  return base::StartsWith(suggestion_canon, field_contents_canon,
-                          base::CompareCase::SENSITIVE);
+  return suggestion_canon.starts_with(field_contents_canon);
 }
 
 // Normalizes text for comparison based on the type of the field `text` was
@@ -1006,7 +1004,7 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
     std::vector<AutofillProfile*>& profiles) {
   const size_t original_size = profiles.size();
-  base::EraseIf(profiles, [min_last_used](const AutofillProfile* profile) {
+  std::erase_if(profiles, [min_last_used](const AutofillProfile* profile) {
     return profile->use_date() <= min_last_used;
   });
   const size_t num_profiles_suppressed = original_size - profiles.size();
@@ -1342,7 +1340,7 @@ void AutofillSuggestionGenerator::
         base::Time min_last_used,
         std::vector<CreditCard*>& cards) {
   const size_t original_size = cards.size();
-  base::EraseIf(cards, [comparison_time = AutofillClock::Now(),
+  std::erase_if(cards, [comparison_time = AutofillClock::Now(),
                         min_last_used](const CreditCard* card) {
     return card->IsExpired(comparison_time) &&
            card->use_date() < min_last_used &&

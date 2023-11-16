@@ -22,8 +22,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -130,7 +128,6 @@
 
 namespace autofill {
 
-using base::StartsWith;
 using base::TimeTicks;
 using mojom::SubmissionSource;
 
@@ -1470,7 +1467,7 @@ void BrowserAutofillManager::UndoAutofill(
   // on `field`. And among those fields, skip the ones that have been modified
   // since that operation. Remove the ones to be skipped so that we only pass
   // fields to be undone by the renderer.
-  base::EraseIf(form.fields, [this, &operation](const FormFieldData& field) {
+  std::erase_if(form.fields, [this, &operation](const FormFieldData& field) {
     return !field.is_autofilled ||
            form_autofill_history_.GetLastFillingOperationForField(
                field.global_id()) != operation;
@@ -2064,7 +2061,7 @@ void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
 
 void BrowserAutofillManager::WipeLogQualityAndVotesUploadCallback(
     FormSignature form_signature) {
-  base::EraseIf(queued_vote_uploads_, [form_signature](const auto& entry) {
+  std::erase_if(queued_vote_uploads_, [form_signature](const auto& entry) {
     return entry.first == form_signature;
   });
 }

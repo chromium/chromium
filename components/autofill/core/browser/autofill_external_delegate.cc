@@ -12,7 +12,6 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -939,7 +938,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   // the list of datalist values.
   auto datalist_values = base::MakeFlatSet<std::u16string>(
       datalist_, {}, [](const SelectOption& option) { return option.value; });
-  base::EraseIf(*suggestions, [&datalist_values](const Suggestion& suggestion) {
+  std::erase_if(*suggestions, [&datalist_values](const Suggestion& suggestion) {
     return suggestion.popup_item_id == PopupItemId::kAutocompleteEntry &&
            base::Contains(datalist_values, suggestion.main_text.value);
   });

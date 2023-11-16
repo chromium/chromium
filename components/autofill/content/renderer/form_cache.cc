@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -19,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/page_form_analyser_logger.h"
@@ -65,10 +63,12 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
     return blink::FormElementPiiType::kUnknown;
   }
 
-  if (base::StartsWith(type, "EMAIL_"))
+  if (type.starts_with("EMAIL_")) {
     return blink::FormElementPiiType::kEmail;
-  if (base::StartsWith(type, "PHONE_"))
+  }
+  if (type.starts_with("PHONE_")) {
     return blink::FormElementPiiType::kPhone;
+  }
   return blink::FormElementPiiType::kOthers;
 }
 
@@ -489,9 +489,9 @@ void FormCache::PruneInitialValueCaches(
   auto should_not_retain = [&ids_to_retain](const auto& p) {
     return !base::Contains(ids_to_retain, p.first);
   };
-  base::EraseIf(initial_select_values_, should_not_retain);
-  base::EraseIf(initial_selectlist_values_, should_not_retain);
-  base::EraseIf(initial_checked_state_, should_not_retain);
+  std::erase_if(initial_select_values_, should_not_retain);
+  std::erase_if(initial_selectlist_values_, should_not_retain);
+  std::erase_if(initial_checked_state_, should_not_retain);
 }
 
 }  // namespace autofill

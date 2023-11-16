@@ -22,7 +22,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -7175,7 +7174,7 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
           ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
   std::u16string phone_number_numbers_only;
   base::RemoveChars(formatted_phone_number, u"+- ", &phone_number_numbers_only);
-  EXPECT_TRUE(base::StartsWith(phone_number_numbers_only, u"1"));
+  EXPECT_TRUE(phone_number_numbers_only.starts_with(u"1"));
 }
 
 // Test that we save form data when a non-country, non-state <select> in the

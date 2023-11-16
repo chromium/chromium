@@ -10,7 +10,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -704,7 +703,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // include the country code prefix.
   if (merged_number.country_code() == 1 &&
       merged_number.national_number() <= 9999999 &&
-      base::StartsWith(new_number, "+1", base::CompareCase::SENSITIVE)) {
+      new_number.starts_with("+1")) {
     size_t offset = 2;  // The char just after "+1".
     while (offset < new_number.size() &&
            base::IsAsciiWhitespace(new_number[offset])) {

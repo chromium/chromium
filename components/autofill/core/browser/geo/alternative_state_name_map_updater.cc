@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -136,7 +135,7 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
       CountryDataMap::GetInstance()->country_codes();
 
   // Remove all invalid country names.
-  base::EraseIf(country_to_state_names_map,
+  std::erase_if(country_to_state_names_map,
                 [&country_codes](
                     const CountryToStateNamesListMapping::value_type& entry) {
                   return !base::Contains(country_codes, entry.first.value());

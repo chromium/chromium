@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1441,7 +1440,7 @@ std::vector<const Iban*> PersonalDataManager::GetIbansToSuggest() const {
   std::vector<const Iban*> ibans_to_suggest = GetIbans();
   // Remove any IBAN from the returned list if it's a local IBAN and its
   // prefix, suffix, and length matches any existing server IBAN.
-  base::EraseIf(ibans_to_suggest, [this](const Iban* iban) {
+  std::erase_if(ibans_to_suggest, [this](const Iban* iban) {
     return iban->record_type() == Iban::kLocalIban &&
            base::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
@@ -2043,7 +2042,7 @@ PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
 void PersonalDataManager::SetCreditCards(
     std::vector<CreditCard>* credit_cards) {
   // Remove empty credit cards from input.
-  base::EraseIf(*credit_cards, [this](const CreditCard& credit_card) {
+  std::erase_if(*credit_cards, [this](const CreditCard& credit_card) {
     return credit_card.IsEmpty(app_locale_);
   });
 

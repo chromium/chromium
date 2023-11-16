@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -270,7 +269,7 @@ void AutocompleteHistoryManager::CancelAllPendingQueries() {
 
 void AutocompleteHistoryManager::CleanupEntries(
     const SuggestionsHandler* handler) {
-  base::EraseIf(pending_queries_, [handler](const auto& pending_query) {
+  std::erase_if(pending_queries_, [handler](const auto& pending_query) {
     const QueryHandler& query_handler = pending_query.second;
     return !query_handler.handler_ || query_handler.handler_.get() == handler;
   });

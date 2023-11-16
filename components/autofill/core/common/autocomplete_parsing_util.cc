@@ -193,8 +193,9 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
   // "given_name" is treated like "given-name".
   base::ReplaceChars(value, "_", "-", &value);
   // We accept e.g. "phone-country" instead of "tel-country".
-  if (base::StartsWith(value, "phone"))
+  if (value.starts_with("phone")) {
     base::ReplaceFirstSubstringAfterOffset(&value, 0, "phone", "tel");
+  }
 
   absl::optional<HtmlFieldType> type =
       ParseStandardizedAutocompleteAttribute(value);
@@ -273,8 +274,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   // (4) The preceding token, if any, may be a named section.
   constexpr base::StringPiece kSectionPrefix = "section-";
-  if (!tokens.empty() && base::StartsWith(tokens.back(), kSectionPrefix,
-                                          base::CompareCase::SENSITIVE)) {
+  if (!tokens.empty() && tokens.back().starts_with(kSectionPrefix)) {
     // Prepend this section name to the suffix set in the preceding block.
     result.section = tokens.back().substr(kSectionPrefix.size());
     tokens.pop_back();

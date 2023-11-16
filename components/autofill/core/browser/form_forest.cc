@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -83,7 +82,7 @@ void FormForest::EraseReferencesTo(
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
-          base::EraseIf(some_form.fields, [&](const FormFieldData& some_form) {
+          std::erase_if(some_form.fields, [&](const FormFieldData& some_form) {
             return Match(some_form.renderer_form_id());
           });
       if (num_removed > 0 && forms_with_removed_fields) {
@@ -101,7 +100,7 @@ base::flat_set<FormGlobalId> FormForest::EraseForms(
     base::span<const FormGlobalId> renderer_forms) {
   for (const FormGlobalId renderer_form : renderer_forms) {
     if (FrameData* frame = GetFrameData(renderer_form.frame_token)) {
-      base::EraseIf(frame->child_forms, [&](const FormData& some_form) {
+      std::erase_if(frame->child_forms, [&](const FormData& some_form) {
         return some_form.global_id() == renderer_form;
       });
     }

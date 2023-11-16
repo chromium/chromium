@@ -196,24 +196,24 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         return value;
       };
 
-      if (base::StartsWith(command, "run")) {
+      if (command.starts_with("run")) {
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
-      } else if (base::StartsWith(command, "next")) {
+      } else if (command.starts_with("next")) {
         commands.push_back(
             {ExecutionCommandType::kRelativeLimit, GetParamOr(1)});
-      } else if (base::StartsWith(command, "skip")) {
+      } else if (command.starts_with("skip")) {
         commands.push_back({ExecutionCommandType::kSkipAction, GetParamOr(1)});
-      } else if (base::StartsWith(command, "show")) {
+      } else if (command.starts_with("show")) {
         commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
-      } else if (base::StartsWith(command, "where")) {
+      } else if (command.starts_with("where")) {
         commands.push_back({ExecutionCommandType::kWhereAmI});
-      } else if (base::StartsWith(command, "failure")) {
+      } else if (command.starts_with("failure")) {
         commands.push_back({ExecutionCommandType::kRunUntilFailure});
         // also add an absolute max limit (like a" run" command).
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
-      } else if (base::StartsWith(command, "help")) {
+      } else if (command.starts_with("help")) {
         PrintDebugInstructions(command_file_path);
       }
     }

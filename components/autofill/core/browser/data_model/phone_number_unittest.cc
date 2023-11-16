@@ -297,7 +297,7 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
   ServerFieldTypeSet types;
   profile.GetSupportedTypes(&types);
   std::vector<ServerFieldType> fields{types.begin(), types.end()};
-  base::EraseIf(fields, [](ServerFieldType type) {
+  std::erase_if(fields, [](ServerFieldType type) {
     return GroupTypeOfServerFieldType(type) != FieldTypeGroup::kPhone;
   });
 

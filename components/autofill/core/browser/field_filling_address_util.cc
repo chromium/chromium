@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
@@ -154,7 +153,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
   // Remove `abbreviations` from the `full_names` as a precautionary measure in
   // case the `AlternativeStateNameMap` contains bad data.
   base::ranges::sort(abbreviations);
-  base::EraseIf(full_names, [&](const std::u16string& full_name) {
+  std::erase_if(full_names, [&](const std::u16string& full_name) {
     return full_name.empty() ||
            base::ranges::binary_search(abbreviations, full_name);
   });
