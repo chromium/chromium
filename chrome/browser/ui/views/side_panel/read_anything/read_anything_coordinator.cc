@@ -277,7 +277,7 @@ void ReadAnythingCoordinator::PrimaryPageChanged(content::Page& page) {
   if (!IsActivePageDistillable()) {
     // On navigation, if we shouldn't show the IPH hide it. Otherwise continue
     // to show it.
-    ActivePageDistillable();
+    ActivePageNotDistillable();
   }
 }
 
