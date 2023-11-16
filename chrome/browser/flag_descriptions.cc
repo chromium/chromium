@@ -5879,6 +5879,10 @@ const char kClipboardHistoryWebContentsPasteDescription[] =
     "Enables an experimental behavior where clipboard history explicitly "
     "pastes into web contents instead of using synthetic key events.";
 
+const char kCloudGamingDeviceName[] = "Enable cloud game search";
+const char kCloudGamingDeviceDescription[] =
+    "Enables cloud game search results in the launcher.";
+
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
 const char kComponentUpdaterTestRequestDescription[] =

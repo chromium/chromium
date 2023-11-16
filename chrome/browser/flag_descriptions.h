@@ -3383,6 +3383,9 @@ extern const char kClipboardHistoryUrlTitlesDescription[];
 extern const char kClipboardHistoryWebContentsPasteName[];
 extern const char kClipboardHistoryWebContentsPasteDescription[];
 
+extern const char kCloudGamingDeviceName[];
+extern const char kCloudGamingDeviceDescription[];
+
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];
 

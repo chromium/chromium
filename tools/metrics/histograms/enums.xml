@@ -39288,6 +39288,7 @@ from previous Chrome versions.
   <int value="-481238673" label="EnableAndroidGamepadVibration:disabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
+  <int value="-479065716" label="CloudGamingDevice:disabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-478404134" label="CCTPageInsightsHub:enabled"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
@@ -41088,6 +41089,7 @@ from previous Chrome versions.
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
+  <int value="376825548" label="CloudGamingDevice:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
   <int value="378093891" label="PrecompileInlineScripts:disabled"/>
   <int value="378380475" label="ClipboardHistoryRefresh:disabled"/>

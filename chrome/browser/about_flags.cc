@@ -11316,6 +11316,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefits)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cloud-gaming-device", flag_descriptions::kCloudGamingDeviceName,
+     flag_descriptions::kCloudGamingDeviceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCloudGamingDevice)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
