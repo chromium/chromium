@@ -7137,3 +7137,4 @@ crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-b
 
 # Gardener 2023-11-16
 crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass ]
+crbug.com/1502612 external/wpt/fledge/tentative/abort.https.window.html [ Failure Pass ]
