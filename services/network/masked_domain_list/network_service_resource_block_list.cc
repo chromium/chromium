@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -18,9 +19,8 @@ using AntiFingerprintingBlockListResult = ::network::
 
 bool ResourceIsEligibleForBlockList(
     const masked_domain_list::Resource& resource) {
-  return std::find(resource.experiments().begin(), resource.experiments().end(),
-                   masked_domain_list::Resource_Experiment_EXPERIMENT_AFP) !=
-         resource.experiments().end();
+  return base::Contains(resource.experiments(),
+                        masked_domain_list::Resource_Experiment_EXPERIMENT_AFP);
 }
 
 AntiFingerprintingBlockListResult GetBlocklistResult(
