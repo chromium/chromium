@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -322,10 +323,12 @@ void UserPerformanceTuningManager::NotifyMemoryMetricsRefreshed() {
 void UserPerformanceTuningManager::DiscardPageForTesting(
     content::WebContents* web_contents) {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  // The RunLoop is quit after discarding is executed on the main thread, so the
+  // caller can check if discarding succeeded via WebContents::WasDiscarded().
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
-          [](base::RepeatingClosure quit_closure,
+          [](base::ScopedClosureRunner quit_closure,
              base::WeakPtr<performance_manager::PageNode> page_node,
              performance_manager::Graph* graph) {
             if (page_node) {
@@ -333,11 +336,11 @@ void UserPerformanceTuningManager::DiscardPageForTesting(
                   graph)
                   ->ImmediatelyDiscardSpecificPage(
                       page_node.get(),
-                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-              quit_closure.Run();
+                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+                      base::DoNothingWithBoundArgs(std::move(quit_closure)));
             }
           },
-          run_loop.QuitClosure(),
+          base::ScopedClosureRunner(run_loop.QuitClosure()),
           performance_manager::PerformanceManager::
               GetPrimaryPageNodeForWebContents(web_contents)));
   run_loop.Run();
