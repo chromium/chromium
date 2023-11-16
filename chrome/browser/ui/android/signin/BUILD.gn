@@ -46,6 +46,7 @@ android_library("java") {
     "//ui/android:ui_utils_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/signin/AccountCapabilitiesLatencyTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachine.java",

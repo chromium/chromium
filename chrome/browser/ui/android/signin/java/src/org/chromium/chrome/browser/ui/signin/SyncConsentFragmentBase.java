@@ -52,6 +52,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -923,15 +924,19 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void onResume() {
         super.onResume();
         mAccountManagerFacade.addObserver(this);
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile());
 
         final CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         mIsSignedInWithoutSync =
                 mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountEmail = primaryAccount.getEmail();
+
+            AccountCapabilitiesLatencyTracker.trackAccountCapabilitiesFetchLatency(
+                    identityManager, primaryAccount);
         }
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.

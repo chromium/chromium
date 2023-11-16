@@ -31,6 +31,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountCapabilities.FetchLatency" units="ms"
+    expires_after="2024-06-30">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Measures time that the users will most likely spend actively waiting for the
+    Account Capabilities to load, when they were not available. Contrary to
+    Signin.AccountCapabilities.UserVisibleLatency, this metric is more closely
+    tracking the actual latency of the fetch of AccountCapabilities, by the
+    means of impact on the user interface that had to present a loading spinner
+    of similar view.
+
+    Recorded when an extended account info is updated and the account info has
+    Capabilities.
+
+    Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
     units="ms" expires_after="2024-04-10">
@@ -61,6 +81,55 @@ chromium-metrics-reviews@google.com.
     This histogram records the outcome of the account capabilities fetch
     operation. This is recorded only on Android and iOS where Chrome fetches the
     account capabilities from the system library.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.ImmediatelyAvailable"
+    enum="BooleanAvailable" expires_after="2024-06-30">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Indicates whether the Account Capabilities were immediately available when
+    requested. Together with Signin.AccountCapabilities.UserVisibleLatency, they
+    are tracking the time and the type of fetch (synchronous or asynchronous)
+    from the user's perspective.
+
+    Recorded in two situations. 1. When an extended account info is updated and
+    the account info has Capabilities. 2. When the following conditions hold: an
+    Activity is resumed, the user is signed in and not syncing, and the primary
+    account info has Capabilities.
+
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.UserVisibleLatency" units="ms"
+    expires_after="2024-06-30">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Measures time that the users will most likely spend actively waiting for the
+    Account Capabilities to load. This metric is not tracking the actual latency
+    of the fetch of AccountCapabilities, but only the time when those
+    capabilities are required but not available yet.
+
+    Example use case of this metric is to track time needed to wait for the
+    Account Capabilities before presenting the Signin consent screen.
+
+    See Signin.AccountCapabilities.ImmediatelyAvailable to analyse what portion
+    of data in this metric was recorded as immediately available (0ms). See
+    Signin.AccountCapabilities.FetchLatency to analyse time spent by users that
+    for whom the UI was blocked until the Capabilities were ready.
+
+    Recorded in two situations. 1. When an extended account info is updated and
+    the account info has Capabilities. 2. When the following conditions hold: an
+    Activity is resumed, the user is signed in and not syncing, and the primary
+    account info has Capabilities.
+
+    Android only. Signin.SyncOptIn.PreSyncConfirmationLatency is the desktop
+    counterpart.
   </summary>
 </histogram>
 
