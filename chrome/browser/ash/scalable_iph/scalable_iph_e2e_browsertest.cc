@@ -234,7 +234,6 @@ class ScalableIphE2EBrowserTestTeamfood : public ScalableIphE2EBrowserTest {
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestCounterfactualControl, E2E) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-    return;
   }
 
   EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
@@ -245,7 +244,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestCounterfactualControl, E2E) {
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestUnlockedBased, E2E) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-    return;
   }
 
   EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
@@ -256,7 +254,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestUnlockedBased, E2E) {
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTimerBased, E2E) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-    return;
   }
 
   EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
@@ -267,7 +264,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTimerBased, E2E) {
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-    return;
   }
 
   EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
@@ -278,7 +274,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTeamfood, E2E) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-    return;
   }
 
   EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));

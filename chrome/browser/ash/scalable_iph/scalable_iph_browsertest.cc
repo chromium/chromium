@@ -1047,7 +1047,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
   if (!IsGoogleChrome()) {
     GTEST_SKIP()
         << "Google Chrome is required for preinstall apps used by this test";
-    return;
   }
 
   // Those constants in `scalable_iph` must be synced with ones in `web_app`.
@@ -1080,7 +1079,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
   if (!IsGoogleChrome()) {
     GTEST_SKIP()
         << "Google Chrome is required for preinstall apps used by this test";
-    return;
   }
 
   apps::AppReadinessWaiter(browser()->profile(),
@@ -1097,7 +1095,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP()
         << "Google Chrome is required for preinstall apps used by this test";
-    return;
   }
 
   EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
