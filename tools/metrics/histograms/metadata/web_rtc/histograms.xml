@@ -923,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelAggregateType"
-    enum="DataChannelAggregateType" expires_after="2022-09-11">
+    enum="DataChannelAggregateType" expires_after="2024-11-17">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -933,7 +933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2022-11-13">
+    expires_after="2024-11-17">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelMaxPacketLifeTime" units="ms"
-    expires_after="2022-06-30">
+    expires_after="2024-11-17">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelMaxRetransmits" units="units"
-    expires_after="2022-06-30">
+    expires_after="2024-11-17">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelSctpErrorCode"
-    enum="DataChannelSctpErrorCode" expires_after="2022-11-13">
+    enum="DataChannelSctpErrorCode" expires_after="2024-11-17">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1584,8 +1584,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.ReliableDataChannelMessageSize" units="bytes"
-    expires_after="2022-10-23">
+    expires_after="2024-11-17">
   <owner>perkj@chromium.org</owner>
+  <owner>orphis@chromium.org</owner>
   <summary>
     Sizes of messages sent over reliable data channels. The size of an
     individual message is added to the histogram as a sample immediately when a
@@ -1723,8 +1724,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.UnreliableDataChannelMessageSize" units="bytes"
-    expires_after="2022-10-23">
+    expires_after="2024-11-17">
   <owner>perkj@chromium.org</owner>
+  <owner>orphis@chromium.org</owner>
   <summary>
     Sizes of messages sent over unreliable data channels. The size of an
     individual message is added to the histogram as a sample immediately when a
