@@ -441,7 +441,8 @@ void ScreenOrientationController::OnWillProcessDisplayChanges() {
   suspend_orientation_lock_refreshes_ = true;
 }
 
-void ScreenOrientationController::OnDidProcessDisplayChanges() {
+void ScreenOrientationController::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
   suspend_orientation_lock_refreshes_ = false;
   if (is_orientation_lock_refresh_pending_) {
     // Note: We must set |is_orientation_lock_refresh_pending_| to false first

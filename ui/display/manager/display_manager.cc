@@ -344,15 +344,52 @@ DisplayManager::BeginEndNotifier::BeginEndNotifier(
     DisplayManager* display_manager)
     : display_manager_(display_manager) {
   if (display_manager_->notify_depth_++ == 0) {
+    CHECK(!display_manager_->pending_display_changes_.has_value());
+    display_manager_->pending_display_changes_.emplace();
     display_manager_->NotifyWillProcessDisplayChanges();
   }
 }
 
 DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
   if (--display_manager_->notify_depth_ == 0) {
-    display_manager_->NotifyDidProcessDisplayChanges();
+    CHECK(display_manager_->pending_display_changes_.has_value());
+    DisplayManagerObserver::DisplayConfigurationChange config_change =
+        CreateConfigChange();
+    display_manager_->pending_display_changes_.reset();
+    display_manager_->NotifyDidProcessDisplayChanges(config_change);
   }
 }
+
+DisplayManagerObserver::DisplayConfigurationChange
+DisplayManager::BeginEndNotifier::CreateConfigChange() const {
+  CHECK(display_manager_->pending_display_changes_.has_value());
+  PendingDisplayChanges& pending_changes =
+      display_manager_->pending_display_changes_.value();
+
+  Displays added_displays;
+  for (int64_t display_id : pending_changes.added_display_ids) {
+    CHECK(display_manager_->IsDisplayIdValid(display_id));
+    added_displays.emplace_back(display_manager_->GetDisplayForId(display_id));
+  }
+
+  std::vector<DisplayManagerObserver::DisplayMetricsChange>
+      display_metrics_changes;
+  for (const auto& pair : pending_changes.display_metrics_changes) {
+    if (display_manager_->IsDisplayIdValid(pair.first)) {
+      display_metrics_changes.emplace_back(
+          DisplayManagerObserver::DisplayMetricsChange(
+              display_manager_->GetDisplayForId(pair.first), pair.second));
+    }
+  }
+
+  return {std::move(added_displays),
+          std::move(pending_changes.removed_displays),
+          std::move(display_metrics_changes)};
+}
+
+DisplayManager::PendingDisplayChanges::PendingDisplayChanges() = default;
+
+DisplayManager::PendingDisplayChanges::~PendingDisplayChanges() = default;
 
 DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
     : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
@@ -467,6 +504,8 @@ void DisplayManager::SetLayoutForCurrentDisplays(
   if (GetNumDisplays() == 1) {
     return;
   }
+  // TODO(tluk): Move instantiating this to after checking whether the current
+  // layout has the same placement list.
   BeginEndNotifier notifier(this);
 
   const DisplayIdList list = GetConnectedDisplayIdList();
@@ -494,6 +533,10 @@ void DisplayManager::SetLayoutForCurrentDisplays(
     NotifyMetricsChanged(GetDisplayForId(id),
                          DisplayObserver::DISPLAY_METRIC_BOUNDS |
                              DisplayObserver::DISPLAY_METRIC_WORK_AREA);
+    CHECK(pending_display_changes_.has_value());
+    pending_display_changes_->display_metrics_changes[id] |=
+        DisplayObserver::DISPLAY_METRIC_BOUNDS |
+        DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   }
 
   if (delegate_) {
@@ -536,6 +579,10 @@ bool DisplayManager::UpdateWorkAreaOfDisplay(int64_t display_id,
   bool workarea_changed = old_work_area != display->work_area();
   if (workarea_changed) {
     NotifyMetricsChanged(*display, DisplayObserver::DISPLAY_METRIC_WORK_AREA);
+
+    CHECK(pending_display_changes_.has_value());
+    pending_display_changes_->display_metrics_changes[display_id] |=
+        DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   }
   return workarea_changed;
 }
@@ -825,7 +872,6 @@ void DisplayManager::OnNativeDisplaysChanged(
       //   disconnected.
       // The display will be updated when one of displays is turned on, and the
       // display list will be updated correctly.
-
       BeginEndNotifier notifier(this);
       for (auto& display : active_display_list_) {
         if (display.detected()) {
@@ -835,6 +881,9 @@ void DisplayManager::OnNativeDisplaysChanged(
           InsertAndUpdateDisplayInfo(info);
           NotifyMetricsChanged(display,
                                DisplayObserver::DISPLAY_METRIC_DETECTED);
+          CHECK(pending_display_changes_.has_value());
+          pending_display_changes_->display_metrics_changes[display.id()] |=
+              DisplayObserver::DISPLAY_METRIC_DETECTED;
         }
       }
     }
@@ -1195,25 +1244,22 @@ void DisplayManager::UpdateDisplaysWith(
   }
 
   UpdatePrimaryDisplayIdIfNecessary();
+  const Display& primary = screen_->GetPrimaryDisplay();
+  bool notify_primary_change = delegate_ && old_primary.id() != primary.id();
 
-  bool notify_primary_change =
-      delegate_ ? old_primary.id() != screen_->GetPrimaryDisplay().id() : false;
+  for (auto& change : display_changes) {
+    Display& updated_display = active_display_list_[change.first];
+    uint32_t& updated_display_metrics = change.second;
 
-  for (auto iter = display_changes.begin(); iter != display_changes.end();
-       ++iter) {
-    uint32_t metrics = iter->second;
-    Display& updated_display = active_display_list_[iter->first];
-
-    if (notify_primary_change &&
-        updated_display.id() == screen_->GetPrimaryDisplay().id()) {
-      metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
+    if (notify_primary_change && updated_display.id() == primary.id()) {
+      updated_display_metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
       notify_primary_change = false;
     }
     if (!updated_display.detected()) {
       updated_display.set_detected(true);
-      metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
+      updated_display_metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
     }
-    NotifyMetricsChanged(updated_display, metrics);
+    NotifyMetricsChanged(updated_display, updated_display_metrics);
   }
 
   uint32_t primary_metrics = 0;
@@ -1221,7 +1267,6 @@ void DisplayManager::UpdateDisplaysWith(
   if (notify_primary_change) {
     // This happens when a primary display has moved to anther display without
     // bounds change.
-    const Display& primary = screen_->GetPrimaryDisplay();
     if (primary.id() != old_primary.id()) {
       primary_metrics = DisplayObserver::DISPLAY_METRIC_PRIMARY;
       if (primary.size() != old_primary.size()) {
@@ -1242,12 +1287,37 @@ void DisplayManager::UpdateDisplaysWith(
 
   if (delegate_ && primary_metrics) {
     NotifyMetricsChanged(screen_->GetPrimaryDisplay(), primary_metrics);
+
+    const auto primary_index_it = std::find(
+        active_display_list_.begin(), active_display_list_.end(), primary);
+    CHECK(primary_index_it != active_display_list_.end());
+    const size_t primary_index =
+        std::distance(active_display_list_.begin(), primary_index_it);
+    display_changes[primary_index] |= primary_metrics;
   }
 
   UpdateInfoForRestoringMirrorMode();
 
   if (delegate_) {
     delegate_->PostDisplayConfigurationChange();
+  }
+
+  // Populate the pending change structure.
+  {
+    CHECK(pending_display_changes_.has_value());
+    // Currently removed displays should only be populated in
+    // `UpdateDisplaysWith()`.
+    CHECK(pending_display_changes_->removed_displays.empty());
+    pending_display_changes_->removed_displays = std::move(removed_displays);
+    base::ranges::transform(
+        added_display_indices,
+        std::back_inserter(pending_display_changes_->added_display_ids),
+        [this](size_t index) { return active_display_list_[index].id(); });
+    for (const auto& pair : display_changes) {
+      int64_t display_id = active_display_list_[pair.first].id();
+      pending_display_changes_->display_metrics_changes[display_id] |=
+          pair.second;
+    }
   }
 
   if (mirror_mode) {
@@ -1774,6 +1844,9 @@ bool DisplayManager::UpdateDisplayBounds(int64_t display_id,
   display->SetSize(display_info_[display_id].size_in_pixel());
   BeginEndNotifier notifier(this);
   NotifyMetricsChanged(*display, DisplayObserver::DISPLAY_METRIC_BOUNDS);
+  CHECK(pending_display_changes_.has_value());
+  pending_display_changes_->display_metrics_changes[display->id()] |=
+      DisplayObserver::DISPLAY_METRIC_BOUNDS;
   return true;
 }
 
@@ -2373,9 +2446,10 @@ void DisplayManager::NotifyWillProcessDisplayChanges() {
   }
 }
 
-void DisplayManager::NotifyDidProcessDisplayChanges() {
+void DisplayManager::NotifyDidProcessDisplayChanges(
+    const DisplayManagerObserver::DisplayConfigurationChange& config_change) {
   for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnDidProcessDisplayChanges();
+    manager_observer.OnDidProcessDisplayChanges(config_change);
   }
 }
 

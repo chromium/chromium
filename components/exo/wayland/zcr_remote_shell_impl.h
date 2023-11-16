@@ -101,7 +101,8 @@ class WaylandRemoteShell : public display::DisplayObserver,
 
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from SeatObserver:
   void OnSurfaceFocused(Surface* gained_focus,
