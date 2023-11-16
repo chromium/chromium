@@ -458,10 +458,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
         // Define a set of relevant AccessibilityEvents.
-        Runnable serviceMaskRunnable = () -> {
-            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
-            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
-        };
+        Runnable serviceMaskRunnable =
+                () -> {
+                    mEventDispatcher.updateRelevantEventTypes(
+                            AccessibilityState.relevantEventTypesForCurrentServices());
+                };
         mView.post(serviceMaskRunnable);
 
         // Send state values set by embedders to native-side objects.
@@ -745,8 +746,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mIsImageDescriptionsCandidate && AccessibilityState.isScreenReaderEnabled());
 
             // Update the list of events we dispatch to enabled services.
-            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
-            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
+            mEventDispatcher.updateRelevantEventTypes(
+                    AccessibilityState.relevantEventTypesForCurrentServices());
 
             // If the auto-disable feature is enabled, then we will disable renderer accessibility
             // and tear down objects when no accessibility services are running. If we have
@@ -972,19 +973,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public void onAccessibilityStateChanged(AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
         refreshNativeState();
-    }
-
-    public Set<Integer> convertMaskToEventTypes(int serviceEventTypes) {
-        Set<Integer> relevantEventTypes = new HashSet<Integer>();
-        int eventTypeBit;
-
-        while (serviceEventTypes != 0) {
-            eventTypeBit = (1 << Integer.numberOfTrailingZeros(serviceEventTypes));
-            relevantEventTypes.add(eventTypeBit);
-            serviceEventTypes &= ~eventTypeBit;
-        }
-
-        return relevantEventTypes;
     }
 
     // WebContentsAccessibility

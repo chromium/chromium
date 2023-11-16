@@ -44,6 +44,7 @@ import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -713,14 +714,29 @@ public class AccessibilityState {
         }
     }
 
+    public static Set<Integer> relevantEventTypesForCurrentServices() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        Set<Integer> relevantEventTypes = new HashSet<Integer>();
+        int eventTypeBit;
+        int currentEventTypes = sEventTypeMask;
+        while (currentEventTypes != 0) {
+            eventTypeBit = (1 << Integer.numberOfTrailingZeros(currentEventTypes));
+            relevantEventTypes.add(eventTypeBit);
+            currentEventTypes &= ~eventTypeBit;
+        }
+
+        return relevantEventTypes;
+    }
+
     /**
-     * Return a bitmask containing the union of all event types that running accessibility
-     * services listen to.
+     * Return a bitmask containing the union of all event types that running accessibility services
+     * listen to.
+     *
      * @return
      */
-    // TODO(mschillaci,jacklynch): Make this private and update current callers.
     @CalledByNative
-    public static int getAccessibilityServiceEventTypeMask() {
+    private static int getAccessibilityServiceEventTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sEventTypeMask;
     }
@@ -1048,7 +1064,7 @@ public class AccessibilityState {
     }
 
     public static void setEventTypeMaskForTesting(int mask) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;

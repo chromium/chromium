@@ -5,6 +5,7 @@
 package org.chromium.ui.accessibility;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.filters.SmallTest;
 
@@ -15,10 +16,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccessibilityStateTest {
+
+    private static final String EVENT_TYPE_MASK_ERROR =
+            "Conversion of event masks to event types not correct.";
 
     @Test
     @SmallTest
@@ -131,5 +138,51 @@ public class AccessibilityStateTest {
         Assert.assertEquals(2, runningServices.size());
         Assert.assertEquals(service1, runningServices.get(0));
         Assert.assertEquals(service2, runningServices.get(1));
+    }
+
+    /** Test logic for converting event type masks to a list of relevant event types. */
+    @Test
+    @SmallTest
+    public void testMaskToEventTypeConversion() {
+        // Create some event masks with known outcomes.
+        int serviceEventMask_empty = 0;
+        int serviceEventMask_full = Integer.MAX_VALUE;
+        int serviceEventMask_test =
+                AccessibilityEvent.TYPE_VIEW_CLICKED
+                        | AccessibilityEvent.TYPE_VIEW_LONG_CLICKED
+                        | AccessibilityEvent.TYPE_VIEW_FOCUSED
+                        | AccessibilityEvent.TYPE_VIEW_SCROLLED
+                        | AccessibilityEvent.TYPE_VIEW_SELECTED
+                        | AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END;
+
+        // Convert each mask to a set of eventTypes.
+        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_empty);
+        Set<Integer> outcome_empty = AccessibilityState.relevantEventTypesForCurrentServices();
+
+        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_full);
+        Set<Integer> outcome_full = AccessibilityState.relevantEventTypesForCurrentServices();
+
+        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_test);
+        Set<Integer> outcome_test = AccessibilityState.relevantEventTypesForCurrentServices();
+
+        // Verify results.
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_empty);
+        Assert.assertTrue(EVENT_TYPE_MASK_ERROR, outcome_empty.isEmpty());
+
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_full);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
+
+        Set<Integer> expected_test =
+                new HashSet<Integer>(
+                        Arrays.asList(
+                                AccessibilityEvent.TYPE_VIEW_CLICKED,
+                                AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,
+                                AccessibilityEvent.TYPE_VIEW_FOCUSED,
+                                AccessibilityEvent.TYPE_VIEW_SCROLLED,
+                                AccessibilityEvent.TYPE_VIEW_SELECTED,
+                                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END));
+
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
     }
 }
