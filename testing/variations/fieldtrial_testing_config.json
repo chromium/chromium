@@ -2108,7 +2108,8 @@
                 {
                     "name": "Enabled_20230628",
                     "params": {
-                        "level": "store-and-evict"
+                        "level": "store-and-evict",
+                        "ttl": "3m"
                     },
                     "enable_features": [
                         "CacheControlNoStoreEnterBackForwardCache"
