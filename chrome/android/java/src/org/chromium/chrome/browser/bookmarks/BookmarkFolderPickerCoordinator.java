@@ -23,7 +23,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,7 +36,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
     private final ModelList mModelList = new ModelList();
-    private final SelectionDelegate mEmptySelectionDelegate = new SelectionDelegate();
     private final Context mContext;
     private final View mView;
     private final View mMoveButton;
@@ -50,7 +48,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     public BookmarkFolderPickerCoordinator(
             Context context,
             BookmarkModel bookmarkModel,
-            BookmarkImageFetcher bookmarkImageFetcher,
             List<BookmarkId> bookmarkIds,
             Runnable finishRunnable,
             BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
@@ -77,7 +74,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                 new BookmarkFolderPickerMediator(
                         context,
                         bookmarkModel,
-                        bookmarkImageFetcher,
                         bookmarkIds,
                         finishRunnable,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),

@@ -93,10 +93,19 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         // TODO(crbug.com/1472832): Consider initializing this in #onCreateOptionsMenu to avoid the
         // possibility that the menu is null when the first parent is set.
         mCoordinator =
-                new BookmarkFolderPickerCoordinator(this, mBookmarkModel, mBookmarkImageFetcher,
-                        mBookmarkIds, this::finish, addNewFolderCoordinator, bookmarkUiPrefs,
-                        new ImprovedBookmarkRowCoordinator(this, mBookmarkImageFetcher,
-                                mBookmarkModel, bookmarkUiPrefs, shoppingService),
+                new BookmarkFolderPickerCoordinator(
+                        this,
+                        mBookmarkModel,
+                        mBookmarkIds,
+                        this::finish,
+                        addNewFolderCoordinator,
+                        bookmarkUiPrefs,
+                        new ImprovedBookmarkRowCoordinator(
+                                this,
+                                mBookmarkImageFetcher,
+                                mBookmarkModel,
+                                bookmarkUiPrefs,
+                                shoppingService),
                         shoppingService);
 
         if (BackPressManager.isSecondaryActivityEnabled()) {

@@ -331,7 +331,6 @@ public class BookmarkFolderPickerRenderTest {
                             new BookmarkFolderPickerCoordinator(
                                     mActivity,
                                     mBookmarkModel,
-                                    mBookmarkImageFetcher,
                                     Arrays.asList(mUserBookmarkId),
                                     mFinishRunnable,
                                     mAddNewFolderCoordinator,

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.view.MenuItem;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -54,7 +53,6 @@ class BookmarkFolderPickerMediator {
     private final ModelList mModelList;
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
-    private final BookmarkImageFetcher mBookmarkImageFetcher;
     private final List<BookmarkId> mBookmarkIds;
     private final BookmarkId mInitialParentId;
     private final Runnable mFinishRunnable;
@@ -66,13 +64,11 @@ class BookmarkFolderPickerMediator {
 
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
-    private MenuItem mCreateNewFolderMenu;
     private BookmarkItem mCurrentParentItem;
 
     BookmarkFolderPickerMediator(
             Context context,
             BookmarkModel bookmarkModel,
-            BookmarkImageFetcher bookmarkImageFetcher,
             List<BookmarkId> bookmarkIds,
             Runnable finishRunnable,
             BookmarkUiPrefs bookmarkUiPrefs,
@@ -84,7 +80,6 @@ class BookmarkFolderPickerMediator {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
-        mBookmarkImageFetcher = bookmarkImageFetcher;
         mBookmarkIds = bookmarkIds;
         mFinishRunnable = finishRunnable;
         mQueryHandler =

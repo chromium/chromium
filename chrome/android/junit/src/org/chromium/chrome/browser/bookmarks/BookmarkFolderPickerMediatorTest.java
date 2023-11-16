@@ -16,7 +16,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.Menu;
@@ -214,7 +213,6 @@ public class BookmarkFolderPickerMediatorTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Runnable mFinishRunnable;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock private Bitmap mBitmap;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private Menu mMenu;
@@ -308,7 +306,6 @@ public class BookmarkFolderPickerMediatorTest {
                 new BookmarkFolderPickerMediator(
                         mActivity,
                         mBookmarkModel,
-                        mBookmarkImageFetcher,
                         Arrays.asList(mUserBookmarkId),
                         mFinishRunnable,
                         mBookmarkUiPrefs,
@@ -330,7 +327,6 @@ public class BookmarkFolderPickerMediatorTest {
                 new BookmarkFolderPickerMediator(
                         mActivity,
                         mBookmarkModel,
-                        mBookmarkImageFetcher,
                         Arrays.asList(mUserFolderId),
                         mFinishRunnable,
                         mBookmarkUiPrefs,
@@ -450,7 +446,6 @@ public class BookmarkFolderPickerMediatorTest {
                 new BookmarkFolderPickerMediator(
                         mActivity,
                         mBookmarkModel,
-                        mBookmarkImageFetcher,
                         Arrays.asList(mUserBookmarkId, mUserBookmarkId1),
                         mFinishRunnable,
                         mBookmarkUiPrefs,
@@ -475,7 +470,6 @@ public class BookmarkFolderPickerMediatorTest {
                 new BookmarkFolderPickerMediator(
                         mActivity,
                         mBookmarkModel,
-                        mBookmarkImageFetcher,
                         Arrays.asList(mUserFolderId, mUserBookmarkId1),
                         mFinishRunnable,
                         mBookmarkUiPrefs,
@@ -500,7 +494,6 @@ public class BookmarkFolderPickerMediatorTest {
                 new BookmarkFolderPickerMediator(
                         mActivity,
                         mBookmarkModel,
-                        mBookmarkImageFetcher,
                         Arrays.asList(mReadingListItemId1, mReadingListItemId2),
                         mFinishRunnable,
                         mBookmarkUiPrefs,
