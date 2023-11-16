@@ -34,6 +34,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.

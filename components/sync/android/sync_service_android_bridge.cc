@@ -85,9 +85,7 @@ SyncServiceAndroidBridge::SyncServiceAndroidBridge(
   native_sync_service_->AddObserver(this);
 }
 
-SyncServiceAndroidBridge::~SyncServiceAndroidBridge() {
-  native_sync_service_->RemoveObserver(this);
-}
+SyncServiceAndroidBridge::~SyncServiceAndroidBridge() = default;
 
 ScopedJavaLocalRef<jobject> SyncServiceAndroidBridge::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
@@ -97,6 +95,11 @@ void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
   // Notify the java world that our sync state has changed.
   JNIEnv* env = AttachCurrentThread();
   Java_SyncServiceImpl_syncStateChanged(env, java_ref_);
+}
+
+void SyncServiceAndroidBridge::OnSyncShutdown(syncer::SyncService* sync) {
+  native_sync_service_->RemoveObserver(this);
+  Java_SyncServiceImpl_destroy(AttachCurrentThread(), java_ref_);
 }
 
 void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
