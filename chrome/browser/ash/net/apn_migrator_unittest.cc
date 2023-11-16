@@ -1777,7 +1777,7 @@ TEST_F(
 
   // Last connected attach APN is saved second.
   EXPECT_EQ(kAttachAccessPointName, custom_apns[1]->access_point_name);
-  EXPECT_EQ(ApnState::kEnabled, custom_apns[1]->state);
+  EXPECT_EQ(ApnState::kDisabled, custom_apns[1]->state);
   EXPECT_TRUE(base::Contains(custom_apns[1]->apn_types, ApnType::kAttach));
 
   histogram_tester().ExpectTotalCount(

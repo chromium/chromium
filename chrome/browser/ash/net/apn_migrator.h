@@ -69,10 +69,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
-  // Creates the |default_apn| in the enabled state before creating the
-  // |attach_apn| in the enabled state.
-  void CreateEnabledAttachAndDefaultCustomApns(
+  // Creates the |default_apn| before creating the |attach_apn|.
+  void CreateDefaultThenAttachCustomApns(
       chromeos::network_config::mojom::ApnPropertiesPtr attach_apn,
+      bool enable_attach,
       chromeos::network_config::mojom::ApnPropertiesPtr default_apn,
       const std::string& guid,
       const std::string& iccid);
