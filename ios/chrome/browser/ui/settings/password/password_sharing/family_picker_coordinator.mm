@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -105,6 +106,11 @@
 
 - (void)familyPickerClosed:(FamilyPickerViewController*)controller
     withSelectedRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
+  LogPasswordSharingInteraction(
+      recipients.count == 1
+          ? PasswordSharingInteraction::kFamilyPickerShareWithOneMember
+          : PasswordSharingInteraction::kFamilyPickerShareWithMultipleMembers);
+
   [self.delegate familyPickerCoordinator:self didSelectRecipients:recipients];
 }
 
@@ -114,6 +120,10 @@
 }
 
 - (void)learnMoreLinkWasTapped {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::
+          kFamilyPickerIneligibleRecipientLearnMoreClicked);
+
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand

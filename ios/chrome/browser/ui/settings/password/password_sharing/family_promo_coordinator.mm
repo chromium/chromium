@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "url/gurl.h"
 
@@ -64,10 +65,18 @@
 #pragma mark - FamilyPromoActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kFamilyPromoGotItClicked);
+
   [self.delegate familyPromoCoordinatorWasDismissed:self];
 }
 
 - (void)createFamilyGroupLinkWasTapped {
+  LogPasswordSharingInteraction(
+      _familyPromoType == FamilyPromoType::kUserNotInFamilyGroup
+          ? PasswordSharingInteraction::kFamilyPromoCreateFamilyGroupClicked
+          : PasswordSharingInteraction::kFamilyPromoInviteFamilyMembersClicked);
+
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command =

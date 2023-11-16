@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -373,6 +374,9 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 }
 
 - (void)onShareButtonPressed {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kPasswordDetailsShareButtonClicked);
+
   if (self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
           prefs::kPasswordSharingFlowHasBeenEntered)) {
     [self startPasswordSharingCoordinator];
