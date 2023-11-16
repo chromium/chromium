@@ -21,7 +21,7 @@ namespace extensions {
 ServiceWorkerData::ServiceWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
-    const absl::optional<base::UnguessableToken>& activation_sequence,
+    const std::optional<base::UnguessableToken>& activation_sequence,
     ScriptContext* context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system)
     : proxy_(proxy),

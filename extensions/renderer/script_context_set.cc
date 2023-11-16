@@ -215,7 +215,7 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
     // We don't support injection of content scripts or user scripts into worker
     // contexts.
     CHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
-    absl::optional<mojom::ExecutionWorld> execution_world =
+    std::optional<mojom::ExecutionWorld> execution_world =
         IsolatedWorldManager::GetInstance().GetExecutionWorldForIsolatedWorld(
             world_id);
     if (execution_world == mojom::ExecutionWorld::kUserScript) {

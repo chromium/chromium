@@ -98,7 +98,7 @@ std::unique_ptr<UserScript> CreateUserScript(
   // Manifest content scripts support `match_about_blank` (unlike
   // `SerializedUserScript`). If `match_about_blank` is specified, we'll
   // override the `match_origin_as_fallback` behavior on the user script later.
-  absl::optional<MatchOriginAsFallbackBehavior>
+  std::optional<MatchOriginAsFallbackBehavior>
       match_origin_as_fallback_override;
   if (!serialized_script.match_origin_as_fallback.has_value() &&
       content_script.match_about_blank && *content_script.match_about_blank) {

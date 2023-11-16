@@ -116,7 +116,7 @@ ExtensionFunction::ResponseAction LockScreenDataGetContentFunction::Run() {
   if (!storage)
     return RespondNow(Error("Not available"));
 
-  absl::optional<api::lock_screen_data::GetContent::Params> params =
+  std::optional<api::lock_screen_data::GetContent::Params> params =
       api::lock_screen_data::GetContent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -142,7 +142,7 @@ LockScreenDataSetContentFunction::LockScreenDataSetContentFunction() = default;
 LockScreenDataSetContentFunction::~LockScreenDataSetContentFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataSetContentFunction::Run() {
-  absl::optional<api::lock_screen_data::SetContent::Params> params =
+  std::optional<api::lock_screen_data::SetContent::Params> params =
       api::lock_screen_data::SetContent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -172,7 +172,7 @@ LockScreenDataDeleteFunction::LockScreenDataDeleteFunction() = default;
 LockScreenDataDeleteFunction::~LockScreenDataDeleteFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataDeleteFunction::Run() {
-  absl::optional<api::lock_screen_data::Delete::Params> params =
+  std::optional<api::lock_screen_data::Delete::Params> params =
       api::lock_screen_data::Delete::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

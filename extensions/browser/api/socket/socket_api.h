@@ -182,8 +182,8 @@ class SocketExtensionWithDnsLookupFunction
   // network::mojom::ResolveHostClient implementation:
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
@@ -288,7 +288,7 @@ class SocketListenFunction : public SocketApiFunction {
 
  private:
   void OnCompleted(int result, const std::string& error_msg);
-  absl::optional<api::socket::Listen::Params> params_;
+  std::optional<api::socket::Listen::Params> params_;
 };
 
 class SocketAcceptFunction : public SocketApiFunction {
@@ -306,7 +306,7 @@ class SocketAcceptFunction : public SocketApiFunction {
  private:
   void OnAccept(int result_code,
                 mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-                const absl::optional<net::IPEndPoint>& remote_addr,
+                const std::optional<net::IPEndPoint>& remote_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 };
@@ -416,7 +416,7 @@ class SocketSetNoDelayFunction : public SocketApiFunction {
  private:
   void OnCompleted(bool success);
 
-  absl::optional<api::socket::SetNoDelay::Params> params_;
+  std::optional<api::socket::SetNoDelay::Params> params_;
 };
 
 class SocketGetInfoFunction : public SocketApiFunction {
@@ -444,7 +444,7 @@ class SocketGetNetworkListFunction : public ExtensionFunction {
 
  private:
   void GotNetworkList(
-      const absl::optional<net::NetworkInterfaceList>& interface_list);
+      const std::optional<net::NetworkInterfaceList>& interface_list);
 };
 
 class SocketJoinGroupFunction : public SocketApiFunction {
@@ -544,7 +544,7 @@ class SocketSecureFunction : public SocketApiFunction {
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
-  absl::optional<api::socket::Secure::Params> params_;
+  std::optional<api::socket::Secure::Params> params_;
 };
 
 }  // namespace extensions

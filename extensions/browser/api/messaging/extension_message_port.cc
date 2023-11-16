@@ -386,14 +386,14 @@ void ExtensionMessagePort::RevalidatePort() {
 void ExtensionMessagePort::DispatchOnConnect(
     mojom::ChannelType channel_type,
     const std::string& channel_name,
-    absl::optional<base::Value::Dict> source_tab,
+    std::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    absl::optional<url::Origin> source_origin) {
+    std::optional<url::Origin> source_origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   for (auto* frame : pending_frames_) {
     frames_[frame] = {};
@@ -765,7 +765,7 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    absl::optional<url::Origin> source_origin,
+    std::optional<url::Origin> source_origin,
     const IPCTarget& target) {
   ExtensionMsg_TabConnectionInfo source;
 

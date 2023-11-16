@@ -5,8 +5,8 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -26,7 +26,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace keys = extension_web_request_api_constants;
 
@@ -111,12 +110,12 @@ bool CreateUploadDataSourcesFromResourceRequest(
   return true;
 }
 
-absl::optional<base::Value::Dict> CreateRequestBodyData(
+std::optional<base::Value::Dict> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
   if (method != "POST" && method != "PUT")
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::Dict request_body_data;
 
@@ -163,7 +162,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    absl::optional<int64_t> navigation_id)
+    std::optional<int64_t> navigation_id)
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),

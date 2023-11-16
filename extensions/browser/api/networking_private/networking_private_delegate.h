@@ -6,14 +6,13 @@
 #define EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/networking_private.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -37,14 +36,14 @@ class NetworkingPrivateDelegate : public KeyedService {
   using DeviceStateListCallback =
       base::OnceCallback<void(std::optional<DeviceStateList>)>;
   using GetGlobalPolicyCallback =
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
+      base::OnceCallback<void(std::optional<base::Value::Dict>)>;
   using GetCertificateListsCallback =
       base::OnceCallback<void(base::Value::Dict)>;
 
   // Returns |result| on success, or |result|=nullopt and |error| on failure.
   using PropertiesCallback =
-      base::OnceCallback<void(absl::optional<base::Value::Dict> result,
-                              const absl::optional<std::string>& error)>;
+      base::OnceCallback<void(std::optional<base::Value::Dict> result,
+                              const std::optional<std::string>& error)>;
 
   // Delegate for forwarding UI requests, e.g. for showing the account UI.
   class UIDelegate {

@@ -62,7 +62,7 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
         return false;
       }
       value = *action;
-      absl::optional<bool> enabled =
+      std::optional<bool> enabled =
           wrapped_dict.FindBool(keys::kActionHandlerEnabledOnLockScreenKey);
       if (enabled) {
         enabled_on_lock_screen = *enabled;

@@ -74,16 +74,16 @@ CreateIndexBuilders(flatbuffers::FlatBufferBuilder* builder) {
 FlatOffset<flat::UrlTransform> BuildTransformOffset(
     flatbuffers::FlatBufferBuilder* builder,
     const dnr_api::URLTransform& transform) {
-  auto create_string_offset =
-      [builder](const absl::optional<std::string>& str) {
-        if (!str)
-          return FlatStringOffset();
+  auto create_string_offset = [builder](const std::optional<std::string>& str) {
+    if (!str) {
+      return FlatStringOffset();
+    }
 
-        return builder->CreateSharedString(*str);
-      };
+    return builder->CreateSharedString(*str);
+  };
 
   auto skip_separator_and_create_string_offset =
-      [builder](const absl::optional<std::string>& str, char separator) {
+      [builder](const std::optional<std::string>& str, char separator) {
         if (!str)
           return FlatStringOffset();
 
@@ -93,7 +93,7 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
         return builder->CreateSharedString(str->c_str() + 1, str->length() - 1);
       };
 
-  auto should_clear_component = [](const absl::optional<std::string>& str) {
+  auto should_clear_component = [](const std::optional<std::string>& str) {
     return str && str->empty();
   };
 

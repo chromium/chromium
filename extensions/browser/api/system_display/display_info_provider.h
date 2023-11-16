@@ -7,13 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/api/system_display.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
@@ -30,7 +29,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
  public:
   using DisplayUnitInfoList = std::vector<api::system_display::DisplayUnitInfo>;
   using DisplayLayoutList = std::vector<api::system_display::DisplayLayout>;
-  using ErrorCallback = base::OnceCallback<void(absl::optional<std::string>)>;
+  using ErrorCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
   DisplayInfoProvider(const DisplayInfoProvider&) = delete;
   DisplayInfoProvider& operator=(const DisplayInfoProvider&) = delete;
@@ -141,7 +140,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
 
   raw_ptr<display::Screen> provided_screen_ = nullptr;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace extensions

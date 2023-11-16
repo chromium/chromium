@@ -81,7 +81,7 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
     Alarm alarm;
     alarm.js_alarm = alarms::Alarm::FromValue(alarm_value);
     if (alarm.js_alarm) {
-      absl::optional<base::TimeDelta> delta =
+      std::optional<base::TimeDelta> delta =
           base::ValueToTimeDelta(alarm_value.GetDict().Find(kAlarmGranularity));
       if (delta) {
         alarm.granularity = *delta;
@@ -334,7 +334,7 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
 
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    base::TimeDelta min_delay,
-                                   absl::optional<base::Value> value) {
+                                   std::optional<base::Value> value) {
   if (value && value->is_list()) {
     AlarmList alarm_states =
         AlarmsFromValue(extension_id, min_delay, value->GetList());

@@ -50,7 +50,7 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         int creation_flags,
                         bool can_execute_script_everywhere,
                         bool all_urls_includes_chrome_urls,
-                        absl::optional<int> definition_index,
+                        std::optional<int> definition_index,
                         UserScript* result,
                         std::u16string* error,
                         bool* wants_file_access);
@@ -62,7 +62,7 @@ bool ParseFileSources(
     const Extension* extension,
     const std::vector<api::scripts_internal::ScriptSource>* js,
     const std::vector<api::scripts_internal::ScriptSource>* css,
-    absl::optional<int> definition_index,
+    std::optional<int> definition_index,
     UserScript* result,
     std::u16string* error);
 

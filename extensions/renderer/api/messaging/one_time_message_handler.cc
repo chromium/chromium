@@ -118,7 +118,7 @@ void OneTimeMessageResponseHelper(
 // Called with the results of dispatching an onMessage event to listeners.
 // Returns true if any of the listeners responded with `true`, indicating they
 // will respond to the call asynchronously.
-bool WillListenerReplyAsync(absl::optional<base::Value> result) {
+bool WillListenerReplyAsync(std::optional<base::Value> result) {
   // `result` can be `nullopt` if the context was destroyed before the
   // listeners were ran (or while they were running).
   if (!result)
@@ -637,7 +637,7 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
 
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                          v8::Local<v8::Context> context,
-                                         absl::optional<base::Value> result) {
+                                         std::optional<base::Value> result) {
   // The context could be tearing down by the time the event is fully
   // dispatched.
   OneTimeMessageContextData* data =

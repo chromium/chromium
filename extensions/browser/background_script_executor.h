@@ -6,14 +6,13 @@
 #define EXTENSIONS_BROWSER_BACKGROUND_SCRIPT_EXECUTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -124,7 +123,7 @@ class BackgroundScriptExecutor {
 
   // The type of background context the extension uses; lazily instantiated in
   // ExecuteScript*().
-  absl::optional<BackgroundType> background_type_;
+  std::optional<BackgroundType> background_type_;
 
   // The method the script will use to send the result.
   ResultCapture result_capture_method_ = ResultCapture::kNone;

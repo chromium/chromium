@@ -174,7 +174,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
     BrowserContext* context,
     const Extension* extension,
     extensions::AppLaunchSource source,
-    absl::optional<app_runtime::LaunchData> launch_data) {
+    std::optional<app_runtime::LaunchData> launch_data) {
   if (!launch_data) {
     launch_data.emplace();
   }
@@ -206,7 +206,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
     const std::string& handler_id,
     const std::vector<EntryInfo>& entries,
     const std::vector<GrantedFileEntry>& file_entries,
-    absl::optional<app_runtime::ActionData> action_data) {
+    std::optional<app_runtime::ActionData> action_data) {
   app_runtime::LaunchSource source_enum = GetLaunchSourceEnum(source);
 
   // TODO(sergeygs): Use the same way of creating an event (using the generated

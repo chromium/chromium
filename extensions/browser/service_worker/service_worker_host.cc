@@ -346,7 +346,7 @@ void ServiceWorkerHost::OpenChannelToNativeApp(
 void ServiceWorkerHost::OpenChannelToTab(
     int32_t tab_id,
     int32_t frame_id,
-    const absl::optional<std::string>& document_id,
+    const std::optional<std::string>& document_id,
     extensions::mojom::ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id,

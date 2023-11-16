@@ -93,7 +93,7 @@ class TestSendMessageFunction : public ExtensionFunction {
   // Whether or not the function is currently waiting for a reply.
   bool waiting_ = false;
 
-  absl::optional<ResponseValue> response_;
+  std::optional<ResponseValue> response_;
 };
 
 class TestSendScriptResultFunction : public TestExtensionFunction {

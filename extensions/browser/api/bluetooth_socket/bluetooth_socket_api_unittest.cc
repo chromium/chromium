@@ -63,7 +63,7 @@ TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
 
   auto create_function =
       base::MakeRefCounted<api::BluetoothSocketCreateFunction>();
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       RunFunctionAndReturnValue(create_function.get(), "[]");
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());

@@ -363,7 +363,7 @@ class PermissionsData {
   // default policy-level and user-level settings.
   // If empty, these settings are ignored. This should mostly only be the case
   // in unittests.
-  mutable absl::optional<int> context_id_;
+  mutable std::optional<int> context_id_;
 
   // Whether the extension uses the default policy host restrictions.
   mutable bool uses_default_policy_host_restrictions_ = true;

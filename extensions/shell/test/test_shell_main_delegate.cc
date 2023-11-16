@@ -43,7 +43,7 @@ TestShellMainDelegate::TestShellMainDelegate() = default;
 TestShellMainDelegate::~TestShellMainDelegate() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-absl::optional<int> TestShellMainDelegate::PostEarlyInitialization(
+std::optional<int> TestShellMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   // At this point, the base::FeatureList has been initialized and the process
   // should still be single threaded. Additionally, minigbm shouldn't have been
@@ -56,7 +56,7 @@ absl::optional<int> TestShellMainDelegate::PostEarlyInitialization(
   }
   extensions::ShellMainDelegate::PostEarlyInitialization(invoked_in);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

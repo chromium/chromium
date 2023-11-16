@@ -6,16 +6,15 @@
 #define EXTENSIONS_COMMON_FILE_UTIL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class ExtensionIconSet;
@@ -85,13 +84,13 @@ scoped_refptr<Extension> LoadExtension(
     std::string* error);
 
 // Loads an extension manifest from the specified directory. Returns
-// `absl::nullopt` on failure, with a description of the error in |error|.
-absl::optional<base::Value::Dict> LoadManifest(
+// `std::nullopt` on failure, with a description of the error in |error|.
+std::optional<base::Value::Dict> LoadManifest(
     const base::FilePath& extension_root,
     std::string* error);
 
 // Convenience overload for specifying a manifest filename.
-absl::optional<base::Value::Dict> LoadManifest(
+std::optional<base::Value::Dict> LoadManifest(
     const base::FilePath& extension_root,
     const base::FilePath::CharType* manifest_filename,
     std::string* error);

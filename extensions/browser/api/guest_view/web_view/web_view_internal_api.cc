@@ -310,7 +310,7 @@ ExtensionFunction::ResponseAction
 WebViewInternalCaptureVisibleRegionFunction::Run() {
   using api::extension_types::ImageDetails;
 
-  absl::optional<web_view_internal::CaptureVisibleRegion::Params> params =
+  std::optional<web_view_internal::CaptureVisibleRegion::Params> params =
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -422,7 +422,7 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
 }
 
 ExtensionFunction::ResponseAction WebViewInternalNavigateFunction::Run() {
-  absl::optional<web_view_internal::Navigate::Params> params =
+  std::optional<web_view_internal::Navigate::Params> params =
       web_view_internal::Navigate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string src = params->src;
@@ -535,7 +535,7 @@ void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
     bool success,
     std::unique_ptr<std::string> data) {
   std::vector<std::unique_ptr<std::string>> data_list;
-  absl::optional<std::string> error;
+  std::optional<std::string> error;
   if (success) {
     DCHECK(data);
     data_list.push_back(std::move(data));
@@ -582,7 +582,7 @@ WebViewInternalAddContentScriptsFunction::
 
 ExecuteCodeFunction::ResponseAction
 WebViewInternalAddContentScriptsFunction::Run() {
-  absl::optional<web_view_internal::AddContentScripts::Params> params =
+  std::optional<web_view_internal::AddContentScripts::Params> params =
       web_view_internal::AddContentScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -622,7 +622,7 @@ WebViewInternalRemoveContentScriptsFunction::
 
 ExecuteCodeFunction::ResponseAction
 WebViewInternalRemoveContentScriptsFunction::Run() {
-  absl::optional<web_view_internal::RemoveContentScripts::Params> params =
+  std::optional<web_view_internal::RemoveContentScripts::Params> params =
       web_view_internal::RemoveContentScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -651,7 +651,7 @@ WebViewInternalSetNameFunction::~WebViewInternalSetNameFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetNameFunction::Run() {
-  absl::optional<web_view_internal::SetName::Params> params =
+  std::optional<web_view_internal::SetName::Params> params =
       web_view_internal::SetName::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetName(params->frame_name);
@@ -668,7 +668,7 @@ WebViewInternalSetAllowTransparencyFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowTransparencyFunction::Run() {
-  absl::optional<web_view_internal::SetAllowTransparency::Params> params =
+  std::optional<web_view_internal::SetAllowTransparency::Params> params =
       web_view_internal::SetAllowTransparency::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetAllowTransparency(params->allow);
@@ -685,7 +685,7 @@ WebViewInternalSetAllowScalingFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowScalingFunction::Run() {
-  absl::optional<web_view_internal::SetAllowScaling::Params> params =
+  std::optional<web_view_internal::SetAllowScaling::Params> params =
       web_view_internal::SetAllowScaling::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetAllowScaling(params->allow);
@@ -699,7 +699,7 @@ WebViewInternalSetZoomFunction::~WebViewInternalSetZoomFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomFunction::Run() {
-  absl::optional<web_view_internal::SetZoom::Params> params =
+  std::optional<web_view_internal::SetZoom::Params> params =
       web_view_internal::SetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetZoom(params->zoom_factor);
@@ -713,7 +713,7 @@ WebViewInternalGetZoomFunction::~WebViewInternalGetZoomFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomFunction::Run() {
-  absl::optional<web_view_internal::GetZoom::Params> params =
+  std::optional<web_view_internal::GetZoom::Params> params =
       web_view_internal::GetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -728,7 +728,7 @@ WebViewInternalSetZoomModeFunction::~WebViewInternalSetZoomModeFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
-  absl::optional<web_view_internal::SetZoomMode::Params> params =
+  std::optional<web_view_internal::SetZoomMode::Params> params =
       web_view_internal::SetZoomMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -758,7 +758,7 @@ WebViewInternalGetZoomModeFunction::~WebViewInternalGetZoomModeFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
-  absl::optional<web_view_internal::GetZoomMode::Params> params =
+  std::optional<web_view_internal::GetZoomMode::Params> params =
       web_view_internal::GetZoomMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -791,7 +791,7 @@ void WebViewInternalFindFunction::ForwardResponse(base::Value::Dict results) {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
-  absl::optional<web_view_internal::Find::Params> params =
+  std::optional<web_view_internal::Find::Params> params =
       web_view_internal::Find::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -821,7 +821,7 @@ WebViewInternalStopFindingFunction::~WebViewInternalStopFindingFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalStopFindingFunction::Run() {
-  absl::optional<web_view_internal::StopFinding::Params> params =
+  std::optional<web_view_internal::StopFinding::Params> params =
       web_view_internal::StopFinding::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -855,7 +855,7 @@ WebViewInternalLoadDataWithBaseUrlFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalLoadDataWithBaseUrlFunction::Run() {
-  absl::optional<web_view_internal::LoadDataWithBaseUrl::Params> params =
+  std::optional<web_view_internal::LoadDataWithBaseUrl::Params> params =
       web_view_internal::LoadDataWithBaseUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -910,7 +910,7 @@ WebViewInternalGoFunction::~WebViewInternalGoFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGoFunction::Run() {
-  absl::optional<web_view_internal::Go::Params> params =
+  std::optional<web_view_internal::Go::Params> params =
       web_view_internal::Go::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -936,7 +936,7 @@ WebViewInternalSetPermissionFunction::~WebViewInternalSetPermissionFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
-  absl::optional<web_view_internal::SetPermission::Params> params =
+  std::optional<web_view_internal::SetPermission::Params> params =
       web_view_internal::SetPermission::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -983,7 +983,7 @@ WebViewInternalOverrideUserAgentFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalOverrideUserAgentFunction::Run() {
-  absl::optional<web_view_internal::OverrideUserAgent::Params> params =
+  std::optional<web_view_internal::OverrideUserAgent::Params> params =
       web_view_internal::OverrideUserAgent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1009,7 +1009,7 @@ WebViewInternalSetAudioMutedFunction::~WebViewInternalSetAudioMutedFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalSetAudioMutedFunction::Run() {
-  absl::optional<web_view_internal::SetAudioMuted::Params> params =
+  std::optional<web_view_internal::SetAudioMuted::Params> params =
       web_view_internal::SetAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1024,7 +1024,7 @@ WebViewInternalIsAudioMutedFunction::~WebViewInternalIsAudioMutedFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
-  absl::optional<web_view_internal::IsAudioMuted::Params> params =
+  std::optional<web_view_internal::IsAudioMuted::Params> params =
       web_view_internal::IsAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1039,7 +1039,7 @@ WebViewInternalGetAudioStateFunction::~WebViewInternalGetAudioStateFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalGetAudioStateFunction::Run() {
-  absl::optional<web_view_internal::GetAudioState::Params> params =
+  std::optional<web_view_internal::GetAudioState::Params> params =
       web_view_internal::GetAudioState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1073,9 +1073,8 @@ WebViewInternalSetSpatialNavigationEnabledFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetSpatialNavigationEnabledFunction::Run() {
-  absl::optional<web_view_internal::SetSpatialNavigationEnabled::Params>
-      params = web_view_internal::SetSpatialNavigationEnabled::Params::Create(
-          args());
+  std::optional<web_view_internal::SetSpatialNavigationEnabled::Params> params =
+      web_view_internal::SetSpatialNavigationEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetGuest().SetSpatialNavigationEnabled(params->spatial_nav_enabled);
@@ -1090,7 +1089,7 @@ WebViewInternalIsSpatialNavigationEnabledFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalIsSpatialNavigationEnabledFunction::Run() {
-  absl::optional<web_view_internal::IsSpatialNavigationEnabled::Params> params =
+  std::optional<web_view_internal::IsSpatialNavigationEnabled::Params> params =
       web_view_internal::IsSpatialNavigationEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

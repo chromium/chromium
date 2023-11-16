@@ -5,12 +5,11 @@
 #ifndef EXTENSIONS_COMMON_API_MESSAGING_MESSAGING_ENDPOINT_H_
 #define EXTENSIONS_COMMON_API_MESSAGING_MESSAGING_ENDPOINT_H_
 
+#include <optional>
 #include <string>
-
 #include "base/debug/crash_logging.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -59,11 +58,11 @@ struct MessagingEndpoint {
   // Identifier of the extension (or the content script).  It is required for
   // |type| of kExtension.  For |type| of kTab, it is set if the endpoint is a
   // content script (otherwise, it's the web page).
-  absl::optional<ExtensionId> extension_id;
+  std::optional<ExtensionId> extension_id;
 
   // Name of the native application.  It is required for |type| of kNativeApp.
   // It is not used for other types.
-  absl::optional<std::string> native_app_name;
+  std::optional<std::string> native_app_name;
 };
 
 namespace debug {

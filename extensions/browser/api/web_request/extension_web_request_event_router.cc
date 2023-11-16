@@ -1704,8 +1704,8 @@ WebRequestEventRouter::RemoveMatchingListener(
     Listeners& listeners,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
-    absl::optional<int> worker_thread_id,
-    absl::optional<int64_t> service_worker_version_id,
+    std::optional<int> worker_thread_id,
+    std::optional<int64_t> service_worker_version_id,
     BrowserContextID browser_context_id) {
   Listeners removed_listeners;
   for (auto iter = listeners.begin(); iter != listeners.end();) {
@@ -1752,9 +1752,9 @@ void WebRequestEventRouter::RemoveLazyListener(
   auto check_list = [&removed_listeners, extension_id, sub_event_name](
                         Listeners& listeners,
                         BrowserContextID browser_context_id) {
-    auto listener = RemoveMatchingListener(listeners, extension_id,
-                                           sub_event_name, absl::nullopt,
-                                           absl::nullopt, browser_context_id);
+    auto listener =
+        RemoveMatchingListener(listeners, extension_id, sub_event_name,
+                               std::nullopt, std::nullopt, browser_context_id);
     if (listener) {
       removed_listeners.push_back(std::move(listener));
     }
@@ -2281,7 +2281,7 @@ int WebRequestEventRouter::ExecuteDeltas(
 
   deltas.sort(&helpers::InDecreasingExtensionInstallationTimeOrder);
 
-  absl::optional<ExtensionId> canceled_by_extension;
+  std::optional<ExtensionId> canceled_by_extension;
   helpers::MergeCancelOfResponses(blocked_request.response_deltas,
                                   &canceled_by_extension);
 

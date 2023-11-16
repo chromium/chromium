@@ -85,7 +85,7 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
       const AcceptParams& params,
       int result,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-      const absl::optional<net::IPEndPoint>& remote_addr,
+      const std::optional<net::IPEndPoint>& remote_addr,
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 

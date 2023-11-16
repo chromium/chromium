@@ -184,7 +184,7 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
 }  // namespace
 
 ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
-  absl::optional<api::user_scripts::Register::Params> params(
+  std::optional<api::user_scripts::Register::Params> params(
       api::user_scripts::Register::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
@@ -281,7 +281,7 @@ void UserScriptsRegisterFunction::OnUserScriptFilesValidated(
 }
 
 void UserScriptsRegisterFunction::OnUserScriptsRegistered(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error.has_value()) {
     Respond(Error(std::move(*error)));
   } else {
@@ -291,11 +291,11 @@ void UserScriptsRegisterFunction::OnUserScriptsRegistered(
 }
 
 ExtensionFunction::ResponseAction UserScriptsGetScriptsFunction::Run() {
-  absl::optional<api::user_scripts::GetScripts::Params> params =
+  std::optional<api::user_scripts::GetScripts::Params> params =
       api::user_scripts::GetScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  absl::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
+  std::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
   std::set<std::string> id_filter;
   if (filter && filter->ids) {
     id_filter.insert(std::make_move_iterator(filter->ids->begin()),
@@ -332,13 +332,13 @@ ExtensionFunction::ResponseAction UserScriptsGetScriptsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction UserScriptsUnregisterFunction::Run() {
-  absl::optional<api::user_scripts::Unregister::Params> params(
+  std::optional<api::user_scripts::Unregister::Params> params(
       api::user_scripts::Unregister::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  absl::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
-  absl::optional<std::vector<std::string>> ids = absl::nullopt;
+  std::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
+  std::optional<std::vector<std::string>> ids = std::nullopt;
   if (filter && filter->ids) {
     ids = filter->ids;
   }
@@ -360,7 +360,7 @@ ExtensionFunction::ResponseAction UserScriptsUnregisterFunction::Run() {
 }
 
 void UserScriptsUnregisterFunction::OnUserScriptsUnregistered(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error.has_value()) {
     Respond(Error(std::move(*error)));
   } else {
@@ -369,7 +369,7 @@ void UserScriptsUnregisterFunction::OnUserScriptsUnregistered(
 }
 
 ExtensionFunction::ResponseAction UserScriptsUpdateFunction::Run() {
-  absl::optional<api::user_scripts::Update::Params> params(
+  std::optional<api::user_scripts::Update::Params> params(
       api::user_scripts::Update::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
@@ -501,7 +501,7 @@ void UserScriptsUpdateFunction::OnUserScriptFilesValidated(
 }
 
 void UserScriptsUpdateFunction::OnUserScriptsUpdated(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error.has_value()) {
     Respond(Error(std::move(*error)));
   } else {
@@ -511,12 +511,12 @@ void UserScriptsUpdateFunction::OnUserScriptsUpdated(
 }
 
 ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
-  absl::optional<api::user_scripts::ConfigureWorld::Params> params(
+  std::optional<api::user_scripts::ConfigureWorld::Params> params(
       api::user_scripts::ConfigureWorld::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  absl::optional<std::string> csp = params->properties.csp;
+  std::optional<std::string> csp = params->properties.csp;
   bool enable_messaging = params->properties.messaging.value_or(false);
 
   util::SetUserScriptWorldInfo(*extension(), browser_context(), csp,

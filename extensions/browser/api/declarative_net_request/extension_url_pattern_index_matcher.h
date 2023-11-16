@@ -37,7 +37,7 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   ~ExtensionUrlPatternIndexMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
-      absl::optional<uint64_t> min_priority) const override;
+      std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
 
@@ -50,14 +50,14 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   using UrlPatternIndexMatcher = url_pattern_index::UrlPatternIndexMatcher;
 
   // RulesetMatcherBase override:
-  absl::optional<RequestAction> GetAllowAllRequestsAction(
+  std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const override;
-  absl::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
+  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
       const RequestParams& params) const override;
 
   // Returns the highest priority action from
   // |flat::IndexType_before_request_except_allow_all_requests| index.
-  absl::optional<RequestAction> GetBeforeRequestActionHelper(
+  std::optional<RequestAction> GetBeforeRequestActionHelper(
       const RequestParams& params) const;
 
   const url_pattern_index::flat::UrlRule* GetMatchingRule(

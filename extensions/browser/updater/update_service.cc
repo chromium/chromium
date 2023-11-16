@@ -5,10 +5,10 @@
 #include "extensions/browser/updater/update_service.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -32,7 +32,6 @@
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -202,7 +201,7 @@ void UpdateService::StartUpdateCheck(
   base::RepeatingCallback<void(
       const std::vector<std::string>&,
       base::OnceCallback<void(
-          const std::vector<absl::optional<update_client::CrxComponent>>&)>)>
+          const std::vector<std::optional<update_client::CrxComponent>>&)>)>
       get_data = base::BindRepeating(
           &UpdateDataProvider::GetData, update_data_provider_,
           update_params.install_immediately, std::move(update_data));

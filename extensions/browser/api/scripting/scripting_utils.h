@@ -139,7 +139,7 @@ UserScriptList UpdateScripts(
 // true and removes the script from the UserScriptLoader invoking
 // `remove_callback` on completion.
 bool RemoveScripts(
-    const absl::optional<std::vector<std::string>>& ids,
+    const std::optional<std::vector<std::string>>& ids,
     UserScript::Source source,
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
@@ -167,7 +167,7 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
 // Holds a list of user scripts as the first item, or an error string as the
 // second item when the user scripts are invalid.
 using ValidateScriptsResult =
-    std::pair<UserScriptList, absl::optional<std::string>>;
+    std::pair<UserScriptList, std::optional<std::string>>;
 
 // Validates that `scripts` resources exist and are properly encoded.
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(

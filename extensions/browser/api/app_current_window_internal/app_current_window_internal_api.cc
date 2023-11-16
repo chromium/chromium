@@ -74,7 +74,7 @@ void GetBoundsFields(const Bounds& bounds_spec, gfx::Rect* bounds) {
 // Copy the constraint value from the API to our internal representation of
 // content size constraints. A value of zero resets the constraints. The insets
 // are used to transform window constraints to content constraints.
-void GetConstraintWidth(const absl::optional<int>& width,
+void GetConstraintWidth(const std::optional<int>& width,
                         const gfx::Insets& insets,
                         gfx::Size* size) {
   if (!width)
@@ -84,7 +84,7 @@ void GetConstraintWidth(const absl::optional<int>& width,
                              : kUnboundedSize);
 }
 
-void GetConstraintHeight(const absl::optional<int>& height,
+void GetConstraintHeight(const std::optional<int>& height,
                          const gfx::Insets& insets,
                          gfx::Size* size) {
   if (!height)
@@ -184,7 +184,7 @@ AppCurrentWindowInternalClearAttentionFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction AppCurrentWindowInternalShowFunction::Run() {
-  absl::optional<Show::Params> params = Show::Params::Create(args());
+  std::optional<Show::Params> params = Show::Params::Create(args());
   CHECK(params);
   if (params->focused && !*params->focused)
     window()->Show(AppWindow::SHOW_INACTIVE);
@@ -200,7 +200,7 @@ ExtensionFunction::ResponseAction AppCurrentWindowInternalHideFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetBoundsFunction::Run() {
-  absl::optional<SetBounds::Params> params = SetBounds::Params::Create(args());
+  std::optional<SetBounds::Params> params = SetBounds::Params::Create(args());
   CHECK(params);
 
   bounds::BoundsType bounds_type = bounds::GetBoundsType(params->bounds_type);
@@ -265,7 +265,7 @@ AppCurrentWindowInternalSetBoundsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetSizeConstraintsFunction::Run() {
-  absl::optional<SetSizeConstraints::Params> params =
+  std::optional<SetSizeConstraints::Params> params =
       SetSizeConstraints::Params::Create(args());
   CHECK(params);
 
@@ -311,7 +311,7 @@ AppCurrentWindowInternalSetIconFunction::Run() {
     return RespondNow(Error(kDevChannelOnly));
   }
 
-  absl::optional<SetIcon::Params> params = SetIcon::Params::Create(args());
+  std::optional<SetIcon::Params> params = SetIcon::Params::Create(args());
   CHECK(params);
   // The |icon_url| parameter may be a blob url (e.g. an image fetched with an
   // XMLHttpRequest) or a resource url.
@@ -328,7 +328,7 @@ AppCurrentWindowInternalSetShapeFunction::Run() {
   if (!window()->GetBaseWindow()->IsFrameless())
     return RespondNow(Error(kRequiresFramelessWindow));
 
-  absl::optional<SetShape::Params> params = SetShape::Params::Create(args());
+  std::optional<SetShape::Params> params = SetShape::Params::Create(args());
   const Region& shape = params->region;
 
   // Build the list of hit-test rects from the supplied list of rects.
@@ -358,7 +358,7 @@ AppCurrentWindowInternalSetAlwaysOnTopFunction::Run() {
     return RespondNow(Error(kAlwaysOnTopPermission));
   }
 
-  absl::optional<SetAlwaysOnTop::Params> params =
+  std::optional<SetAlwaysOnTop::Params> params =
       SetAlwaysOnTop::Params::Create(args());
   CHECK(params);
   window()->SetAlwaysOnTop(params->always_on_top);
@@ -367,7 +367,7 @@ AppCurrentWindowInternalSetAlwaysOnTopFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetVisibleOnAllWorkspacesFunction::Run() {
-  absl::optional<SetVisibleOnAllWorkspaces::Params> params =
+  std::optional<SetVisibleOnAllWorkspaces::Params> params =
       SetVisibleOnAllWorkspaces::Params::Create(args());
   CHECK(params);
   window()->GetBaseWindow()->SetVisibleOnAllWorkspaces(params->always_visible);
@@ -376,7 +376,7 @@ AppCurrentWindowInternalSetVisibleOnAllWorkspacesFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetActivateOnPointerFunction::Run() {
-  absl::optional<SetActivateOnPointer::Params> params =
+  std::optional<SetActivateOnPointer::Params> params =
       SetActivateOnPointer::Params::Create(args());
   CHECK(params);
   window()->GetBaseWindow()->SetActivateOnPointer(params->activate_on_pointer);

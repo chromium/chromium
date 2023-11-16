@@ -55,7 +55,7 @@ base::Value::List ToValue(const std::vector<T>& vec) {
 template <typename T>
 void SetValue(base::Value::Dict& dict,
               const char* key,
-              const absl::optional<T>& value) {
+              const std::optional<T>& value) {
   if (!value)
     return;
 
@@ -158,7 +158,7 @@ base::Value::Dict TestRuleRedirect::ToValue() const {
 
 TestHeaderInfo::TestHeaderInfo(std::string header,
                                std::string operation,
-                               absl::optional<std::string> value)
+                               std::optional<std::string> value)
     : header(std::move(header)),
       operation(std::move(operation)),
       value(std::move(value)) {}

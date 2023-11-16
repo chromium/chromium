@@ -4,13 +4,13 @@
 
 #include "extensions/browser/updater/safe_manifest_parser.h"
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -29,7 +29,7 @@ class ExtensionUpdateManifestTest : public testing::Test {
 
  protected:
   UpdateManifestResults* results() const { return results_.get(); }
-  const absl::optional<ManifestParseFailure>& parse_error() const {
+  const std::optional<ManifestParseFailure>& parse_error() const {
     return parse_error_;
   }
 
@@ -42,7 +42,7 @@ class ExtensionUpdateManifestTest : public testing::Test {
   void OnUpdateManifestParsed(
       base::OnceClosure quit_loop,
       std::unique_ptr<UpdateManifestResults> results,
-      const absl::optional<ManifestParseFailure>& failure) {
+      const std::optional<ManifestParseFailure>& failure) {
     results_ = std::move(results);
     parse_error_ = failure;
     std::move(quit_loop).Run();
@@ -50,7 +50,7 @@ class ExtensionUpdateManifestTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<UpdateManifestResults> results_;
-  absl::optional<ManifestParseFailure> parse_error_;
+  std::optional<ManifestParseFailure> parse_error_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

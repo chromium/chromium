@@ -6,12 +6,11 @@
 #define EXTENSIONS_BROWSER_API_MESSAGING_MESSAGING_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -44,7 +43,7 @@ class MessagingDelegate {
 
   // If web_contents is a tab, returns a dictionary representing its tab.
   // Otherwise returns nullptr.
-  virtual absl::optional<base::Value::Dict> MaybeGetTabInfo(
+  virtual std::optional<base::Value::Dict> MaybeGetTabInfo(
       content::WebContents* web_contents);
 
   // Returns the WebContents for the given tab ID, if found.

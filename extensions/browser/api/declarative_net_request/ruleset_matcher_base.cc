@@ -209,11 +209,11 @@ RulesetMatcherBase::RulesetMatcherBase(const ExtensionId& extension_id,
     : extension_id_(extension_id), ruleset_id_(ruleset_id) {}
 RulesetMatcherBase::~RulesetMatcherBase() = default;
 
-absl::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
+std::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
     const RequestParams& params) const {
-  absl::optional<RequestAction> action =
+  std::optional<RequestAction> action =
       GetBeforeRequestActionIgnoringAncestors(params);
-  absl::optional<RequestAction> parent_action =
+  std::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(params.parent_routing_id);
 
   return GetMaxPriorityAction(std::move(action), std::move(parent_action));
@@ -230,7 +230,7 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   // commit for the frame is received in the browser (via DidFinishNavigation).
   // Hence if the parent frame is allowlisted, we allow list the current frame
   // as well in OnRenderFrameCreated.
-  absl::optional<RequestAction> parent_action =
+  std::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(parent->GetGlobalId());
   if (!parent_action)
     return;
@@ -259,11 +259,10 @@ void RulesetMatcherBase::OnDidFinishNavigation(
 
   // Find the highest priority allowAllRequests action corresponding to this
   // frame.
-  absl::optional<RequestAction> parent_action =
+  std::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(params.parent_routing_id);
-  absl::optional<RequestAction> frame_action =
-      GetAllowAllRequestsAction(params);
-  absl::optional<RequestAction> action =
+  std::optional<RequestAction> frame_action = GetAllowAllRequestsAction(params);
+  std::optional<RequestAction> action =
       GetMaxPriorityAction(std::move(parent_action), std::move(frame_action));
 
   content::GlobalRenderFrameHostId frame_id = host->GetGlobalId();
@@ -273,7 +272,7 @@ void RulesetMatcherBase::OnDidFinishNavigation(
     allowlisted_frames_.insert(std::make_pair(frame_id, std::move(*action)));
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 RulesetMatcherBase::GetAllowlistedFrameActionForTesting(
     content::RenderFrameHost* host) const {
   DCHECK(host);
@@ -301,12 +300,12 @@ RequestAction RulesetMatcherBase::CreateAllowAllRequestsAction(
   return CreateRequestAction(RequestAction::Type::ALLOW_ALL_REQUESTS, rule);
 }
 
-absl::optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
+std::optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule) const {
   if (!IsUpgradeableUrl(*params.url)) {
     // TODO(crbug.com/1033780): this results in counterintuitive behavior.
-    return absl::nullopt;
+    return std::nullopt;
   }
   RequestAction upgrade_action =
       CreateRequestAction(RequestAction::Type::UPGRADE, rule);
@@ -314,7 +313,7 @@ absl::optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
   return upgrade_action;
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 RulesetMatcherBase::CreateRedirectActionFromMetadata(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule,
@@ -344,18 +343,18 @@ RulesetMatcherBase::CreateRedirectActionFromMetadata(
   return CreateRedirectAction(params, rule, std::move(redirect_url));
 }
 
-absl::optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
+std::optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule,
     GURL redirect_url) const {
   // Redirecting WebSocket handshake request is prohibited.
   // TODO(crbug.com/1033780): this results in counterintuitive behavior.
   if (params.element_type == flat_rule::ElementType_WEBSOCKET)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Prevent a redirect loop where a URL continuously redirects to itself.
   if (!redirect_url.is_valid() || *params.url == redirect_url)
-    return absl::nullopt;
+    return std::nullopt;
 
   RequestAction redirect_action =
       CreateRequestAction(RequestAction::Type::REDIRECT, rule);
@@ -409,11 +408,11 @@ RequestAction RulesetMatcherBase::CreateRequestAction(
                        extension_id());
 }
 
-absl::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
+std::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
     content::GlobalRenderFrameHostId frame_id) const {
   auto it = allowlisted_frames_.find(frame_id);
   if (it == allowlisted_frames_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return it->second.Clone();
 }

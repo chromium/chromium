@@ -5,12 +5,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -21,7 +21,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/test_extensions_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -89,7 +88,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (extension_id.empty())
     extension_id.resize(1);
 
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
       fuzzed_data_provider.ConsumeRemainingBytesAsString());
   if (!parsed_json || !parsed_json->is_dict())
     return 0;

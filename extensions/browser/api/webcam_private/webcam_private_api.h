@@ -52,13 +52,13 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   void OnGotDeviceIdOnUIThread(const std::string& extension_id,
                                const std::string& webcam_id,
                                base::OnceCallback<void(Webcam*)> callback,
-                               const absl::optional<std::string>& device_id);
+                               const std::optional<std::string>& device_id);
 
   static void GetDeviceIdOnIOThread(
       std::string salt,
       url::Origin security_origin,
       std::string hmac_device_id,
-      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
+      base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   void GetDeviceIdOnUIThread(const url::Origin& security_origin,
                              const std::string& extension_id,
@@ -171,7 +171,7 @@ class WebcamPrivateSetFunction : public ExtensionFunction {
 
  private:
   void OnWebcam(
-      absl::optional<extensions::api::webcam_private::Set::Params> params,
+      std::optional<extensions::api::webcam_private::Set::Params> params,
       Webcam* webcam);
   void OnSetWebcamParameters(bool success);
 
@@ -251,7 +251,7 @@ class WebcamPrivateResetFunction : public ExtensionFunction {
 
  private:
   void OnWebcam(
-      absl::optional<extensions::api::webcam_private::Reset::Params> params,
+      std::optional<extensions::api::webcam_private::Reset::Params> params,
       Webcam* webcam);
   void OnResetWebcam(bool success);
 };

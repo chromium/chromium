@@ -28,7 +28,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 // Additional options for parsing user scripts.
 struct SerializedUserScriptParseOptions {
   // If populated, used in the error message.
-  absl::optional<int> index_for_error;
+  std::optional<int> index_for_error;
   // If true, indicates the extension can execute scripts on every page without
   // additional permission (this should only be true for special extensions like
   // ChromeVox).
@@ -45,7 +45,7 @@ struct SerializedUserScriptParseOptions {
 // If `wants_file_access_out` is provided, it will be populated with whether the
 // extension wants file access according to the patterns in the serialized
 // script.
-// TODO(devlin): It'd be nice to use absl::optional here, but UserScripts are
+// TODO(devlin): It'd be nice to use std::optional here, but UserScripts are
 // currently passed by pointer a lot.
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,

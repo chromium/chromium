@@ -64,7 +64,7 @@ OffscreenCreateDocumentFunction::OffscreenCreateDocumentFunction() = default;
 OffscreenCreateDocumentFunction::~OffscreenCreateDocumentFunction() = default;
 
 ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
-  absl::optional<api::offscreen::CreateDocument::Params> params =
+  std::optional<api::offscreen::CreateDocument::Params> params =
       api::offscreen::CreateDocument::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());

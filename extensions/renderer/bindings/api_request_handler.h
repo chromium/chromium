@@ -7,8 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -16,7 +16,6 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -142,7 +141,7 @@ class APIRequestHandler {
 
     std::unique_ptr<AsyncResultHandler> async_handler;
 
-    // Note: We can't use absl::optional here for derived Token instances.
+    // Note: We can't use std::optional here for derived Token instances.
     std::unique_ptr<InteractionProvider::Token> user_gesture_token;
   };
 

@@ -28,7 +28,7 @@ class StateStore;
 class ExtensionUserScriptLoader : public UserScriptLoader {
  public:
   using DynamicScriptsModifiedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& error)>;
+      base::OnceCallback<void(const std::optional<std::string>& error)>;
 
   struct PathAndLocaleInfo {
     base::FilePath file_path;
@@ -155,7 +155,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
     // Deserializes `value` into a UserScriptList and calls `callback` with that
     // list.
     void OnDynamicScriptsReadFromStorage(DynamicScriptsReadCallback callback,
-                                         absl::optional<base::Value> value);
+                                         std::optional<base::Value> value);
 
     raw_ptr<content::BrowserContext> browser_context_;
 
@@ -187,11 +187,10 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
 
   // Called when the extension's initial set of dynamic scripts have been
   // loaded.
-  void OnInitialExtensionScriptsLoaded(
-      UserScriptList initial_dynamic_scripts,
-      ScriptsLoadedCallback callback,
-      UserScriptLoader* loader,
-      const absl::optional<std::string>& error);
+  void OnInitialExtensionScriptsLoaded(UserScriptList initial_dynamic_scripts,
+                                       ScriptsLoadedCallback callback,
+                                       UserScriptLoader* loader,
+                                       const std::optional<std::string>& error);
 
   // Called when the scripts added by AddDynamicScripts have been loaded. Since
   // `added_scripts` corresponds to newly loaded scripts, their IDs are removed
@@ -201,7 +200,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                              std::set<std::string> new_persistent_script_ids,
                              DynamicScriptsModifiedCallback callback,
                              UserScriptLoader* loader,
-                             const absl::optional<std::string>& error);
+                             const std::optional<std::string>& error);
 
   // Called when the scripts to be removed in RemoveDynamicScripts are removed.
   // All scripts in `loaded_dynamic_scripts_` with their id in
@@ -209,7 +208,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   void OnDynamicScriptsRemoved(const std::set<std::string>& removed_script_ids,
                                DynamicScriptsModifiedCallback callback,
                                UserScriptLoader* loader,
-                               const absl::optional<std::string>& error);
+                               const std::optional<std::string>& error);
 
   // Checks if the extension has initial dynamic scripts by checking if the
   // extension has the scripting or user scripts permission, and if URLPatterns

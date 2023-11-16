@@ -21,7 +21,7 @@ namespace {
 // Note: this will crash if `json` doesn't parse to a valid script.
 SerializedUserScript SerializedScriptFromJson(base::StringPiece json) {
   base::Value value = base::test::ParseJson(json);
-  absl::optional<SerializedUserScript> serialized_script =
+  std::optional<SerializedUserScript> serialized_script =
       SerializedUserScript::FromValue(value);
   return std::move(*serialized_script);
 }

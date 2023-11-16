@@ -6,14 +6,13 @@
 #define EXTENSIONS_RENDERER_BINDINGS_API_SIGNATURE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -41,7 +40,7 @@ class APISignature {
     // The list of expected arguments for the asynchronous return. Can be
     // nullopt if response validation isn't enabled, as it is only used when
     // validating a response from the API.
-    absl::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature;
+    std::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature;
     // Indicates if passing the callback when calling the API is optional for
     // contexts or APIs which do not support promises (passing the callback is
     // always inheriently optional if promises are supported).
@@ -85,13 +84,13 @@ class APISignature {
     // since it will include null-filled optional arguments. Populated if
     // parsing was successful. Note that the callback, if any, is included in
     // this list.
-    absl::optional<v8::LocalVector<v8::Value>> arguments;
+    std::optional<v8::LocalVector<v8::Value>> arguments;
 
     // Whether the asynchronous response is handled by a callback or a promise.
     binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 
     // The parse error, if parsing failed.
-    absl::optional<std::string> error;
+    std::optional<std::string> error;
   };
 
   struct JSONParseResult {
@@ -106,7 +105,7 @@ class APISignature {
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    absl::optional<base::Value::List> arguments_list;
+    std::optional<base::Value::List> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;
@@ -115,7 +114,7 @@ class APISignature {
     binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 
     // The parse error, if parsing failed.
-    absl::optional<std::string> error;
+    std::optional<std::string> error;
   };
 
   // Parses |arguments| against this signature, returning the result and

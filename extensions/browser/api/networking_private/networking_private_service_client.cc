@@ -380,10 +380,10 @@ void NetworkingPrivateServiceClient::AfterGetProperties(
     std::unique_ptr<base::Value::Dict> properties,
     const std::string* error) {
   if (!error->empty()) {
-    std::move(callback).Run(absl::nullopt, *error);
+    std::move(callback).Run(std::nullopt, *error);
     return;
   }
-  std::move(callback).Run(std::move(*properties), absl::nullopt);
+  std::move(callback).Run(std::move(*properties), std::nullopt);
 }
 
 void NetworkingPrivateServiceClient::AfterGetState(

@@ -368,7 +368,7 @@ class CSPDirectiveToken {
 
  private:
   const raw_ref<const Directive> directive_;
-  absl::optional<std::string> secure_value_;
+  std::optional<std::string> secure_value_;
 };
 
 // Class responsible for parsing a given CSP string |policy|, and enforcing

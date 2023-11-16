@@ -7,15 +7,14 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/declarative_net_request/extension_url_pattern_index_matcher.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -49,18 +48,18 @@ class RulesetMatcher {
 
   ~RulesetMatcher();
 
-  absl::optional<RequestAction> GetBeforeRequestAction(
+  std::optional<RequestAction> GetBeforeRequestAction(
       const RequestParams& params) const;
 
   // Returns a list of actions corresponding to all matched
   // modifyHeaders rules with priority greater than |min_priority| if specified.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
-      absl::optional<uint64_t> min_priority) const;
+      std::optional<uint64_t> min_priority) const;
 
   bool IsExtraHeadersMatcher() const;
   size_t GetRulesCount() const;
-  absl::optional<size_t> GetUnsafeRulesCount() const;
+  std::optional<size_t> GetUnsafeRulesCount() const;
   size_t GetRegexRulesCount() const;
 
   // Returns a RuleCounts object for this matcher containing the total rule
@@ -77,7 +76,7 @@ class RulesetMatcher {
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
   // any, for |host|.
-  absl::optional<RequestAction> GetAllowlistedFrameActionForTesting(
+  std::optional<RequestAction> GetAllowlistedFrameActionForTesting(
       content::RenderFrameHost* host) const;
 
   // Set the disabled rule ids to the ruleset matcher.
@@ -96,7 +95,7 @@ class RulesetMatcher {
   // The number of unsafe rules for this matcher. Computed only for dynamic and
   // session scoped rulesets as all rules for static rulesets are considered
   // "safe".
-  absl::optional<size_t> unsafe_rule_count_ = absl::nullopt;
+  std::optional<size_t> unsafe_rule_count_ = std::nullopt;
 
   // Underlying matcher for filter-list style rules supported using the
   // |url_pattern_index| component.

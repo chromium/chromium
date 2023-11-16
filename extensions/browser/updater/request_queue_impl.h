@@ -23,7 +23,7 @@ RequestQueue<T>::RequestQueue(
     const base::RepeatingClosure& start_request_callback)
     : backoff_policy_(backoff_policy),
       start_request_callback_(start_request_callback),
-      active_request_(absl::nullopt) {}
+      active_request_(std::nullopt) {}
 
 template <typename T>
 RequestQueue<T>::~RequestQueue() = default;

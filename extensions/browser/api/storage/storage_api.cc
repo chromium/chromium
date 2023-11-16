@@ -517,7 +517,7 @@ StorageStorageAreaSetAccessLevelFunction::RunInSession() {
   if (source_context_type() != Feature::BLESSED_EXTENSION_CONTEXT)
     return Error("Context cannot set the storage access level");
 
-  absl::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
+  std::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
       api::storage::StorageArea::SetAccessLevel::Params::Create(args());
 
   if (!params)

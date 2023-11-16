@@ -563,7 +563,7 @@ void MediaPerceptionAPIManager::UpstartRestartCallback(
 
 void MediaPerceptionAPIManager::StateCallback(
     APIStateCallback callback,
-    absl::optional<mri::State> result) {
+    std::optional<mri::State> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         GetStateForServiceError(extensions::api::media_perception_private::
@@ -577,7 +577,7 @@ void MediaPerceptionAPIManager::StateCallback(
 
 void MediaPerceptionAPIManager::GetDiagnosticsCallback(
     APIGetDiagnosticsCallback callback,
-    absl::optional<mri::Diagnostics> result) {
+    std::optional<mri::Diagnostics> result) {
   if (!result.has_value()) {
     std::move(callback).Run(GetDiagnosticsForServiceError(
         extensions::api::media_perception_private::ServiceError::

@@ -133,7 +133,7 @@ base::Value BackgroundScriptExecutor::WaitForResult() {
     AddTestFailure("Failed to wait for message");
     return base::Value();
   }
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(next_message, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value) {
     AddTestFailure("Received bad message: " + next_message);
@@ -161,7 +161,7 @@ bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
       script_, worker_ids[0].version_id,
       base::BindOnce(
           [](std::string script, base::Value _ignored_value,
-             const absl::optional<std::string>& error) {
+             const std::optional<std::string>& error) {
             // `_ignored_value` is ignored, because extension tests are expected
             // to communicate their result via `chrome.test.sendScriptResult`
             // instead (see also `BackgroundScriptExecutor::WaitForResult`).

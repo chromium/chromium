@@ -4,8 +4,8 @@
 
 #include "extensions/browser/extension_function_dispatcher.h"
 
+#include <optional>
 #include <utility>
-
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -55,7 +55,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using perfetto::protos::pbzero::ChromeTrackEvent;
@@ -166,7 +165,7 @@ bool CanRendererActOnBehalfOfExtension(
   return false;
 }
 
-absl::optional<bad_message::BadMessageReason> ValidateRequest(
+std::optional<bad_message::BadMessageReason> ValidateRequest(
     const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
     content::RenderProcessHost& render_process_host) {
@@ -182,7 +181,7 @@ absl::optional<bad_message::BadMessageReason> ValidateRequest(
 
   // TODO(https://crbug.com/1186447): Validate `params.user_gesture`.
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const char* ToString(bad_message::BadMessageReason bad_message_code) {

@@ -44,7 +44,7 @@ using EventListenerConstructor =
     base::RepeatingCallback<std::unique_ptr<EventListener>(
         const std::string& /* event_name */,
         content::RenderProcessHost* /* process */,
-        absl::optional<base::Value::Dict> /* filter */)>;
+        std::optional<base::Value::Dict> /* filter */)>;
 
 class EmptyDelegate : public EventListenerMap::Delegate {
   void OnListenerAdded(const EventListener* listener) override {}
@@ -100,7 +100,7 @@ class EventListenerMapTest : public ExtensionsTest {
   std::unique_ptr<EventListener> CreateLazyListener(
       const std::string& event_name,
       const ExtensionId& extension_id,
-      absl::optional<base::Value::Dict> filter,
+      std::optional<base::Value::Dict> filter,
       bool is_for_service_worker) {
     return EventListener::CreateLazyListener(
         event_name, extension_id, browser_context(), is_for_service_worker,
@@ -133,7 +133,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtension(
     const std::string& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   return EventListener::ForExtension(event_name, extension_id, process,
                                      std::move(filter));
 }
@@ -142,7 +142,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
     const GURL& listener_url,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   return EventListener::ForURL(event_name, listener_url, process,
                                std::move(filter));
 }
@@ -151,7 +151,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
     const std::string& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   content::BrowserContext* browser_context =
       process ? process->GetBrowserContext() : nullptr;
   return EventListener::ForExtensionServiceWorker(
@@ -437,7 +437,7 @@ TEST_F(EventListenerMapTest, RemovingRouters) {
   listeners_->AddListener(EventListener::ForURL(
       kEvent1Name, GURL(kURL), process_.get(), base::Value::Dict()));
   listeners_->AddListener(CreateEventListenerForExtensionServiceWorker(
-      kExt1Id, kEvent1Name, process_.get(), absl::nullopt));
+      kExt1Id, kEvent1Name, process_.get(), std::nullopt));
   listeners_->RemoveListenersForProcess(process_.get());
   ASSERT_FALSE(listeners_->HasListenerForEvent(kEvent1Name));
 }
@@ -478,16 +478,16 @@ TEST_F(EventListenerMapTest, HasListenerForExtension) {
       return EventListener::CreateLazyListener(
           kEvent1Name, kExt1Id, process_->GetBrowserContext(),
           is_for_service_worker, Extension::GetBaseURLFromExtensionId(kExt1Id),
-          absl::nullopt);
+          std::nullopt);
     }
     if (is_for_service_worker) {
       return EventListener::ForExtensionServiceWorker(
           kEvent1Name, kExt1Id, process_.get(), process_->GetBrowserContext(),
           Extension::GetBaseURLFromExtensionId(kExt1Id),
-          GetWorkerVersionId(lazy), GetWorkerThreadId(lazy), absl::nullopt);
+          GetWorkerVersionId(lazy), GetWorkerThreadId(lazy), std::nullopt);
     }
     return EventListener::ForExtension(kEvent1Name, kExt1Id, process_.get(),
-                                       absl::nullopt);
+                                       std::nullopt);
   };
 
   for (bool is_for_service_worker : {false, true}) {

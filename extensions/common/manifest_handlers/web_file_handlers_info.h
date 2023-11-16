@@ -48,7 +48,7 @@ struct WebFileHandlers : public Extension::ManifestData {
   // `multiple-clients` if that's provided, or errors in any other case.
   // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
   static WebFileHandler::LaunchType GetLaunchType(
-      const absl::optional<std::string>& launch_type);
+      const std::optional<std::string>& launch_type);
 
   // Determine if this extension has any web file handlers associated with it.
   static bool HasFileHandlers(const Extension& extension);

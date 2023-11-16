@@ -57,7 +57,7 @@ std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
   auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
   if (api_supports_promises)
     returns_async->promise_support = binding::APIPromiseSupport::kSupported;
-  absl::optional<bool> callback_optional =
+  std::optional<bool> callback_optional =
       returns_async_spec.FindBool("optional");
   returns_async->optional = callback_optional.value_or(false);
 

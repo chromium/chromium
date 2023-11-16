@@ -108,7 +108,7 @@ class AutomationEventRouter
       content::BrowserContext* browser_context = nullptr) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   // If a remote router is registered, then all events are directly forwarded to
   // it. The caller of this method is responsible for calling it again with

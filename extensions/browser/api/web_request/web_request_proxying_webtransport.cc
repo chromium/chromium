@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/render_process_host.h"
@@ -15,7 +16,6 @@
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -137,7 +137,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
         base::BindOnce(&WebTransportHandshakeProxy::OnError,
                        base::Unretained(this), net::ERR_ABORTED));
     std::move(create_callback_)
-        .Run(receiver_.BindNewPipeAndPassRemote(), absl::nullopt);
+        .Run(receiver_.BindNewPipeAndPassRemote(), std::nullopt);
     receiver_.set_disconnect_handler(
         base::BindOnce(&WebTransportHandshakeProxy::OnError,
                        base::Unretained(this), net::ERR_ABORTED));
@@ -200,7 +200,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   }
 
   void OnHandshakeFailed(
-      const absl::optional<net::WebTransportError>& error) override {
+      const std::optional<net::WebTransportError>& error) override {
     remote_->OnHandshakeFailed(error);
 
     int error_code = net::ERR_ABORTED;
@@ -282,7 +282,7 @@ void StartWebRequestProxyingWebTransport(
                                /*is_download=*/false,
                                /*is_async=*/true,
                                /*is_service_worker_script=*/false,
-                               /*navigation_id=*/absl::nullopt);
+                               /*navigation_id=*/std::nullopt);
   params.web_request_type = WebRequestResourceType::WEB_TRANSPORT;
 
   auto proxy = std::make_unique<WebTransportHandshakeProxy>(

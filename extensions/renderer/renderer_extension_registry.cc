@@ -107,13 +107,13 @@ void RendererExtensionRegistry::SetWorkerActivationToken(
       std::move(worker_activation_token);
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 RendererExtensionRegistry::GetWorkerActivationToken(
     const ExtensionId& extension_id) const {
   base::AutoLock lock(lock_);
   auto iter = worker_activation_tokens_.find(extension_id);
   if (iter == worker_activation_tokens_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second;
 }

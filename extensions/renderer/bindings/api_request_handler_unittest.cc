@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_request_handler.h"
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -20,7 +21,6 @@
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -51,7 +51,7 @@ class APIRequestHandlerTest : public APIBindingTest {
   }
 
   void SaveUserActivationState(v8::Local<v8::Context> context,
-                               absl::optional<bool>* ran_with_user_gesture) {
+                               std::optional<bool>* ran_with_user_gesture) {
     *ran_with_user_gesture =
         interaction_provider()->HasActiveInteraction(context);
   }
@@ -265,11 +265,11 @@ TEST_F(APIRequestHandlerTest, CustomCallbackWithErrorInExtensionCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  auto add_console_error = [](absl::optional<std::string>* error_out,
+  auto add_console_error = [](std::optional<std::string>* error_out,
                               v8::Local<v8::Context> context,
                               const std::string& error) { *error_out = error; };
 
-  absl::optional<std::string> logged_error;
+  std::optional<std::string> logged_error;
   ExceptionHandler exception_handler(
       base::BindRepeating(add_console_error, &logged_error));
 
@@ -474,7 +474,7 @@ TEST_F(APIRequestHandlerTest, UserGestureTest) {
 
   // Set up a callback to be used with the request so we can check if a user
   // gesture was active.
-  absl::optional<bool> ran_with_user_gesture;
+  std::optional<bool> ran_with_user_gesture;
   v8::Local<v8::FunctionTemplate> function_template =
       gin::CreateFunctionTemplate(
           isolate(),
@@ -525,13 +525,13 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  absl::optional<std::string> logged_error;
+  std::optional<std::string> logged_error;
   auto get_parent = [](v8::Local<v8::Context> context,
                        v8::Local<v8::Object>* secondary_parent) {
     return context->Global();
   };
 
-  auto log_error = [](absl::optional<std::string>* logged_error,
+  auto log_error = [](std::optional<std::string>* logged_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *logged_error = error; };
 
@@ -796,11 +796,11 @@ TEST_F(APIRequestHandlerTest, ThrowExceptionInCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  auto add_console_error = [](absl::optional<std::string>* error_out,
+  auto add_console_error = [](std::optional<std::string>* error_out,
                               v8::Local<v8::Context> context,
                               const std::string& error) { *error_out = error; };
 
-  absl::optional<std::string> logged_error;
+  std::optional<std::string> logged_error;
   ExceptionHandler exception_handler(
       base::BindRepeating(add_console_error, &logged_error));
 

@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
-
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
@@ -28,7 +28,6 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -117,9 +116,9 @@ void RunUnderscoreDirectoriesTest(
 }
 
 struct UninstallTestData {
-  absl::optional<const base::FilePath> profile_dir;
-  absl::optional<const base::FilePath> extensions_install_dir;
-  absl::optional<const base::FilePath> extension_dir_to_delete;
+  std::optional<const base::FilePath> profile_dir;
+  std::optional<const base::FilePath> extensions_install_dir;
+  std::optional<const base::FilePath> extension_dir_to_delete;
   bool extension_directory_deleted;
 };
 
@@ -128,84 +127,84 @@ const std::vector<UninstallTestData>& GetTestData() {
   // permutations of known bad values.
   static const auto* test_data = new std::vector<UninstallTestData>{
       // Valid directory.
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/true},
 
       // Empty profile directory.
       {/*profile_dir=*/base::FilePath(),
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       // Empty extensions directory.
-      {/*profile_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
        /*extensions_install_dir=*/base::FilePath(),
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       // Empty extensions directory to delete.
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt, base::FilePath(),
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt, base::FilePath(),
        /*extension_directory_deleted=*/false},
 
       // Nonabsolute profile directory.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       // Nonabsolute extensions directory.
-      {/*profile_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
        /*extensions_install_dir=*/
        base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       // Nonabsolute extensions directory to delete.
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
        /*extension_dir_to_delete=*/
        base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
        /*extension_directory_deleted=*/false},
 
       // Dangerous extensions directory to delete values.
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
        /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL(".")),
        /*extension_directory_deleted=*/false},
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
        /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL("..")),
        /*extension_directory_deleted=*/false},
-      {/*profile_dir=*/absl::nullopt,
-       /*extensions_install_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
        /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL("/")),
        /*extension_directory_deleted=*/false},
 
       // Dangerous profile directory values.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL(".")),
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("..")),
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("/")),
-       /*extensions_install_dir=*/absl::nullopt,
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extensions_install_dir=*/std::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
 
       // Dangerous extensions directory values.
-      {/*profile_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
        /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL(".")),
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
-      {/*profile_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
        /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL("..")),
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false},
-      {/*profile_dir=*/absl::nullopt,
+      {/*profile_dir=*/std::nullopt,
        /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL("/")),
-       /*extension_dir_to_delete=*/absl::nullopt,
+       /*extension_dir_to_delete=*/std::nullopt,
        /*extension_directory_deleted=*/false}};
 
   return *test_data;

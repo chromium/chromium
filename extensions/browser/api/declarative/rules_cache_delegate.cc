@@ -210,7 +210,7 @@ void RulesCacheDelegate::ReadFromStorage(const std::string& extension_id) {
 
 void RulesCacheDelegate::ReadFromStorageCallback(
     const std::string& extension_id,
-    absl::optional<base::Value> value) {
+    std::optional<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
   content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)

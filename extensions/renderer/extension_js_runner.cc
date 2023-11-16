@@ -74,7 +74,7 @@ v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
 }
 
 void ExtensionJSRunner::OnFunctionComplete(ResultCallback callback,
-                                           absl::optional<base::Value> value,
+                                           std::optional<base::Value> value,
                                            base::TimeTicks start_time) {
   DCHECK(script_context_->is_valid());
 

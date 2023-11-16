@@ -5,13 +5,13 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_PARAMS_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_PARAMS_H_
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -63,14 +63,14 @@ struct RequestParams {
       embedder_conditions_matcher;
 
   // A map from CompositeMatcher to the priority of its highest priority
-  // matching allow or allowAllRequests rule if there is one, or absl::nullopt
+  // matching allow or allowAllRequests rule if there is one, or std::nullopt
   // otherwise. Used as a cache to prevent additional calls to
   // GetBeforeRequestAction.
-  mutable base::flat_map<const CompositeMatcher*, absl::optional<uint64_t>>
+  mutable base::flat_map<const CompositeMatcher*, std::optional<uint64_t>>
       allow_rule_max_priority;
 
   // Lower cased url, used for regex matching. Cached for performance.
-  mutable absl::optional<std::string> lower_cased_url_spec;
+  mutable std::optional<std::string> lower_cased_url_spec;
 
   // Map from RegexRulesMatcher to a vector of potential matches for this
   // request. Cached for performance.

@@ -4,8 +4,8 @@
 
 #include "extensions/common/manifest_test.h"
 
+#include <optional>
 #include <utility>
-
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,7 +22,6 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::ManifestLocation;
@@ -36,7 +35,7 @@ std::string GetNameFromManifest(const base::Value::Dict& manifest) {
 }
 
 // |manifest_path| is an absolute path to a manifest file.
-absl::optional<base::Value::Dict> LoadManifestFile(
+std::optional<base::Value::Dict> LoadManifestFile(
     const base::FilePath& manifest_path,
     std::string* error) {
   base::FilePath extension_path = manifest_path.DirName();
@@ -49,7 +48,7 @@ absl::optional<base::Value::Dict> LoadManifestFile(
       deserializer.Deserialize(nullptr, error);
 
   if (!manifest || !manifest->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Most unit tests don't need localization, and they'll fail if we try to
@@ -88,9 +87,9 @@ ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest)
 ManifestTest::ManifestData::ManifestData(ManifestData&& other) = default;
 ManifestTest::ManifestData::~ManifestData() = default;
 
-const absl::optional<base::Value::Dict>&
-ManifestTest::ManifestData::GetManifest(const base::FilePath& test_data_dir,
-                                        std::string* error) const {
+const std::optional<base::Value::Dict>& ManifestTest::ManifestData::GetManifest(
+    const base::FilePath& test_data_dir,
+    std::string* error) const {
   if (!manifest_) {
     base::FilePath manifest_path = test_data_dir.AppendASCII(name_);
     manifest_ = LoadManifestFile(manifest_path, error);
@@ -116,7 +115,7 @@ base::FilePath ManifestTest::GetTestDataDir() {
   return path.AppendASCII("manifest_tests");
 }
 
-absl::optional<base::Value::Dict> ManifestTest::LoadManifest(
+std::optional<base::Value::Dict> ManifestTest::LoadManifest(
     char const* manifest_name,
     std::string* error) {
   base::FilePath manifest_path = GetTestDataDir().AppendASCII(manifest_name);
@@ -129,7 +128,7 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
     ManifestLocation location,
     int flags) {
   base::FilePath test_data_dir = GetTestDataDir();
-  const absl::optional<base::Value::Dict>& dict =
+  const std::optional<base::Value::Dict>& dict =
       manifest.GetManifest(test_data_dir, error);
   if (!dict) {
     return nullptr;

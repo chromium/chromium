@@ -108,7 +108,7 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
-  absl::optional<audio::GetDevices::Params> params =
+  std::optional<audio::GetDevices::Params> params =
       audio::GetDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -137,7 +137,7 @@ void AudioGetDevicesFunction::OnResponse(
 ///////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
-  absl::optional<audio::SetActiveDevices::Params> params =
+  std::optional<audio::SetActiveDevices::Params> params =
       audio::SetActiveDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -164,7 +164,7 @@ void AudioSetActiveDevicesFunction::OnResponse(bool success) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
-  absl::optional<audio::SetProperties::Params> params =
+  std::optional<audio::SetProperties::Params> params =
       audio::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -195,7 +195,7 @@ void AudioSetPropertiesFunction::OnResponse(bool success) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
-  absl::optional<audio::SetMute::Params> params =
+  std::optional<audio::SetMute::Params> params =
       audio::SetMute::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -222,7 +222,7 @@ void AudioSetMuteFunction::OnResponse(bool success) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
-  absl::optional<audio::GetMute::Params> params =
+  std::optional<audio::GetMute::Params> params =
       audio::GetMute::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

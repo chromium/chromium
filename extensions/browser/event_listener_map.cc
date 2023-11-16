@@ -26,7 +26,7 @@ std::unique_ptr<EventListener> EventListener::ForExtension(
     const std::string& event_name,
     const std::string& extension_id,
     content::RenderProcessHost* process,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   DCHECK(process);
 
   return base::WrapUnique(new EventListener(
@@ -40,7 +40,7 @@ std::unique_ptr<EventListener> EventListener::ForURL(
     const std::string& event_name,
     const GURL& listener_url,
     content::RenderProcessHost* process,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   // Use only the origin to identify the event listener, e.g. chrome://settings
   // for chrome://settings/accounts, to avoid multiple events being triggered
   // for the same process. See crbug.com/536858 for details. // TODO(devlin): If
@@ -60,7 +60,7 @@ std::unique_ptr<EventListener> EventListener::ForExtensionServiceWorker(
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int worker_thread_id,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   return base::WrapUnique(new EventListener(
       event_name, extension_id, service_worker_scope, process, browser_context,
       true, service_worker_version_id, worker_thread_id, std::move(filter)));
@@ -72,7 +72,7 @@ std::unique_ptr<EventListener> EventListener::CreateLazyListener(
     content::BrowserContext* browser_context,
     bool is_for_service_worker,
     const GURL& service_worker_scope,
-    absl::optional<base::Value::Dict> filter) {
+    std::optional<base::Value::Dict> filter) {
   return base::WrapUnique(new EventListener(
       event_name, extension_id, service_worker_scope, /*process=*/nullptr,
       browser_context, is_for_service_worker,
@@ -101,7 +101,7 @@ bool EventListener::Equals(const EventListener* other) const {
 }
 
 std::unique_ptr<EventListener> EventListener::Copy() const {
-  absl::optional<base::Value::Dict> filter_copy;
+  std::optional<base::Value::Dict> filter_copy;
   if (filter_)
     filter_copy = filter_->Clone();
   return base::WrapUnique(new EventListener(
@@ -131,7 +131,7 @@ EventListener::EventListener(const std::string& event_name,
                              bool is_for_service_worker,
                              int64_t service_worker_version_id,
                              int worker_thread_id,
-                             absl::optional<base::Value::Dict> filter)
+                             std::optional<base::Value::Dict> filter)
     : event_name_(event_name),
       extension_id_(extension_id),
       listener_url_(listener_url),
@@ -315,7 +315,7 @@ void EventListenerMap::LoadUnfilteredLazyListeners(
         is_for_service_worker
             ? Extension::GetBaseURLFromExtensionId(extension_id)
             : GURL(),
-        absl::nullopt));
+        std::nullopt));
   }
 }
 

@@ -109,7 +109,7 @@ void UserScriptManager::OnExtensionUnloaded(
 
 void UserScriptManager::OnInitialExtensionLoadComplete(
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   RemovePendingExtensionLoadAndSignal(loader->host_id().id);
 }
 

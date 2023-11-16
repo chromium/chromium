@@ -31,7 +31,7 @@ bool ExtractFromDict(const std::string& key,
                      const base::Value::Dict* dict_value,
                      int max,
                      int* value) {
-  absl::optional<int> temp = dict_value->FindInt(key);
+  std::optional<int> temp = dict_value->FindInt(key);
   if (!temp) {
     *value = UsbDevicePermissionData::SPECIAL_VALUE_ANY;
     return true;

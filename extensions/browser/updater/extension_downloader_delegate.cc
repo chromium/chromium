@@ -26,8 +26,8 @@ ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
       -net_error,
       (net_error == net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE &&
        response_code > 0)
-          ? absl::optional<int>(response_code)
-          : absl::nullopt,
+          ? std::optional<int>(response_code)
+          : std::nullopt,
       failure_count);
 }
 
@@ -39,7 +39,7 @@ ExtensionDownloaderDelegate::FailureData::FailureData(const int net_error_code,
 
 ExtensionDownloaderDelegate::FailureData::FailureData(
     const int net_error_code,
-    const absl::optional<int> response,
+    const std::optional<int> response,
     const int fetch_attempts)
     : network_error_code(net_error_code),
       response_code(response),

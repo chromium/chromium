@@ -75,7 +75,7 @@ bool ScriptsShouldBeAllowedInIncognito(
 }
 
 bool RemoveScripts(
-    const absl::optional<std::vector<std::string>>& ids,
+    const std::optional<std::vector<std::string>>& ids,
     UserScript::Source source,
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
@@ -144,7 +144,7 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
                                       const ExtensionId& extension_id) {
   ExtensionPrefs::Get(browser_context)
       ->UpdateExtensionPref(extension_id, kPrefPersistentScriptURLPatterns,
-                            absl::nullopt);
+                            std::nullopt);
 }
 
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
@@ -169,8 +169,8 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   }
 
   return std::make_pair(std::move(scripts), are_script_files_valid
-                                                ? absl::nullopt
-                                                : absl::make_optional(error));
+                                                ? std::nullopt
+                                                : std::make_optional(error));
 }
 
 }  // namespace extensions::scripting

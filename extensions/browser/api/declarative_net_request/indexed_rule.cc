@@ -52,7 +52,7 @@ class UrlFilterParser {
 
   // This sets the |url_pattern_type|, |anchor_left|, |anchor_right| and
   // |url_pattern| fields on the |indexed_rule_|.
-  static void Parse(absl::optional<std::string> url_filter,
+  static void Parse(std::optional<std::string> url_filter,
                     IndexedRule* indexed_rule) {
     DCHECK(indexed_rule);
     UrlFilterParser(url_filter ? std::move(*url_filter) : std::string(),
@@ -176,8 +176,7 @@ uint8_t GetActivationTypes(const dnr_api::Rule& parsed_rule) {
 // Returns a bitmask of flat_rule::RequestMethod corresponding to passed
 // `request_methods`.
 uint16_t GetRequestMethodsMask(
-    const absl::optional<std::vector<dnr_api::RequestMethod>>&
-        request_methods) {
+    const std::optional<std::vector<dnr_api::RequestMethod>>& request_methods) {
   uint16_t mask = flat_rule::RequestMethod_NONE;
   if (!request_methods)
     return mask;
@@ -214,7 +213,7 @@ ParseResult ComputeRequestMethods(const dnr_api::Rule& rule,
 // Returns a bitmask of flat_rule::ElementType corresponding to passed
 // |resource_types|.
 uint16_t GetResourceTypesMask(
-    const absl::optional<std::vector<dnr_api::ResourceType>>& resource_types) {
+    const std::optional<std::vector<dnr_api::ResourceType>>& resource_types) {
   uint16_t mask = flat_rule::ElementType_NONE;
   if (!resource_types)
     return mask;
@@ -268,7 +267,7 @@ ParseResult ComputeElementTypes(const dnr_api::Rule& rule,
 // Lower-cases and sorts |domains|, as required by the url_pattern_index
 // component and stores the result in |output|. Returns false in case of
 // failure, when one of the input strings contains non-ascii characters.
-bool CanonicalizeDomains(absl::optional<std::vector<std::string>> domains,
+bool CanonicalizeDomains(std::optional<std::vector<std::string>> domains,
                          std::vector<std::string>* output) {
   DCHECK(output);
   DCHECK(output->empty());
@@ -297,7 +296,7 @@ bool IsRedirectUrlRelative(const std::string& redirect_url) {
   return !redirect_url.empty() && redirect_url[0] == '/';
 }
 
-bool IsValidTransformScheme(const absl::optional<std::string>& scheme) {
+bool IsValidTransformScheme(const std::optional<std::string>& scheme) {
   if (!scheme)
     return true;
 
@@ -308,7 +307,7 @@ bool IsValidTransformScheme(const absl::optional<std::string>& scheme) {
   return false;
 }
 
-bool IsValidPort(const absl::optional<std::string>& port) {
+bool IsValidPort(const std::optional<std::string>& port) {
   if (!port || port->empty())
     return true;
 
@@ -316,7 +315,7 @@ bool IsValidPort(const absl::optional<std::string>& port) {
   return base::StringToUint(*port, &port_num) && port_num <= 65535;
 }
 
-bool IsEmptyOrStartsWith(const absl::optional<std::string>& str,
+bool IsEmptyOrStartsWith(const std::optional<std::string>& str,
                          char starts_with) {
   return !str || str->empty() || str->at(0) == starts_with;
 }

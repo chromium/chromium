@@ -115,9 +115,9 @@ class HidReceiveFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success,
                   uint8_t report_id,
-                  const absl::optional<std::vector<uint8_t>>& buffer);
+                  const std::optional<std::vector<uint8_t>>& buffer);
 
-  absl::optional<api::hid::Receive::Params> parameters_;
+  std::optional<api::hid::Receive::Params> parameters_;
 };
 
 class HidSendFunction : public HidConnectionIoFunction {
@@ -138,7 +138,7 @@ class HidSendFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success);
 
-  absl::optional<api::hid::Send::Params> parameters_;
+  std::optional<api::hid::Send::Params> parameters_;
 };
 
 class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
@@ -161,9 +161,9 @@ class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
   void StartWork(device::mojom::HidConnection* connection) override;
 
   void OnFinished(bool success,
-                  const absl::optional<std::vector<uint8_t>>& buffer);
+                  const std::optional<std::vector<uint8_t>>& buffer);
 
-  absl::optional<api::hid::ReceiveFeatureReport::Params> parameters_;
+  std::optional<api::hid::ReceiveFeatureReport::Params> parameters_;
 };
 
 class HidSendFeatureReportFunction : public HidConnectionIoFunction {
@@ -185,7 +185,7 @@ class HidSendFeatureReportFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success);
 
-  absl::optional<api::hid::SendFeatureReport::Params> parameters_;
+  std::optional<api::hid::SendFeatureReport::Params> parameters_;
 };
 
 }  // namespace extensions

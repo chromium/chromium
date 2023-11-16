@@ -98,10 +98,10 @@ ZipResultVariant PrepareAndGetUnzipDir(const base::FilePath& zip_file,
   return ZipResultVariant{unzip_dir};
 }
 
-absl::optional<std::string> ReadFileContent(const base::FilePath& path) {
+std::optional<std::string> ReadFileContent(const base::FilePath& path) {
   std::string content;
   return base::ReadFileToString(path, &content) ? content
-                                                : absl::optional<std::string>();
+                                                : std::optional<std::string>();
 }
 
 }  // namespace
@@ -207,7 +207,7 @@ void ZipFileInstaller::ManifestUnzipped(const base::FilePath& unzip_dir,
 
 void ZipFileInstaller::ManifestRead(
     const base::FilePath& unzip_dir,
-    absl::optional<std::string> manifest_content) {
+    std::optional<std::string> manifest_content) {
   if (!manifest_content) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
@@ -222,7 +222,7 @@ void ZipFileInstaller::ManifestRead(
       json_parser.BindNewPipeAndPassReceiver());
   json_parser.set_disconnect_handler(
       base::BindOnce(&ZipFileInstaller::ManifestParsed, this, unzip_dir,
-                     absl::nullopt, "Data Decoder terminated unexpectedly"));
+                     std::nullopt, "Data Decoder terminated unexpectedly"));
   auto* json_parser_ptr = json_parser.get();
   json_parser_ptr->Parse(
       *manifest_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS,
@@ -230,18 +230,17 @@ void ZipFileInstaller::ManifestRead(
           [](std::unique_ptr<data_decoder::DataDecoder>,
              mojo::Remote<data_decoder::mojom::JsonParser>,
              scoped_refptr<ZipFileInstaller> installer,
-             const base::FilePath& unzip_dir, absl::optional<base::Value> value,
-             const absl::optional<std::string>& error) {
+             const base::FilePath& unzip_dir, std::optional<base::Value> value,
+             const std::optional<std::string>& error) {
             installer->ManifestParsed(unzip_dir, std::move(value), error);
           },
           std::move(data_decoder), std::move(json_parser),
           base::WrapRefCounted(this), unzip_dir));
 }
 
-void ZipFileInstaller::ManifestParsed(
-    const base::FilePath& unzip_dir,
-    absl::optional<base::Value> result,
-    const absl::optional<std::string>& error) {
+void ZipFileInstaller::ManifestParsed(const base::FilePath& unzip_dir,
+                                      std::optional<base::Value> result,
+                                      const std::optional<std::string>& error) {
   if (!result || !result->is_dict()) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;

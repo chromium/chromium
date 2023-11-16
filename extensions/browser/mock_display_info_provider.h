@@ -6,16 +6,15 @@
 #define EXTENSIONS_BROWSER_MOCK_DISPLAY_INFO_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/values.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -51,7 +50,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
                      ErrorCallback callback) override;
 
   // Helpers, accessors.
-  absl::optional<base::Value::Dict> GetSetInfoValue() {
+  std::optional<base::Value::Dict> GetSetInfoValue() {
     return std::move(set_info_value_);
   }
 
@@ -79,7 +78,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
       const std::vector<display::Display>& displays,
       DisplayUnitInfoList& units) const override;
 
-  absl::optional<base::Value::Dict> set_info_value_;
+  std::optional<base::Value::Dict> set_info_value_;
   std::string set_info_display_id_;
   bool unified_desktop_enabled_ = false;
   std::set<std::string> overscan_started_;

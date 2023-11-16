@@ -32,7 +32,7 @@ GuestViewInternalCreateGuestFunction::~GuestViewInternalCreateGuestFunction() =
     default;
 
 ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
-  absl::optional<guest_view_internal::CreateGuest::Params> params =
+  std::optional<guest_view_internal::CreateGuest::Params> params =
       guest_view_internal::CreateGuest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -92,7 +92,7 @@ GuestViewInternalDestroyUnattachedGuestFunction::
 
 ExtensionFunction::ResponseAction
 GuestViewInternalDestroyUnattachedGuestFunction::Run() {
-  absl::optional<guest_view_internal::DestroyUnattachedGuest::Params> params =
+  std::optional<guest_view_internal::DestroyUnattachedGuest::Params> params =
       guest_view_internal::DestroyUnattachedGuest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -112,7 +112,7 @@ GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
 GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() = default;
 
 ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
-  absl::optional<guest_view_internal::SetSize::Params> params =
+  std::optional<guest_view_internal::SetSize::Params> params =
       guest_view_internal::SetSize::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GuestViewBase* guest =

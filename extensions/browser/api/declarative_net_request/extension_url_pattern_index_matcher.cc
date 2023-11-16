@@ -79,14 +79,14 @@ size_t ExtensionUrlPatternIndexMatcher::GetRulesCount() const {
   return rules_count_;
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const flat_rule::UrlRule* rule =
       GetMatchingRule(params, flat::IndexType_allow_all_requests,
                       FindRuleStrategy::kHighestPriority);
   if (!rule)
-    return absl::nullopt;
+    return std::nullopt;
 
   return CreateAllowAllRequestsAction(params, *rule);
 }
@@ -94,7 +94,7 @@ ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
 std::vector<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
     const RequestParams& params,
-    absl::optional<uint64_t> min_priority) const {
+    std::optional<uint64_t> min_priority) const {
   // TODO(crbug.com/1083178): Plumb |min_priority| into UrlPatternIndexMatcher
   // to prune more rules before matching on url filters.
   std::vector<const flat_rule::UrlRule*> rules =
@@ -109,21 +109,21 @@ ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
   return GetModifyHeadersActionsFromMetadata(params, rules, *metadata_list_);
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionIgnoringAncestors(
     const RequestParams& params) const {
   return GetMaxPriorityAction(GetBeforeRequestActionHelper(params),
                               GetAllowAllRequestsAction(params));
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionHelper(
     const RequestParams& params) const {
   const flat_rule::UrlRule* rule = GetMatchingRule(
       params, flat::IndexType_before_request_except_allow_all_requests,
       FindRuleStrategy::kHighestPriority);
   if (!rule)
-    return absl::nullopt;
+    return std::nullopt;
 
   const flat::UrlRuleMetadata* metadata =
       metadata_list_->LookupByKey(rule->id());
@@ -144,7 +144,7 @@ ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionHelper(
       NOTREACHED();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(

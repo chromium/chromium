@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +26,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -105,11 +104,11 @@ bool MatchesDevicePermissionEntry(const base::Value::Dict& value,
   if (!type || *type != TypeToString(entry->type())) {
     return false;
   }
-  absl::optional<int> vendor_id = value.FindInt(kDeviceVendorId);
+  std::optional<int> vendor_id = value.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() != entry->vendor_id()) {
     return false;
   }
-  absl::optional<int> product_id = value.FindInt(kDeviceProductId);
+  std::optional<int> product_id = value.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() != entry->product_id()) {
     return false;
   }
@@ -167,18 +166,18 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
 // Clears all DevicePermissionEntries for the app from ExtensionPrefs.
 void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
                                   const std::string& extension_id) {
-  prefs->UpdateExtensionPref(extension_id, kDevices, absl::nullopt);
+  prefs->UpdateExtensionPref(extension_id, kDevices, std::nullopt);
 }
 
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
     const base::Value::Dict& entry) {
-  absl::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
+  std::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() < 0 ||
       vendor_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 
-  absl::optional<int> product_id = entry.FindInt(kDeviceProductId);
+  std::optional<int> product_id = entry.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() < 0 ||
       product_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;

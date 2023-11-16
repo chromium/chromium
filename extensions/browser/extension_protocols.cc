@@ -458,7 +458,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     // new_url isn't expected to have a value, but prefer it if it's populated.
     if (new_url.has_value())
       request_.url = new_url.value();
@@ -632,7 +632,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     }
 
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     CompleteRequestAndDeleteThis(net::OK);
   }

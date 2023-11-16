@@ -104,7 +104,7 @@ class RulesCacheDelegate {
   // Read/write a list of rules serialized to Values.
   void ReadFromStorage(const std::string& extension_id);
   void ReadFromStorageCallback(const std::string& extension_id,
-                               absl::optional<base::Value> value);
+                               std::optional<base::Value> value);
 
   // Check the preferences whether the extension with |extension_id| has some
   // rules stored on disk. If this information is not in the preferences, true

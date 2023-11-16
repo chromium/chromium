@@ -14,11 +14,11 @@ namespace mojo {
 template <>
 struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
                     extensions::EventFilteringInfo> {
-  static const absl::optional<GURL>& url(
+  static const std::optional<GURL>& url(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.url;
   }
-  static const absl::optional<std::string>& service_type(
+  static const std::optional<std::string>& service_type(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.service_type;
   }
@@ -29,7 +29,7 @@ struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
   static int instance_id(const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.instance_id.value_or(0);
   }
-  static const absl::optional<std::string>& window_type(
+  static const std::optional<std::string>& window_type(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.window_type;
   }

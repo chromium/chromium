@@ -218,7 +218,7 @@ void WebViewContentScriptManager::SignalOnScriptsUpdated(
 
 void WebViewContentScriptManager::OnScriptsUpdated(
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   --pending_operation_count_;
   DCHECK_GE(pending_operation_count_, 0);
   RunCallbacksIfReady();

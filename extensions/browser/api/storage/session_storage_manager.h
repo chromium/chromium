@@ -31,7 +31,7 @@ class SessionStorageManager : public KeyedService,
  public:
   struct ValueChange {
     ValueChange(std::string key,
-                absl::optional<base::Value> old_value,
+                std::optional<base::Value> old_value,
                 base::Value* new_value);
     ~ValueChange();
     ValueChange(const ValueChange& other) = delete;
@@ -40,7 +40,7 @@ class SessionStorageManager : public KeyedService,
 
     std::string key;
 
-    absl::optional<base::Value> old_value;
+    std::optional<base::Value> old_value;
 
     // Owned by the SessionStorageManager. Caller cannot rely on it after any
     // subsequent calls to SessionStorageManager methods.

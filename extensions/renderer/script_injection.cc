@@ -274,12 +274,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       injector_->ExpectsResults(), injector_->ShouldWaitForPromise());
 }
 
-void ScriptInjection::OnJsInjectionCompleted(absl::optional<base::Value> value,
+void ScriptInjection::OnJsInjectionCompleted(std::optional<base::Value> value,
                                              base::TimeTicks start_time) {
   DCHECK(!did_inject_js_);
 
   base::TimeTicks timestamp(base::TimeTicks::Now());
-  absl::optional<base::TimeDelta> elapsed;
+  std::optional<base::TimeDelta> elapsed;
   // If the script will never execute (such as if the context is destroyed),
   // `start_time` is null. Only log a time for execution if the script, in fact,
   // executed.

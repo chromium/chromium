@@ -208,7 +208,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void WriteToStorage(const std::string& extension_id);
   void ReadFromStorage(const std::string& extension_id,
                        base::TimeDelta min_delay,
-                       absl::optional<base::Value> value);
+                       std::optional<base::Value> value);
 
   // Set the timer to go off at the specified |time|, and set |next_poll_time|
   // appropriately.

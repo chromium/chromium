@@ -94,8 +94,8 @@ namespace {
 
 // If the same property is specified for the inner and outer bounds, raise an
 // error.
-bool CheckBoundsConflict(const absl::optional<int>& inner_property,
-                         const absl::optional<int>& outer_property,
+bool CheckBoundsConflict(const std::optional<int>& inner_property,
+                         const std::optional<int>& outer_property,
                          const std::string& property_name,
                          std::string* error) {
   if (inner_property && outer_property) {
@@ -143,7 +143,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown())
     return RespondNow(Error(kUnknownErrorDoNotUse));
 
-  absl::optional<Create::Params> params = Create::Params::Create(args());
+  std::optional<Create::Params> params = Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL url = extension()->GetResourceURL(params->url);
@@ -165,7 +165,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   // AppWindow::Create so we can set the opener at create time rather than
   // with a hack in AppWindowCustomBindings::GetView().
   AppWindow::CreateParams create_params;
-  absl::optional<app_window::CreateWindowOptions>& options = params->options;
+  std::optional<app_window::CreateWindowOptions>& options = params->options;
   if (options) {
     if (options->id) {
       // TODO(mek): use URL if no id specified?
@@ -473,9 +473,9 @@ bool AppWindowCreateFunction::GetBoundsSpec(
     // new API, the deprecated fields will be ignored - do not attempt to merge
     // them.
 
-    const absl::optional<app_window::BoundsSpecification>& inner_bounds =
+    const std::optional<app_window::BoundsSpecification>& inner_bounds =
         options.inner_bounds;
-    const absl::optional<app_window::BoundsSpecification>& outer_bounds =
+    const std::optional<app_window::BoundsSpecification>& outer_bounds =
         options.outer_bounds;
     if (inner_bounds && outer_bounds) {
       if (!CheckBoundsConflict(inner_bounds->left, outer_bounds->left, "left",

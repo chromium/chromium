@@ -4,14 +4,13 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
+#include <optional>
 #include <tuple>
-
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -217,7 +216,7 @@ bool APILastError::HasError(v8::Local<v8::Context> context) {
                                                   &last_error);
 }
 
-absl::optional<std::string> APILastError::GetErrorMessage(
+std::optional<std::string> APILastError::GetErrorMessage(
     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -228,7 +227,7 @@ absl::optional<std::string> APILastError::GetErrorMessage(
 
   v8::Local<v8::Object> parent = get_parent_.Run(context, nullptr);
   if (parent.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   v8::Local<v8::Value> error;
   v8::Local<v8::Private> key = v8::Private::ForApi(
@@ -236,7 +235,7 @@ absl::optional<std::string> APILastError::GetErrorMessage(
   // Access through GetPrivate() so we don't trigger accessed() and ensure we
   // get the original error and not any overrides.
   if (!parent->GetPrivate(context, key).ToLocal(&error)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   LastErrorObject* last_error = nullptr;
@@ -244,7 +243,7 @@ absl::optional<std::string> APILastError::GetErrorMessage(
                                                &last_error)) {
     return last_error->error();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void APILastError::ReportUncheckedError(v8::Local<v8::Context> context,

@@ -8,7 +8,7 @@
 
 namespace extensions {
 
-absl::optional<int> ShellMainDelegate::PreBrowserMain() {
+std::optional<int> ShellMainDelegate::PreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [ShellCrApplication sharedApplication];
 
@@ -17,7 +17,7 @@ absl::optional<int> ShellMainDelegate::PreBrowserMain() {
   // This is undesirable and we must enforce that this doesn't happen.
   CHECK([NSApp isKindOfClass:[ShellCrApplication class]]);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace extensions

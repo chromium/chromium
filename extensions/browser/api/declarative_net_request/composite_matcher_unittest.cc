@@ -39,10 +39,10 @@ using CompositeMatcherTest = ::testing::Test;
 TestRule CreateModifyHeadersRule(
     int id,
     int priority,
-    absl::optional<std::string> url_filter,
-    absl::optional<std::string> regex_filter,
-    absl::optional<std::vector<TestHeaderInfo>> request_headers_list,
-    absl::optional<std::vector<TestHeaderInfo>> response_headers_list) {
+    std::optional<std::string> url_filter,
+    std::optional<std::string> regex_filter,
+    std::optional<std::vector<TestHeaderInfo>> request_headers_list,
+    std::optional<std::vector<TestHeaderInfo>> response_headers_list) {
   TestRule rule = CreateGenericRule();
   rule.id = id;
   rule.priority = priority;
@@ -126,16 +126,16 @@ TEST_F(CompositeMatcherTest, SamePrioritySpace) {
 // Tests the GetModifyHeadersActions method.
 TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
   TestRule rule_1 = CreateModifyHeadersRule(
-      kMinValidID, kMinValidPriority, "google.com", absl::nullopt,
+      kMinValidID, kMinValidPriority, "google.com", std::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header1", "remove", absl::nullopt),
+          {TestHeaderInfo("header1", "remove", std::nullopt),
            TestHeaderInfo("header2", "set", "value2")}),
-      absl::nullopt);
+      std::nullopt);
 
   TestRule rule_2 = CreateModifyHeadersRule(
-      kMinValidID, kMinValidPriority + 1, "/path", absl::nullopt, absl::nullopt,
+      kMinValidID, kMinValidPriority + 1, "/path", std::nullopt, std::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header1", "remove", absl::nullopt),
+          {TestHeaderInfo("header1", "remove", std::nullopt),
            TestHeaderInfo("header2", "append", "VALUE2"),
            TestHeaderInfo("header3", "set", "VALUE3")}));
 
@@ -180,7 +180,7 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
                                     *rule_1.id, *rule_1.priority, kSource1ID);
   action_1.request_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
@@ -189,7 +189,7 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
                                     *rule_2.id, *rule_2.priority, kSource2ID);
   action_2.response_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kAppend,
                                 "VALUE2"),
       RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kSet,
@@ -229,7 +229,7 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
                                     *rule_1.id, *rule_1.priority, kSource1ID);
   action_1.request_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
@@ -238,7 +238,7 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
                                     *rule_2.id, *rule_2.priority, kSource2ID);
   action_2.response_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kAppend,
                                 "VALUE2"),
       RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kSet,
@@ -264,40 +264,40 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
   allow_rule.priority = allow_rule_priority;
 
   TestRule url_rule_1 = CreateModifyHeadersRule(
-      kMinValidID + 1, allow_rule_priority - 1, "google.com", absl::nullopt,
+      kMinValidID + 1, allow_rule_priority - 1, "google.com", std::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header1", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header1", "remove", std::nullopt)}),
+      std::nullopt);
 
   TestRule url_rule_2 = CreateModifyHeadersRule(
-      kMinValidID + 2, allow_rule_priority, "google.com", absl::nullopt,
+      kMinValidID + 2, allow_rule_priority, "google.com", std::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header2", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header2", "remove", std::nullopt)}),
+      std::nullopt);
 
   TestRule url_rule_3 = CreateModifyHeadersRule(
-      kMinValidID + 3, allow_rule_priority + 1, "google.com", absl::nullopt,
+      kMinValidID + 3, allow_rule_priority + 1, "google.com", std::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header3", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header3", "remove", std::nullopt)}),
+      std::nullopt);
 
   TestRule regex_rule_1 = CreateModifyHeadersRule(
-      kMinValidID + 4, allow_rule_priority - 1, absl::nullopt, R"(google\.com)",
+      kMinValidID + 4, allow_rule_priority - 1, std::nullopt, R"(google\.com)",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header4", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header4", "remove", std::nullopt)}),
+      std::nullopt);
 
   TestRule regex_rule_2 = CreateModifyHeadersRule(
-      kMinValidID + 5, allow_rule_priority, absl::nullopt, R"(google\.com)",
+      kMinValidID + 5, allow_rule_priority, std::nullopt, R"(google\.com)",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header5", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header5", "remove", std::nullopt)}),
+      std::nullopt);
 
   TestRule regex_rule_3 = CreateModifyHeadersRule(
-      kMinValidID + 6, allow_rule_priority + 1, absl::nullopt, R"(google\.com)",
+      kMinValidID + 6, allow_rule_priority + 1, std::nullopt, R"(google\.com)",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("header6", "remove", absl::nullopt)}),
-      absl::nullopt);
+          {TestHeaderInfo("header6", "remove", std::nullopt)}),
+      std::nullopt);
 
   const RulesetID kSource1ID(1);
   std::unique_ptr<RulesetMatcher> matcher_1;
@@ -347,12 +347,10 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   RequestAction header_3_action = create_action_for_rule(
       url_rule_3, kSource1ID,
-      {HeaderInfo("header3", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header3", dnr_api::HeaderOperation::kRemove, std::nullopt)});
   RequestAction header_6_action = create_action_for_rule(
       regex_rule_3, kSource2ID,
-      {HeaderInfo("header6", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header6", dnr_api::HeaderOperation::kRemove, std::nullopt)});
 
   // For the request to "http://google.com/1", since |url_rule_3| and
   // |regex_rule_3| are the only rules with a greater priority than
@@ -374,20 +372,16 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   RequestAction header_1_action = create_action_for_rule(
       url_rule_1, kSource1ID,
-      {HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header1", dnr_api::HeaderOperation::kRemove, std::nullopt)});
   RequestAction header_2_action = create_action_for_rule(
       url_rule_2, kSource1ID,
-      {HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header2", dnr_api::HeaderOperation::kRemove, std::nullopt)});
   RequestAction header_4_action = create_action_for_rule(
       regex_rule_1, kSource2ID,
-      {HeaderInfo("header4", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header4", dnr_api::HeaderOperation::kRemove, std::nullopt)});
   RequestAction header_5_action = create_action_for_rule(
       regex_rule_2, kSource2ID,
-      {HeaderInfo("header5", dnr_api::HeaderOperation::kRemove,
-                  absl::nullopt)});
+      {HeaderInfo("header5", dnr_api::HeaderOperation::kRemove, std::nullopt)});
 
   // For the request to "http://google.com/2", "header1" to "header6" should be
   // removed since all modifyHeaders rules are matched and there is no matching
@@ -438,7 +432,7 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
   struct {
     const raw_ref<GURL, ExperimentalAsh> request_url;
     PageAccess access;
-    absl::optional<GURL> expected_final_url;
+    std::optional<GURL> expected_final_url;
     bool should_notify_withheld;
   } test_cases[] = {
       // If access to the request is allowed, we should not notify that
@@ -447,28 +441,28 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
        ruleset1_url, false},
       {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kAllowed,
        https_example_url, false},
-      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kAllowed,
-       absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kAllowed, std::nullopt,
+       false},
 
       // Notify the request is withheld if it matches with a redirect rule.
       {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kWithheld,
-       absl::nullopt, true},
+       std::nullopt, true},
       // If the page access to the request is withheld but it matches with
       // an upgrade rule, or no rule, then we should not notify.
       {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kWithheld,
        https_example_url, false},
       {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kWithheld,
-       absl::nullopt, false},
+       std::nullopt, false},
 
       // If access to the request is denied instead of withheld, the extension
       // should not be notified.
-      {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kDenied,
-       absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kDenied, std::nullopt,
+       false},
       // If the page access to the request is denied but it matches with
       // an upgrade rule, or no rule, then we should not notify.
       {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kDenied,
        https_example_url, false},
-      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kDenied, absl::nullopt,
+      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kDenied, std::nullopt,
        false},
   };
 
@@ -527,18 +521,18 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
     const char* url;
     const PageAccess access;
     const bool expected_notify_withheld;
-    absl::optional<int> expected_matched_rule_id;
+    std::optional<int> expected_matched_rule_id;
   } cases[] = {
       {"https://example.com", PageAccess::kAllowed, false, block_rule.id},
-      {"https://example.com", PageAccess::kWithheld, true, absl::nullopt},
+      {"https://example.com", PageAccess::kWithheld, true, std::nullopt},
       {"https://foo.com", PageAccess::kAllowed, false, allow_rule.id},
       // We don't expect to be notified about this (even though there's a rule
       // that would have matched) because the rule would just allow the request.
-      {"https://foo.com", PageAccess::kWithheld, false, absl::nullopt},
+      {"https://foo.com", PageAccess::kWithheld, false, std::nullopt},
       {"http://upgrade.com", PageAccess::kAllowed, false, upgrade_rule.id},
-      {"http://upgrade.com", PageAccess::kWithheld, true, absl::nullopt},
-      {"http://nomatch.com", PageAccess::kAllowed, false, absl::nullopt},
-      {"http://nomatch.com", PageAccess::kWithheld, false, absl::nullopt},
+      {"http://upgrade.com", PageAccess::kWithheld, true, std::nullopt},
+      {"http://nomatch.com", PageAccess::kAllowed, false, std::nullopt},
+      {"http://nomatch.com", PageAccess::kWithheld, false, std::nullopt},
   };
 
   for (size_t i = 0; i < std::size(cases); i++) {
@@ -552,7 +546,7 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
         composite_matcher->GetBeforeRequestAction(params, cases[i].access);
     EXPECT_EQ(cases[i].expected_notify_withheld, info.notify_request_withheld);
 
-    absl::optional<int> rule_matched_id;
+    std::optional<int> rule_matched_id;
     if (info.action)
       rule_matched_id = info.action->rule_id;
 
@@ -599,7 +593,7 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
 
   struct {
     GURL request_url;
-    absl::optional<GURL> expected_final_url;
+    std::optional<GURL> expected_final_url;
   } test_cases[] = {
       // Test requests which match exactly one rule.
       {GURL("http://abc.com"), GURL("http://google.com")},
@@ -616,9 +610,9 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
 
       // The request will not be redirected as it matches the upgrade rule but
       // is already https.
-      {GURL("https://abcdef.com"), absl::nullopt},
+      {GURL("https://abcdef.com"), std::nullopt},
 
-      {GURL("http://xyz.com"), absl::nullopt},
+      {GURL("http://xyz.com"), std::nullopt},
   };
 
   for (const auto& test_case : test_cases) {

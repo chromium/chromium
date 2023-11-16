@@ -4,12 +4,12 @@
 
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 
+#include <optional>
 #include "base/observer_list.h"
 #include "base/version.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -97,7 +97,7 @@ void LazyEventDispatchUtil::RemovePendingOnInstallInfoFromPref(
   DCHECK(prefs);
 
   prefs->UpdateExtensionPref(
-      extension_id, kPrefPendingOnInstalledEventDispatchInfo, absl::nullopt);
+      extension_id, kPrefPendingOnInstalledEventDispatchInfo, std::nullopt);
 }
 
 void LazyEventDispatchUtil::StorePendingOnInstallInfoToPref(

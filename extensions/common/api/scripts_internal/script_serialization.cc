@@ -4,12 +4,12 @@
 
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 
+#include <optional>
 #include "base/types/optional_util.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions::script_serialization {
 

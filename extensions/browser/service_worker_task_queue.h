@@ -6,9 +6,9 @@
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,7 +22,6 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "url/gurl.h"
 
@@ -129,9 +128,9 @@ class ServiceWorkerTaskQueue : public KeyedService,
       int thread_id);
 
   // Returns the current activation token for an extension, if the extension
-  // is currently activated. Returns absl::nullopt if the extension isn't
+  // is currently activated. Returns std::nullopt if the extension isn't
   // activated.
-  absl::optional<base::UnguessableToken> GetCurrentActivationToken(
+  std::optional<base::UnguessableToken> GetCurrentActivationToken(
       const ExtensionId& extension_id) const;
 
   // Activates incognito split mode extensions that are activated in |other|

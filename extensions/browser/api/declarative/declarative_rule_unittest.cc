@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ParseJson;
 using base::test::ParseJsonDict;
@@ -141,7 +141,7 @@ struct FulfillableCondition {
     result->condition_set_id =
         id.has_value() ? static_cast<base::MatcherStringPattern::ID>(id.value())
                        : base::MatcherStringPattern::kInvalidId;
-    if (absl::optional<int> max_value_int = dict.FindInt("max")) {
+    if (std::optional<int> max_value_int = dict.FindInt("max")) {
       result->max_value = *max_value_int;
     } else {
       *error = "Expected integer at ['max']";
@@ -230,7 +230,7 @@ class SummingAction : public base::RefCounted<SummingAction> {
       return nullptr;
     }
 
-    absl::optional<int> increment = dict.FindInt("value");
+    std::optional<int> increment = dict.FindInt("value");
     EXPECT_TRUE(increment);
     int min_priority = dict.FindInt("priority").value_or(0);
     return scoped_refptr<const SummingAction>(

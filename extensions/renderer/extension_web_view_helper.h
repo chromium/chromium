@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSION_WEB_VIEW_HELPER_H_
 #define EXTENSIONS_RENDERER_EXTENSION_WEB_VIEW_HELPER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_observer.h"
 #include "url/origin.h"
@@ -23,7 +23,7 @@ class ExtensionWebViewHelper : public blink::WebViewObserver {
 
   ~ExtensionWebViewHelper() override;
 
-  const absl::optional<url::Origin>& GetOutermostOrigin() const;
+  const std::optional<url::Origin>& GetOutermostOrigin() const;
 
   static const ExtensionWebViewHelper* Get(blink::WebView* web_view);
 
@@ -31,7 +31,7 @@ class ExtensionWebViewHelper : public blink::WebViewObserver {
   void OnDestruct() override;
 
  private:
-  absl::optional<url::Origin> outermost_origin_;
+  std::optional<url::Origin> outermost_origin_;
 };
 
 }  // namespace extensions

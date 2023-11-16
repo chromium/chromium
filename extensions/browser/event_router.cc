@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
-
 #include "base/atomic_sequence_num.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -47,7 +47,6 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using content::BrowserContext;
@@ -419,7 +418,7 @@ void EventRouter::AddLazyListenerForMainThread(const std::string& extension_id,
                                                const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
+      event_name, extension_id, browser_context_, false, GURL(), std::nullopt);
   AddLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
 }
 
@@ -436,7 +435,7 @@ void EventRouter::AddLazyListenerForServiceWorker(
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
       event_name, extension_id, browser_context_,
       /*is_for_service_worker=*/true, worker_scope_url,
-      /*filter=*/absl::nullopt);
+      /*filter=*/std::nullopt);
   AddLazyEventListenerImpl(std::move(listener),
                            RegisteredEventType::kServiceWorker);
 }
@@ -518,7 +517,7 @@ void EventRouter::RemoveLazyListenerForMainThread(
     const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
+      event_name, extension_id, browser_context_, false, GURL(), std::nullopt);
   RemoveLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
 }
 
@@ -534,7 +533,7 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
   // listeners.
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
       event_name, extension_id, browser_context_, true, worker_scope_url,
-      absl::nullopt);
+      std::nullopt);
   RemoveLazyEventListenerImpl(std::move(listener),
                               RegisteredEventType::kServiceWorker);
 }
@@ -572,7 +571,7 @@ void EventRouter::AddEventListener(const std::string& event_name,
                                    RenderProcessHost* process,
                                    const std::string& extension_id) {
   listeners_.AddListener(EventListener::ForExtension(event_name, extension_id,
-                                                     process, absl::nullopt));
+                                                     process, std::nullopt));
   CHECK(base::Contains(observed_process_set_, process));
 }
 
@@ -585,7 +584,7 @@ void EventRouter::AddServiceWorkerEventListener(
       event_listener->event_name,
       event_listener->listener_owner->get_extension_id(), process,
       process->GetBrowserContext(), service_worker.scope_url,
-      service_worker.version_id, service_worker.thread_id, absl::nullopt));
+      service_worker.version_id, service_worker.thread_id, std::nullopt));
   CHECK(base::Contains(observed_process_set_, process));
 }
 
@@ -593,7 +592,7 @@ void EventRouter::RemoveEventListener(const std::string& event_name,
                                       RenderProcessHost* process,
                                       const std::string& extension_id) {
   std::unique_ptr<EventListener> listener = EventListener::ForExtension(
-      event_name, extension_id, process, absl::nullopt);
+      event_name, extension_id, process, std::nullopt);
   listeners_.RemoveListener(listener.get());
 }
 
@@ -607,7 +606,7 @@ void EventRouter::RemoveServiceWorkerEventListener(
           event_listener->event_name,
           event_listener->listener_owner->get_extension_id(), process,
           process->GetBrowserContext(), service_worker.scope_url,
-          service_worker.version_id, service_worker.thread_id, absl::nullopt);
+          service_worker.version_id, service_worker.thread_id, std::nullopt);
   listeners_.RemoveListener(listener.get());
 }
 
@@ -615,7 +614,7 @@ void EventRouter::AddEventListenerForURL(const std::string& event_name,
                                          RenderProcessHost* process,
                                          const GURL& listener_url) {
   listeners_.AddListener(
-      EventListener::ForURL(event_name, listener_url, process, absl::nullopt));
+      EventListener::ForURL(event_name, listener_url, process, std::nullopt));
   CHECK(base::Contains(observed_process_set_, process));
 }
 
@@ -623,7 +622,7 @@ void EventRouter::RemoveEventListenerForURL(const std::string& event_name,
                                             RenderProcessHost* process,
                                             const GURL& listener_url) {
   std::unique_ptr<EventListener> listener =
-      EventListener::ForURL(event_name, listener_url, process, absl::nullopt);
+      EventListener::ForURL(event_name, listener_url, process, std::nullopt);
   listeners_.RemoveListener(listener.get());
 }
 
@@ -1142,7 +1141,7 @@ void EventRouter::DispatchEventToProcess(
     return;
   }
 
-  absl::optional<base::Value::List> modified_event_args;
+  std::optional<base::Value::List> modified_event_args;
   mojom::EventFilteringInfoPtr modified_event_filter_info;
   if (!event.will_dispatch_callback.is_null() &&
       !event.will_dispatch_callback.Run(

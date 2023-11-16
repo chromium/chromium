@@ -8,15 +8,14 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
-
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -120,7 +119,7 @@ class RequestQueue {
   base::circular_deque<Request> pending_requests_;
 
   // Active entry with its associated backoff.
-  absl::optional<Request> active_request_;
+  std::optional<Request> active_request_;
 
   // Timer to schedule calls to StartNextRequest, if the first pending request
   // hasn't passed its release time yet.

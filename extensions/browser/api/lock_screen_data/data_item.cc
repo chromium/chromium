@@ -109,7 +109,7 @@ void GetRegisteredItems(OperationResult* result,
   // Using remove to pass ownership of registered_item dict to
   // |registered_items| (and avoid doing a copy |read.settings()|
   // sub-dictionary).
-  absl::optional<base::Value> registered_items =
+  std::optional<base::Value> registered_items =
       read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items) {
     // If the registered items dictionary cannot be found, assume no items have
@@ -137,7 +137,7 @@ void RegisterItem(OperationResult* result,
     *result = OperationResult::kFailed;
     return;
   }
-  absl::optional<base::Value> registered_items =
+  std::optional<base::Value> registered_items =
       read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items)
     registered_items = base::Value(base::Value::Type::DICT);

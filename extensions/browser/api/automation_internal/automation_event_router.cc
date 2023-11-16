@@ -135,7 +135,7 @@ void AutomationEventRouter::DispatchActionResult(
 
 void AutomationEventRouter::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED_NORETURN();
 #else

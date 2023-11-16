@@ -70,7 +70,7 @@ bool IsActualConnectionFailure(bt_private::ConnectResultType result) {
   }
 }
 
-absl::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
+std::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
     bt_private::ConnectResultType result) {
   DCHECK(IsActualConnectionFailure(result));
 
@@ -612,7 +612,7 @@ void BluetoothPrivateConnectFunction::DoWork(
 }
 
 void BluetoothPrivateConnectFunction::OnConnect(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     // Set the result type and respond with true (success).
     Respond(ArgumentList(bt_private::Connect::Results::Create(
@@ -658,7 +658,7 @@ void BluetoothPrivatePairFunction::DoWork(
 }
 
 void BluetoothPrivatePairFunction::OnPair(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     Respond(Error(kPairingFailed));
     return;
@@ -688,7 +688,7 @@ void BluetoothPrivateRecordPairingFunction::DoWork(
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {
     device::RecordPairingResult(
-        success ? absl::nullopt : GetConnectionFailureReason(result),
+        success ? std::nullopt : GetConnectionFailureReason(result),
         GetBluetoothTransport(params_->transport),
         base::Milliseconds(params_->pairing_duration_ms));
   }
@@ -719,7 +719,7 @@ void BluetoothPrivateRecordReconnectionFunction::DoWork(
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {
     device::RecordUserInitiatedReconnectionAttemptResult(
-        success ? absl::nullopt : GetConnectionFailureReason(result),
+        success ? std::nullopt : GetConnectionFailureReason(result),
         device::UserInitiatedReconnectionUISurfaces::kSettings);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

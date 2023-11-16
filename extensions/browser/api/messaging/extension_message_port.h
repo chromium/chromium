@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +21,6 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -89,14 +88,14 @@ class ExtensionMessagePort : public MessagePort {
   void RevalidatePort() override;
   void DispatchOnConnect(mojom::ChannelType channel_type,
                          const std::string& channel_name,
-                         absl::optional<base::Value::Dict> source_tab,
+                         std::optional<base::Value::Dict> source_tab,
                          const ExtensionApiFrameIdMap::FrameData& source_frame,
                          int guest_process_id,
                          int guest_render_frame_routing_id,
                          const MessagingEndpoint& source_endpoint,
                          const std::string& target_extension_id,
                          const GURL& source_url,
-                         absl::optional<url::Origin> source_origin) override;
+                         std::optional<url::Origin> source_origin) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
@@ -150,7 +149,7 @@ class ExtensionMessagePort : public MessagePort {
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
       const GURL& source_url,
-      absl::optional<url::Origin> source_origin,
+      std::optional<url::Origin> source_origin,
       const IPCTarget& target);
   std::unique_ptr<IPC::Message> BuildDispatchOnDisconnectIPC(
       const std::string& error_message,

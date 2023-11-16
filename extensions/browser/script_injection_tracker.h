@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 #define EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 
+#include <optional>
 #include "base/debug/crash_logging.h"
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 struct HostID;
@@ -158,24 +158,24 @@ class ScopedScriptInjectionTrackerFailureCrashKeys {
   base::debug::ScopedCrashKeyString registry_status_crash_key_;
   base::debug::ScopedCrashKeyString is_incognito_crash_key_;
 
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       last_committed_origin_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       last_committed_url_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
+  std::optional<base::debug::ScopedCrashKeyString>
       frame_debug_string_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString> is_guest_crash_key_;
+  std::optional<base::debug::ScopedCrashKeyString> is_guest_crash_key_;
 
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_web_view_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_static_content_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_dynamic_content_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_user_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       dynamic_scripts_state_crash_key_;
 };
 

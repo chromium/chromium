@@ -30,12 +30,12 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpServerApiTest, SocketTCPCreateGood) {
   socket_create_function->set_extension(empty_extension.get());
   socket_create_function->set_has_callback(true);
 
-  absl::optional<base::Value> result(
+  std::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           socket_create_function.get(), "[]", browser_context()));
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
-  absl::optional<int> socket_id = result->GetDict().FindInt("socketId");
+  std::optional<int> socket_id = result->GetDict().FindInt("socketId");
   ASSERT_TRUE(socket_id);
   ASSERT_GT(*socket_id, 0);
 }

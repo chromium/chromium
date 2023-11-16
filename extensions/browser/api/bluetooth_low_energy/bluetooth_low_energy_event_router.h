@@ -8,10 +8,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,7 +31,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth_low_energy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -155,11 +154,11 @@ class BluetoothLowEnergyEventRouter
 
   // Returns the list of api::bluetooth_low_energy::Service objects
   // associated with the Bluetooth device with address |device_address| if
-  // successful. Otherwise returns absl::nullopt, if no device with the given
+  // successful. Otherwise returns std::nullopt, if no device with the given
   // address is known. If the device is found but it has no GATT services, then
   // returns an empty list.
   typedef std::vector<api::bluetooth_low_energy::Service> ServiceList;
-  absl::optional<ServiceList> GetServices(
+  std::optional<ServiceList> GetServices(
       const std::string& device_address) const;
 
   // Returns a service based on GATT service with instance ID |instance_id| if
@@ -431,14 +430,14 @@ class BluetoothLowEnergyEventRouter
       const std::string& characteristic_instance_id,
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Runs |callback|.
   void OnReadRemoteDescriptor(
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Called by BluetoothDevice in response to a call to CreateGattConnection.
@@ -448,7 +447,7 @@ class BluetoothLowEnergyEventRouter
       const std::string& device_address,
       ErrorCallback callback,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Called by BluetoothGattService in response to Register().
   void OnRegisterGattServiceSuccess(const std::string& service_id,

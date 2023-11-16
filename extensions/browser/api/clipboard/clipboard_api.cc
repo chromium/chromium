@@ -51,7 +51,7 @@ void ClipboardAPI::OnClipboardDataChanged() {
 ClipboardSetImageDataFunction::~ClipboardSetImageDataFunction() = default;
 
 ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
-  absl::optional<clipboard::SetImageData::Params> params =
+  std::optional<clipboard::SetImageData::Params> params =
       clipboard::SetImageData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

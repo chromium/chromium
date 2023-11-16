@@ -460,18 +460,18 @@ class AutomationWebContentsObserver
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
-absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
+std::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   if (automation_api_delegate->EnableTree(ax_tree_id))
-    return absl::nullopt;
+    return std::nullopt;
 
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
   if (!render_frame_host) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   content::WebContents* contents =
@@ -484,17 +484,17 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     contents->EnableWebContentsOnlyAccessibilityMode();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   using api::automation_internal::EnableTree::Params;
 
-  absl::optional<Params> params = Params::Create(args());
+  std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
-  absl::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
+  std::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
   if (error) {
     return RespondNow(Error(error.value()));
   } else {
@@ -580,7 +580,7 @@ AutomationInternalPerformActionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
 
   using api::automation_internal::PerformAction::Params;
-  absl::optional<Params> params = Params::Create(args());
+  std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int request_id = params->args.request_id.value_or(-1);

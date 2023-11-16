@@ -6,11 +6,10 @@
 #define EXTENSIONS_BROWSER_API_DIAGNOSTICS_DIAGNOSTICS_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/diagnostics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -27,7 +26,7 @@ class DiagnosticsSendPacketFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnTestICMPCompleted(absl::optional<std::string> status);
+  void OnTestICMPCompleted(std::optional<std::string> status);
 };
 
 }  // namespace extensions

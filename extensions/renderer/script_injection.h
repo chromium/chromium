@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +18,6 @@
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-forward.h"
 
 namespace content {
@@ -93,7 +92,7 @@ class ScriptInjection {
 
   // Called when JS injection for the given frame has been completed or
   // cancelled.
-  void OnJsInjectionCompleted(absl::optional<base::Value> value,
+  void OnJsInjectionCompleted(std::optional<base::Value> value,
                               base::TimeTicks start_time);
 
  private:
@@ -151,7 +150,7 @@ class ScriptInjection {
   bool log_activity_;
 
   // Results storage.
-  absl::optional<base::Value> execution_result_;
+  std::optional<base::Value> execution_result_;
 
   // The callback to run upon the status updated asynchronously. It's used for
   // the reply of the permission handling or script injection completion.

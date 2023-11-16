@@ -40,7 +40,7 @@ class FakeURLLoader final : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
@@ -125,10 +125,10 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
   }
 
   bool is_intercepted() const { return is_intercepted_; }
-  const absl::optional<int>& cancel_error_code() const {
+  const std::optional<int>& cancel_error_code() const {
     return cancel_error_code_;
   }
-  const absl::optional<std::string>& cancel_custom_reason() const {
+  const std::optional<std::string>& cancel_custom_reason() const {
     return cancel_custom_reason_;
   }
 
@@ -152,8 +152,8 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
 
  private:
   bool is_intercepted_ = false;
-  absl::optional<int> cancel_error_code_;
-  absl::optional<std::string> cancel_custom_reason_;
+  std::optional<int> cancel_error_code_;
+  std::optional<std::string> cancel_custom_reason_;
 
   //  The chain of mojom::URLLoaderClient:
   //    [Blink side]

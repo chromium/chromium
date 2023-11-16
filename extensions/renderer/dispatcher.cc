@@ -551,7 +551,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   context->set_service_worker_version_id(service_worker_version_id);
 
   WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
-  absl::optional<base::UnguessableToken> worker_activation_token =
+  std::optional<base::UnguessableToken> worker_activation_token =
       RendererExtensionRegistry::Get()->GetWorkerActivationToken(
           extension->id());
 
@@ -1111,7 +1111,7 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::string error;
     std::string id = param->id;
-    absl::optional<base::UnguessableToken> worker_activation_token =
+    std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;
 
     scoped_refptr<const Extension> extension =

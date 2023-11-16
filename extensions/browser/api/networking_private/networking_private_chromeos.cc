@@ -286,14 +286,14 @@ void NetworkingPrivateChromeOS::GetProperties(const std::string& guid,
   std::string service_path, error;
   if (!GetServicePathFromGuid(guid, &service_path, &error)) {
     NET_LOG(ERROR) << "GetProperties failed: " << error;
-    std::move(callback).Run(absl::nullopt, error);
+    std::move(callback).Run(std::nullopt, error);
     return;
   }
 
   std::string user_id_hash;
   if (!GetPrimaryUserIdHash(browser_context_, &user_id_hash, &error)) {
     NET_LOG(ERROR) << "GetProperties failed: " << error;
-    std::move(callback).Run(absl::nullopt, error);
+    std::move(callback).Run(std::nullopt, error);
     return;
   }
 
@@ -310,14 +310,14 @@ void NetworkingPrivateChromeOS::GetManagedProperties(
   std::string service_path, error;
   if (!GetServicePathFromGuid(guid, &service_path, &error)) {
     NET_LOG(ERROR) << "GetManagedProperties failed: " << error;
-    std::move(callback).Run(absl::nullopt, error);
+    std::move(callback).Run(std::nullopt, error);
     return;
   }
 
   std::string user_id_hash;
   if (!GetPrimaryUserIdHash(browser_context_, &user_id_hash, &error)) {
     NET_LOG(ERROR) << "GetManagedProperties failed: " << error;
-    std::move(callback).Run(absl::nullopt, error);
+    std::move(callback).Run(std::nullopt, error);
     return;
   }
 
@@ -804,8 +804,8 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
     const std::string& guid,
     PropertiesCallback callback,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> dictionary,
-    absl::optional<std::string> error) {
+    std::optional<base::Value::Dict> dictionary,
+    std::optional<std::string> error) {
   if (dictionary) {
     AppendThirdPartyProviderName(&dictionary.value());
   }

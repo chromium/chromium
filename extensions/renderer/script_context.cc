@@ -245,9 +245,9 @@ void ScriptContext::SafeCallFunction(
           content::V8ValueConverter::Create()->FromV8Value(result,
                                                            v8_context());
       std::move(callback).Run(
-          value ? absl::make_optional(
+          value ? std::make_optional(
                       base::Value::FromUniquePtrValue(std::move(value)))
-                : absl::nullopt,
+                : std::nullopt,
           start_time);
     }
   }

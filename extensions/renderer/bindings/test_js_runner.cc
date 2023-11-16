@@ -19,17 +19,17 @@ namespace {
 bool g_allow_errors = false;
 bool g_suspended = false;
 
-absl::optional<base::Value> Convert(v8::MaybeLocal<v8::Value> maybe_value,
-                                    v8::Local<v8::Context> context) {
+std::optional<base::Value> Convert(v8::MaybeLocal<v8::Value> maybe_value,
+                                   v8::Local<v8::Context> context) {
   v8::Local<v8::Value> v8_value;
   if (!maybe_value.ToLocal(&v8_value))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (std::unique_ptr<base::Value> value =
           content::V8ValueConverter::Create()->FromV8Value(v8_value, context)) {
     return base::Value::FromUniquePtrValue(std::move(value));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

@@ -9,9 +9,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -28,7 +28,6 @@
 #include "extensions/common/extension_messages.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 typedef extensions::api::alarms::Alarm JsAlarm;
 
@@ -113,7 +112,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
         "[\"0\", {\"delayInMinutes\": 0}]",
     };
     for (size_t i = 0; i < num_alarms; ++i) {
-      absl::optional<base::Value> result = RunFunctionAndReturnValue(
+      std::optional<base::Value> result = RunFunctionAndReturnValue(
           new AlarmsCreateFunction(&test_clock_), kCreateArgs[i]);
       EXPECT_FALSE(result);
     }
@@ -319,7 +318,7 @@ class ConsoleLogMessageLocalFrame : public content::FakeLocalFrame {
 
  private:
   unsigned message_count_ = 0;
-  absl::optional<blink::mojom::ConsoleMessageLevel> last_level_;
+  std::optional<blink::mojom::ConsoleMessageLevel> last_level_;
   std::string last_message_;
 };
 
@@ -349,7 +348,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get the default one.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetFunction(), "[null]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
@@ -362,7 +361,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get "7".
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"7\"]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
@@ -375,7 +374,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get a non-existent one.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"nobody\"]");
     ASSERT_FALSE(result);
   }
@@ -384,7 +383,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
 TEST_F(ExtensionAlarmsTest, GetAll) {
   // Test getAll with 0 alarms.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[]");
     std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(0u, alarms.size());
@@ -394,7 +393,7 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   CreateAlarms(2);
 
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[null]");
     std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(2u, alarms.size());
@@ -441,7 +440,7 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, Clear) {
   // Clear a non-existent one.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"nobody\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_FALSE(result->GetBool());
@@ -452,13 +451,13 @@ TEST_F(ExtensionAlarmsTest, Clear) {
 
   // Clear all but the 0.001-minute alarm.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"7\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"0\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
@@ -490,7 +489,7 @@ void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, ClearAll) {
   // ClearAll with no alarms set.
   {
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsClearAllFunction(), "[]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());

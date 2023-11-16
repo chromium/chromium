@@ -85,7 +85,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     scoped_refptr<FeedbackPrivateReadLogSourceFunction> function =
         base::MakeRefCounted<FeedbackPrivateReadLogSourceFunction>();
 
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), ParamsToJSON(params));
     if (!result_value)
       return testing::AssertionFailure() << "No result";
@@ -127,7 +127,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     base::Value values = base::test::ParseJson(args);
     EXPECT_TRUE(values.is_list());
 
-    absl::optional<api::feedback_private::SendFeedback::Params> params =
+    std::optional<api::feedback_private::SendFeedback::Params> params =
         api::feedback_private::SendFeedback::Params::Create(values.GetList());
     EXPECT_TRUE(params);
 
@@ -136,7 +136,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
     auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
 
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), args);
     EXPECT_TRUE(result_value);
 

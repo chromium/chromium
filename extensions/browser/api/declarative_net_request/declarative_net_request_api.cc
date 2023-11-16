@@ -5,10 +5,10 @@
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -37,7 +37,6 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -50,7 +49,7 @@ namespace dnr_api = api::declarative_net_request;
 // the API call is for all tabs.
 bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
                             const Extension* extension,
-                            absl::optional<int> tab_id,
+                            std::optional<int> tab_id,
                             std::string* error) {
   bool can_call =
       declarative_net_request::HasDNRFeedbackPermission(extension, tab_id);
@@ -119,7 +118,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -224,7 +223,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -329,7 +328,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateEnabledRulesetsFunction::
-    OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error) {
+    OnEnabledStaticRulesetsUpdated(std::optional<std::string> error) {
   if (error)
     Respond(Error(std::move(*error)));
   else
@@ -413,7 +412,7 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   if (error) {
     Respond(Error(std::move(*error)));
   } else {
@@ -482,7 +481,7 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  absl::optional<int> tab_id;
+  std::optional<int> tab_id;
   base::Time min_time_stamp = base::Time::Min();
 
   if (params->filter) {

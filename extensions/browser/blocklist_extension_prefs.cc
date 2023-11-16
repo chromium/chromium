@@ -4,9 +4,9 @@
 
 #include "extensions/browser/blocklist_extension_prefs.h"
 
+#include <optional>
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -205,7 +205,7 @@ void SetSafeBrowsingExtensionBlocklistState(
     ExtensionPrefs* extension_prefs) {
   if (bitmap_blocklist_state == BitMapBlocklistState::NOT_BLOCKLISTED) {
     extension_prefs->UpdateExtensionPref(extension_id, kPrefBlocklistState,
-                                         absl::nullopt);
+                                         std::nullopt);
     extension_prefs->DeleteExtensionPrefsIfPrefEmpty(extension_id);
   } else {
     extension_prefs->UpdateExtensionPref(
@@ -236,7 +236,7 @@ void SetExtensionTelemetryServiceBlocklistState(
   if (bitmap_blocklist_state == BitMapBlocklistState::NOT_BLOCKLISTED) {
     extension_prefs->UpdateExtensionPref(
         extension_id, kPrefExtensionTelemetryServiceBlocklistState,
-        absl::nullopt);
+        std::nullopt);
     extension_prefs->DeleteExtensionPrefsIfPrefEmpty(extension_id);
   } else {
     extension_prefs->UpdateExtensionPref(

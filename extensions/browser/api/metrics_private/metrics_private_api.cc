@@ -76,7 +76,7 @@ ExtensionFunction::ResponseAction MetricsPrivateGetFieldTrialFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateGetVariationParamsFunction::Run() {
-  absl::optional<GetVariationParams::Params> params =
+  std::optional<GetVariationParams::Params> params =
       GetVariationParams::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -89,7 +89,7 @@ MetricsPrivateGetVariationParamsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordUserActionFunction::Run() {
-  absl::optional<RecordUserAction::Params> params =
+  std::optional<RecordUserAction::Params> params =
       RecordUserAction::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -134,7 +134,7 @@ void MetricsHistogramHelperFunction::RecordValue(const std::string& name,
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateRecordValueFunction::Run() {
-  absl::optional<RecordValue::Params> params =
+  std::optional<RecordValue::Params> params =
       RecordValue::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -168,7 +168,7 @@ MetricsPrivateRecordSparseValueWithPersistentHashFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordSparseValueFunction::Run() {
-  absl::optional<RecordSparseValue::Params> params =
+  std::optional<RecordSparseValue::Params> params =
       RecordSparseValue::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   base::UmaHistogramSparse(params->metric_name, params->value);
@@ -176,7 +176,7 @@ MetricsPrivateRecordSparseValueFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateRecordBooleanFunction::Run() {
-  absl::optional<RecordBoolean::Params> params =
+  std::optional<RecordBoolean::Params> params =
       RecordBoolean::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   base::UmaHistogramBoolean(params->metric_name, params->value);
@@ -185,7 +185,7 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordBooleanFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordEnumerationValueFunction::Run() {
-  absl::optional<RecordEnumerationValue::Params> params =
+  std::optional<RecordEnumerationValue::Params> params =
       RecordEnumerationValue::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   // Uses UmaHistogramExactLinear instead of UmaHistogramEnumeration
@@ -197,7 +197,7 @@ MetricsPrivateRecordEnumerationValueFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordPercentageFunction::Run() {
-  absl::optional<RecordPercentage::Params> params =
+  std::optional<RecordPercentage::Params> params =
       RecordPercentage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   RecordValue(params->metric_name, base::LINEAR_HISTOGRAM, 1, 101, 102,
@@ -206,7 +206,7 @@ MetricsPrivateRecordPercentageFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateRecordCountFunction::Run() {
-  absl::optional<RecordCount::Params> params =
+  std::optional<RecordCount::Params> params =
       RecordCount::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   RecordValue(params->metric_name, base::HISTOGRAM, 1, 1000000, 50,
@@ -216,7 +216,7 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordCountFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordSmallCountFunction::Run() {
-  absl::optional<RecordSmallCount::Params> params =
+  std::optional<RecordSmallCount::Params> params =
       RecordSmallCount::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   RecordValue(params->metric_name, base::HISTOGRAM, 1, 100, 50, params->value);
@@ -225,7 +225,7 @@ MetricsPrivateRecordSmallCountFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordMediumCountFunction::Run() {
-  absl::optional<RecordMediumCount::Params> params =
+  std::optional<RecordMediumCount::Params> params =
       RecordMediumCount::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   RecordValue(params->metric_name, base::HISTOGRAM, 1, 10000, 50,
@@ -234,8 +234,7 @@ MetricsPrivateRecordMediumCountFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateRecordTimeFunction::Run() {
-  absl::optional<RecordTime::Params> params =
-      RecordTime::Params::Create(args());
+  std::optional<RecordTime::Params> params = RecordTime::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   static const int kTenSecMs = 10 * 1000;
   RecordValue(params->metric_name, base::HISTOGRAM, 1, kTenSecMs, 50,
@@ -245,7 +244,7 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordTimeFunction::Run() {
 
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordMediumTimeFunction::Run() {
-  absl::optional<RecordMediumTime::Params> params =
+  std::optional<RecordMediumTime::Params> params =
       RecordMediumTime::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   static const int kThreeMinMs = 3 * 60 * 1000;
@@ -255,7 +254,7 @@ MetricsPrivateRecordMediumTimeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateRecordLongTimeFunction::Run() {
-  absl::optional<RecordLongTime::Params> params =
+  std::optional<RecordLongTime::Params> params =
       RecordLongTime::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   static const int kOneHourMs = 60 * 60 * 1000;
@@ -268,7 +267,7 @@ MetricsPrivateGetHistogramFunction::~MetricsPrivateGetHistogramFunction() =
     default;
 
 ExtensionFunction::ResponseAction MetricsPrivateGetHistogramFunction::Run() {
-  absl::optional<api::metrics_private::GetHistogram::Params> params =
+  std::optional<api::metrics_private::GetHistogram::Params> params =
       api::metrics_private::GetHistogram::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

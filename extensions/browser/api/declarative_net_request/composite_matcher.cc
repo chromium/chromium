@@ -58,7 +58,7 @@ class ScopedGetBeforeRequestActionTimer {
 }  // namespace
 
 ActionInfo::ActionInfo() = default;
-ActionInfo::ActionInfo(absl::optional<RequestAction> action,
+ActionInfo::ActionInfo(std::optional<RequestAction> action,
                        bool notify_request_withheld)
     : action(std::move(action)),
       notify_request_withheld(notify_request_withheld) {}
@@ -135,14 +135,14 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
            page_access == PermissionsData::PageAccess::kWithheld);
   }
 
-  absl::optional<RequestAction> final_action;
+  std::optional<RequestAction> final_action;
 
   // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or absl::nullopt otherwise.
-  absl::optional<uint64_t> max_allow_rule_priority;
+  // rule within this matcher, or std::nullopt otherwise.
+  std::optional<uint64_t> max_allow_rule_priority;
 
   for (const auto& matcher : matchers_) {
-    absl::optional<RequestAction> action =
+    std::optional<RequestAction> action =
         matcher->GetBeforeRequestAction(params);
     if (!action)
       continue;
@@ -172,7 +172,7 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
   // `requires_host_permission` is true and `page_access` is withheld or denied.
   bool notify_request_withheld = page_access == PageAccess::kWithheld &&
                                  !final_action->IsAllowOrAllowAllRequests();
-  return ActionInfo(absl::nullopt, notify_request_withheld);
+  return ActionInfo(std::nullopt, notify_request_withheld);
 }
 
 std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
@@ -181,8 +181,8 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
   DCHECK(params.allow_rule_max_priority.contains(this));
 
   // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or absl::nullopt if no such rule exists.
-  absl::optional<uint64_t> max_allow_rule_priority =
+  // rule within this matcher, or std::nullopt if no such rule exists.
+  std::optional<uint64_t> max_allow_rule_priority =
       params.allow_rule_max_priority[this];
 
   for (const auto& matcher : matchers_) {

@@ -35,7 +35,7 @@ void SystemStorageGetInfoFunction::OnGetStorageInfoCompleted(bool success) {
 ExtensionFunction::ResponseAction SystemStorageEjectDeviceFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<EjectDevice::Params> params =
+  std::optional<EjectDevice::Params> params =
       EjectDevice::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -98,7 +98,7 @@ ExtensionFunction::ResponseAction
 SystemStorageGetAvailableCapacityFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<GetAvailableCapacity::Params> params =
+  std::optional<GetAvailableCapacity::Params> params =
       GetAvailableCapacity::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

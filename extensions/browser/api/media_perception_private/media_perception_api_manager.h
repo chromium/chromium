@@ -5,8 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_MANAGER_H_
 #define EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_MANAGER_H_
 
+#include <optional>
 #include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,7 +17,6 @@
 #include "extensions/common/api/media_perception_private.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -105,12 +104,12 @@ class MediaPerceptionAPIManager : public BrowserContextKeyedAPI,
 
   // Callback for State D-Bus method calls to the media analytics process.
   void StateCallback(APIStateCallback callback,
-                     absl::optional<mri::State> state);
+                     std::optional<mri::State> state);
 
   // Callback for GetDiagnostics D-Bus method calls to the media analytics
   // process.
   void GetDiagnosticsCallback(APIGetDiagnosticsCallback callback,
-                              absl::optional<mri::Diagnostics> diagnostics);
+                              std::optional<mri::Diagnostics> diagnostics);
 
   // Callbacks for Upstart command to start media analytics process.
   void UpstartStartProcessCallback(APIComponentProcessStateCallback callback,

@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/ipc_message_sender.h"
 
+#include <optional>
 #include <utility>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -34,7 +34,6 @@
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 
@@ -91,7 +90,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter(context)->AddListenerForMainThread(mojom::EventListener::New(
-        GetEventListenerOwner(context), event_name, nullptr, absl::nullopt));
+        GetEventListenerOwner(context), event_name, nullptr, std::nullopt));
   }
 
   void SendRemoveUnfilteredEventListenerIPC(
@@ -102,7 +101,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 
     GetEventRouter(context)->RemoveListenerForMainThread(
         mojom::EventListener::New(GetEventListenerOwner(context), event_name,
-                                  nullptr, absl::nullopt));
+                                  nullptr, std::nullopt));
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -426,7 +425,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         mojom::ServiceWorkerContext::New(context->service_worker_scope(),
                                          context->service_worker_version_id(),
                                          content::WorkerThread::GetCurrentId()),
-        /*event_filter=*/absl::nullopt);
+        /*event_filter=*/std::nullopt);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     dispatcher_->SendAddEventListener(std::move(event_listener));
 #else
@@ -450,7 +449,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         mojom::ServiceWorkerContext::New(context->service_worker_scope(),
                                          context->service_worker_version_id(),
                                          content::WorkerThread::GetCurrentId()),
-        /*event_filter=*/absl::nullopt);
+        /*event_filter=*/std::nullopt);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     dispatcher_->SendRemoveEventListener(std::move(event_listener));
@@ -713,7 +712,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   const raw_ptr<WorkerThreadDispatcher, ExperimentalRenderer> dispatcher_;
   const int64_t service_worker_version_id_;
-  absl::optional<ExtensionId> extension_id_;
+  std::optional<ExtensionId> extension_id_;
 };
 
 }  // namespace

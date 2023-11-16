@@ -63,7 +63,7 @@ bool RawDataPresenter::Succeeded() {
   return true;
 }
 
-absl::optional<base::Value> RawDataPresenter::TakeResult() {
+std::optional<base::Value> RawDataPresenter::TakeResult() {
   return base::Value(std::move(list_));
 }
 
@@ -114,9 +114,9 @@ bool ParsedDataPresenter::Succeeded() {
   return success_;
 }
 
-absl::optional<base::Value> ParsedDataPresenter::TakeResult() {
+std::optional<base::Value> ParsedDataPresenter::TakeResult() {
   if (!success_)
-    return absl::nullopt;
+    return std::nullopt;
   return base::Value(std::move(dictionary_.value()));
 }
 

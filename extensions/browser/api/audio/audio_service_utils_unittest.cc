@@ -133,7 +133,7 @@ TEST(AudioServiceUtilsTest, ConvertDeviceFilterToMojomStreamTypes) {
   crosapi::mojom::DeviceFilterPtr result;
   auto input = std::make_unique<api::audio::DeviceFilter>();
 
-  input->stream_types = absl::nullopt;
+  input->stream_types = std::nullopt;
   result = ConvertDeviceFilterToMojom(input.get());
   EXPECT_TRUE(result && !result->includedStreamTypes);
 

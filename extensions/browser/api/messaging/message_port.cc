@@ -25,14 +25,14 @@ void MessagePort::RevalidatePort() {}
 void MessagePort::DispatchOnConnect(
     mojom::ChannelType channel_type,
     const std::string& channel_name,
-    absl::optional<base::Value::Dict> source_tab,
+    std::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    absl::optional<url::Origin> source_origin) {}
+    std::optional<url::Origin> source_origin) {}
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 

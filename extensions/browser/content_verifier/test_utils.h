@@ -7,11 +7,11 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,7 +25,6 @@
 #include "extensions/browser/content_verify_job.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/test_extension_dir.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -89,7 +88,7 @@ class TestContentVerifySingleJobObserver {
 
     ExtensionId extension_id_;
     base::FilePath relative_path_;
-    absl::optional<ContentVerifyJob::FailureReason> failure_reason_;
+    std::optional<ContentVerifyJob::FailureReason> failure_reason_;
     bool seen_on_hashes_ready_ = false;
     ContentHashReader::InitStatus hashes_status_;
   };

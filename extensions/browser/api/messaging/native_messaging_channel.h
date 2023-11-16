@@ -5,9 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGING_CHANNEL_H_
 #define EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGING_CHANNEL_H_
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -35,7 +35,7 @@ class NativeMessagingChannel {
   virtual void Start(EventHandler* event_handler) = 0;
 
   // Sends a message to the other endpoint.
-  virtual void SendMessage(absl::optional<base::ValueView> message) = 0;
+  virtual void SendMessage(std::optional<base::ValueView> message) = 0;
 };
 
 }  // namespace extensions

@@ -408,19 +408,19 @@ void BluetoothLowEnergyEventRouter::Disconnect(
   std::move(callback).Run();
 }
 
-absl::optional<BluetoothLowEnergyEventRouter::ServiceList>
+std::optional<BluetoothLowEnergyEventRouter::ServiceList>
 BluetoothLowEnergyEventRouter::GetServices(
     const std::string& device_address) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!adapter_.get()) {
     VLOG(1) << "BluetoothAdapter not ready.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BluetoothDevice* device = adapter_->GetDevice(device_address);
   if (!device) {
     VLOG(1) << "Bluetooth device not found: " << device_address;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ServiceList list;
@@ -1384,7 +1384,7 @@ void BluetoothLowEnergyEventRouter::HandleRequestResponse(
   }
 
   if (request->type == AttributeValueRequest::ATTRIBUTE_READ_REQUEST) {
-    std::move(request->value_callback).Run(/*error_code=*/absl::nullopt, value);
+    std::move(request->value_callback).Run(/*error_code=*/std::nullopt, value);
   } else {
     std::move(request->success_callback).Run();
   }
@@ -1604,7 +1604,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
     const std::string& characteristic_instance_id,
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    absl::optional<BluetoothGattService::GattErrorCode> error_code,
+    std::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic value read failed.";
@@ -1623,7 +1623,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
 void BluetoothLowEnergyEventRouter::OnReadRemoteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic/descriptor value read failed.";
@@ -1660,7 +1660,7 @@ void BluetoothLowEnergyEventRouter::OnCreateGattConnection(
     const std::string& device_address,
     ErrorCallback callback,
     std::unique_ptr<BluetoothGattConnection> connection,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     VLOG(2) << "Failed to create GATT connection: " << error_code.value();
 

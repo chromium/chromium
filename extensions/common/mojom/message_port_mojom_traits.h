@@ -65,12 +65,12 @@ struct StructTraits<extensions::mojom::PortIdDataView, extensions::PortId> {
 template <>
 struct StructTraits<extensions::mojom::MessagingEndpointDataView,
                     extensions::MessagingEndpoint> {
-  static absl::optional<std::string> native_app_name(
+  static std::optional<std::string> native_app_name(
       const extensions::MessagingEndpoint& endpoint) {
     return endpoint.native_app_name;
   }
 
-  static absl::optional<std::string> extension_id(
+  static std::optional<std::string> extension_id(
       const extensions::MessagingEndpoint& endpoint) {
     return endpoint.extension_id;
   }

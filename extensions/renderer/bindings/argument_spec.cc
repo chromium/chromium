@@ -61,8 +61,8 @@ const char* GetV8ValueTypeString(v8::Local<v8::Value> value) {
 // |maximum|, populating |error| otherwise.
 template <class T>
 bool CheckFundamentalBounds(T value,
-                            const absl::optional<int>& minimum,
-                            const absl::optional<int>& maximum,
+                            const std::optional<int>& minimum,
+                            const std::optional<int>& maximum,
                             std::string* error) {
   if (minimum && value < *minimum) {
     *error = api_errors::NumberTooSmall(*minimum);
@@ -126,12 +126,14 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
   else
     NOTREACHED();
 
-  if (absl::optional<int> minimum = dict.FindInt("minimum"))
+  if (std::optional<int> minimum = dict.FindInt("minimum")) {
     minimum_ = *minimum;
-  if (absl::optional<int> maximum = dict.FindInt("maximum"))
+  }
+  if (std::optional<int> maximum = dict.FindInt("maximum")) {
     maximum_ = *maximum;
+  }
 
-  absl::optional<int> min_length = dict.FindInt("minLength");
+  std::optional<int> min_length = dict.FindInt("minLength");
   if (!min_length)
     min_length = dict.FindInt("minItems");
   if (min_length) {
@@ -139,7 +141,7 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
     min_length_ = *min_length;
   }
 
-  absl::optional<int> max_length = dict.FindInt("maxLength");
+  std::optional<int> max_length = dict.FindInt("maxLength");
   if (!max_length)
     max_length = dict.FindInt("maxItems");
   if (max_length) {

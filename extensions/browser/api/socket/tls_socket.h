@@ -81,8 +81,8 @@ class TLSSocket : public ResumableTCPSocket {
   void OnReadComplete(int result, scoped_refptr<net::IOBuffer> io_buffer);
 
   mojo::Remote<network::mojom::TLSClientSocket> tls_socket_;
-  absl::optional<net::IPEndPoint> local_addr_;
-  absl::optional<net::IPEndPoint> peer_addr_;
+  std::optional<net::IPEndPoint> local_addr_;
+  std::optional<net::IPEndPoint> peer_addr_;
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
   ReadCompletionCallback read_callback_;
 };

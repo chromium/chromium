@@ -5,13 +5,12 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_DECLARATIVE_API_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_DECLARATIVE_API_H_
 
+#include <optional>
 #include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/events.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -61,7 +60,7 @@ class EventsEventAddRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::AddRules::Params> params_;
+  std::optional<api::events::Event::AddRules::Params> params_;
 };
 
 class EventsEventRemoveRulesFunction : public RulesFunction {
@@ -79,7 +78,7 @@ class EventsEventRemoveRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::RemoveRules::Params> params_;
+  std::optional<api::events::Event::RemoveRules::Params> params_;
 };
 
 class EventsEventGetRulesFunction : public RulesFunction {
@@ -97,7 +96,7 @@ class EventsEventGetRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::GetRules::Params> params_;
+  std::optional<api::events::Event::GetRules::Params> params_;
 };
 
 }  // namespace extensions

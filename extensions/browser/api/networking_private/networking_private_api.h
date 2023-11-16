@@ -6,12 +6,11 @@
 #define EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -49,8 +48,8 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value::Dict> result,
-              const absl::optional<std::string>& error);
+  void Result(std::optional<base::Value::Dict> result,
+              const std::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getManagedProperties method.
@@ -73,8 +72,8 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value::Dict> result,
-              const absl::optional<std::string>& error);
+  void Result(std::optional<base::Value::Dict> result,
+              const std::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getState method.
@@ -523,7 +522,7 @@ class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value::Dict> global_policies);
+  void Result(std::optional<base::Value::Dict> global_policies);
 };
 
 class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {

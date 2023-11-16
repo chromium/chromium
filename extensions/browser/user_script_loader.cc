@@ -197,8 +197,8 @@ UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
       host_id_(host_id) {}
 
 UserScriptLoader::~UserScriptLoader() {
-  absl::optional<std::string> error =
-      absl::make_optional(kUserScriptLoaderDestroyedErrorMsg);
+  std::optional<std::string> error =
+      std::make_optional(kUserScriptLoaderDestroyedErrorMsg);
 
   // Clean up state by firing all remaining callbacks with |error| populated to
   // alert consumers that scripts are not loaded.
@@ -279,7 +279,7 @@ void UserScriptLoader::AttemptLoad(ScriptsLoadedCallback callback) {
       queued_load_callbacks_.push_back(std::move(callback));
     } else {
       std::move(callback).Run(this,
-                              absl::make_optional(kNoScriptChangesErrorMsg));
+                              std::make_optional(kNoScriptChangesErrorMsg));
     }
   }
 
@@ -453,7 +453,7 @@ void UserScriptLoader::OnScriptsLoaded(
   std::list<ScriptsLoadedCallback> loaded_callbacks;
   loaded_callbacks.splice(loaded_callbacks.end(), loading_callbacks_);
   for (auto& callback : loaded_callbacks)
-    std::move(callback).Run(this, /*error=*/absl::nullopt);
+    std::move(callback).Run(this, /*error=*/std::nullopt);
 
   // Notify `ScriptInjectionTracker` at the very end - *after* all the observers
   // and callbacks above have already been run. In particular, this needs to

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/functional/bind.h"
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
@@ -20,7 +20,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -43,7 +42,7 @@ class SystemDisplayApiTest : public ShellApiTest {
                const api::system_display::DisplayProperties& properties) {
     provider_->SetDisplayProperties(
         display_id, properties,
-        base::BindOnce([](absl::optional<std::string>) {}));
+        base::BindOnce([](std::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
 };
@@ -68,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayNotKioskEnabled) {
       api_test_utils::RunFunctionAndReturnError(
           set_info_function.get(), "[\"display_id\", {}]", browser_context()));
 
-  absl::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
+  std::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
   EXPECT_FALSE(set_info);
 }
 
@@ -96,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "}]",
       browser_context()));
 
-  absl::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
+  std::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
   ASSERT_TRUE(set_info);
 
   EXPECT_TRUE(api_test_utils::GetBoolean(*set_info, "isPrimary"));
@@ -252,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibration) {
 
   provider_->SetTouchCalibrationWillSucceed(true);
 
-  absl::optional<base::Value> result(
+  std::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           show_native_calibration.get(), "[\"" + id + "\"]",
           browser_context()));

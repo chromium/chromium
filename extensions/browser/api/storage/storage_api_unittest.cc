@@ -99,7 +99,7 @@ class StorageApiUnittest : public ApiUnitTest {
   // |out_value| with the string result.
   testing::AssertionResult RunGetFunction(const std::string& key,
                                           std::string* out_value) {
-    absl::optional<base::Value> result = RunFunctionAndReturnValue(
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
         new StorageStorageAreaGetFunction(),
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
     if (!result)

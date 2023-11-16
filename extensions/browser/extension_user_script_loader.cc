@@ -10,10 +10,10 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
-
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_set.h"
 #include "base/containers/cxx20_erase_vector.h"
@@ -54,7 +54,6 @@
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 
 using content::BrowserContext;
@@ -67,7 +66,7 @@ using SubstitutionMap = std::map<std::string, std::string>;
 
 // Each map entry associates a UserScript::Content object with the ID of the
 // resource holding the content of the script.
-using ScriptResourceIds = std::map<UserScript::Content*, absl::optional<int>>;
+using ScriptResourceIds = std::map<UserScript::Content*, std::optional<int>>;
 
 // The source of script file from where it's read.
 enum class ReadScriptContentSource {
@@ -82,7 +81,7 @@ struct VerifyContentInfo {
                     const ExtensionId& extension_id,
                     const base::FilePath& extension_root,
                     const base::FilePath relative_path,
-                    absl::optional<std::string> content)
+                    std::optional<std::string> content)
       : verifier(verifier),
         extension_id(extension_id),
         extension_root(extension_root),
@@ -105,15 +104,15 @@ struct VerifyContentInfo {
   // The content to verify, or nullopt if there was an error retrieving it
   // from its associated file. Example of errors are: missing or unreadable
   // file.
-  absl::optional<std::string> content;
+  std::optional<std::string> content;
 };
 
 // Reads and returns {content, source} of a |script_file|.
 //   - content contains the std::string content, or nullopt if the script file
 // couldn't be read.
-std::tuple<absl::optional<std::string>, ReadScriptContentSource>
+std::tuple<std::optional<std::string>, ReadScriptContentSource>
 ReadScriptContent(UserScript::Content* script_file,
-                  const absl::optional<int>& script_resource_id,
+                  const std::optional<int>& script_resource_id,
                   size_t& remaining_length) {
   const base::FilePath& path = ExtensionResource::GetFilePath(
       script_file->extension_root(), script_file->relative_path(),
@@ -127,7 +126,7 @@ ReadScriptContent(UserScript::Content* script_file,
     LOG(WARNING) << "Failed to get file path to "
                  << script_file->relative_path().value() << " from "
                  << script_file->extension_root().value();
-    return {absl::nullopt, ReadScriptContentSource::kFile};
+    return {std::nullopt, ReadScriptContentSource::kFile};
   }
 
   size_t max_script_length =
@@ -140,7 +139,7 @@ ReadScriptContent(UserScript::Content* script_file,
       LOG(WARNING) << "Failed to load user script file, maximum size exceeded: "
                    << path.value();
     }
-    return {absl::nullopt, ReadScriptContentSource::kFile};
+    return {std::nullopt, ReadScriptContentSource::kFile};
   }
 
   remaining_length -= content.size();
@@ -212,7 +211,7 @@ void RecordTotalContentScriptLengthForLoad(size_t manifest_scripts_length,
 // Loads user scripts from the extension who owns these scripts.
 void LoadScriptContent(const mojom::HostID& host_id,
                        UserScript::Content* script_file,
-                       const absl::optional<int>& script_resource_id,
+                       const std::optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
                        const scoped_refptr<ContentVerifier>& verifier,
                        size_t& remaining_length) {
@@ -386,19 +385,19 @@ void LoadScriptsOnFileTaskRunner(
 }
 
 // Attempts to coerce a `dict` from an `api::content_scripts::ContentScript` to
-// an `api::scripts_internal::SerializedUserScript`, returning absl::nullopt on
+// an `api::scripts_internal::SerializedUserScript`, returning std::nullopt on
 // failure.
 // TODO(https://crbug.com/1494155): Remove this when migration is complete.
-absl::optional<api::scripts_internal::SerializedUserScript>
+std::optional<api::scripts_internal::SerializedUserScript>
 ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
   auto content_script = api::content_scripts::ContentScript::FromValue(dict);
   if (!content_script.has_value()) {
-    return absl::nullopt;  // Bad entry.
+    return std::nullopt;  // Bad entry.
   }
 
   auto* id = dict.FindString(scripting::kId);
   if (!id || id->empty()) {
-    return absl::nullopt;  // Bad entry.
+    return std::nullopt;  // Bad entry.
   }
 
   // If a UserScript does not have a prefixed ID, then we can assume it's a
@@ -419,7 +418,7 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
       source = api::scripts_internal::Source::kDynamicUserScript;
     } else {
       // Invalid script source. Bad entry.
-      return absl::nullopt;
+      return std::nullopt;
     }
     id_to_use = *id;
   } else {
@@ -490,7 +489,7 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       continue;  // Bad entry; no recovery.
     }
 
-    absl::optional<api::scripts_internal::SerializedUserScript>
+    std::optional<api::scripts_internal::SerializedUserScript>
         serialized_script;
 
     // Check for the `source` key as a sentinel to determine if the underlying
@@ -657,7 +656,7 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
   });
 
   if (scripts.empty()) {
-    std::move(callback).Run(/*error=*/absl::nullopt);
+    std::move(callback).Run(/*error=*/std::nullopt);
     return;
   }
 
@@ -689,7 +688,7 @@ void ExtensionUserScriptLoader::RemoveDynamicScripts(
     const std::set<std::string>& ids_to_remove,
     DynamicScriptsModifiedCallback callback) {
   if (ids_to_remove.empty()) {
-    std::move(callback).Run(/*error=*/absl::nullopt);
+    std::move(callback).Run(/*error=*/std::nullopt);
     return;
   }
 
@@ -881,7 +880,7 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
 
 void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
     OnDynamicScriptsReadFromStorage(DynamicScriptsReadCallback callback,
-                                    absl::optional<base::Value> value) {
+                                    std::optional<base::Value> value) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id_);
@@ -955,7 +954,7 @@ void ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded(
     UserScriptList initial_dynamic_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
     pending_dynamic_script_ids_.erase(script->id());
   }
@@ -978,7 +977,7 @@ void ExtensionUserScriptLoader::OnDynamicScriptsAdded(
     std::set<std::string> new_persistent_script_ids,
     DynamicScriptsModifiedCallback callback,
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   // Now that a script load for all scripts contained in `added_scripts` has
   // occurred, add these scripts to `loaded_dynamic_scripts_` and remove any ids
   // in `pending_dynamic_script_ids_` that correspond to a script in
@@ -1008,7 +1007,7 @@ void ExtensionUserScriptLoader::OnDynamicScriptsRemoved(
     const std::set<std::string>& removed_script_ids,
     DynamicScriptsModifiedCallback callback,
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   // Remove scripts from `loaded_dynamic_scripts_` only when the set of
   // `removed_script_ids` have actually been removed and the corresponding IPC
   // has been sent.

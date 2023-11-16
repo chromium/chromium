@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/messaging/message_service.h"
-
+#include <optional>
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -20,7 +19,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
@@ -325,11 +323,11 @@ class ScopedExternalConnectionInfoCrashKeys {
 // messages sent from the given renderer `process`.  If the validation fails, or
 // the sender is not associated with an extension, then `nullopt` is returned.
 // The sender should ignore the IPC when `nullopt` is returned.
-absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
+std::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
     content::RenderProcessHost& process,
     const PortContext& source_context) {
   if (!IsValidSourceContext(process, source_context)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (source_context.is_for_service_worker()) {
@@ -342,7 +340,7 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
     if (!frame) {
       // Not calling ReceivedBadMessage because it is possible that the frame
       // got deleted before the IPC arrived.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // These extension IPCs are on the same pipe as DidCommit() (and thus can't
@@ -362,7 +360,7 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
           origin.GetDebugString(false /* include_nonce */));
       bad_message::ReceivedBadMessage(
           &process, bad_message::EMF_NON_EXTENSION_SENDER_FRAME);
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return scheme_host_port.host();
@@ -371,7 +369,7 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
   DCHECK(source_context.is_for_native_host());
   bad_message::ReceivedBadMessage(
       &process, bad_message::EMF_NON_EXTENSION_SENDER_NATIVE_HOST);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -457,7 +455,7 @@ void MessageService::OpenChannelToTab(
   if (!process) {
     return;
   }
-  absl::optional<ExtensionId> extension_id =
+  std::optional<ExtensionId> extension_id =
       ValidateSourceContextAndExtractExtensionId(*process,
                                                  source.port_context());
   if (!extension_id) {

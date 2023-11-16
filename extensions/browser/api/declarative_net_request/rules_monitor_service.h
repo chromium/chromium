@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,7 +26,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -56,7 +55,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                             public ExtensionRegistryObserver {
  public:
   using ApiCallback =
-      base::OnceCallback<void(absl::optional<std::string> error)>;
+      base::OnceCallback<void(std::optional<std::string> error)>;
   using ApiCallbackToGetDisabledRuleIds =
       base::OnceCallback<void(std::vector<int> disabled_rule_ids)>;
 
@@ -230,7 +229,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // response to UpdateDynamicRules.
   void OnDynamicRulesUpdated(ApiCallback callback,
                              LoadRequestData load_data,
-                             absl::optional<std::string> error);
+                             std::optional<std::string> error);
 
   // Unloads all rulesets for the given |extension_id|.
   void RemoveCompositeMatcher(const ExtensionId& extension_id);

@@ -5,8 +5,8 @@
 #ifndef EXTENSIONS_TEST_EXTENSION_TEST_MESSAGE_LISTENER_H_
 #define EXTENSIONS_TEST_EXTENSION_TEST_MESSAGE_LISTENER_H_
 
+#include <optional>
 #include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +14,6 @@
 #include "extensions/browser/api/test/test_api_observer.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -188,7 +187,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
 
   // The message we're expecting. If empty, we will wait for any message,
   // regardless of contents.
-  const absl::optional<std::string> expected_message_;
+  const std::optional<std::string> expected_message_;
 
   // The last message we received.
   std::string message_;
@@ -213,7 +212,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   raw_ptr<const content::BrowserContext> browser_context_ = nullptr;
 
   // The message that signals failure.
-  absl::optional<std::string> failure_message_;
+  std::optional<std::string> failure_message_;
 
   // If we received a message that was the failure message.
   bool failed_ = false;

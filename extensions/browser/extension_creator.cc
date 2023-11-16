@@ -205,7 +205,7 @@ bool ExtensionCreator::CreateCrx(
     const base::FilePath& zip_path,
     crypto::RSAPrivateKey* private_key,
     const base::FilePath& crx_path,
-    const absl::optional<std::string>& compressed_verified_contents) {
+    const std::optional<std::string>& compressed_verified_contents) {
   crx_file::CreatorResult result;
   if (compressed_verified_contents.has_value()) {
     result = crx_file::CreateCrxWithVerifiedContentsInHeader(
@@ -235,7 +235,7 @@ bool ExtensionCreator::CreateCrxAndPerformCleanup(
     const base::FilePath& extension_dir,
     const base::FilePath& crx_path,
     crypto::RSAPrivateKey* private_key,
-    const absl::optional<std::string>& compressed_verified_contents) {
+    const std::optional<std::string>& compressed_verified_contents) {
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir())
     return false;
@@ -275,7 +275,7 @@ bool ExtensionCreator::Run(const base::FilePath& extension_dir,
   }
 
   return CreateCrxAndPerformCleanup(extension_dir, crx_path, key_pair.get(),
-                                    absl::nullopt);
+                                    std::nullopt);
 }
 
 }  // namespace extensions

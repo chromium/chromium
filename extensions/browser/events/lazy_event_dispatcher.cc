@@ -4,6 +4,7 @@
 
 #include "extensions/browser/events/lazy_event_dispatcher.h"
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "extensions/browser/event_router.h"
@@ -12,7 +13,6 @@
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserContext;
 
@@ -73,7 +73,7 @@ bool LazyEventDispatcher::QueueEventDispatch(
   // to avoid lifetime issues. Use a separate copy of the event args, so they
   // last until the event is dispatched.
   if (!dispatched_event->will_dispatch_callback.is_null()) {
-    absl::optional<base::Value::List> modified_event_args;
+    std::optional<base::Value::List> modified_event_args;
     mojom::EventFilteringInfoPtr modified_event_filter_info;
     if (!dispatched_event->will_dispatch_callback.Run(
             dispatch_context.browser_context(),

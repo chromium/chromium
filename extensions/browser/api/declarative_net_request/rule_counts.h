@@ -6,8 +6,7 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULE_COUNTS_H_
 
 #include <cstddef>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace extensions::declarative_net_request {
 
@@ -15,7 +14,7 @@ namespace extensions::declarative_net_request {
 struct RuleCounts {
   RuleCounts();
   RuleCounts(size_t rule_count,
-             absl::optional<size_t> unsafe_rule_count,
+             std::optional<size_t> unsafe_rule_count,
              size_t regex_rule_count);
 
   RuleCounts& operator+=(const RuleCounts& that);
@@ -26,7 +25,7 @@ struct RuleCounts {
   // utils.cc in the same directory for what constitutes an "unsafe" rule). This
   // is only counted for dynamic or session rulesets and is null for static
   // rulesets.
-  absl::optional<size_t> unsafe_rule_count = absl::nullopt;
+  std::optional<size_t> unsafe_rule_count = std::nullopt;
   // Tracks the total regex rule count of a ruleset.
   size_t regex_rule_count = 0;
 };
