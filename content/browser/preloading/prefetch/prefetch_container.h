@@ -108,17 +108,21 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
   // Defines the key to uniquely identify a prefetch.
-  class Key {
+  class CONTENT_EXPORT Key {
    public:
     Key() = delete;
-    Key(blink::DocumentToken referring_document_token, GURL prefetch_url)
-        : referring_document_token_(std::move(referring_document_token)),
-          prefetch_url_(std::move(prefetch_url)) {}
+    Key(net::NetworkIsolationKey nik, GURL prefetch_url);
+    Key(blink::DocumentToken referring_document_token, GURL prefetch_url);
+    ~Key();
+
+    Key(const Key&);
 
     bool operator==(const Key& rhs) const = default;
     bool operator<(const Key& rhs) const {
-      if (referring_document_token_ != rhs.referring_document_token_) {
-        return referring_document_token_ < rhs.referring_document_token_;
+      if (referring_document_token_or_nik_ !=
+          rhs.referring_document_token_or_nik_) {
+        return referring_document_token_or_nik_ <
+               rhs.referring_document_token_or_nik_;
       }
       return prefetch_url_ < rhs.prefetch_url_;
     }
@@ -126,18 +130,24 @@ class CONTENT_EXPORT PrefetchContainer {
     const GURL& prefetch_url() const { return prefetch_url_; }
 
     Key WithNewUrl(const GURL& new_url) const {
-      return Key(referring_document_token_, new_url);
+      return Key(referring_document_token_or_nik_, new_url);
     }
 
     bool NonUrlPartIsSame(const Key& other) const {
-      return referring_document_token_ == other.referring_document_token_;
+      return referring_document_token_or_nik_ ==
+             other.referring_document_token_or_nik_;
     }
 
    private:
+    Key(absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
+            referring_document_token_or_nik,
+        GURL prefetch_url);
+
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                                    const Key& prefetch_key);
 
-    const blink::DocumentToken referring_document_token_;
+    const absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
+        referring_document_token_or_nik_;
     const GURL prefetch_url_;
   };
 

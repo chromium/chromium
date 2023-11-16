@@ -33,6 +33,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -440,6 +441,38 @@ PrefetchContainer::~PrefetchContainer() {
     prefetch_document_manager_->PrefetchWillBeDestroyed(this);
   }
 }
+
+PrefetchContainer::Key::Key(
+    absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
+        referring_document_token_or_nik,
+    GURL prefetch_url)
+    : referring_document_token_or_nik_(
+          std::move(referring_document_token_or_nik)),
+      prefetch_url_(std::move(prefetch_url)) {
+  CHECK_EQ(absl::holds_alternative<net::NetworkIsolationKey>(
+               referring_document_token_or_nik_),
+           PrefetchNIKScopeEnabled());
+}
+
+PrefetchContainer::Key::Key(blink::DocumentToken referring_document_token,
+                            GURL prefetch_url)
+    : referring_document_token_or_nik_(std::move(referring_document_token)),
+      prefetch_url_(std::move(prefetch_url)) {
+  CHECK(!PrefetchNIKScopeEnabled());
+}
+
+PrefetchContainer::Key::Key(
+    net::NetworkIsolationKey referring_network_isolation_key,
+    GURL prefetch_url)
+    : referring_document_token_or_nik_(
+          std::move(referring_network_isolation_key)),
+      prefetch_url_(std::move(prefetch_url)) {
+  CHECK(PrefetchNIKScopeEnabled());
+}
+
+PrefetchContainer::Key::~Key() = default;
+
+PrefetchContainer::Key::Key(const Key&) = default;
 
 PrefetchContainer::Reader::Reader() : Reader(nullptr, 0) {}
 
@@ -1235,8 +1268,17 @@ std::ostream& operator<<(std::ostream& ostream,
 
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer::Key& prefetch_key) {
-  return ostream << "(" << prefetch_key.referring_document_token_ << ", "
-                 << prefetch_key.prefetch_url_ << ")";
+  ostream << "(";
+  if (const auto* token = absl::get_if<blink::DocumentToken>(
+          &prefetch_key.referring_document_token_or_nik_)) {
+    ostream << *token;
+  } else {
+    ostream << absl::get<net::NetworkIsolationKey>(
+                   prefetch_key.referring_document_token_or_nik_)
+                   .ToDebugString();
+  }
+  ostream << ", " << prefetch_key.prefetch_url() << ")";
+  return ostream;
 }
 
 CONTENT_EXPORT std::ostream& operator<<(
