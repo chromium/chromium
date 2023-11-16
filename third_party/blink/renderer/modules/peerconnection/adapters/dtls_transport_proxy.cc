@@ -25,8 +25,8 @@ std::unique_ptr<DtlsTransportProxy> DtlsTransportProxy::Create(
   std::unique_ptr<DtlsTransportProxy> proxy =
       base::WrapUnique(new DtlsTransportProxy(frame, proxy_thread, host_thread,
                                               dtls_transport, delegate));
-  // TODO(hta): Delete this thread jump once creation can be initiated
-  // from the host thread (=webrtc signalling thread).
+  // TODO(hta, tommi): Delete this thread jump once creation can be initiated
+  // from the host thread (=webrtc network thread).
   PostCrossThreadTask(
       *host_thread, FROM_HERE,
       CrossThreadBindOnce(&DtlsTransportProxy::StartOnHostThread,
