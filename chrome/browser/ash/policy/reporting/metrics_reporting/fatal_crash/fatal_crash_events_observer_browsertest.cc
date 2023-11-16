@@ -152,6 +152,28 @@ IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
+                       CrashOccursAndPolicyDefault) {
+  // Not enabling policy here.
+  chromeos::MissiveClientTestObserver missive_event_observer(
+      base::BindRepeating(IsRecordCrashEvent));
+  EmitCrash(is_uploaded());
+
+  ::content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(missive_event_observer.HasNewEnqueuedRecord());
+}
+
+IN_PROC_BROWSER_TEST_F(FatalCrashEventsBrowserTest,
+                       CrashNotOccurAndPolicyEnabled) {
+  EnablePolicy();
+  chromeos::MissiveClientTestObserver missive_event_observer(
+      base::BindRepeating(IsRecordCrashEvent));
+  // Not emitting crashes here.
+
+  ::content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(missive_event_observer.HasNewEnqueuedRecord());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     FatalCrashEventsBrowserTests,
     FatalCrashEventsBrowserTest,
