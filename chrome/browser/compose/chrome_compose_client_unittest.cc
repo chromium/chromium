@@ -586,6 +586,9 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("", result->compose_state->webui_state);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kNewSessionWithSelectedText, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestInputParams) {
@@ -852,9 +855,9 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 1,  // Close button pressed.
-                                 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionComposeCount + std::string(".Ignored"),
       3,  // Expect that three Compose calls were recorded.
@@ -897,9 +900,9 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
-  histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 0,  // Accept button pressed.
-                                 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kAcceptedSuggestion, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionComposeCount + std::string(".Accepted"),
       3,  // Expect that three Compose calls were recorded.
@@ -921,9 +924,9 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
   GURL next_page("http://example.com/a.html");
   NavigateAndCommit(web_contents(), next_page);
 
-  histograms().ExpectBucketCount("Compose.SessionCloseReason",
-                                 2,  // Ended implicitly.
-                                 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kEndedImplicitly, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {

@@ -16,6 +16,7 @@ const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
 const char kComposeResponseDurationError[] = "Compose.Response.Duration.Error";
 const char kComposeResponseStatus[] = "Compose.Response.Status";
 const char kComposeSessionComposeCount[] = "Compose.Session.ComposeCount";
+const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
 const char kComposeSessionDialogShownCount[] =
     "Compose.Session.DialogShownCount";
 const char kComposeSessionUndoCount[] = "Compose.Session.UndoCount";
@@ -39,7 +40,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
                                    int undo_count) {
-  UMA_HISTOGRAM_ENUMERATION("Compose.SessionCloseReason", reason);
+  UMA_HISTOGRAM_ENUMERATION(kComposeSessionCloseReason, reason);
 
   std::string status;
   switch (reason) {
@@ -48,6 +49,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
       break;
     case ComposeSessionCloseReason::kCloseButtonPressed:
     case ComposeSessionCloseReason::kEndedImplicitly:
+    case ComposeSessionCloseReason::kNewSessionWithSelectedText:
       status = ".Ignored";
   }
   base::UmaHistogramCounts1000(kComposeSessionComposeCount + status,

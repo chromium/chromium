@@ -18,6 +18,7 @@ extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
 extern const char kComposeSessionComposeCount[];
+extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];
 extern const char kComposeSessionUndoCount[];
 extern const char kComposeShowStatus[];
@@ -38,7 +39,8 @@ enum class ComposeSessionCloseReason {
   kAcceptedSuggestion = 0,
   kCloseButtonPressed = 1,
   kEndedImplicitly = 2,
-  kMaxValue = kEndedImplicitly,
+  kNewSessionWithSelectedText = 3,
+  kMaxValue = kNewSessionWithSelectedText,
 };
 
 // Enum for recording the show status of the Compose context menu item.

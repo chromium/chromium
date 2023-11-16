@@ -160,6 +160,10 @@ void ChromeComposeClient::CreateOrUpdateSession(
       ui_entry_point != EntryPoint::kAutofillPopup && !selected_text.empty();
   if (!HasSession(active_compose_field_id_.value()) ||
       should_create_new_session_for_selection) {
+    if (!selected_text.empty()) {
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
+    }
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), std::move(callback));
     current_session = new_session.get();
