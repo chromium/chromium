@@ -817,6 +817,13 @@ void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
   SetBooleanPref(account_id, kLacrosEnabled, enabled);
 }
 
+bool KnownUser::GetLacrosEnabledForAnyUser() {
+  const std::vector<AccountId> account_ids = GetKnownAccountIds();
+  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
+    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
+  });
+}
+
 bool KnownUser::UserExists(const AccountId& account_id) {
   return FindPrefs(account_id);
 }

@@ -510,6 +510,14 @@ void RecordLacrosEnabledForPrimaryUser(bool enabled) {
       .SetLacrosEnabled(user->GetAccountId(), enabled);
 }
 
+// Returns true if Lacros is enabled for any user, according to the
+// KnownUser's LacrosEnabled local state preference.
+// This function is used to determine if Lacros should be enabled for prelaunch.
+bool IsLacrosEnabledByAnyUserForPrelaunch() {
+  return user_manager::KnownUser(g_browser_process->local_state())
+      .GetLacrosEnabledForAnyUser();
+}
+
 bool ShouldPrelaunchLacrosAtLoginScreen() {
   if (!base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)) {
     LOG(WARNING)
@@ -536,6 +544,13 @@ bool ShouldPrelaunchLacrosAtLoginScreen() {
           ash::switches::kLoginUser)) {
     LOG(WARNING)
         << "Lacros will not be prelaunched: `login-user` switch was passed";
+    return false;
+  }
+
+  // If Lacros is not enabled for any user, don't prelaunch it.
+  if (!IsLacrosEnabledByAnyUserForPrelaunch()) {
+    LOG(WARNING)
+        << "Lacros will not be prelaunched: no user has Lacros enabled";
     return false;
   }
 

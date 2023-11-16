@@ -87,6 +87,13 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   ~ChromeSavedDeskDelegateTest() override = default;
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    mock_browser_manager_ =
+        std::make_unique<testing::NiceMock<MockBrowserManager>>();
+
     // Create a test user and profile so the `ChromeSavedDeskDelegate` does not
     // return empty result simply because of missing user profile.
     auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
@@ -109,7 +116,12 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     chrome_saved_desk_delegate_ = std::make_unique<ChromeSavedDeskDelegate>();
   }
 
-  void TearDown() override { chrome_saved_desk_delegate_.reset(); }
+  void TearDown() override {
+    chrome_saved_desk_delegate_.reset();
+    profile_.reset();
+    mock_browser_manager_.reset();
+    profile_manager_.reset();
+  }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
@@ -124,7 +136,7 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     return task_environment_;
   }
 
-  MockBrowserManager& mock_browser_manager() { return mock_browser_manager_; }
+  MockBrowserManager& mock_browser_manager() { return *mock_browser_manager_; }
 
   full_restore::FullRestoreSaveHandler* GetSaveHandler(
       bool start_save_timer = true) {
@@ -149,7 +161,9 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<TestingProfile> profile_;
 
-  testing::NiceMock<MockBrowserManager> mock_browser_manager_;
+  std::unique_ptr<testing::NiceMock<MockBrowserManager>> mock_browser_manager_;
+
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<ChromeSavedDeskDelegate> chrome_saved_desk_delegate_;
 

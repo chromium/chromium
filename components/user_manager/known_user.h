@@ -263,8 +263,11 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   std::string GetPendingOnboardingScreen(const AccountId& account_id);
 
-  // Whether Lacros is enabled for the user.
+  // Records whether Lacros is enabled for the user.
   void SetLacrosEnabled(const AccountId& account_id, bool enabled);
+  // Returns true if at least one user has Lacros enabled, false otherwise.
+  // It defaults to false for users for which there's no information.
+  bool GetLacrosEnabledForAnyUser();
 
   bool UserExists(const AccountId& account_id);
 

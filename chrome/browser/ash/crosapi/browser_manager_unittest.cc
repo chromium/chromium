@@ -30,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -246,6 +247,13 @@ class BrowserManagerTest : public testing::Test {
     kMaxValue = kChromeAppKiosk,
   };
 
+  void AddKnownUser(bool lacros_enabled) {
+    AccountId account_id =
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
+    user_manager::KnownUser(local_state_.Get())
+        .SetLacrosEnabled(account_id, lacros_enabled);
+  }
+
   void AddUser(UserType user_type) {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
@@ -271,6 +279,8 @@ class BrowserManagerTest : public testing::Test {
     ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
         local_state_.Get(), user->username_hash(),
         ash::standalone_browser::migrator_util::MigrationMode::kCopy);
+
+    AddKnownUser(/*lacros_enabled=*/true);
 
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
@@ -512,7 +522,35 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
 
-TEST_F(BrowserManagerTest, AllowUseOfLacrosOnNormalCPUs) {
+class BrowserManagerWithoutLacrosUserTest : public BrowserManagerTest {
+  void SetUpBrowserManager() override {
+    AddKnownUser(/*lacros_enabled=*/false);
+    BrowserManagerTest::SetUpBrowserManager();
+  }
+};
+
+TEST_F(BrowserManagerWithoutLacrosUserTest,
+       DoNotPrelaunchLacrosIfNoUserHasItEnabled) {
+  // Simulate that we are ready and the log in screen is shown.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
+  // Trigger the pre-launch logic as the log in screen is ready.
+  fake_browser_manager_->TriggerLoginPromptVisible();
+
+  // Expect the prelaunch logic was NOT called as no user has Lacros enabled.
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
+}
+
+class BrowserManagerWithLacrosUserTest : public BrowserManagerTest {
+ public:
+  void SetUpBrowserManager() override {
+    AddKnownUser(/*lacros_enabled=*/true);
+    BrowserManagerTest::SetUpBrowserManager();
+  }
+};
+
+TEST_F(BrowserManagerWithLacrosUserTest, AllowUseOfLacrosOnNormalCPUs) {
   // Simulate that we are ready and the log in screen is shown.
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
@@ -524,11 +562,12 @@ TEST_F(BrowserManagerTest, AllowUseOfLacrosOnNormalCPUs) {
   EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
 }
 
-class BrowserManagerWithOldCPUTest : public BrowserManagerTest {
+class BrowserManagerWithOldCPUTest : public BrowserManagerWithLacrosUserTest {
   void SetUpBrowserManager() override {
     // Set the used CPU type to really old.
     ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
-    BrowserManagerTest::SetUpBrowserManager();
+
+    BrowserManagerWithLacrosUserTest::SetUpBrowserManager();
   }
 };
 
