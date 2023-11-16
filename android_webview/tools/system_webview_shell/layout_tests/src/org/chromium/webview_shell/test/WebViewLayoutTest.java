@@ -393,7 +393,6 @@ public class WebViewLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1502191")
     public void testGeolocationCallbacks() throws Exception {
         runWebViewLayoutTest(
                 "blink-apis/geolocation/geolocation-permission-callbacks.html",
@@ -424,7 +423,6 @@ public class WebViewLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1502191")
     public void testBatteryApi() throws Exception {
         runWebViewLayoutTest(
                 "blink-apis/battery-status/battery-callback.html",
