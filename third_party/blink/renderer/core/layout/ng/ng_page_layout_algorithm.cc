@@ -16,11 +16,10 @@
 
 namespace blink {
 
-NGPageLayoutAlgorithm::NGPageLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+PageLayoutAlgorithm::PageLayoutAlgorithm(const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {}
 
-const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
+const NGLayoutResult* PageLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   WritingDirectionMode writing_direction =
       ConstraintSpace().GetWritingDirection();
@@ -78,13 +77,13 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGPageLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult PageLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   NOTREACHED();
   return MinMaxSizesResult();
 }
 
-const NGPhysicalBoxFragment* NGPageLayoutAlgorithm::LayoutPage(
+const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,
     const NGBlockBreakToken* break_token) const {
@@ -98,14 +97,14 @@ const NGPhysicalBoxFragment* NGPageLayoutAlgorithm::LayoutPage(
   NGConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
-  NGBlockLayoutAlgorithm child_algorithm(
+  BlockLayoutAlgorithm child_algorithm(
       {Node(), fragment_geometry, child_space, break_token});
   child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
   const NGLayoutResult* result = child_algorithm.Layout();
   return &To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 }
 
-NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
+NGConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
   NGConstraintSpaceBuilder space_builder(
       ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);

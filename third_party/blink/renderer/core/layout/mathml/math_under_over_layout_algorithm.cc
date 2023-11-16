@@ -138,8 +138,8 @@ bool HasAccent(const NGBlockNode& node, bool accent_under) {
 }  // namespace
 
 MathUnderOverLayoutAlgorithm::MathUnderOverLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 

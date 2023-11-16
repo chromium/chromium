@@ -20,12 +20,12 @@ struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
 class CORE_EXPORT FlexLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
   explicit FlexLayoutAlgorithm(
-      const NGLayoutAlgorithmParams& params,
+      const LayoutAlgorithmParams& params,
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;

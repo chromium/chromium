@@ -19,7 +19,7 @@ struct BoxLayoutExtraInput {
   // pointer to it.
   DISALLOW_NEW();
 
-  // The border-box size computed by NGReplacedLayoutAlgorithm.
+  // The border-box size computed by ReplacedLayoutAlgorithm.
   PhysicalSize size;
 
   // Border and padding values.

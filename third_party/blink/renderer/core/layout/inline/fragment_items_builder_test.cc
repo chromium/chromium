@@ -41,7 +41,7 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
 
   InlineNode inline_node(container);
   {
-    // First test emulates what |NGBlockLayoutAlgorithm| does, which loops
+    // First test emulates what |BlockLayoutAlgorithm| does, which loops
     // following calls for each line:
     // 1. |AcquireLogicalLineItems|
     // 2. |AssociateLogicalLineItems|

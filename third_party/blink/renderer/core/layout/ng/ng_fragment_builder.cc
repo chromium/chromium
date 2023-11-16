@@ -349,7 +349,7 @@ void NGFragmentBuilder::PropagateFromFragment(
 void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
                                          const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
-  // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
+  // |SimplifiedLayoutAlgorithm|) we always place them as the first child.
   if (child->IsListMarker()) {
     children_.push_front(LogicalFragmentLink{std::move(child), child_offset});
     return;

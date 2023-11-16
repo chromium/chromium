@@ -16,12 +16,12 @@
 
 namespace blink {
 
-void NGBaseLayoutAlgorithmTest::SetUp() {
+void BaseLayoutAlgorithmTest::SetUp() {
   EnableCompositing();
   RenderingTest::SetUp();
 }
 
-void NGBaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
+void BaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
   if (GetDocument().Lifecycle().GetState() ==
       DocumentLifecycle::kInPerformLayout)
     return;
@@ -30,7 +30,7 @@ void NGBaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
 }
 
-const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
     NGBlockNode node,
     const NGConstraintSpace& space,
     const NGBreakToken* break_token) {
@@ -40,7 +40,7 @@ const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   const NGLayoutResult* result =
-      NGBlockLayoutAlgorithm(
+      BlockLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();
 
@@ -48,7 +48,7 @@ const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
 }
 
 const NGPhysicalBoxFragment*
-NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     NGBlockNode node,
     const NGConstraintSpace& space,
     const NGBreakToken* break_token) {
@@ -65,8 +65,8 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
 }
 
-const NGPhysicalBoxFragment*
-NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
+const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
+    const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
   CHECK(layout_object && layout_object->IsLayoutNGObject());
   const NGPhysicalBoxFragment* fragment =
@@ -75,7 +75,7 @@ NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   return fragment;
 }
 
-const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::CurrentFragmentFor(
+const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
     const LayoutNGBlockFlow* block_flow) {
   return block_flow->GetPhysicalFragment(0);
 }

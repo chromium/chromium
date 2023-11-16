@@ -197,8 +197,8 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
 #if DCHECK_IS_ON()
 // TODO: Currently we haven't supported ::marker, so the margin-top of marker
 // should always be zero. And this make us could resolve LI's BFC block-offset
-// in NGBlockLayoutAlgorithm::PositionOrPropagateListMarker and
-// NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes without consider
+// in BlockLayoutAlgorithm::PositionOrPropagateListMarker and
+// BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes without consider
 // marker's margin-top.
 void UnpositionedListMarker::CheckMargin() const {
   DCHECK(marker_layout_object_);

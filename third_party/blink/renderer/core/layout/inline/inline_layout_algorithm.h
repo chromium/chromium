@@ -39,9 +39,9 @@ struct LeadingFloats;
 //
 // Uses LineBreaker to find InlineItems to form a line.
 class CORE_EXPORT InlineLayoutAlgorithm final
-    : public NGLayoutAlgorithm<InlineNode,
-                               LineBoxFragmentBuilder,
-                               InlineBreakToken> {
+    : public LayoutAlgorithm<InlineNode,
+                             LineBoxFragmentBuilder,
+                             InlineBreakToken> {
  public:
   InlineLayoutAlgorithm(InlineNode,
                         const NGConstraintSpace&,

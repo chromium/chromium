@@ -15,8 +15,8 @@
 namespace blink {
 
 TableSectionLayoutAlgorithm::TableSectionLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {}
 
 // Generated fragment structure:
 // +-----section--------------+

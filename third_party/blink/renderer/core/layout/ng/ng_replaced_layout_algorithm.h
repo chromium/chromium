@@ -15,12 +15,12 @@ namespace blink {
 class NGBlockNode;
 class NGBlockBreakToken;
 
-class CORE_EXPORT NGReplacedLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT ReplacedLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit NGReplacedLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit ReplacedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   const NGLayoutResult* Layout() override;

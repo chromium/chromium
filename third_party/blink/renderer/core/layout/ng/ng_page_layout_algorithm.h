@@ -17,12 +17,12 @@ class NGBlockBreakToken;
 class NGConstraintSpace;
 struct LogicalSize;
 
-class CORE_EXPORT NGPageLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT PageLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  NGPageLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit PageLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

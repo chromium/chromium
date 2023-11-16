@@ -22,7 +22,7 @@ class NGPhysicalBoxFragment;
 
 // Base class for all LayoutNG Algorithms unit test classes.
 typedef bool TestParamLayoutNG;
-class NGBaseLayoutAlgorithmTest
+class BaseLayoutAlgorithmTest
     : public testing::WithParamInterface<TestParamLayoutNG>,
       public RenderingTest {
  protected:

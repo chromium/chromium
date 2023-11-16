@@ -24,7 +24,7 @@ class NGEarlyBreak;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
-struct NGLayoutAlgorithmParams;
+struct LayoutAlgorithmParams;
 
 enum class MathScriptType;
 
@@ -41,7 +41,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
                                const NGEarlyBreak* = nullptr,
                                const NGColumnSpannerPath* = nullptr) const;
 
-  // This method is just for use within the |NGSimplifiedLayoutAlgorithm|.
+  // This method is just for use within the |SimplifiedLayoutAlgorithm|.
   //
   // If layout is dirty, it will perform layout using the previous constraint
   // space used to generate the |NGLayoutResult|.
@@ -248,7 +248,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
  private:
   void PrepareForLayout() const;
 
-  const NGLayoutResult* RunSimplifiedLayout(const NGLayoutAlgorithmParams&,
+  const NGLayoutResult* RunSimplifiedLayout(const LayoutAlgorithmParams&,
                                             const NGLayoutResult&) const;
 
   // If this node is a LayoutNGMixin, the caller must pass the layout object for

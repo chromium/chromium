@@ -41,8 +41,8 @@ static void DetermineOperatorSpacing(const NGBlockNode& node,
 }  // namespace
 
 MathRowLayoutAlgorithm::MathRowLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   DCHECK(!ConstraintSpace().HasBlockFragmentation());
 }

@@ -119,7 +119,7 @@ we may break before or after it).
 
 ([Fragment builders](ng_box_fragment_builder.h) also need to be
 fragmentation-aware. This is automatically taken care of by the
-[NGLayoutAlgorithm](ng_layout_algorithm.h) constructor, so algorithm
+[LayoutAlgorithm](ng_layout_algorithm.h) constructor, so algorithm
 implementors need not worry about this.)
 
 **Important:** When laying out a child that participates in block fragmentation,
@@ -176,7 +176,7 @@ that the block layout algorithm in particular doesn't use it, because it needs
 to do some extra work for the calculation of [orphans and
 widows](https://www.w3.org/TR/css-break-3/#widows-orphans), which is specific to
 block containers. Instead, it has its own implementation, in
-[NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded()](ng_block_layout_algorithm.cc),
+[BlockLayoutAlgorithm::BreakBeforeChildIfNeeded()](ng_block_layout_algorithm.cc),
 that performs additional logic for handling orphans and widows.
 
 What BreakBeforeChildIfNeeded() returns determines how to proceed. We'll either:
@@ -204,7 +204,7 @@ If we decide to break before a child (either directly because of a kBrokeBefore
 return value, or, when re-laying out to an earlier break, because of
 kNeedsEarlierBreak), the parent needs to [consume all remaining space in the
 fragmentainer](https://www.w3.org/TR/css-break-3/#box-splitting). How to do this
-is algorithm-specific. NGBlockLayoutAlgorithm has
+is algorithm-specific. BlockLayoutAlgorithm has
 ConsumeRemainingFragmentainerSpace(), for instance.
 
 ## At the end of layout ##
@@ -265,7 +265,7 @@ a tree structure for each parent we need to break and resume inside of, which
 we'll traverse when resuming layout in the next fragmentainer. See for instance
 [NGBlockChildIterator](ng_block_child_iterator.h), and how it makes use of the
 break token tree structure during child layout in
-[NGBlockLayoutAlgorithm::Layout()](ng_block_layout_algorithm.cc).
+[BlockLayoutAlgorithm::Layout()](ng_block_layout_algorithm.cc).
 
 Note that the mere existence of a break token for a node doesn't imply that any
 fragment has been generated for a node, since we also create break tokens
@@ -282,11 +282,11 @@ a child break token for each child node that we need to break *before*.
 For multicol layout, a break token tree is built all the way up to the
 containing column fragment, and there it will serve as input to the next
 column. The column fragments are produced by the regular
-[NGBlockLayoutAlgorithm](ng_block_layout_algorithm.h), while the multicol
+[BlockLayoutAlgorithm](ng_block_layout_algorithm.h), while the multicol
 container itself produces multicol container fragments (we may be nested inside
 of another fragmentation context; otherwise there'll only be one multicol
 container fragment) using
-[NGColumnLayoutAlgorithm](ng_column_layout_algorithm.h).
+[ColumnLayoutAlgorithm](ng_column_layout_algorithm.h).
 
 Example:
 
@@ -376,7 +376,7 @@ us how much space we actually need to fit in this column. We were able to fit
 100px in the previous column, so that's our previously consumed block-size. The
 specified height is 150px, so we need room for another 50px, which will
 fit. Create another fragment for #container and return to the parent layout
-algorithm (the NGBlockLayoutAlgorithm for the second column). The column only
+algorithm (the BlockLayoutAlgorithm for the second column). The column only
 had one break token child, i.e. the one for #container. We'll proceed with its
 sibling #next, which will also fit in the second column. And we're done.
 
@@ -395,7 +395,7 @@ the [NGEarlyBreak](ng_early_break.h) structure.
 An algorithm can be rerun to break at the appealing early breakpoint by passing
 said early breakpoint to the algorithm's constructor. This can be done in the
 algorithm by calling and returning the result from
-[NGLayoutAlgorithm::RelayoutAndBreakEarlier()](ng_layout_algorithm.h). This will
+[LayoutAlgorithm::RelayoutAndBreakEarlier()](ng_layout_algorithm.h). This will
 set the early_break_ member and relayout. Any compliant algorithm needs to
 check if an early break has been set, and, if so, break when reaching that
 node.
@@ -420,7 +420,7 @@ and relayout without block fragmentation, so that the node from this point will
 be treated as monolithic.
 
 The correct response to this is to abort layout of the node and relayout using
-[NGLayoutAlgorithm::RelayoutWithoutFragmentation()](ng_layout_algorithm.h).
+[LayoutAlgorithm::RelayoutWithoutFragmentation()](ng_layout_algorithm.h).
 
 ## Parallel flows ##
 

@@ -518,7 +518,7 @@ class CORE_EXPORT NGConstraintSpace final {
   bool IsTableCellChild() const { return bitfields_.is_table_cell_child; }
 
   // If we should apply the restricted block-size behavior. See where this is
-  // set within |NGBlockLayoutAlgorithm| for the conditions when this applies.
+  // set within |BlockLayoutAlgorithm| for the conditions when this applies.
   bool IsRestrictedBlockSizeTableCellChild() const {
     return bitfields_.is_restricted_block_size_table_cell_child;
   }

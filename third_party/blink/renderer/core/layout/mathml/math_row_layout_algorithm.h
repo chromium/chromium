@@ -16,11 +16,11 @@ namespace blink {
 class LayoutUnit;
 
 class CORE_EXPORT MathRowLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit MathRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathRowLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   struct ChildWithOffsetAndMargins {
     DISALLOW_NEW();

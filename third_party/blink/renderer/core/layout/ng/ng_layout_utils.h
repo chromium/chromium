@@ -18,7 +18,7 @@ struct MarginStrut;
 // various types of misses we may be able to perform less work than a full
 // layout.
 //
-// See |NGSimplifiedLayoutAlgorithm| for details about the
+// See |SimplifiedLayoutAlgorithm| for details about the
 // |kNeedsSimplifiedLayout| cache miss type.
 enum class NGLayoutCacheStatus {
   kHit,                    // Cache hit, no additional work required.

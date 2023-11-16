@@ -17,11 +17,11 @@ class NGBlockNode;
 class NGBlockBreakToken;
 
 class CORE_EXPORT TableSectionLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit TableSectionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit TableSectionLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

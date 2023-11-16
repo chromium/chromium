@@ -17,11 +17,11 @@ class NGBlockBreakToken;
 class NGConstraintSpace;
 
 class CORE_EXPORT FieldsetLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit FieldsetLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit FieldsetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

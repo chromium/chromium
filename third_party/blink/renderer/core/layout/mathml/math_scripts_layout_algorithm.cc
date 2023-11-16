@@ -88,8 +88,8 @@ ScriptsVerticalParameters GetScriptsVerticalParameters(
 }  // namespace
 
 MathScriptsLayoutAlgorithm::MathScriptsLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 

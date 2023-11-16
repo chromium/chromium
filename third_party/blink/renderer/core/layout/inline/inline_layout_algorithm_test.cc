@@ -36,7 +36,7 @@ const PhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
   return nullptr;
 }
 
-class InlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class InlineLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   static std::string AsFragmentItemsString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;

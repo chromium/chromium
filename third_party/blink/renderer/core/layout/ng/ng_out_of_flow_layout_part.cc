@@ -1198,10 +1198,9 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
         old_result->GetConstraintSpaceForCaching();
     FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         constraint_space, multicol, /* break_token */ nullptr);
-    NGLayoutAlgorithmParams params(multicol, fragment_geometry,
-                                   constraint_space);
-    NGSimplifiedLayoutAlgorithm algorithm(params, *old_result,
-                                          /* keep_old_size */ true);
+    LayoutAlgorithmParams params(multicol, fragment_geometry, constraint_space);
+    SimplifiedLayoutAlgorithm algorithm(params, *old_result,
+                                        /* keep_old_size */ true);
 
     // First copy the fragmentainers (and other child fragments) that we already
     // had.
@@ -2179,7 +2178,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       // Out-of-flow positioned elements whose containing block is inside
       // clipped overflow shouldn't generate any additional fragmentainers. Just
       // place everything in the last fragmentainer. This is similar to what
-      // NGLayoutAlgorithm::RelayoutWithoutFragmentation() does for in-flow
+      // LayoutAlgorithm::RelayoutWithoutFragmentation() does for in-flow
       // content overflowing a clipped ancestor, except that in this case we
       // know up front that we should disable fragmentation.
       //
@@ -2260,9 +2259,9 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     previous_break_token =
         PreviousFragmentainerBreakToken(*container_builder_, original_index);
   }
-  NGLayoutAlgorithmParams params(node, fragment_geometry, space,
-                                 previous_break_token,
-                                 /* early_break */ nullptr);
+  LayoutAlgorithmParams params(node, fragment_geometry, space,
+                               previous_break_token,
+                               /* early_break */ nullptr);
 
   // |algorithm| corresponds to the "mutable copy" of our original
   // fragmentainer. As long as this "copy" hasn't been laid out via

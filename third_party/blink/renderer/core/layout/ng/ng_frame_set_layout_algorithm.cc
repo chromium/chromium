@@ -15,7 +15,7 @@ namespace {
 // This function never produces fractional values.
 // LayoutUnit(int) produces fractional values if the argument is greater
 // than kIntMaxForLayoutUnit or smaller than kIntMinForLayoutUnit.
-// NGFrameSetLayoutAlgorithm always requires integers.
+// FrameSetLayoutAlgorithm always requires integers.
 LayoutUnit IntLayoutUnit(double value) {
   if (value >= kIntMaxForLayoutUnit)
     return LayoutUnit(kIntMaxForLayoutUnit);
@@ -37,12 +37,12 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
 
 }  // namespace
 
-NGFrameSetLayoutAlgorithm::NGFrameSetLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm<NGBlockNode, NGBoxFragmentBuilder, NGBlockBreakToken>(
+FrameSetLayoutAlgorithm::FrameSetLayoutAlgorithm(
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm<NGBlockNode, NGBoxFragmentBuilder, NGBlockBreakToken>(
           params) {}
 
-const NGLayoutResult* NGFrameSetLayoutAlgorithm::Layout() {
+const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
   auto& frame_set = *To<HTMLFrameSetElement>(Node().GetDOMNode());
   auto layout_data = std::make_unique<FrameSetLayoutData>();
   layout_data->border_thickness = frame_set.Border(Style());
@@ -67,7 +67,7 @@ const NGLayoutResult* NGFrameSetLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGFrameSetLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult FrameSetLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   MinMaxSizes sizes;
   const auto& space = ConstraintSpace();
@@ -85,7 +85,7 @@ MinMaxSizesResult NGFrameSetLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 // https://html.spec.whatwg.org/C/#convert-a-list-of-dimensions-to-a-list-of-pixel-values
-Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
+Vector<LayoutUnit> FrameSetLayoutAlgorithm::LayoutAxis(
     wtf_size_t count,
     const Vector<HTMLDimension>& grid,
     const Vector<int>& deltas,
@@ -269,7 +269,7 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
   return sizes;
 }
 
-void NGFrameSetLayoutAlgorithm::LayoutChildren(
+void FrameSetLayoutAlgorithm::LayoutChildren(
     const FrameSetLayoutData& layout_data) {
   PhysicalOffset position;
   NGLayoutInputNode child = Node().FirstChild();
@@ -305,10 +305,10 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
   }
 }
 
-void NGFrameSetLayoutAlgorithm::LayoutChild(const NGLayoutInputNode& child,
-                                            LogicalSize available_size,
-                                            PhysicalOffset position,
-                                            PhysicalSize child_size) {
+void FrameSetLayoutAlgorithm::LayoutChild(const NGLayoutInputNode& child,
+                                          LogicalSize available_size,
+                                          PhysicalOffset position,
+                                          PhysicalSize child_size) {
   const PhysicalSize frameset_size = ToPhysicalSize(
       container_builder_.Size(), ConstraintSpace().GetWritingMode());
   const auto container_direction = Style().GetWritingDirection();

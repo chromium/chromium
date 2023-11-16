@@ -14,14 +14,14 @@
 namespace blink {
 namespace {
 
-class NGColumnLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class ColumnLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-    return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+    return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 
   String DumpFragmentTree(const NGPhysicalBoxFragment* fragment) {
@@ -39,7 +39,7 @@ class NGColumnLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 };
 
-TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditable) {
+TEST_F(ColumnLayoutAlgorithmTest, EmptyEditable) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 10px/20px Ahem; }"
@@ -54,7 +54,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditable) {
   EXPECT_EQ(20, GetElementById("multicol2")->OffsetHeight());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditableWithFloat) {
+TEST_F(ColumnLayoutAlgorithmTest, EmptyEditableWithFloat) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 10px/20px Ahem; }"
@@ -71,7 +71,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditableWithFloat) {
   EXPECT_EQ(20, GetElementById("multicol2")->OffsetHeight());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
+TEST_F(ColumnLayoutAlgorithmTest, EmptyMulticol) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -92,7 +92,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   ASSERT_TRUE(fragment);
@@ -109,7 +109,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
   EXPECT_FALSE(iterator.NextChild());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, EmptyBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -132,7 +132,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   EXPECT_EQ(PhysicalSize(210, 100), fragment->Size());
@@ -158,7 +158,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
   EXPECT_FALSE(iterator.NextChild());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, BlockInOneColumn) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -181,7 +181,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
 
   FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
@@ -208,7 +208,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
   EXPECT_FALSE(iterator.NextChild());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeightBlockAtFragmentainerBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, ZeroHeightBlockAtFragmentainerBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -240,7 +240,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeightBlockAtFragmentainerBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BlockInTwoColumns) {
+TEST_F(ColumnLayoutAlgorithmTest, BlockInTwoColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -270,7 +270,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInTwoColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BlockInThreeColumns) {
+TEST_F(ColumnLayoutAlgorithmTest, BlockInThreeColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -302,7 +302,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInThreeColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ActualColumnCountGreaterThanSpecified) {
+TEST_F(ColumnLayoutAlgorithmTest, ActualColumnCountGreaterThanSpecified) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -334,7 +334,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ActualColumnCountGreaterThanSpecified) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, TwoBlocksInTwoColumns) {
+TEST_F(ColumnLayoutAlgorithmTest, TwoBlocksInTwoColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -366,7 +366,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, TwoBlocksInTwoColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, ZeroHeight) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -391,7 +391,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeightWithContent) {
+TEST_F(ColumnLayoutAlgorithmTest, ZeroHeightWithContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -427,7 +427,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ZeroHeightWithContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, OverflowedBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -465,7 +465,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock2) {
+TEST_F(ColumnLayoutAlgorithmTest, OverflowedBlock2) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -513,7 +513,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock3) {
+TEST_F(ColumnLayoutAlgorithmTest, OverflowedBlock3) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -552,7 +552,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, OverflowedBlock3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, UnusedSpaceInBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, UnusedSpaceInBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -587,7 +587,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, UnusedSpaceInBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatInOneColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatInOneColumn) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -615,7 +615,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatInOneColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, TwoFloatsInOneColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, TwoFloatsInOneColumn) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -645,7 +645,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, TwoFloatsInOneColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, TwoFloatsInTwoColumns) {
+TEST_F(ColumnLayoutAlgorithmTest, TwoFloatsInTwoColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -678,7 +678,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, TwoFloatsInTwoColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithForcedBreak) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -715,7 +715,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithForcedBreak) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMargin) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -745,7 +745,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMargin) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMarginBelowFloat) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithMarginBelowFloat) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -777,7 +777,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMarginBelowFloat) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithLastResortBreak) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithLastResortBreak) {
   // Breaking inside the line is not possible, and breaking between the
   // block-start content edge and the first child should be avoided.
   SetBodyInnerHTML(R"HTML(
@@ -816,7 +816,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithLastResortBreak) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithAvoidBreak) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithAvoidBreak) {
   // We want to avoid breaking inside the float child, and breaking before it
   // should be avoided (not a valid breakpoint).
   SetBodyInnerHTML(R"HTML(
@@ -853,7 +853,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithAvoidBreak) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMarginAndAvoidBreak) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatWithMarginAndAvoidBreak) {
   // We want to avoid breaking inside the float child, and breaking before it
   // should be avoided (not a valid breakpoint). The top margin should be kept
   // in the next column.
@@ -891,7 +891,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatWithMarginAndAvoidBreak) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, UnbreakableFloatBeforeBreakable) {
+TEST_F(ColumnLayoutAlgorithmTest, UnbreakableFloatBeforeBreakable) {
   // https://www.w3.org/TR/CSS22/visuren.html#float-position
   //
   // "The outer top of a floating box may not be higher than the outer top of
@@ -937,7 +937,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, UnbreakableFloatBeforeBreakable) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BlockWithTopMarginInThreeColumns) {
+TEST_F(ColumnLayoutAlgorithmTest, BlockWithTopMarginInThreeColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -971,7 +971,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockWithTopMarginInThreeColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BlockStartAtColumnBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, BlockStartAtColumnBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1002,7 +1002,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockStartAtColumnBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedBlockAfterBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedBlockAfterBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1040,7 +1040,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedBlockAfterBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoid) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1071,7 +1071,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideAvoidColumn) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1102,7 +1102,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidPage) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideAvoidPage) {
   // break-inside:avoid-page has no effect, unless we're breaking into pages.
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1135,7 +1135,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidPage) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   // The block that has break-inside:avoid is too tall to fit in one
   // fragmentainer. So a break is unavoidable. Let's check that:
   // 1. The block is still shifted to the start of the next fragmentainer
@@ -1172,7 +1172,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedBreakInsideAvoid) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedBreakInsideAvoid) {
   // If there were no break-inside:avoid on the outer DIV here, there'd be a
   // break between the two inner ones, since they wouldn't both fit in the first
   // column. However, since the outer DIV does have such a declaration,
@@ -1213,7 +1213,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedBreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedBreakInsideAvoidTall) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedBreakInsideAvoidTall) {
   // Here the outer DIV with break-inside:avoid is too tall to fit where it
   // occurs naturally, so it needs to be pushed to the second column. It's not
   // going to fit fully there either, though, since its two children don't fit
@@ -1256,7 +1256,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedBreakInsideAvoidTall) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidAtColumnBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideAvoidAtColumnBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1290,7 +1290,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideAvoidAtColumnBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MarginTopPastEndOfFragmentainer) {
+TEST_F(ColumnLayoutAlgorithmTest, MarginTopPastEndOfFragmentainer) {
   // A block whose border box would start past the end of the current
   // fragmentainer should start exactly at the start of the next fragmentainer,
   // discarding what's left of the margin.
@@ -1325,7 +1325,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginTopPastEndOfFragmentainer) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
+TEST_F(ColumnLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
   // A block whose border box would start past the end of the current
   // fragmentainer should start exactly at the start of the next fragmentainer,
   // discarding what's left of the margin.
@@ -1360,7 +1360,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MarginTopAtEndOfFragmentainer) {
+TEST_F(ColumnLayoutAlgorithmTest, MarginTopAtEndOfFragmentainer) {
   // A block whose border box is flush with the end of the fragmentainer
   // shouldn't produce an empty fragment there - only one fragment in the next
   // fragmentainer.
@@ -1394,7 +1394,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginTopAtEndOfFragmentainer) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MarginBottomAtEndOfFragmentainer) {
+TEST_F(ColumnLayoutAlgorithmTest, MarginBottomAtEndOfFragmentainer) {
   // A block whose border box is flush with the end of the fragmentainer
   // shouldn't produce an empty fragment there - only one fragment in the next
   // fragmentainer.
@@ -1428,7 +1428,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginBottomAtEndOfFragmentainer) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolExtraSpace) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesInMulticolExtraSpace) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1468,7 +1468,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolExtraSpace) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolExactFit) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesInMulticolExactFit) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1508,7 +1508,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolExactFit) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildExtraSpace) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesInMulticolChildExtraSpace) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1550,7 +1550,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildExtraSpace) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildExactFit) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesInMulticolChildExactFit) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1592,7 +1592,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildExactFit) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildNoSpaceForFirst) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesInMulticolChildNoSpaceForFirst) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1635,7 +1635,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesInMulticolChildNoSpaceForFirst) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
+TEST_F(ColumnLayoutAlgorithmTest,
        LinesInMulticolChildInsufficientSpaceForFirst) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1679,7 +1679,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LineAtColumnBoundaryInFirstBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, LineAtColumnBoundaryInFirstBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1723,7 +1723,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LineAtColumnBoundaryInFirstBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, LinesAndFloatsMulticol) {
+TEST_F(ColumnLayoutAlgorithmTest, LinesAndFloatsMulticol) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1772,7 +1772,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesAndFloatsMulticol) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatBelowLastLineInColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatBelowLastLineInColumn) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1818,7 +1818,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatBelowLastLineInColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, Orphans) {
+TEST_F(ColumnLayoutAlgorithmTest, Orphans) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1859,7 +1859,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, Orphans) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, OrphansUnsatisfiable) {
+TEST_F(ColumnLayoutAlgorithmTest, OrphansUnsatisfiable) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1903,7 +1903,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, OrphansUnsatisfiable) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, Widows) {
+TEST_F(ColumnLayoutAlgorithmTest, Widows) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -1949,7 +1949,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, Widows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, WidowsUnsatisfiable) {
+TEST_F(ColumnLayoutAlgorithmTest, WidowsUnsatisfiable) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2015,7 +2015,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, WidowsUnsatisfiable) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, OrphansAndUnsatisfiableWidows) {
+TEST_F(ColumnLayoutAlgorithmTest, OrphansAndUnsatisfiableWidows) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2055,7 +2055,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, OrphansAndUnsatisfiableWidows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, UnsatisfiableOrphansAndWidows) {
+TEST_F(ColumnLayoutAlgorithmTest, UnsatisfiableOrphansAndWidows) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2095,7 +2095,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, UnsatisfiableOrphansAndWidows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, WidowsAndAbspos) {
+TEST_F(ColumnLayoutAlgorithmTest, WidowsAndAbspos) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2143,7 +2143,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, WidowsAndAbspos) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore) {
   // Just breaking where we run out of space is perfect, since it won't violate
   // the orphans/widows requirement, since there'll be two lines both before and
   // after the break.
@@ -2190,7 +2190,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore2) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore2) {
   // Prefer breaking between lines and violate an orphans requirement, rather
   // than violating break-before:avoid.
   SetBodyInnerHTML(R"HTML(
@@ -2232,7 +2232,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore3) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore3) {
   // Prefer breaking between lines and violate a widows requirement, rather than
   // violating break-before:avoid.
   SetBodyInnerHTML(R"HTML(
@@ -2274,7 +2274,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakBetweenLinesNotBefore3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatInBlockMovedByOrphans) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatInBlockMovedByOrphans) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2314,7 +2314,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatInBlockMovedByOrphans) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FloatMovedWithWidows) {
+TEST_F(ColumnLayoutAlgorithmTest, FloatMovedWithWidows) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2357,7 +2357,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatMovedWithWidows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BorderAndPadding) {
+TEST_F(ColumnLayoutAlgorithmTest, BorderAndPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2387,7 +2387,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BorderAndPadding) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideWithBorder) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideWithBorder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2423,7 +2423,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideWithBorder) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreaks) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreaks) {
   // This tests that forced breaks are honored, but only at valid class A break
   // points (i.e. *between* in-flow block siblings).
   SetBodyInnerHTML(R"HTML(
@@ -2476,7 +2476,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreaks) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakInSecondChild) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakInSecondChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2513,7 +2513,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakInSecondChild) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedAndUnforcedBreaksAtSameBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedAndUnforcedBreaksAtSameBoundary) {
   // We have two parallel flows, one with a forced break inside and one with an
   // unforced break. Check that we handle the block-start margins correctly
   // (i.e. truncate at unforced breaks but not at forced breaks).
@@ -2564,7 +2564,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedAndUnforcedBreaksAtSameBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ResumeInsideFormattingContextRoot) {
+TEST_F(ColumnLayoutAlgorithmTest, ResumeInsideFormattingContextRoot) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2598,7 +2598,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ResumeInsideFormattingContextRoot) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NewFcAtColumnBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, NewFcAtColumnBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2629,7 +2629,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NewFcAtColumnBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NewFcWithMargin) {
+TEST_F(ColumnLayoutAlgorithmTest, NewFcWithMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2661,7 +2661,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NewFcWithMargin) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NewFcBelowFloat) {
+TEST_F(ColumnLayoutAlgorithmTest, NewFcBelowFloat) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2693,7 +2693,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NewFcBelowFloat) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NewFcWithMarginPastColumnBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, NewFcWithMarginPastColumnBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2724,7 +2724,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NewFcWithMarginPastColumnBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
+TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   // The multicol container here contains two inline-blocks with a line break
   // opportunity between them. We'll test what min/max values we get for the
   // multicol container when specifying both column-count and column-width, only
@@ -2754,7 +2754,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-  NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   absl::optional<MinMaxSizes> sizes;
 
   // Both column-count and column-width set. See
@@ -2794,7 +2794,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   EXPECT_EQ(LayoutUnit(100), sizes->max_size);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancing) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2824,7 +2824,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightExactMatch) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightExactMatch) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2855,7 +2855,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightExactMatch) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightLessContent) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightLessContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2886,7 +2886,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightLessContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
+TEST_F(ColumnLayoutAlgorithmTest,
        ColumnBalancingFixedHeightOverflowingContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2922,7 +2922,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingMinHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingMinHeight) {
   // Min-height has no effect on the columns, only on the multicol
   // container. Balanced columns should never be taller than they have to be.
   SetBodyInnerHTML(R"HTML(
@@ -2955,7 +2955,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingMinHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingMaxHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingMaxHeight) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2988,8 +2988,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingMaxHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
-       ColumnBalancingMinHeightLargerThanMaxHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingMinHeightLargerThanMaxHeight) {
   // Min-height has no effect on the columns, only on the multicol
   // container. Balanced columns should never be taller than they have to be.
   SetBodyInnerHTML(R"HTML(
@@ -3023,7 +3022,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightMinHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightMinHeight) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3059,7 +3058,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingFixedHeightMinHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent { columns: 3; }
@@ -3082,7 +3081,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
   EXPECT_EQ(3U, multicol->Children().size());
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingEmpty) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingEmpty) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3105,7 +3104,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingEmpty) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingEmptyBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingEmptyBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3131,7 +3130,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingEmptyBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLine) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingSingleLine) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3159,7 +3158,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLine) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNested) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNested) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3191,7 +3190,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNested) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNestedSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNestedSpanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3225,7 +3224,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingSingleLineInNestedSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingOverflow) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingOverflow) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3260,7 +3259,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingOverflow) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLines) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLines) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3298,7 +3297,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLines) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesOrphans) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesOrphans) {
   // We have 6 lines and 3 columns. If we make the columns tall enough to hold 2
   // lines each, it should all fit. But then there's an orphans request that 3
   // lines be placed together in the same column...
@@ -3344,7 +3343,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesOrphans) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak) {
   // We have 6 lines and 3 columns. If we make the columns tall enough to hold 2
   // lines each, it should all fit. But then there's a forced break after the
   // first line, so that the remaining 5 lines have to be distributed into the 2
@@ -3390,7 +3389,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak2) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak2) {
   // We have 7+5 lines and 3 columns. There's a forced break after 7 lines, then
   // 5 more lines. There will be another implicit break among the first 7 lines,
   // while the columns will have to fit 5 lines, because of the 5 lines after
@@ -3443,7 +3442,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak3) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak3) {
   // We have 7+5 lines and 3 columns. There's a forced break after 7 lines, then
   // 5 more lines. There will be another implicit break among the first 7 lines,
   // while the columns will have to fit 5 lines, because of the 5 lines after
@@ -3502,7 +3501,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesForcedBreak3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside) {
   // We have 6 lines and 3 columns. If we make the columns tall enough to hold 2
   // lines each, it should all fit. But then there's a block with 3 lines and
   // break-inside:avoid...
@@ -3548,7 +3547,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside2) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside2) {
   // We have 5 lines and 3 columns. If we make the columns tall enough to hold 2
   // lines each, it should all fit. But then there's a block with 3 lines and
   // break-inside:avoid...
@@ -3593,7 +3592,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingLinesAvoidBreakInside2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingUnderflow) {
+TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancingUnderflow) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3619,7 +3618,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingUnderflow) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfc) {
+TEST_F(ColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfc) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3656,7 +3655,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfc) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NoClassCBreakPointBeforeBfc) {
+TEST_F(ColumnLayoutAlgorithmTest, NoClassCBreakPointBeforeBfc) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3692,7 +3691,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NoClassCBreakPointBeforeBfc) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithClearance) {
+TEST_F(ColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithClearance) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3729,7 +3728,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithClearance) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithMargin) {
+TEST_F(ColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3766,8 +3765,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBfcWithMargin) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
-       ClassCBreakPointBeforeBlockMarginCollapsing) {
+TEST_F(ColumnLayoutAlgorithmTest, ClassCBreakPointBeforeBlockMarginCollapsing) {
   // We get a class C break point here, because we get clearance, because the
   // (collapsed) margin isn't large enough to take the block below the float on
   // its own.
@@ -3810,7 +3808,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
+TEST_F(ColumnLayoutAlgorithmTest,
        NoClassCBreakPointBeforeBlockMarginCollapsing) {
   // No class C break point here, because there's no clearance, because the
   // (collapsed) margin is large enough to take the block below the float on its
@@ -3853,7 +3851,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeLine) {
+TEST_F(ColumnLayoutAlgorithmTest, ClassCBreakPointBeforeLine) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3891,7 +3889,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ClassCBreakPointBeforeLine) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakAtClassCBreakPoint) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakAtClassCBreakPoint) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -3928,7 +3926,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakAtClassCBreakPoint) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, Nested) {
+TEST_F(ColumnLayoutAlgorithmTest, Nested) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -3979,7 +3977,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, Nested) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedWithEdibleMargin) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedWithEdibleMargin) {
   // There's a block-start margin after an unforced break. It should be eaten by
   // the fragmentainer boundary.
   SetBodyInnerHTML(R"HTML(
@@ -4016,7 +4014,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedWithEdibleMargin) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedNoInnerContent) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedNoInnerContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -4048,7 +4046,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedNoInnerContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedSomeInnerContent) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedSomeInnerContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -4083,7 +4081,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedSomeInnerContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedLimitedHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedLimitedHeight) {
   // This tests that we don't advance to the next outer fragmentainer when we've
   // reached the bottom of an inner multicol container. We should create inner
   // columns that overflow in the inline direction in that case.
@@ -4140,7 +4138,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedLimitedHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedLimitedHeightWithPadding) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedLimitedHeightWithPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; width:320px; height:100px; }
@@ -4176,7 +4174,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedLimitedHeightWithPadding) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedUnbalancedInnerAutoHeight) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedUnbalancedInnerAutoHeight) {
   // The fragments generated by an inner multicol are block-size constrained by
   // the outer multicol, so if column-fill is auto, we shouldn't forcefully
   // balance.
@@ -4222,7 +4220,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedUnbalancedInnerAutoHeight) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedAtOuterBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedAtOuterBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:100px; width:320px; }
@@ -4255,7 +4253,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedAtOuterBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedZeroHeightAtOuterBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedZeroHeightAtOuterBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:100px; width:320px; }
@@ -4285,7 +4283,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedZeroHeightAtOuterBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedWithMarginAtOuterBoundary) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedWithMarginAtOuterBoundary) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:100px; width:320px; }
@@ -4318,7 +4316,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedWithMarginAtOuterBoundary) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedWithTallBorder) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedWithTallBorder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:100px; width:320px; }
@@ -4350,7 +4348,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedWithTallBorder) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, NestedWithTallSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, NestedWithTallSpanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:100px; width:320px; column-fill:auto; }
@@ -4385,7 +4383,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedWithTallSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AbsposFitsInOneColumn) {
+TEST_F(ColumnLayoutAlgorithmTest, AbsposFitsInOneColumn) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div style="columns:3; width:320px; height:100px; column-gap:10px; column-fill:auto;">
@@ -4411,7 +4409,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AbsposFitsInOneColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, Spanner) {
+TEST_F(ColumnLayoutAlgorithmTest, Spanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4464,7 +4462,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, Spanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerWithContent) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerWithContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4524,7 +4522,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerWithContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, TwoSpannersPercentWidth) {
+TEST_F(ColumnLayoutAlgorithmTest, TwoSpannersPercentWidth) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4579,7 +4577,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, TwoSpannersPercentWidth) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerNoBalancing) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerNoBalancing) {
   // Even if column-fill is auto and block-size is restricted, we have to
   // balance column contents in front of a spanner (but not after).
   SetBodyInnerHTML(R"HTML(
@@ -4634,7 +4632,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerNoBalancing) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerAtStart) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerAtStart) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4675,7 +4673,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerAtStart) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerAtEnd) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerAtEnd) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4715,7 +4713,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerAtEnd) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerAlone) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerAlone) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4742,7 +4740,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerAlone) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerInBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerInBlock) {
   // Spanners don't have to be direct children of the multicol container, but
   // have to be defined in the same block formatting context as the one
   // established by the multicol container.
@@ -4777,7 +4775,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerInBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerWithSiblingsInBlock) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerWithSiblingsInBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4820,7 +4818,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerWithSiblingsInBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerInBlockWithSiblings) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerInBlockWithSiblings) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4862,7 +4860,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerInBlockWithSiblings) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerMargins) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerMargins) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4898,7 +4896,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerMargins) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerMarginsRtl) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerMarginsRtl) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4935,7 +4933,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerMarginsRtl) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, FixedSizeMulticolWithSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, FixedSizeMulticolWithSpanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -4976,7 +4974,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FixedSizeMulticolWithSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, MarginAndBorderTopWithSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, MarginAndBorderTopWithSpanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -5014,7 +5012,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginAndBorderTopWithSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerWithMargins) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideSpannerWithMargins) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -5050,7 +5048,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerWithMargins) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, InvalidSpanners) {
+TEST_F(ColumnLayoutAlgorithmTest, InvalidSpanners) {
   // Spanners cannot exist inside new formatting context roots. They will just
   // be treated as normal column content then.
   SetBodyInnerHTML(R"HTML(
@@ -5097,7 +5095,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, InvalidSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideSpanner) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -5144,7 +5142,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerTwice) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideSpannerTwice) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -5194,7 +5192,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerTwice) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerWithContent) {
+TEST_F(ColumnLayoutAlgorithmTest, BreakInsideSpannerWithContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -5242,7 +5240,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BreakInsideSpannerWithContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners) {
   // There are two spanners in a nested multicol. They could fit in the same
   // outer column, but there's a forced break between them.
   SetBodyInnerHTML(R"HTML(
@@ -5275,7 +5273,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners2) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners2) {
   // There are two spanners in a nested multicol. They could fit in the same
   // outer column, but there's a forced break between them.
   SetBodyInnerHTML(R"HTML(
@@ -5308,7 +5306,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners3) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners3) {
   // There are two spanners in a nested multicol. They could fit in the same
   // outer column, but there's a forced break after the last child of the first
   // spanner.
@@ -5347,7 +5345,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners4) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners4) {
   // There are two spanners in a nested multicol. They could fit in the same
   // outer column, but there's a forced break before the first child of the
   // last spanner.
@@ -5386,7 +5384,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners4) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners5) {
+TEST_F(ColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners5) {
   // There are two spanners in a nested multicol. They could fit in the same
   // outer column, but there's a forced break between them. The second spanner
   // has a top margin, which should be retained, due to the forced break.
@@ -5420,7 +5418,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, ForcedBreakBetweenSpanners5) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners) {
+TEST_F(ColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners) {
   // There are two spanners in a nested multicol. They won't fit in the same
   // outer column, and we don't want to break inside. So we should break between
   // them.
@@ -5454,7 +5452,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners2) {
+TEST_F(ColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners2) {
   // There are two spanners in a nested multicol. They won't fit in the same
   // outer column, and we don't want to break inside. So we should break between
   // them. The second spanner has a top margin, but it should be truncated since
@@ -5489,7 +5487,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenSpanners2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners) {
   // There are three spanners in a nested multicol. The first two could fit in
   // the same outer column, but the third one is too tall, and we also don't
   // want to break before that one.So we should break between the two first
@@ -5526,7 +5524,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners2) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners2) {
   // There are two spanners in a nested multicol. They won't fit in the same
   // outer column, but we don't want to break inside the second one, and also
   // not between the spanners. The first spanner is breakable, so we should
@@ -5570,7 +5568,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners3) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners3) {
   // Violate orphans and widows requests rather than break-between avoidance
   // requests.
   SetBodyInnerHTML(R"HTML(
@@ -5620,7 +5618,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidSoftBreakBetweenSpanners3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenRowAndSpanner) {
+TEST_F(ColumnLayoutAlgorithmTest, SoftBreakBetweenRowAndSpanner) {
   // We have a nested multicol with some column content, followed by a
   // spanner. Everything won't fit in the same outer column, and we don't want
   // to break inside the spanner. Break between the row of columns and the
@@ -5667,7 +5665,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SoftBreakBetweenRowAndSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, SpannerAsMulticol) {
+TEST_F(ColumnLayoutAlgorithmTest, SpannerAsMulticol) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .outer { columns:3; height:50px; column-fill:auto; width:320px; }
@@ -5719,7 +5717,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, SpannerAsMulticol) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetween) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetween) {
   // Breaking exactly where we run out of space would violate a
   // break-before:avoid rule. There's a perfect break opportunity before the
   // previous sibling, so use that one instead.
@@ -5758,7 +5756,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetween) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidAndForceBreakBetween) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidAndForceBreakBetween) {
   // If we're both told to avoid and force breaking at a breakpoint, forcing
   // always wins.
   SetBodyInnerHTML(R"HTML(
@@ -5796,7 +5794,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidAndForceBreakBetween) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenInFloat) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenInFloat) {
   // There are two parallel flows here; one for the float, and one for its
   // sibling. They don't affect each other as far as breaking is concerned.
   SetBodyInnerHTML(R"HTML(
@@ -5841,7 +5839,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenInFloat) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
+TEST_F(ColumnLayoutAlgorithmTest,
        IgnoreBreakInsideAvoidBecauseBreakBetweenAvoid) {
   // We want to avoid breaks between all the children, and at the same time
   // avoid breaks inside of them. This is impossible to honor in this test,
@@ -5888,7 +5886,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInsideIgnoreInside) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInsideIgnoreInside) {
   // This one isn't obvious, spec-wise, since it's not defined which rules to
   // disregard first (break-inside vs. break-before, and break-inside on a child
   // vs. on its container), but it seems right to disregard break-inside:avoid
@@ -5934,7 +5932,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInsideIgnoreInside) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInside) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInside) {
   // When looking for possible breaks inside #middle, we need to take into
   // account that we're supposed to avoid breaking inside. The only breakpoint
   // that doesn't violate any rules in this test is *before* #middle.
@@ -5980,7 +5978,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAndInside) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenInsideBreakableParent) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenInsideBreakableParent) {
   // There's a perfect breakpoint between the two direct children of the
   // multicol container - i.e. between #first and #second. We should avoid
   // breaking between between any of the children of #second (we run out of
@@ -6033,7 +6031,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenInsideBreakableParent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAfterBreakableSibling) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenAfterBreakableSibling) {
   // We should avoid breaking between the two direct children of the multicol
   // container - i.e. between #first and #second. We should also avoid breaking
   // between between the children of #second (we run out of space before its
@@ -6088,8 +6086,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenAfterBreakableSibling) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest,
-       AvoidBreakBetweenBreakInsidePreviousSibling) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenBreakInsidePreviousSibling) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -6133,7 +6130,7 @@ TEST_F(NGColumnLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows) {
   // We run out of space at .content, but this isn't a good location, because of
   // break-before:avoid. Break between the lines. Honor orphans and widows, so
   // that two of the four lines will be pushed to the second column.
@@ -6179,7 +6176,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows2) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows2) {
   // We run out of space at .content, but this isn't a good location, because of
   // break-before:avoid. Break between the first block and the two lines, in
   // order to honor orphans and widows.
@@ -6222,7 +6219,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows2) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows3) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows3) {
   // We run out of space between the first and the second line in the second
   // container, but this isn't a good location, because of the orphans and
   // widows requirement. Break between the second and third line inside the
@@ -6278,7 +6275,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenHonorOrphansWidows3) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenIgnoreOrphansWidows) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenIgnoreOrphansWidows) {
   // We run out of space at .content, but this isn't a good location, because of
   // break-before:avoid. Break between the two lines, even if that will violate
   // the orphans and widows requirement. According to the spec, this is better
@@ -6323,7 +6320,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenIgnoreOrphansWidows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenLinesInsideBreakAvoid) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenLinesInsideBreakAvoid) {
   // We run out of space at the second line inside the last container, and we're
   // not supposed to break inside it. We're also not supposed to break between
   // the lines in the previous container (since it has break-inside:avoid,
@@ -6372,7 +6369,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenLinesInsideBreakAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenBreakAtEarlyClassC) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBetweenBreakAtEarlyClassC) {
   // The early break is a class C breakpoint, and this is also exactly where the
   // BFC block-offset is resolved. There are no possible breaks as long as we
   // don't know our BFC offset, but breaking just before the box that resolves
@@ -6413,7 +6410,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBetweenBreakAtEarlyClassC) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBeforeBlockReplacedContent) {
+TEST_F(ColumnLayoutAlgorithmTest, AvoidBreakBeforeBlockReplacedContent) {
   // Replaced content is unbreakable. Don't break right before it if we have
   // break-before:avoid, though.
   SetBodyInnerHTML(R"HTML(
@@ -6448,7 +6445,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, AvoidBreakBeforeBlockReplacedContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGColumnLayoutAlgorithmTest, TallReplacedContent) {
+TEST_F(ColumnLayoutAlgorithmTest, TallReplacedContent) {
   // Replaced content is unbreakable. Let it overflow the column.
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -15,14 +15,14 @@
 namespace blink {
 namespace {
 
-class OutOfFlowLayoutPartTest : public NGBaseLayoutAlgorithmTest {
+class OutOfFlowLayoutPartTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-    return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+    return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 
   String DumpFragmentTree(Element* element) {

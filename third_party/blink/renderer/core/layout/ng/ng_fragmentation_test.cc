@@ -11,18 +11,18 @@
 namespace blink {
 namespace {
 
-class NGFragmentationTest : public NGBaseLayoutAlgorithmTest {
+class FragmentationTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-    return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+    return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 };
 
-TEST_F(NGFragmentationTest, MultipleFragments) {
+TEST_F(FragmentationTest, MultipleFragments) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div style="columns:3; width:620px; column-fill:auto; height:100px; column-gap:10px;">
@@ -65,7 +65,7 @@ TEST_F(NGFragmentationTest, MultipleFragments) {
   EXPECT_EQ(outer2->GetPhysicalFragment(1)->Size(), PhysicalSize(200, 40));
 }
 
-TEST_F(NGFragmentationTest, MultipleFragmentsAndColumnSpanner) {
+TEST_F(FragmentationTest, MultipleFragmentsAndColumnSpanner) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div id="multicol" style="columns:3; width:620px; column-gap:10px; orphans:1; widows:1; line-height:20px;">
@@ -129,7 +129,7 @@ TEST_F(NGFragmentationTest, MultipleFragmentsAndColumnSpanner) {
   EXPECT_EQ(spanner2->GetPhysicalFragment(0)->Size(), PhysicalSize(620, 0));
 }
 
-TEST_F(NGFragmentationTest, MultipleFragmentsNestedMulticol) {
+TEST_F(FragmentationTest, MultipleFragmentsNestedMulticol) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div id="outer_multicol" style="columns:3; column-fill:auto; height:100px; width:620px; column-gap:10px;">
@@ -184,7 +184,7 @@ TEST_F(NGFragmentationTest, MultipleFragmentsNestedMulticol) {
   EXPECT_EQ(child2->GetPhysicalFragment(3)->Size(), PhysicalSize(22, 100));
 }
 
-TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
+TEST_F(FragmentationTest, HasSeenAllChildrenIfc) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div style="columns:3; column-fill:auto; height:50px; line-height:20px; orphans:1; widows:1;">
@@ -232,7 +232,7 @@ TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
   EXPECT_FALSE(break_token);
 }
 
-TEST_F(NGFragmentationTest, InkOverflowInline) {
+TEST_F(FragmentationTest, InkOverflowInline) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #container {
@@ -273,7 +273,7 @@ TEST_F(NGFragmentationTest, InkOverflowInline) {
   EXPECT_EQ(container->VisualOverflowRect(), PhysicalRect(0, 0, 260, 15));
 }
 
-TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
+TEST_F(FragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #columns {
@@ -305,7 +305,7 @@ TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
   EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
 }
 
-TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxNested) {
+TEST_F(FragmentationTest, OffsetFromOwnerLayoutBoxNested) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {

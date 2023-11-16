@@ -19,12 +19,12 @@ class NGConstraintSpace;
 struct LogicalSize;
 struct MarginStrut;
 
-class CORE_EXPORT NGColumnLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT ColumnLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

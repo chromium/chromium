@@ -113,7 +113,7 @@ class CORE_EXPORT InlineItem {
 
   // If this item is either a float or OOF-positioned node. If an inline
   // formatting-context *only* contains these types of nodes we consider it
-  // block-level, and run the |NGBlockLayoutAlgorithm| instead of the
+  // block-level, and run the |BlockLayoutAlgorithm| instead of the
   // |InlineLayoutAlgorithm|.
   bool IsBlockLevel() const { return is_block_level_; }
   void SetIsBlockLevel(bool value) { is_block_level_ = value; }

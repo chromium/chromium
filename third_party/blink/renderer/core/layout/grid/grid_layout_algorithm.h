@@ -34,11 +34,11 @@ using GridItemDataPtrVector = Vector<GridItemData*, 16>;
 using GridSetPtrVector = Vector<GridSet*, 16>;
 
 class CORE_EXPORT GridLayoutAlgorithm
-    : public NGLayoutAlgorithm<GridNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<GridNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit GridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit GridLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;

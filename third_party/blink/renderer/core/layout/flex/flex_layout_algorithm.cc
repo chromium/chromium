@@ -133,9 +133,9 @@ bool ContainsNonWhitespace(const LayoutBox* box) {
 }  // anonymous namespace
 
 FlexLayoutAlgorithm::FlexLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params,
+    const LayoutAlgorithmParams& params,
     const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
-    : NGLayoutAlgorithm(params),
+    : LayoutAlgorithm(params),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_horizontal_flow_(FlexibleBoxAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
@@ -1074,7 +1074,7 @@ const NGLayoutResult* FlexLayoutAlgorithm::Layout() {
 const NGLayoutResult*
 FlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
-  NGLayoutAlgorithmParams params(
+  LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), /* early_break */ nullptr);
   FlexLayoutAlgorithm algorithm(params);
@@ -1085,7 +1085,7 @@ FlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
 const NGLayoutResult* FlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
     const NGLayoutResult* previous_result) {
   DCHECK(previous_result->GetEarlyBreak());
-  NGLayoutAlgorithmParams params(
+  LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), previous_result->GetEarlyBreak(), &column_early_breaks_);
   FlexLayoutAlgorithm algorithm_with_break(params);
@@ -2504,7 +2504,7 @@ const NGLayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
   DCHECK(!row_cross_size_updates_.empty());
   DCHECK_LE(row_cross_size_updates_.size(), 2u);
 
-  NGLayoutAlgorithmParams params(
+  LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), early_break_, additional_early_breaks_);
   FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,

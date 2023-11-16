@@ -715,7 +715,7 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
 
 const NGLayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
   DCHECK(!is_known_to_be_last_table_box_);
-  NGLayoutAlgorithmParams params(
+  LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), /* early_break */ nullptr);
   TableLayoutAlgorithm algorithm(params);

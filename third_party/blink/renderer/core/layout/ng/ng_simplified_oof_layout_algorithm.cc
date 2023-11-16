@@ -14,10 +14,10 @@
 namespace blink {
 
 SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params,
+    const LayoutAlgorithmParams& params,
     const NGPhysicalBoxFragment& previous_fragment,
     bool is_new_fragment)
-    : NGLayoutAlgorithm(params),
+    : LayoutAlgorithm(params),
       writing_direction_(Style().GetWritingDirection()) {
   DCHECK(previous_fragment.IsFragmentainerBox());
   DCHECK(params.space.HasKnownFragmentainerBlockSize());

@@ -16,8 +16,8 @@
 
 namespace blink {
 
-GridLayoutAlgorithm::GridLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 
   const auto& node = Node();

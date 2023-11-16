@@ -13,14 +13,14 @@
 namespace blink {
 namespace {
 
-class NGFieldsetLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class NGFieldsetLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-    return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+    return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 
   MinMaxSizes RunComputeMinMaxSizes(NGBlockNode node) {
@@ -457,7 +457,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetPaddingWithLegend) {
       node.CreatesNewFormattingContext());
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -558,7 +558,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, NoFragmentation) {
 
   // We should only have one 176x126 fragment with no fragmentation.
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(176, 126), fragment->Size());
   ASSERT_FALSE(fragment->BreakToken());
 }
@@ -584,16 +584,16 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SimpleFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(176, 200), fragment->Size());
   ASSERT_TRUE(fragment->BreakToken());
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   EXPECT_EQ(PhysicalSize(176, 200), fragment->Size());
   ASSERT_TRUE(fragment->BreakToken());
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   EXPECT_EQ(PhysicalSize(176, 126), fragment->Size());
   ASSERT_FALSE(fragment->BreakToken());
@@ -619,7 +619,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -629,7 +629,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -667,7 +667,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -678,7 +678,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -690,7 +690,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -730,7 +730,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -741,7 +741,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -753,7 +753,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -793,7 +793,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -803,7 +803,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -843,7 +843,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -853,7 +853,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -897,7 +897,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -907,7 +907,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
   dump = DumpFragmentTree(fragment);
@@ -918,7 +918,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -963,7 +963,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -973,7 +973,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -985,7 +985,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
   dump = DumpFragmentTree(fragment);
@@ -1021,7 +1021,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1034,7 +1034,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1079,7 +1079,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1091,7 +1091,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1133,7 +1133,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedLegend) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_FALSE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1179,7 +1179,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1194,7 +1194,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -1207,7 +1207,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1244,7 +1244,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1255,7 +1255,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1295,7 +1295,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1306,7 +1306,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -1318,7 +1318,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1360,7 +1360,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1370,7 +1370,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1411,7 +1411,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1424,7 +1424,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1467,7 +1467,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1477,7 +1477,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1566,7 +1566,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1576,7 +1576,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1621,7 +1621,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1631,7 +1631,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1669,7 +1669,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1679,7 +1679,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -1690,7 +1690,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1726,7 +1726,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1736,7 +1736,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -1747,7 +1747,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 
@@ -1788,7 +1788,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1798,7 +1798,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
       node, space, fragment->BreakToken());
   EXPECT_FALSE(fragment->BreakToken());
 
@@ -1837,7 +1837,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   const NGPhysicalBoxFragment* fragment =
-      NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
+      BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   ASSERT_TRUE(fragment->BreakToken());
 
   String dump = DumpFragmentTree(fragment);
@@ -1847,7 +1847,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_TRUE(fragment->BreakToken());
 
@@ -1858,7 +1858,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
 )DUMP";
   EXPECT_EQ(expectation, dump);
 
-  fragment = NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+  fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       node, space, fragment->BreakToken());
   ASSERT_FALSE(fragment->BreakToken());
 

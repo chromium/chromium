@@ -58,8 +58,8 @@ inline LegendBlockAlignment ComputeLegendBlockAlignment(
 }  // namespace
 
 FieldsetLayoutAlgorithm::FieldsetLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params),
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params),
       writing_direction_(ConstraintSpace().GetWritingDirection()),
       consumed_block_size_(BreakToken() ? BreakToken()->ConsumedBlockSize()
                                         : LayoutUnit()) {

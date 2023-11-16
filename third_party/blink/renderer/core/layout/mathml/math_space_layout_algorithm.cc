@@ -10,8 +10,8 @@
 namespace blink {
 
 MathSpaceLayoutAlgorithm::MathSpaceLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 

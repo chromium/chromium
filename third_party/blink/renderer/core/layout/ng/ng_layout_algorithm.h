@@ -21,7 +21,7 @@ class NGEarlyBreak;
 class NGLayoutResult;
 
 // Operations provided by a layout algorithm.
-class NGLayoutAlgorithmOperations {
+class LayoutAlgorithmOperations {
  public:
   // Actual layout function. Lays out the children and descendants within the
   // constraints given by the NGConstraintSpace. Returns a layout result with
@@ -37,11 +37,11 @@ class NGLayoutAlgorithmOperations {
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
-struct NGLayoutAlgorithmParams {
+struct LayoutAlgorithmParams {
   STACK_ALLOCATED();
 
  public:
-  NGLayoutAlgorithmParams(
+  LayoutAlgorithmParams(
       NGBlockNode node,
       const FragmentGeometry& fragment_geometry,
       const NGConstraintSpace& space,
@@ -69,14 +69,14 @@ struct NGLayoutAlgorithmParams {
 template <typename NGInputNodeType,
           typename NGBoxFragmentBuilderType,
           typename NGBreakTokenType>
-class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
+class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   STACK_ALLOCATED();
  public:
-  NGLayoutAlgorithm(NGInputNodeType node,
-                    const ComputedStyle* style,
-                    const NGConstraintSpace& space,
-                    TextDirection direction,
-                    const NGBreakTokenType* break_token)
+  LayoutAlgorithm(NGInputNodeType node,
+                  const ComputedStyle* style,
+                  const NGConstraintSpace& space,
+                  TextDirection direction,
+                  const NGBreakTokenType* break_token)
       : node_(node),
         break_token_(break_token),
         container_builder_(node,
@@ -86,7 +86,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
   // Constructor for algorithms that use NGBoxFragmentBuilder and
   // NGBlockBreakToken.
-  explicit NGLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
+  explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<NGInputNodeType>(params.node)),
         early_break_(params.early_break),
         break_token_(params.break_token),
@@ -106,7 +106,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     }
   }
 
-  virtual ~NGLayoutAlgorithm() = default;
+  virtual ~LayoutAlgorithm() = default;
 
  protected:
   const NGConstraintSpace& ConstraintSpace() const {
@@ -157,7 +157,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     DCHECK(!early_break_);
     DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
 
-    NGLayoutAlgorithmParams params(
+    LayoutAlgorithmParams params(
         Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
         BreakToken(), &breakpoint, additional_early_breaks);
     Algorithm algorithm_with_break(params);
@@ -193,9 +193,9 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     // fragment, but this one will be the last).
     NGConstraintSpace new_space = ConstraintSpace().CloneWithoutFragmentation();
 
-    NGLayoutAlgorithmParams params(Node(),
-                                   container_builder_.InitialFragmentGeometry(),
-                                   new_space, BreakToken());
+    LayoutAlgorithmParams params(Node(),
+                                 container_builder_.InitialFragmentGeometry(),
+                                 new_space, BreakToken());
     Algorithm algorithm_without_fragmentation(params);
     auto& new_builder = algorithm_without_fragmentation.container_builder_;
     new_builder.SetBoxType(container_builder_.BoxType());

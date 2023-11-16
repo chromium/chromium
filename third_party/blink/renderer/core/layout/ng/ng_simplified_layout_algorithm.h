@@ -36,14 +36,14 @@ struct PhysicalFragmentLink;
 //    b. Otherwise perform layout on the inflow child (which may trigger
 //       "simplified" layout on its children).
 //  3. Run the |OutOfFlowLayoutPart|.
-class CORE_EXPORT NGSimplifiedLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT SimplifiedLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  NGSimplifiedLayoutAlgorithm(const NGLayoutAlgorithmParams&,
-                              const NGLayoutResult&,
-                              bool keep_old_size = false);
+  SimplifiedLayoutAlgorithm(const LayoutAlgorithmParams&,
+                            const NGLayoutResult&,
+                            bool keep_old_size = false);
 
   // Perform a simple copy of all children of the old fragment.
   void CloneOldChildren();

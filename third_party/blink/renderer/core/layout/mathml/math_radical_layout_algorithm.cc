@@ -24,8 +24,8 @@ bool HasBaseGlyphForRadical(const ComputedStyle& style) {
 }  // namespace
 
 MathRadicalLayoutAlgorithm::MathRadicalLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 

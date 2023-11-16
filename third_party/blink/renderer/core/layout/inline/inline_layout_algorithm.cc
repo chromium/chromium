@@ -236,13 +236,13 @@ InlineLayoutAlgorithm::InlineLayoutAlgorithm(
     const InlineBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context)
-    : NGLayoutAlgorithm(inline_node,
-                        &inline_node.Style(),
-                        space,
-                        // Use LTR direction since inline layout handles bidi by
-                        // itself and lays out in visual order.
-                        TextDirection::kLtr,
-                        break_token),
+    : LayoutAlgorithm(inline_node,
+                      &inline_node.Style(),
+                      space,
+                      // Use LTR direction since inline layout handles bidi by
+                      // itself and lays out in visual order.
+                      TextDirection::kLtr,
+                      break_token),
       box_states_(nullptr),
       context_(context),
       column_spanner_path_(column_spanner_path),

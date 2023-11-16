@@ -13,12 +13,12 @@ namespace blink {
 class HTMLDimension;
 class NGBlockBreakToken;
 
-class CORE_EXPORT NGFrameSetLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT FrameSetLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit NGFrameSetLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit FrameSetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;

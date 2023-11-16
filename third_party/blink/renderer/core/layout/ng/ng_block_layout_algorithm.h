@@ -28,7 +28,7 @@ enum class NGBreakStatus;
 
 // This struct is used for communicating to a child the position of the previous
 // inflow child. This will be used to calculate the position of the next child.
-struct NGPreviousInflowPosition {
+struct PreviousInflowPosition {
   LayoutUnit logical_block_offset;
   MarginStrut margin_strut;
   // > 0: Block-end annotation space of the previous line
@@ -39,17 +39,17 @@ struct NGPreviousInflowPosition {
 
 // This struct holds information for the current inflow child. The data is not
 // useful outside of handling this single inflow child.
-struct NGInflowChildData {
-  NGInflowChildData(BfcOffset bfc_offset_estimate,
-                    const MarginStrut& margin_strut,
-                    const BoxStrut& margins,
-                    bool is_pushed_by_floats = false)
+struct InflowChildData {
+  InflowChildData(BfcOffset bfc_offset_estimate,
+                  const MarginStrut& margin_strut,
+                  const BoxStrut& margins,
+                  bool is_pushed_by_floats = false)
       : bfc_offset_estimate(bfc_offset_estimate),
         margin_strut(margin_strut),
         margins(margins),
         is_pushed_by_floats(is_pushed_by_floats) {}
 
-  NGInflowChildData(const NGInflowChildData&) = default;
+  InflowChildData(const InflowChildData&) = default;
 
   BfcOffset bfc_offset_estimate;
   MarginStrut margin_strut;
@@ -59,15 +59,15 @@ struct NGInflowChildData {
 
 // A class for general block layout (e.g. a <div> with no special style).
 // Lays out the children in sequence.
-class CORE_EXPORT NGBlockLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+class CORE_EXPORT BlockLayoutAlgorithm
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
   // Default constructor.
-  explicit NGBlockLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit BlockLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  ~NGBlockLayoutAlgorithm() override;
+  ~BlockLayoutAlgorithm() override;
 
   void SetBoxType(NGPhysicalFragment::NGBoxType type);
 
@@ -90,7 +90,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   inline const NGLayoutResult* Layout(
       InlineChildLayoutContext* inline_child_layout_context);
 
-  const NGLayoutResult* FinishLayout(NGPreviousInflowPosition*,
+  const NGLayoutResult* FinishLayout(PreviousInflowPosition*,
                                      InlineChildLayoutContext*);
 
   // Return the BFC block offset of this block.
@@ -106,7 +106,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Return the BFC block offset of the next block-start border edge (for some
   // child) we'd get if we commit pending margins.
   LayoutUnit NextBorderEdge(
-      const NGPreviousInflowPosition& previous_inflow_position) const {
+      const PreviousInflowPosition& previous_inflow_position) const {
     return BfcBlockOffset() + previous_inflow_position.logical_block_offset +
            previous_inflow_position.margin_strut.Sum();
   }
@@ -119,7 +119,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NGConstraintSpace CreateConstraintSpaceForChild(
       const NGLayoutInputNode child,
       const NGBreakToken* child_break_token,
-      const NGInflowChildData& child_data,
+      const InflowChildData& child_data,
       const LogicalSize child_available_size,
       bool is_new_fc,
       const absl::optional<LayoutUnit> bfc_block_offset = absl::nullopt,
@@ -127,15 +127,15 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       LayoutUnit block_start_annotation_space = LayoutUnit());
 
   // @return Estimated BFC block offset for the "to be layout" child.
-  NGInflowChildData ComputeChildData(const NGPreviousInflowPosition&,
-                                     NGLayoutInputNode,
-                                     const NGBreakToken* child_break_token,
-                                     bool is_new_fc);
+  InflowChildData ComputeChildData(const PreviousInflowPosition&,
+                                   NGLayoutInputNode,
+                                   const NGBreakToken* child_break_token,
+                                   bool is_new_fc);
 
-  NGPreviousInflowPosition ComputeInflowPosition(
-      const NGPreviousInflowPosition&,
+  PreviousInflowPosition ComputeInflowPosition(
+      const PreviousInflowPosition&,
       const NGLayoutInputNode child,
-      const NGInflowChildData&,
+      const InflowChildData&,
       const absl::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
       const NGLayoutResult&,
@@ -152,7 +152,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   LayoutUnit PositionSelfCollapsingChildWithParentBfc(
       const NGLayoutInputNode& child,
       const NGConstraintSpace& child_space,
-      const NGInflowChildData& child_data,
+      const InflowChildData& child_data,
       const NGLayoutResult&) const;
 
   // Try to reuse part of cached fragments. When reusing is possible, this
@@ -161,11 +161,11 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // returns |true|. Otherwise returns |false|.
   bool TryReuseFragmentsFromCache(
       InlineNode child,
-      NGPreviousInflowPosition*,
+      PreviousInflowPosition*,
       const InlineBreakToken** inline_break_token_out);
 
-  void HandleOutOfFlowPositioned(const NGPreviousInflowPosition&, NGBlockNode);
-  void HandleFloat(const NGPreviousInflowPosition&,
+  void HandleOutOfFlowPositioned(const PreviousInflowPosition&, NGBlockNode);
+  void HandleFloat(const PreviousInflowPosition&,
                    NGBlockNode,
                    const NGBlockBreakToken*);
 
@@ -189,14 +189,14 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NGLayoutResult::EStatus HandleNewFormattingContext(
       NGLayoutInputNode child,
       const NGBlockBreakToken* child_break_token,
-      NGPreviousInflowPosition*);
+      PreviousInflowPosition*);
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
   const NGLayoutResult* LayoutNewFormattingContext(
       NGLayoutInputNode child,
       const NGBlockBreakToken* child_break_token,
-      const NGInflowChildData&,
+      const InflowChildData&,
       BfcOffset origin_offset,
       bool abort_if_cleared,
       BfcOffset* out_child_bfc_offset,
@@ -208,7 +208,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NGLayoutResult::EStatus HandleInflow(
       NGLayoutInputNode child,
       const NGBreakToken* child_break_token,
-      NGPreviousInflowPosition*,
+      PreviousInflowPosition*,
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
@@ -218,8 +218,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGConstraintSpace&,
       bool has_clearance_past_adjoining_floats,
       const NGLayoutResult*,
-      NGInflowChildData*,
-      NGPreviousInflowPosition*,
+      InflowChildData*,
+      PreviousInflowPosition*,
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
@@ -227,7 +227,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // break before a child.
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
-  void ConsumeRemainingFragmentainerSpace(NGPreviousInflowPosition*);
+  void ConsumeRemainingFragmentainerSpace(PreviousInflowPosition*);
 
   // Final adjustments before fragment creation. We need to prevent the fragment
   // from crossing fragmentainer boundaries, and rather create a break token if
@@ -244,7 +244,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.
   NGBreakStatus BreakBeforeChildIfNeeded(NGLayoutInputNode child,
                                          const NGLayoutResult&,
-                                         NGPreviousInflowPosition*,
+                                         PreviousInflowPosition*,
                                          LayoutUnit bfc_block_offset,
                                          bool has_container_separation);
 
@@ -279,13 +279,13 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // block-offset was already resolved, this method does nothing (and returns
   // true).
   bool ResolveBfcBlockOffset(
-      NGPreviousInflowPosition*,
+      PreviousInflowPosition*,
       LayoutUnit bfc_block_offset,
       const absl::optional<LayoutUnit> forced_bfc_block_offset);
 
   // This passes in the |forced_bfc_block_offset| from the input constraints,
   // which is almost always desired.
-  bool ResolveBfcBlockOffset(NGPreviousInflowPosition* previous_inflow_position,
+  bool ResolveBfcBlockOffset(PreviousInflowPosition* previous_inflow_position,
                              LayoutUnit bfc_block_offset) {
     return ResolveBfcBlockOffset(previous_inflow_position, bfc_block_offset,
                                  ConstraintSpace().ForcedBfcBlockOffset());
@@ -293,8 +293,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // A very common way to resolve the BFC block offset is to simply commit the
   // pending margin, so here's a convenience overload for that.
-  bool ResolveBfcBlockOffset(
-      NGPreviousInflowPosition* previous_inflow_position) {
+  bool ResolveBfcBlockOffset(PreviousInflowPosition* previous_inflow_position) {
     return ResolveBfcBlockOffset(previous_inflow_position,
                                  NextBorderEdge(*previous_inflow_position));
   }
@@ -319,11 +318,11 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Return false if it aborts when resolving BFC block offset for LI.
   bool PositionOrPropagateListMarker(const NGLayoutResult&,
                                      LogicalOffset*,
-                                     NGPreviousInflowPosition*);
+                                     PreviousInflowPosition*);
 
   // Positions a list marker when the block does not have any line boxes.
   // Return false if it aborts when resolving BFC block offset for LI.
-  bool PositionListMarkerWithoutLineBoxes(NGPreviousInflowPosition*);
+  bool PositionListMarkerWithoutLineBoxes(PreviousInflowPosition*);
 
   // Calculates logical offset for the current fragment using either {@code
   // intrinsic_block_size_} when the fragment doesn't know it's offset or
@@ -370,19 +369,19 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
-  // This function returns a new value for `NGPreviousInflowPosition::
+  // This function returns a new value for `PreviousInflowPosition::
   // logical_block_offset`.
   LayoutUnit HandleTextControlPlaceholder(
       NGBlockNode placeholder,
-      const NGPreviousInflowPosition& previous_inflow_position);
+      const PreviousInflowPosition& previous_inflow_position);
   // A helper for HandleTextControlPlaceholder().
-  // This function returns a new value for `NGPreviousInflowPosition::
+  // This function returns a new value for `PreviousInflowPosition::
   // logical_block_offset`.
   LayoutUnit FinishTextControlPlaceholder(
       const NGLayoutResult* result,
       const LogicalOffset& offset,
       bool apply_fixed_size,
-      const NGPreviousInflowPosition& previous_inflow_position);
+      const PreviousInflowPosition& previous_inflow_position);
 
   // Adjusts the inline offset of the slider thumb box from the value of
   // HTMLInputElement.

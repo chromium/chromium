@@ -31,8 +31,8 @@ struct ResultWithOffset {
 };
 
 TableRowLayoutAlgorithm::TableRowLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {}
 
 const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
   const TableConstraintSpaceData& table_data = *ConstraintSpace().TableData();

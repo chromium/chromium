@@ -13,8 +13,8 @@
 namespace blink {
 
 MathTokenLayoutAlgorithm::MathTokenLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   container_builder_.SetIsInlineFormattingContext(
       Node().IsInlineFormattingContextRoot());

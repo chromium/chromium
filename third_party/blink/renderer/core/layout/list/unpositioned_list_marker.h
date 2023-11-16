@@ -29,7 +29,7 @@ class NGPhysicalFragment;
 // Represents an unpositioned list marker.
 //
 // A list item can have either block children or inline children. Because
-// NGBLockLayoutAlgorithm handles the former while NGInlineLayoutAlgorithm
+// BLockLayoutAlgorithm handles the former while InlineLayoutAlgorithm
 // handles the latter, list marker can appear in either algorithm.
 //
 // To handle these two cases consistently, when list markers appear in these
@@ -46,8 +46,8 @@ class NGPhysicalFragment;
 //
 // In addition, marker makes LI non self-collapsing. If the BFC block-offset of
 // LI isn't resolved after layout marker, we'll resolve it. See
-// |NGBlockLayoutAlgorithm::PositionOrPropagateListMarker()| and
-// |NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes()| for details.
+// |BlockLayoutAlgorithm::PositionOrPropagateListMarker()| and
+// |BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes()| for details.
 class CORE_EXPORT UnpositionedListMarker final {
   DISALLOW_NEW();
 

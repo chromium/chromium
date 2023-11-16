@@ -55,7 +55,7 @@ LayoutUnit TableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
   FragmentGeometry geometry =
       CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr);
-  NGLayoutAlgorithmParams params(*this, geometry, space);
+  LayoutAlgorithmParams params(*this, geometry, space);
   TableLayoutAlgorithm algorithm(params);
   return algorithm.ComputeCaptionBlockSize();
 }

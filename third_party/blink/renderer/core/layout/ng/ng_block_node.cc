@@ -111,7 +111,7 @@ inline LayoutMultiColumnFlowThread* GetFlowThread(const LayoutBox& box) {
 // for all layout algorithms for each node we lay out. Therefore it must not be
 // inline.
 template <typename Algorithm, typename Callback>
-NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
+NOINLINE void CreateAlgorithmAndRun(const LayoutAlgorithmParams& params,
                                     const Callback& callback) {
   Algorithm algorithm(params);
   callback(&algorithm);
@@ -120,7 +120,7 @@ NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
 template <typename Callback>
 NOINLINE void DetermineMathMLAlgorithmAndRun(
     const LayoutBox& box,
-    const NGLayoutAlgorithmParams& params,
+    const LayoutAlgorithmParams& params,
     const Callback& callback) {
   DCHECK(box.IsMathML());
   // Currently math layout algorithms can only apply to MathML elements.
@@ -146,7 +146,7 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
       else if (IsTextOnlyToken(params.node))
         CreateAlgorithmAndRun<MathTokenLayoutAlgorithm>(params, callback);
       else
-        CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
+        CreateAlgorithmAndRun<BlockLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLScriptsElement>(element) &&
                IsValidMathMLScript(params.node)) {
@@ -163,7 +163,7 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
 }
 
 template <typename Callback>
-NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
+NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
                                        const Callback& callback) {
   const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
@@ -182,41 +182,41 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   } else if (box.IsLayoutGrid()) {
     CreateAlgorithmAndRun<GridLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutReplaced()) {
-    CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<ReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsFieldset()) {
     CreateAlgorithmAndRun<FieldsetLayoutAlgorithm>(params, callback);
   } else if (box.IsFrameSet()) {
-    CreateAlgorithmAndRun<NGFrameSetLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<FrameSetLayoutAlgorithm>(params, callback);
   }
   // If there's a legacy layout box, we can only do block fragmentation if
   // we would have done block fragmentation with the legacy engine.
   // Otherwise writing data back into the legacy tree will fail. Look for
   // the flow thread.
   else if (GetFlowThread(box) && style.SpecifiesColumns()) {
-    CreateAlgorithmAndRun<NGColumnLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<ColumnLayoutAlgorithm>(params, callback);
   } else if (UNLIKELY(!box.Parent() && params.node.IsPaginatedRoot())) {
-    CreateAlgorithmAndRun<NGPageLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<PageLayoutAlgorithm>(params, callback);
   } else {
-    CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<BlockLayoutAlgorithm>(params, callback);
   }
 }
 
 inline const NGLayoutResult* LayoutWithAlgorithm(
-    const NGLayoutAlgorithmParams& params) {
+    const LayoutAlgorithmParams& params) {
   const NGLayoutResult* result = nullptr;
   DetermineAlgorithmAndRun(params,
-                           [&result](NGLayoutAlgorithmOperations* algorithm) {
+                           [&result](LayoutAlgorithmOperations* algorithm) {
                              result = algorithm->Layout();
                            });
   return result;
 }
 
 inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
-    const NGLayoutAlgorithmParams& params,
+    const LayoutAlgorithmParams& params,
     const MinMaxSizesFloatInput& float_input) {
   MinMaxSizesResult result;
   DetermineAlgorithmAndRun(
-      params, [&result, &float_input](NGLayoutAlgorithmOperations* algorithm) {
+      params, [&result, &float_input](LayoutAlgorithmOperations* algorithm) {
         result = algorithm->ComputeMinMaxSizes(float_input);
       });
   return result;
@@ -418,8 +418,8 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   PrepareForLayout();
 
-  NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
-                                 break_token, early_break);
+  LayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
+                               break_token, early_break);
   params.column_spanner_path = column_spanner_path;
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
@@ -1011,7 +1011,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       fragment_geometry.border + fragment_geometry.padding;
 
   MinMaxSizesResult result = ComputeMinMaxSizesWithAlgorithm(
-      NGLayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
+      LayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
       float_input);
 
   if (auto min_size = ContentMinimumInlineSize(*this, border_padding))
@@ -1571,9 +1571,9 @@ const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
 }
 
 const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
-    const NGLayoutAlgorithmParams& params,
+    const LayoutAlgorithmParams& params,
     const NGLayoutResult& previous_result) const {
-  NGSimplifiedLayoutAlgorithm algorithm(params, previous_result);
+  SimplifiedLayoutAlgorithm algorithm(params, previous_result);
   if (const auto* previous_box_fragment = DynamicTo<NGPhysicalBoxFragment>(
           &previous_result.PhysicalFragment())) {
     if (previous_box_fragment->HasItems())

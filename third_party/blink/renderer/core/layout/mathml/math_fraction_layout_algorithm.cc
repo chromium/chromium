@@ -119,8 +119,8 @@ FractionStackParameters GetFractionStackParameters(const ComputedStyle& style) {
 }  // namespace
 
 MathFractionLayoutAlgorithm::MathFractionLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   container_builder_.SetIsMathMLFraction();
 }

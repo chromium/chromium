@@ -11,13 +11,13 @@
 
 namespace blink {
 
-NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+ReplacedLayoutAlgorithm::ReplacedLayoutAlgorithm(
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
+const NGLayoutResult* ReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
   // TODO(crbug.com/1252693): kIgnoreBlockLengths applies inline constraints
   // through the aspect ratio. But the aspect ratio is ignored when computing
@@ -37,7 +37,7 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   // Most layouts are interested in the min/max content contribution which will
   // call |ComputeReplacedSize| directly. (Which doesn't invoke the code below).
@@ -58,7 +58,7 @@ MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   return {sizes, depends_on_block_constraints};
 }
 
-void NGReplacedLayoutAlgorithm::LayoutMediaChildren() {
+void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
   WritingModeConverter converter(ConstraintSpace().GetWritingDirection(),
                                  container_builder_.Size());
   LogicalRect logical_new_rect(

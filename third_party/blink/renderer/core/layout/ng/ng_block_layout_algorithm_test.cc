@@ -28,11 +28,9 @@ namespace {
 using testing::ElementsAre;
 using testing::Pointee;
 
-class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
-  void SetUp() override {
-    NGBaseLayoutAlgorithmTest::SetUp();
-  }
+  void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   const NGPhysicalBoxFragment* GetHtmlPhysicalFragment() const {
     const auto* layout_box =
@@ -53,7 +51,7 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         space, node, /* break_token */ nullptr, /* is_intrinsic */ true);
 
-    NGBlockLayoutAlgorithm algorithm({node, fragment_geometry, space});
+    BlockLayoutAlgorithm algorithm({node, fragment_geometry, space});
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 
@@ -87,7 +85,7 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 };
 
-TEST_F(NGBlockLayoutAlgorithmTest, FixedSize) {
+TEST_F(BlockLayoutAlgorithmTest, FixedSize) {
   SetBodyInnerHTML(R"HTML(
     <div id="box" style="width:30px; height:40px"></div>
   )HTML");
@@ -103,7 +101,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, FixedSize) {
   EXPECT_EQ(PhysicalSize(30, 40), fragment->Size());
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, Caching) {
+TEST_F(BlockLayoutAlgorithmTest, Caching) {
   // The inner element exists so that "simplified" layout logic isn't invoked.
   SetBodyInnerHTML(R"HTML(
     <div id="box" style="width:30px; height:40%;">
@@ -154,7 +152,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, Caching) {
   EXPECT_EQ(result, nullptr);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, MinInlineSizeCaching) {
+TEST_F(BlockLayoutAlgorithmTest, MinInlineSizeCaching) {
   SetBodyInnerHTML(R"HTML(
     <div id="box" style="min-width:30%; width: 10px; height:40px;"></div>
   )HTML");
@@ -196,7 +194,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, MinInlineSizeCaching) {
   EXPECT_EQ(result, nullptr);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
+TEST_F(BlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
   // Quirks mode triggers the interesting parent-child %-resolution behavior.
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
 
@@ -290,7 +288,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
   EXPECT_EQ(run_test("box8"), nullptr);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, LineOffsetCaching) {
+TEST_F(BlockLayoutAlgorithmTest, LineOffsetCaching) {
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="display: flow-root; width: 300px; height: 100px;">
       <div id="box1" style="width: 100px; margin: 0 auto 0 auto;"></div>
@@ -321,7 +319,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, LineOffsetCaching) {
 }
 
 // Verifies that two children are laid out with the correct size and position.
-TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildren) {
+TEST_F(BlockLayoutAlgorithmTest, LayoutBlockChildren) {
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="width: 30px">
       <div style="height: 20px">
@@ -360,7 +358,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildren) {
 
 // Verifies that a child is laid out correctly if it's writing mode is different
 // from the parent's one.
-TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildrenWithWritingMode) {
+TEST_F(BlockLayoutAlgorithmTest, LayoutBlockChildrenWithWritingMode) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #div2 {
@@ -398,7 +396,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildrenWithWritingMode) {
 
 // Verifies that floats are positioned at the top of the first child that can
 // determine its position after margins collapsed.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -468,7 +466,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
 // - top and bottom margins of a box that does not establish a new block
 //   formatting context and that has zero computed 'min-height', zero or 'auto'
 //   computed 'height', and no in-flow children
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
   SetBodyInnerHTML(R"HTML(
       <style>
       #first-child {
@@ -551,7 +549,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
 // Verifies the collapsing margins case for the next pair:
 // - bottom margin of a last in-flow child and bottom margin of its parent if
 //   the parent has 'auto' computed height
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
   SetBodyInnerHTML(R"HTML(
       <style>
        #container {
@@ -602,7 +600,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
 
 // Verifies that 2 adjoining margins are not collapsed if there is padding or
 // border that separates them.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -665,7 +663,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
 
 // Verifies that margins of 2 adjoining blocks with different writing modes
 // get collapsed.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase5) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase5) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -730,7 +728,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase5) {
 }
 
 // Verifies that margins collapsing logic works with Layout Inline.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsWithText) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsWithText) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -758,7 +756,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsWithText) {
 
 // Verifies that the margin strut of a child with a different writing mode does
 // not get used in the collapsing margins calculation.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase6) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase6) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #div1 {
@@ -801,7 +799,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase6) {
 
 // Verifies that a child with clearance - which does nothing - still shifts its
 // parent's offset.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase7) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase7) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -855,7 +853,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase7) {
 
 // An empty block level element (with margins collapsing through it) has
 // non-trivial behavior with margins collapsing.
-TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
+TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -1016,7 +1014,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
 
 // Tests that when auto margins are applied to a new formatting context, they
 // are applied within the layout opportunity.
-TEST_F(NGBlockLayoutAlgorithmTest, NewFormattingContextAutoMargins) {
+TEST_F(BlockLayoutAlgorithmTest, NewFormattingContextAutoMargins) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1049,7 +1047,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, NewFormattingContextAutoMargins) {
 
 // Verifies that a box's size includes its borders and padding, and that
 // children are positioned inside the content box.
-TEST_F(NGBlockLayoutAlgorithmTest, BorderAndPadding) {
+TEST_F(BlockLayoutAlgorithmTest, BorderAndPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #div1 {
@@ -1105,7 +1103,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, BorderAndPadding) {
   EXPECT_EQ(kBorderLeft + kPaddingLeft, div2_offset.left);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, PercentageResolutionSize) {
+TEST_F(BlockLayoutAlgorithmTest, PercentageResolutionSize) {
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="width: 30px; padding-left: 10px">
       <div id="div1" style="width: 40%"></div>
@@ -1132,7 +1130,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PercentageResolutionSize) {
 
 // A very simple auto margin case. We rely on the tests in ng_length_utils_test
 // for the more complex cases; just make sure we handle auto at all here.
-TEST_F(NGBlockLayoutAlgorithmTest, AutoMargin) {
+TEST_F(BlockLayoutAlgorithmTest, AutoMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #first { width: 10px; margin-left: auto; margin-right: auto; }
@@ -1167,7 +1165,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, AutoMargin) {
 
 // Verifies that floats can be correctly positioned if they are inside of nested
 // empty blocks.
-TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
+TEST_F(BlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -1263,7 +1261,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
 
 // Verifies that left/right floating and regular blocks can be positioned
 // correctly by the algorithm.
-TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatFragments) {
+TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -1382,7 +1380,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatFragments) {
 }
 
 // Verifies that NG block layout algorithm respects "clear" CSS property.
-TEST_F(NGBlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
+TEST_F(BlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #container {
@@ -1508,7 +1506,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
 }
 
 // Verifies that we compute the right min and max-content size.
-TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContent) {
+TEST_F(BlockLayoutAlgorithmTest, ComputeMinMaxContent) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div id="first-child" style="width: 20px"></div>
@@ -1525,7 +1523,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContent) {
   EXPECT_EQ(kSecondChildWidth, sizes.max_size);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentFloats) {
+TEST_F(BlockLayoutAlgorithmTest, ComputeMinMaxContentFloats) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #f1 { float: left; width: 20px; }
@@ -1546,7 +1544,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentFloats) {
   EXPECT_EQ(LayoutUnit(90), sizes.max_size);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentFloatsClearance) {
+TEST_F(BlockLayoutAlgorithmTest, ComputeMinMaxContentFloatsClearance) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #f1 { float: left; width: 20px; }
@@ -1567,7 +1565,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentFloatsClearance) {
   EXPECT_EQ(LayoutUnit(50), sizes.max_size);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentNewFormattingContext) {
+TEST_F(BlockLayoutAlgorithmTest, ComputeMinMaxContentNewFormattingContext) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #f1 { float: left; width: 20px; }
@@ -1588,7 +1586,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ComputeMinMaxContentNewFormattingContext) {
   EXPECT_EQ(LayoutUnit(100), sizes.max_size);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest,
+TEST_F(BlockLayoutAlgorithmTest,
        ComputeMinMaxContentNewFormattingContextNegativeMargins) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1610,7 +1608,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   EXPECT_EQ(LayoutUnit(70), sizes.max_size);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest,
+TEST_F(BlockLayoutAlgorithmTest,
        ComputeMinMaxContentSingleNewFormattingContextNegativeMargins) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1629,7 +1627,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
 }
 
 // Tests that we correctly handle shrink-to-fit
-TEST_F(NGBlockLayoutAlgorithmTest, ShrinkToFit) {
+TEST_F(BlockLayoutAlgorithmTest, ShrinkToFit) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div id="first-child" style="width: 20px"></div>
@@ -1652,7 +1650,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ShrinkToFit) {
 
 // Verifies that we position empty blocks and floats correctly inside of the
 // block that establishes new BFC.
-TEST_F(NGBlockLayoutAlgorithmTest, PositionEmptyBlocksInNewBfc) {
+TEST_F(BlockLayoutAlgorithmTest, PositionEmptyBlocksInNewBfc) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
@@ -1697,7 +1695,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionEmptyBlocksInNewBfc) {
 
 // Verifies that we can correctly position blocks with clearance and
 // intruding floats.
-TEST_F(NGBlockLayoutAlgorithmTest,
+TEST_F(BlockLayoutAlgorithmTest,
        PositionBlocksWithClearanceAndIntrudingFloats) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -1771,7 +1769,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
 }
 
 // Tests that a block won't fragment if it doesn't reach the fragmentation line.
-TEST_F(NGBlockLayoutAlgorithmTest, NoFragmentation) {
+TEST_F(BlockLayoutAlgorithmTest, NoFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1799,7 +1797,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, NoFragmentation) {
 }
 
 // Tests that a block will fragment if it reaches the fragmentation line.
-TEST_F(NGBlockLayoutAlgorithmTest, SimpleFragmentation) {
+TEST_F(BlockLayoutAlgorithmTest, SimpleFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1831,7 +1829,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, SimpleFragmentation) {
 
 // Tests that children inside the same block formatting context fragment when
 // reaching a fragmentation line.
-TEST_F(NGBlockLayoutAlgorithmTest, InnerChildrenFragmentation) {
+TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1893,8 +1891,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, InnerChildrenFragmentation) {
 
 // Tests that children which establish new formatting contexts fragment
 // correctly.
-TEST_F(NGBlockLayoutAlgorithmTest,
-       InnerFormattingContextChildrenFragmentation) {
+TEST_F(BlockLayoutAlgorithmTest, InnerFormattingContextChildrenFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1958,7 +1955,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
 
 // Tests that children inside a block container will fragment if the container
 // doesn't reach the fragmentation line.
-TEST_F(NGBlockLayoutAlgorithmTest, InnerChildrenFragmentationSmallHeight) {
+TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentationSmallHeight) {
   SetBodyInnerHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2020,7 +2017,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, InnerChildrenFragmentationSmallHeight) {
 }
 
 // Tests that float children fragment correctly inside a parallel flow.
-TEST_F(NGBlockLayoutAlgorithmTest, DISABLED_FloatFragmentationParallelFlows) {
+TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationParallelFlows) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2099,7 +2096,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, DISABLED_FloatFragmentationParallelFlows) {
 
 // Tests that float children don't fragment if they aren't in the same writing
 // mode as their parent.
-TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
+TEST_F(BlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2151,7 +2148,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
 }
 
 // Tests that a float child inside a zero height block fragments correctly.
-TEST_F(NGBlockLayoutAlgorithmTest, DISABLED_FloatFragmentationZeroHeight) {
+TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationZeroHeight) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2223,8 +2220,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, DISABLED_FloatFragmentationZeroHeight) {
 
 // Verifies that we correctly position a new FC block with the Layout
 // Opportunity iterator.
-TEST_F(NGBlockLayoutAlgorithmTest,
-       NewFcBlockWithAdjoiningFloatCollapsesMargins) {
+TEST_F(BlockLayoutAlgorithmTest, NewFcBlockWithAdjoiningFloatCollapsesMargins) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2279,7 +2275,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   EXPECT_THAT(body_offset, PhysicalOffset(8, 8));
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, NewFcAvoidsFloats) {
+TEST_F(BlockLayoutAlgorithmTest, NewFcAvoidsFloats) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2320,7 +2316,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, NewFcAvoidsFloats) {
   EXPECT_EQ(PhysicalOffset(0, 30), offset);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, ZeroBlockSizeAboveEdge) {
+TEST_F(BlockLayoutAlgorithmTest, ZeroBlockSizeAboveEdge) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2357,7 +2353,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, ZeroBlockSizeAboveEdge) {
   EXPECT_EQ(PhysicalOffset(0, -10), offset);
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, NewFcFirstChildIsZeroBlockSize) {
+TEST_F(BlockLayoutAlgorithmTest, NewFcFirstChildIsZeroBlockSize) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -2401,7 +2397,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, NewFcFirstChildIsZeroBlockSize) {
 }
 
 // This test assumes that tables are not yet implemented in LayoutNG.
-TEST_F(NGBlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
+TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div style="display:table-cell;">
@@ -2422,7 +2418,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
   // EXPECT_EQ(PhysicalOffset(20, 10), fragment->Offset());
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, LayoutRubyTextCrash) {
+TEST_F(BlockLayoutAlgorithmTest, LayoutRubyTextCrash) {
   // crbug.com/1102186. This test passes if no DCHECK failure.
   SetBodyInnerHTML(R"HTML(
     <ruby>base<rt style="writing-mode:vertical-rl">annotation</ruby>
@@ -2430,7 +2426,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutRubyTextCrash) {
   UpdateAllLifecyclePhasesForTest();
 }
 
-TEST_F(NGBlockLayoutAlgorithmTest, HandleTextControlPlaceholderCrash) {
+TEST_F(BlockLayoutAlgorithmTest, HandleTextControlPlaceholderCrash) {
   // crbug.com/1209025 and crbug.com/1342608. This test passes if no crash.
   SetBodyInnerHTML(R"HTML(
 <style>

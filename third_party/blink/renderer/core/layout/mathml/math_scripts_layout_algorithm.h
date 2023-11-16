@@ -16,11 +16,11 @@ class NGBlockNode;
 
 // This algorithm handles msub, msup and msubsup elements.
 class CORE_EXPORT MathScriptsLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<NGBlockNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit MathScriptsLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathScriptsLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   struct ChildAndMetrics {
     DISALLOW_NEW();

@@ -56,7 +56,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   //    then associate them by |AssociateLogicalLineItems|.
   // 3. |AddLine| adds the |PhysicalLineBoxFragment|.
   //
-  // |NGBlockLayoutAlgorithm| runs these phases in the order for each line. In
+  // |BlockLayoutAlgorithm| runs these phases in the order for each line. In
   // this case, one instance of |LogicalLineItems| is reused for all lines to
   // reduce memory allocations.
   //

@@ -23,7 +23,7 @@ struct CORE_EXPORT MarginStrut {
   LayoutUnit quirky_positive_margin;
 
   // If this flag is set, we only Append non-quirky margins to this strut.
-  // See comment inside NGBlockLayoutAlgorithm for when this occurs.
+  // See comment inside BlockLayoutAlgorithm for when this occurs.
   bool is_quirky_container_start = false;
 
   // If set, we will discard all adjoining margins.

@@ -18,12 +18,12 @@ class NGBlockBreakToken;
 class TableBorders;
 
 class CORE_EXPORT TableLayoutAlgorithm
-    : public NGLayoutAlgorithm<TableNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<TableNode,
+                             NGBoxFragmentBuilder,
+                             NGBlockBreakToken> {
  public:
-  explicit TableLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
-      : NGLayoutAlgorithm(params) {}
+  explicit TableLayoutAlgorithm(const LayoutAlgorithmParams& params)
+      : LayoutAlgorithm(params) {}
   const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;

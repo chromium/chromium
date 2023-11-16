@@ -13,7 +13,7 @@
 namespace blink {
 namespace {
 
-class FlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class FlexLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const DevtoolsFlexInfo* LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
