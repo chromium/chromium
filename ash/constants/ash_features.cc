@@ -1557,6 +1557,12 @@ BASE_FEATURE(kImeKoreanModeSwitchDebug,
              "ImeKoreanModeSwitchDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a change in the Korean input method whereby right-Alt location solely
+// functions as the internal-mode switch, i.e. not concurrently as Alt modifier.
+BASE_FEATURE(kImeKoreanOnlyModeSwitchOnRightAlt,
+             "ImeKoreanOnlyModeSwitchOnRightAlt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to show new improved UI for cryptohome errors that happened
 // during login. UI contains links to help center and might provide actions
 // that can be taken to resolve the problem.
