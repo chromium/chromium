@@ -413,6 +413,9 @@ class DenseSet {
   // Inserts all values of |xs| into the present set.
   constexpr void insert_all(const DenseSet& xs) { bitset_ |= xs.bitset_; }
 
+  // Erases all elements that are not present in both `*this` and `xs`.
+  constexpr void intersect(const DenseSet& xs) { bitset_ &= xs.bitset_; }
+
   // Erases the element whose index matches the index of |x| and returns the
   // number of erased elements (0 or 1).
   size_t erase(T x) {

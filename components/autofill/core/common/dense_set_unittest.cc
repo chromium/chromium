@@ -578,6 +578,16 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_EQ(t.size(), 3u);
 }
 
+TEST(DenseSetTest, intersect) {
+  constexpr uint64_t kMaxValue = 5;
+  DenseSetWrapper<uint64_t, 0, kMaxValue> s = {1, 3, 4};
+  DenseSetWrapper<uint64_t, 0, kMaxValue> t = {1, 2, 4};
+  s.intersect(t);
+  // Expect that only 1 and 4 remain.
+  t.erase(2);
+  EXPECT_EQ(s, t);
+}
+
 TEST(DenseSetTest, std_set) {
   constexpr uint64_t kMaxValue = 50;
   DenseSetWrapper<uint64_t, 0, kMaxValue> dense_set;
