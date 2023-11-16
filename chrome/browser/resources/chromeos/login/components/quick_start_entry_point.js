@@ -16,11 +16,27 @@
  *     'quickStartTextkey' - ID of localized string to be used as button text.
  */
 
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OobeI18nBehavior} from './behaviors/oobe_i18n_behavior.js';
+import {OobeModalDialog} from './dialogs/oobe_modal_dialog.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const QuickStartEntryPointBase =
+    mixinBehaviors([OobeI18nBehavior], PolymerElement);
+
+/**
+ * @typedef {{
+ *  quickStartBluetoothDialog: OobeModalDialog
+ * }}
+ */
+QuickStartEntryPointBase.$;
 
 /** @polymer */
-export class QuickStartEntryPoint extends PolymerElement {
+export class QuickStartEntryPoint extends QuickStartEntryPointBase {
   static get is() {
     return 'quick-start-entry-point';
   }
@@ -36,6 +52,31 @@ export class QuickStartEntryPoint extends PolymerElement {
         value: '',
       },
     };
+  }
+
+  quickStartButtonClicked_() {
+    this.dispatchEvent(new CustomEvent('activate-quick-start', {
+      bubbles: true,
+      composed: true,
+      detail: {enableBluetooth: false},
+    }));
+  }
+
+  showQuickStartBluetoothDialog() {
+    this.$.quickStartBluetoothDialog.showDialog();
+  }
+
+  cancelBluetoothDialog_() {
+    this.$.quickStartBluetoothDialog.hideDialog();
+  }
+
+  turnOnBluetooth_() {
+    this.$.quickStartBluetoothDialog.hideDialog();
+    this.dispatchEvent(new CustomEvent('activate-quick-start', {
+      bubbles: true,
+      composed: true,
+      detail: {enableBluetooth: true},
+    }));
   }
 }
 

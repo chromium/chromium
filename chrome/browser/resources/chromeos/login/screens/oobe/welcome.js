@@ -236,6 +236,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       'showRemoraRequisitionDialog',
       'maybeGiveChromeVoxHint',
       'setQuickStartEnabled',
+      'showQuickStartBluetoothDialog',
     ];
   }
 
@@ -388,15 +389,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    */
   onWelcomeNextButtonClicked_() {
     this.userActed('continue');
-  }
-
-  /**
-   * Handle "Quick Start" button for "Welcome" screen.
-   *
-   * @private
-   */
-  onQuickStartButtonClicked_() {
-    this.userActed('activateQuickStart');
   }
 
   /**
@@ -775,9 +767,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     });
   }
 
-  setQuickStartEnabled() {
-    this.$.welcomeScreen.isQuickStartEnabled = true;
-  }
 
   /**
    * Returns a voice name from |voices| that matches |locale|.
@@ -886,6 +875,29 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    */
   hideCFMSetupButton_(isDeviceRequisitionConfigurable, isMeet) {
     return !isDeviceRequisitionConfigurable && !isMeet;
+  }
+
+  /** ******************** Quick Start section ******************* */
+
+  setQuickStartEnabled() {
+    this.$.welcomeScreen.isQuickStartEnabled = true;
+  }
+
+  showQuickStartBluetoothDialog() {
+    this.$.welcomeScreen.onShowQuickStartBluetoothDialog_();
+  }
+
+  /**
+   * Handle "Quick Start" button for "Welcome" screen.
+   *
+   * @private
+   */
+  onActivateQuickStart_(e) {
+    if (e.detail.enableBluetooth) {
+      this.userActed('quickStartEnableBluetooth');
+    } else {
+      this.userActed('quickStartClicked');
+    }
   }
 }
 

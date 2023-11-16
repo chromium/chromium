@@ -108,6 +108,15 @@ class QuickStartController : public OobeUI::Observer,
   FidoAssertionInfo GetFidoAssertion() { return fido_.value(); }
   std::string GetWiFiName() { return wifi_name_.value(); }
 
+  // Check if bluetooth is disabled which would require showing the enable
+  // bluetooth dialog to turn on bluetooth before continuing quick start flow.
+  bool ShouldShowBluetoothDialog();
+
+  // Turn on bluetooth for quick start flow to continue
+  void TurnOnBluetooth();
+
+  void set_fake_bluetooth_state_for_testing(bool bluetooth_enabled);
+
   // Exit point to be used when the flow is cancelled.
   EntryPoint GetExitPoint();
 
@@ -186,6 +195,9 @@ class QuickStartController : public OobeUI::Observer,
   // QuickStartScreen implements the UiDelegate and registers itself whenever it
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
+
+  // TODO(ayag)(b/309382466): set value by fetching bluetooth state
+  bool is_bluetooth_enabled_ = true;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

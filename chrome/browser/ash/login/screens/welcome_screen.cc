@@ -90,7 +90,9 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
     "activateRemoraRequisition";
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
-constexpr const char kUserActionQuickStartClicked[] = "activateQuickStart";
+constexpr const char kUserActionQuickStartClicked[] = "quickStartClicked";
+constexpr const char kUserActionQuickStartEnableBluetooth[] =
+    "quickStartEnableBluetooth";
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
 constexpr const char kSetLocaleId[] = "setLocaleId";
@@ -412,8 +414,11 @@ void WelcomeScreen::HideImpl() {
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
-    CHECK(context()->quick_start_enabled);
-    Exit(Result::QUICK_START);
+    OnQuickStartClicked();
+    return;
+  }
+  if (action_id == kUserActionQuickStartEnableBluetooth) {
+    OnTurnOnBluetoothForQuickStart();
     return;
   }
   if (action_id == kUserActionContinueButtonClicked) {
@@ -721,6 +726,23 @@ void WelcomeScreen::UpdateA11yState() {
   if (view_) {
     view_->UpdateA11yState(a11y_state);
   }
+}
+
+void WelcomeScreen::OnQuickStartClicked() {
+  CHECK(context()->quick_start_enabled);
+  if (WizardController::default_controller()
+          ->quick_start_controller()
+          ->ShouldShowBluetoothDialog()) {
+    // Show bluetooth dialog
+    view_->ShowQuickStartBluetoothDialog();
+  } else {
+    Exit(Result::QUICK_START);
+  }
+}
+
+void WelcomeScreen::OnTurnOnBluetoothForQuickStart() {
+  CHECK(context()->quick_start_enabled);
+  Exit(Result::QUICK_START);
 }
 
 void WelcomeScreen::Exit(Result result) const {

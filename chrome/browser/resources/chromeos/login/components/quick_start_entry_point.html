@@ -6,8 +6,33 @@ found in the LICENSE file.
 
 <!-- Structure of Quick Start button custom element -->
 <oobe-icon-button
-  id="quickStart"
+  id="quickStartButton"
   text-key="[[quickStartTextKey]]"
   icon1x="oobe-20:quick-start-android-device"
-  icon2x="oobe-20:quick-start-android-device">
+  icon2x="oobe-20:quick-start-android-device"
+  on-click="quickStartButtonClicked_"
+>
 </oobe-icon-button>
+<oobe-modal-dialog id="quickStartBluetoothDialog">
+  <div id="quickStartBluetoothTitle"
+    slot="title">
+    <p>[[i18nDynamic(locale, 'quickStartBluetoothTitle')]]</p>
+  </div>
+  <div id="quickStartBluetoothContent"
+    slot="content">[[i18nDynamic(locale, 'quickStartBluetoothContent')]]
+  </div>
+  <div slot="buttons">
+    <oobe-text-button
+      id="quickStartBluetoothCancelButton"
+      on-click="cancelBluetoothDialog_"
+      text-key="quickStartBluetoothCancelButton"
+    >
+    </oobe-text-button>
+    <oobe-text-button
+      id="quickStartBluetoothEnableButton"
+      on-click="turnOnBluetooth_"
+      text-key="quickStartBluetoothEnableButton"
+    >
+    </oobe-text-button>
+  </div>
+</oobe-modal-dialog>

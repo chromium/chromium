@@ -285,6 +285,10 @@ void WelcomeScreenHandler::SetQuickStartEnabled() {
   CallExternalAPI("setQuickStartEnabled");
 }
 
+void WelcomeScreenHandler::ShowQuickStartBluetoothDialog() {
+  CallExternalAPI("showQuickStartBluetoothDialog");
+}
+
 void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
   base::UmaHistogramBoolean("OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess",
                             true);

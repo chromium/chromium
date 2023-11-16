@@ -124,6 +124,21 @@ void QuickStartController::AbortFlow() {
   ResetState();
 }
 
+bool QuickStartController::ShouldShowBluetoothDialog() {
+  // TODO(ayag)(b/309382466): check bluetooth enabled
+  return !this->is_bluetooth_enabled_;
+}
+
+void QuickStartController::TurnOnBluetooth() {
+  // TODO(ayag)(b/309382466): enable bluetooth
+  this->is_bluetooth_enabled_ = true;
+}
+
+void QuickStartController::set_fake_bluetooth_state_for_testing(
+    bool bluetooth_enabled) {
+  this->is_bluetooth_enabled_ = bluetooth_enabled;
+}
+
 QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
   return exit_point_.value();
 }

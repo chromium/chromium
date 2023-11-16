@@ -70,6 +70,14 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE);
   builder->Add("quickStartSetupFromSigninSubtitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_SUBTITLE);
+  builder->Add("quickStartBluetoothTitle",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_TITLE);
+  builder->Add("quickStartBluetoothContent",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CONTENT);
+  builder->Add("quickStartBluetoothCancelButton",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL);
+  builder->Add("quickStartBluetoothEnableButton",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE);
 }
 
 }  // namespace ash
