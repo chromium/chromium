@@ -18,10 +18,6 @@
 
 class Profile;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace views {
 class DialogDelegate;
 class View;
@@ -30,12 +26,10 @@ class View;
 namespace web_app {
 
 class IsolatedWebAppInstallerModel;
-class SignedWebBundleMetadata;
 class WebAppProvider;
 
 class IsolatedWebAppInstallerViewController
-    : public InstallabilityChecker::Delegate,
-      public IsolatedWebAppInstallerView::Delegate {
+    : public IsolatedWebAppInstallerView::Delegate {
  public:
   IsolatedWebAppInstallerViewController(Profile* profile,
                                         WebAppProvider* web_app_provider,
@@ -62,6 +56,8 @@ class IsolatedWebAppInstallerViewController
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            CanLaunchAppAfterInstall);
 
+  struct InstallabilityCheckedVisitor;
+
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
       base::WeakPtr<IsolatedWebAppInstallerViewController> controller);
@@ -70,20 +66,12 @@ class IsolatedWebAppInstallerViewController
   void OnComplete();
   void Close();
 
+  void OnInstallabilityChecked(InstallabilityChecker::Result result);
   void OnInstallComplete(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 
   void OnConfirmInstallLearnMoreClicked();
-
-  // `InstallabilityChecker::Delegate`:
-  void OnProfileShutdown() override;
-  void OnBundleInvalid(const std::string& error) override;
-  void OnBundleInstallable(const SignedWebBundleMetadata& metadata) override;
-  void OnBundleUpdatable(const SignedWebBundleMetadata& metadata,
-                         const base::Version& installed_version) override;
-  void OnBundleOutdated(const SignedWebBundleMetadata& metadata,
-                        const base::Version& installed_version) override;
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;

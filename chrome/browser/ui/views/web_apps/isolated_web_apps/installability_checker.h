@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 
@@ -29,30 +30,39 @@ class WebAppProvider;
 
 class InstallabilityChecker {
  public:
-  class Delegate {
-   public:
-    virtual void OnProfileShutdown() = 0;
-    virtual void OnBundleInvalid(const std::string& error) = 0;
-    virtual void OnBundleInstallable(
-        const SignedWebBundleMetadata& metadata) = 0;
-    virtual void OnBundleUpdatable(const SignedWebBundleMetadata& metadata,
-                                   const base::Version& installed_version) = 0;
-    virtual void OnBundleOutdated(const SignedWebBundleMetadata& metadata,
-                                  const base::Version& installed_version) = 0;
+  struct ProfileShutdown {};
+  struct BundleInvalid {
+    std::string error;
   };
+  struct BundleInstallable {
+    SignedWebBundleMetadata metadata;
+  };
+  struct BundleUpdatable {
+    SignedWebBundleMetadata metadata;
+    base::Version installed_version;
+  };
+  struct BundleOutdated {
+    SignedWebBundleMetadata metadata;
+    base::Version installed_version;
+  };
+  using Result = absl::variant<ProfileShutdown,
+                               BundleInvalid,
+                               BundleInstallable,
+                               BundleUpdatable,
+                               BundleOutdated>;
 
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,
       WebAppProvider* web_app_provider,
       const base::FilePath& bundle_path,
-      Delegate* delegate);
+      base::OnceCallback<void(Result)> callback);
 
   ~InstallabilityChecker();
 
  private:
   InstallabilityChecker(Profile* profile,
                         WebAppProvider* web_app_provider,
-                        Delegate* delegate);
+                        base::OnceCallback<void(Result)> callback);
 
   void Start(const base::FilePath& bundle_path);
   void OnLoadedUrlInfo(
@@ -68,7 +78,7 @@ class InstallabilityChecker {
 
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> web_app_provider_;
-  raw_ptr<Delegate> delegate_;
+  base::OnceCallback<void(Result)> callback_;
   base::WeakPtrFactory<InstallabilityChecker> weak_ptr_factory_{this};
 };
 

@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -72,6 +73,44 @@ class OnCompleteDialogDelegate : public views::DialogDelegate {
 
 }  // namespace
 
+struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
+  explicit InstallabilityCheckedVisitor(
+      IsolatedWebAppInstallerModel& model,
+      IsolatedWebAppInstallerViewController& controller)
+      : model_(model), controller_(controller) {}
+
+  void operator()(InstallabilityChecker::BundleInvalid) {
+    model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
+        /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
+        IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE));
+    controller_->OnModelChanged();
+  }
+
+  void operator()(InstallabilityChecker::BundleInstallable installable) {
+    model_->SetSignedWebBundleMetadata(installable.metadata);
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+    controller_->OnModelChanged();
+  }
+
+  void operator()(InstallabilityChecker::BundleUpdatable) {
+    // TODO(crbug.com/1479140): Handle updates
+    controller_->Close();
+  }
+
+  void operator()(InstallabilityChecker::BundleOutdated) {
+    // TODO(crbug.com/1479140): Show "outdated" error message
+    controller_->Close();
+  }
+
+  void operator()(InstallabilityChecker::ProfileShutdown) {
+    controller_->Close();
+  }
+
+ private:
+  raw_ref<IsolatedWebAppInstallerModel> model_;
+  raw_ref<IsolatedWebAppInstallerViewController> controller_;
+};
+
 IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
     Profile* profile,
     WebAppProvider* web_app_provider,
@@ -91,7 +130,10 @@ void IsolatedWebAppInstallerViewController::Start() {
   OnModelChanged();
 
   installability_checker_ = InstallabilityChecker::CreateAndStart(
-      profile_, web_app_provider_, model_->bundle_path(), this);
+      profile_, web_app_provider_, model_->bundle_path(),
+      base::BindOnce(
+          &IsolatedWebAppInstallerViewController::OnInstallabilityChecked,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
@@ -179,6 +221,11 @@ void IsolatedWebAppInstallerViewController::Close() {
   }
 }
 
+void IsolatedWebAppInstallerViewController::OnInstallabilityChecked(
+    InstallabilityChecker::Result result) {
+  absl::visit(InstallabilityCheckedVisitor(*model_, *this), result);
+}
+
 void IsolatedWebAppInstallerViewController::OnInstallComplete(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
@@ -196,39 +243,6 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
 
 void IsolatedWebAppInstallerViewController::OnConfirmInstallLearnMoreClicked() {
   // TODO(crbug.com/1479140): Implement
-}
-
-void IsolatedWebAppInstallerViewController::OnProfileShutdown() {
-  Close();
-}
-
-void IsolatedWebAppInstallerViewController::OnBundleInvalid(
-    const std::string& error) {
-  model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
-      /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
-      IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE));
-  OnModelChanged();
-}
-
-void IsolatedWebAppInstallerViewController::OnBundleInstallable(
-    const SignedWebBundleMetadata& metadata) {
-  model_->SetSignedWebBundleMetadata(metadata);
-  model_->SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
-  OnModelChanged();
-}
-
-void IsolatedWebAppInstallerViewController::OnBundleUpdatable(
-    const SignedWebBundleMetadata& metadata,
-    const base::Version& installed_version) {
-  // TODO(crbug.com/1479140): Handle updates
-  Close();
-}
-
-void IsolatedWebAppInstallerViewController::OnBundleOutdated(
-    const SignedWebBundleMetadata& metadata,
-    const base::Version& installed_version) {
-  // TODO(crbug.com/1479140): Show "outdated" error message
-  Close();
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
