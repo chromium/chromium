@@ -5176,8 +5176,10 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Card) {
       IsCreditCardUpstreamEnabled());
   EXPECT_EQ(credit_card_save_manager_->CreditCardWasUploaded(),
             IsCreditCardUpstreamEnabled() &&
-                CreditCardImportType() !=
-                    FormDataImporter::CreditCardImportType::kServerCard);
+                (CreditCardImportType() ==
+                     FormDataImporter::CreditCardImportType::kNewCard ||
+                 CreditCardImportType() ==
+                     FormDataImporter::CreditCardImportType::kLocalCard));
   EXPECT_EQ(credit_card_save_manager_->CardLocalSaveStarted(),
             CreditCardImportType() ==
                     FormDataImporter::CreditCardImportType::kNewCard &&
@@ -5214,15 +5216,66 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
                 IsCreditCardUpstreamEnabled());
 }
 
+// Tests that ProceedWithSavingIfApplicable should initiate CVC save flow with
+// expected input with duplicate case.
+TEST_P(ProceedWithSavingIfApplicableTest,
+       ProceedWithSavingIfApplicable_Cvc_Duplicate_Local) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  FormStructure form_structure(CreateTestCreditCardFormData());
+  CreditCard local_card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(local_card);
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(server_card);
+  local_card.set_cvc(u"234");
+
+  // Save local card CVC to local even if duplicate local and server card
+  // detected.
+  credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      form_structure, local_card,
+      FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
+      /*is_credit_card_upstream_enabled=*/true);
+  EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
+  EXPECT_FALSE(credit_card_save_manager_->CvcUploadSaveStarted());
+}
+
+// Tests that ProceedWithSavingIfApplicable should initiate CVC upload flow with
+// expected input with duplicate case.
+TEST_P(ProceedWithSavingIfApplicableTest,
+       ProceedWithSavingIfApplicable_Cvc_Duplicate_Server) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  FormStructure form_structure(CreateTestCreditCardFormData());
+  CreditCard local_card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(local_card);
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(server_card);
+  server_card.set_cvc(u"234");
+
+  // Save server card CVC to server even if duplicate local and server card
+  // detected.
+  credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      form_structure, server_card,
+      FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
+      IsCreditCardUpstreamEnabled());
+  EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+                IsCreditCardUpstreamEnabled());
+  EXPECT_FALSE(credit_card_save_manager_->CvcLocalSaveStarted());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     CreditCardSaveManagerTest,
     ProceedWithSavingIfApplicableTest,
     testing::Combine(
         testing::Bool(),
         testing::Bool(),
-        testing::Values(FormDataImporter::CreditCardImportType::kServerCard,
-                        FormDataImporter::CreditCardImportType::kLocalCard,
-                        FormDataImporter::CreditCardImportType::kNewCard),
+        testing::Values(
+            FormDataImporter::CreditCardImportType::kServerCard,
+            FormDataImporter::CreditCardImportType::kLocalCard,
+            FormDataImporter::CreditCardImportType::kNewCard,
+            FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
         testing::Bool()));
 
 // Tests that server CVC is not added to AutofillTable during credit card

@@ -55,6 +55,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
     kNewCard,
     // The extracted card is already known to be a virtual card.
     kVirtualCard,
+    // The extracted card is known to be a duplicate local and server card.
+    kDuplicateLocalServerCard,
   };
 
   // The parameters should outlive the FormDataImporter.

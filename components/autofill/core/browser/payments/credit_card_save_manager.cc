@@ -168,10 +168,14 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
     FormDataImporter::CreditCardImportType credit_card_import_type,
     bool is_credit_card_upstream_enabled) {
   // Prioritize card upload save if it is allowed. Check if card upload save
-  // should be offer and attempt to offer card upload save.
+  // should be offer and attempt to offer card upload save. Card upload is only
+  // offered if import_type is local card or new card. It can't be duplicate or
+  // server card.
   if (is_credit_card_upstream_enabled &&
-      credit_card_import_type !=
-          FormDataImporter::CreditCardImportType::kServerCard) {
+      (credit_card_import_type ==
+           FormDataImporter::CreditCardImportType::kLocalCard ||
+       credit_card_import_type ==
+           FormDataImporter::CreditCardImportType::kNewCard)) {
     AttemptToOfferCardUploadSave(
         submitted_form, card,
         /*uploading_local_card=*/credit_card_import_type ==
@@ -185,16 +189,15 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
       !card.cvc().empty()) {
     // We will only offer CVC-only save if the card is known to Autofill.
     CreditCard* existing_credit_card = nullptr;
-    if (credit_card_import_type ==
-        FormDataImporter::CreditCardImportType::kLocalCard) {
+    if (card.record_type() == CreditCard::RecordType::kLocalCard) {
       existing_credit_card =
           personal_data_manager_->GetCreditCardByGUID(card.guid());
       if (existing_credit_card && existing_credit_card->cvc() != card.cvc()) {
         AttemptToOfferCvcLocalSave(card);
         return true;
       }
-    } else if (credit_card_import_type ==
-                   FormDataImporter::CreditCardImportType::kServerCard &&
+    } else if (card.record_type() ==
+                   CreditCard::RecordType::kMaskedServerCard &&
                is_credit_card_upstream_enabled) {
       existing_credit_card =
           personal_data_manager_->GetCreditCardByInstrumentId(

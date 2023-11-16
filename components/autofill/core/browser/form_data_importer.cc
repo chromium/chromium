@@ -905,9 +905,28 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       // Return that we found a masked server card with matching last four
       // digits and copy over the user entered CVC so that future processing
       // logic check if CVC upload save should be offered.
-      credit_card_import_type_ = CreditCardImportType::kServerCard;
       CreditCard server_card_with_cvc = *server_card;
       server_card_with_cvc.set_cvc(candidate.cvc());
+
+      // If `credit_card_import_type_` was local card, then a local card was
+      // extracted from the form. If a server card is now also extracted from
+      // the form, the duplicate local and server card case is detected.
+      if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
+        credit_card_import_type_ =
+            CreditCardImportType::kDuplicateLocalServerCard;
+
+        // Return server card if flag is on since suggestion only shows server
+        // cards if flag is on. Return local card if flag is off since
+        // suggestion only shows local cards if flag is off.
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillSuggestServerCardInsteadOfLocalCard)) {
+          return server_card_with_cvc;
+        } else {
+          return candidate;
+        }
+      }
+
+      credit_card_import_type_ = CreditCardImportType::kServerCard;
       return server_card_with_cvc;
     } else {
       // Keep track of the fact that we found a server card with matching
