@@ -28,10 +28,6 @@
 
 class Profile;
 
-namespace password_manager {
-class PasswordChangeSuccessTracker;
-}  // namespace password_manager
-
 namespace extensions {
 
 extern const char kPasswordCheckDataKey[];
@@ -128,11 +124,6 @@ class PasswordCheckDelegate
   // Constructs `PasswordUiEntry` from `CredentialUIEntry`.
   api::passwords_private::PasswordUiEntry ConstructInsecureCredentialUiEntry(
       password_manager::CredentialUIEntry entry);
-
-  // Returns a raw pointer to the `PasswordChangeSuccessTracker` associated
-  // with `profile_`.
-  password_manager::PasswordChangeSuccessTracker*
-  GetPasswordChangeSuccessTracker() const;
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;

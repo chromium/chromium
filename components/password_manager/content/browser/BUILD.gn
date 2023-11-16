@@ -16,8 +16,6 @@ static_library("browser") {
     "form_meta_data.h",
     "form_submission_tracker_util.cc",
     "form_submission_tracker_util.h",
-    "password_change_success_tracker_factory.cc",
-    "password_change_success_tracker_factory.h",
     "password_manager_log_router_factory.cc",
     "password_manager_log_router_factory.h",
     "password_requirements_service_factory.cc",
@@ -78,7 +76,6 @@ source_set("unit_tests") {
     "content_password_manager_driver_factory_unittest.cc",
     "content_password_manager_driver_unittest.cc",
     "form_submission_tracker_util_unittest.cc",
-    "password_change_success_tracker_factory_unittest.cc",
     "password_manager_log_router_factory_unittest.cc",
   ]
 
@@ -94,10 +91,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing:buildflags",
-    "//components/ukm:test_support",
-    "//components/user_prefs",
     "//content/test:test_support",
-    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

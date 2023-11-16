@@ -32,13 +32,10 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
-#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -99,9 +96,6 @@ using password_manager::InsecurityMetadata;
 using password_manager::IsLeaked;
 using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
-using password_manager::MockPasswordChangeSuccessTracker;
-using password_manager::PasswordChangeSuccessTracker;
-using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
@@ -146,17 +140,6 @@ EventRouter* CreateAndUseEventRouter(Profile* profile) {
             return std::unique_ptr<KeyedService>(
                 std::make_unique<EventRouter>(context, nullptr));
           })));
-}
-
-MockPasswordChangeSuccessTracker* CreateAndUsePasswordChangeSuccessTracker(
-    Profile* profile) {
-  return static_cast<MockPasswordChangeSuccessTracker*>(
-      PasswordChangeSuccessTrackerFactory::GetInstance()
-          ->SetTestingSubclassFactoryAndUse(
-              profile, base::BindRepeating([](content::BrowserContext*) {
-                return std::make_unique<
-                    testing::StrictMock<MockPasswordChangeSuccessTracker>>();
-              })));
 }
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
@@ -302,9 +285,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   TestPasswordStore& store() { return *store_; }
   TestPasswordStore& account_store() { return *account_store_; }
   BulkLeakCheckService* service() { return bulk_leak_check_service_; }
-  MockPasswordChangeSuccessTracker& password_change_success_tracker() {
-    return *password_change_success_tracker_;
-  }
   syncer::TestSyncService& sync_service() { return *sync_service_; }
   SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
@@ -330,8 +310,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       CreateAndUseTestPasswordStore(&profile_);
   scoped_refptr<TestPasswordStore> account_store_ =
       CreateAndUseTestAccountPasswordStore(&profile_);
-  raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
-      CreateAndUsePasswordChangeSuccessTracker(&profile_);
   raw_ptr<syncer::TestSyncService> sync_service_ =
       CreateAndUseSyncService(&profile_);
   IdGenerator credential_id_generator_;
