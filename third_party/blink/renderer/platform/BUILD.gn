@@ -2525,6 +2525,14 @@ fuzzer_test("layout_locale_fuzzer") {
   ]
 }
 
+fuzzer_test("segmented_string_fuzzer") {
+  sources = [ "text/segmented_string_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+}
+
 # Fuzzer for blink::FindCategory.
 fuzzer_test("mathml_operator_dictionary_fuzzer") {
   sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
