@@ -31,8 +31,8 @@
   "CROS_DEDEDE_RELEASE_BETA": {
     "skylab": {
       "cros_board": "dedede",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "dedede-release/R119-15633.37.0"
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "dedede-release/R120-15662.16.0"
     },
     "enabled": false,
     "identifier": "DEDEDE_RELEASE_BETA"
@@ -40,10 +40,10 @@
   "CROS_DEDEDE_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "dedede",
-      "cros_chrome_version": "118.0.5993.124",
-      "cros_img": "dedede-release/R118-15604.57.0"
+      "cros_chrome_version": "119.0.6045.158",
+      "cros_img": "dedede-release/R119-15633.44.0"
     },
-    "enabled": true,
+    "enabled": false,
     "identifier": "DEDEDE_RELEASE_STABLE"
   },
   "CROS_PUFF_RELEASE_LKGM": {
@@ -70,8 +70,8 @@
   "CROS_PUFF_RELEASE_BETA": {
     "skylab": {
       "cros_board": "puff",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "puff-release/R119-15633.37.0",
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "puff-release/R120-15662.16.0",
       "dut_pool": "chrome"
     },
     "enabled": false,
@@ -121,8 +121,8 @@
   "CROS_HANA_RELEASE_BETA": {
     "skylab": {
       "cros_board": "hana",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "hana-release/R119-15633.37.0"
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "hana-release/R120-15662.16.0"
     },
     "enabled": false,
     "identifier": "HANA_RELEASE_BETA"
@@ -130,10 +130,10 @@
   "CROS_HANA_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "hana",
-      "cros_chrome_version": "118.0.5993.124",
-      "cros_img": "hana-release/R118-15604.57.0"
+      "cros_chrome_version": "119.0.6045.158",
+      "cros_img": "hana-release/R119-15633.44.0"
     },
-    "enabled": true,
+    "enabled": false,
     "identifier": "HANA_RELEASE_STABLE"
   },
   "CROS_JACUZZI_RELEASE_LKGM": {
@@ -158,8 +158,8 @@
   "CROS_JACUZZI_RELEASE_BETA": {
     "skylab": {
       "cros_board": "jacuzzi",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "jacuzzi-release/R119-15633.37.0"
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "jacuzzi-release/R120-15662.16.0"
     },
     "enabled": false,
     "identifier": "JACUZZI_RELEASE_BETA"
@@ -177,10 +177,10 @@
   "CROS_JACUZZI_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "jacuzzi",
-      "cros_chrome_version": "118.0.5993.124",
-      "cros_img": "jacuzzi-release/R118-15604.57.0"
+      "cros_chrome_version": "119.0.6045.158",
+      "cros_img": "jacuzzi-release/R119-15633.44.0"
     },
-    "enabled": true,
+    "enabled": false,
     "identifier": "JACUZZI_RELEASE_STABLE"
   },
   "CROS_JACUZZI_PUBLIC_LKGM": {
@@ -266,8 +266,8 @@
   "CROS_OCTOPUS_RELEASE_BETA": {
     "skylab": {
       "cros_board": "octopus",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "octopus-release/R119-15633.37.0"
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "octopus-release/R120-15662.16.0"
     },
     "enabled": false,
     "identifier": "OCTOPUS_RELEASE_BETA"
@@ -275,10 +275,10 @@
   "CROS_OCTOPUS_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "octopus",
-      "cros_chrome_version": "118.0.5993.124",
-      "cros_img": "octopus-release/R118-15604.57.0"
+      "cros_chrome_version": "119.0.6045.158",
+      "cros_img": "octopus-release/R119-15633.44.0"
     },
-    "enabled": true,
+    "enabled": false,
     "identifier": "OCTOPUS_RELEASE_STABLE"
   },
   "CROS_STRONGBAD_RELEASE_LKGM": {
@@ -303,8 +303,8 @@
   "CROS_STRONGBAD_RELEASE_BETA": {
     "skylab": {
       "cros_board": "strongbad",
-      "cros_chrome_version": "119.0.6045.116",
-      "cros_img": "strongbad-release/R119-15633.37.0"
+      "cros_chrome_version": "120.0.6099.25",
+      "cros_img": "strongbad-release/R120-15662.16.0"
     },
     "enabled": false,
     "identifier": "STRONGBAD_RELEASE_BETA"
@@ -312,10 +312,10 @@
   "CROS_STRONGBAD_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "strongbad",
-      "cros_chrome_version": "118.0.5993.124",
-      "cros_img": "strongbad-release/R118-15604.57.0"
+      "cros_chrome_version": "119.0.6045.158",
+      "cros_img": "strongbad-release/R119-15633.44.0"
     },
-    "enabled": true,
+    "enabled": false,
     "identifier": "STRONGBAD_RELEASE_STABLE"
   },
   "CROS_TROGDOR_RELEASE_ASH_LKGM": {
