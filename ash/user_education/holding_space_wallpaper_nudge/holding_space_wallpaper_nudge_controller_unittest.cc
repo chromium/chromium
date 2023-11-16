@@ -260,7 +260,6 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     : public UserEducationAshTestBase {
  public:
   HoldingSpaceWallpaperNudgeControllerTestBase(
-      absl::optional<bool> counterfactual_enabled,
       absl::optional<bool> drop_to_pin_enabled,
       bool rate_limiting_enabled,
       base::test::TaskEnvironment::TimeSource time_source)
@@ -270,19 +269,15 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     // verified in test coverage for the controller's owner.
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
-    base::FieldTrialParams params;
-
-    if (counterfactual_enabled.has_value()) {
-      params.emplace("is-counterfactual",
-                     counterfactual_enabled.value() ? "true" : "false");
-    }
 
     if (drop_to_pin_enabled.has_value()) {
-      params.emplace("drop-to-pin",
-                     drop_to_pin_enabled.value() ? "true" : "false");
+      enabled.push_back(base::test::FeatureRefAndParams(
+          features::kHoldingSpaceWallpaperNudge,
+          {{"drop-to-pin", drop_to_pin_enabled.value() ? "true" : "false"}}));
+    } else {
+      enabled.emplace_back(features::kHoldingSpaceWallpaperNudge,
+                           base::FieldTrialParams());
     }
-
-    enabled.emplace_back(features::kHoldingSpaceWallpaperNudge, params);
 
     if (rate_limiting_enabled) {
       disabled.emplace_back(
@@ -427,7 +422,6 @@ class HoldingSpaceWallpaperNudgeControllerTest
  public:
   HoldingSpaceWallpaperNudgeControllerTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
-            /*counterfactual_enabled=*/false,
             /*drop_to_pin_enabled=*/false,
             /*rate_limiting_enabled=*/true,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
@@ -541,7 +535,6 @@ class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
  public:
   HoldingSpaceWallpaperNudgeControllerDragAndDropTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
-            /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
             /*rate_limiting_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
@@ -820,7 +813,6 @@ class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
  public:
   HoldingSpaceWallpaperNudgeControllerRateLimitingTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
-            /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
             /*rate_limiting_enabled=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -958,159 +950,6 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
   EXPECT_TRUE(tray->GetVisible());
   EXPECT_EQ(HasWallpaperHighlight(display_id),
             drop_to_pin_enabled().value_or(false));
-
-  // Clean up holding space controller.
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id, /*client=*/nullptr, /*model=*/nullptr);
-}
-
-// HoldingSpaceWallpaperNudgeControllerCounterfactualTest ----------------------
-
-// Base class for tests of the `HoldingSpaceWallpaperNudgeController` which are
-// concerned with the behavior of counterfactual experiment arms.
-class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
-    : public HoldingSpaceWallpaperNudgeControllerTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple</*counterfactual_enabled=*/absl::optional<bool>,
-                     /*drop_to_pin_enabled=*/absl::optional<bool>>> {
- public:
-  HoldingSpaceWallpaperNudgeControllerCounterfactualTest()
-      : HoldingSpaceWallpaperNudgeControllerTestBase(
-            counterfactual_enabled(),
-            drop_to_pin_enabled(),
-            /*rate_limiting_enabled=*/false,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  // Whether the is-counterfactual feature parameter is enabled.
-  absl::optional<bool> counterfactual_enabled() const {
-    return std::get<1>(GetParam());
-  }
-
-  // Whether the drop-to-pin feature parameter is enabled.
-  absl::optional<bool> drop_to_pin_enabled() const {
-    return std::get<0>(GetParam());
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
-                         testing::Combine(
-                             /*counterfactual_enabled=*/
-                             ::testing::Values(absl::make_optional(true),
-                                               absl::make_optional(false),
-                                               absl::nullopt),
-                             /*drop_to_pin_enabled=*/
-                             ::testing::Values(absl::make_optional(true),
-                                               absl::make_optional(false),
-                                               absl::nullopt)));
-
-// Tests -----------------------------------------------------------------------
-
-// Verifies that the holding space wallpaper nudge is prevented from showing if
-// enabled counterfactually as part of an experiment arm.
-TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
-       PreventsHoldingSpaceWallpaperNudgeCounterfactualArms) {
-  const int64_t display_id = GetPrimaryDisplay().id();
-  const bool expect_counterfactual = counterfactual_enabled().value_or(false);
-  const bool expect_drop_to_pin =
-      !expect_counterfactual && drop_to_pin_enabled().value_or(false);
-
-  // Log in a regular user.
-  const AccountId& account_id = AccountId::FromUserEmail("user@test");
-  SimulateUserLogin(account_id);
-
-  // Register a model and client for holding space.
-  HoldingSpaceModel holding_space_model;
-  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id, &holding_space_client, &holding_space_model);
-
-  // Configure the client to crack file system URLs.
-  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
-      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
-        return base::FilePath(base::StrCat(
-            {"//path/to/", std::string(&file_system_url.spec().back())}));
-      }));
-
-  if (expect_drop_to_pin) {
-    // Needed by the client to create the placeholder.
-    EXPECT_CALL(holding_space_client, IsDriveDisabled)
-        .WillRepeatedly(testing::Return(false));
-  }
-
-  // Mark the holding space feature as available since there is no holding
-  // space keyed service which would otherwise be responsible for doing so.
-  holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
-
-  if (expect_drop_to_pin) {
-    EXPECT_CALL(holding_space_client,
-                PinFiles(ElementsAre(Eq(base::FilePath("//path/to/a")),
-                                     Eq(base::FilePath("//path/to/b")))))
-        .WillOnce(
-            Invoke([&](const std::vector<base::FilePath>& unpinned_file_paths) {
-              holding_space_model.AddItems(CreateHoldingSpaceItems(
-                  HoldingSpaceItem::Type::kPinnedFile, unpinned_file_paths));
-            }));
-  }
-
-  // Create and show a widget from which data can be drag-and-dropped.
-  auto widget = CreateTestWidgetForDisplayId(display_id);
-  widget->SetContentsView(std::make_unique<DraggableView>(
-      base::BindLambdaForTesting([&](ui::OSExchangeData* data) {
-        data->SetString(u"Payload");
-        SetFilesAppData(data, u"file-system:a\nfile-system:b");
-      })));
-  widget->CenterWindow(gfx::Size(100, 100));
-  widget->Show();
-
-  auto* const shelf = GetShelfForDisplayId(display_id);
-  auto* const tray = GetHoldingSpaceTrayForShelf(shelf);
-
-  // Autohide the shelf so that the shelf visibility behavior can be verified.
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  EXPECT_FALSE(shelf->IsVisible());
-  EXPECT_FALSE(tray->GetVisible());
-
-  // Ensure a non-zero animation duration so there is sufficient time to
-  // detect pings before they are automatically destroyed on animation
-  // completion.
-  SetAnimationDurationMultiplier(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Drag data from the `widget` to the wallpaper.
-  MoveMouseTo(widget.get());
-  PressLeftButton();
-  MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
-
-  // Expect the holding space tray to have a help bubble and a ping only iff
-  // the experiment is enabled non-counterfactually.
-  EXPECT_NE(HasHelpBubble(tray), expect_counterfactual);
-  EXPECT_NE(HasPing(tray), expect_counterfactual);
-
-  // The shelf and holding space tray should show iff the experiment is enabled
-  // non-counterfactually.
-  EXPECT_NE(shelf->IsVisible(), expect_counterfactual);
-  EXPECT_NE(tray->GetVisible(), expect_counterfactual);
-
-  // The wallpaper highlight should show if drop-to-pin behavior is enabled.
-  EXPECT_EQ(HasWallpaperHighlight(display_id), expect_drop_to_pin);
-
-  // Release the left button. This will complete the drop and pin items to the
-  // holding space if the drop-to-pin beahavior is enabled.
-  ReleaseLeftButton();
-  FlushMessageLoop();
-
-  // Expect the dropped items to be pinned to holding space iff drop-to-pin
-  // behavior is enabled.
-  size_t expected_items = expect_drop_to_pin ? 2u : 0u;
-  EXPECT_EQ(holding_space_model.items().size(), expected_items);
-
-  // Expect the tray bubble to be shown after successful drop-to-pin behavior.
-  if (expect_drop_to_pin) {
-    EXPECT_TRUE(tray->GetBubbleWidget()->IsVisible());
-    tray->GetBubbleWidget()->CloseNow();
-  }
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(

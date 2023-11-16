@@ -240,15 +240,6 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
   void OnDragEntered(const ui::OSExchangeData& data,
                      const gfx::Point& location_in_screen) override {
-    if (features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
-      if (NudgeShouldBeShown()) {
-        // Mark the nudge as "shown" for the counterfactual experiment arm.
-        holding_space_wallpaper_nudge_prefs::MarkNudgeShown(
-            Shell::Get()->session_controller()->GetLastActiveUserPrefService());
-      }
-      return;
-    }
-
     if (features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
       // Highlight the wallpaper when `data` is dragged over it so that the user
       // better understands the wallpaper is a drop target.
@@ -291,15 +282,13 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
     DCHECK(CanDrop(data));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
-    return (!features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() &&
-            features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled())
+    return features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()
                ? ui::DragDropTypes::DragOperation::DRAG_COPY
                : ui::DragDropTypes::DragOperation::DRAG_NONE;
   }
 
   void OnDragExited() override {
-    if (!features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() &&
-        features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
+    if (features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
       // When `data` is dragged out of the wallpaper, remove the highlight which
       // was used to indicate the wallpaper was a drop target.
       CHECK(wallpaper_highlight_);
@@ -310,8 +299,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   ui::mojom::DragOperation OnDrop(
       const ui::OSExchangeData& data,
       const gfx::Point& location_in_screen) override {
-    if (!features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled() ||
-        features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
+    if (!features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
       return ui::mojom::DragOperation::kNone;
     }
 
