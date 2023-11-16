@@ -455,7 +455,6 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
     return;
   }
   AddPinnedActionButtonFor(id);
-  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -464,7 +463,6 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
   RemovePinnedActionButtonFor(id);
-  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -656,11 +654,6 @@ void PinnedToolbarActionsContainer::ReorderViews() {
     ReorderChildView(popped_out_button, index);
     index++;
   }
-}
-
-SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {
-  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
-      browser_view_->browser());
 }
 
 void PinnedToolbarActionsContainer::SetActionButtonIconVisibility(

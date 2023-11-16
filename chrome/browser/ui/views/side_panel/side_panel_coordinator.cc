@@ -273,11 +273,13 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
   } else {
+    pinned_model_observation_.Observe(
+        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
     // When the SidePanelPinning feature is enabled observe changes to the
     // pinned actions so we can update the pin button appropriately.
     // TODO(b/310910098): Observe the PinnedToolbarActionModel instead when
     // pinned extensions are fully merged into it.
-    model_observation_.Observe(
+    extensions_model_observation_.Observe(
         ToolbarActionsModel::Get(browser_view_->browser()->profile()));
   }
 
@@ -1306,4 +1308,18 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from) {
   UpdateToolbarButtonHighlight(observed_view->GetVisible());
+}
+
+void SidePanelCoordinator::OnActionAdded(const actions::ActionId& id) {
+  if (current_entry_ &&
+      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
+    UpdateHeaderPinButtonState();
+  }
+}
+
+void SidePanelCoordinator::OnActionRemoved(const actions::ActionId& id) {
+  if (current_entry_ &&
+      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
+    UpdateHeaderPinButtonState();
+  }
 }

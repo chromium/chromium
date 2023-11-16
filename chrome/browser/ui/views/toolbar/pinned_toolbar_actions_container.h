@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -130,7 +129,6 @@ class PinnedToolbarActionsContainer
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
-  SidePanelCoordinator* GetSidePanelCoordinator();
 
   // Sorts child views to display them in the correct order.
   void ReorderViews();
