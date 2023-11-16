@@ -495,7 +495,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     const Node& node,
     DocumentMarker::MarkerType type) {
   if ((type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) &&
-      RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled()) {
+      RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
     return true;
   }
 

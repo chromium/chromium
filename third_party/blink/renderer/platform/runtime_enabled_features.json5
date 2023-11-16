@@ -1000,14 +1000,6 @@
       base_feature: "none",
     },
     {
-      // Use the new CSS-based painting for spelling and grammar errors,
-      // regardless of whether the new highlights or decorations are exposed
-      // to authors (see CSSSpellingGrammarErrors).
-      name: "CSSPaintingForSpellingGrammarErrors",
-      status: "stable",
-      base_feature: "CssPaintingForSpellingGrammarErrors",
-    },
-    {
       // Ignore the stylesheet encoding when parsing URLs, always using UTF-8.
       // See crbug.com/1485525.
       name: "CSSParserIgnoreCharsetForURLs",
@@ -1095,6 +1087,8 @@
     {
       // Support for CSS ::spelling-error, ::grammar-error, and the
       // spelling-error and grammar-error values in text-decoration-line.
+      // Includes painting spelling and grammar markers using standard CSS
+      // styling.
       //
       // https://drafts.csswg.org/css-pseudo-4/#selectordef-spelling-error
       // https://drafts.csswg.org/css-pseudo-4/#selectordef-grammar-error

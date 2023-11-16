@@ -559,10 +559,6 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
     }
   }
 
-  bool do_spelling_grammar =
-      RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
-      RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled();
-
   // To extract decorations due to markers, we need a fragment item and a
   // node. Ideally we would use cursor.Current().GetNode() but that's const
   // and the style functions we need to access pseudo styles take non-const
@@ -597,7 +593,7 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
         container_offset, ink_overflow, inline_context);
     accumulated_bound.Unite(custom_bound);
   }
-  if (do_spelling_grammar) {
+  if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
     DocumentMarkerVector spelling_markers = controller.MarkersFor(
         *text_node, DocumentMarker::MarkerTypes::Spelling());
     if (!spelling_markers.empty()) {
