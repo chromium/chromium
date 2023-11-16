@@ -4,9 +4,8 @@
 
 #include "chrome/browser/lacros/desk_profiles_lacros.h"
 
-#include "base/containers/span.h"
-#include "base/hash/legacy_hash.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -14,23 +13,11 @@
 namespace crosapi {
 namespace {
 
-// Computes a stable profile identifier based on the profile path. `CityHash64`
-// is defined as unchanging.
-uint64_t ProfileHash(const std::string& profile_path) {
-  // The result is defined as taking the 63 upper bits from CityHash64 and
-  // setting the lowest bit to 1. This gives us two properties:
-  //  1. We can use the value 0 as a natural invalid/unset indicator.
-  //  2. Any other even number is reserved for future use.
-  return base::legacy::CityHash64(
-             base::as_bytes(base::make_span(profile_path))) |
-         1;
-}
-
 mojom::LacrosProfileSummaryPtr CreateProfileSummary(
     const ProfileAttributesEntry& entry) {
   auto summary = mojom::LacrosProfileSummary::New();
 
-  summary->profile_id = ProfileHash(entry.GetPath().value());
+  summary->profile_id = HashProfilePathToProfileId(entry.GetPath());
   summary->name = base::UTF16ToUTF8(entry.GetName());
   summary->email = base::UTF16ToUTF8(entry.GetUserName());
   summary->icon = *entry.GetAvatarIcon().ToImageSkia();
@@ -68,8 +55,7 @@ void DeskProfilesLacros::OnProfileAdded(const base::FilePath& profile_path) {
 
 void DeskProfilesLacros::OnProfileWillBeRemoved(
     const base::FilePath& profile_path) {
-  const std::string& path_string = profile_path.value();
-  remote_->OnProfileRemoved(ProfileHash(path_string));
+  remote_->OnProfileRemoved(HashProfilePathToProfileId(profile_path));
 }
 
 void DeskProfilesLacros::OnProfileNameChanged(

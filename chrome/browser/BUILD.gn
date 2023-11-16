@@ -5656,6 +5656,8 @@ static_library("browser") {
       "lacros/prefs_ash_observer.h",
       "lacros/profile_loader.cc",
       "lacros/profile_loader.h",
+      "lacros/profile_util.cc",
+      "lacros/profile_util.h",
       "lacros/remote_apps/remote_apps_proxy_lacros.cc",
       "lacros/remote_apps/remote_apps_proxy_lacros.h",
       "lacros/remote_apps/remote_apps_proxy_lacros_factory.cc",
