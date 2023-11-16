@@ -1864,7 +1864,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494845")
+            reason = "b/311163531: Re-enable once HttpEngine propagates UploadDataProvider#close")
     public void testDirectExecutorProhibitedByDefault() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         Executor myExecutor =
@@ -2733,9 +2733,6 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494845")
     // Used for Android's NetworkSecurityPolicy added in Nougat
     public void testCleartextTrafficBlocked() throws Exception {
         final int cleartextNotPermitted = -29;
@@ -2747,7 +2744,9 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isNotNull();
-        if (!mTestRule.testingJavaImpl()) {
+        // NetworkException#getCronetInternalErrorCode is exposed only by the native
+        // implementation.
+        if (mTestRule.implementationUnderTest() == CronetImplementation.STATICALLY_LINKED) {
             assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                     .isEqualTo(cleartextNotPermitted);
         }
