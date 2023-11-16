@@ -99,9 +99,6 @@ class SupervisedUserService : public KeyedService,
   // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
-  // Returns true if the URL filtering parental control is enabled.
-  bool IsURLFilteringEnabled() const;
-
   // Returns true if there is a custodian for the child.  A child can have
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
