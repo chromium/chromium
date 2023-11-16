@@ -70,7 +70,7 @@ void AutofillProviderAndroidBridgeImpl::SendPrefillRequest(
   if (obj.is_null()) {
     return;
   }
-  // TODO(crbug.com/1502091): Actually call Java.
+  Java_AutofillProvider_sendPrefillRequest(env, obj, form.GetJavaPeer());
 }
 
 void AutofillProviderAndroidBridgeImpl::StartAutofillSession(

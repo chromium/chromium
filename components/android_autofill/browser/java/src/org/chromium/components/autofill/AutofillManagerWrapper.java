@@ -8,9 +8,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
+import android.view.autofill.VirtualViewFillInfo;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -116,6 +118,16 @@ public class AutofillManagerWrapper {
         if (mDisabled || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("cancel");
         mAutofillManager.cancel();
+    }
+
+    public void notifyVirtualViewsReady(
+            View parent, SparseArray<VirtualViewFillInfo> viewFillInfos) {
+        // notifyVirtualViewsReady was added in Android U.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+        if (mDisabled || checkAndWarnIfDestroyed()) return;
+
+        if (isLoggable()) log("notifyVirtualViewsReady");
+        mAutofillManager.notifyVirtualViewsReady(parent, viewFillInfos);
     }
 
     public void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {

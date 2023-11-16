@@ -13,14 +13,19 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.autofill.AutofillValue;
+import android.view.autofill.VirtualViewFillInfo;
+
+import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -31,6 +36,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
@@ -38,6 +44,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /** The unit tests for AutofillProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,17 +66,26 @@ public class AutofillProviderTest {
 
     // Virtual Id of the field with focus.
     private int mFocusVirtualId;
+    private SparseArray<VirtualViewFillInfo> mPrefillRequestInfos;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private AutofillProviderJni mAutofillProviderJni;
 
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
+
         public TestAutofillManagerWrapper(Context context) {
             super(context);
+        }
+
+        @Override
+        public void notifyVirtualViewsReady(
+                View parent, SparseArray<VirtualViewFillInfo> viewFillInfos) {
+            mPrefillRequestInfos = viewFillInfos;
+            super.notifyVirtualViewsReady(parent, viewFillInfos);
         }
 
         @Override
@@ -211,5 +227,28 @@ public class AutofillProviderTest {
         assertTrue(formData.mFields.get(0).isAutofilled());
         assertTrue(formData.mFields.get(1).isAutofilled());
         assertFalse(formData.mFields.get(2).isAutofilled());
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Features.EnableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
+    })
+    public void testSendingPrefillRequestUsesCorrectHints() {
+        FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
+        field1Builder.mServerPredictions = new String[] {"NAME_FIRST", "NAME_LAST"};
+        FormData formData =
+                new FormData(123, null, null, Collections.singletonList(field1Builder.build()));
+
+        mAutofillProvider.sendPrefillRequest(formData);
+        // Creating a new request here shouldn't affect the results, that's better than saving the
+        // prefill request in the provider.
+        PrefillRequest randomRequest = new PrefillRequest(formData);
+        SparseArray<VirtualViewFillInfo> expctedInfos = randomRequest.getPrefillHints();
+
+        assertEquals(
+                expctedInfos.valueAt(0).getAutofillHints(),
+                mPrefillRequestInfos.valueAt(0).getAutofillHints());
     }
 }

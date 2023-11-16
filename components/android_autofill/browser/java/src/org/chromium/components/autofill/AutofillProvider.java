@@ -196,6 +196,25 @@ public class AutofillProvider {
     }
 
     /**
+     * Sends a prefill (cache) request to the Android Autofill Framework.
+     *
+     * @param form the form to send the prefill request for.
+     */
+    @CalledByNative
+    public void sendPrefillRequest(FormData form) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+        // Return early if there's a session running already.
+        if (mRequest != null && mRequest.getFocusField() != null) {
+            return;
+        }
+
+        transformFormFieldToContainViewCoordinates(form);
+        PrefillRequest prefillRequest = new PrefillRequest(form);
+
+        mAutofillManager.notifyVirtualViewsReady(mContainerView, prefillRequest.getPrefillHints());
+    }
+
+    /**
      * Invoked when filling form is need. AutofillProvider shall ask autofill
      * service for the values with which to fill the form.
      *
