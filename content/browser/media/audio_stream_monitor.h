@@ -9,16 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
-
-namespace base {
-class TickClock;
-}
 
 namespace content {
 
@@ -144,12 +139,6 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // The WebContents instance to receive indicator toggle notifications. This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
   const raw_ptr<WebContents> web_contents_;
-
-  // Note: |clock_| is always a DefaultTickClock, except during unit
-  // testing.
-  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
-  // T* (result of implicitly casting raw_ptr<T> to T*).
-  RAW_PTR_EXCLUSION const base::TickClock* const clock_;
 
   // Confirms single-threaded access in debug builds.
   base::ThreadChecker thread_checker_;
