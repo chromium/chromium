@@ -115,6 +115,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddDeleteEditShortcutWidget(ActionViewListItem* anchor_view);
   void RemoveDeleteEditShortcutWidget();
 
+  void EnterButtonPlaceMode(ActionType action_type);
+  void ExitButtonPlaceMode();
+
   // Show education nudge for editing tip. It only shows up for the first new
   // action after closing `ButtonOptionsMenu`.
   void MayShowEduNudgeForEditingTip();
@@ -124,6 +127,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void UpdateButtonOptionsMenuWidgetBounds();
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
+  void UpdateTargetWidgetBounds();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -233,9 +237,14 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddEditingListWidget();
   void RemoveEditingListWidget();
+  void SetEditingListVisibility(bool visible);
   EditingList* GetEditingList();
 
   ButtonOptionsMenu* GetButtonOptionsMenu();
+
+  // Shows or removes target view when in or out button place mode.
+  void AddTargetWidget(ActionType action_type);
+  void RemoveTargetWidget();
 
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen
@@ -273,6 +282,7 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> editing_list_widget_;
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
+  std::unique_ptr<views::Widget> target_widget_;
 
   // Each widget can associate with one education nudge widget.
   base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;

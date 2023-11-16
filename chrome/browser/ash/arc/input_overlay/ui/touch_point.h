@@ -34,7 +34,7 @@ class TouchPoint : public views::View {
   // whether the TouchPoint is dragged or mouse hovered. `center` is the
   // TouchPoint's center coordinates.
   static void DrawTouchPoint(gfx::Canvas* canvas,
-                             ui::ColorProvider* color_provider,
+                             const ui::ColorProvider* color_provider,
                              ActionType action_type,
                              UIState ui_state,
                              const gfx::Point& center);

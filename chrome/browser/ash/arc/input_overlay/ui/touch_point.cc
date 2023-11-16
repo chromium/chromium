@@ -151,7 +151,7 @@ SkPath DrawCrossOutsideStroke(const gfx::Point& center) {
       /*center=*/SkPoint::Make(center.x(), center.y()));
 }
 
-SkColor GetOutsideStrokeColor(ui::ColorProvider* color_provider,
+SkColor GetOutsideStrokeColor(const ui::ColorProvider* color_provider,
                               UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
@@ -169,7 +169,7 @@ SkColor GetOutsideStrokeColor(ui::ColorProvider* color_provider,
   }
 }
 
-SkColor GetInsideStrokeColor(ui::ColorProvider* color_provider,
+SkColor GetInsideStrokeColor(const ui::ColorProvider* color_provider,
                              UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
@@ -186,7 +186,8 @@ SkColor GetInsideStrokeColor(ui::ColorProvider* color_provider,
   }
 }
 
-SkColor GetCenterColor(ui::ColorProvider* color_provider, UIState ui_state) {
+SkColor GetCenterColor(const ui::ColorProvider* color_provider,
+                       UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
       return IsBeta() ? color_provider->GetColor(
@@ -208,7 +209,7 @@ SkColor GetCenterColor(ui::ColorProvider* color_provider, UIState ui_state) {
 }
 
 std::array<SkColor, kTouchPointComponentSize> GetColors(
-    ui::ColorProvider* color_provider,
+    const ui::ColorProvider* color_provider,
     UIState ui_state) {
   return {GetOutsideStrokeColor(color_provider, ui_state),
           GetInsideStrokeColor(color_provider, ui_state),
@@ -310,7 +311,7 @@ gfx::Size TouchPoint::GetSize(ActionType action_type) {
 
 // static
 void TouchPoint::DrawTouchPoint(gfx::Canvas* canvas,
-                                ui::ColorProvider* color_provider,
+                                const ui::ColorProvider* color_provider,
                                 ActionType action_type,
                                 UIState ui_state,
                                 const gfx::Point& center) {

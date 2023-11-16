@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -634,6 +635,7 @@ InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
 void DisplayOverlayController::AddNewAction(ActionType action_type,
                                             const gfx::Point& target_pos) {
   touch_injector_->AddNewAction(action_type, target_pos);
+  ExitButtonPlaceMode();
 }
 
 void DisplayOverlayController::RemoveAction(Action* action) {
@@ -833,6 +835,18 @@ void DisplayOverlayController::UpdateEditingListWidgetBounds() {
 
   if (auto* editing_list = GetEditingList()) {
     editing_list->UpdateWidget();
+  }
+}
+
+void DisplayOverlayController::UpdateTargetWidgetBounds() {
+  if (!target_widget_) {
+    return;
+  }
+
+  auto* target_view =
+      views::AsViewClass<TargetView>(target_widget_->GetContentsView());
+  if (target_view) {
+    target_view->UpdateWidgetBounds();
   }
 }
 
@@ -1068,6 +1082,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
   if (IsBeta()) {
     UpdateInputMappingWidgetBounds();
     UpdateEditingListWidgetBounds();
+    UpdateTargetWidgetBounds();
 
     // Remove the floating window attached the ActionView.
     RemoveButtonOptionsMenuWidget();
@@ -1091,6 +1106,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
 }
 
 void DisplayOverlayController::RemoveAllWidgets() {
+  RemoveTargetWidget();
   RemoveButtonOptionsMenuWidget();
   RemoveEditingListWidget();
   RemoveInputMappingWidget();
@@ -1152,6 +1168,15 @@ void DisplayOverlayController::RemoveEditingListWidget() {
   }
 }
 
+void DisplayOverlayController::SetEditingListVisibility(bool visible) {
+  DCHECK(editing_list_widget_);
+  if (visible) {
+    editing_list_widget_->ShowInactive();
+  } else {
+    editing_list_widget_->Hide();
+  }
+}
+
 EditingList* DisplayOverlayController::GetEditingList() {
   if (!editing_list_widget_) {
     return nullptr;
@@ -1168,6 +1193,37 @@ ButtonOptionsMenu* DisplayOverlayController::GetButtonOptionsMenu() {
 
   return views::AsViewClass<ButtonOptionsMenu>(
       button_options_widget_->GetContentsView());
+}
+
+void DisplayOverlayController::EnterButtonPlaceMode(ActionType action_type) {
+  RemoveDeleteEditShortcutWidget();
+  SetEditingListVisibility(/*visible=*/false);
+  AddTargetWidget(action_type);
+  // TODO(b/304806934): add rich nudge view.
+}
+
+void DisplayOverlayController::ExitButtonPlaceMode() {
+  // TODO(b/304806934): remove rich nudge view.
+  RemoveTargetWidget();
+  SetEditingListVisibility(/*visible=*/true);
+}
+
+void DisplayOverlayController::AddTargetWidget(ActionType action_type) {
+  DCHECK(!target_widget_);
+
+  target_widget_ = CreateTransientWidget(
+      touch_injector_->window(), /*widget_name=*/kInputMapping,
+      /*accept_events=*/true, /*is_floating=*/true);
+  target_widget_->SetContentsView(
+      std::make_unique<TargetView>(this, action_type));
+  target_widget_->ShowInactive();
+}
+
+void DisplayOverlayController::RemoveTargetWidget() {
+  if (target_widget_) {
+    target_widget_->Close();
+    target_widget_.reset();
+  }
 }
 
 void DisplayOverlayController::UpdateEventRewriteCapability() {

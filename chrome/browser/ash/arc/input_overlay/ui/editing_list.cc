@@ -306,11 +306,8 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
 }
 
 void EditingList::OnAddButtonPressed() {
-  // TODO(b/304806934): enters into button place mode instead of adding new
-  // action in the window center.
-  auto bounds = controller_->touch_injector()->content_bounds();
-  controller_->AddNewAction(
-      ActionType::TAP, gfx::Point(bounds.width() / 2, bounds.height() / 2));
+  // TODO(b/304819827): Support action type choose.
+  controller_->EnterButtonPlaceMode(ActionType::TAP);
 }
 
 void EditingList::OnDoneButtonPressed() {

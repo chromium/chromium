@@ -448,6 +448,8 @@ source_set("ash") {
     "arc/input_overlay/ui/nudge_view.h",
     "arc/input_overlay/ui/reposition_controller.cc",
     "arc/input_overlay/ui/reposition_controller.h",
+    "arc/input_overlay/ui/target_view.cc",
+    "arc/input_overlay/ui/target_view.h",
     "arc/input_overlay/ui/touch_point.cc",
     "arc/input_overlay/ui/touch_point.h",
     "arc/input_overlay/ui/ui_utils.cc",
