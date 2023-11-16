@@ -29,6 +29,8 @@ IN_PROC_BROWSER_TEST_F(LoginIntegrationTest, TestLogin) {
 
   // Waits for the primary user session to start.
   ash::test::WaitForPrimaryUserSessionStart();
+
+  EXPECT_TRUE(login_mixin().IsCryptohomeMounted());
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -55,5 +57,7 @@ IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, GaiaLogin) {
 
   // Waits for the primary user session to start.
   ash::test::WaitForPrimaryUserSessionStart();
+
+  EXPECT_TRUE(login_mixin().IsCryptohomeMounted());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

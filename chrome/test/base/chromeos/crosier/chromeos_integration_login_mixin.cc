@@ -5,6 +5,7 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/chromeos/crosier/test_accounts.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
 
@@ -100,6 +103,38 @@ void ChromeOSIntegrationLoginMixin::Login() {
   }
 }
 
+bool ChromeOSIntegrationLoginMixin::IsCryptohomeMounted() const {
+  // No cryptohome mount for kStubLogin.
+  if (mode_ == Mode::kStubLogin) {
+    return false;
+  }
+
+  if (username_.empty()) {
+    return false;
+  }
+
+  user_data_auth::IsMountedRequest request;
+  request.set_username(gaia::CanonicalizeEmail(gaia::SanitizeEmail(username_)));
+
+  bool is_mounted = false;
+  base::RunLoop run_loop;
+  ash::UserDataAuthClient::Get()->IsMounted(
+      request, base::BindLambdaForTesting(
+                   [&](absl::optional<user_data_auth::IsMountedReply> result) {
+                     if (!result.has_value()) {
+                       LOG(ERROR) << "Failed to call IsMounted.";
+                       is_mounted = false;
+                     } else {
+                       is_mounted = result->is_mounted();
+                     }
+
+                     run_loop.Quit();
+                   }));
+  run_loop.Run();
+
+  return is_mounted;
+}
+
 void ChromeOSIntegrationLoginMixin::SetUp() {
   setup_called_ = true;
 
@@ -174,6 +209,8 @@ void ChromeOSIntegrationLoginMixin::DoTestLogin() {
   constexpr char kTestPassword[] = "testpass";
   constexpr char kTestGaiaId[] = "12345";
 
+  username_ = kTestUser;
+
   ash::test::OobeJS().Evaluate(
       base::StringPrintf("Oobe.loginForTesting(\"%s\", \"%s\",\"%s\")",
                          kTestUser, kTestPassword, kTestGaiaId));
@@ -206,6 +243,8 @@ void ChromeOSIntegrationLoginMixin::DoGaiaLogin() {
     crosier::GetGaiaTestAccount(email, password);
     CHECK(!email.empty() && !password.empty());
   }
+
+  username_ = email;
 
   GaiaFrameJS()
       .CreateWaiter("!!document.querySelector('#identifierId')")
