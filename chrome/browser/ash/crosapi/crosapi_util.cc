@@ -681,6 +681,9 @@ void InjectBrowserInitParams(
 
   params->is_cros_web_app_shortcut_ui_update_enabled =
       chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled();
+
+  params->is_cros_shortstand_enabled =
+      chromeos::features::IsCrosShortstandEnabled();
 }
 
 template <typename BrowserParams>

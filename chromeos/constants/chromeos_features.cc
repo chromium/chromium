@@ -225,8 +225,7 @@ bool IsSeparateWebAppShortcutBadgeIconEnabled() {
 
 bool IsCrosShortstandEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/300570785): Pass the value to lacros.
-  return false;
+  return chromeos::BrowserParamsProxy::Get()->IsCrosShortstandEnabled();
 #else
   return base::FeatureList::IsEnabled(kCrosShortstand);
 #endif

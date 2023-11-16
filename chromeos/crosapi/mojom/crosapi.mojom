@@ -1074,8 +1074,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 74
-// Next id: 74
+// Next version: 75
+// Next id: 75
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1510,6 +1510,11 @@ struct BrowserInitParams {
   // Lacros needs to use the same entropy values to be trustworthy for UMA data.
   [MinVersion=73]
   EntropySource? entropy_source@73;
+
+  // If true, the shortstand feature is enabled, which introduces different
+  // behaviour between web apps and browser created shortcuts to be displayed.
+  [MinVersion=74]
+  bool is_cros_shortstand_enabled@74;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

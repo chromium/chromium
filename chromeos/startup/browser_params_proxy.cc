@@ -331,4 +331,8 @@ bool BrowserParamsProxy::IsCrosWebAppShortcutUiUpdateEnabled() const {
   return BrowserInitParams::Get()->is_cros_web_app_shortcut_ui_update_enabled;
 }
 
+bool BrowserParamsProxy::IsCrosShortstandEnabled() const {
+  return BrowserInitParams::Get()->is_cros_shortstand_enabled;
+}
+
 }  // namespace chromeos
