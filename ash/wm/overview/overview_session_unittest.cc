@@ -942,8 +942,7 @@ TEST_P(OverviewSessionTest, MaximizedWindow) {
 // maximized and fullscreen window.
 #if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
     !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
-// TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
-TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
+TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
   std::unique_ptr<aura::Window> maximized_window(CreateTestWindow());
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestWindow());
 
@@ -983,8 +982,7 @@ TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
 }
 #endif
 
-// TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
-TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
+TEST_P(OverviewSessionTest, TabletModeHistograms) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -1017,8 +1015,7 @@ TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
 // Tests that entering overview when a fullscreen window is active in maximized
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
-// TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
-TEST_P(OverviewSessionTest, DISABLED_FullscreenWindowTabletMode) {
+TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 

@@ -386,6 +386,10 @@ void FrameSequenceTracker::ReportFrameEnd(
   DCHECK_EQ(last_started_impl_sequence_, last_processed_impl_sequence_)
       << TRACKER_DCHECK_MSG;
   last_started_impl_sequence_ = 0;
+
+  if (termination_status_ == TerminationStatus::kActive) {
+    last_ended_frame_id_ = args.frame_id;
+  }
 }
 
 void FrameSequenceTracker::ReportFramePresented(
@@ -635,6 +639,16 @@ void FrameSequenceTracker::CleanUp() {
 
 void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
                                           const FrameInfo& frame_info) {
+  // For trackers that scheduled for termination, only proceed to update
+  // metrics for customer typed tracker and the frame is before the last ended
+  // frame.
+  if (termination_status_ == TerminationStatus::kScheduledForTermination &&
+      (custom_sequence_id_ < 0 ||
+       last_ended_frame_id_.source_id != args.frame_id.source_id ||
+       last_ended_frame_id_.sequence_number < args.frame_id.sequence_number)) {
+    return;
+  }
+
   if (metrics_)
     metrics_->AddSortedFrame(args, frame_info);
 }
