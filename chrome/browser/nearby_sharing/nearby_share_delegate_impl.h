@@ -61,6 +61,7 @@ class NearbyShareDelegateImpl
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
+  std::u16string GetPlaceholderFeatureName() const override;
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;

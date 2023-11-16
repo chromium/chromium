@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -190,4 +191,13 @@ const gfx::VectorIcon& NearbyShareDelegateImpl::GetIcon(bool on_icon) const {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return kEmptyIcon;
+}
+
+std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsNameEnabled()) {
+    return NearbyShareResourceGetter::GetInstance()->GetFeatureName();
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return u"";
 }

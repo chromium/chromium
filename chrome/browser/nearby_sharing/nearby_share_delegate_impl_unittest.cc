@@ -212,6 +212,28 @@ TEST_F(NearbyShareDelegateImplTest, GetIconFlagDisabledOfficialBuild) {
   EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
   EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
 }
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagEnabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  // Just enforce non empty string for official branded builds..
+  EXPECT_NE(delegate_.GetPlaceholderFeatureName(), u"");
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagDisabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
 #else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(NearbyShareDelegateImplTest, GetIconFlagEnabledUnofficialBuild) {
   base::test::ScopedFeatureList feature_list;
@@ -231,5 +253,27 @@ TEST_F(NearbyShareDelegateImplTest, GetIconFlagDisabledUnofficialBuild) {
 
   EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
   EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagEnabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagDisabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

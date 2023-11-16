@@ -51,4 +51,8 @@ const gfx::VectorIcon& TestNearbyShareDelegate::GetIcon(bool on_icon) const {
   return kEmptyIcon;
 }
 
+std::u16string TestNearbyShareDelegate::GetPlaceholderFeatureName() const {
+  return u"Nearby Share";
+}
+
 }  // namespace ash
