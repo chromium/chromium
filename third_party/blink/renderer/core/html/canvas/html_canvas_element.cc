@@ -1492,6 +1492,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 
 void HTMLCanvasElement::DiscardResourceProvider() {
   canvas2d_bridge_.reset();
+  ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
   dirty_rect_ = gfx::RectF();
 }
@@ -1838,6 +1839,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     // assigning the new canvas layer bridge.
     old_layer_bridge->SetCanvasResourceHost(nullptr);
   }
+  ResetLayer();
   ReplaceResourceProvider(nullptr);
   canvas2d_bridge_ = std::move(new_layer_bridge);
   canvas2d_bridge_->SetCanvasResourceHost(this);

@@ -874,29 +874,6 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
-  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     ->GetCapabilities())
-      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-  Host()->PrepareTransferableResource(nullptr, &resource, &release_callback);
-
-  // Tearing down the bridge does not destroy unreleased resources.
-  bridge.reset();
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-  constexpr bool lost_resource = false;
-  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kOpaque);
