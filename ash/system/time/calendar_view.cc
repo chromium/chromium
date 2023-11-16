@@ -9,6 +9,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -26,6 +27,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/date_helper.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -83,6 +85,8 @@ constexpr int kChevronInBetweenPadding = 16;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
+constexpr int kTitleLeftPadding = 8;
+
 // Adds a gap between the bottom visible row in the scrollview and the top of
 // the event list view when open.
 constexpr int kCalendarEventListViewOpenMargin = 8;
@@ -184,6 +188,44 @@ constexpr char kSmoothScrollMonthViewWhenShowingTodaysDateCell[] =
 constexpr char kSmoothScrollLabelViewWhenShowingTodaysDateCell[] =
     "Ash.CalendarView.SmoothScrollToTodaysDateCell.LabelView."
     "AnimationSmoothness";
+
+// Configures the TriView used for the title.
+void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
+  std::unique_ptr<views::BoxLayout> layout;
+
+  switch (container) {
+    case TriView::Container::START:
+    case TriView::Container::END: {
+      const int left_padding =
+          container == TriView::Container::START ? kTitleLeftPadding : 0;
+      const int right_padding =
+          container == TriView::Container::END ? kTitleRightPadding : 0;
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::TLBR(0, left_padding, 0, right_padding),
+          kTitleItemBetweenSpacing);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      break;
+    }
+    case TriView::Container::CENTER:
+      tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
+
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kStretch);
+      break;
+  }
+
+  tri_view->SetContainerLayout(container, std::move(layout));
+  tri_view->SetMinSize(container,
+                       gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
+}
 
 std::unique_ptr<views::Label> CreateHeaderView(const std::u16string& month) {
   return views::Builder<views::Label>(
@@ -411,9 +453,8 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
 BEGIN_METADATA(CalendarHeaderView, views::View)
 END_METADATA
 
-CalendarView::CalendarView(DetailedViewDelegate* delegate,
-                           bool for_glanceables_container)
-    : GlanceableTrayChildBubble(delegate, for_glanceables_container),
+CalendarView::CalendarView(bool for_glanceables_container)
+    : GlanceableTrayChildBubble(for_glanceables_container),
       calendar_view_controller_(std::make_unique<CalendarViewController>()),
       scrolling_settled_timer_(
           FROM_HERE,
@@ -451,11 +492,13 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
   GetViewAccessibility().OverrideName(GetClassName());
 
-  CreateTitleRow(IDS_ASH_CALENDAR_TITLE, /*create_back_button=*/false);
+  CreateCalendarTitleRow(IDS_ASH_CALENDAR_TITLE);
 
   // Adds the progress bar to layout when initialization to avoid changing the
   // layout while reading the bounds of it.
-  ShowProgress(-1, false);
+  progress_bar_ = AddChildViewAt(std::make_unique<GlanceablesProgressBarView>(),
+                                 kTitleRowProgressBarIndex + 1);
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   // Add the header. The `temp_header_` only shows up during the header
   // animation.
@@ -560,7 +603,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   // Override the default focus order so the calendar contents (which contains
   // the current date view) and the UI within calendar sliding surfaces get
   // focused before the "Today" button in the calendar view header.
-  scroll_view_->InsertBeforeInFocusList(TrayDetailedView::tri_view());
+  scroll_view_->InsertBeforeInFocusList(tri_view_);
   calendar_sliding_surface_->InsertAfterInFocusList(scroll_view_);
 
   scoped_calendar_model_observer_.Observe(calendar_model_.get());
@@ -596,11 +639,28 @@ CalendarView::~CalendarView() {
   content_view_->RemoveAllChildViews();
 }
 
-void CalendarView::CreateExtraTitleRowButtons() {
-  tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+void CalendarView::CreateCalendarTitleRow(int string_id) {
+  DCHECK(!tri_view_);
+
+  tri_view_ =
+      AddChildViewAt(std::make_unique<TriView>(kUnifiedTopShortcutSpacing), 0);
+
+  ConfigureTitleTriView(tri_view_.get(), TriView::Container::START);
+  ConfigureTitleTriView(tri_view_.get(), TriView::Container::CENTER);
+  ConfigureTitleTriView(tri_view_.get(), TriView::Container::END);
+
+  auto* title_label = TrayPopupUtils::CreateDefaultLabel();
+  title_label->SetText(l10n_util::GetStringUTF16(string_id));
+  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                             *title_label);
+  tri_view_->AddView(TriView::Container::CENTER, title_label);
+
+  // Adds the buttons to the end of the `tri_view_`.
+  tri_view_->SetContainerVisible(TriView::Container::END, /*visible=*/true);
   if (calendar_utils::IsDisabledByAdmin()) {
     DCHECK(!managed_button_);
-    managed_button_ = tri_view()->AddView(
+    managed_button_ = tri_view_->AddView(
         TriView::Container::END,
         std::make_unique<IconButton>(
             base::BindRepeating([]() {
@@ -611,16 +671,21 @@ void CalendarView::CreateExtraTitleRowButtons() {
   }
 
   DCHECK(!reset_to_today_button_);
-  reset_to_today_button_ = CreateInfoButton(
+  reset_to_today_button_ = new PillButton(
       base::BindRepeating(&CalendarView::ResetToTodayWithAnimation,
                           base::Unretained(this)),
-      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
+      l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_INFO_BUTTON),
+      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
+  reset_to_today_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
+      calendar_utils::GetMonthDayYear(base::Time::Now())));
+
   reset_to_today_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP));
-  tri_view()->AddView(TriView::Container::END, reset_to_today_button_);
+  tri_view_->AddView(TriView::Container::END, reset_to_today_button_);
 
   DCHECK(!settings_button_);
-  settings_button_ = CreateSettingsButton(
+  settings_button_ = new IconButton(
       base::BindRepeating([]() {
         ClockModel* model = Shell::Get()->system_tray_model()->clock();
 
@@ -630,23 +695,22 @@ void CalendarView::CreateExtraTitleRowButtons() {
           model->ShowSetTimeDialog();
         }
       }),
+      IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
       IDS_ASH_CALENDAR_SETTINGS);
+  if (!TrayPopupUtils::CanOpenWebUISettings()) {
+    settings_button_->SetEnabled(false);
+  }
   settings_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_SETTINGS_TOOLTIP));
-  tri_view()->AddView(TriView::Container::END, settings_button_);
-}
+  tri_view_->AddView(TriView::Container::END, settings_button_);
 
-views::Button* CalendarView::CreateInfoButton(
-    views::Button::PressedCallback callback,
-    int info_accessible_name_id) {
-  auto* button =
-      new PillButton(std::move(callback),
-                     l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_INFO_BUTTON),
-                     PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
-  button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
-      calendar_utils::GetMonthDayYear(base::Time::Now())));
-  return button;
+  // Adds an empty view as a placeholder so that the views below won't move up
+  // when the `progress_bar_` becomes invisible.
+  auto buffer_view = std::make_unique<views::View>();
+  buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+  AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
+
+  Layout();
 }
 
 void CalendarView::SetMonthViews() {
@@ -830,7 +894,13 @@ bool CalendarView::EventsFetchComplete() {
 }
 
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
-  ShowProgress(-1, !EventsFetchComplete());
+  const bool visible = !EventsFetchComplete();
+  progress_bar_->UpdateProgressBarVisibility(
+      /*visible=*/visible);
+
+  // Updates the visibility of the buffer view so that when `progress_bar_`s
+  // visibility changes, the following views won't move up.
+  children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
 }
 
 void CalendarView::FadeInCurrentMonth() {
@@ -1588,7 +1658,7 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
 
 void CalendarView::OnEvent(ui::Event* event) {
   if (!event->IsKeyEvent()) {
-    TrayDetailedView::OnEvent(event);
+    GlanceableTrayChildBubble::OnEvent(event);
     return;
   }
 
@@ -1627,7 +1697,7 @@ void CalendarView::OnEvent(ui::Event* event) {
         event->StopPropagation();
       }
     }
-    TrayDetailedView::OnEvent(event);
+    GlanceableTrayChildBubble::OnEvent(event);
     return;
   }
 
@@ -1645,7 +1715,7 @@ void CalendarView::OnEvent(ui::Event* event) {
     next_month_->DisableFocus();
     next_next_month_->DisableFocus();
 
-    TrayDetailedView::OnEvent(event);
+    GlanceableTrayChildBubble::OnEvent(event);
 
     // Should move the focus out of the scroll view (the whole scroll view
     // temporarily grabbed focus in place of the initially focused date cell
@@ -1660,7 +1730,7 @@ void CalendarView::OnEvent(ui::Event* event) {
   if (key_event->type() != ui::EventType::ET_KEY_PRESSED ||
       (key_code != ui::VKEY_UP && key_code != ui::VKEY_DOWN &&
        key_code != ui::VKEY_LEFT && key_code != ui::VKEY_RIGHT)) {
-    TrayDetailedView::OnEvent(event);
+    GlanceableTrayChildBubble::OnEvent(event);
     return;
   }
 

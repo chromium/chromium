@@ -39,8 +39,9 @@ namespace ash {
 
 class CalendarEventListView;
 class CalendarMonthView;
+class GlanceablesProgressBarView;
 class IconButton;
-class CalendarView;
+class TriView;
 
 // The header of the calendar view, which shows the current month and year.
 class CalendarHeaderView : public views::View {
@@ -77,7 +78,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // `for_glanceables_container` - Whether the calendar view is shown as a
   // bubble in glanceables container, or a `UnifiedSystemTrayBubble` (which is
   // the case if glanceables feature is not enabled).
-  CalendarView(DetailedViewDelegate* delegate, bool for_glanceables_container);
+  explicit CalendarView(bool for_glanceables_container);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
   ~CalendarView() override;
@@ -101,11 +102,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // views::View:
   void OnEvent(ui::Event* event) override;
-
-  // TrayDetailedView:
-  void CreateExtraTitleRowButtons() override;
-  views::Button* CreateInfoButton(views::Button::PressedCallback callback,
-                                  int info_accessible_name_id) override;
 
   CalendarViewController* calendar_view_controller() {
     return calendar_view_controller_.get();
@@ -195,6 +191,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   friend class CalendarViewTest;
   friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
+
+  // Creates the calendar view title that includes a label,
+  // `reset_to_today_button_`, and a `settings_button_`.
+  void CreateCalendarTitleRow(int string_id);
 
   // Assigns month views and labels based on the current date on screen.
   void SetMonthViews();
@@ -414,6 +414,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Owned by `CalendarView`.
   raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_ = nullptr;
 
+  // The container view for the top-most title row. Owned by `CalendarView`.
+  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
+
   // The following is owned by `CalendarView`.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_label_ =
@@ -440,6 +443,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   raw_ptr<IconButton, ExperimentalAsh> managed_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
+  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
   raw_ptr<CalendarEventListView, DanglingUntriaged | ExperimentalAsh>
       event_list_view_ = nullptr;

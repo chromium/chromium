@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/media_tray.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tri_view.h"
 #include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

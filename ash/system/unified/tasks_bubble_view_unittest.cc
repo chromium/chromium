@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -60,7 +59,6 @@ class TasksBubbleViewTest : public AshTestBase {
     widget_->SetFullscreen(true);
 
     view_ = widget_->SetContentsView(std::make_unique<TasksBubbleView>(
-        &detailed_view_delegate_,
         fake_glanceables_tasks_client_->task_lists()));
   }
 
@@ -128,7 +126,6 @@ class TasksBubbleViewTest : public AshTestBase {
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
-  DetailedViewDelegate detailed_view_delegate_{nullptr};
   raw_ptr<TasksBubbleView> view_;
   std::unique_ptr<views::Widget> widget_;
 };

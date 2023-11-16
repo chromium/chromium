@@ -75,8 +75,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
  public:
   METADATA_HEADER(TasksBubbleView);
 
-  TasksBubbleView(DetailedViewDelegate* delegate,
-                  const ui::ListModel<api::TaskList>* task_lists);
+  explicit TasksBubbleView(const ui::ListModel<api::TaskList>* task_lists);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;

@@ -303,7 +303,7 @@ void UnifiedSystemTrayController::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
     calendar_metrics::CalendarEventSource event_source) {
   calendar_metrics::RecordCalendarShowMetrics(show_source, event_source);
-  ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
+  ShowDetailedView(std::make_unique<UnifiedCalendarViewController>());
 
   showing_calendar_view_ = true;
   showing_audio_detailed_view_ = false;

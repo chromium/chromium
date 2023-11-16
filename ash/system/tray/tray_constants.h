@@ -234,6 +234,9 @@ inline constexpr int kUnifiedTopShortcutButtonMinSpacing = 4;
 
 // Constants used in the detailed view in UnifiedSystemTray.
 inline constexpr int kUnifiedDetailedViewTitleRowHeight = 64;
+inline constexpr int kTitleRightPadding = 16;
+inline constexpr int kTitleItemBetweenSpacing = 8;
+inline constexpr int kTitleRowProgressBarIndex = 1;
 
 // Constants used for the status area overflow button and state.
 inline constexpr gfx::Size kStatusAreaOverflowButtonSize(28, 32);

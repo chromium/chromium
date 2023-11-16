@@ -93,9 +93,8 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
 
 }  // namespace
 
-TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
-                                 const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceablesTasksViewBase(delegate) {
+TasksBubbleView::TasksBubbleView(
+    const ui::ListModel<api::TaskList>* task_lists) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager

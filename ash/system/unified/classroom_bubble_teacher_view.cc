@@ -15,7 +15,6 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
-#include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -89,10 +88,8 @@ class ClassroomTeacherComboboxModel : public ui::ComboboxModel {
 
 }  // namespace
 
-ClassroomBubbleTeacherView::ClassroomBubbleTeacherView(
-    DetailedViewDelegate* delegate)
+ClassroomBubbleTeacherView::ClassroomBubbleTeacherView()
     : ClassroomBubbleBaseView(
-          delegate,
           std::make_unique<ClassroomTeacherComboboxModel>()) {
   CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
   combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(

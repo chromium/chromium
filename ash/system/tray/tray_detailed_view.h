@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -60,12 +59,8 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
 
-  // Creates the row containing the back button and title. Optionally omits the
-  // back button and left aligns the label contained in the CENTER view if
-  // `create_back_button` is false.
-  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
-  // TrayDetailedView.
-  void CreateTitleRow(int string_id, bool create_back_button = true);
+  // Creates the row containing the back button and title.
+  void CreateTitleRow(int string_id);
 
   // Creates a scrollable list. The list has a border at the bottom if there is
   // any other view between the list and the footer row at the bottom.
@@ -123,11 +118,8 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // Returns the TriView used for the title row. A label with `string_id` is
   // added to the CENTER view. Left aligns the label contained in the CENTER
-  // view and reduces padding if `create_back_button` is false.
-  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
-  // TrayDetailedView.
-  std::unique_ptr<TriView> CreateTitleTriView(int string_id,
-                                              bool create_back_button);
+  // view.
+  std::unique_ptr<TriView> CreateTitleTriView(int string_id);
 
   // Creates and adds subclass-specific buttons to the title row.
   virtual void CreateExtraTitleRowButtons();

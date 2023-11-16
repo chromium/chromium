@@ -9,6 +9,7 @@
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -21,7 +22,6 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
-#include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -35,6 +35,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,7 +58,6 @@ using ::google_apis::calendar::CalendarEvent;
 using ::google_apis::calendar::EventList;
 
 constexpr char kTestUser[] = "user@test";
-constexpr int kLoadingBarIndex = 2;
 
 }  // namespace
 
@@ -91,15 +91,12 @@ class CalendarViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    delegate_ =
-        std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
 
   void TearDown() override {
     widget_.reset();
-    delegate_.reset();
 
     AshTestBase::TearDown();
   }
@@ -136,8 +133,8 @@ class CalendarViewTest : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
 
-    auto calendar_view = std::make_unique<CalendarView>(
-        delegate_.get(), /*for_glanceables_container=*/false);
+    auto calendar_view =
+        std::make_unique<CalendarView>(/*for_glanceables_container=*/false);
 
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
@@ -322,7 +319,6 @@ class CalendarViewTest : public AshTestBase {
   // Owned by `widget_`.
   raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
       nullptr;
-  std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
@@ -1399,8 +1395,6 @@ class CalendarViewAnimationTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    delegate_ =
-        std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
@@ -1419,7 +1413,6 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   void TearDown() override {
-    delegate_.reset();
     widget_.reset();
     time_overrides_.reset();
 
@@ -1427,8 +1420,8 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
-    calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
-        delegate_.get(), /*for_glanceables_container=*/false));
+    calendar_view_ = widget_->SetContentsView(
+        std::make_unique<CalendarView>(/*for_glanceables_container=*/false));
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
@@ -1556,7 +1549,6 @@ class CalendarViewAnimationTest : public AshTestBase {
   // Owned by `widget_`.
   raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
       nullptr;
-  std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
   raw_ptr<CalendarModel, DanglingUntriaged | ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
@@ -1985,12 +1977,13 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
       calendar_test_utils::kAnimationSettleDownDuration);
 
   EXPECT_EQ(1U, on_screen_month().size());
-
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  const auto* progress_bar = calendar_view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kProgressBar));
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
   WaitUntilFetched();
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(progress_bar->GetVisible());
 }
 
 TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
@@ -2006,12 +1999,13 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
       calendar_test_utils::kAnimationSettleDownDuration);
 
   EXPECT_EQ(2U, on_screen_month().size());
-
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  const auto* progress_bar = calendar_view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kProgressBar));
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
   WaitUntilFetched();
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(progress_bar->GetVisible());
 
   // Resets to today so that a new fetching request will be sent for on-screen
   // months who have cached events(eg. a refetching status). Tests the loading
@@ -2022,7 +2016,7 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
   // Advances the time to allow `on_screen_month_` to update.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_TRUE(progress_bar->GetVisible());
 }
 
 TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
@@ -2038,12 +2032,13 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
       calendar_test_utils::kAnimationSettleDownDuration);
 
   EXPECT_EQ(3U, on_screen_month().size());
-
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  const auto* progress_bar = calendar_view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kProgressBar));
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
   WaitUntilFetched();
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(progress_bar->GetVisible());
 
   // Resets to today so that a new fetching request will be sent for on-screen
   // months who have cached events(eg. a refetching status). Tests the loading
@@ -2054,7 +2049,7 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
   // Advances the time to allow `on_screen_month_` to update.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_TRUE(progress_bar->GetVisible());
 }
 
 // Tests the loading bar visibility for different user sessions.
@@ -2070,8 +2065,10 @@ TEST_F(CalendarViewAnimationTest,
   CreateCalendarView();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_TRUE(
+      calendar_view()
+          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetVisible());
 
   // Tests when the screen is locked, the loading bar is invisible.
   calendar_model()->ClearAllCachedEvents();
@@ -2082,8 +2079,10 @@ TEST_F(CalendarViewAnimationTest,
   // Advances the time to allow `on_screen_month_` to initialize.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(
+      calendar_view()
+          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetVisible());
 
   // Tests when the user starts the login process, the loading bar is invisible.
   calendar_model()->ClearAllCachedEvents();
@@ -2092,8 +2091,10 @@ TEST_F(CalendarViewAnimationTest,
   CreateCalendarView();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(
+      calendar_view()
+          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetVisible());
 }
 
 // Tests the loading bar visibility for when fetching events errors.
@@ -2128,11 +2129,13 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForErrorFetchingEvents) {
   calendar_model()->FetchEvents(start_of_current_month);
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  const auto* progress_bar = calendar_view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kProgressBar));
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
   WaitUntilFetched();
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(progress_bar->GetVisible());
 }
 
 // Tests the loading bar visibility for when fetching events times out.
@@ -2168,11 +2171,13 @@ TEST_F(CalendarViewAnimationTest,
   calendar_model()->FetchEvents(start_of_current_month);
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  const auto* progress_bar = calendar_view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kProgressBar));
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
   WaitUntilFetched();
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  EXPECT_FALSE(progress_bar->GetVisible());
 }
 
 // Tests that the EventListView does not crash if shown during the initial open.

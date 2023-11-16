@@ -8,16 +8,15 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/system/tray/tray_detailed_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
 class GlanceablesErrorMessageView;
 
 // Child bubble of the `GlanceableTrayBubbleView`.
-class ASH_EXPORT GlanceableTrayChildBubble : public TrayDetailedView {
+class ASH_EXPORT GlanceableTrayChildBubble : public views::View {
  public:
   METADATA_HEADER(GlanceableTrayChildBubble);
 
@@ -26,8 +25,7 @@ class ASH_EXPORT GlanceableTrayChildBubble : public TrayDetailedView {
   // `GlanceablesTrayChildBubble` and if the glanceblae view flag is
   // not enabled, the calendar view will be added to the
   // `UnifiedSystemTrayBubble` which has its own styling.
-  GlanceableTrayChildBubble(DetailedViewDelegate* delegate,
-                            bool for_glanceables_container);
+  explicit GlanceableTrayChildBubble(bool for_glanceables_container);
   GlanceableTrayChildBubble(const GlanceableTrayChildBubble&) = delete;
   GlanceableTrayChildBubble& operator-(const GlanceableTrayChildBubble&) =
       delete;

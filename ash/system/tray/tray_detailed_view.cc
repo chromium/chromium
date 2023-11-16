@@ -54,41 +54,27 @@
 namespace ash {
 namespace {
 
-// The index of the horizontal rule below the title row.
-const int kTitleRowProgressBarIndex = 1;
-
-constexpr int kItemBetweenSpacing = 8;
 constexpr int kScrollViewCornerRadius = 16;
-constexpr int kTriViewRightPadding = 16;
-
-// If there's no back button then less padding is required.
-// TODO(b/285280977): Remove when CalendarView is out of TrayDetailedView as
-// this is only used there.
-constexpr int kNoBackButtonLeftPadding = 8;
 
 // Inset the scroll bar to avoid the rounded corners at top and bottom.
 constexpr auto kScrollBarInsets = gfx::Insets::VH(kScrollViewCornerRadius, 0);
 
 // Configures the TriView used for the title in a detailed view.
-void ConfigureTitleTriView(TriView* tri_view,
-                           TriView::Container container,
-                           bool create_back_button) {
+void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   std::unique_ptr<views::BoxLayout> layout;
 
   switch (container) {
     case TriView::Container::START:
     case TriView::Container::END: {
       const int left_padding = container == TriView::Container::START
-                                   ? create_back_button
-                                         ? kUnifiedBackButtonLeftPadding
-                                         : kNoBackButtonLeftPadding
+                                   ? kUnifiedBackButtonLeftPadding
                                    : 0;
       const int right_padding =
-          container == TriView::Container::END ? kTriViewRightPadding : 0;
+          container == TriView::Container::END ? kTitleRightPadding : 0;
       layout = std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
           gfx::Insets::TLBR(0, left_padding, 0, right_padding),
-          kItemBetweenSpacing);
+          kTitleItemBetweenSpacing);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
       layout->set_cross_axis_alignment(
@@ -102,13 +88,8 @@ void ConfigureTitleTriView(TriView* tri_view,
           views::BoxLayout::Orientation::kVertical);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
-      if (create_back_button) {
-        layout->set_cross_axis_alignment(
-            views::BoxLayout::CrossAxisAlignment::kCenter);
-        break;
-      }
       layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kStretch);
+          views::BoxLayout::CrossAxisAlignment::kCenter);
       break;
   }
 
@@ -140,17 +121,15 @@ void TrayDetailedView::OverrideProgressBarAccessibleName(
   progress_bar_accessible_name_ = name;
 }
 
-void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
+void TrayDetailedView::CreateTitleRow(int string_id) {
   DCHECK(!tri_view_);
 
-  tri_view_ =
-      AddChildViewAt(CreateTitleTriView(string_id, create_back_button), 0);
-  if (create_back_button) {
-    back_button_ = delegate_->CreateBackButton(base::BindRepeating(
-        &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
-    back_button_->SetID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON);
-    tri_view_->AddView(TriView::Container::START, back_button_);
-  }
+  tri_view_ = AddChildViewAt(CreateTitleTriView(string_id), 0);
+
+  back_button_ = delegate_->CreateBackButton(base::BindRepeating(
+      &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
+  back_button_->SetID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON);
+  tri_view_->AddView(TriView::Container::START, back_button_);
 
   // Adds an empty view as a placeholder so that the views below won't move up
   // when the `progress_bar_` becomes invisible.
@@ -159,10 +138,6 @@ void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
   AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
   CreateExtraTitleRowButtons();
 
-  if (!create_back_button) {
-    Layout();
-    return;
-  }
   // Makes the `tri_view_`'s `START` and `END`container have the same width,
   // so the header text will be in the center of the `QuickSettingsView`
   // horizontally.
@@ -300,17 +275,12 @@ void TrayDetailedView::HandleViewClicked(views::View* view) {
   NOTREACHED();
 }
 
-std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(
-    int string_id,
-    bool create_back_button) {
+std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
   auto tri_view = std::make_unique<TriView>(kUnifiedTopShortcutSpacing);
 
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::START,
-                        create_back_button);
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::CENTER,
-                        create_back_button);
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::END,
-                        create_back_button);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::START);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::CENTER);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::END);
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
   title_label->SetText(l10n_util::GetStringUTF16(string_id));

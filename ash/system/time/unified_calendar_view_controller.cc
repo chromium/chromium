@@ -9,26 +9,19 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view.h"
-#include "ash/system/tray/detailed_view_delegate.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
-UnifiedCalendarViewController::UnifiedCalendarViewController(
-    UnifiedSystemTrayController* tray_controller)
-    : detailed_view_delegate_(
-          std::make_unique<DetailedViewDelegate>(tray_controller)),
-      tray_controller_(tray_controller) {}
-
 UnifiedCalendarViewController::~UnifiedCalendarViewController() = default;
 
 std::unique_ptr<views::View> UnifiedCalendarViewController::CreateView() {
   DCHECK(!view_);
   const base::Time start_time = base::Time::Now();
-  auto view = std::make_unique<CalendarView>(
-      detailed_view_delegate_.get(), /*for_glanceables_container=*/false);
+  auto view =
+      std::make_unique<CalendarView>(/*for_glanceables_container=*/false);
   base::UmaHistogramTimes("Ash.CalendarView.ConstructionTime",
                           base::Time::Now() - start_time);
   view_ = view.get();

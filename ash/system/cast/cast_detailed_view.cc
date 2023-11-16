@@ -18,6 +18,7 @@
 #include "ash/system/cast/cast_zero_state_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"

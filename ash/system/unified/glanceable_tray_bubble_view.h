@@ -29,7 +29,6 @@ struct TaskList;
 class CalendarView;
 class ClassroomBubbleStudentView;
 class ClassroomBubbleTeacherView;
-class DetailedViewDelegate;
 class Shelf;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
@@ -76,7 +75,6 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   void OnGlanceablesContainerHeightChanged(int height_delta);
 
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   // Whether the bubble view has been initialized.
   bool initialized_ = false;
