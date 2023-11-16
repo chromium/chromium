@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -441,9 +442,20 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.
-  selection_indicator_->SetVisible(selected &&
-                                   popup_view_->GetSelection().state ==
-                                       OmniboxPopupSelection::NORMAL);
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      match_.HasInstantKeyword(
+          popup_view_->controller()->client()->GetTemplateURLService())) {
+    const OmniboxPopupSelection::LineState line_state =
+        popup_view_->GetSelection().state;
+    selection_indicator_->SetVisible(
+        selected &&
+        (line_state == OmniboxPopupSelection::LineState::NORMAL ||
+         line_state == OmniboxPopupSelection::LineState::KEYWORD_MODE));
+  } else {
+    selection_indicator_->SetVisible(selected &&
+                                     popup_view_->GetSelection().state ==
+                                         OmniboxPopupSelection::NORMAL);
+  }
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
