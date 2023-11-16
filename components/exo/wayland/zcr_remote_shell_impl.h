@@ -20,6 +20,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_event_mapping.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 
 namespace exo {
@@ -54,8 +55,7 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
-class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public display::DisplayObserver,
+class WaylandRemoteShell : public display::DisplayObserver,
                            public SeatObserver,
                            public display::DisplayManagerObserver {
  public:
@@ -102,11 +102,6 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
   void OnDidProcessDisplayChanges() override;
-
-  // Overridden from ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnding() override;
-  void OnTabletModeEnded() override;
 
   // Overridden from SeatObserver:
   void OnSurfaceFocused(Surface* gained_focus,

@@ -349,10 +349,6 @@ void WMHelper::RemovePostTargetHandler(ui::EventHandler* handler) {
   ash::Shell::Get()->RemovePostTargetHandler(handler);
 }
 
-bool WMHelper::InTabletMode() const {
-  return ash::Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
-
 double WMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
   if (default_scale_cancellation_) {
     return GetDefaultDeviceScaleFactor();
