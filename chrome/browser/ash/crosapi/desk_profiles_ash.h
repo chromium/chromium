@@ -36,6 +36,9 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
 
   // ash::DeskProfilesDelegate:
   std::vector<ash::LacrosProfileSummary> GetProfilesSnapshot() const override;
+  uint64_t GetPrimaryProfileId() const override;
+  const ash::LacrosProfileSummary* GetProfilesSnapshotByProfileId(
+      uint64_t profile_id) const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

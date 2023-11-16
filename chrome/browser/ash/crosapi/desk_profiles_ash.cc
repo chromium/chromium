@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 
+#include <cstddef>
 #include <utility>
 
 #include "ash/session/session_controller_impl.h"
@@ -72,6 +73,21 @@ void DeskProfilesAsh::OnProfileRemoved(uint64_t profile_id) {
 std::vector<ash::LacrosProfileSummary> DeskProfilesAsh::GetProfilesSnapshot()
     const {
   return profiles_;
+}
+
+const ash::LacrosProfileSummary*
+DeskProfilesAsh::GetProfilesSnapshotByProfileId(uint64_t profile_id) const {
+  for (auto& profile : profiles_) {
+    if (profile.profile_id == profile_id) {
+      return &profile;
+    }
+  }
+  // If profile_id can't be found, return nullptr.
+  return nullptr;
+}
+
+uint64_t DeskProfilesAsh::GetPrimaryProfileId() const {
+  return primary_user_profile_id_;
 }
 
 void DeskProfilesAsh::AddObserver(Observer* observer) {

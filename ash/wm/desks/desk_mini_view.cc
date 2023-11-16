@@ -8,6 +8,7 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -45,6 +47,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -60,6 +63,7 @@ constexpr int kLabelPreviewSpacing = 8;
 constexpr int kCloseButtonMargin = 4;
 constexpr int kMinDeskNameViewWidth = 56;
 constexpr int kPreviewFocusRingRadius = 10;
+constexpr int kProfileButtonMargin = 4;
 constexpr int kShortcutViewBorderWidth = 6;
 constexpr int kShortcutViewBorderHeight = 3;
 constexpr int kShortcutViewHeight = 20;
@@ -232,6 +236,16 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
         gfx::RoundedCornersF(kShortcutViewHeight));
     desk_shortcut_view_->SetVisible(false);
     desk_shortcut_view_->SetCanProcessEventsWithinSubtree(false);
+  }
+  // Only show profile avatar button when there is more than one profile logged
+  // in.
+  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
+  if (chromeos::features::IsDeskProfilesEnabled() && desk_profile_delegate &&
+      desk_profile_delegate->GetProfilesSnapshot().size() > 1) {
+    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
+        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
+                            base::Unretained(this)),
+        desk));
   }
 
   UpdateDeskButtonVisibility();
@@ -424,6 +438,11 @@ void DeskMiniView::MaybeCloseContextMenu() {
     context_menu_->MaybeCloseMenu();
 }
 
+void DeskMiniView::OnDeskProfilesButtonPressed() {
+  desk_profile_button_->RequestFocus();
+  // TODO(shidi): Implement desk avatar context menu.
+}
+
 void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   if (!desk_)
     return;
@@ -497,6 +516,14 @@ void DeskMiniView::Layout() {
         preview_bounds.height() - kShortcutViewHeight -
             kShortcutViewDistanceFromBottom,
         desk_shortcut_view_width, kShortcutViewHeight);
+  }
+  if (desk_profile_button_) {
+    const gfx::Size desk_profile_button_size =
+        desk_profile_button_->GetPreferredSize();
+    desk_profile_button_->SetBoundsRect(
+        gfx::Rect(gfx::Point(preview_bounds.x() + kProfileButtonMargin,
+                             preview_bounds.y() + kProfileButtonMargin),
+                  desk_profile_button_size));
   }
 }
 
@@ -580,6 +607,16 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
   }
 
   Layout();
+}
+
+void DeskMiniView::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
+  if (!desk_) {
+    return;
+  }
+  if (desk_profile_button_) {
+    desk_profile_button_->UpdateIcon();
+    Layout();
+  }
 }
 
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,

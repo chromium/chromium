@@ -9,11 +9,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/animation_abort_handle.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -148,6 +148,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnContentChanged() override;
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
+  void OnDeskProfileChanged(uint64_t new_lacros_profile_id) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -170,6 +171,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   void OnDeskPreviewPressed();
 
+  void OnDeskProfilesButtonPressed();
+
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);
 
@@ -184,6 +187,9 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   // The view that shows a preview of the desk contents.
   raw_ptr<DeskPreviewView, ExperimentalAsh> desk_preview_ = nullptr;
+
+  // The view that shows what profile the desk belongs to.
+  raw_ptr<DeskProfilesButton, ExperimentalAsh> desk_profile_button_ = nullptr;
 
   // The editable desk name.
   raw_ptr<DeskNameView, ExperimentalAsh> desk_name_view_ = nullptr;
