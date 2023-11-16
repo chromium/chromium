@@ -131,11 +131,6 @@ class NetworkResourcesData final
       text_encoding_name_ = text_encoding_name;
     }
 
-    scoped_refptr<SharedBuffer> Buffer() const { return buffer_; }
-    void SetBuffer(scoped_refptr<SharedBuffer> buffer) {
-      buffer_ = std::move(buffer);
-    }
-
     const Resource* CachedResource() const { return cached_resource_.Get(); }
     void SetResource(const Resource*);
 
@@ -200,8 +195,6 @@ class NetworkResourcesData final
     String text_encoding_name_;
     int64_t raw_header_size_;
     int64_t pending_encoded_data_length_;
-
-    scoped_refptr<SharedBuffer> buffer_;
 
     // We use UntracedMember<> here to do custom weak processing.
     UntracedMember<const Resource> cached_resource_;

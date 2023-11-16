@@ -9,4 +9,14 @@ Response body: {
     }
     sessionId : <string>
 }
+Waiting for request...
+Waiting for loading finished...
+Response body: {
+    id : <number>
+    result : {
+        base64Encoded : true
+        body : <body>
+    }
+    sessionId : <string>
+}
 
