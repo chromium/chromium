@@ -37,7 +37,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   // Once we update the Linux sysroot to be new enough, this warning will
   // start firing on Linux too. At that point, s/mallinfo/mallinfo2/ in this
   // file and remove the pragma here and and the end of this function.
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 33)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -79,7 +79,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   EXPECT_LT(after_free.hblks, after_alloc.hblks);
   EXPECT_LT(after_free.hblkhd, after_alloc.hblkhd);
   EXPECT_LT(after_free.uordblks, after_alloc.uordblks);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 33)
 #pragma clang diagnostic pop
 #endif
 }
