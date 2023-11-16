@@ -67,24 +67,6 @@ void ReserveIfSupported(T& container, const U& source) {
   }
 }
 
-// constexpr sort implementation. std::sort is not constexpr prior to C++20.
-// While insertion sort has a quadratic worst case complexity, it was chosen
-// because it has linear complexity for nearly sorted data, is stable, and
-// simple to implement.
-template <typename BidirIt, typename Compare>
-constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
-  if (first == last)
-    return;
-
-  for (auto it = std::next(first); it != last; ++it) {
-    for (auto curr = it; curr != first && comp(*curr, *std::prev(curr));
-         --curr) {
-      using std::swap;
-      swap(*curr, *std::prev(curr));
-    }
-  }
-}
-
 // Implementation -------------------------------------------------------------
 
 // Implementation for the sorted associative flat_set and flat_map using a

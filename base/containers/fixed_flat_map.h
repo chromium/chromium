@@ -5,6 +5,7 @@
 #ifndef BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 #define BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <utility>
@@ -112,8 +113,9 @@ constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapSorted(
 
 // Utility function to simplify constructing a fixed_flat_map from a fixed list
 // of keys and values. Requires that the passed in `data` contains unique keys.
-// This function does a quadratic insertion sort at compile-time, so if your set
-// is large, prefer `MakeFixedFlatMapSorted`.
+//
+// Large inputs will run into compiler limits, e.g. "constexpr evaluation hit
+// maximum step limit". In that case, use `MakeFixedFlatMapSorted()`.
 //
 // Example usage:
 //   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
@@ -124,7 +126,7 @@ constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
     const Compare& comp = Compare()) {
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
   typename FixedFlatMap::value_compare value_comp{comp};
-  internal::InsertionSort(data, data + N, value_comp);
+  std::sort(data, data + N, value_comp);
   return MakeFixedFlatMapSorted(std::move(data), comp);
 }
 

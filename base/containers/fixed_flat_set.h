@@ -5,6 +5,7 @@
 #ifndef BASE_CONTAINERS_FIXED_FLAT_SET_H_
 #define BASE_CONTAINERS_FIXED_FLAT_SET_H_
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <type_traits>
@@ -96,6 +97,9 @@ constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSetSorted(
 // Utility function to simplify constructing a fixed_flat_set from a fixed list
 // of keys. Requires that the passed in `data` contains unique keys.
 //
+// Large inputs will run into compiler limits, e.g. "constexpr evaluation hit
+// maximum step limit". In that case, use `MakeFixedFlatSetSorted()`.
+//
 // Example usage:
 //   constexpr auto kIntSet = base::MakeFixedFlatSet<int>({1, 2, 3, 4});
 //
@@ -109,7 +113,7 @@ template <class Key, size_t N, class Compare = std::less<>>
 constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     std::common_type_t<Key>(&&data)[N],
     const Compare& comp = Compare()) {
-  internal::InsertionSort(data, data + N, comp);
+  std::sort(data, data + N, comp);
   CHECK(internal::is_sorted_and_unique(data, comp));
   // Specify the value_type explicitly to ensure that the returned array has
   // immutable keys.
