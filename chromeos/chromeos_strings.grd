@@ -4519,6 +4519,9 @@
         <message name="IDS_SETTINGS_APN_A11Y_DISABLED" desc="Accessibility text for when an APN is disabled">
           APN is disabled.
         </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ENABLED" desc="Accessibility text for when an APN is enabled">
+          APN is enabled.
+        </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
           More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
         </message>
@@ -4575,6 +4578,15 @@
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN type will be used">
           Attach
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN" desc="Accessibility text for when an APN is both a default and an attach APN">
+          APN is type default and attach.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_APN_ONLY" desc="Accessibility text for when an APN is only a default APN">
+          APN is type default.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ATTACH_APN_ONLY" desc="Accessibility text for when an APN is only an attach APN">
+          APN is type attach.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required

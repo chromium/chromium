@@ -14,7 +14,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {ApnProperties, ApnState, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list_item.html.js';
@@ -305,10 +305,22 @@ class ApnListItem extends ApnListItemBase {
 
     if (this.isConnected) {
       a11yLabel += ' ' + this.i18n('apnA11yConnected');
+    } else if (this.isDisabled_) {
+      a11yLabel += ' ' + this.i18n('apnA11yDisabled');
+    } else {
+      a11yLabel += ' ' + this.i18n('apnA11yEnabled');
     }
 
-    if (this.isDisabled_) {
-      a11yLabel += ' ' + this.i18n('apnA11yDisabled');
+    const isDefaultApn =
+        this.apn.apnTypes && this.apn.apnTypes.includes(ApnType.kDefault);
+    const isAttachApn =
+        this.apn.apnTypes && this.apn.apnTypes.includes(ApnType.kAttach);
+    if (isDefaultApn && isAttachApn) {
+      a11yLabel += ' ' + this.i18n('apnA11yDefaultAndAttachApn');
+    } else if (isDefaultApn) {
+      a11yLabel += ' ' + this.i18n('apnA11yDefaultApnOnly');
+    } else if (isAttachApn) {
+      a11yLabel += ' ' + this.i18n('apnA11yAttachApnOnly');
     }
 
     return a11yLabel;

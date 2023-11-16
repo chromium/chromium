@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnState, ApnType, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -348,14 +348,45 @@ suite('ApnListItemTest', function() {
     // Enabled custom APN, non-connected.
     const apnName = 'apn1';
     const apnId = '1';
+    const defaultTypeOnly = apnListItem.i18n('apnA11yDefaultApnOnly');
+    const attachTypeOnly = apnListItem.i18n('apnA11yAttachApnOnly');
+    const defaultAndAttach = apnListItem.i18n('apnA11yDefaultAndAttachApn');
+
+    // Attach only APN.
     apnListItem.apn = {
       id: apnId,
       accessPointName: apnName,
+      apnTypes: [ApnType.kAttach],
     };
 
+    const enabledText = apnListItem.i18n('apnA11yEnabled');
     const nameText = apnListItem.i18n(
         'apnA11yName', /*index=*/ 1, /*count=*/ 1, /*name=*/ 'apn1');
-    assertEquals(apnListItem.$.actionMenuButton.ariaLabel, nameText);
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + enabledText + ' ' + attachTypeOnly);
+
+    // Attach and Default APN.
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+      apnTypes: [ApnType.kDefault, ApnType.kAttach],
+    };
+
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + enabledText + ' ' + defaultAndAttach);
+
+    // Default only APN.
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+      apnTypes: [ApnType.kDefault],
+    };
+
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + enabledText + ' ' + defaultTypeOnly);
 
     // Enabled custom APN, connected.
     apnListItem.isConnected = true;
@@ -363,7 +394,15 @@ suite('ApnListItemTest', function() {
     const connectedText = apnListItem.i18n('apnA11yConnected');
     assertEquals(
         apnListItem.$.actionMenuButton.ariaLabel,
-        nameText + ' ' + connectedText);
+        nameText + ' ' + connectedText + ' ' + defaultTypeOnly);
+
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + connectedText + ' ' + defaultTypeOnly);
+
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + connectedText + ' ' + defaultTypeOnly);
 
     // Disabled custom APN, non-connected.
     apnListItem.apn = {
@@ -386,7 +425,7 @@ suite('ApnListItemTest', function() {
     const autoDetectedText = apnListItem.i18n('apnA11yAutoDetected');
     assertEquals(
         apnListItem.$.actionMenuButton.ariaLabel,
-        nameText + ' ' + autoDetectedText);
+        nameText + ' ' + autoDetectedText + ' ' + enabledText);
 
     // Enabled database APN, connected.
     apnListItem.apn = {
