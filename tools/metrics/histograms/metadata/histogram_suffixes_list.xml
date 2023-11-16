@@ -3225,13 +3225,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Permissions.Usage.ElapsedTimeSinceGrant"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Platform_FirmwareType" separator=".">
-  <suffix name="EC" label="Embedded Controller firmware"/>
-  <suffix name="Main" label="Main processor firmware"/>
-  <suffix name="PD" label="USB Power Delivery controller firmware"/>
-  <affected-histogram name="Platform.BootMode.FirmwareWriteProtect"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PlatformEmmcLifeUsed" separator=".">
   <suffix name="TypeA" label="Memory Type A"/>
   <suffix name="TypeB" label="Memory Type B"/>

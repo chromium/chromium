@@ -52,29 +52,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.BootMode.DevSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2022-04-03">
-  <owner>dossym@chromium.org</owner>
+    enum="Platform.BootMode.SwitchStatus" expires_after="2024-05-01">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Indicates the status of the developer switch on Chrome OS hardware. The
     developer switch allows users to run their own code on the device.
+
+    Warning: this histogram was expired from 2022-04-03 to 2023-11-15 ; data may
+    be missing.
   </summary>
 </histogram>
 
-<histogram name="Platform.BootMode.FirmwareWriteProtect"
-    enum="Platform.BootMode.FirmwareWriteProtect" expires_after="2022-04-17">
-  <owner>dossym@chromium.org</owner>
+<histogram name="Platform.BootMode.FirmwareWriteProtect.{FirmwareType}"
+    enum="Platform.BootMode.FirmwareWriteProtect" expires_after="2024-05-01">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     On Chrome OS hardware, indicates whether flash write protection is enabled
-    for the firmware indicated by the histogram suffix.
+    for the {FirmwareType} firmware.
+
+    Warning: this histogram was expired from 2022-04-17 to 2023-11-15 ; data may
+    be missing.
   </summary>
+  <token key="FirmwareType">
+    <variant name="EC" summary="Embedded Controller"/>
+    <variant name="Main" summary="Main processor"/>
+    <variant name="PD" summary="USB Power Delivery controller"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.BootMode.WriteProtectSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2021-09-05">
-  <owner>dossym@chromium.org</owner>
+    enum="Platform.BootMode.SwitchStatus" expires_after="2024-05-01">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Indicates the status of the hardware write protect switch on Chrome OS
     hardware. The write protect switch protects firmware from being rewritten.
+
+    Warning: this histogram was expired from 2021-09-05 to 2023-11-15 ; data may
+    be missing.
   </summary>
 </histogram>
 
