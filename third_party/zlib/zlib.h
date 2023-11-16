@@ -820,8 +820,9 @@ ZEXTERN int ZEXPORT deflateSetHeader(z_streamp strm,
    gzip file" and give up.
 
      If deflateSetHeader is not used, the default gzip header has text false,
-   the time set to zero, and os set to 255, with no extra, name, or comment
-   fields.  The gzip header is returned to the default state by deflateReset().
+   the time set to zero, and os set to the current operating system, with no
+   extra, name, or comment fields.  The gzip header is returned to the default
+   state by deflateReset().
 
      deflateSetHeader returns Z_OK if success, or Z_STREAM_ERROR if the source
    stream state was inconsistent.
