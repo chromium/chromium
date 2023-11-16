@@ -91,9 +91,9 @@ export class Panel extends PanelInterface {
         .addEventListener('click', () => this.onPanRight_(), false);
     $('menus_button')
         .addEventListener(
-            'mousedown', event => this.onOpenMenus_(event), false);
+            'mousedown', event => this.menuManager_.onOpenMenus(event), false);
     $('options').addEventListener('click', () => this.onOptions_(), false);
-    $('close').addEventListener('click', () => this.onClose_(), false);
+    $('close').addEventListener('click', () => this.onClose(), false);
 
     document.addEventListener(
         'keydown', event => this.onKeyDown_(event), false);
@@ -142,6 +142,16 @@ export class Panel extends PanelInterface {
   /** @override */
   setPendingCallback(callback) {
     this.pendingCallback_ = callback;
+  }
+
+  /** @override */
+  get mode() {
+    return this.mode_;
+  }
+
+  /** @override */
+  get sessionState() {
+    return this.sessionState_;
   }
 
   /** Adds BackgroundBridge to the global object so that tests can mock it. */
@@ -216,10 +226,10 @@ export class Panel extends PanelInterface {
         this.onUpdateBraille_(command.data);
         break;
       case PanelCommandType.OPEN_MENUS:
-        this.onOpenMenus_(undefined, String(command.data));
+        this.menuManager_.onOpenMenus(undefined, String(command.data));
         break;
       case PanelCommandType.OPEN_MENUS_MOST_RECENT:
-        this.onOpenMenus_(undefined, this.menuManager_.lastMenu);
+        this.menuManager_.onOpenMenus(undefined, this.menuManager_.lastMenu);
         break;
       case PanelCommandType.SEARCH:
         this.onSearch_();
@@ -228,7 +238,7 @@ export class Panel extends PanelInterface {
         this.onTutorial_();
         break;
       case PanelCommandType.CLOSE_CHROMEVOX:
-        this.onClose_();
+        this.onClose();
       case PanelCommandType.ENABLE_TEST_HOOKS:
         window.MenuManager = MenuManager;
         window.Msgs = Msgs;
@@ -241,9 +251,8 @@ export class Panel extends PanelInterface {
    * Sets the mode, which determines the size of the panel and what objects
    *     are shown or hidden.
    * @param {PanelMode} mode The new mode.
-   * @private
    */
-  setMode_(mode) {
+  setMode(mode) {
     if (this.mode_ === mode) {
       return;
     }
@@ -287,105 +296,11 @@ export class Panel extends PanelInterface {
   }
 
   /**
-   * Open / show the ChromeVox Menus.
-   * @param {Event=} opt_event An optional event that triggered this.
-   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
-   * @private
-   */
-  async onOpenMenus_(opt_event, opt_activateMenuTitle) {
-    // If the menu was already open, close it now and exit early.
-    if (this.mode_ !== PanelMode.COLLAPSED) {
-      this.setMode_(PanelMode.COLLAPSED);
-      return;
-    }
-
-    // Eat the event so that a mousedown isn't turned into a drag, allowing
-    // users to click-drag-release to select a menu item.
-    if (opt_event) {
-      opt_event.stopPropagation();
-      opt_event.preventDefault();
-    }
-
-    await BackgroundBridge.PanelBackground.saveCurrentNode();
-    this.setMode_(PanelMode.FULLSCREEN_MENUS);
-
-    // The panel does not get focus immediately when we request to be full
-    // screen (handled in ChromeVoxPanel natively on hash changed). Wait, if
-    // needed, for focus to begin initialization.
-    if (!document.hasFocus()) {
-      await waitForWindowFocus();
-    }
-
-    const eventSource = await BackgroundBridge.EventSource.get();
-    const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
-
-    // Build the top-level menus.
-    const searchMenu = this.menuManager_.addSearchMenu('panel_search_menu');
-    const jumpMenu = this.menuManager_.addMenu('panel_menu_jump');
-    const speechMenu = this.menuManager_.addMenu('panel_menu_speech');
-    const touchMenu = touchScreen ?
-        this.menuManager_.addMenu('panel_menu_touchgestures') :
-        null;
-    const chromevoxMenu = this.menuManager_.addMenu('panel_menu_chromevox');
-    const actionsMenu = this.menuManager_.addMenu('panel_menu_actions');
-
-    // Add a menu item that opens the full list of ChromeBook keyboard
-    // shortcuts. We want this to be at the top of the ChromeVox menu.
-    await this.menuManager_.addOSKeyboardShortcutsMenuItem(chromevoxMenu);
-
-    // Create a mapping between categories from CommandStore, and our
-    // top-level menus. Some categories aren't mapped to any menu.
-    const categoryToMenu = this.menuManager_.makeCategoryMapping(
-        actionsMenu, chromevoxMenu, jumpMenu, speechMenu);
-
-    // Make a copy of the key bindings, get the localized title of each
-    // command, and then sort them.
-    const sortedBindings = await this.menuManager_.getSortedKeyBindings();
-
-    // Insert items from the bindings into the menus.
-    const bindingMap = this.menuManager_.makeBindingMap(sortedBindings);
-    for (const binding of bindingMap.values()) {
-      const category = CommandStore.categoryForCommand(binding.command);
-      const menu = category ? categoryToMenu[category] : null;
-      this.menuManager_.addMenuItemFromKeyBinding(binding, menu, touchScreen);
-    }
-
-    // Add Touch Gestures menu items.
-    if (touchMenu) {
-      this.menuManager_.addTouchGestureMenuItems(touchMenu);
-    }
-
-    if (this.sessionState_ !== 'IN_SESSION') {
-      this.menuManager_.denySignedOut();
-    }
-
-    // Add a menu item that disables / closes ChromeVox.
-    chromevoxMenu.addMenuItem(
-        Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
-        async () => this.onClose_());
-
-    for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
-      this.menuManager_.addNodeMenu(menuData);
-    }
-    await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
-        opt_activateMenuTitle);
-
-    await this.menuManager_.addActionsMenuItems(actionsMenu, bindingMap);
-
-    // Activate either the specified menu or the search menu.
-    const selectedMenu =
-        this.menuManager_.getSelectedMenu(opt_activateMenuTitle);
-
-    const activateFirstItem = (selectedMenu !== this.menuManager_.searchMenu);
-    this.menuManager_.activateMenu(selectedMenu, activateFirstItem);
-  }
-
-  /**
    * Open incremental search.
    * @private
    */
   async onSearch_() {
-    this.setMode_(PanelMode.SEARCH);
+    this.setMode(PanelMode.SEARCH);
     this.menuManager_.clearMenus();
     this.pendingCallback_ = null;
     this.updateFromPrefs_();
@@ -566,7 +481,7 @@ export class Panel extends PanelInterface {
   onKeyDown_(event) {
     if (event.key === 'Escape' &&
         this.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
-      this.setMode_(PanelMode.COLLAPSED);
+      this.setMode(PanelMode.COLLAPSED);
       return;
     }
 
@@ -648,15 +563,12 @@ export class Panel extends PanelInterface {
    * @private
    */
   onOptions_() {
-    BackgroundBridge.CommandHandler.onCommand(Command.SHOW_OPTIONS_PAGE);
-    this.setMode_(PanelMode.COLLAPSED);
+    chrome.runtime.openOptionsPage();
+    this.setMode(PanelMode.COLLAPSED);
   }
 
-  /**
-   * Exit ChromeVox.
-   * @private
-   */
-  onClose_() {
+  /** @override */
+  onClose() {
     // Change the url fragment to 'close', which signals the native code
     // to exit ChromeVox.
     this.ownerWindow_.location =
@@ -688,7 +600,7 @@ export class Panel extends PanelInterface {
     this.menuManager_.clearMenus();
 
     // Make sure we're not in full-screen mode.
-    this.setMode_(PanelMode.COLLAPSED);
+    this.setMode(PanelMode.COLLAPSED);
 
     this.menuManager_.activeMenu = null;
 
@@ -722,7 +634,7 @@ export class Panel extends PanelInterface {
         this.createITutorial_(curriculum, medium);
       }
 
-      this.setMode_(PanelMode.FULLSCREEN_TUTORIAL);
+      this.setMode(PanelMode.FULLSCREEN_TUTORIAL);
       if (this.tutorial_ && this.tutorial_.show) {
         this.tutorial_.medium = medium;
         this.tutorial_.show();
@@ -808,7 +720,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   onCloseTutorial_() {
-    this.setMode_(PanelMode.COLLAPSED);
+    this.setMode(PanelMode.COLLAPSED);
   }
 
   /** @private */
@@ -873,11 +785,6 @@ export class Panel extends PanelInterface {
     this.sessionState_ = sessionState;
     $('options').disabled = sessionState !== 'IN_SESSION';
   }
-}
-
-async function waitForWindowFocus() {
-  return new Promise(
-      resolve => window.addEventListener('focus', resolve, {once: true}));
 }
 
 window.addEventListener('load', async () => await Panel.init(), false);
