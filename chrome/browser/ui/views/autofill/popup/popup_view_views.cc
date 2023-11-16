@@ -191,6 +191,17 @@ bool PopupViewViews::Show(
     SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
                     PopupCellSelectionSource::kNonUserInput);
   }
+
+  // Check for the special "warning bubble" mode: single warning suggestion
+  // which content should be just announced to the user. Triggering
+  // Event::kAlert on such a row makes screen readers read its content out.
+  // TODO(crbug.com/1480487): Consider supporting "warning mode" explicitly.
+  if (rows_.size() == 1 &&
+      absl::holds_alternative<PopupWarningView*>(rows_[0])) {
+    absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
+        ax::mojom::Event::kAlert, true);
+  }
+
   return true;
 }
 
