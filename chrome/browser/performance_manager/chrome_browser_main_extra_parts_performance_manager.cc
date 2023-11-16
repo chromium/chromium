@@ -75,6 +75,7 @@
 #include "chrome/browser/performance_manager/policies/probabilistic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
@@ -279,6 +280,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   battery_saver_mode_manager_ = base::WrapUnique(
       new performance_manager::user_tuning::BatterySaverModeManager(
           g_browser_process->local_state()));
+  performance_detection_manager_ = base::WrapUnique(
+      new performance_manager::user_tuning::PerformanceDetectionManager());
 #endif
 
   page_load_metrics_observer_ =
@@ -322,6 +325,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
   performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
       ->Start();
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
+      ->Start();
+  performance_manager::user_tuning::PerformanceDetectionManager::GetInstance()
       ->Start();
 
   // This object is created by the metrics service before threads, but it
