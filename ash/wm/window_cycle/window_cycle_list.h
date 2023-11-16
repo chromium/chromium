@@ -157,9 +157,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows_|.
   int GetIndexOfWindow(aura::Window* window) const;
 
-  // Returns the number of items to be cycled in the window cycle list with the
-  // existence of snap groups for all desks.
-  int GetNumberOfCycleItemsAllDesks() const;
+  // Returns the number of windows in the window cycle list for all desks.
+  int GetNumberOfWindowsAllDesks() const;
 
   // Computes and reports the number of non-same-app windows skipped metric if
   // `same_app_only_`. This must be called from the destructor before the call
