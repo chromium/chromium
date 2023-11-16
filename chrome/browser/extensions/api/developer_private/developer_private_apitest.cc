@@ -146,7 +146,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
 }
 
 // TODO(https://crbug.com/1457154): Test is flaky on MSan builders.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_InspectInactiveServiceWorkerBackground \
   DISABLED_InspectInactiveServiceWorkerBackground
 #else

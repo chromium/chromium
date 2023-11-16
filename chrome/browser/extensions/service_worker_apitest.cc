@@ -2156,8 +2156,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
 // 2) An incognito window was open.
 // 3) Toggle the allow in incognito switch to off
 // Regression test for crbug.com/1394588
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DisallowIncognitoWithOnInstalledListener \
+  DISABLED_DisallowIncognitoWithOnInstalledListener
+#else
+#define MAYBE_DisallowIncognitoWithOnInstalledListener \
+  DisallowIncognitoWithOnInstalledListener
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       DisallowIncognitoWithOnInstalledListener) {
+                       MAYBE_DisallowIncognitoWithOnInstalledListener) {
   ResultCatcher catcher;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;

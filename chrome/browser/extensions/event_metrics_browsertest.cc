@@ -23,7 +23,14 @@ using EventMetricsBrowserTest = ExtensionBrowserTest;
 
 // Tests that the only the dispatch time histogram provided to the test is
 // emitted with a sane value, and that other provided metrics are not emitted.
-IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchMetricTest) {
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DispatchMetricTest DISABLED_DispatchMetricTest
+#else
+#define MAYBE_DispatchMetricTest DispatchMetricTest
+#endif
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   struct {
     const std::string event_metric_emitted;
