@@ -32,7 +32,7 @@ class AccountMigrationWelcomeDialog : public SystemWebDialogDelegate {
   std::string GetDialogArgs() const override;
   bool ShouldShowDialogTitle() const override;
   bool ShouldShowCloseButton() const override;
-  const std::string& Id() override;
+  std::string Id() override;
 
   std::string GetUserEmail() const;
 

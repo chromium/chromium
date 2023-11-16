@@ -48,7 +48,7 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
   DiagnosticsDialog& operator=(const DiagnosticsDialog&) = delete;
 
   // SystemWebDialogDelegate
-  const std::string& Id() override;
+  std::string Id() override;
   bool ShouldCloseDialogOnEscape() const override;
 
   // ui::WebDialogDelegate

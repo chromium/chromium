@@ -104,7 +104,7 @@ BluetoothPairingDialog::BluetoothPairingDialog(
 
 BluetoothPairingDialog::~BluetoothPairingDialog() = default;
 
-const std::string& BluetoothPairingDialog::Id() {
+std::string BluetoothPairingDialog::Id() {
   return dialog_id_;
 }
 

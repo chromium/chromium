@@ -48,7 +48,7 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
 
  private:
   // SystemWebDialogDelegate
-  const std::string& Id() override;
+  std::string Id() override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
   // ui::WebDialogDelegate

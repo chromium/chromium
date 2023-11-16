@@ -120,7 +120,7 @@ InternetConfigDialog::InternetConfigDialog(const std::string& dialog_id,
 
 InternetConfigDialog::~InternetConfigDialog() = default;
 
-const std::string& InternetConfigDialog::Id() {
+std::string InternetConfigDialog::Id() {
   return dialog_id_;
 }
 

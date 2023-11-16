@@ -91,7 +91,7 @@ InlineLoginDialogOnboarding::InlineLoginDialogOnboarding(
     const gfx::Size& size,
     base::OnceCallback<void(void)> dialog_closed_callback)
     : size_(size), dialog_closed_callback_(std::move(dialog_closed_callback)) {
-  set_modal_type(ui::MODAL_TYPE_CHILD);
+  set_dialog_modal_type(ui::MODAL_TYPE_CHILD);
 }
 
 InlineLoginDialogOnboarding::~InlineLoginDialogOnboarding() = default;

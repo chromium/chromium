@@ -43,7 +43,7 @@ class MockSystemWebDialog : public SystemWebDialogDelegate {
 
   ~MockSystemWebDialog() override = default;
 
-  const std::string& Id() override { return id_; }
+  std::string Id() override { return id_; }
   std::string GetDialogArgs() const override { return std::string(); }
 
  private:
