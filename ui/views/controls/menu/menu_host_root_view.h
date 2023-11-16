@@ -55,7 +55,7 @@ class MenuHostRootView : public internal::RootView {
   MenuController* GetMenuControllerForInputEvents();
 
   // The SubmenuView we contain.
-  raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
+  raw_ptr<SubmenuView> submenu_;
 };
 
 }  // namespace views
