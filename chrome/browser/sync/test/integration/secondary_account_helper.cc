@@ -85,7 +85,12 @@ void SignOutAccount(Profile* profile,
                     const CoreAccountId& account_id) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  signin::SetCookieAccounts(identity_manager, test_url_loader_factory, {});
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CHECK(!account.IsEmpty());
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory,
+      {{account.email, account.gaia, /*signed_out=*/true}});
   signin::RemoveRefreshTokenForAccount(identity_manager, account_id);
 }
 

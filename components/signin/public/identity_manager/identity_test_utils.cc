@@ -520,7 +520,7 @@ void SetCookieAccounts(
   std::vector<CookieParams> gaia_cookie_accounts;
   for (const CookieParamsForTest& params : cookie_accounts) {
     gaia_cookie_accounts.push_back({params.email, params.gaia_id,
-                                    /*valid=*/true, /*signed_out=*/false,
+                                    /*valid=*/true, params.signed_out,
                                     /*verified=*/true});
   }
 

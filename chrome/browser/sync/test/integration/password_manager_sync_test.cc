@@ -882,6 +882,25 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  SetupSyncTransportWithoutPasswordAccountStorage();
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  SignOut();
+  PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
+
+  // The opt-in should be remembered.
+  SetupSyncTransportWithoutPasswordAccountStorage();
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PasswordDeletionsPropagateToServer) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";

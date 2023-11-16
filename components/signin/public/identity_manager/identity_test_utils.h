@@ -41,6 +41,7 @@ namespace signin {
 struct CookieParamsForTest {
   std::string email;
   std::string gaia_id;
+  bool signed_out = false;
 };
 
 class IdentityManager;

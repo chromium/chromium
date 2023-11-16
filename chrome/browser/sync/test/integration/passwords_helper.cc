@@ -288,10 +288,21 @@ void InjectKeystoreEncryptedServerPassword(
 PasswordSyncActiveChecker::PasswordSyncActiveChecker(
     syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
+
 PasswordSyncActiveChecker::~PasswordSyncActiveChecker() = default;
 
 bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
+}
+
+PasswordSyncInactiveChecker::PasswordSyncInactiveChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+
+PasswordSyncInactiveChecker::~PasswordSyncInactiveChecker() = default;
+
+bool PasswordSyncInactiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return !service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
 SamePasswordFormsChecker::SamePasswordFormsChecker(PasswordForm::Store store)
