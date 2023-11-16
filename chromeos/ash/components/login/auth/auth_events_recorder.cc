@@ -306,7 +306,7 @@ void AuthEventsRecorder::ResetLoginData() {
   Reset();
 }
 
-void AuthEventsRecorder::OnKnowledgeFactorAuthFailue() {
+void AuthEventsRecorder::OnKnowledgeFactorAuthFailure() {
   knowledge_factor_auth_failure_count_++;
 }
 

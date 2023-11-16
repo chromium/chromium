@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
 
   // Increment `knowledge_factor_auth_failure_count_` to reflect a failed
   // attempt to authenticate with a knowledge auth factor.
-  void OnKnowledgeFactorAuthFailue();
+  void OnKnowledgeFactorAuthFailure();
 
   // Log the auth failure action and reason.
   void OnAuthFailure(const AuthFailure::FailureReason& failure_reason);

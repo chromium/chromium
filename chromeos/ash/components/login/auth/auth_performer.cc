@@ -262,7 +262,7 @@ void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
   if (auto error = user_data_auth::ReplyToCryptohomeError(reply);
       cryptohome::ErrorMatches(
           error, user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)) {
-    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
+    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailure();
   }
   OnAuthenticateAuthFactor(request_start, std::move(context),
                            std::move(callback), std::move(reply));
