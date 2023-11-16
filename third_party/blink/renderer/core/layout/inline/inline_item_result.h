@@ -24,7 +24,7 @@ class InlineItem;
 class NGLayoutResult;
 class ShapeResult;
 class ShapeResultView;
-struct NGPositionedFloat;
+struct PositionedFloat;
 
 // The result of measuring InlineItem.
 //
@@ -91,11 +91,11 @@ struct CORE_EXPORT InlineItemResult {
   // NGLayoutResult for atomic inline items.
   Member<const NGLayoutResult> layout_result;
 
-  // NGPositionedFloat for floating inline items. Should only be present for
+  // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
   GC_PLUGIN_IGNORE("crbug.com/1146383")
-  absl::optional<NGPositionedFloat> positioned_float;
+  absl::optional<PositionedFloat> positioned_float;
 
   // Margins, borders, and padding for open tags.
   // Margins are set for atomic inlines too.

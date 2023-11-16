@@ -65,9 +65,9 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   friend class LineWidthsTest;
 
   void PositionLeadingFloats(ExclusionSpace&, LeadingFloats&);
-  NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
-                                  LayoutObject* floating_object,
-                                  ExclusionSpace*);
+  PositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
+                                LayoutObject* floating_object,
+                                ExclusionSpace*);
 
   void PrepareBoxStates(const LineInfo&, const InlineBreakToken*);
   void RebuildBoxStates(const LineInfo&,

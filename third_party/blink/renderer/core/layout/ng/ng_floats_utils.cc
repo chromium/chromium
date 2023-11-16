@@ -38,7 +38,7 @@ BfcOffset AdjustToTopEdgeAlignmentRule(const ExclusionSpace& exclusion_space,
 }
 
 LayoutOpportunity FindLayoutOpportunityForFloat(
-    const NGUnpositionedFloat& unpositioned_float,
+    const UnpositionedFloat& unpositioned_float,
     const ExclusionSpace& exclusion_space,
     const BoxStrut& fragment_margins,
     LayoutUnit inline_size) {
@@ -62,7 +62,7 @@ LayoutOpportunity FindLayoutOpportunityForFloat(
 // Creates a constraint space for an unpositioned float. origin_block_offset
 // should only be set when we want to fragmentation to occur.
 NGConstraintSpace CreateConstraintSpaceForFloat(
-    const NGUnpositionedFloat& unpositioned_float,
+    const UnpositionedFloat& unpositioned_float,
     absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
     absl::optional<BoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
@@ -103,7 +103,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
 
 ExclusionShapeData* CreateExclusionShapeData(
     const BoxStrut& margins,
-    const NGUnpositionedFloat& unpositioned_float) {
+    const UnpositionedFloat& unpositioned_float) {
   const LayoutBox* layout_box = unpositioned_float.node.GetLayoutBox();
   DCHECK(layout_box->GetShapeOutsideInfo());
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
@@ -147,7 +147,7 @@ const ExclusionArea* CreateExclusionArea(
     const LogicalFragment& fragment,
     const BfcOffset& float_margin_bfc_offset,
     const BoxStrut& margins,
-    const NGUnpositionedFloat& unpositioned_float,
+    const UnpositionedFloat& unpositioned_float,
     EFloat type) {
   BfcOffset start_offset = float_margin_bfc_offset;
   BfcOffset end_offset(
@@ -166,8 +166,8 @@ const ExclusionArea* CreateExclusionArea(
 }
 
 // Performs layout on a float, without fragmentation, and stores the result on
-// the NGUnpositionedFloat data-structure.
-void LayoutFloatWithoutFragmentation(NGUnpositionedFloat* unpositioned_float) {
+// the UnpositionedFloat data-structure.
+void LayoutFloatWithoutFragmentation(UnpositionedFloat* unpositioned_float) {
   if (unpositioned_float->layout_result)
     return;
 
@@ -188,7 +188,7 @@ void LayoutFloatWithoutFragmentation(NGUnpositionedFloat* unpositioned_float) {
 }  // namespace
 
 LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
-    NGUnpositionedFloat* unpositioned_float) {
+    UnpositionedFloat* unpositioned_float) {
   DCHECK(unpositioned_float);
 
   LayoutFloatWithoutFragmentation(unpositioned_float);
@@ -205,8 +205,8 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
       .ClampNegativeToZero();
 }
 
-NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
-                                ExclusionSpace* exclusion_space) {
+PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
+                              ExclusionSpace* exclusion_space) {
   DCHECK(unpositioned_float);
   const NGConstraintSpace& parent_space = unpositioned_float->parent_space;
   NGBlockNode node = unpositioned_float->node;
@@ -442,8 +442,8 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     }
   }
 
-  return NGPositionedFloat(layout_result, break_before_token, float_bfc_offset,
-                           minimum_space_shortage);
+  return PositionedFloat(layout_result, break_before_token, float_bfc_offset,
+                         minimum_space_shortage);
 }
 
 }  // namespace blink

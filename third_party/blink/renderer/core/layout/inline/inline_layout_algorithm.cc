@@ -1047,7 +1047,7 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
       // should not leave any unpositioned floats behind.
       DCHECK(!BreakToken() || !BreakToken()->IsInParallelBlockFlow());
 
-      NGPositionedFloat positioned_float =
+      PositionedFloat positioned_float =
           PositionFloat(origin_bfc_block_offset, child.unpositioned_float,
                         &GetExclusionSpace());
       const NGBlockBreakToken* break_token = positioned_float.BreakToken();
@@ -1737,7 +1737,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = BreakToken() ? BreakToken()->StartItemIndex() : 0;
-  NGPositionedFloatVector& positioned_floats = leading_floats.floats;
+  PositionedFloatVector& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
     const InlineItem& item = items[index];
 
@@ -1759,7 +1759,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
     // optimistic guess.
     const LayoutUnit origin_bfc_block_offset =
         ConstraintSpace().ExpectedBfcBlockOffset();
-    NGPositionedFloat positioned_float = PositionFloat(
+    PositionedFloat positioned_float = PositionFloat(
         origin_bfc_block_offset, item.GetLayoutObject(), &exclusion_space);
 
     if (ConstraintSpace().HasBlockFragmentation()) {
@@ -1778,21 +1778,21 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
   leading_floats.handled_index = index;
 }
 
-NGPositionedFloat InlineLayoutAlgorithm::PositionFloat(
+PositionedFloat InlineLayoutAlgorithm::PositionFloat(
     LayoutUnit origin_bfc_block_offset,
     LayoutObject* floating_object,
     ExclusionSpace* exclusion_space) {
   BfcOffset origin_bfc_offset = {ConstraintSpace().GetBfcOffset().line_offset,
                                  origin_bfc_block_offset};
 
-  NGUnpositionedFloat unpositioned_float(
+  UnpositionedFloat unpositioned_float(
       NGBlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, ConstraintSpace().AvailableSize(),
       ConstraintSpace().PercentageResolutionSize(),
       ConstraintSpace().ReplacedPercentageResolutionSize(), origin_bfc_offset,
       ConstraintSpace(), Style());
 
-  NGPositionedFloat positioned_float =
+  PositionedFloat positioned_float =
       ::blink::PositionFloat(&unpositioned_float, exclusion_space);
 
   if (positioned_float.minimum_space_shortage) {

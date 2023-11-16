@@ -8,12 +8,12 @@
 
 namespace blink {
 
-void NGPositionedFloat::Trace(Visitor* visitor) const {
+void PositionedFloat::Trace(Visitor* visitor) const {
   visitor->Trace(layout_result);
   visitor->Trace(break_before_token);
 }
 
-const NGBlockBreakToken* NGPositionedFloat::BreakToken() const {
+const NGBlockBreakToken* PositionedFloat::BreakToken() const {
   if (break_before_token) {
     return break_before_token.Get();
   }

@@ -217,7 +217,7 @@ class CORE_EXPORT LineBreaker {
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
 
-  bool ShouldPushFloatAfterLine(NGUnpositionedFloat*, LineInfo*);
+  bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
                    const NGBlockBreakToken* float_break_token,
                    LineInfo*);

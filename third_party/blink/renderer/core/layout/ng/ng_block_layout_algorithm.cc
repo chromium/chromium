@@ -1346,7 +1346,7 @@ void BlockLayoutAlgorithm::HandleFloat(
     }
   }
 
-  NGUnpositionedFloat unpositioned_float(
+  UnpositionedFloat unpositioned_float(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, ConstraintSpace(),
       Style());
@@ -1363,7 +1363,7 @@ void BlockLayoutAlgorithm::HandleFloat(
       abort_when_bfc_block_offset_updated_ = true;
   }
 
-  NGPositionedFloat positioned_float =
+  PositionedFloat positioned_float =
       PositionFloat(&unpositioned_float, &GetExclusionSpace());
 
   if (positioned_float.minimum_space_shortage > LayoutUnit()) {

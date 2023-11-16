@@ -2779,7 +2779,7 @@ void LineBreaker::HandleBlockInInline(
 // broken inside or before it in the previous fragmentainer. Otherwise we must
 // attempt to place it.
 bool LineBreaker::ShouldPushFloatAfterLine(
-    NGUnpositionedFloat* unpositioned_float,
+    UnpositionedFloat* unpositioned_float,
     LineInfo* line_info) {
   if (unpositioned_float->token) {
     return false;
@@ -2869,7 +2869,7 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   }
 
   LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
-  NGUnpositionedFloat unpositioned_float(
+  UnpositionedFloat unpositioned_float(
       NGBlockNode(To<LayoutBox>(item.GetLayoutObject())), float_break_token,
       constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),

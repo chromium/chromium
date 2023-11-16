@@ -22,18 +22,18 @@ class ComputedStyle;
 class NGConstraintSpace;
 
 // Struct that keeps all information needed to position floats in LayoutNG.
-struct CORE_EXPORT NGUnpositionedFloat final {
+struct CORE_EXPORT UnpositionedFloat final {
   STACK_ALLOCATED();
 
  public:
-  NGUnpositionedFloat(NGBlockNode node,
-                      const NGBlockBreakToken* token,
-                      const LogicalSize available_size,
-                      const LogicalSize percentage_size,
-                      const LogicalSize replaced_percentage_size,
-                      const BfcOffset& origin_bfc_offset,
-                      const NGConstraintSpace& parent_space,
-                      const ComputedStyle& parent_style)
+  UnpositionedFloat(NGBlockNode node,
+                    const NGBlockBreakToken* token,
+                    const LogicalSize available_size,
+                    const LogicalSize percentage_size,
+                    const LogicalSize replaced_percentage_size,
+                    const BfcOffset& origin_bfc_offset,
+                    const NGConstraintSpace& parent_space,
+                    const ComputedStyle& parent_style)
       : node(node),
         token(token),
         available_size(available_size),

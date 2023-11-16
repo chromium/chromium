@@ -15,23 +15,23 @@ namespace blink {
 class NGLayoutResult;
 
 // Contains the information necessary for copying back data to a FloatingObject.
-struct CORE_EXPORT NGPositionedFloat {
+struct CORE_EXPORT PositionedFloat {
   DISALLOW_NEW();
 
  public:
-  NGPositionedFloat() = default;
-  NGPositionedFloat(const NGLayoutResult* layout_result,
-                    const NGBlockBreakToken* break_before_token,
-                    const BfcOffset& bfc_offset,
-                    LayoutUnit minimum_space_shortage)
+  PositionedFloat() = default;
+  PositionedFloat(const NGLayoutResult* layout_result,
+                  const NGBlockBreakToken* break_before_token,
+                  const BfcOffset& bfc_offset,
+                  LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
         break_before_token(break_before_token),
         bfc_offset(bfc_offset),
         minimum_space_shortage(minimum_space_shortage) {}
-  NGPositionedFloat(NGPositionedFloat&&) noexcept = default;
-  NGPositionedFloat(const NGPositionedFloat&) = default;
-  NGPositionedFloat& operator=(NGPositionedFloat&&) = default;
-  NGPositionedFloat& operator=(const NGPositionedFloat&) = default;
+  PositionedFloat(PositionedFloat&&) noexcept = default;
+  PositionedFloat(const PositionedFloat&) = default;
+  PositionedFloat& operator=(PositionedFloat&&) = default;
+  PositionedFloat& operator=(const PositionedFloat&) = default;
 
   void Trace(Visitor*) const;
 
@@ -45,6 +45,6 @@ struct CORE_EXPORT NGPositionedFloat {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGPositionedFloat)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PositionedFloat)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_POSITIONED_FLOAT_H_

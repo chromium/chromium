@@ -21,7 +21,7 @@ struct CORE_EXPORT LeadingFloats {
 
  public:
   wtf_size_t handled_index = 0;
-  NGPositionedFloatVector floats;
+  PositionedFloatVector floats;
 };
 
 }  // namespace blink
