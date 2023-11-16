@@ -1194,6 +1194,43 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
     indication that it's the first user, but also no public key, no policies and
     no local state entry.
   </int>
+  <int value="32" label="PrivateSlotKeyGenerationSuccess">
+    ChromeOS successfully generated the owner key in the private slot.
+  </int>
+  <int value="33" label="PrivateSlotKeyGenerationFail">
+    ChromeOS failed to generate the owner key in the private slot.
+  </int>
+  <int value="34" label="PublicSlotKeyGenerationSuccess">
+    ChromeOS successfully generated the owner key in the public slot.
+  </int>
+  <int value="35" label="PublicSlotKeyGenerationFail">
+    ChromeOS failed to generate the owner key in the public slot.
+  </int>
+  <int value="36" label="MigrationToPrivateSlotStarted">
+    ChromeOS started migrating the owner key from the public to the private slot
+    (the outcome is collected as kOwnerKeyGenerated and other counters).
+  </int>
+  <int value="37" label="MigrationToPublicSlotStarted">
+    ChromeOS started migrating the owner key from the private to the public slot
+    (the outcome is collected as kOwnerKeyGenerated and other counters).
+  </int>
+  <int value="38" label="OwnerKeySetSuccess">
+    session_manager notified Chrome that it finished saving the owner key
+    successfully.
+  </int>
+  <int value="39" label="OwnerKeySetFail">
+    session_manager notified Chrome that it failed to save the owner key on
+    disk.
+  </int>
+  <int value="40" label="OldOwnerKeyCleanUpStarted">
+    ChromeOS started deleting the old owner key.
+  </int>
+  <int value="41" label="OwnerKeyInPublicSlotTrue">
+    The owner key was found in the public.
+  </int>
+  <int value="42" label="OwnerKeyInPublicSlotFalse">
+    The owner key was found in the private slot.
+  </int>
 </enum>
 
 <enum name="PartnerLocationMetric">

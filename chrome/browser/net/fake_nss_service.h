@@ -34,6 +34,10 @@ class FakeNssService : public NssService {
 
   NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread() override;
 
+  PK11SlotInfo* GetPublicSlot() const;
+  PK11SlotInfo* GetPrivateSlot() const;
+  PK11SlotInfo* GetSystemSlot() const;
+
  private:
   std::unique_ptr<crypto::ScopedTestNSSDB> public_slot_;
   std::unique_ptr<crypto::ScopedTestNSSDB> private_slot_;

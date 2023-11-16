@@ -69,6 +69,12 @@ class OWNERSHIP_EXPORT PrivateKey
   PrivateKey(const PrivateKey&) = delete;
   PrivateKey& operator=(const PrivateKey&) = delete;
 
+  // Extracts the SECKEYPrivateKey from the object. Should be used carefully,
+  // since PrivateKey is refcounted and could be used from several places at the
+  // same time.
+  // TODO(b/264397430): The method can be removed after the migration is done.
+  crypto::ScopedSECKEYPrivateKey ExtractKey() { return std::move(key_); }
+
   SECKEYPrivateKey* key() { return key_.get(); }
 
  private:

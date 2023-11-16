@@ -65,6 +65,11 @@ class CrosSettingsTest : public testing::Test {
   ~CrosSettingsTest() override {}
 
   void SetUp() override {
+    // Disable owner key migration.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+
     device_policy_.Build();
 
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
@@ -147,6 +152,7 @@ class CrosSettingsTest : public testing::Test {
     return CrosSettings::Get()->IsUserAllowlisted(username, nullptr, user_type);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
 

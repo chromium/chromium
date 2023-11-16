@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -107,6 +110,13 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // By default disable the migration, so the imported key doesn't get
+    // replaced.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -154,6 +164,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged | ExperimentalAsh>
       service_ = nullptr;
   ScopedTestingLocalState local_state_;
@@ -329,6 +340,13 @@ class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // By default disable the migration, so the imported key doesn't get
+    // replaced.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -338,6 +356,9 @@ class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
     ASSERT_TRUE(service_);
     ASSERT_FALSE(service_->IsOwner());
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that a non-owner cannot set owner settings.
@@ -409,6 +430,45 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysBothKeys) {
 
   EXPECT_TRUE(service_->IsReady());
   EXPECT_EQ(service_->IsOwner(), is_owner.Get());
+}
+
+// Test that the old owner key gets cleaned up after the new one is installed by
+// session manager.
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, CleanUpOldOwnerKey) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot,
+                            features::kMigrateOwnerKeyToPrivateSlot},
+      /*disabled_features=*/{});
+
+  FakeNssService* nss_service = FakeNssService::InitializeForBrowserContext(
+      profile_.get(), /*enable_system_slot=*/false);
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
+
+  EXPECT_FALSE(service_->IsReady());
+  service_->OnTPMTokenReady();  // Trigger key load.
+
+  base::test::TestFuture<bool> is_owner;
+  service_->IsOwnerAsync(is_owner.GetCallback());
+  EXPECT_TRUE(is_owner.Get());
+
+  // Check that the old key is not deleted too early.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted, 0)));
+
+  service_->OwnerKeySet(/*success=*/true);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeySetSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted, 1)));
 }
 
 }  // namespace ash
