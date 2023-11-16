@@ -1239,20 +1239,6 @@ class WebURLLoaderThrottleProviderForFrameImpl
   const blink::LocalFrameToken frame_token_;
 };
 
-blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
-    const absl::optional<blink::FrameToken>& previous_frame_token) {
-  if (!previous_frame_token) {
-    return nullptr;
-  }
-
-  auto* previous_web_frame = WebFrame::FromFrameToken(*previous_frame_token);
-
-  CHECK(previous_web_frame);
-  CHECK(previous_web_frame->IsWebLocalFrame());
-
-  return previous_web_frame->ToWebLocalFrame()->FrameWidget();
-}
-
 // Initialize the WebFrameWidget with compositing. Only local root frames
 // create a widget.
 // `previous_widget` indicates whether the compositor for the frame which
@@ -1261,20 +1247,15 @@ blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
 void InitializeFrameWidgetForFrame(
     WebLocalFrame& frame,
     blink::WebFrameWidget* previous_widget,
-    mojom::CreateFrameWidgetParamsPtr widget_params) {
+    mojom::CreateFrameWidgetParamsPtr widget_params,
+    const bool is_for_nested_main_frame) {
   CHECK(widget_params);
 
-  bool is_for_nested_main_frame = false;
-  bool is_for_scalable_page = false;
-  bool is_main_frame = !frame.Parent();
-  if (is_main_frame) {
-    // TODO(bokan): Portals sometimes set this value on the WebFrameWidget from
-    // WebViewImpl::SetInsidePortal - can we remove that path? Even better,
-    // could the WebFrameWidget delegate to WebView/Page for this information?
-    // https://crbug.com/1316535.
-    is_for_nested_main_frame = frame.View()->IsFencedFrameRoot();
-    is_for_scalable_page = !is_for_nested_main_frame;
-  }
+  const bool is_main_frame = !frame.Parent();
+  CHECK(is_main_frame || !is_for_nested_main_frame);
+
+  const bool is_for_scalable_page =
+      is_main_frame && !frame.View()->IsFencedFrameRoot();
 
   const auto frame_sink_id =
       previous_widget ? previous_widget->GetFrameSinkId()
@@ -1523,12 +1504,14 @@ RenderFrameImpl* RenderFrameImpl::Create(
         browser_interface_broker,
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
-    const base::UnguessableToken& devtools_frame_token) {
+    const base::UnguessableToken& devtools_frame_token,
+    bool is_for_nested_main_frame) {
   DCHECK(routing_id != MSG_ROUTING_NONE);
-  CreateParams params(
-      agent_scheduling_group, routing_id, std::move(frame_receiver),
-      std::move(browser_interface_broker),
-      std::move(associated_interface_provider), devtools_frame_token);
+  CreateParams params(agent_scheduling_group, routing_id,
+                      std::move(frame_receiver),
+                      std::move(browser_interface_broker),
+                      std::move(associated_interface_provider),
+                      devtools_frame_token, is_for_nested_main_frame);
 
   if (g_create_render_frame_impl)
     return g_create_render_frame_impl(std::move(params));
@@ -1568,7 +1551,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       agent_scheduling_group, params->routing_id, std::move(params->frame),
       std::move(params->interface_broker),
       std::move(params->associated_interface_provider_remote),
-      devtools_frame_token);
+      devtools_frame_token, is_for_nested_main_frame);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view, render_frame, render_frame->blink_interface_registry_.get(),
@@ -1581,8 +1564,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
-  CHECK(!PreviousWidgetForLazyCompositorInitialization(
-      params->widget_params->previous_frame_token_for_compositor_reuse));
+  CHECK(!params->widget_params->previous_frame_token_for_compositor_reuse);
 
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1667,7 +1649,8 @@ void RenderFrameImpl::CreateFrame(
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     bool is_on_initial_empty_document,
     const blink::DocumentToken& document_token,
-    blink::mojom::PolicyContainerPtr policy_container) {
+    blink::mojom::PolicyContainerPtr policy_container,
+    bool is_for_nested_main_frame) {
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the `blink::WebView` and RenderFrame for it. The
   // second block uses that to make a RenderWidget, if needed.
@@ -1707,7 +1690,8 @@ void RenderFrameImpl::CreateFrame(
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
         std::move(browser_interface_broker),
-        std::move(associated_interface_provider), devtools_frame_token);
+        std::move(associated_interface_provider), devtools_frame_token,
+        is_for_nested_main_frame);
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state->unique_name);
     WebFrame* opener = nullptr;
@@ -1753,7 +1737,8 @@ void RenderFrameImpl::CreateFrame(
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
         std::move(browser_interface_broker),
-        std::move(associated_interface_provider), devtools_frame_token);
+        std::move(associated_interface_provider), devtools_frame_token,
+        is_for_nested_main_frame);
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(),
         frame_token, previous_web_frame, replicated_state->frame_policy,
@@ -1865,13 +1850,15 @@ RenderFrameImpl::CreateParams::CreateParams(
         browser_interface_broker,
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
-    const base::UnguessableToken& devtools_frame_token)
+    const base::UnguessableToken& devtools_frame_token,
+    bool is_for_nested_main_frame)
     : agent_scheduling_group(&agent_scheduling_group),
       routing_id(routing_id),
       frame_receiver(std::move(frame_receiver)),
       browser_interface_broker(std::move(browser_interface_broker)),
       associated_interface_provider(std::move(associated_interface_provider)),
-      devtools_frame_token(devtools_frame_token) {}
+      devtools_frame_token(devtools_frame_token),
+      is_for_nested_main_frame(is_for_nested_main_frame) {}
 RenderFrameImpl::CreateParams::~CreateParams() = default;
 RenderFrameImpl::CreateParams::CreateParams(CreateParams&&) = default;
 RenderFrameImpl::CreateParams& RenderFrameImpl::CreateParams::operator=(
@@ -1899,7 +1886,8 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
           this,
           base::BindRepeating(&RenderFrameImpl::RequestOverlayRoutingToken,
                               base::Unretained(this))),
-      devtools_frame_token_(params.devtools_frame_token) {
+      devtools_frame_token_(params.devtools_frame_token),
+      is_for_nested_main_frame_(params.is_for_nested_main_frame) {
   DCHECK(RenderThread::IsMainThread());
   blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
       registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr());
@@ -3598,7 +3586,8 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
       *agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
-      std::move(associated_interface_provider), devtools_frame_token);
+      std::move(associated_interface_provider), devtools_frame_token,
+      /*is_for_nested_main_frame=*/false);
   child_render_frame->SetLoaderFactoryBundle(CloneLoaderFactories());
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
@@ -3639,7 +3628,8 @@ void RenderFrameImpl::MaybeInitializeWidget(
   if (!PreviousWidgetForLazyCompositorInitialization(
           widget_params->previous_frame_token_for_compositor_reuse)) {
     InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
-                                  std::move(widget_params));
+                                  std::move(widget_params),
+                                  is_for_nested_main_frame_);
   } else {
     // Initializing the widget is deferred until commit if this RenderFrame
     // will be replacing a previous RenderFrame. This enables reuse of the
@@ -3670,7 +3660,29 @@ void RenderFrameImpl::EnsureWidgetInitialized() {
 
   InitializeFrameWidgetForFrame(
       *frame_, previous_widget,
-      std::move(widget_params_for_lazy_widget_creation_));
+      std::move(widget_params_for_lazy_widget_creation_),
+      is_for_nested_main_frame_);
+}
+
+blink::WebFrameWidget*
+RenderFrameImpl::PreviousWidgetForLazyCompositorInitialization(
+    const absl::optional<blink::FrameToken>& previous_frame_token) const {
+  if (!previous_frame_token) {
+    return nullptr;
+  }
+
+  auto* previous_web_frame = WebFrame::FromFrameToken(*previous_frame_token);
+
+  CHECK(previous_web_frame);
+  CHECK(previous_web_frame->IsWebLocalFrame());
+
+  auto* previous_render_frame =
+      RenderFrameImpl::FromWebFrame(previous_web_frame);
+  CHECK(previous_render_frame);
+  CHECK_EQ(previous_render_frame->is_for_nested_main_frame_,
+           is_for_nested_main_frame_);
+
+  return previous_web_frame->ToWebLocalFrame()->FrameWidget();
 }
 
 void RenderFrameImpl::WillSwap() {

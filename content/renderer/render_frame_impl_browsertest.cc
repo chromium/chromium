@@ -174,8 +174,8 @@ class RenderFrameImplTest : public RenderViewTest {
         /*has_committed_real_load=*/true, blink::DocumentToken(),
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),
-            mock_policy_container_host
-                .BindNewEndpointAndPassDedicatedRemote()));
+            mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
+        /*is_for_nested_main_frame=*/false);
 
     frame_ = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(kSubframeRouteId));

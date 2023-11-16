@@ -244,7 +244,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       bool is_on_initial_empty_document,
       const blink::DocumentToken& document_token,
-      blink::mojom::PolicyContainerPtr policy_container);
+      blink::mojom::PolicyContainerPtr policy_container,
+      bool is_for_nested_main_frame);
 
   // Returns the RenderFrameImpl for the given routing ID.
   static RenderFrameImpl* FromRoutingID(int routing_id);
@@ -262,7 +263,8 @@ class CONTENT_EXPORT RenderFrameImpl
             browser_interface_broker,
         mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
             associated_interface_provider,
-        const base::UnguessableToken& devtools_frame_token);
+        const base::UnguessableToken& devtools_frame_token,
+        bool is_for_nested_main_frame);
     ~CreateParams();
 
     CreateParams(CreateParams&&);
@@ -276,6 +278,7 @@ class CONTENT_EXPORT RenderFrameImpl
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider;
     base::UnguessableToken devtools_frame_token;
+    bool is_for_nested_main_frame;
   };
 
   using CreateRenderFrameImplFunction = RenderFrameImpl* (*)(CreateParams);
@@ -861,7 +864,8 @@ class CONTENT_EXPORT RenderFrameImpl
           browser_interface_broker,
       mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
           associated_interface_provider,
-      const base::UnguessableToken& devtools_frame_token);
+      const base::UnguessableToken& devtools_frame_token,
+      bool is_for_nested_main_frame);
 
   // Functions to add and remove observers for this object.
   void AddObserver(RenderFrameObserver* observer);
@@ -962,6 +966,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
   // see `MaybeInitializeWidget()` above.
   void EnsureWidgetInitialized();
+
+  // Returns the widget whose compositor should be reused for this widget if
+  // a non-null `previous_frame_token` is provided.
+  blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
+      const absl::optional<blink::FrameToken>& previous_frame_token) const;
 
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
@@ -1597,6 +1606,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // Set when this RenderFrame is being swapped for
   // `provisional_frame_for_local_root_swap_`.
   raw_ptr<RenderFrameImpl> provisional_frame_for_local_root_swap_ = nullptr;
+
+  // Set if this RenderFrameImpl is for a main frame which is not top-level.
+  const bool is_for_nested_main_frame_;
 
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };

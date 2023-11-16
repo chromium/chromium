@@ -16053,6 +16053,14 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
 
 bool RenderFrameHostImpl::ShouldReuseCompositing(
     SiteInstanceImpl& speculative_site_instance) const {
+  // The compositor can't be swapped from a non-top level RenderFrameHost to a
+  // top-level RenderFrameHost (or vice-versa). Since portals breaks this
+  // assumption, disable the compositor use when its enabled.
+  // This feature is being removed. See crbug.com/1498140.
+  if (base::FeatureList::IsEnabled(blink::features::kPortals)) {
+    return false;
+  }
+
   if (!ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     return false;
   }
