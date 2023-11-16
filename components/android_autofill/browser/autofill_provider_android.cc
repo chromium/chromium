@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -341,6 +342,9 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager != manager_.get() || !IsCurrentlyLinkedForm(form)) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
+        manager == manager_.get());
     return;
   }
   bridge_->OnDidFillAutofillFormData();

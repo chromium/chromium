@@ -5422,6 +5422,19 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason"
+    enum="OnDidFillAutofillFormDataEarlyReturnReason"
+    expires_after="2024-01-31">
+  <owner>jihadghanna@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the reason for early return in
+    AutoillProviderAndroid::OnDidFillAutofillFormData. Recorded right before
+    returning early from the function if this happens, and at every function
+    call.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.Provider.PackageName"
     enum="AutofillProviderPackageName" expires_after="2024-05-23">
   <owner>alexmitra@chromium.org</owner>

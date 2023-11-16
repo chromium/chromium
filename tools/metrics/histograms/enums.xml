@@ -49733,6 +49733,12 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Enforced by flag for dev"/>
 </enum>
 
+<enum name="OnDidFillAutofillFormDataEarlyReturnReason">
+  <int value="0" label="Different AndroidAutofillManager was passed"/>
+  <int value="1"
+      label="Form passed is different from the one that initiated the session"/>
+</enum>
+
 <enum name="OneTimePermissionEvent">
   <summary>One-time permission events.</summary>
   <int value="0" label="Granted one time"/>
