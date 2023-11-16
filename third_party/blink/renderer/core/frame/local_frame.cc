@@ -30,13 +30,16 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -3367,7 +3370,11 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
 
         auto params = mojom::blink::DownloadURLParams::New();
         params->is_context_menu_save = true;
-        params->suggested_name = media_element->title();
+        // Suggested name always starts with "videoframe_", plus the timestamp
+        // of the video frame in milliseconds.
+        auto timestamp_ms = base::saturated_cast<uint32_t>(
+            media_element->currentTime() * base::Time::kMillisecondsPerSecond);
+        params->suggested_name = "videoframe_" + String::Number(timestamp_ms);
         params->data_url_blob = DataURLToBlob(data_url);
         GetLocalFrameHostRemote().DownloadURL(std::move(params));
       }
