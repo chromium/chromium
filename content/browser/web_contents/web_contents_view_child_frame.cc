@@ -75,7 +75,7 @@ gfx::NativeView WebContentsViewChildFrame::GetNativeView() const {
     return outer_view->GetNativeView();
   }
 
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::NativeView WebContentsViewChildFrame::GetContentNativeView() const {
@@ -83,7 +83,7 @@ gfx::NativeView WebContentsViewChildFrame::GetContentNativeView() const {
     return outer_view->GetContentNativeView();
   }
 
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::NativeWindow WebContentsViewChildFrame::GetTopLevelNativeWindow() const {
@@ -91,7 +91,7 @@ gfx::NativeWindow WebContentsViewChildFrame::GetTopLevelNativeWindow() const {
     return outer_view->GetTopLevelNativeWindow();
   }
 
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 gfx::Rect WebContentsViewChildFrame::GetContainerBounds() const {
