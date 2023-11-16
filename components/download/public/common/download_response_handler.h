@@ -104,7 +104,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   DownloadUrlParameters::RequestHeadersType request_headers_;
   std::string request_origin_;
   DownloadSource download_source_;
-  net::CertStatus cert_status_;
+  net::CertStatus cert_status_ = 0;
   bool has_strong_validators_;
   absl::optional<url::Origin> request_initiator_;
   ::network::mojom::CredentialsMode credentials_mode_;
