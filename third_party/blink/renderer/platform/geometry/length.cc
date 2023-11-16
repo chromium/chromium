@@ -152,15 +152,7 @@ Length Length::SubtractFromOneHundredPercent() const {
   if (IsPercent())
     return Length::Percent(100 - Value());
   DCHECK(IsSpecified());
-  scoped_refptr<const CalculationValue> result =
-      AsCalculationValue()->SubtractFromOneHundredPercent();
-  if (result->IsExpression() ||
-      (result->Pixels() != 0 && result->Percent() != 0)) {
-    return Length(std::move(result));
-  }
-  if (result->Percent())
-    return Length::Percent(result->Percent());
-  return Length::Fixed(result->Pixels());
+  return Length(AsCalculationValue()->SubtractFromOneHundredPercent());
 }
 
 Length Length::Add(const Length& other) const {
@@ -171,17 +163,7 @@ Length Length::Add(const Length& other) const {
   if (IsPercent() && other.IsPercent()) {
     return Length::Percent(Percent() + other.Percent());
   }
-
-  scoped_refptr<const CalculationValue> result =
-      AsCalculationValue()->Add(*other.AsCalculationValue());
-  if (result->IsExpression() ||
-      (result->Pixels() != 0 && result->Percent() != 0)) {
-    return Length(std::move(result));
-  }
-  if (result->Percent()) {
-    return Length::Percent(result->Percent());
-  }
-  return Length::Fixed(result->Pixels());
+  return Length(AsCalculationValue()->Add(*other.AsCalculationValue()));
 }
 
 Length Length::Zoom(double factor) const {
