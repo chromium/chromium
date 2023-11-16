@@ -133,7 +133,6 @@
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-forward.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
@@ -291,7 +290,6 @@ class SiteInfo;
 class SpeechSynthesisImpl;
 class TimeoutMonitor;
 class WebAuthRequestSecurityChecker;
-class WebBluetoothServiceImpl;
 class WebUIImpl;
 struct PendingNavigation;
 struct ResourceTimingInfo;
@@ -2034,9 +2032,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreatePaymentManager(
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
 
-  void CreateWebBluetoothService(
-      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
-
   void GetWebAuthenticationService(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 
@@ -3155,7 +3150,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class TextInputTestLocalFrame;
   friend class WebContentsSplitCacheBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
-  friend class WebBluetoothServiceImplBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,
@@ -3558,11 +3552,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // will be a nullptr when the url is not the savable URLs or valid.
   void GetSavableResourceLinksCallback(
       blink::mojom::GetSavableResourceLinksReplyPtr reply);
-
-  // Returns a raw pointer to the last Web Bluetooth Service associated with the
-  // frame, or nullptr otherwise. Used for testing purposes only (see
-  // |TestRenderFrameHost|).
-  WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting();
 
   // Allows tests to disable the unload event timer to simulate bugs that
   // happen before it fires (to avoid flakiness).
@@ -5083,10 +5072,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // is useful for tests that need to detect when newly created frames finish
   // loading about:blank.
   base::OnceClosure did_stop_loading_callback_;
-
-  // Used when testing to retrieve that last created Web Bluetooth service.
-  raw_ptr<WebBluetoothServiceImpl> last_web_bluetooth_service_for_testing_ =
-      nullptr;
 
   BackForwardCacheDisablingFeaturesCallback
       back_forward_cache_disabling_features_callback_for_testing_;

@@ -6656,9 +6656,6 @@ void RenderFrameHostImpl::AddDocumentService(
 void RenderFrameHostImpl::RemoveDocumentService(
     internal::DocumentServiceBase* document_service,
     base::PassKey<internal::DocumentServiceBase>) {
-  if (document_service == last_web_bluetooth_service_for_testing_) {
-    last_web_bluetooth_service_for_testing_ = nullptr;
-  }
   base::Erase(document_associated_data_->services(), document_service);
 }
 
@@ -11655,27 +11652,6 @@ void RenderFrameHostImpl::CreatePaymentManager(
   // in back-forward cache.
   OnBackForwardCacheDisablingStickyFeatureUsed(
       BackForwardCacheDisablingFeature::kPaymentManager);
-}
-
-WebBluetoothServiceImpl*
-RenderFrameHostImpl::GetWebBluetoothServiceForTesting() {
-  if (!document_associated_data_ || !last_web_bluetooth_service_for_testing_)
-    return nullptr;
-
-  return last_web_bluetooth_service_for_testing_;
-}
-
-void RenderFrameHostImpl::CreateWebBluetoothService(
-    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
-  BackForwardCache::DisableForRenderFrameHost(
-      this, BackForwardCacheDisable::DisabledReason(
-                BackForwardCacheDisable::DisabledReasonId::kWebBluetooth));
-
-  // Although the returned pointer is being stored for test support, this is not
-  // a test-only function, and the call of WebBluetoothServiceImpl::Create below
-  // is how the WebBluetoothServiceImpl instance gets created.
-  last_web_bluetooth_service_for_testing_ =
-      WebBluetoothServiceImpl::Create(this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateWebUsbService(

@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -589,13 +588,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
       mojom::DidCommitProvisionalLoadInterfaceParams::New(
           std::move(browser_interface_broker_receiver)),
       same_document);
-}
-
-WebBluetoothServiceImpl*
-TestRenderFrameHost::CreateWebBluetoothServiceForTesting(
-    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
-  RenderFrameHostImpl::CreateWebBluetoothService(std::move(receiver));
-  return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

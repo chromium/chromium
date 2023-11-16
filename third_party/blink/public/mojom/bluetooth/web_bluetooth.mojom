@@ -209,8 +209,9 @@ enum WebBluetoothWriteType {
   kWriteWithoutResponse,
 };
 
-// Web Bluetooth Interface that Blink can use to perform
-// Bluetooth GATT Operations on Bluetooth Devices.
+// Web Bluetooth Interface implemented by the browser process and provided to
+// Blink in the renderer for Bluetooth GATT Operations on Bluetooth Devices. An
+// instance of this interface is 1:1 with Document.
 interface WebBluetoothService {
   // Checks if Web Bluetooth is allowed and if a Bluetooth radio is available.
   GetAvailability() => (bool is_available);

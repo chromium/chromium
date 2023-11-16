@@ -88,26 +88,22 @@ class FrameConnectedBluetoothDevicesTest
     subframe->InitializeRenderFrameIfNeeded();
 
     // Simulate two frames each connected to a bluetooth service.
-    service_ptr0_ =
-        contents()->GetPrimaryMainFrame()->CreateWebBluetoothServiceForTesting(
-            service0_.BindNewPipeAndPassReceiver());
+    service_ptr0_ = WebBluetoothServiceImpl::CreateForTesting(
+        contents()->GetPrimaryMainFrame(),
+        service0_.BindNewPipeAndPassReceiver());
     map_ptr0_ = service_ptr0_->connected_devices_.get();
 
-    service_ptr1_ = subframe->CreateWebBluetoothServiceForTesting(
-        service1_.BindNewPipeAndPassReceiver());
+    service_ptr1_ = WebBluetoothServiceImpl::CreateForTesting(
+        subframe, service1_.BindNewPipeAndPassReceiver());
     map_ptr1_ = service_ptr1_->connected_devices_.get();
   }
 
   void TearDown() override {
-    ClearServicesAndMaps();
+    // This normally happens as part of fixture destruction, but the test
+    // fixture has pointers to several `DocumentUserData` that will dangle if
+    // not explicitly torn down here.
+    DeleteContents();
     RenderViewHostImplTestHarness::TearDown();
-  }
-
-  void ClearServicesAndMaps() {
-    map_ptr0_ = nullptr;
-    service_ptr0_ = nullptr;
-    map_ptr1_ = nullptr;
-    service_ptr1_ = nullptr;
   }
 
   std::unique_ptr<NiceMockBluetoothGattConnection> GetConnection(
@@ -117,26 +113,43 @@ class FrameConnectedBluetoothDevicesTest
   }
 
   void ResetService0() {
+    // This is a hack; destruction is normally implicitly triggered by
+    // navigation or destruction of the frame itself, and not explicitly like
+    // this test does.
     map_ptr0_ = nullptr;
-    service_ptr0_.ExtractAsDangling()->ResetAndDeleteThis();
+    WebBluetoothServiceImpl::DeleteForCurrentDocument(
+        &service_ptr0_.ExtractAsDangling()->render_frame_host());
   }
 
   void ResetService1() {
+    // This is a hack; destruction is normally implicitly triggered by
+    // navigation or destruction of the frame itself, and not explicitly like
+    // this test does.
     map_ptr1_ = nullptr;
-    service_ptr1_.ExtractAsDangling()->ResetAndDeleteThis();
+    WebBluetoothServiceImpl::DeleteForCurrentDocument(
+        &service_ptr1_.ExtractAsDangling()->render_frame_host());
+  }
+
+  void DeleteContents() {
+    // WebBluetoothServiceImpls are DocumentUserDatas, so null out these fields
+    // before destroying the WebContents to avoid dangling pointers.
+    service_ptr0_ = nullptr;
+    map_ptr0_ = nullptr;
+    service_ptr1_ = nullptr;
+    map_ptr1_ = nullptr;
+    RenderViewHostTestHarness::DeleteContents();
   }
 
  protected:
-  raw_ptr<WebBluetoothServiceImpl> service_ptr0_ = nullptr;
   raw_ptr<FrameConnectedBluetoothDevices> map_ptr0_ = nullptr;
-
-  raw_ptr<WebBluetoothServiceImpl> service_ptr1_ = nullptr;
   raw_ptr<FrameConnectedBluetoothDevices> map_ptr1_ = nullptr;
 
  private:
   mojo::Remote<blink::mojom::WebBluetoothService> service0_;
+  raw_ptr<WebBluetoothServiceImpl> service_ptr0_ = nullptr;
 
   mojo::Remote<blink::mojom::WebBluetoothService> service1_;
+  raw_ptr<WebBluetoothServiceImpl> service_ptr1_ = nullptr;
 
   scoped_refptr<NiceMockBluetoothAdapter> adapter_;
   NiceMockBluetoothDevice device0_;
@@ -452,9 +465,6 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
   // destroyed.
   map_ptr0_->Insert(kDeviceId0, GetConnection(kDeviceAddress0),
                     CreateServerClient());
-  // |DeleteContents| will destroy the Web Bluetooth services. As such we need
-  // to remove the references beforehand,  otherwise it will become dangling.
-  ClearServicesAndMaps();
 
   DeleteContents();
 }

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -137,6 +138,19 @@ class DocumentUserData : public base::SupportsUserData::Data {
   // (here + transitively/as-far-as-reasonably-possible in callers).
   explicit DocumentUserData(RenderFrameHost* rfh) : render_frame_host_(rfh) {
     CHECK(rfh);
+  }
+
+  // Returns the origin of the associated document.
+  //
+  // Note that a DocumentUserData can be attached to a speculative
+  // RenderFrameHost, but while the RenderFrameHost remains speculative/pending
+  // commit, `origin()` returns a meaningless unique opaque origin. Only after
+  // the commit will the returned value become meaningful.
+  const url::Origin& origin() const {
+    // `this` is promptly deleted if `render_frame_host_` commits a
+    // cross-document navigation, so it is always safe to simply call
+    // `GetLastCommittedOrigin()` directly, even without RenderDocument.
+    return render_frame_host().GetLastCommittedOrigin();
   }
 
  private:
