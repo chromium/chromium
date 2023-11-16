@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_STRATEGY_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
@@ -101,32 +100,6 @@ class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
  private:
   // Indicates whether to show the "NEW" IPH badge.
   const bool show_new_badge_;
-};
-
-// A `PopupRowStrategy` that creates the content for password suggestion rows.
-class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
- public:
-  PopupPasswordSuggestionStrategy(
-      base::WeakPtr<AutofillPopupController> controller,
-      int line_number);
-  PopupPasswordSuggestionStrategy(const PopupPasswordSuggestionStrategy&) =
-      delete;
-  PopupPasswordSuggestionStrategy& operator=(
-      const PopupPasswordSuggestionStrategy&) = delete;
-  ~PopupPasswordSuggestionStrategy() override;
-
-  // PopupRowStrategy:
-  std::unique_ptr<PopupRowContentView> CreateContent() override;
-
- private:
-  // Creates the description label for this suggestion.
-  std::unique_ptr<views::Label> CreateDescriptionLabel() const;
-
-  // Creates the subtext views for this suggestion. Since it registers the
-  // labels inside them for tracking with `content_view`, it assumes that the
-  // returned views are added to `content_view` afterwards.
-  std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-      PopupRowContentView& content_view) const;
 };
 
 }  // namespace autofill

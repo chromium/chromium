@@ -49,6 +49,10 @@ constexpr auto kPopupItemTypesUsingLeadingIcons =
          PopupItemId::kPasswordAccountStorageReSignin,
          PopupItemId::kPasswordAccountStorageOptInAndGenerate});
 
+// Max width for the username and masked password.
+constexpr int kAutofillPopupUsernameMaxWidth = 272;
+constexpr int kAutofillPopupPasswordMaxWidth = 108;
+
 // Returns a wrapper around `closure` that posts it to the default message
 // queue instead of executing it directly. This is to avoid that the callback's
 // caller can suicide by (unwittingly) deleting itself or its parent.
@@ -122,6 +126,56 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
   // Force a refresh to ensure all the labels'styles are correct.
   view->UpdateStyle(/*selected=*/false);
+
+  return view;
+}
+
+std::unique_ptr<views::Label> CreatePasswordDescriptionLabel(
+    const Suggestion& suggestion) {
+  if (suggestion.labels.empty()) {
+    return nullptr;
+  }
+
+  CHECK_EQ(suggestion.labels.size(), 1u);
+  CHECK_EQ(suggestion.labels[0].size(), 1u);
+
+  auto label = std::make_unique<views::Label>(
+      suggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  label->SetElideBehavior(gfx::ELIDE_HEAD);
+  label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
+  return label;
+}
+
+std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
+    const Suggestion& suggestion,
+    PopupRowContentView& content_view) {
+  auto label = std::make_unique<views::Label>(
+      suggestion.additional_label, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  label->SetElideBehavior(gfx::TRUNCATE);
+  label->SetMaximumWidthSingleLine(kAutofillPopupPasswordMaxWidth);
+  content_view.TrackLabel(label.get());
+  std::vector<std::unique_ptr<views::View>> result;
+  result.push_back(std::move(label));
+  return result;
+}
+
+std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
+    const Suggestion& suggestion) {
+  auto view = std::make_unique<PopupRowContentView>();
+
+  // Add the actual views.
+  std::unique_ptr<views::Label> main_text_label =
+      popup_cell_utils::CreateMainTextLabel(
+          suggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
+  main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
+
+  popup_cell_utils::AddSuggestionContentToView(
+      suggestion, std::move(main_text_label),
+      popup_cell_utils::CreateMinorTextLabel(suggestion.minor_text),
+      CreatePasswordDescriptionLabel(suggestion),
+      CreateAndTrackPasswordSubtextViews(suggestion, *view), *view);
 
   return view;
 }
@@ -229,9 +283,9 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
-      strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
-                                                                   line_number);
-      break;
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreatePasswordPopupRowContentView(suggestion));
     case PopupItemId::kCompose: {
       auto tracker = std::make_unique<ScopedNewBadgeTracker>(
           controller->GetWebContents()->GetBrowserContext());

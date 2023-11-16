@@ -33,15 +33,6 @@
 
 namespace autofill {
 
-namespace {
-
-// Max width for the username and masked password.
-constexpr int kAutofillPopupUsernameMaxWidth = 272;
-constexpr int kAutofillPopupPasswordMaxWidth = 108;
-
-
-}  // namespace
-
 /**************************** PopupRowBaseStrategy ****************************/
 
 PopupRowBaseStrategy::PopupRowBaseStrategy(
@@ -129,72 +120,6 @@ PopupComposeSuggestionStrategy::CreateContent() {
       *view);
 
   return view;
-}
-
-/************************ PopupPasswordSuggestionStrategy *******************/
-
-PopupPasswordSuggestionStrategy::PopupPasswordSuggestionStrategy(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number)
-    : PopupRowBaseStrategy(std::move(controller), line_number) {}
-
-PopupPasswordSuggestionStrategy::~PopupPasswordSuggestionStrategy() = default;
-
-std::unique_ptr<PopupRowContentView>
-PopupPasswordSuggestionStrategy::CreateContent() {
-  if (!GetController()) {
-    return nullptr;
-  }
-
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupRowContentView>();
-
-  // Add the actual views.
-  std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
-  main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
-
-  popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),
-      CreateDescriptionLabel(), CreateAndTrackSubtextViews(*view), *view);
-
-  return view;
-}
-
-std::unique_ptr<views::Label>
-PopupPasswordSuggestionStrategy::CreateDescriptionLabel() const {
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  if (kSuggestion.labels.empty()) {
-    return nullptr;
-  }
-
-  DCHECK_EQ(kSuggestion.labels.size(), 1u);
-  DCHECK_EQ(kSuggestion.labels[0].size(), 1u);
-
-  auto label = std::make_unique<views::Label>(
-      kSuggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  label->SetElideBehavior(gfx::ELIDE_HEAD);
-  label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
-  return label;
-}
-
-std::vector<std::unique_ptr<views::View>>
-PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
-    PopupRowContentView& content_view) const {
-  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      GetController()->GetSuggestionAt(GetLineNumber()).additional_label,
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
-  label->SetElideBehavior(gfx::TRUNCATE);
-  label->SetMaximumWidthSingleLine(kAutofillPopupPasswordMaxWidth);
-  content_view.TrackLabel(label.get());
-  std::vector<std::unique_ptr<views::View>> result;
-  result.push_back(std::move(label));
-  return result;
 }
 
 }  // namespace autofill
