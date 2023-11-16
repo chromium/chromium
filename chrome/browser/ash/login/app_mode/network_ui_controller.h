@@ -100,7 +100,6 @@ class NetworkUiController
  private:
   void OnNetworkStateChanged(bool online);
   void MaybeShowNetworkConfigureUI();
-  void MaybeShowNetworkConfigureUIForConsumerKiosk();
   void ShowNetworkConfigureUI();
   void CloseNetworkConfigureUI();
 

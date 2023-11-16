@@ -1061,10 +1061,6 @@ bool LoginDisplayHostWebUI::HasUserPods() {
   return false;
 }
 
-void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
-  NOTREACHED();
-}
-
 void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
   NOTREACHED();
 }

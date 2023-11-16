@@ -98,7 +98,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
-  void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
                                        bool show_password_error) override;
   void StartCryptohomeRecovery(
@@ -186,10 +185,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // consume auth status events.
   void CreateExistingUserController();
 
-  // Consumer kiosk owner authentication functions.
-  void CheckOwnerCredentials(const UserContext& user_context);
-  void OnOwnerSigninSuccess();
-
   // Result callback for local authentication dialog.
   void OnLocalAuthenticationCompleted(
       bool success,
@@ -255,11 +250,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Set if Gaia dialog is shown with prefilled email.
   absl::optional<AccountId> gaia_reauth_account_id_;
-
-  // Consumer kiosk owner fields.
-  AccountId owner_account_id_;
-  base::OnceClosure owner_verified_callback_;
-  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};

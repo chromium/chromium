@@ -305,17 +305,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, PRE_LaunchAppNetworkDown) {
-  // Tests the network down case for the initial app download and launch.
-  RunAppLaunchNetworkDownTest();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkDown) {
-  // Tests the network down case for launching an existing app that is
-  // installed in PRE_LaunchAppNetworkDown.
-  RunAppLaunchNetworkDownTest();
-}
-
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
   auto auto_reset =

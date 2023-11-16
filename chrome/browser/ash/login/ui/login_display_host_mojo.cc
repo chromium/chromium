@@ -148,34 +148,6 @@ bool IsLazyWebUILoadingEnabled() {
   return true;
 }
 
-void ShowOwnerPod(const AccountId& owner) {
-  const user_manager::User* device_owner =
-      user_manager::UserManager::Get()->FindUser(owner);
-  CHECK(device_owner);
-
-  std::vector<LoginUserInfo> user_info_list;
-  LoginUserInfo user_info;
-  user_info.basic_user_info.type = device_owner->GetType();
-  user_info.basic_user_info.account_id = device_owner->GetAccountId();
-  user_info.basic_user_info.display_name =
-      base::UTF16ToUTF8(device_owner->GetDisplayName());
-  user_info.basic_user_info.display_email = device_owner->display_email();
-  user_info.basic_user_info.avatar = BuildAshUserAvatarForUser(*device_owner);
-  user_info.auth_type = proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
-  user_info.is_signed_in = device_owner->is_logged_in();
-  user_info.is_device_owner = true;
-  user_info.can_remove = false;
-  user_info_list.push_back(user_info);
-
-  LoginScreen::Get()->GetModel()->SetUserList(user_info_list);
-  LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  LoginScreen::Get()->EnableAddUserButton(false);
-
-  // Disable PIN.
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(owner,
-                                                       /*enabled=*/false);
-}
-
 void UpdatePinAuthAvailability(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
@@ -677,20 +649,6 @@ bool LoginDisplayHostMojo::HasUserPods() {
   return has_user_pods_;
 }
 
-void LoginDisplayHostMojo::VerifyOwnerForKiosk(base::OnceClosure on_success) {
-  // This UI is specific fo the consumer kiosk. We hide all the pods except for
-  // the owner. User can't go back to the normal user screen from this. App
-  // launch cancellation results in the Chrome restart (see
-  // KioskLaunchController::OnCancelAppLaunch).
-  CHECK(GetKioskLaunchController());
-  DCHECK(!owner_verified_callback_);
-  owner_verified_callback_ = std::move(on_success);
-  owner_account_id_ = user_manager::UserManager::Get()->GetOwnerAccountId();
-  CHECK(owner_account_id_.is_valid());
-  ShowOwnerPod(owner_account_id_);
-  HideOobeDialog();
-}
-
 void LoginDisplayHostMojo::AddObserver(LoginDisplayHost::Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -775,11 +733,6 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     LOG(FATAL) << "Incorrect Active Directory user type "
                << user_context.GetUserType();
     user_context.SetIsUsingOAuth(false);
-  }
-
-  if (owner_verified_callback_) {
-    CheckOwnerCredentials(user_context);
-    return;
   }
 
   existing_user_controller_->Login(user_context, SigninSpecifics());
@@ -1030,28 +983,6 @@ void LoginDisplayHostMojo::CreateExistingUserController() {
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);
-}
-
-void LoginDisplayHostMojo::CheckOwnerCredentials(
-    const UserContext& user_context) {
-  CHECK_EQ(owner_account_id_, user_context.GetAccountId());
-  if (!extended_authenticator_) {
-    extended_authenticator_ = ExtendedAuthenticator::Create(this);
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ExtendedAuthenticator::AuthenticateToCheck,
-                     extended_authenticator_.get(), user_context,
-                     base::BindOnce(&LoginDisplayHostMojo::OnOwnerSigninSuccess,
-                                    base::Unretained(this))));
-}
-
-void LoginDisplayHostMojo::OnOwnerSigninSuccess() {
-  DCHECK(owner_verified_callback_);
-  std::move(owner_verified_callback_).Run();
-  extended_authenticator_.reset();
-  ShowFullScreen();
 }
 
 void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(

@@ -118,8 +118,6 @@ class KioskBaseTest : public OobeBaseTest {
 
   void WaitForAppLaunchSuccess();
 
-  void RunAppLaunchNetworkDownTest();
-
   void SimulateNetworkOnline();
 
   void SimulateNetworkOffline();

@@ -62,10 +62,6 @@ void ConsumerKioskAutoLaunchStatusCheck(
   std::move(runner_quit_task).Run();
 }
 
-void WaitForNetworkConfigureLink() {
-  test::OobeJS().CreateVisibilityWaiter(true, kConfigNetwork)->Wait();
-}
-
 }  // namespace
 
 const char kTestEnterpriseKioskAppId[] = "gcpjojfkologpegommokeppihdbcnahn";
@@ -320,36 +316,6 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
 void KioskBaseTest::WaitForAppLaunchSuccess() {
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/true);
-}
-
-void KioskBaseTest::RunAppLaunchNetworkDownTest() {
-  auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
-
-  // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  splash_waiter.Wait();
-
-  WaitForNetworkConfigureLink();
-
-  // Configure network should bring up lock screen for owner.
-  GetKioskLaunchController()
-      ->GetNetworkUiControllerForTesting()
-      ->OnConfigureNetwork();
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  // There should be only one owner pod on this screen.
-  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
-
-  // A network error screen should be shown after authenticating.
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  LoginScreenTestApi::SubmitPassword(test_owner_account_id_, "password",
-                                     /*check_if_submittable=*/true);
-  error_screen_waiter.Wait();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-
-  SimulateNetworkOnline();
-  WaitForAppLaunchSuccess();
 }
 
 void KioskBaseTest::SimulateNetworkOnline() {
