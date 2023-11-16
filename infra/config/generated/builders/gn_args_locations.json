@@ -41,6 +41,18 @@
     "android-pie-x86-rel": "ci/android-pie-x86-rel/gn-args.json",
     "android-x86-rel": "ci/android-x86-rel/gn-args.json"
   },
+  "chromium.build": {
+    "android-build-perf-developer": "build/android-build-perf-developer/gn-args.json",
+    "build-perf-android": "build/build-perf-android/gn-args.json",
+    "build-perf-android-siso": "build/build-perf-android-siso/gn-args.json",
+    "build-perf-linux": "build/build-perf-linux/gn-args.json",
+    "build-perf-linux-siso": "build/build-perf-linux-siso/gn-args.json",
+    "linux-build-perf-developer": "build/linux-build-perf-developer/gn-args.json",
+    "mac-build-perf": "build/mac-build-perf/gn-args.json",
+    "mac-build-perf-developer": "build/mac-build-perf-developer/gn-args.json",
+    "mac-build-perf-siso": "build/mac-build-perf-siso/gn-args.json",
+    "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json"
+  },
   "chromium.chromiumos": {
     "chromeos-amd64-generic-asan-rel": "ci/chromeos-amd64-generic-asan-rel/gn-args.json",
     "chromeos-amd64-generic-cfi-thin-lto-rel": "ci/chromeos-amd64-generic-cfi-thin-lto-rel/gn-args.json",

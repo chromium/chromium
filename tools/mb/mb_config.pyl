@@ -129,51 +129,15 @@
 
     # TODO: b/278144885 - Rename build perf builders.
     'chromium.build': {
-      'android-build-perf-developer': {
-        'builtin': 'android_developer_siso',
-        'reproxy': 'android_developer_reclient',
-      },
-      # Keep in sync with android-arm64-rel
-      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      'build-perf-android-siso': {
-        'builtin': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
-        'reproxy': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      },
-      # Keep in sync with linux-rel
-      'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'build-perf-linux-siso': {
-        'builtin': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
-        'reproxy': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      },
       # Keep in sync with win-rel
-      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'build-perf-windows-siso': {
         'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
         'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       },
-      'linux-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
-      },
       # Keep in sync with linux-chromeos-rel
-      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-build-perf-siso': {
         'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
         'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      },
-      # Keep in sync with mac-rel
-      'mac-build-perf': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
-      'mac-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
-      },
-      'mac-build-perf-siso': {
-        'builtin': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso',
-        'reproxy': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
-      },
-      'win-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
       },
     },
 
@@ -1253,15 +1217,6 @@
       'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info', 'use_dummy_lastchange',
     ],
 
-    # GN args to simulate Android developer builds.
-    'android_developer_reclient': [
-      'android_developer', 'reclient',
-    ],
-
-    'android_developer_siso': [
-      'android_developer', 'siso',
-    ],
-
     'android_official_optimize_reclient': [
       'official_optimize_reclient', 'android_without_codecs', 'full_symbols',
     ],
@@ -1317,21 +1272,6 @@
       'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
       'webview_shell',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag'
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'no_reclient', 'siso',
-      'enable_dangling_raw_ptr_feature_flag'
     ],
 
     'android_release_trybot_reclient': [
@@ -1907,14 +1847,6 @@
       'debug_bot_reclient', 'enable_all_rust_features', 'x64',
     ],
 
-    'developer_reclient': [
-      'developer', 'reclient',
-    ],
-
-    'developer_siso': [
-      'developer', 'siso',
-    ],
-
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
       'use_clang_coverage',
@@ -2105,41 +2037,11 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x64',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag',
-      'enable_backup_ref_ptr_feature_flag', 'x64',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag',
-      'enable_backup_ref_ptr_feature_flag', 'x64',
-      'no_reclient', 'siso',
-    ],
-
     # Keep in sync with
     # gpu_tests_release_trybot_no_symbols_use_dummy_lastchange.
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
-      'enable_dangling_raw_ptr_feature_flag',
-      "enable_backup_ref_ptr_feature_flag",
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
-      'enable_dangling_raw_ptr_feature_flag',
-      "enable_backup_ref_ptr_feature_flag",
-      "no_goma", "no_reclient", "siso",
     ],
 
     'gpu_tests_release_trybot_ptr_comp_reclient': [
@@ -2989,12 +2891,6 @@
       'mixins': ['android_without_codecs', 'chrome_with_codecs'],
     },
 
-    # Representative GN args for Android developer builds.
-    'android_developer': {
-      'gn_args': 'target_os="android"',
-      'mixins': ['arm64', 'developer'],
-    },
-
     'android_external': {
       'gn_args': 'enable_chrome_android_internal=false',
     },
@@ -3292,10 +3188,6 @@
     },
 
     # Representative GN args for developer builds.
-    'developer': {
-      'mixins': ['debug', 'full_symbols', 'disable_nacl', 'shared'],
-    },
-
     'devtools_do_typecheck': {
       'gn_args': 'devtools_skip_typecheck=false',
     },
@@ -3373,10 +3265,6 @@
 
     'eve-arc-r': {
       'args_file': '//build/args/chromeos/eve-arc-r.gni',
-    },
-
-    'fail_on_android_expectations': {
-      'gn_args': 'fail_on_android_expectations=true',
     },
 
     'fail_on_san_warnings': {

@@ -74,6 +74,16 @@ gn_args.config(
     },
 )
 
+# Representative GN args for Android developer builds.
+gn_args.config(
+    "android_developer",
+    configs = [
+        "android",
+        "arm64",
+        "developer",
+    ],
+)
+
 # It's significantly faster to build without static analysis checks.
 gn_args.config(
     "android_fastbuild",
@@ -376,6 +386,16 @@ gn_args.config(
 )
 
 gn_args.config(
+    "developer",
+    configs = [
+        "debug",
+        "full_symbols",
+        "disable_nacl",
+        "shared",
+    ],
+)
+
+gn_args.config(
     "devtools_do_typecheck",
     args = {
         "devtools_skip_typecheck": False,
@@ -634,6 +654,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "no_reclient",
+    args = {
+        "use_remoteexec": False,
+    },
+)
+
+gn_args.config(
     "no_remoting",
     args = {
         "enable_remoting": False,
@@ -806,6 +833,14 @@ gn_args.config(
     "static",
     args = {
         "is_component_build": False,
+    },
+)
+
+gn_args.config(
+    "siso",
+    args = {
+        # TODO: b/311110622 - Switch to use_siso=true.
+        "enable_precompiled_headers": False,
     },
 )
 

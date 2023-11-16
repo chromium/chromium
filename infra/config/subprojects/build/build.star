@@ -9,6 +9,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
 
 luci.bucket(
@@ -112,6 +113,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "android",
         short_name = "ninja",
     ),
+    gn_args = "try/android-arm64-rel",
 )
 
 cq_build_perf_builder(
@@ -147,6 +149,10 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "android",
         short_name = "siso",
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/android-arm64-rel", "no_reclient", "siso"]),
+        "reproxy": "try/android-arm64-rel",
+    },
 )
 
 cq_build_perf_builder(
@@ -172,6 +178,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "linux",
         short_name = "ninja",
     ),
+    gn_args = "try/linux-rel",
 )
 
 cq_build_perf_builder(
@@ -200,6 +207,17 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "linux",
         short_name = "siso",
     ),
+    gn_args = {
+        "builtin": gn_args.config(
+            # TODO: Remove after migrating to Starlark.
+            # This is a workaround to pass gn-args-verifier.
+            args = {
+                "use_goma": False,
+            },
+            configs = ["try/linux-rel", "no_reclient", "siso"],
+        ),
+        "reproxy": "try/linux-rel",
+    },
 )
 
 cq_build_perf_builder(
@@ -339,6 +357,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "mac",
         short_name = "ninja",
     ),
+    gn_args = "try/mac-rel",
 )
 
 cq_build_perf_builder(
@@ -371,6 +390,12 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "mac",
         short_name = "siso",
     ),
+    gn_args = {
+        "builtin": gn_args.config(
+            configs = ["try/mac-rel", "no_reclient", "siso"],
+        ),
+        "reproxy": "try/mac-rel",
+    },
 )
 
 def developer_build_perf_builder(description_html, **kwargs):
@@ -415,6 +440,10 @@ This builder measures build performance for Android developer builds, by simulat
         category = "android",
         short_name = "dev",
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["android_developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["android_developer", "reclient"]),
+    },
     reclient_jobs = 5120,
 )
 
@@ -442,6 +471,10 @@ This builder measures build performance for Linux developer builds, by simulatin
         category = "linux",
         short_name = "dev",
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     reclient_jobs = 5120,
 )
 
@@ -469,6 +502,10 @@ This builder measures build performance for Windows developer builds, by simulat
         category = "windows",
         short_name = "dev",
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     reclient_jobs = 1000,
 )
 
@@ -497,5 +534,9 @@ This builder measures build performance for Mac developer builds, by simulating 
         category = "mac",
         short_name = "dev",
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     reclient_jobs = 800,
 )
