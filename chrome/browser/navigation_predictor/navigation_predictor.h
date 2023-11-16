@@ -154,7 +154,10 @@ class NavigationPredictor
       tracked_anchor_id_to_index_;
 
   // URLs that were sent to the prediction service.
-  std::set<GURL> predicted_urls_;
+  // We store hashes of URLs, rather than URLs themselves, to save memory.
+  // TODO(mcnee): Would it be better to use a bloom filter to have a limit on
+  // the memory usage needed for this?
+  std::set<size_t> predicted_urls_;
 
   // UKM ID for navigation
   ukm::SourceId ukm_source_id_;

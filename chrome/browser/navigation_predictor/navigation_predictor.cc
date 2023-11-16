@@ -226,10 +226,12 @@ void NavigationPredictor::ReportNewAnchorElements(
     replacements.ClearRef();
     document_url = element->source_url.ReplaceComponents(replacements);
     GURL target_url = element->target_url.ReplaceComponents(replacements);
-    if (target_url != document_url &&
-        predicted_urls_.find(target_url) == predicted_urls_.end()) {
-      predicted_urls_.insert(target_url);
-      new_predictions.push_back(target_url);
+    if (target_url != document_url) {
+      auto [it, inserted] =
+          predicted_urls_.insert(base::FastHash(target_url.spec()));
+      if (inserted) {
+        new_predictions.push_back(std::move(target_url));
+      }
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
