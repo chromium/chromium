@@ -3983,59 +3983,20 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
   // Not adding a keyboard simulates a failure in getting top row layout, which
   // will fallback to Layout1 in which case keys are rewritten to their default
   // values.
-  KeyTestCase invalid_layout_tests[] = {
-      // F2 -> Forward
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD, ui::EF_NONE,
-        ui::DomKey::BROWSER_FORWARD}},
-      // F3 -> Refresh
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      // F4 -> Zoom (aka Fullscreen)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      // F7 -> Brightness up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP}},
-  };
-
-  for (const auto& test : invalid_layout_tests)
-    CheckKeyTestCase(source(), test);
+  EXPECT_EQ(BrowserForwardPressed(), RunRewriter(F2Pressed()));
+  EXPECT_EQ(BrowserRefreshPressed(), RunRewriter(F3Pressed()));
+  EXPECT_EQ(ZoomTogglePressed(), RunRewriter(F4Pressed()));
+  EXPECT_EQ(BrightnessUpPressed(), RunRewriter(F7Pressed()));
 
   // Adding a keyboard with a valid layout will take effect.
-  const std::vector<KeyTestCase> layout2_tests({
-      // F2 -> Refresh
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      // F3 -> Zoom (aka Fullscreen)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      // F4 -> Launch App 1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK, ui::EF_NONE,
-        ui::DomKey::LAUNCH_MY_COMPUTER}},
-      // F7 -> Media Play/Pause
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-       {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE, ui::EF_NONE,
-        ui::DomKey::MEDIA_PLAY_PAUSE}},
-  });
-
-  TestKeyboard("Internal Keyboard", kKbdTopRowLayout2Tag,
-               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false,
-               layout2_tests);
+  SetUpKeyboard({.name = "Internal Keyboard",
+                 .layout = kKbdTopRowLayout2Tag,
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = false});
+  EXPECT_EQ(BrowserRefreshPressed(), RunRewriter(F2Pressed()));
+  EXPECT_EQ(ZoomTogglePressed(), RunRewriter(F3Pressed()));
+  EXPECT_EQ(SelectTaskPressed(), RunRewriter(F4Pressed()));
+  EXPECT_EQ(MediaPlayPausePressed(), RunRewriter(F7Pressed()));
 }
 
 // Tests that event rewrites still work even if modifiers are remapped.
@@ -4049,19 +4010,16 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysWithControlRemapped) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kMeta);
 
-  TestChromeKeyboardVariants({
-      // Ctrl+Right -> End
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::ARROW_RIGHT},
-       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Shift+Ctrl+Right -> Shift+End
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_RIGHT},
-       {ui::VKEY_END, ui::DomCode::END, ui::EF_SHIFT_DOWN, ui::DomKey::END}},
-  });
+    EXPECT_EQ(EndPressed(),
+              RunRewriter(ArrowRightPressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(EndPressed(ui::EF_SHIFT_DOWN),
+              RunRewriter(
+                  ArrowRightPressed(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
@@ -4128,31 +4086,13 @@ TEST_F(EventRewriterTest, TopRowKeysAreFunctionKeys) {
   send_function_keys_pref.Init(prefs::kSendFunctionKeys, prefs());
   send_function_keys_pref.SetValue(true);
   keyboard_settings->top_row_are_fkeys = true;
-  ui::EventDispatchDetails details = source().Send(&press_f1);
-  ASSERT_FALSE(details.dispatcher_destroyed);
-  {
-    auto events = TakeEvents();
-    ASSERT_EQ(1u, events.size());
-    EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_F1,
-                                        ui::DomCode::F1, ui::EF_NONE,
-                                        ui::DomKey::F1, kNoScanCode),
-              GetKeyEventAsString(*events[0]->AsKeyEvent()));
-  }
+  EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed()));
+
   // If the pref isn't set when an event is sent to a regular window, F1 is
   // rewritten to the back key.
   send_function_keys_pref.SetValue(false);
   keyboard_settings->top_row_are_fkeys = false;
-  details = source().Send(&press_f1);
-  ASSERT_FALSE(details.dispatcher_destroyed);
-  {
-    auto events = TakeEvents();
-    ASSERT_EQ(1u, events.size());
-    EXPECT_EQ(
-        GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
-                                  ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-                                  ui::DomKey::BROWSER_BACK, kNoScanCode),
-        GetKeyEventAsString(*events[0]->AsKeyEvent()));
-  }
+  EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed()));
 }
 
 // Parameterized version of test with the same name that accepts the
