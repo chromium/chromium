@@ -1,0 +1,162 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="IppVersion">
+  <int value="0" label="Error">Failed to parse version</int>
+  <int value="1" label="Unknown">Version value not recognized</int>
+  <int value="2" label="IPP 1.0">IPP 1.0</int>
+  <int value="3" label="IPP 1.1">IPP 1.1</int>
+  <int value="4" label="IPP 2.0">IPP 2.0</int>
+  <int value="5" label="IPP 2.1">IPP 2.1</int>
+  <int value="6" label="IPP 2.2">IPP 2.2</int>
+</enum>
+
+<enum name="PrinterEditDialogActions">
+  <int value="0" label="Dialog opened"/>
+  <int value="1" label="View PPD clicked"/>
+</enum>
+
+<enum name="PrinterProtocol">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Universal Serial Bus (usb)"/>
+  <int value="2" label="Internet Print Protocol (ipp)"/>
+  <int value="3" label="Internet Print Protocol Secure (ipps)"/>
+  <int value="4" label="HyperText Transfer Protocol (http)"/>
+  <int value="5" label="HyperText Transfer Protocol Secure (https)"/>
+  <int value="6" label="App Socket (socket)"/>
+  <int value="7" label="Line Print Daemon (lpd)"/>
+  <int value="8" label="IPP-over-USB (ippusb)"/>
+</enum>
+
+<enum name="PrinterSettingsUserAction">
+  <int value="0" label="Add printer manually"/>
+  <int value="1" label="Save printer"/>
+  <int value="2" label="Edit printer"/>
+  <int value="3" label="Remove printer"/>
+  <int value="4" label="Click help link"/>
+</enum>
+
+<enum name="PrinterSetupResult">
+  <int value="0" label="Fatal Error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Printer Unreachable"/>
+  <int value="3" label="Could not contact debugd over dbus"/>
+  <int value="4" label="Can't configure native printers due to policy"/>
+  <int value="5" label="Invalid values are used to update printer"/>
+  <int value="6" label="Could not install component"/>
+  <int value="7" label="Edit success"/>
+  <int value="8" label="Printer sent unexpected response"/>
+  <int value="9" label="Printer requires PPD"/>
+  <int value="10" label="PPD exceeds size limit"/>
+  <int value="11" label="PPD Rejected by cupstestppd"/>
+  <int value="12" label="Could not find PPD"/>
+  <int value="13" label="Failed to download PPD"/>
+  <int value="14" label="I/O error in CUPS"/>
+  <int value="15" label="Memory allocation error in Cups"/>
+  <int value="16" label="Printer's URI is incorrect"/>
+  <int value="17" label="Manual setup required"/>
+  <int value="64" label="No reply from debugd over D-Bus"/>
+  <int value="65" label="Generic D-Bus timeout"/>
+  <int value="66" label="Printer removed during setup"/>
+</enum>
+
+<enum name="PrinterStatusQueryResult">
+  <int value="0" label="UNKNOWN_FAILURE">All other query failures.</int>
+  <int value="1" label="SUCCESS">Printer returned a valid printer status.</int>
+  <int value="2" label="UNREACHABLE">
+    Device could not connect to the printer.
+  </int>
+  <int value="3" label="HOSTNAME_RESOLUTION">
+    Unable to resolve IP address from printer hostname.
+  </int>
+</enum>
+
+<enum name="PrinterStatusReasons">
+  <int value="0" label="UNKNOWN_REASON"/>
+  <int value="1" label="NONE"/>
+  <int value="2" label="MEDIA_NEEDED"/>
+  <int value="3" label="MEDIA_JAM"/>
+  <int value="4" label="MOVING_TO_PAUSED"/>
+  <int value="5" label="PAUSED"/>
+  <int value="6" label="SHUTDOWN"/>
+  <int value="7" label="CONNECTING_TO_DEVICE"/>
+  <int value="8" label="TIMED_OUT"/>
+  <int value="9" label="STOPPING"/>
+  <int value="10" label="STOPPED_PARTLY"/>
+  <int value="11" label="TONER_LOW"/>
+  <int value="12" label="TONER_EMPTY"/>
+  <int value="13" label="SPOOL_AREA_FULL"/>
+  <int value="14" label="COVER_OPEN"/>
+  <int value="15" label="INTERLOCK_OPEN"/>
+  <int value="16" label="DOOR_OPEN"/>
+  <int value="17" label="INPUT_TRAY_MISSING"/>
+  <int value="18" label="MEDIA_LOW"/>
+  <int value="19" label="MEDIA_EMPTY"/>
+  <int value="20" label="OUTPUT_TRAY_MISSING"/>
+  <int value="21" label="OUTPUT_AREA_ALMOST_FULL"/>
+  <int value="22" label="OUTPUT_AREA_FULL"/>
+  <int value="23" label="MARKER_SUPPLY_LOW"/>
+  <int value="24" label="MARKER_SUPPLY_EMPTY"/>
+  <int value="25" label="MARKER_WASTE_ALMOST_FULL"/>
+  <int value="26" label="MARKER_WASTE_FULL"/>
+  <int value="27" label="FUSER_OVER_TEMP"/>
+  <int value="28" label="FUSER_UNDER_TEMP"/>
+  <int value="29" label="OPC_NEAR_EOL"/>
+  <int value="30" label="OPC_LIFE_OVER"/>
+  <int value="31" label="DEVELOPER_LOW"/>
+  <int value="32" label="DEVELOPER_EMPTY"/>
+  <int value="33" label="INTERPRETER_RESOURCE_UNAVAILABLE"/>
+  <int value="34" label="CUPS_PKI_EXPIRED"/>
+</enum>
+
+<enum name="PrintJobResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Successful Finish"/>
+  <int value="2" label="Cancelled due to timeout"/>
+  <int value="3" label="Cancelled by printer"/>
+  <int value="4" label="Lost track of job"/>
+  <int value="5" label="Filter failed"/>
+  <int value="6" label="Cancelled due to client unauthorized"/>
+</enum>
+
+<enum name="PrintOopResult">
+  <int value="0" label="Successful"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Access Denied"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<enum name="UsbPrinterSetupSource">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Print Preview"/>
+  <int value="2" label="Automatic"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

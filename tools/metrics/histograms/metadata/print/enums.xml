@@ -1,0 +1,120 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="PrintAttemptOutcome">
+  <int value="0" label="Cancelled print button disabled"/>
+  <int value="1" label="Cancelled no printers available"/>
+  <int value="2" label="Cancelled other printers available"/>
+  <int value="3" label="Cancelled selected printer error status"/>
+  <int value="4" label="Cancelled selected printer good status"/>
+  <int value="5" label="Cancelled selected printer unknown status"/>
+  <int value="6" label="PDF print attempted"/>
+  <int value="7" label="Print job success with initially selected printer"/>
+  <int value="8" label="Print job success with manually selected printer"/>
+  <int value="9" label="Print job fail with initially selected printer"/>
+  <int value="10" label="Print job fail with manually selected printer"/>
+</enum>
+
+<enum name="PrintPreviewLaunchSourceType">
+  <int value="0" label="Preview area shows connection error manage button"/>
+  <int value="1" label="Destination dialog no printers manage button"/>
+  <int value="2" label="Destination dialog has printers manage button"/>
+</enum>
+
+<enum name="PrintPreviewPrintDocumentTypeBuckets">
+  <int value="0" label="HTML_DOCUMENT"/>
+  <int value="1" label="PDF_DOCUMENT"/>
+</enum>
+
+<enum name="PrintPreviewPrintSettingsUiBuckets">
+  <int value="0" label="ADVANCED_SETTINGS_DIALOG_SHOWN"/>
+  <int value="1" label="ADVANCED_SETTINGS_DIALOG_CANCELED"/>
+  <int value="2" label="MORE_SETTINGS_CLICKED"/>
+  <int value="3" label="LESS_SETTINGS_CLICKED"/>
+  <int value="4" label="PRINT_WITH_SETTINGS_EXPANDED"/>
+  <int value="5" label="PRINT_WITH_SETTINGS_COLLAPSED"/>
+</enum>
+
+<enum name="PrintPreviewStateError">
+  <int value="0" label="None"/>
+  <int value="1" label="Invalid Ticket"/>
+  <int value="2" label="Invalid Printer"/>
+  <int value="3" label="No Destinations"/>
+  <int value="4" label="Preview Failed"/>
+  <int value="5" label="Print Failed"/>
+</enum>
+
+<enum name="PrintPreviewUserActionType">
+  <int value="0" label="PRINT_TO_PRINTER"/>
+  <int value="1" label="PRINT_TO_PDF"/>
+  <int value="2" label="CANCEL"/>
+  <int value="3" label="FALLBACK_TO_ADVANCED_SETTINGS_DIALOG"/>
+  <int value="4" label="PREVIEW_FAILED"/>
+  <int value="5" label="PREVIEW_STARTED"/>
+  <int value="6" label="INITIATOR_TAB_CRASHED_UNUSED"/>
+  <int value="7" label="INITIATOR_TAB_CLOSED"/>
+  <int value="8" label="PRINT_WITH_CLOUD_PRINT"/>
+  <int value="9" label="PRINT_WITH_PRIVET_UNUSED"/>
+  <int value="10" label="PRINT_WITH_EXTENSION"/>
+  <int value="11" label="OPEN_IN_MAC_PREVIEW"/>
+  <int value="12" label="PRINT_TO_GOOGLE_DRIVE"/>
+  <int value="13" label="PRINT_TO_GOOGLE_DRIVE_CROS"/>
+</enum>
+
+<enum name="PrintSettings">
+  <int value="0" label="LANDSCAPE"/>
+  <int value="1" label="PORTRAIT"/>
+  <int value="2" label="COLOR"/>
+  <int value="3" label="BLACK_AND_WHITE"/>
+  <int value="4" label="COLLATE"/>
+  <int value="5" label="SIMPLEX"/>
+  <int value="6" label="DUPLEX"/>
+  <int value="7" label="TOTAL"/>
+  <int value="8" label="HEADERS_AND_FOOTERS"/>
+  <int value="9" label="CSS_BACKGROUND"/>
+  <int value="10" label="SELECTION_ONLY"/>
+  <int value="11" label="EXTERNAL_PDF_PREVIEW_UNUSED"/>
+  <int value="12" label="PAGE_RANGE"/>
+  <int value="13" label="DEFAULT_MEDIA"/>
+  <int value="14" label="NON_DEFAULT_MEDIA"/>
+  <int value="15" label="COPIES"/>
+  <int value="16" label="NON_DEFAULT_MARGINS"/>
+  <int value="17" label="DISTILL_PAGE_UNUSED"/>
+  <int value="18" label="SCALING"/>
+  <int value="19" label="PRINT_AS_IMAGE"/>
+  <int value="20" label="PAGES_PER_SHEET"/>
+  <int value="21" label="FIT_TO_PAGE"/>
+  <int value="22" label="DEFAULT_DPI"/>
+  <int value="23" label="NON_DEFAULT_DPI"/>
+  <int value="24" label="PIN"/>
+  <int value="25" label="FIT_TO_PAPER"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
