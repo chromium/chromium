@@ -55,8 +55,7 @@ export class ForcedActionPath {
     this.onFinishedCallback_ = onFinishedCallback;
 
     for (let i = 0; i < actionInfos.length; ++i) {
-      this.actions_.push(
-          ForcedActionPath.Action.fromActionInfo(actionInfos[i]));
+      this.actions_.push(ForcedActionPath.createAction(actionInfos[i]));
     }
     if (this.actions_[0].beforeActionCallback) {
       this.actions_[0].beforeActionCallback();
@@ -90,6 +89,73 @@ export class ForcedActionPath {
   /** Destroys the forced action path. */
   static destroy() {
     ForcedActionPath.instance = null;
+  }
+
+  /**
+   * Constructs a new Action given an ActionInfo object.
+   * @param {!ForcedActionPath.ActionInfo} info
+   * @return {!ForcedActionPath.Action}
+   */
+  static createAction(info) {
+    switch (info.type) {
+      case ActionType.KEY_SEQUENCE:
+        if (typeof info.value !== 'object') {
+          throw new Error(
+              'ForcedActionPath: Must provide an object resembling a ' +
+              'KeySequence for Actions of type ActionType.KEY_SEQUENCE');
+        }
+        break;
+
+      default:
+        if (typeof info.value !== 'string') {
+          throw new Error(
+              'ForcedActionPath: Must provide a string value for Actions if ' +
+              'type is other than ActionType.KEY_SEQUENCE');
+        }
+    }
+
+    const type = info.type;
+    const value = (typeof info.value === 'string') ?
+        info.value :
+        KeySequence.deserialize(
+            /** @type {!SerializedKeySequence} */ (info.value));
+    const shouldPropagate = info.shouldPropagate;
+    const beforeActionMsg = info.beforeActionMsg;
+    const afterActionMsg = info.afterActionMsg;
+    const afterActionCmd = info.afterActionCmd;
+
+    const beforeActionCallback = () => {
+      if (!beforeActionMsg) {
+        return;
+      }
+
+      ForcedActionPath.Action.output_(beforeActionMsg);
+    };
+
+    // A function that either provides output or performs a command when the
+    // action has been matched.
+    const afterActionCallback = () => {
+      if (afterActionMsg) {
+        ForcedActionPath.Action.output_(afterActionMsg);
+      } else if (afterActionCmd) {
+        ForcedActionPath.Action.onCommand_(afterActionCmd);
+      }
+    };
+
+    const params = {
+      type,
+      value,
+      shouldPropagate,
+      beforeActionCallback,
+      afterActionCallback,
+    };
+
+    switch (type) {
+      case ActionType.KEY_SEQUENCE:
+        return new ForcedActionPath.KeySequenceAction(params);
+      default:
+        return new ForcedActionPath.StringAction(params);
+    }
   }
 
   // Public methods.
@@ -273,72 +339,55 @@ ForcedActionPath.Action = class {
         }
     }
   }
+};
 
+/**
+ * Defines an object that is used to create a ForcedActionPath.Action.
+ * @typedef {{
+ *    type: ActionType,
+ *    value: (string|Object),
+ *    shouldPropagate: (boolean|undefined),
+ *    beforeActionMsg: (string|undefined),
+ *    afterActionMsg: (string|undefined),
+ *    afterActionCmd: (!Command|undefined),
+ * }}
+ */
+ForcedActionPath.ActionInfo;
+
+/**
+ * Represents an expected action.
+ * @abstract
+ */
+ForcedActionPath.Action = class {
   /**
-   * Constructs a new Action given an ActionInfo object.
-   * @param {!ForcedActionPath.ActionInfo} info
-   * @return {!ForcedActionPath.Action}
+   * Please see below for more information on arguments:
+   * type: The type of action.
+   * value: The action value.
+   * shouldPropagate: Whether or not this action should propagate to other
+   *  handlers e.g. CommandHandler.
+   * beforeActionCallback: A callback that runs once before this action is seen.
+   * afterActionCallback: A callback that runs once after this action is seen.
+   * @param {!{
+   *  type: ActionType,
+   *  value: (string|!KeySequence),
+   *  shouldPropagate: (boolean|undefined),
+   *  beforeActionCallback: (function(): void|undefined),
+   *  afterActionCallback: (function(): void|undefined)
+   * }} params
+   * @protected
    */
-  static fromActionInfo(info) {
-    switch (info.type) {
-      case ActionType.KEY_SEQUENCE:
-        if (typeof info.value !== 'object') {
-          throw new Error(
-              'ForcedActionPath: Must provide an object resembling a ' +
-              'KeySequence for Actions of type ActionType.KEY_SEQUENCE');
-        }
-        break;
-
-      default:
-        if (typeof info.value !== 'string') {
-          throw new Error(
-              'ForcedActionPath: Must provide a string value for Actions if ' +
-              'type is other than ActionType.KEY_SEQUENCE');
-        }
-    }
-
-    const type = info.type;
-    const value = (typeof info.value === 'string') ?
-        info.value :
-        KeySequence.deserialize(
-            /** @type {!SerializedKeySequence} */ (info.value));
-    const shouldPropagate = info.shouldPropagate;
-    const beforeActionMsg = info.beforeActionMsg;
-    const afterActionMsg = info.afterActionMsg;
-    const afterActionCmd = info.afterActionCmd;
-
-    const beforeActionCallback = () => {
-      if (!beforeActionMsg) {
-        return;
-      }
-
-      ForcedActionPath.Action.output_(beforeActionMsg);
-    };
-
-    // A function that either provides output or performs a command when the
-    // action has been matched.
-    const afterActionCallback = () => {
-      if (afterActionMsg) {
-        ForcedActionPath.Action.output_(afterActionMsg);
-      } else if (afterActionCmd) {
-        ForcedActionPath.Action.onCommand_(afterActionCmd);
-      }
-    };
-
-    const params = {
-      type,
-      value,
-      shouldPropagate,
-      beforeActionCallback,
-      afterActionCallback,
-    };
-
-    switch (type) {
-      case ActionType.KEY_SEQUENCE:
-        return new ForcedActionPath.KeySequenceAction(params);
-      default:
-        return new ForcedActionPath.StringAction(params);
-    }
+  constructor(params) {
+    /** @type {ActionType} */
+    this.type = params.type;
+    /** @type {string|!KeySequence} */
+    this.value = this.typedValue(params.value);
+    /** @type {boolean} */
+    this.shouldPropagate =
+        (params.shouldPropagate !== undefined) ? params.shouldPropagate : true;
+    /** @type {(function():void)|undefined} */
+    this.beforeActionCallback = params.beforeActionCallback;
+    /** @type {(function():void)|undefined} */
+    this.afterActionCallback = params.afterActionCallback;
   }
 
   /**
