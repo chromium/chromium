@@ -229,7 +229,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
       [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
-      [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
       [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
       [self isRunningTest:@selector(testSigninPromoWhenSyncOff)] ||
       [self isRunningTest:@selector(testSigninPromoClosedWhenSyncOff)] ||
@@ -253,6 +252,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
+      [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
       [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
       [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
@@ -1234,9 +1234,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSignInFromSettingsMenu {
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1245,16 +1243,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Check the Settings Menu labels for sync state.
+  // Check the Settings Menu labels.
   [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(
-                                       GetNSString(IDS_IOS_SETTING_ON)),
-                                   grey_accessibilityID(
-                                       kSettingsGoogleSyncAndServicesCellId),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsGoogleServicesCellId)]
       assertWithMatcher:grey_sufficientlyVisible()];
