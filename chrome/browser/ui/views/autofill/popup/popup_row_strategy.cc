@@ -87,40 +87,4 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
       view);
 }
 
-/************************ PopupComposeSuggestionStrategy ********************/
-
-PopupComposeSuggestionStrategy::PopupComposeSuggestionStrategy(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    bool show_new_badge)
-    : PopupRowBaseStrategy(std::move(controller), line_number),
-      show_new_badge_(show_new_badge) {}
-
-PopupComposeSuggestionStrategy::~PopupComposeSuggestionStrategy() = default;
-
-std::unique_ptr<PopupRowContentView>
-PopupComposeSuggestionStrategy::CreateContent() {
-  if (!GetController()) {
-    return nullptr;
-  }
-
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupRowContentView>();
-  auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
-      kSuggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_BODY_3_MEDIUM);
-  main_text_label->SetDisplayNewBadge(show_new_badge_);
-  popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      /*minor_text_label=*/nullptr,
-      /*description_label=*/nullptr, /*subtext_views=*/
-      popup_cell_utils::CreateAndTrackSubtextViews(
-          *view, kSuggestion, GetController()->GetPopupType(),
-          views::style::STYLE_BODY_4),
-      *view);
-
-  return view;
-}
-
 }  // namespace autofill

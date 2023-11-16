@@ -16,6 +16,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/views/new_badge_label.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
@@ -180,6 +181,26 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
   return view;
 }
 
+std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
+    const Suggestion& suggestion,
+    PopupType popup_type,
+    bool show_new_badge) {
+  auto view = std::make_unique<PopupRowContentView>();
+  auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
+      suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_BODY_3_MEDIUM);
+  main_text_label->SetDisplayNewBadge(show_new_badge);
+  popup_cell_utils::AddSuggestionContentToView(
+      suggestion, std::move(main_text_label),
+      /*minor_text_label=*/nullptr,
+      /*description_label=*/nullptr, /*subtext_views=*/
+      popup_cell_utils::CreateAndTrackSubtextViews(
+          *view, suggestion, popup_type, views::style::STYLE_BODY_4),
+      *view);
+
+  return view;
+}
+
 // Creates the row for an Autocomplete entry with a delete button.
 std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
     base::WeakPtr<AutofillPopupController> controller,
@@ -262,8 +283,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
 
   const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   PopupItemId popup_item_id = suggestion.popup_item_id;
-  std::optional<PopupRowView::ScopedNewBadgeTrackerWithAcceptAction>
-      new_badge_tracker;
 
   if (popup_item_id == PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
@@ -289,14 +308,20 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case PopupItemId::kCompose: {
       auto tracker = std::make_unique<ScopedNewBadgeTracker>(
           controller->GetWebContents()->GetBrowserContext());
-      strategy = std::make_unique<PopupComposeSuggestionStrategy>(
-          controller, line_number,
-          tracker->TryShowNewBadge(
-              feature_engagement::kIPHComposeNewBadgeFeature,
-              &compose::features::kEnableCompose));
-      new_badge_tracker.emplace(std::move(tracker),
-                                /*action_name=*/"compose_activated");
-    } break;
+      const bool show_new_badge = tracker->TryShowNewBadge(
+          feature_engagement::kIPHComposeNewBadgeFeature,
+          &compose::features::kEnableCompose);
+      auto new_badge_tracker =
+          PopupRowView::ScopedNewBadgeTrackerWithAcceptAction(
+              std::move(tracker),
+              /*action_name=*/"compose_activated");
+      auto row_view = std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreateComposePopupRowContentView(
+              suggestion, controller->GetPopupType(), show_new_badge));
+      row_view->set_new_badge_tracker(std::move(new_badge_tracker));
+      return row_view;
+    };
     default:
       if (IsFooterPopupItemId(popup_item_id)) {
         return std::make_unique<PopupRowView>(
@@ -309,12 +334,9 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       break;
   }
 
-  auto row_view = std::make_unique<PopupRowView>(
-      a11y_selection_delegate, selection_delegate, controller, line_number,
-      strategy->CreateContent());
-  row_view->set_new_badge_tracker(std::move(new_badge_tracker));
-
-  return row_view;
+  return std::make_unique<PopupRowView>(a11y_selection_delegate,
+                                        selection_delegate, controller,
+                                        line_number, strategy->CreateContent());
 }
 
 }  // namespace autofill
