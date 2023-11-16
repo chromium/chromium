@@ -207,6 +207,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         loadTimeData.getString('wallpaperSearchSubmitBtn');
   }
 
+  private expandCategoryForDescriptorA_(label: string) {
+    const categoryGroup = this.descriptors_?.descriptorA.find(
+        group => group.labels.includes(label));
+    if (categoryGroup) {
+      this.set(`expandedCategories_.${categoryGroup.category}`, true);
+    }
+  }
+
   private async fetchDescriptors_() {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
@@ -332,8 +340,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
 
     assert(this.descriptors_);
-    this.selectedDescriptorA_ = this.selectedDescriptorA_ ||
+    const selectedDescriptorA = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.descriptorA);
+    this.expandCategoryForDescriptorA_(selectedDescriptorA);
+    this.selectedDescriptorA_ = selectedDescriptorA;
     this.loading_ = true;
     this.results_ = [];
     this.emptyContainers_ = [];

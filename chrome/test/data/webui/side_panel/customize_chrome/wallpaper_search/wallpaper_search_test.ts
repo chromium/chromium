@@ -281,6 +281,14 @@ suite('WallpaperSearchTest', () => {
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
 
           wallpaperSearchElement.$.submitButton.click();
+          await flushTasks();
+
+          // Category is expanded to reveal dropdown items.
+          assertEquals(
+              2,
+              wallpaperSearchElement.shadowRoot!
+                  .querySelectorAll('#descriptorComboboxA .dropdown-item')
+                  .length);
 
           assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
           assertNotEquals(

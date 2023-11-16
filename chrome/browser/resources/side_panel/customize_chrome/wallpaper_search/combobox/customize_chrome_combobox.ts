@@ -58,7 +58,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
       value: {
         type: String,
         notify: true,
-        observer: 'onValueChanged_',
+        observer: 'selectItemFromValue_',
       },
     };
   }
@@ -125,6 +125,10 @@ export class CustomizeChromeCombobox extends PolymerElement {
         element.id = `comboboxItem${itemCount++}`;
       }
     });
+
+    if (this.value) {
+      this.selectItemFromValue_();
+    }
   }
 
   private onDropdownClick_(event: MouseEvent) {
@@ -255,12 +259,13 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.value = this.selectedElement_.value;
   }
 
-  private onValueChanged_() {
+  private selectItemFromValue_() {
     if (!this.value) {
       return;
     }
 
-    if (this.selectedElement_ && this.selectedElement_.value === this.value) {
+    if (this.selectedElement_?.isConnected &&
+        this.selectedElement_.value === this.value) {
       // Selected element matches the value. Nothing left to do.
       return;
     }

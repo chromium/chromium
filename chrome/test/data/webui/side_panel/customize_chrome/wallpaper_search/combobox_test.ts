@@ -22,11 +22,12 @@ suite('ComboboxTest', () => {
     return label;
   }
 
-  function addOption(parent: HTMLElement = combobox): OptionElement {
+  function addOption(
+      parent: HTMLElement = combobox, value: string = 'value'): OptionElement {
     const option = document.createElement('div') as OptionElement;
     option.setAttribute('role', 'option');
     option.innerText = 'Option';
-    option.value = 'value';
+    option.value = value;
     parent.appendChild(option);
     return option;
   }
@@ -180,6 +181,35 @@ suite('ComboboxTest', () => {
     combobox.value = 'option-2-value';
     assertFalse(option1.hasAttribute('selected'));
     assertTrue(option2.hasAttribute('selected'));
+  });
+
+  test('UpdatesWithBoundValueOnDomChange', async () => {
+    const groupA = addGroup();
+    addOption(groupA, 'valueA1');
+    const groupB = addGroup();
+
+    // Set the bound value to an option that does not exist yet.
+    combobox.value = 'valueB1';
+    await flushTasks();
+    assertEquals(0, combobox.querySelectorAll('[selected]').length);
+
+    // Add an option with the selected value.
+    const optionB1 = addOption(groupB, 'valueB1');
+    await flushTasks();
+    assertEquals(1, combobox.querySelectorAll('[selected]').length);
+    assertTrue(optionB1.hasAttribute('selected'));
+
+    // Removing the option should keep the bound value.
+    optionB1.remove();
+    await flushTasks();
+    assertEquals('valueB1', combobox.value);
+    assertEquals(0, combobox.querySelectorAll('[selected]').length);
+
+    // Adding a new option with the same value should select it.
+    const newOptionB1 = addOption(groupB, 'valueB1');
+    await flushTasks();
+    assertEquals(1, combobox.querySelectorAll('[selected]').length);
+    assertTrue(newOptionB1.hasAttribute('selected'));
   });
 
   test('SetsUniqueIdsAndAriaActiveDescendant', async () => {
