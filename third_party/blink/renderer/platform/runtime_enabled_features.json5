@@ -2005,7 +2005,7 @@
     },
     {
       name: "HTMLSelectElementShowPicker",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HTMLSelectListElement",

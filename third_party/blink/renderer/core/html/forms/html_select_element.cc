@@ -1469,7 +1469,7 @@ const ComputedStyle* HTMLSelectElement::OptionStyle() const {
 }
 
 // Show the option list for this select element.
-// https://github.com/whatwg/html/pull/9754
+// https://html.spec.whatwg.org/multipage/input.html#dom-select-showpicker
 void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
   Document& document = GetDocument();
   LocalFrame* frame = document.GetFrame();
