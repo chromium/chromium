@@ -16,7 +16,7 @@ Here is a table of common area of inquiry and suggested tools for examining them
 |----------------------- | ------- |
 | Which subsystems consuming memory per process.  | [Global Memory Dumps](#global-memory-dumps), [Taking memory-infra trace](#memory-infra-trace) |
 | Tracking C++ object allocation over time | [`diff_heap_profiler.py`](#diff-heap-profiler), [Heap Details in chrome://tracing](#heap-dumps-chrome-tracing) |
-| Suspected DOM leaks in the Renderer | [Real World Leak Detector](#real-world-leak-detector) |
+| Suspected DOM leaks in the Renderer | [Developer Tools Heap Snapshots](#dev-tools-heap-snapshots), [Real World Leak Detector](#real-world-leak-detector) |
 | Kernel/Driver Memory and Resource Usage | [perfmon (win), ETW](#os-tools) |
 | Blackbox examination of process memory | [VMMAP (win)](#os-tools) | Understanding fragmentation of the memory space |
 | Symbolized Heap Dump data | [Heap Dumps](#heap-dumps) | Grabs raw data for analysis by other tools |
@@ -219,6 +219,27 @@ analyze it.
 TODO(ajwong): Add screenshot or at least reference the more detailed
 memory-infra docs.
 
+-----------
+## <a name="dev-tools-heap-snapshots"></a> Developer Tools Heap Snapshots
+
+Heap snapshots provide views of objects on the Oilpan and V8 heaps and retainer
+relationships between them. General documentation is here:
+https://developer.chrome.com/docs/devtools/memory-problems/heap-snapshots/
+
+By default, many objects on the Oilpan heap will be labeled as "InternalNode".
+To capture detailed symbol names for them, follow these steps:
+
+1. Add the following to gn args and rebuild: `cppgc_enable_object_names = true` <br/>
+   Or use [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/) prebuilt binaries; they have this flag enabled.
+
+2. In Developer Tools, under Settings | Experiments, check "Show option to
+expose internals in heap snapshots"
+
+3. Reload Developer Tools (there will be a button for this at the top of the
+window)
+
+4. On the Memory pane, under Select profiling type | Heap snapshot, check
+"Expose internals (includes additional implementation-specific details)"
 
 -----------
 ## <a name="real-world-leak-detector"></a> Real World Leak Detector (Blink-only)
