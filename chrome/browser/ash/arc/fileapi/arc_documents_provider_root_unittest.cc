@@ -784,15 +784,17 @@ TEST_F(ArcDocumentsProviderRootTest, DeleteFileThenGetMetadataClearsCache) {
       kAuthority, kRootSpec.document_id,
       base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg"))));
 
-  base::RunLoop run_loop;
-  root_->DeleteFile(base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
-                    base::BindOnce(
-                        [](base::RunLoop* run_loop, base::File::Error error) {
-                          run_loop->Quit();
-                          EXPECT_EQ(base::File::FILE_OK, error);
-                        },
-                        &run_loop));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    root_->DeleteFile(base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+                      base::BindOnce(
+                          [](base::RunLoop* run_loop, base::File::Error error) {
+                            run_loop->Quit();
+                            EXPECT_EQ(base::File::FILE_OK, error);
+                          },
+                          &run_loop));
+    run_loop.Run();
+  }
 
   // dir/photo.jpg should have been removed.
   {
@@ -1136,17 +1138,19 @@ TEST_F(ArcDocumentsProviderRootTest, CopyFile) {
 }
 
 TEST_F(ArcDocumentsProviderRootTest, CopyFileThenGetMetadataClearsCache) {
-  base::RunLoop run_loop;
-  root_->CopyFileLocal(
-      base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
-      base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, base::File::Error error) {
-            run_loop->Quit();
-            EXPECT_EQ(base::File::FILE_OK, error);
-          },
-          &run_loop));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    root_->CopyFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
 
   // dir/photo2.jpg should be created by the copy.
   {
@@ -1283,17 +1287,19 @@ TEST_F(ArcDocumentsProviderRootTest, RenameFile) {
 }
 
 TEST_F(ArcDocumentsProviderRootTest, RenameFileThenGetMetadataClearsCache) {
-  base::RunLoop run_loop;
-  root_->MoveFileLocal(
-      base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
-      base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, base::File::Error error) {
-            run_loop->Quit();
-            EXPECT_EQ(base::File::FILE_OK, error);
-          },
-          &run_loop));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    root_->MoveFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
 
   // There should be dir/photo2.jpg which was renamed from dir/photo.jpg.
   {
@@ -1405,17 +1411,19 @@ TEST_F(ArcDocumentsProviderRootTest, MoveFile) {
 }
 
 TEST_F(ArcDocumentsProviderRootTest, MoveFileThenGetMetadataClearsCache) {
-  base::RunLoop run_loop;
-  root_->MoveFileLocal(
-      base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
-      base::FilePath(FILE_PATH_LITERAL("photo.jpg")),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, base::File::Error error) {
-            run_loop->Quit();
-            EXPECT_EQ(base::File::FILE_OK, error);
-          },
-          &run_loop));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    root_->MoveFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
 
   // There should be photo.jpg which was moved from dir/photo.jpg.
   {
