@@ -1254,9 +1254,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Sync Off tab and signin in
 // will turn Sync On.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled, as this test is about sync.
 - (void)testSignInFromSyncOffLink {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1385,9 +1383,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that the sign-in promo for Sync is displayed when the user is signed in
 // with Sync off.
 // kEnableBookmarksAccountStorage is disabled.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled since this test is about sync.
 - (void)testSigninPromoWhenSyncOff {
   // Add identity to the device.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1406,9 +1402,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that no sign-in promo for Sync is displayed when the user is signed in
 // with Sync off and has closed the sign-in promo for Sync.
 // kEnableBookmarksAccountStorage is disabled.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled since this test is about sync.
 - (void)testSigninPromoClosedWhenSyncOff {
   // Add identity to the device.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
