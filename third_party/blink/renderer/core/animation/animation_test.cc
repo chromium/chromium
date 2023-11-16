@@ -30,10 +30,10 @@
 
 #include "third_party/blink/renderer/core/animation/animation.h"
 
+#include <bit>
 #include <memory>
 #include <tuple>
 
-#include "base/bits.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/trees/target_property.h"
@@ -1420,7 +1420,7 @@ int GenerateHistogramValue(CompositorAnimations::FailureReason reason) {
   // as 0 and recorded as 0.
   if (reason == CompositorAnimations::kNoFailure)
     return CompositorAnimations::kNoFailure;
-  return base::bits::CountTrailingZeroBits(static_cast<uint32_t>(reason)) + 1;
+  return std::countr_zero(static_cast<uint32_t>(reason)) + 1;
 }
 }  // namespace
 

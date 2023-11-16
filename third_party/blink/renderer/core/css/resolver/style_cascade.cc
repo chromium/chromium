@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 
+#include <bit>
+
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
@@ -484,7 +486,7 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
   uint64_t bits = map_.HighPriorityBits();
 
   while (bits) {
-    int i = base::bits::CountTrailingZeroBits(bits);
+    int i = std::countr_zero(bits);
     bits &= bits - 1;  // Clear the lowest bit.
     LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
   }
