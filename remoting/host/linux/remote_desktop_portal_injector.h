@@ -18,8 +18,8 @@
 #include "third_party/libei/include/libei.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screen_capture_portal_interface.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screencast_portal.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_session_details.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_session_details.h"
 
 namespace remoting::xdg_portal {
 

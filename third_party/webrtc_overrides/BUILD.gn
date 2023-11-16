@@ -161,6 +161,9 @@ if (is_castos || is_cast_android || is_nacl) {
   # for how that is done.
   webrtc_public_deps += [ ":field_trial" ]
 }
+if ((is_linux || is_chromeos) && rtc_use_pipewire) {
+  webrtc_public_deps += [ "//third_party/webrtc/modules/portal" ]
+}
 
 component("webrtc_component") {
   configs += webrtc_configs

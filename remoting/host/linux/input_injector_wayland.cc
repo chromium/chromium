@@ -34,8 +34,8 @@
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/proto/internal.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/scoped_glib.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 

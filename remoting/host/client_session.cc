@@ -58,7 +58,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 #if defined(WEBRTC_USE_GIO)
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 #endif
 
 namespace {
