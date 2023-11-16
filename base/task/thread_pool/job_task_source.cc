@@ -4,10 +4,10 @@
 
 #include "base/task/thread_pool/job_task_source.h"
 
+#include <bit>
 #include <type_traits>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -306,7 +306,7 @@ uint8_t JobTaskSource::AcquireTaskId() {
   do {
     // Count trailing one bits. This is the id of the right-most 0-bit in
     // |assigned_task_ids|.
-    task_id = bits::CountTrailingZeroBits(~assigned_task_ids);
+    task_id = std::countr_one(assigned_task_ids);
     new_assigned_task_ids = assigned_task_ids | (uint32_t(1) << task_id);
   } while (!assigned_task_ids_.compare_exchange_weak(
       assigned_task_ids, new_assigned_task_ids, std::memory_order_acquire,
