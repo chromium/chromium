@@ -50,6 +50,13 @@ void TrustTokenDatabaseOwner::Create(
 TrustTokenDatabaseOwner::~TrustTokenDatabaseOwner() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // KeyValueTables are first dereferenced in the DB runner sequence. This
+  // attaches their weak pointers to the DB runner sequence. Post tasks to free
+  // them in the DB task runner.
+  db_task_runner_->DeleteSoon(FROM_HERE, issuer_toplevel_pair_table_.release());
+  db_task_runner_->DeleteSoon(FROM_HERE, toplevel_table_.release());
+  db_task_runner_->DeleteSoon(FROM_HERE, issuer_table_.release());
+
   db_task_runner_->DeleteSoon(FROM_HERE, backing_database_.release());
 }
 
