@@ -675,7 +675,7 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
     return;
   }
 
-  if (expecting_config_changes_) {
+  if (expecting_config_changes_ && !audio_parameters_.IsBitstreamFormat()) {
     buffer_converter_ =
         std::make_unique<AudioBufferConverter>(audio_parameters_);
   }
@@ -925,7 +925,7 @@ void AudioRendererImpl::DecodedAudioReady(
         buffer->channel_layout() == CHANNEL_LAYOUT_STEREO &&
         audio_parameters_.channel_layout() == CHANNEL_LAYOUT_MONO;
     if (is_mono_to_stereo || is_stereo_to_mono) {
-      if (!buffer_converter_) {
+      if (!buffer_converter_ && !audio_parameters_.IsBitstreamFormat()) {
         buffer_converter_ =
             std::make_unique<AudioBufferConverter>(audio_parameters_);
       }
@@ -961,12 +961,19 @@ void AudioRendererImpl::DecodedAudioReady(
       }
     }
 
-    DCHECK(buffer_converter_);
-    buffer_converter_->AddInput(std::move(buffer));
+    if (audio_parameters_.IsBitstreamFormat()) {
+      // Avoid using `buffer_converter_` for bitstreams, as resampling the
+      // bitstream data doesn't make sense.
+      CHECK(!buffer_converter_);
+      need_another_buffer = HandleDecodedBuffer_Locked(std::move(buffer));
+    } else {
+      DCHECK(buffer_converter_);
+      buffer_converter_->AddInput(std::move(buffer));
 
-    while (buffer_converter_->HasNextBuffer()) {
-      need_another_buffer =
-          HandleDecodedBuffer_Locked(buffer_converter_->GetNextBuffer());
+      while (buffer_converter_->HasNextBuffer()) {
+        need_another_buffer =
+            HandleDecodedBuffer_Locked(buffer_converter_->GetNextBuffer());
+      }
     }
   } else {
     // TODO(chcunningham, tguilbert): Figure out if we want to support implicit
@@ -1415,7 +1422,12 @@ void AudioRendererImpl::ChangeState_Locked(State new_state) {
 void AudioRendererImpl::OnConfigChange(const AudioDecoderConfig& config) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(expecting_config_changes_);
-  buffer_converter_->ResetTimestampState();
+
+  // We don't use `buffer_converter_` for bitstream formats.
+  CHECK(buffer_converter_ || audio_parameters_.IsBitstreamFormat());
+  if (buffer_converter_) {
+    buffer_converter_->ResetTimestampState();
+  }
 
   // An invalid config may be supplied by callers who simply want to reset
   // internal state outside of detecting a new config from the demuxer stream.
