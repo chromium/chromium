@@ -27,6 +27,7 @@
 #include "cookie_controls_bubble_view_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -97,6 +98,9 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
 
 void CookieControlsBubbleViewController::SwitchToReloadingView() {
   bubble_view_->SwitchToReloadingView();
+  bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
+                                 GetSubjectUrlName(web_contents_.get())));
   bubble_view_->GetReloadingView()->RequestFocus();
 
   // Set a timeout for how long the reloading view is shown for.

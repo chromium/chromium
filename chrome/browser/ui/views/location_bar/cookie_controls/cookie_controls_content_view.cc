@@ -209,8 +209,6 @@ void CookieControlsContentView::AddFeedbackSection() {
           launch_icon));
 
   feedback_button->SetProperty(views::kElementIdentifierKey, kFeedbackButton);
-  feedback_button->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE));
 }
 
 void CookieControlsContentView::UpdateContentLabels(
