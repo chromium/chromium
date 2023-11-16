@@ -366,6 +366,7 @@ HEADLESS_PROTOCOL_TEST(LargeBrowserWindowSize,
                        "sanity/large-browser-window-size.js")
 
 HEADLESS_PROTOCOL_TEST(ScreencastBasics, "sanity/screencast-basics.js")
+HEADLESS_PROTOCOL_TEST(ScreencastViewport, "sanity/screencast-viewport.js")
 
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {

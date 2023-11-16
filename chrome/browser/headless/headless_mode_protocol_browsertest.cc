@@ -255,14 +255,12 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeInputSelectFileDialogTest,
                               MAYBE_InputSelectFileDialog,
                               "input/input-select-file-dialog.js")
 
-// https://crbug.com/1411976
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ScreencastBasics DISABLED_ScreencastBasics
-#else
-#define MAYBE_ScreencastBasics ScreencastBasics
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
-                            "sanity/screencast-basics.js")
+// These currently fail on Windows,see https://crbug.com/1411976 and
+// https://crbug.com/1502651
+#if !BUILDFLAG(IS_WIN)
+HEADLESS_MODE_PROTOCOL_TEST(ScreencastBasics, "sanity/screencast-basics.js")
+HEADLESS_MODE_PROTOCOL_TEST(ScreencastViewport, "sanity/screencast-viewport.js")
+#endif  // #if !BUILDFLAG(IS_WIN)
 
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
