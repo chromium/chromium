@@ -2352,10 +2352,19 @@ bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   }
 
+  // Step 3. If action is an ASCII case-insensitive match for showPicker ...
+  // Early return instead of doing this in step 3.
   if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
     return false;
   }
 
+  // Step 1. If this is not mutable, then return.
+  if (!isMutable()) {
+    return false;
+  }
+
+  // Step 2. If this's relevant settings object's origin is not same origin with
+  // this's relevant settings object's top-level origin, [...], then return.
   Document& document = GetDocument();
   LocalFrame* frame = document.GetFrame();
   if (frame && !frame->IsSameOrigin()) {
@@ -2366,10 +2375,17 @@ bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
     return false;
   }
 
-  if (!isMutable()) {
+  // If this's relevant global object does not have transient
+  // activation, then return.
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    String message = "Input cannot be invoked without a user gesture.";
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning, message));
     return false;
   }
 
+  // Step 3. ... show the picker, if applicable, for this.
   input_type_view_->OpenPopupView();
 
   return true;
