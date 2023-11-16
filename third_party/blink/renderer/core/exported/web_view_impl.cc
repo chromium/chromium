@@ -538,6 +538,20 @@ void WebViewImpl::SetNoStatePrefetchClient(
 }
 
 void WebViewImpl::CloseWindow() {
+#if !(BUILDFLAG(IS_ANDROID) || \
+      (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
+  auto close_task_trace = close_task_posted_stack_trace_;
+  base::debug::Alias(&close_task_trace);
+  auto close_trace = close_called_stack_trace_;
+  base::debug::Alias(&close_trace);
+  auto prev_close_window_trace = close_window_called_stack_trace_;
+  base::debug::Alias(&prev_close_window_trace);
+  close_window_called_stack_trace_.emplace();
+  auto cur_close_window_trace = close_window_called_stack_trace_;
+  base::debug::Alias(&cur_close_window_trace);
+#endif
+  SCOPED_CRASH_KEY_BOOL("Bug1499519", "page_exists", !!page_);
+
   // Have the browser process a close request. We should have either a
   // |local_main_frame_host_remote_| or |remote_main_frame_host_remote_|.
   // This method will not execute if Close has been called as WeakPtrs
@@ -1108,6 +1122,20 @@ Frame* WebViewImpl::FocusedCoreFrame() const {
 // WebWidget ------------------------------------------------------------------
 
 void WebViewImpl::Close() {
+#if !(BUILDFLAG(IS_ANDROID) || \
+      (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
+  auto close_task_trace = close_task_posted_stack_trace_;
+  base::debug::Alias(&close_task_trace);
+  auto prev_close_trace = close_called_stack_trace_;
+  base::debug::Alias(&prev_close_trace);
+  close_called_stack_trace_.emplace();
+  auto cur_close_trace = close_called_stack_trace_;
+  base::debug::Alias(&cur_close_trace);
+  auto close_window_trace = close_window_called_stack_trace_;
+  base::debug::Alias(&close_window_trace);
+#endif
+  SCOPED_CRASH_KEY_BOOL("Bug1499519", "page_exists", !!page_);
+
   // Closership is a single relationship, so only 1 call to Close() should
   // occur.
   CHECK(page_);
@@ -3978,6 +4006,18 @@ bool WebViewImpl::IsFencedFrameRoot() const {
 }
 
 void WebViewImpl::MojoDisconnected() {
+#if !(BUILDFLAG(IS_ANDROID) || \
+      (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
+  auto prev_close_task_trace = close_task_posted_stack_trace_;
+  base::debug::Alias(&prev_close_task_trace);
+  close_task_posted_stack_trace_.emplace();
+  auto cur_close_task_trace = close_task_posted_stack_trace_;
+  base::debug::Alias(&cur_close_task_trace);
+  auto close_trace = close_called_stack_trace_;
+  base::debug::Alias(&close_trace);
+  auto close_window_trace = close_window_called_stack_trace_;
+  base::debug::Alias(&close_window_trace);
+#endif
   // This IPC can be called from re-entrant contexts. We can't destroy a
   // RenderViewImpl while references still exist on the stack, so we dispatch a
   // non-nestable task. This method is called exactly once by the browser
