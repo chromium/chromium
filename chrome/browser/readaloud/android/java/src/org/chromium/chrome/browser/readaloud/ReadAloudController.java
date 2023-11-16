@@ -144,8 +144,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
                         ? sReadabilityHooksForTesting
-                        : new ReadAloudReadabilityHooksImpl(
-                                mActivity, profile, ReadAloudFeatures.getApiKeyOverride());
+                        : new ReadAloudReadabilityHooksImpl(mActivity, profile);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
