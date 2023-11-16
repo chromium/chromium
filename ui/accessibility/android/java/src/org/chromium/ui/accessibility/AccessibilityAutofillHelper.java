@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.accessibility;
+package org.chromium.ui.accessibility;
 
 import android.os.Build;
 
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 /**
  * Helper class for Autofill state and password preferences for accessibility related code.
  */
+@JNINamespace("ui")
 public class AccessibilityAutofillHelper {
+    @CalledByNative
     public static boolean shouldRespectDisplayedPasswordText() {
         // We should respect whatever is displayed in a password box and report that via
         // accessibility APIs, whether that's the unobscured password, or all dots. However, we
@@ -20,6 +23,7 @@ public class AccessibilityAutofillHelper {
         return isAutofillOnlyPossibleAccessibilityConsumer();
     }
 
+    @CalledByNative
     public static boolean shouldExposePasswordText() {
         // On Android P and higher, when no other accessibility services are running other than
         // Autofill, we should always expose the actual password text so that third-party Autofill

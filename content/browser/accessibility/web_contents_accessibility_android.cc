@@ -332,15 +332,6 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
   allow_image_descriptions_ = allow_image_descriptions;
 }
 
-void WebContentsAccessibilityAndroid::SetPasswordRules(
-    JNIEnv* env,
-    jboolean should_respect_displayed_password_text,
-    jboolean should_expose_password_text) {
-  should_respect_displayed_password_text_ =
-      should_respect_displayed_password_text;
-  should_expose_password_text_ = should_expose_password_text;
-}
-
 void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

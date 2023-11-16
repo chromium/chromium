@@ -739,11 +739,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     AccessibilityState.isOnlyPasswordManagersEnabled(),
                     /* isAccessibilityEnabled= */ true);
 
-            // Update the state of how passwords are exposed based on user settings.
-            WebContentsAccessibilityImplJni.get().setPasswordRules(mNativeObj,
-                    AccessibilityAutofillHelper.shouldRespectDisplayedPasswordText(),
-                    AccessibilityAutofillHelper.shouldExposePasswordText());
-
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
             WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(mNativeObj,
@@ -2082,8 +2077,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         String getSupportedHtmlElementTypes(long nativeWebContentsAccessibilityAndroid);
         void showContextMenu(long nativeWebContentsAccessibilityAndroid, int id);
         boolean isRootManagerConnected(long nativeWebContentsAccessibilityAndroid);
-        void setPasswordRules(long nativeWebContentsAccessibilityAndroid,
-                boolean shouldRespectDisplayedPasswordText, boolean shouldExposePasswordText);
         boolean areInlineTextBoxesLoaded(long nativeWebContentsAccessibilityAndroid, int id);
         void loadInlineTextBoxes(long nativeWebContentsAccessibilityAndroid, int id);
         int[] getCharacterBoundingBoxes(

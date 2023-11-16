@@ -84,8 +84,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   // State properties defined from Java-side code.
   bool ShouldAllowImageDescriptions();
-  bool ShouldRespectDisplayedPasswordText();
-  bool ShouldExposePasswordText();
 
   // Consume hover event if necessary, and return true if it did.
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
