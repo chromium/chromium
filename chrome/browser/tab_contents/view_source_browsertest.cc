@@ -474,6 +474,12 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   GURL view_source_url(content::kViewSourceScheme + std::string(":") +
                        url.spec());
   EXPECT_EQ(view_source_url, view_source_contents->GetLastCommittedURL());
+  // Make sure that the navigation type reported is "back_forward" on the
+  // duplicated tab.
+  EXPECT_EQ(
+      "back_forward",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "performance.getEntriesByType('navigation')[0].type"));
 
   // Verify the request for the view-source tab had the correct IsolationInfo.
   absl::optional<network::ResourceRequest> request =

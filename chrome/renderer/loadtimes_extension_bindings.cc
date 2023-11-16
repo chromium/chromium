@@ -86,6 +86,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormSubmitted:
         return "FormSubmitted";
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return "BackForward";
       case blink::kWebNavigationTypeReload:
         return "Reload";
@@ -106,6 +107,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormResubmittedReload:
         return kTransitionLink;
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return kTransitionForwardBack;
       case blink::kWebNavigationTypeReload:
         return kTransitionReload;

@@ -85,6 +85,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
     case WebFrameLoadType::kStandard:
       return "push";
     case WebFrameLoadType::kBackForward:
+    case WebFrameLoadType::kRestore:
       return "traverse";
     case WebFrameLoadType::kReload:
     case WebFrameLoadType::kReloadBypassingCache:
@@ -207,9 +208,9 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   NavigationHistoryEntry* old_current = currentEntry();
 
   HeapVector<Member<NavigationHistoryEntry>> disposed_entries;
-  if (type == WebFrameLoadType::kBackForward) {
-    // If this is a same-document back/forward navigation, the new current
-    // entry should already be present in entries_ and its key in
+  if (IsBackForwardOrRestore(type)) {
+    // If this is a same-document back/forward navigation or restore, the new
+    // current entry should already be present in entries_ and its key in
     // keys_to_indices_.
     CHECK(keys_to_indices_.Contains(item.GetNavigationApiKey()));
     current_entry_index_ = keys_to_indices_.at(item.GetNavigationApiKey());
@@ -719,7 +720,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   const String& key = params->destination_item
                           ? params->destination_item->GetNavigationApiKey()
                           : String();
-  if (params->frame_load_type == WebFrameLoadType::kBackForward &&
+  if (IsBackForwardOrRestore(params->frame_load_type) &&
       params->event_type == NavigateEventType::kFragment &&
       !keys_to_indices_.Contains(key)) {
     // This same document history traversal was preempted by another navigation
@@ -754,7 +755,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       MakeGarbageCollected<NavigationDestination>(
           params->url, params->event_type != NavigateEventType::kCrossDocument,
           destination_state);
-  if (params->frame_load_type == WebFrameLoadType::kBackForward) {
+  if (IsBackForwardOrRestore(params->frame_load_type)) {
     auto iter = keys_to_indices_.find(key);
     if (iter != keys_to_indices_.end()) {
       destination->SetDestinationEntry(entries_[iter->value]);
@@ -764,18 +765,17 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   bool should_allow_traversal_cancellation =
       RuntimeEnabledFeatures::NavigateEventCancelableTraversalsEnabled() &&
-      params->frame_load_type == WebFrameLoadType::kBackForward &&
+      IsBackForwardOrRestore(params->frame_load_type) &&
       params->event_type != NavigateEventType::kCrossDocument &&
       frame->IsMainFrame() &&
       (!params->is_browser_initiated || frame->IsHistoryUserActivationActive());
-  init->setCancelable(params->frame_load_type !=
-                          WebFrameLoadType::kBackForward ||
+  init->setCancelable(!IsBackForwardOrRestore(params->frame_load_type) ||
                       should_allow_traversal_cancellation);
   init->setCanIntercept(
       CanChangeToUrlForHistoryApi(params->url, window_->GetSecurityOrigin(),
                                   window_->Url()) &&
       (params->event_type != NavigateEventType::kCrossDocument ||
-       params->frame_load_type != WebFrameLoadType::kBackForward));
+       !IsBackForwardOrRestore(params->frame_load_type)));
   init->setHashChange(
       params->event_type == NavigateEventType::kFragment &&
       params->url != window_->Url() &&
@@ -831,7 +831,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   DispatchEvent(*navigate_event);
 
   if (navigate_event->defaultPrevented()) {
-    if (params->frame_load_type == WebFrameLoadType::kBackForward &&
+    if (IsBackForwardOrRestore(params->frame_load_type) &&
         window_->GetFrame()) {
       window_->GetFrame()->ConsumeHistoryUserActivation();
     }

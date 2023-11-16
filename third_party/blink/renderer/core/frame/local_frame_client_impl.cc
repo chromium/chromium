@@ -142,7 +142,7 @@ bool IsLoadedAsMHTMLArchive(LocalFrame* local_frame) {
 // navigation.
 bool IsBackForwardNavigationInProgress(LocalFrame* local_frame) {
   return local_frame &&
-         IsBackForwardLoadType(
+         IsBackForwardOrRestore(
              local_frame->Loader().GetDocumentLoader()->LoadType()) &&
          !local_frame->GetDocument()->LoadEventFinished();
 }

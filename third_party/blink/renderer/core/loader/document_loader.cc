@@ -476,7 +476,7 @@ DocumentLoader::DocumentLoader(
       // at commit time in |params_|. Set it as the current history item of this
       // DocumentLoader. For other navigations, |history_item_| will be created
       // when the FrameLoader calls SetHistoryItemStateForCommit.
-      history_item_(IsBackForwardLoadType(params_->frame_load_type)
+      history_item_(IsBackForwardOrRestore(params_->frame_load_type)
                         ? params_->history_item
                         : nullptr),
       original_referrer_(referrer_),
@@ -589,8 +589,9 @@ DocumentLoader::DocumentLoader(
   for (const auto& resource : params_->early_hints_preloaded_resources)
     early_hints_preloaded_resources_.insert(resource, EarlyHintsPreloadEntry());
 
-  if (IsBackForwardLoadType(params_->frame_load_type))
+  if (IsBackForwardOrRestore(params_->frame_load_type)) {
     DCHECK(history_item_);
+  }
 
   if (params_->ad_auction_components) {
     ad_auction_components_.emplace();
@@ -852,6 +853,7 @@ WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
     case WebFrameLoadType::kStandard:
       return kWebStandardCommit;
     case WebFrameLoadType::kBackForward:
+    case WebFrameLoadType::kRestore:
       return kWebBackForwardCommit;
     case WebFrameLoadType::kReload:
     case WebFrameLoadType::kReplaceCurrentItem:
@@ -892,7 +894,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_synchronously_committed,
     absl::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
-  DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
+  DCHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
 
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -1076,8 +1078,9 @@ void DocumentLoader::SetHistoryItemStateForCommit(
     WebFrameLoadType load_type,
     HistoryNavigationType navigation_type,
     CommitReason commit_reason) {
-  if (!history_item_ || !IsBackForwardLoadType(load_type))
+  if (!history_item_ || !IsBackForwardOrRestore(load_type)) {
     history_item_ = MakeGarbageCollected<HistoryItem>();
+  }
 
   history_item_->SetURL(UrlForHistory());
   history_item_->SetReferrer(referrer_.GetString());
@@ -1095,8 +1098,9 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   // Don't propagate state from the old item to the new item if there isn't an
   // old item (obviously), or if this is a back/forward navigation, since we
   // explicitly want to restore the state we just committed.
-  if (!old_item || IsBackForwardLoadType(load_type))
+  if (!old_item || IsBackForwardOrRestore(load_type)) {
     return;
+  }
 
   // The navigation API key corresponds to a "slot" in the back/forward list,
   // and should be shared for all replacing navigations so long as the
@@ -1497,7 +1501,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     return mojom::blink::CommitResult::RestartCrossDocument;
   }
 
-  if (!IsBackForwardLoadType(frame_load_type)) {
+  if (!IsBackForwardOrRestore(frame_load_type)) {
     // For the browser to send a same-document navigation, it will always have a
     // fragment. When no fragment is present, the browser loads a new document.
     CHECK(url.HasFragmentIdentifier());
@@ -1602,7 +1606,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   if (!frame_)
     return;
 
-  if (!IsBackForwardLoadType(frame_load_type)) {
+  if (!IsBackForwardOrRestore(frame_load_type)) {
     SetNavigationType(triggering_event_info !=
                               mojom::blink::TriggeringEventInfo::kNotFromEvent
                           ? kWebNavigationTypeLinkClicked
@@ -1958,8 +1962,9 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
 
   frame_->DomWindow()->BindContentSecurityPolicy();
 
-  if (history_item_ && IsBackForwardLoadType(load_type_))
+  if (history_item_ && IsBackForwardOrRestore(load_type_)) {
     document->SetStateForNewControls(history_item_->GetDocumentState());
+  }
 
   DCHECK(document->GetFrame());
   // TODO(dgozman): modify frame's client hints directly once we commit
@@ -2863,7 +2868,7 @@ void DocumentLoader::CommitNavigation() {
   // metrics to be correctly sent to the browser process.
   if (commit_reason_ != CommitReason::kInitialization)
     use_counter_.DidCommitLoad(frame_);
-  if (load_type_ == WebFrameLoadType::kBackForward) {
+  if (IsBackForwardOrRestore(load_type_)) {
     if (Page* page = frame_->GetPage())
       page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
   }

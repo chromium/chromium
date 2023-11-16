@@ -75,6 +75,7 @@ struct WebNavigationParams;
 
 CORE_EXPORT bool IsBackForwardLoadType(WebFrameLoadType);
 CORE_EXPORT bool IsReloadLoadType(WebFrameLoadType);
+CORE_EXPORT bool IsBackForwardOrRestore(WebFrameLoadType);
 
 class CORE_EXPORT FrameLoader final {
   DISALLOW_NEW();

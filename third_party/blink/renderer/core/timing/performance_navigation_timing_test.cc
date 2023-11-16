@@ -33,5 +33,8 @@ TEST_F(PerformanceNavigationTimingTest, GetNavigationTimingType) {
   returned_type =
       GetNavigationTimingType(kWebNavigationTypeFormResubmittedReload);
   EXPECT_EQ(returned_type, "reload");
+
+  returned_type = GetNavigationTimingType(kWebNavigationTypeRestore);
+  EXPECT_EQ(returned_type, "back_forward");
 }
 }  // namespace blink

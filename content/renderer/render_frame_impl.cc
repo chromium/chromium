@@ -625,9 +625,11 @@ WebFrameLoadType NavigationTypeToLoadType(
 
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      return WebFrameLoadType::kBackForward;
+
     case blink::mojom::NavigationType::RESTORE:
     case blink::mojom::NavigationType::RESTORE_WITH_POST:
-      return WebFrameLoadType::kBackForward;
+      return WebFrameLoadType::kRestore;
 
     case blink::mojom::NavigationType::SAME_DOCUMENT:
     case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
@@ -2852,7 +2854,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
   WebHistoryItem item_for_history_navigation;
   blink::mojom::CommitResult commit_status = blink::mojom::CommitResult::Ok;
 
-  if (load_type == WebFrameLoadType::kBackForward) {
+  if (load_type == WebFrameLoadType::kBackForward ||
+      load_type == WebFrameLoadType::kRestore) {
     // We must know the nav entry ID of the page we are navigating back to,
     // which should be the case because history navigations are routed via the
     // browser.
@@ -3031,7 +3034,14 @@ void RenderFrameImpl::CommitFailedNavigation(
   if (page_state.IsValid())
     navigation_params->history_item = WebHistoryItem(page_state);
   if (!navigation_params->history_item.IsNull()) {
-    navigation_params->frame_load_type = WebFrameLoadType::kBackForward;
+    if (common_params->navigation_type ==
+            blink::mojom::NavigationType::RESTORE ||
+        common_params->navigation_type ==
+            blink::mojom::NavigationType::RESTORE_WITH_POST) {
+      navigation_params->frame_load_type = WebFrameLoadType::kRestore;
+    } else {
+      navigation_params->frame_load_type = WebFrameLoadType::kBackForward;
+    }
   } else if (common_params->should_replace_current_entry) {
     navigation_params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
@@ -5100,7 +5110,13 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
   // TODO(creis): Change PageState to FrameState.  In the meantime, we
   // store the relevant frame's WebHistoryItem in the root of the
   // PageState.
-  *load_type = blink::WebFrameLoadType::kBackForward;
+  if (navigation_type == blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT ||
+      navigation_type ==
+          blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT) {
+    *load_type = blink::WebFrameLoadType::kBackForward;
+  } else {
+    *load_type = blink::WebFrameLoadType::kRestore;
+  }
 
   // Keep track of which subframes the browser process has history items
   // for during a history navigation.

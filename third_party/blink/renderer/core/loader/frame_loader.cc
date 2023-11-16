@@ -155,13 +155,22 @@ bool IsBackForwardLoadType(WebFrameLoadType type) {
   return type == WebFrameLoadType::kBackForward;
 }
 
+bool IsBackForwardOrRestore(WebFrameLoadType type) {
+  return type == WebFrameLoadType::kBackForward ||
+         type == WebFrameLoadType::kRestore;
+}
+
+bool IsRestoreLoadType(WebFrameLoadType type) {
+  return type == WebFrameLoadType::kRestore;
+}
+
 bool IsReloadLoadType(WebFrameLoadType type) {
   return type == WebFrameLoadType::kReload ||
          type == WebFrameLoadType::kReloadBypassingCache;
 }
 
 bool FrameLoader::NeedsHistoryItemRestore(WebFrameLoadType type) {
-  return type == WebFrameLoadType::kBackForward || IsReloadLoadType(type);
+  return IsBackForwardOrRestore(type) || IsReloadLoadType(type);
 }
 
 ResourceRequest FrameLoader::ResourceRequestForReload(
@@ -550,6 +559,7 @@ static WebNavigationType DetermineNavigationType(
     bool have_event) {
   bool is_reload = IsReloadLoadType(frame_load_type);
   bool is_back_forward = IsBackForwardLoadType(frame_load_type);
+  bool is_restore = IsRestoreLoadType(frame_load_type);
   if (is_form_submission) {
     if (is_reload)
       return kWebNavigationTypeFormResubmittedReload;
@@ -563,6 +573,9 @@ static WebNavigationType DetermineNavigationType(
     return kWebNavigationTypeReload;
   if (is_back_forward)
     return kWebNavigationTypeBackForward;
+  if (is_restore) {
+    return kWebNavigationTypeRestore;
+  }
   return kWebNavigationTypeOther;
 }
 
@@ -583,6 +596,7 @@ DetermineRequestContextFromNavigationType(
 
     case kWebNavigationTypeBackForward:
     case kWebNavigationTypeReload:
+    case kWebNavigationTypeRestore:
       return mojom::blink::RequestContextType::INTERNAL;
   }
   NOTREACHED();
@@ -601,6 +615,7 @@ DetermineRequestDestinationFromNavigationType(
       return network::mojom::RequestDestination::kDocument;
     case kWebNavigationTypeBackForward:
     case kWebNavigationTypeReload:
+    case kWebNavigationTypeRestore:
       return network::mojom::RequestDestination::kEmpty;
   }
   NOTREACHED();
@@ -609,7 +624,7 @@ DetermineRequestDestinationFromNavigationType(
 
 void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                   WebFrameLoadType frame_load_type) {
-  CHECK(!IsBackForwardLoadType(frame_load_type));
+  CHECK(!IsBackForwardOrRestore(frame_load_type));
   DCHECK(request.GetTriggeringEventInfo() !=
          mojom::blink::TriggeringEventInfo::kUnknown);
   DCHECK(frame_->GetDocument());
@@ -1048,13 +1063,13 @@ void FrameLoader::CommitNavigation(
     frame_for_navigate_event = frame_->GetPreviousLocalFrameForLocalSwap();
   }
   auto url_origin = SecurityOrigin::Create(navigation_params->url);
-  if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward &&
+  if (IsBackForwardOrRestore(navigation_params->frame_load_type) &&
       frame_for_navigate_event->DomWindow()
           ->GetSecurityOrigin()
           ->IsSameOriginWith(url_origin.get())) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         navigation_params->url, NavigateEventType::kCrossDocument,
-        WebFrameLoadType::kBackForward);
+        navigation_params->frame_load_type);
     if (navigation_params->is_browser_initiated)
       params->involvement = UserNavigationInvolvement::kBrowserUI;
     params->destination_item = navigation_params->history_item;
@@ -1433,8 +1448,7 @@ bool FrameLoader::ShouldPerformFragmentNavigation(bool is_form_submission,
   // explicitly reloading, currently displaying a frameset, or if the URL does
   // not have a fragment.
   return EqualIgnoringASCIICase(http_method, http_names::kGET) &&
-         !IsReloadLoadType(load_type) &&
-         load_type != WebFrameLoadType::kBackForward &&
+         !IsReloadLoadType(load_type) && !IsBackForwardOrRestore(load_type) &&
          url.HasFragmentIdentifier() &&
          // For provisional LocalFrame, there is no real document loaded and
          // the initial empty document should not be considered, so there is
@@ -1460,7 +1474,7 @@ void FrameLoader::ProcessFragment(const KURL& url,
   // restoring the past scroll offset during a history navigation. In these
   // cases we assume the scroll was restored from history (by the page).
   const bool uses_manual_scroll_restoration =
-      frame_load_type == WebFrameLoadType::kBackForward &&
+      IsBackForwardOrRestore(frame_load_type) &&
       GetDocumentLoader()->GetHistoryItem() &&
       GetDocumentLoader()->GetHistoryItem()->ScrollRestorationType() ==
           mojom::blink::ScrollRestorationType::kManual;
@@ -1483,7 +1497,7 @@ void FrameLoader::ProcessFragment(const KURL& url,
   // should still be able to click on a same-document fragment link and have it
   // jump to the anchor).
   const bool is_same_document_non_history_nav =
-      is_same_document_navigation && !IsBackForwardLoadType(frame_load_type);
+      is_same_document_navigation && !IsBackForwardOrRestore(frame_load_type);
 
   const bool block_fragment_scroll =
       blocked_by_policy ||

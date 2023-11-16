@@ -866,6 +866,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
       blink::kWebNavigationTypeFormSubmitted,
       blink::kWebNavigationTypeBackForward,
       blink::kWebNavigationTypeReload,
+      blink::kWebNavigationTypeRestore,
       blink::kWebNavigationTypeFormResubmittedBackForward,
       blink::kWebNavigationTypeFormResubmittedReload,
       blink::kWebNavigationTypeOther,

@@ -104,6 +104,7 @@ const char* WebNavigationTypeToString(blink::WebNavigationType type) {
     case blink::kWebNavigationTypeFormSubmitted:
       return kFormSubmittedString;
     case blink::kWebNavigationTypeBackForward:
+    case blink::kWebNavigationTypeRestore:
       return kBackForwardString;
     case blink::kWebNavigationTypeReload:
       return kReloadString;
