@@ -304,6 +304,14 @@ android_library("cronet_api_helpers_java") {
   ]
 }
 
+# CronetStatsLog uses `android.util.StatsLog` which is not in the public SDK,
+# hence this separate target pointed at the system SDK.
+android_library("cronet_stats_log_java") {
+  sources = [ "java/src/org/chromium/net/telemetry/CronetStatsLog.java" ]
+  alternative_android_sdk_dep =
+      "//third_party/android_sdk:public_framework_system_java"
+}
+
 cronet_impl_common_java_srcjar_deps = [
   ":http_cache_type_java",
   ":load_states_list",
@@ -311,8 +319,10 @@ cronet_impl_common_java_srcjar_deps = [
   "//net:effective_connection_type_java",
 ]
 
-cronet_impl_common_java_deps_to_package =
-    [ "//net/android:net_thread_stats_uid_java" ]
+cronet_impl_common_java_deps_to_package = [
+  ":cronet_stats_log_java",
+  "//net/android:net_thread_stats_uid_java",
+]
 
 # cronet_impl_common_base_java.jar - common Cronet code that is shared
 # by all Cronet engine implementations.
@@ -336,6 +346,10 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
     "java/src/org/chromium/net/impl/UserAgent.java",
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+    "java/src/org/chromium/net/telemetry/CronetLoggerImpl.java",
+    "java/src/org/chromium/net/telemetry/ExperimentalOptions.java",
+    "java/src/org/chromium/net/telemetry/RateLimiter.java",
+    "java/src/org/chromium/net/telemetry/SizeBuckets.java",
     _generated_implementation_api_version_java,
   ]
 
@@ -1202,6 +1216,10 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+    "test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java",
+    "test/javatests/src/org/chromium/net/telemetry/ExperimentalOptionsTest.java",
+    "test/javatests/src/org/chromium/net/telemetry/RateLimiterTest.java",
+    "test/javatests/src/org/chromium/net/telemetry/SizeBucketsTest.java",
     "test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",
     "test/javatests/src/org/chromium/net/urlconnection/CronetChunkedOutputStreamTest.java",
     "test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",

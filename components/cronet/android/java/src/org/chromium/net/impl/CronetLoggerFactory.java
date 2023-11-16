@@ -88,6 +88,8 @@ public final class CronetLoggerFactory {
         }
     }
 
+    // TODO(edechamps): get rid of this and just use the built-in
+    // org.chromium.net.telemetry.CronetLoggerImpl directly instead.
     private static Class<? extends CronetLogger> fetchLoggerImplClass() {
         ClassLoader loader = CronetLoggerFactory.class.getClassLoader();
         try {
