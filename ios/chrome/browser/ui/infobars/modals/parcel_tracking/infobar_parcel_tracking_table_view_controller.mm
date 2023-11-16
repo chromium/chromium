@@ -88,10 +88,6 @@ NSString* const kCarrierKey = @"carrier";
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  self.tableView.tableFooterView = [self reportIssueButton];
-  self.tableView.tableFooterView.frame =
-      CGRectMake(0, 0, self.tableView.bounds.size.width, kFooterFrameHeight);
-
   [self loadModel];
 }
 
@@ -149,8 +145,11 @@ NSString* const kCarrierKey = @"carrier";
                  addTarget:self
                     action:@selector(trackButtonWasPressed:)
           forControlEvents:UIControlEventTouchUpInside];
-      tableViewTextButtonCell.separatorInset =
-          UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
+      // Hide the separator if "Track This Parcel" button is displayed.
+      if (!trackingParcels_) {
+        tableViewTextButtonCell.separatorInset =
+            UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
+      }
       break;
     }
     case ItemType::kTrackingNumber: {
@@ -167,6 +166,16 @@ NSString* const kCarrierKey = @"carrier";
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   return cell;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  return [self reportIssueButton];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  return kFooterFrameHeight;
 }
 
 #pragma mark - InfobarParcelTrackingModalConsumer
@@ -193,7 +202,6 @@ NSString* const kCarrierKey = @"carrier";
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.attributedTitle = [self reportIssueString];
   button.configuration = buttonConfiguration;
-  button.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
   [button addTarget:self
                 action:@selector(reportIssueButtonWasPressed:)
       forControlEvents:UIControlEventTouchUpInside];
