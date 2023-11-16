@@ -194,13 +194,13 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
           kSuggestion.main_text,
           GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
   popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
-                                controller);
+                                controller->GetPopupType());
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),
       /*description_label=*/nullptr,
-      popup_cell_utils::CreateAndTrackSubtextViews(*view, controller,
-                                                   line_number),
+      popup_cell_utils::CreateAndTrackSubtextViews(*view, kSuggestion,
+                                                   controller->GetPopupType()),
       *view);
 
   // Setup a layout of the delete button for Autocomplete entries.

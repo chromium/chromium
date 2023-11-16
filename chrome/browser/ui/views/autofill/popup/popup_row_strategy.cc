@@ -77,13 +77,13 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
           kSuggestion.main_text,
           GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
   popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
-                                GetController());
+                                GetController()->GetPopupType());
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),
       /*description_label=*/nullptr,
-      popup_cell_utils::CreateAndTrackSubtextViews(view, GetController(),
-                                                   GetLineNumber()),
+      popup_cell_utils::CreateAndTrackSubtextViews(
+          view, kSuggestion, GetController()->GetPopupType()),
       view);
 }
 
@@ -116,7 +116,8 @@ PopupComposeSuggestionStrategy::CreateContent() {
       /*minor_text_label=*/nullptr,
       /*description_label=*/nullptr, /*subtext_views=*/
       popup_cell_utils::CreateAndTrackSubtextViews(
-          *view, GetController(), GetLineNumber(), views::style::STYLE_BODY_4),
+          *view, kSuggestion, GetController()->GetPopupType(),
+          views::style::STYLE_BODY_4),
       *view);
 
   return view;

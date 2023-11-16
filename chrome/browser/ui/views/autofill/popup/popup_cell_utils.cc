@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -470,11 +471,10 @@ void AddSuggestionContentToView(
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
-                 base::WeakPtr<const AutofillPopupController> controller) {
-  DCHECK(controller);
-  if (controller->GetPopupType() == PopupType::kAddresses) {
+                 PopupType popup_type) {
+  if (popup_type == PopupType::kAddresses) {
     label.SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
-  } else if (controller->GetPopupType() == PopupType::kCreditCards &&
+  } else if (popup_type == PopupType::kCreditCards &&
              text.should_truncate.value()) {
     // should_truncate should only be set to true iff the experiments are
     // enabled.
@@ -507,15 +507,14 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
 
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
+    const Suggestion& suggestion,
+    PopupType popup_type,
     int text_style) {
   std::vector<std::unique_ptr<views::View>> result;
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
-  for (const std::vector<Suggestion::Text>& label_row :
-       controller->GetSuggestionAt(line_number).labels) {
+  for (const std::vector<Suggestion::Text>& label_row : suggestion.labels) {
     if (base::ranges::all_of(label_row, &std::u16string::empty,
                              &Suggestion::Text::value)) {
       // If a row is empty, do not include any further rows.
@@ -537,7 +536,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
               label_text.value,
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL, text_style));
       content_view.TrackLabel(label);
-      FormatLabel(*label, label_text, controller);
+      FormatLabel(*label, label_text, popup_type);
     }
     result.push_back(std::move(label_row_container_view));
   }
@@ -545,21 +544,18 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
   return result;
 }
 
-void AddSuggestionStrategyContentCellChildren(
-    PopupRowContentView* view,
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  DCHECK(controller);
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
+                                              const Suggestion& suggestion,
+                                              PopupType popup_type) {
   // Add the label views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
-  FormatLabel(*main_text_label, kSuggestion.main_text, controller);
+      suggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
+  FormatLabel(*main_text_label, suggestion.main_text, popup_type);
   AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      CreateMinorTextLabel(kSuggestion.minor_text),
+      suggestion, std::move(main_text_label),
+      CreateMinorTextLabel(suggestion.minor_text),
       /*description_label=*/nullptr,
-      CreateAndTrackSubtextViews(*view, controller, line_number), *view);
+      CreateAndTrackSubtextViews(*view, suggestion, popup_type), *view);
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
