@@ -162,6 +162,27 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         account, idp_data, show_back_button);
   }
 
+  void CreateMultiAccountPicker(
+      const std::vector<std::string>& account_suffixes,
+      bool supports_add_account = false) {
+    std::vector<content::IdentityRequestAccount> account_list =
+        CreateTestIdentityRequestAccounts(
+            account_suffixes,
+            content::IdentityRequestAccount::LoginState::kSignUp);
+
+    CreateAccountSelectionBubble(/*exclude_title=*/false,
+                                 /*exclude_iframe=*/true,
+                                 /*show_auto_reauthn_checkbox=*/false);
+    std::vector<IdentityProviderDisplayData> idp_data;
+    content::IdentityProviderMetadata metadata;
+    metadata.supports_add_account = supports_add_account;
+    idp_data.emplace_back(kIdpETLDPlusOne, metadata,
+                          CreateTestClientMetadata(/*terms_of_service_url=*/""),
+                          account_list,
+                          /*request_permission=*/true);
+    dialog_->ShowMultiAccountPicker(idp_data);
+  }
+
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true,
@@ -307,23 +328,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
       bool expect_idp_brand_icon_in_header,
       bool expect_idp_row) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-
-    {
-      std::vector<content::IdentityRequestAccount> account_list =
-          CreateTestIdentityRequestAccounts(
-              kAccountSuffixes,
-              content::IdentityRequestAccount::LoginState::kSignUp);
-
-      CreateAccountSelectionBubble(/*exclude_title=*/false,
-                                   /*exclude_iframe=*/true,
-                                   /*show_auto_reauthn_checkbox=*/false);
-      std::vector<IdentityProviderDisplayData> idp_data;
-      idp_data.emplace_back(
-          kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
-          /*request_permission=*/true);
-      dialog_->ShowMultiAccountPicker(idp_data);
-    }
+    CreateMultiAccountPicker(kAccountSuffixes);
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
@@ -592,6 +597,23 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn, /*expected_subtitle=*/absl::nullopt,
                        /*expect_idp_brand_icon_in_header=*/true,
                        /*expect_idp_row=*/false);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, AddAccount) {
+  const std::vector<std::string> kAccountSuffixes = {"0"};
+  CreateMultiAccountPicker(kAccountSuffixes, true);
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+
+  views::ScrollView* scroll_view = static_cast<views::ScrollView*>(children[2]);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 2u);
+
+  // Check the "Add Account" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(scroll_view->contents()->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(), u"Add Account");
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {

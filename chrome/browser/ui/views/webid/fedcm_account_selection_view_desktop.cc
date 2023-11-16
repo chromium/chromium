@@ -65,7 +65,11 @@ void FedCmAccountSelectionView::Show(
     bool show_auto_reauthn_checkbox) {
   // If IDP sign-in modal dialog is open, we delay the showing of the accounts
   // dialog until the modal dialog is destroyed.
-  if (popup_window_ && state_ == State::IDP_SIGNIN_STATUS_MISMATCH) {
+  // The sign-in modal dialog can be triggered either from the "Continue" button
+  // on the mismatch dialog or the "Add Account" button from the account
+  // chooser.
+  if (popup_window_ && (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
+                        state_ == State::ACCOUNT_PICKER)) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     show_accounts_dialog_callback_ = base::BindOnce(
@@ -131,7 +135,8 @@ void FedCmAccountSelectionView::Show(
     DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
     ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
                        idp_display_data_list_[0]);
-  } else if (accounts_size == 1u) {
+  } else if (accounts_size == 1u &&
+             !idp_display_data_list_[0].idp_metadata.supports_add_account) {
     state_ = State::PERMISSION;
     GetBubbleView()->ShowSingleAccountConfirmDialog(
         top_frame_for_display_, iframe_for_display_,
@@ -501,14 +506,17 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 
 void FedCmAccountSelectionView::CloseModalDialog() {
   if (popup_window_) {
-    // If the pop-up window is for IDP sign-in status, we do not destroy the
-    // bubble widget and wait for the accounts fetch before displaying a dialog.
+    // If the pop-up window is for IDP sign-in (as triggered from the mismatch
+    // dialog or the add account button from the account chooser), we do not
+    // destroy the bubble widget and wait for the accounts fetch before
+    // displaying a dialog.
     // Otherwise if the pop-up window is for AuthZ or error, we destroy the
     // bubble widget and any incoming accounts fetches would not display any
     // dialog.
     // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
     // for AuthZ/error.
-    if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH) {
+    if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
+        state_ == State::ACCOUNT_PICKER) {
       should_destroy_bubble_widget_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();

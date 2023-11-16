@@ -1289,7 +1289,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   fetch_data_ = FetchData();
 
-  DCHECK(idp_data_for_display_.empty());
+  if (IsFedCmAddAccountEnabled()) {
+    // This map may have contents already if we came here through the "Add
+    // Account" flow.
+    idp_data_for_display_.clear();
+  } else {
+    CHECK(idp_data_for_display_.empty());
+  }
 
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
