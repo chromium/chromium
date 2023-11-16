@@ -1152,6 +1152,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
   // Now, set to fullscreen.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+#endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
       .Times(1);
@@ -1166,6 +1169,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
   // Unfullscreen
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+#endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
@@ -1200,6 +1206,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   SendConfigureEvent(surface_id_, {2000, 2000}, states);
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+#endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
       .Times(1);
@@ -1214,6 +1223,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
   // Restore
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+#endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);

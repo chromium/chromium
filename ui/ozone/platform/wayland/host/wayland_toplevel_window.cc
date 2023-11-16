@@ -548,23 +548,24 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
       is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
-    // The immersive state change has finished and we need to inform the
-    // browser/app that the transition is done.
     is_immersive_fullscreen_ = window_states.is_immersive_fullscreen;
     delegate()->OnImmersiveModeChanged(is_immersive_fullscreen_);
   }
 
-  if (is_fullscreen_ != window_states.is_fullscreen &&
-      !!requested_window_show_state_count_) {
+  if (is_fullscreen_ != window_states.is_fullscreen) {
+    is_fullscreen_ = window_states.is_fullscreen;
     // The fullscreen state change has finished and we we need to inform the
     // browser/app that the transition is done.
     delegate()->OnFullscreenModeChanged();
-    is_fullscreen_ = window_states.is_fullscreen;
   }
 #endif
 
-  const bool did_send_delegate_notification =
-      !!requested_window_show_state_count_;
+  // Should skip notifying OnWindowStateChanged() when there are incoming
+  // responses for the window show state requests to avoid notifying more than
+  // once.
+  // TODO(crbug.com/1502744): Implement notification logic correctly.
+  const bool skip_window_state_changed_notification =
+      (requested_window_show_state_count_ > 0);
   if (requested_window_show_state_count_)
     requested_window_show_state_count_--;
 
@@ -615,7 +616,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Thus, we must store previous bounds to restore later.
   SetOrResetRestoredBounds();
 
-  if (old_state != state_ && !did_send_delegate_notification) {
+  if (old_state != state_ && !skip_window_state_changed_notification) {
     previous_state_ = old_state;
     delegate()->OnWindowStateChanged(previous_state_, state_);
   }
