@@ -1241,8 +1241,7 @@ PrefetchService::OnPrefetchResponseStarted(
               retry_after_string, base::Time::Now(), &retry_after) &&
           delegate_) {
         // Cap the retry after value to a maximum.
-        static constexpr base::TimeDelta max_retry_after =
-            base::Seconds(1 * 60 * 60 * 24 * 7 /* 1 week */);
+        static constexpr base::TimeDelta max_retry_after = base::Days(7);
         if (retry_after > max_retry_after) {
           retry_after = max_retry_after;
         }

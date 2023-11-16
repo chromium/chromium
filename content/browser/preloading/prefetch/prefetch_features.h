@@ -28,6 +28,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrefetchReusableBodySizeLimit;
 
+// If enabled, navigational prefetch is scoped to the referring document's
+// network isolation key instead of the old behavior of the referring document
+// itself. See crbug.com/1502326
 BASE_DECLARE_FEATURE(kPrefetchNIKScope);
 
 }  // namespace content::features
