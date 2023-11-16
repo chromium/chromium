@@ -557,9 +557,10 @@ struct ASH_PUBLIC_EXPORT FileMetadata {
   ~FileMetadata();
 
   base::File::Info file_info;
-  std::string mime_type;
   base::FilePath file_path;
-  base::FilePath virtual_path;
+  base::FilePath file_name;
+  // The folder path that is formatted for display.
+  base::FilePath displayable_folder_path;
 };
 
 class ASH_PUBLIC_EXPORT FileMetadataLoader {

@@ -65,10 +65,9 @@ ash::FileMetadata MetadataLoaderForTest() {
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
 
   metadata.file_info.last_modified = last_modified;
-  metadata.file_info.size = 20 * 1024.0;  // 20.0 KB
-  metadata.mime_type = "image/jpeg";
   metadata.file_path = base::FilePath("full file path");
-  metadata.virtual_path = base::FilePath("virtual file path");
+  metadata.file_name = base::FilePath("file name");
+  metadata.displayable_folder_path = base::FilePath("displayable folder");
   return metadata;
 }
 
@@ -408,12 +407,11 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   // the narrowed space \x202F is used in formatting the time of the day.
   const std::vector<views::Label*>& content_labels =
       image_list_view->metadata_content_labels_for_test();
-  EXPECT_EQ(content_labels[0]->GetText(), u"20.0 KB");
-  EXPECT_EQ(content_labels[1]->GetText(),
-            u"Dec 23, 2021, 9:01\x202F"
+  EXPECT_EQ(content_labels[0]->GetText(), u"file name");
+  EXPECT_EQ(content_labels[1]->GetText(), u"displayable folder");
+  EXPECT_EQ(content_labels[2]->GetText(),
+            u"Modified Dec 23, 2021, 9:01\x202F"
             u"AM");
-  EXPECT_EQ(content_labels[2]->GetText(), u"image/jpeg");
-  EXPECT_EQ(content_labels[3]->GetText(), u"virtual file path");
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 

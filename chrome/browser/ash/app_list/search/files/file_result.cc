@@ -81,10 +81,10 @@ ash::FileMetadata GetFileMetadata(base::FilePath file_path,
   base::File::Info info;
   if (base::GetFileInfo(file_path, &info)) {
     metadata.file_info = info;
-    net::GetMimeTypeFromFile(file_path, &metadata.mime_type);
   }
   metadata.file_path = file_path;
-  metadata.virtual_path = displayable_path;
+  metadata.file_name = displayable_path.BaseName();
+  metadata.displayable_folder_path = displayable_path.DirName();
 
   return metadata;
 }

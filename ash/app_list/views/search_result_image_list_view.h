@@ -14,7 +14,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
-class BoxLayoutView;
 class FlexLayoutView;
 class Label;
 }  // namespace views
@@ -51,7 +50,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // `image_info_container_` if needed.
   void OnImageMetadataLoaded(ash::FileMetadata metadata);
 
-  const views::BoxLayoutView* image_info_container_for_test() const {
+  const views::FlexLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
   }
   const std::vector<views::Label*>& metadata_content_labels_for_test() const {
@@ -73,15 +72,13 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
-  raw_ptr<views::BoxLayoutView> image_info_container_ = nullptr;
-  raw_ptr<views::FlexLayoutView> image_info_title_container_ = nullptr;
-  raw_ptr<views::FlexLayoutView> image_info_content_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> image_info_container_ = nullptr;
 
   std::vector<SearchResultImageView*> image_views_;
 
   // Labels that show the file metadata in `image_info_container_`. There should
-  // always be 4 labels, which in the order of {file size, date modified, mime
-  // type, file path}.
+  // always be 3 labels, which in the order of {file name, file directory, date
+  // modified}.
   std::vector<views::Label*> metadata_content_labels_;
 
   base::WeakPtrFactory<SearchResultImageListView> weak_ptr_factory_{this};
