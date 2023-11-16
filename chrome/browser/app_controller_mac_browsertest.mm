@@ -238,53 +238,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
   // Let the run loop get flushed, during process cleanup and try not to crash.
 }
 
-// Regression test for https://crbug.com/1236073
-// TODO(crbug.com/1373692): Extremely flaky on the mac12-arm64-rel bot.
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       DISABLED_DeleteEphemeralProfile) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  Profile* profile = browser()->profile();
-  // Activate the first profile.
-  [NSNotificationCenter.defaultCenter
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser()
-                               ->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  AppController* app_controller = AppController.sharedController;
-  ASSERT_EQ(profile, app_controller.lastProfileIfLoaded);
-
-  // Mark the profile as ephemeral.
-  profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  EXPECT_TRUE(entry->IsEphemeral());
-
-  // Add sentinel data to observe profile destruction. Ephemeral profiles are
-  // destroyed immediately upon browser close.
-  ProfileDestructionWaiter waiter(profile);
-
-  // Close browser and wait for the profile to be deleted.
-  CloseBrowserSynchronously(browser());
-  waiter.Wait();
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-
-  // Create a new profile and activate it.
-  Profile& profile2 = CreateAndWaitForProfile(
-      profile_manager->user_data_dir().AppendASCII("Profile 2"));
-  Browser* browser2 = CreateBrowser(&profile2);
-  // This should not crash.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser2->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  ASSERT_EQ(&profile2, app_controller.lastProfileIfLoaded);
-}
-
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
  protected:
   AppControllerKeepAliveBrowserTest() {

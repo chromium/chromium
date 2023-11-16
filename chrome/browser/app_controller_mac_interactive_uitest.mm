@@ -7,14 +7,19 @@
 #include <string>
 
 #import "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,16 +34,60 @@ void SendOpenUrlToAppController(const GURL& url) {
   [NSApp.delegate application:NSApp openURLs:@[ net::NSURLWithGURL(url) ]];
 }
 
+// Note: These tests interact with SharedController which requires the browser's
+// focus. In browser_tests other tests that are running in parallel cause
+// flakiness to test test. See: https://crbug.com/1469960
+
+// -------------------AppControllerInteractiveUITest-------------------
+
+using AppControllerInteractiveUITest = InProcessBrowserTest;
+
+// Regression test for https://crbug.com/1236073
+IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  Profile* profile = browser()->profile();
+
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile, app_controller.lastProfileIfLoaded);
+
+  // Mark the profile as ephemeral.
+  profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  EXPECT_TRUE(entry->IsEphemeral());
+
+  // Add sentinel data to observe profile destruction. Ephemeral profiles are
+  // destroyed immediately upon browser close.
+  ProfileDestructionWaiter waiter(profile);
+
+  // Close browser and wait for the profile to be deleted.
+  CloseBrowserSynchronously(browser());
+  waiter.Wait();
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Create a new profile and activate it.
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      profile_manager->user_data_dir().AppendASCII("Profile 2"));
+  Browser* browser2 = CreateBrowser(&profile2);
+  // This should not crash.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:browser2->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  ASSERT_EQ(&profile2, app_controller.lastProfileIfLoaded);
+}
+
 // -------------------AppControllerMainMenuInteractiveUITest-------------------
 
 class AppControllerMainMenuInteractiveUITest : public InProcessBrowserTest {
  protected:
   AppControllerMainMenuInteractiveUITest() = default;
 };
-
-// Note: These tests interact with SharedController which requires the browser's
-// focus. In browser_tests other tests that are running in parallel cause
-// flakiness to test test. See: https://crbug.com/1469960
 
 // Test switching from Regular to OTR profiles updates the history menu.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
