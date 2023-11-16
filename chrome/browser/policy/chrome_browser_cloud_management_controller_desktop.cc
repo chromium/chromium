@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
@@ -189,6 +190,21 @@ void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
     policy_invalidator_->Shutdown();
   if (commands_invalidator_)
     commands_invalidator_->Shutdown();
+
+  policy_invalidator_.reset();
+  commands_invalidator_.reset();
+  invalidation_service_.reset();
+  device_instance_id_driver_.reset();
+  identity_provider_.reset();
+
+  // In some tests, `DCHECK_CURRENTLY_ON(content::BrowserThread::UI)` fails.
+  // Such tests have not initialized device_oauth2_token_service anyway, so skip
+  // calling Shutdown() for the service.
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    CHECK_IS_TEST();
+    return;
+  }
+  DeviceOAuth2TokenServiceFactory::Shutdown();
 }
 
 MachineLevelUserCloudPolicyManager*
