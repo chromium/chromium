@@ -308,15 +308,19 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 }
 
-// Tests that upon identity selection, the SaveToPhotosMediator hides the
-// account picker, and once the account picker is hidden, it uploads the image
-// it has fetched from the image fetch tab helper and shows snackbar messages
-// 1. when it starts uploading the image and,
-// 2. when the PhotosService reports upload completion.
+// Tests that upon identity selection, the SaveToPhotosMediator starts the
+// validation spinner in the account picker, it uploads the image it has fetched
+// from the image fetch tab helper, hides the account picker and shows a
+// snackbar message when the PhotosService reports upload completion.
 TEST_F(SaveToPhotosMediatorTest,
-       DidSelectIdentityUploadsImageAndShowsSnackbarMessages) {
+       DidSelectIdentityUploadsImageAndShowsSnackbarMessage) {
   // The feature requires the user being signed-in.
   SignIn();
+
+  // This test assumes there is no default account memorized for Save to Photos.
+  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  browser_state_->GetPrefs()->ClearPref(
+      prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -337,22 +341,21 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_TRUE(GetTestPhotosService()->IsAvailable());
   EXPECT_EQ(GetTestPhotosService()->GetIdentity(), nil);
 
-  // Expect that the mediator will hide the account picker when it knows what
-  // identity has been selected.
-  OCMExpect([mock_save_to_photos_mediator_delegate hideAccountPicker]);
+  // Expect that the mediator start the validation spinner in the account picker
+  // when it knows what identity has been selected.
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      startValidationSpinnerForAccountPicker]);
+
+  // Run until the mediator calls the Photos service.
+  SetUpPhotosServiceQuitClosure();
 
   // Give the selected identity to the mediator and verify that the mediator
-  // asked to hide the account picker.
+  // asked to start the validation spinner in the account picker.
   [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
   histogram_tester_.ExpectUniqueSample(
       kSaveToPhotosAccountPickerActionsHistogram,
       SaveToPhotosAccountPickerActions::kSelectedIdentity, 1);
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
-
-  // Notify the mediator that the account picker was hidden and run until it
-  // calls the Photos service.
-  SetUpPhotosServiceQuitClosure();
-  [mediator accountPickerWasHidden];
 
   // Test that the PhotosService is now unavailable and has been given an image
   // to upload.
@@ -362,8 +365,17 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_NSEQ(GetTestPhotosService()->GetImageData(), GetFakeImageData());
   EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
 
-  // Expect that the success snackbar is shown once the PhotosService is done
+  // Expect that the account picker is hidden once the PhotosService is done
   // uploading.
+  OCMExpect([mock_save_to_photos_mediator_delegate hideAccountPicker]);
+
+  // Run until the PhotosService finishes to upload the image and check that the
+  // account picker was hidden.
+  task_environment_.RunUntilQuit();
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  // Expect that the success snackbar is shown once the account picker is
+  // hidden.
   NSString* expected_message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
       base::SysNSStringToUTF16(fake_identity_.userEmail));
@@ -375,11 +387,62 @@ TEST_F(SaveToPhotosMediatorTest,
                 messageAction:[OCMArg isNotNil]
              completionAction:[OCMArg isNotNil]]);
 
-  // Run until the PhotosService finishes to upload the image.
-  task_environment_.RunUntilQuit();
+  [mediator accountPickerWasHidden];
 
   // Verify that the success snackbar has been shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+}
+
+// Tests after the account picker has been displayed, the user can dismiss it
+// using the "Cancel" button.
+TEST_F(SaveToPhotosMediatorTest, DidCancelBeforeUploadDismissesAccountPicker) {
+  // The feature requires the user being signed-in.
+  SignIn();
+
+  // This test assumes there is no default account memorized for Save to Photos.
+  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  browser_state_->GetPrefs()->ClearPref(
+      prefs::kIosSaveToPhotosSkipAccountPicker);
+
+  // Create a mediator and set up with mock delegate.
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  // Start the mediator and run until the image has been fetched and processed
+  // by the mediator.
+  SetUpImageFetchTabHelperQuitClosure();
+  [mediator startWithImageURL:GURL(kFakeImageUrl)
+                     referrer:web::Referrer()
+                     webState:web_state_.get()];
+  task_environment_.RunUntilQuit();
+
+  // Test that the PhotosService has not been used to upload an image yet.
+  EXPECT_TRUE(GetTestPhotosService()->IsAvailable());
+  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), nil);
+
+  // Expect that the mediator hides the account picker when "Cancel" has been
+  // tapped.
+  OCMExpect([mock_save_to_photos_mediator_delegate hideAccountPicker]);
+
+  // Give the selected identity to the mediator and verify that the mediator
+  // asked to start the validation spinner in the account picker.
+  [mediator accountPickerDidCancel];
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosAccountPickerActionsHistogram,
+      SaveToPhotosAccountPickerActions::kCancelled, 1);
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  // Expect that the mediator hides Save to Photos the account picker is hidden.
+  OCMExpect([mock_save_to_photos_mediator_delegate hideSaveToPhotos]);
+  // Let the mediator know that the account picker was hidden.
+  [mediator accountPickerWasHidden];
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosActionsHistogram,
+      SaveToPhotosActions::kFailureUserCancelledWithAccountPicker, 1);
 }
 
 // Tests that the SaveToPhotosMediator tries to open the Google Photos app if it

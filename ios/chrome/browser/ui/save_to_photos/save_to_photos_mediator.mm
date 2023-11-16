@@ -74,6 +74,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   id<SystemIdentity> _identity;
   BOOL _userTappedSuccessSnackbarButton;
   base::TimeTicks _uploadStart;
+  BOOL _showingAccountPicker;
   BOOL _successSnackbarAppeared;
   BOOL _successSnackbarDisappeared;
   BOOL _uploadCompletedSuccessfully;
@@ -143,7 +144,6 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   base::UmaHistogramEnumeration(
       kSaveToPhotosAccountPickerActionsHistogram,
       SaveToPhotosAccountPickerActions::kSelectedIdentity);
-  [self.delegate hideAccountPicker];
 
   // Memorize the account that was picked and whether to ask which account to
   // use every time.
@@ -153,12 +153,25 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                            !askEveryTime);
 
   _identity = identity;
+
+  [self.delegate startValidationSpinnerForAccountPicker];
+  [self tryUploadImage];
 }
 
 - (void)accountPickerDidCancel {
-  base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
-                                SaveToPhotosAccountPickerActions::kCancelled);
-  [self.delegate hideAccountPicker];
+  if (!_identity) {
+    base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
+                                  SaveToPhotosAccountPickerActions::kCancelled);
+    [self.delegate hideAccountPicker];
+    _showingAccountPicker = NO;
+    return;
+  }
+
+  // If `_identity` is not nil while the account picker is presented, that means
+  // the user has already tapped "Save" for a given identity.
+  _photosService->CancelUpload();
+  [self.delegate stopValidationSpinnerForAccountPicker];
+  _identity = nil;
 }
 
 - (void)accountPickerWasHidden {
@@ -169,7 +182,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     [self.delegate hideSaveToPhotos];
     return;
   }
-  [self tryUploadImage];
+
+  // If `_identity` is not nil at this point, then an image has been uploaded
+  // with this identity successfully.
+  [self showSnackbarWithSuccessMessageAndOpenButton];
 }
 
 - (void)storeKitWantsToHide {
@@ -248,6 +264,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
       IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
   [self.delegate showAccountPickerWithConfiguration:configuration
                                    selectedIdentity:defaultIdentity];
+  _showingAccountPicker = YES;
 }
 
 // Once the destination account is known, tries to upload the image using the
@@ -270,7 +287,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     return;
   }
 
-  // Else start uploading the image and let the user know with a snackbar.
+  // Else start uploading the image.
   auto uploadCompletionCallback =
       base::BindOnce(^(PhotosService::UploadResult result) {
         [weakSelf photosServiceFinishedUploadWithResult:result];
@@ -294,7 +311,9 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     base::UmaHistogramTimes("IOS.SaveToPhotos.UploadFailureLatency",
                             base::TimeTicks::Now() - _uploadStart);
     __weak __typeof(self) weakSelf = self;
+    [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
+      [weakSelf.delegate startValidationSpinnerForAccountPicker];
       [weakSelf tryUploadImage];
     }];
     return;
@@ -303,6 +322,17 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
                           base::TimeTicks::Now() - _uploadStart);
   _uploadCompletedSuccessfully = YES;
+
+  // Option 1: user did not skip the account picker so it is on the screen now,
+  // and it can be hidden.
+  if (_showingAccountPicker) {
+    [self.delegate hideAccountPicker];
+    _showingAccountPicker = NO;
+    return;
+  }
+
+  // Option 2: user did skip the account picker and so it is not on the screen
+  // now.
 
   if (!_successSnackbarAppeared) {
     // If the success snackbar did not appear for some reason (no progress has
@@ -329,6 +359,12 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 - (void)photosServiceReportedUploadProgress:
     (const PhotosService::UploadProgress&)progress {
+  if (_showingAccountPicker) {
+    // If the account picker is presented, do nothing here.
+    return;
+  }
+
+  // Otherwise, if all of the image data has been uploaded, show success early.
   if (progress.total_bytes_sent == progress.total_bytes_expected_to_send) {
     [self showSnackbarWithSuccessMessageAndOpenButton];
   }
@@ -348,6 +384,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   NSString* tryAgainTitle = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_THIS_FILE_COULD_NOT_BE_UPLOADED_TRY_AGAIN);
   __weak __typeof(self.delegate) weakDelegate = self.delegate;
+  BOOL showingAccountPicker = _showingAccountPicker;
   [self.delegate
       showTryAgainOrCancelAlertWithTitle:title
                                  message:message
@@ -355,6 +392,15 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                           tryAgainAction:tryAgain
                              cancelTitle:cancelTitle
                             cancelAction:^{
+                              if (showingAccountPicker) {
+                                // Do nothing if the account picker is
+                                // presented. The alert will be dismissed and
+                                // the account picker will remain presented to
+                                // let the user pick another account if they
+                                // want to.
+                                return;
+                              }
+
                               base::UmaHistogramEnumeration(
                                   kSaveToPhotosActionsHistogram,
                                   SaveToPhotosActions::
@@ -393,15 +439,19 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 - (void)successSnackbarDisappearedUserTriggered:(BOOL)userTriggered {
   _successSnackbarDisappeared = YES;
   if (!_uploadCompletedSuccessfully) {
-    // If the upload has not completed, wait until it does to finish.
+    // If the upload has not completed, wait until it does to finish. The
+    // success snackbar can disappear before the upload has completed because it
+    // is presented early.
     return;
   }
 
-  // If the upload completed, maybe open the photo and finish.
+  // If the upload completed and the user tapped "Open", open the photo.
   if (_userTappedSuccessSnackbarButton) {
     [self openPhotosAppOrShowInStoreKit];
     return;
   }
+
+  // If the user did not interact with the snackbar, finish.
   base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
                                 SaveToPhotosActions::kSuccess);
   [self.delegate hideSaveToPhotos];

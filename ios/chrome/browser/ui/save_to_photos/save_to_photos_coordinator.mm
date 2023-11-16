@@ -120,6 +120,14 @@
   [_accountPickerCoordinator stopAnimated:YES];
 }
 
+- (void)startValidationSpinnerForAccountPicker {
+  [_accountPickerCoordinator startValidationSpinner];
+}
+
+- (void)stopValidationSpinnerForAccountPicker {
+  [_accountPickerCoordinator stopValidationSpinner];
+}
+
 - (void)showTryAgainOrCancelAlertWithTitle:(NSString*)title
                                    message:(NSString*)message
                              tryAgainTitle:(NSString*)tryAgainTitle
@@ -131,8 +139,14 @@
     _alertCoordinator = nil;
   }
 
+  UIViewController* alertBaseViewController =
+      self.baseViewController.presentedViewController;
+  if (!alertBaseViewController) {
+    alertBaseViewController = self.baseViewController;
+  }
+
   _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
+      initWithBaseViewController:alertBaseViewController
                          browser:self.browser
                            title:title
                          message:message];
