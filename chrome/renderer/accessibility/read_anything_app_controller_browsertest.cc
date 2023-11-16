@@ -248,6 +248,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetChildren(ax_node_id);
   }
 
+  std::string GetDataFontCss(ui::AXNodeID ax_node_id) {
+    return controller_->GetDataFontCss(ax_node_id);
+  }
+
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) {
     return controller_->GetHtmlTag(ax_node_id);
   }
@@ -266,6 +270,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsOverline(ui::AXNodeID ax_node_id) {
     return controller_->IsOverline(ax_node_id);
+  }
+
+  bool IsGoogleDocs() { return controller_->IsGoogleDocs(); }
+
+  bool IsLeafNode(ui::AXNodeID ax_node_id) {
+    return controller_->IsLeafNode(ax_node_id);
   }
 
   void OnLinkClicked(ui::AXNodeID ax_node_id) {
@@ -467,6 +477,57 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_TextFieldReturnsDiv) {
   EXPECT_EQ(div, GetHtmlTag(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_SvgReturnsDivIfGoogleDocs) {
+  std::string svg = "svg";
+  std::string div = "div";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+  update.nodes.resize(2);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2};
+  update.nodes[1].id = 2;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, svg);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  OnActiveAXTreeIDChanged(
+      id_1, GURL("https://docs.google.com/document/d/"
+                 "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+                 "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
+  EXPECT_TRUE(IsGoogleDocs());
+  EXPECT_EQ(div, GetHtmlTag(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetHtmlTag_paragraphWithTagGReturnsPIfGoogleDocs) {
+  std::string g = "g";
+  std::string p = "p";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[0].role = ax::mojom::Role::kParagraph;
+  update.nodes[1].role = ax::mojom::Role::kParagraph;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  OnActiveAXTreeIDChanged(
+      id_1, GURL("https://docs.google.com/document/d/"
+                 "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+                 "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
+  EXPECT_TRUE(IsGoogleDocs());
+  EXPECT_EQ("", GetHtmlTag(1));
+  EXPECT_EQ(p, GetHtmlTag(2));
+  EXPECT_EQ(g, GetHtmlTag(3));
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        GetHtmlTag_DivWithHeadingAndAriaLevelReturnsH) {
   std::string h3 = "h3";
@@ -544,6 +605,63 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
   EXPECT_EQ(" friend", GetTextContent(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       GetTextContent_UseNameAttributeTextIfGoogleDocs) {
+  std::string text_content = "Hello";
+  std::string more_text_content = "world";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[0].role = ax::mojom::Role::kParagraph;
+  update.nodes[1].id = 2;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                     text_content);
+  update.nodes[2].id = 3;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                     more_text_content);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  OnActiveAXTreeIDChanged(
+      id_1, GURL("https://docs.google.com/document/d/"
+                 "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+                 "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
+  EXPECT_TRUE(IsGoogleDocs());
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ(text_content, GetTextContent(2));
+  EXPECT_EQ(more_text_content, GetTextContent(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetTextContent_DoNotUseNameAttributeTextIfNotGoogleDocs) {
+  std::string text_content = "Hello";
+  std::string more_text_content = "world";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[0].role = ax::mojom::Role::kParagraph;
+  update.nodes[1].id = 2;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                     text_content);
+  update.nodes[2].id = 3;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                     more_text_content);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  OnActiveAXTreeIDChanged(id_1, GURL("https://www.google.com/"));
+  EXPECT_FALSE(IsGoogleDocs());
+  EXPECT_EQ("", GetTextContent(1));
+  EXPECT_EQ("", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   std::string http_url = "http://www.google.com";
   std::string https_url = "https://www.google.com";
@@ -595,6 +713,18 @@ TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
   EXPECT_EQ(true, ShouldBold(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetDataFontCss) {
+  std::string dataFontCss = "italic 400 14.6667px 'Courier New'";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(1);
+  update.nodes[0].id = 2;
+  update.nodes[0].html_attributes.emplace_back("data-font-css", dataFontCss);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(dataFontCss, GetDataFontCss(2));
+}
+
 TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -607,6 +737,35 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   OnAXTreeDistilled({});
   EXPECT_EQ(true, IsOverline(2));
   EXPECT_EQ(false, IsOverline(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsLeafNode) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(4);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3, 4};
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(false, IsLeafNode(1));
+  EXPECT_EQ(true, IsLeafNode(2));
+  EXPECT_EQ(true, IsLeafNode(3));
+  EXPECT_EQ(true, IsLeafNode(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  OnActiveAXTreeIDChanged(id_1, GURL("www.google.com"));
+  EXPECT_FALSE(IsGoogleDocs());
+
+  OnActiveAXTreeIDChanged(
+      tree_id_, GURL("https://docs.google.com/document/d/"
+                     "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+                     "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
+  EXPECT_TRUE(IsGoogleDocs());
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {

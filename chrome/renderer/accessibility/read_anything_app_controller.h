@@ -139,13 +139,16 @@ class ReadAnythingAppController
   int BlueTheme() const;
   std::string GetStoredVoice(const std::string& lang) const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
+  std::string GetDataFontCss(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
+  std::string GetNameAttributeText(ui::AXNode* ax_node) const;
   std::string GetTextContent(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
+  bool IsLeafNode(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnCopy() const;
   void OnScroll(bool on_selection) const;
@@ -158,6 +161,7 @@ class ReadAnythingAppController
   bool IsSelectable() const;
   bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;
+  bool IsGoogleDocs() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();

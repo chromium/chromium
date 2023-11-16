@@ -265,6 +265,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return this.createTextNode_(nodeId);
     }
 
+    // For Google Docs, we extract text from Annotated Canvas. The Annotated
+    // Canvas elements with text are leaf nodes with <rect> html tag.
+    if (chrome.readingMode.isGoogleDocs() &&
+        chrome.readingMode.isLeafNode(nodeId)) {
+      return this.createTextNode_(nodeId);
+    }
+
     // getHtmlTag might return '#document' which is not a valid to pass to
     // createElement.
     if (htmlTag === '#document') {
@@ -304,8 +311,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
     this.domNodeToAxNodeIdMap_.set(textNode, nodeId);
-    const shouldBold = chrome.readingMode.shouldBold(nodeId);
     const isOverline = chrome.readingMode.isOverline(nodeId);
+    let shouldBold = chrome.readingMode.shouldBold(nodeId);
+
+    if (chrome.readingMode.isGoogleDocs()) {
+      const dataFontCss = chrome.readingMode.getDataFontCss(nodeId);
+      if (dataFontCss) {
+        const styleNode = document.createElement('style');
+        styleNode.style.cssText = `font:${dataFontCss}`;
+        if (styleNode.style.fontStyle === 'italic') {
+          shouldBold = true;
+        }
+        const fontWeight = +styleNode.style.fontWeight;
+        if (!isNaN(fontWeight) && fontWeight > 500) {
+          shouldBold = true;
+        }
+      }
+    }
 
     if (!shouldBold && !isOverline) {
       return textNode;
@@ -463,14 +485,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   getVoices(): VoicesByLanguage {
     // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
     // voices from loading on Linux, which slows down development.
-    return this.synth.getVoices()
-        .reduce(
-            (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
-              (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
-                  .push(voice);
-              return voicesByLang;
-            },
-            {});
+    return this.synth.getVoices().reduce(
+        (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
+          (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
+              .push(voice);
+          return voicesByLang;
+        },
+        {});
   }
 
   setSpeechSynthesisVoice(voice: SpeechSynthesisVoice|undefined) {

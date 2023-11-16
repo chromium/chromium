@@ -82,6 +82,10 @@ declare namespace chrome {
     // contained within the selection.
     function getChildren(nodeId: number): number[];
 
+    // Returns content of "data-font-css" html attribute. This is needed for
+    // rendering content from annotated canvas in Google Docs.
+    function getDataFontCss(nodeId: number): string;
+
     // Returns the HTML tag of the AXNode for the provided AXNodeID.
     function getHtmlTag(nodeId: number): string;
 
@@ -104,6 +108,12 @@ declare namespace chrome {
 
     // Returns true if the element has overline text styling.
     function isOverline(nodeId: number): boolean;
+
+    // Returns true if the element is a leaf node.
+    function isLeafNode(nodeId: number): boolean;
+
+    // Returns true if the webpage corresponds to a Google Doc.
+    function isGoogleDocs(): boolean;
 
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
