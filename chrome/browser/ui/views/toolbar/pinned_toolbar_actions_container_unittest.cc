@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -134,6 +135,10 @@ TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
   model->UpdatePinnedState(actions::kActionCut, true);
   pinned_buttons = GetChildToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 1u);
+  // Check the context menu
+  EXPECT_EQ(
+      pinned_buttons[0]->menu_model()->GetLabelAt(0),
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
   // Verify pressing the toolbar button invokes the action.
   ASSERT_EQ(actions::ActionManager::Get()
                 .FindAction(actions::kActionCut)
@@ -179,6 +184,10 @@ TEST_F(PinnedToolbarActionsContainerTest,
   CheckIsPoppedOut(actions::kActionCut, true);
   CheckIsPinned(actions::kActionCut, false);
   toolbar_buttons = GetChildToolbarButtons();
+  // Check the context menu
+  EXPECT_EQ(
+      toolbar_buttons[0]->menu_model()->GetLabelAt(0),
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
   ASSERT_EQ(toolbar_buttons.size(), 1u);
   // Verify deactivating a button removes it from popped out buttons.
   container->UpdateActionState(actions::kActionCut, false);
@@ -409,4 +418,53 @@ TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrder) {
   ASSERT_EQ(toolbar_buttons.size(), 2u);
   ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCopy);
   ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, ContextMenuTest) {
+  const std::u16string kActionTooltipText = u"Test Action";
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto action_item = actions::ActionItem::Builder()
+                         .SetText(u"Test Action")
+                         .SetTooltipText(kActionTooltipText)
+                         .SetActionId(actions::kActionCut)
+                         .SetVisible(true)
+                         .SetEnabled(true)
+                         .SetInvokeActionCallback(base::DoNothing())
+                         .Build();
+  // clang-format on
+  browser_action_item->AddChild(std::move(action_item));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  auto* container =
+      browser_view()->toolbar()->pinned_toolbar_actions_container();
+
+  ASSERT_TRUE(model);
+  // Verify there are no pinned buttons.
+  auto pinned_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(pinned_buttons.size(), 0u);
+  // Verify pinning an action adds a button.
+  model->UpdatePinnedState(actions::kActionCut, true);
+  pinned_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(pinned_buttons.size(), 1u);
+  // Check the context menu. Callback should unpin the button.
+  EXPECT_EQ(
+      pinned_buttons[0]->menu_model()->GetLabelAt(0),
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
+  pinned_buttons[0]->ExecuteCommand(IDC_UPDATE_SIDE_PANEL_PIN_STATE, 0);
+  pinned_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(pinned_buttons.size(), 0u);
+  // Callback for pop out button should pin the action.
+  container->UpdateActionState(actions::kActionCut, true);
+  auto child_views =
+      browser_view()->toolbar()->pinned_toolbar_actions_container()->children();
+  auto* pop_out_button =
+      static_cast<PinnedToolbarActionsContainer::PinnedActionToolbarButton*>(
+          child_views[0]);
+  EXPECT_EQ(
+      pop_out_button->menu_model()->GetLabelAt(0),
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
+  pop_out_button->ExecuteCommand(IDC_UPDATE_SIDE_PANEL_PIN_STATE, 0);
+  CheckIsPinned(actions::kActionCut, true);
 }

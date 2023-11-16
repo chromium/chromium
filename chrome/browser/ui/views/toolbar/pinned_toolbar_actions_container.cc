@@ -26,11 +26,14 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/dialog_model_menu_model_adapter.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -56,20 +59,21 @@ void RecordPinnedActionsCount(int count) {
 PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     PinnedActionToolbarButton(Browser* browser,
                               actions::ActionId action_id,
-                              views::DragController* drag_controller)
+                              PinnedToolbarActionsContainer* container)
     : ToolbarButton(
           base::BindRepeating(&PinnedActionToolbarButton::ButtonPressed,
                               base::Unretained(this)),
-          nullptr,
+          CreateMenuModel(),
           nullptr),
       browser_(browser),
       action_item_(actions::ActionManager::Get().FindAction(
           action_id,
-          BrowserActions::FromBrowser(browser)->root_action_item())) {
+          BrowserActions::FromBrowser(browser)->root_action_item())),
+      container_(container) {
   CHECK(action_item_);
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  set_drag_controller(drag_controller);
+  set_drag_controller(container);
   GetViewAccessibility().OverrideDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
@@ -185,6 +189,62 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   }
   SetEnabled(action_item_->GetEnabled());
   SetVisible(action_item_->GetVisible());
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+PinnedToolbarActionsContainer::PinnedActionToolbarButton::CreateMenuModel() {
+  std::unique_ptr<ui::SimpleMenuModel> model =
+      std::make_unique<ui::SimpleMenuModel>(this);
+  // String ID does not mean anything here as it is dynamic. It will get
+  // recomputed  from `GetLabelForCommandId()`.
+  model->AddItemWithStringId(IDC_UPDATE_SIDE_PANEL_PIN_STATE,
+                             IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN);
+  return model;
+}
+
+bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    IsItemForCommandIdDynamic(int command_id) const {
+  return command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE;
+}
+
+std::u16string
+PinnedToolbarActionsContainer::PinnedActionToolbarButton::GetLabelForCommandId(
+    int command_id) const {
+  if (command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE) {
+    actions::ActionId action_id = action_item_->GetActionId().value();
+    return l10n_util::GetStringUTF16(
+        container_->IsActionPinned(action_id)
+            ? IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN
+            : IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN);
+  }
+  return std::u16string();
+}
+
+void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ExecuteCommand(
+    int command_id,
+    int event_flags) {
+  if (command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE) {
+    UpdatePinnedStateForContextMenu();
+  }
+}
+
+bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    IsCommandIdEnabled(int command_id) const {
+  if (command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE) {
+    return browser_->profile()->IsRegularProfile() &&
+           action_item_->GetProperty(actions::kActionItemPinnableKey);
+  }
+  return true;
+}
+
+void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    UpdatePinnedStateForContextMenu() {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser_->profile());
+  actions::ActionId action_id = action_item_->GetActionId().value();
+
+  actions_model->UpdatePinnedState(
+      action_id, container_->IsActionPinned(action_id) ? false : true);
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer,
@@ -556,6 +616,13 @@ void PinnedToolbarActionsContainer::RemoveButton(
   } else {
     RemoveChildViewT(button);
   }
+}
+
+bool PinnedToolbarActionsContainer::IsActionPinned(
+    const actions::ActionId& id) {
+  PinnedToolbarActionsContainer::PinnedActionToolbarButton* button =
+      GetPinnedButtonFor(id);
+  return button != nullptr;
 }
 
 void PinnedToolbarActionsContainer::ReorderViews() {

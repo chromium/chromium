@@ -466,6 +466,9 @@
 #endif
 #define IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS 51210
 
+// Context menu items for pinned sidepanel toolbar button
+#define IDC_UPDATE_SIDE_PANEL_PIN_STATE 51211
+
 // Context menu items for media stream status tray
 #define IDC_MEDIA_STREAM_DEVICE_STATUS_TRAY 51300
 #define IDC_MEDIA_CONTEXT_MEDIA_STREAM_CAPTURE_LIST_FIRST 51301

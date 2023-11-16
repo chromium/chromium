@@ -18,6 +18,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/views/drag_controller.h"
 
 class Browser;
@@ -31,13 +32,14 @@ class PinnedToolbarActionsContainer
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
-  class PinnedActionToolbarButton : public ToolbarButton {
+  class PinnedActionToolbarButton : public ToolbarButton,
+                                    public ui::SimpleMenuModel::Delegate {
     METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
 
    public:
     PinnedActionToolbarButton(Browser* browser,
                               actions::ActionId action_id,
-                              views::DragController* drag_controller);
+                              PinnedToolbarActionsContainer* container);
     ~PinnedActionToolbarButton() override;
 
     actions::ActionId GetActionId();
@@ -53,8 +55,17 @@ class PinnedToolbarActionsContainer
     // Button:
     gfx::Size CalculatePreferredSize() const override;
 
+    void UpdatePinnedStateForContextMenu();
+
+    // ui::SimpleMenuModel::Delegate:
+    bool IsItemForCommandIdDynamic(int command_id) const override;
+    std::u16string GetLabelForCommandId(int command_id) const override;
+    void ExecuteCommand(int command_id, int event_flags) override;
+    bool IsCommandIdEnabled(int command_id) const override;
+
    private:
     void ActionItemChanged();
+    std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
     raw_ptr<Browser> browser_;
     raw_ptr<actions::ActionItem> action_item_ = nullptr;
@@ -62,6 +73,7 @@ class PinnedToolbarActionsContainer
     // Used to ensure the button remains highlighted while active.
     absl::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
     bool invoking_action_ = false;
+    raw_ptr<PinnedToolbarActionsContainer> container_;
   };
 
   explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
@@ -101,6 +113,8 @@ class PinnedToolbarActionsContainer
   bool CanStartDragForView(View* sender,
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
+
+  bool IsActionPinned(const actions::ActionId& id);
 
  private:
   friend class PinnedSidePanelInteractiveTest;
