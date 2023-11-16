@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
+#import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
@@ -73,6 +74,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [activityType isEqualToString:kShortcutLensFromAppIconLongPress] ||
       [activityType isEqualToString:kShortcutLensFromSpotlight] ||
       [activityType isEqualToString:kSiriShortcutAddBookmarkToChrome] ||
+      [activityType isEqualToString:kSiriShortcutAddReadingListItemToChrome] ||
       [activityType isEqualToString:kSiriShortcutSearchInChrome] ||
       [activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return @[ kRegularMode, kIncognitoMode ];
@@ -344,6 +346,25 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
     AppStartupParameters* startupParams =
         [self startupParametersForOpeningNewTabWithAction:ADD_BOOKMARKS];
+    startupParams.inputURLs = intent.url;
+    [connectionInformation setStartupParameters:startupParams];
+  } else if ([userActivity.activityType
+                 isEqualToString:kSiriShortcutAddReadingListItemToChrome]) {
+    base::UmaHistogramEnumeration(kAppLaunchSource,
+                                  AppLaunchSource::SIRI_SHORTCUT);
+    base::RecordAction(
+        UserMetricsAction("IOSLaunchedByAddReadingListItemToChromeIntent"));
+
+    AddReadingListItemToChromeIntent* intent =
+        base::apple::ObjCCastStrict<AddReadingListItemToChromeIntent>(
+            userActivity.interaction.intent);
+
+    if (!intent || !intent.url || intent.url.count == 0) {
+      return NO;
+    }
+
+    AppStartupParameters* startupParams = [self
+        startupParametersForOpeningNewTabWithAction:ADD_READING_LIST_ITEMS];
     startupParams.inputURLs = intent.url;
     [connectionInformation setStartupParameters:startupParams];
   } else if ([userActivity.activityType isEqualToString:kSiriOpenLatestTab]) {

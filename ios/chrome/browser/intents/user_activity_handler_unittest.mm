@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
+#import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
 #import "ios/chrome/common/intents/ClearBrowsingDataIntent.h"
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
@@ -1081,6 +1082,135 @@ TEST_F(UserActivityHandlerTest,
 TEST_F(UserActivityHandlerTest, ContinueUserActivityBookmarksFailsNoURLs) {
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:@"AddBookmarkToChromeIntent"];
+
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:userActivity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
+}
+
+// Tests that Chrome does continue the activity for the Add Reading List items
+// intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityAddToReadingList) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
+
+  AddReadingListItemToChromeIntent* intent =
+      [[AddReadingListItemToChromeIntent alloc] init];
+  NSArray<NSURL*>* URLs =
+      @[ [[NSURL alloc] initWithString:@"https://google.com"] ];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(ADD_READING_LIST_ITEMS,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome does not continue the activity for the Add Reading List
+// items intent due to still being in first run.
+TEST_F(UserActivityHandlerTest,
+       ContinueUserActivityAddToReadingListFailsFirstRun) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddReadingListItemToChromeIntent"];
+
+  NSArray<NSURL*>* URLs =
+      @[ [[NSURL alloc] initWithString:@"https://google.com"] ];
+  AddReadingListItemToChromeIntent* intent =
+      [[AddReadingListItemToChromeIntent alloc] init];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mockUserActivity = CreateMockNSUserActivity(userActivity, interaction);
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:mockUserActivity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
+}
+
+// Tests that Chrome does not continue the activity if the intent URLs array
+// is empty.
+TEST_F(UserActivityHandlerTest,
+       ContinueUserActivityAddToReadingListFailsURLsArrayEmpty) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddReadingListItemToChromeIntent"];
+
+  NSArray<NSURL*>* URLs = @[];
+  AddReadingListItemToChromeIntent* intent =
+      [[AddReadingListItemToChromeIntent alloc] init];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mockUserActivity = CreateMockNSUserActivity(userActivity, interaction);
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:mockUserActivity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
+}
+
+// Tests that Chrome does not continue the activity if the intent URLs are not
+// set for the Add Reading List items intent.
+TEST_F(UserActivityHandlerTest,
+       ContinueUserActivityAddToReadingListFailsNoURLs) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddReadingListItemToChromeIntent"];
 
   id startupInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];

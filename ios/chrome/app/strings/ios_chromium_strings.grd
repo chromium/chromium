@@ -397,6 +397,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_DESCRIPTION" desc="Shortcut description to add a bookmark to Chromium [iOS only].">
         Adds the inputted URLs to your bookmarks in Chromium.
       </message>
+      <message name="IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_DESCRIPTION" desc="Shortcut description to add a reading list item to Chromium [iOS only].">
+        Adds the inputted URLs to your reading list in Chromium.
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_TITLE" desc="Shortcut name to add a reading list item to Chrome [iOS only].">
+        Add Reading List Item to Chromium
+      </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chromium shares your location with sites you allow.
       </message>

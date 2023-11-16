@@ -65,6 +65,30 @@
       <string>Intents.strings</string>
       <key>strings</key>
       <array>
+      <dict>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_TITLE</string>
+          <key>output</key>
+          <string>bdpqTT</string>
+        </dict>
+        <dict>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_DESCRIPTION</string>
+          <key>output</key>
+          <string>DMhhCH</string>
+        </dict>
+        <dict>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_PARAMETER_COMBINATION_TITLE</string>
+          <key>output</key>
+          <string>WT62lb</string>
+        </dict>
+        <dict>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_PROMPT_DIALOG</string>
+          <key>output</key>
+          <string>ujhmCA</string>
+        </dict>
         <dict>
          <key>output</key>
           <string>eoLMs3</string>

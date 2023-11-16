@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
@@ -2411,6 +2412,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf addBookmarks:weakSelf.startupParameters.inputURLs];
       };
+    case ADD_READING_LIST_ITEMS:
+      return ^{
+        [weakSelf addReadingListItems:weakSelf.startupParameters.inputURLs];
+      };
     default:
       return nil;
   }
@@ -2567,6 +2572,17 @@ void InjectNTP(Browser* browser) {
       self.currentInterface.browser->GetCommandDispatcher(), BookmarksCommands);
 
   [bookmarksCommandsHandler bulkCreateBookmarksWithURLs:URLs];
+}
+
+- (void)addReadingListItems:(NSArray<NSURL*>*)URLs {
+  if (!self.currentInterface.browser || [URLs count] < 1) {
+    return;
+  }
+
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.currentInterface.browser);
+
+  readingListBrowserAgent->BulkAddURLsToReadingListWithViewSnackbar(URLs);
 }
 
 #pragma mark - TabOpening implementation.

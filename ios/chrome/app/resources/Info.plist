@@ -94,6 +94,7 @@
 		<string>${IOS_MOVE_TAB_ACTIVITY_TYPE}</string>
 		<string>NSUserActivityTypeBrowsingWeb</string>
 		<string>AddBookmarkToChromeIntent</string>
+		<string>AddReadingListItemToChromeIntent</string>
 		<string>OpenInChromeIncognitoIntent</string>
 		<string>OpenInChromeIntent</string>
 		<string>SearchInChromeIntent</string>

@@ -126,6 +126,9 @@
     case ADD_BOOKMARKS:
       [description appendString:@", should add bookmarks"];
       break;
+    case ADD_READING_LIST_ITEMS:
+      [description appendString:@", should add reading list items"];
+      break;
     default:
       break;
   }

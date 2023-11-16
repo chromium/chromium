@@ -26,6 +26,8 @@ extern NSString* const kShortcutLensFromSpotlight;
 //
 // NSUserActivity for Add Bookmark to Chrome intent.
 extern NSString* const kSiriShortcutAddBookmarkToChrome;
+// NSUserActivity for Add Reading List Item to Chrome intent.
+extern NSString* const kSiriShortcutAddReadingListItemToChrome;
 // NSUserActivity for Open in Chrome intent.
 extern NSString* const kSiriShortcutOpenInChrome;
 // NSUserActivity for Search in Chrome intent.
