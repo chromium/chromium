@@ -265,9 +265,11 @@ IOSChromeSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
 }
 
-syncer::SyncTypePreferenceProvider*
-IOSChromeSyncClient::GetPreferenceProvider() {
-  return nullptr;
+bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
+  // TODO(crbug.com/1502574): Reconsider if this should integrate with
+  // SupervisedUserSettingsServiceFactory, along with corresponding
+  // logic in the UI.
+  return true;
 }
 
 void IOSChromeSyncClient::OnLocalSyncTransportDataCleared() {

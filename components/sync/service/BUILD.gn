@@ -67,7 +67,6 @@ static_library("service") {
     "sync_stopped_reporter.cc",
     "sync_stopped_reporter.h",
     "sync_token_status.h",
-    "sync_type_preference_provider.h",
     "sync_user_settings.h",
     "sync_user_settings_impl.cc",
     "sync_user_settings_impl.h",

@@ -29,7 +29,6 @@ struct LocalDataDescription;
 class SyncApiComponentFactory;
 class SyncInvalidationsService;
 class SyncService;
-class SyncTypePreferenceProvider;
 
 // Interface for clients of the Sync API to plumb through necessary dependent
 // components. This interface is purely for abstracting dependencies, and
@@ -64,8 +63,8 @@ class SyncClient {
   // Returns the current SyncApiComponentFactory instance.
   virtual SyncApiComponentFactory* GetSyncApiComponentFactory() = 0;
 
-  // Returns the preference provider, or null if none exists.
-  virtual SyncTypePreferenceProvider* GetPreferenceProvider() = 0;
+  // Returns whether custom passphrase is allowed for the current user.
+  virtual bool IsCustomPassphraseAllowed() = 0;
 
   // Notifies the client that local sync metadata in preferences has been
   // cleared.

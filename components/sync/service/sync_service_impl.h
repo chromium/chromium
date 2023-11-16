@@ -67,6 +67,7 @@ class SyncServiceImpl : public SyncService,
                         public SyncPrefObserver,
                         public DataTypeManagerObserver,
                         public SyncServiceCrypto::Delegate,
+                        public SyncUserSettingsImpl::Delegate,
                         public signin::IdentityManager::Observer {
  public:
   // Bundles the arguments for SyncServiceImpl construction. This is a
@@ -187,6 +188,11 @@ class SyncServiceImpl : public SyncService,
   absl::optional<PassphraseType> GetPassphraseType() const override;
   void SetEncryptionBootstrapToken(const std::string& bootstrap_token) override;
   std::string GetEncryptionBootstrapToken() const override;
+
+  // SyncUserSettingsImpl::Delegate implementation.
+  bool IsCustomPassphraseAllowed() const override;
+  SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override;
+  CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
@@ -322,8 +328,6 @@ class SyncServiceImpl : public SyncService,
   void ConfigureDataTypeManager(ConfigureReason reason);
 
   bool UseTransportOnlyMode() const;
-
-  SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const;
 
   // Returns the set of data types that are supported in principle, possibly
   // influenced by command-line options.

@@ -696,13 +696,17 @@ ChromeSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
 }
 
-syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
+bool ChromeSyncClient::IsCustomPassphraseAllowed() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return SupervisedUserSettingsServiceFactory::GetForKey(
-      profile_->GetProfileKey());
-#else
-  return nullptr;
-#endif
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              profile_->GetProfileKey());
+  if (supervised_user_settings_service) {
+    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  }
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  return true;
 }
 
 void ChromeSyncClient::OnLocalSyncTransportDataCleared() {

@@ -246,12 +246,7 @@ void SyncServiceImpl::Initialize() {
   // It's safe to pass a raw ptr, since SyncServiceImpl outlives
   // SyncUserSettingsImpl.
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
-      &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
-      GetRegisteredDataTypes(),
-      base::BindRepeating(&SyncServiceImpl::GetSyncAccountStateForPrefs,
-                          base::Unretained(this)),
-      base::BindRepeating(&SyncServiceImpl::GetAccountInfo,
-                          base::Unretained(this)));
+      /*delegate=*/this, &crypto_, &sync_prefs_, GetRegisteredDataTypes());
 
   sync_prefs_observation_.Observe(&sync_prefs_);
 
@@ -1281,6 +1276,32 @@ std::string SyncServiceImpl::GetEncryptionBootstrapToken() const {
   return sync_prefs_.GetEncryptionBootstrapToken();
 }
 
+bool SyncServiceImpl::IsCustomPassphraseAllowed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_client_->IsCustomPassphraseAllowed();
+}
+
+SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Local sync does not require an actual signed in account to be running.
+  if (!IsSignedIn() && !IsLocalSyncEnabled()) {
+    return SyncPrefs::SyncAccountState::kNotSignedIn;
+  }
+  if (!IsSetupInProgress() && UseTransportOnlyMode()) {
+    // While the setup for Sync-the-feature is in progress, the account state
+    // should be syncing so that the user can properly select the types they
+    // want to sync.
+    return SyncPrefs::SyncAccountState::kSignedInNotSyncing;
+  }
+  return SyncPrefs::SyncAccountState::kSyncing;
+}
+
+CoreAccountInfo SyncServiceImpl::GetSyncAccountInfoForPrefs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetAccountInfo();
+}
+
 bool SyncServiceImpl::IsSetupInProgress() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return outstanding_setup_in_progress_handles_ > 0;
@@ -1565,21 +1586,6 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
   // Note: When local Sync is enabled, then we want full-sync mode (not just
   // transport), even though Sync-the-feature is not considered enabled.
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
-}
-
-SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
-    const {
-  // Local sync does not require an actual signed in account to be running.
-  if (!IsSignedIn() && !IsLocalSyncEnabled()) {
-    return SyncPrefs::SyncAccountState::kNotSignedIn;
-  }
-  if (!IsSetupInProgress() && UseTransportOnlyMode()) {
-    // While the setup for Sync-the-feature is in progress, the account state
-    // should be syncing so that the user can properly select the types they
-    // want to sync.
-    return SyncPrefs::SyncAccountState::kSignedInNotSyncing;
-  }
-  return SyncPrefs::SyncAccountState::kSyncing;
 }
 
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {

@@ -62,7 +62,8 @@ class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
 };
 
-class SyncUserSettingsImplTest : public testing::Test {
+class SyncUserSettingsImplTest : public testing::Test,
+                                 public SyncUserSettingsImpl::Delegate {
  protected:
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -72,21 +73,30 @@ class SyncUserSettingsImplTest : public testing::Test {
         &sync_service_crypto_delegate_, &trusted_vault_client_);
   }
 
-  std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
-      ModelTypeSet registered_types,
-      SyncPrefs::SyncAccountState sync_account_state =
-          SyncPrefs::SyncAccountState::kSyncing) {
+  // SyncUserSettingsImpl::Delegate implementation.
+  bool IsCustomPassphraseAllowed() const override { return true; }
+
+  SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override {
+    return sync_account_state_;
+  }
+
+  CoreAccountInfo GetSyncAccountInfoForPrefs() const override {
     CoreAccountInfo account;
     account.email = "name@account.com";
     account.gaia = "name";
     account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+    return account;
+  }
 
+  void SetSyncAccountState(SyncPrefs::SyncAccountState sync_account_state) {
+    sync_account_state_ = sync_account_state;
+  }
+
+  std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
+      ModelTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
-        sync_service_crypto_.get(), sync_prefs_.get(),
-        /*preference_provider=*/nullptr, registered_types,
-        base::BindLambdaForTesting(
-            [sync_account_state] { return sync_account_state; }),
-        base::BindLambdaForTesting([account] { return account; }));
+        /*delegate=*/this, sync_service_crypto_.get(), sync_prefs_.get(),
+        registered_types);
   }
 
   // The order of fields matters because it determines destruction order and
@@ -97,6 +107,8 @@ class SyncUserSettingsImplTest : public testing::Test {
       sync_service_crypto_delegate_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
+  SyncPrefs::SyncAccountState sync_account_state_ =
+      SyncPrefs::SyncAccountState::kSyncing;
 };
 
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
@@ -142,8 +154,8 @@ TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
       /*disabled_features=*/{});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes(),
-                           SyncPrefs::SyncAccountState::kNotSignedIn);
+      MakeSyncUserSettings(GetUserTypes());
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kNotSignedIn);
 
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(), UserSelectableTypeSet());
 }
@@ -162,8 +174,8 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
       /*disabled_features=*/{});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes(),
-                           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+      MakeSyncUserSettings(GetUserTypes());
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
@@ -194,8 +206,8 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes(),
-                           SyncPrefs::SyncAccountState::kSyncing);
+      MakeSyncUserSettings(GetUserTypes());
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
 
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();

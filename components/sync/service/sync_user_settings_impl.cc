@@ -55,23 +55,17 @@ int GetCurrentMajorProductVersion() {
 
 }  // namespace
 
-SyncUserSettingsImpl::SyncUserSettingsImpl(
-    SyncServiceCrypto* crypto,
-    SyncPrefs* prefs,
-    const SyncTypePreferenceProvider* preference_provider,
-    ModelTypeSet registered_model_types,
-    base::RepeatingCallback<SyncPrefs::SyncAccountState()>
-        sync_account_state_for_prefs_callback,
-    base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback)
-    : crypto_(crypto),
+SyncUserSettingsImpl::SyncUserSettingsImpl(Delegate* delegate,
+                                           SyncServiceCrypto* crypto,
+                                           SyncPrefs* prefs,
+                                           ModelTypeSet registered_model_types)
+    : delegate_(delegate),
+      crypto_(crypto),
       prefs_(prefs),
-      preference_provider_(preference_provider),
-      registered_model_types_(registered_model_types),
-      sync_account_state_for_prefs_callback_(
-          std::move(sync_account_state_for_prefs_callback)),
-      sync_account_info_callback_(std::move(sync_account_info_callback)) {
-  DCHECK(crypto_);
-  DCHECK(prefs_);
+      registered_model_types_(registered_model_types) {
+  CHECK(delegate_);
+  CHECK(crypto_);
+  CHECK(prefs_);
 }
 
 SyncUserSettingsImpl::~SyncUserSettingsImpl() = default;
@@ -99,12 +93,11 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   UserSelectableTypeSet types;
 
   if (ShouldUsePerAccountPrefs()) {
-    signin::GaiaIdHash gaia_id_hash =
-        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+        delegate_->GetSyncAccountInfoForPrefs().gaia);
     types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
   } else {
-    types =
-        prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
+    types = prefs_->GetSelectedTypes(delegate_->GetSyncAccountStateForPrefs());
   }
   types.RetainAll(GetRegisteredSelectableTypes());
 
@@ -155,8 +148,8 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   CHECK(registered_types.Has(type));
 
   if (ShouldUsePerAccountPrefs()) {
-    signin::GaiaIdHash gaia_id_hash =
-        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+        delegate_->GetSyncAccountInfoForPrefs().gaia);
     prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
   } else {
     DUMP_WILL_BE_CHECK(!IsSyncEverythingEnabled());
@@ -252,8 +245,7 @@ void SyncUserSettingsImpl::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool SyncUserSettingsImpl::IsCustomPassphraseAllowed() const {
-  return !preference_provider_ ||
-         preference_provider_->IsCustomPassphraseAllowed();
+  return delegate_->IsCustomPassphraseAllowed();
 }
 
 bool SyncUserSettingsImpl::IsEncryptEverythingEnabled() const {
@@ -390,7 +382,7 @@ bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
   // prefs, also update the migration code in sync_to_signin_migration.cc
   // accordingly!
   return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-         sync_account_state_for_prefs_callback_.Run() ==
+         delegate_->GetSyncAccountStateForPrefs() ==
              SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
