@@ -640,7 +640,7 @@ void ConfigurePartitions(
 
 // TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
 // the new version.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,

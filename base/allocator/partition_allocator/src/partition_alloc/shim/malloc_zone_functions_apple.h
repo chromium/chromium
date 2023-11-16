@@ -60,11 +60,11 @@ struct MallocZoneFunctions {
   const ChromeMallocZone* context;
 };
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void StoreZoneFunctions(const ChromeMallocZone* zone,
                         MallocZoneFunctions* functions);
 static constexpr int kMaxZoneCount = 30;
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 
 // The array g_malloc_zones stores all information about malloc zones before
@@ -89,16 +89,16 @@ extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 // default allocator is stored as the first MallocZoneFunctions.
 //
 // Returns whether the zone was successfully stored.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 bool StoreMallocZone(ChromeMallocZone* zone);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 bool IsMallocZoneAlreadyStored(ChromeMallocZone* zone);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 bool DoesMallocZoneNeedReplacing(ChromeMallocZone* zone,
                                  const MallocZoneFunctions* functions);
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetMallocZoneCountForTesting();
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void ClearAllMallocZonesForTesting();
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) int GetMallocZoneCountForTesting();
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void ClearAllMallocZonesForTesting();
 
 inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   for (unsigned int i = 0; i < kMaxZoneCount; ++i) {

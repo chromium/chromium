@@ -38,11 +38,11 @@ bool WinCallNewHandler(size_t size);
 
 // Wrappers to implement the interface for the _aligned_* functions on top of
 // the CRT's Windows heap. Exported for tests.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* WinHeapAlignedMalloc(size_t size, size_t alignment);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void WinHeapAlignedFree(void* ptr);
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void WinHeapAlignedFree(void* ptr);
 
 }  // namespace allocator_shim
 

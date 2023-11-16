@@ -23,6 +23,11 @@ config("partition_alloc_base_implementation") {
   defines = [ "IS_PARTITION_ALLOC_BASE_IMPL" ]
 }
 
+config("allocator_shim_implementation") {
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_ALLOCATOR_SHIM_IMPL" ]
+}
+
 # TODO(https://crbug.com/1467773): Split PartitionAlloc into a public and
 # private parts. The public config would include add the "./include" dir and
 # the private config would add the "./src" dir.
@@ -118,7 +123,7 @@ if (!is_debug || partition_alloc_optimized_debug) {
   _add_configs += [ "//build/config/compiler:no_optimize" ]
 }
 
-component("partition_alloc") {
+group("partition_alloc") {
   public_deps = [
     ":allocator_base",
     ":allocator_core",
@@ -133,7 +138,7 @@ component("partition_alloc") {
 # Only usable when pointers are 64-bit.
 use_freelist_pool_offsets = has_64_bit_pointers && false
 
-source_set("allocator_core") {
+component("allocator_core") {
   visibility = [ ":*" ]
 
   sources = [
@@ -544,17 +549,18 @@ component("allocator_base") {
   configs += _add_configs
 }
 
-source_set("allocator_shim") {
+component("allocator_shim") {
   visibility = [ ":*" ]
 
   sources = []
-  deps = [ ":allocator_base" ]
+  deps = []
   all_dependent_configs = []
   public_configs = [ ":public_includes" ]
   configs += [
-    ":partition_alloc_implementation",
+    ":allocator_shim_implementation",
     "//build/config/compiler:wexit_time_destructors",
   ]
+  frameworks = []
 
   configs -= _remove_configs
   configs += _add_configs
@@ -598,6 +604,8 @@ source_set("allocator_shim") {
       "shim/allocator_interception_apple.mm",
       "shim/malloc_zone_functions_apple.cc",
     ]
+    frameworks += [ "CoreFoundation.framework" ]
+
     if (use_allocator_shim) {
       configs += [ ":mac_no_default_new_delete_symbols" ]
 
@@ -642,6 +650,10 @@ source_set("allocator_shim") {
   sources = shim_headers
   if (use_allocator_shim) {
     sources += shim_sources
+  } else {
+    # To avoid "lld-link: error: <root>: undefined symbol: _DllMainCRTStartup",
+    # at least one object file is required when linking allocator_shim.dll.
+    sources += [ "shim/empty.cc" ]
   }
 
   deps += [

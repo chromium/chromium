@@ -31,7 +31,7 @@ namespace internal {
 // PCScan. An example would be strings or socket/IPC/file buffers. Use with
 // caution.
 template <bool quarantinable>
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) NonScannableAllocatorImpl final {
+class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) NonScannableAllocatorImpl final {
  public:
   static NonScannableAllocatorImpl& Instance();
 
