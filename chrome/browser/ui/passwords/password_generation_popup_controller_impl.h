@@ -175,6 +175,8 @@ class PasswordGenerationPopupControllerImpl
   const std::u16string& HelpText() const override;
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleNudgePasswordKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
 
   // Whether the elements of popup are selectable (true in generation state).
   bool IsSelectable() const;

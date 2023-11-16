@@ -51,6 +51,7 @@
 
 using autofill::PopupHidingReason;
 #if !BUILDFLAG(IS_ANDROID)
+using password_manager::features::kPasswordGenerationExperimentVariationParam;
 using password_manager::features::PasswordGenerationVariation;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -165,9 +166,14 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
   bool edit_password_enabled = false;
   // Password generation experiments are defined for Desktop only.
 #if !BUILDFLAG(IS_ANDROID)
-  edit_password_enabled =
-      password_manager::features::kPasswordGenerationExperimentVariationParam
-          .Get() == PasswordGenerationVariation::kEditPassword;
+  PasswordGenerationVariation password_generation_variation =
+      kPasswordGenerationExperimentVariationParam.Get();
+  if (password_generation_variation ==
+      PasswordGenerationVariation::kNudgePassword) {
+    return HandleNudgePasswordKeyPressEvent(event);
+  }
+  edit_password_enabled = password_generation_variation ==
+                          PasswordGenerationVariation::kEditPassword;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   switch (event.windows_key_code) {
@@ -188,6 +194,20 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
       // We suppress tab if the password is selected because we will
       // automatically advance focus anyway.
       return PossiblyAcceptSelectedElement();
+    default:
+      return false;
+  }
+}
+
+bool PasswordGenerationPopupControllerImpl::HandleNudgePasswordKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  switch (event.windows_key_code) {
+    case ui::VKEY_ESCAPE:
+      HideImpl();
+      return true;
+    case ui::VKEY_RETURN:
+      PasswordAccepted();
+      return true;
     default:
       return false;
   }
@@ -439,9 +459,7 @@ std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationExperiment)) {
-    switch (
-        password_manager::features::kPasswordGenerationExperimentVariationParam
-            .Get()) {
+    switch (kPasswordGenerationExperimentVariationParam.Get()) {
       case PasswordGenerationVariation::kTrustedAdvice:
         return l10n_util::GetStringUTF16(
             IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE);
