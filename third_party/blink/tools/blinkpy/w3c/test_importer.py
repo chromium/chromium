@@ -628,9 +628,8 @@ class TestImporter(object):
         # If this starts blocking the importer unnecessarily, revert
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
         # Try linux-blink-rel to make sure no breakage in webdriver tests
-        description += (
-            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel,linux-wpt-fyi-rel'
-        )
+        for builder in ['linux-blink-rel', 'linux-wpt-chromium-rel']:
+            description += f'Cq-Include-Trybots: luci.chromium.try:{builder}\n'
 
         return description
 

@@ -887,7 +887,6 @@ exempted_from_description_builders = {
         "linux-webkit-msan-rel",
         "linux-wpt-content-shell-fyi-rel",
         "linux-wpt-content-shell-leak-detection",
-        "linux-wpt-fyi-rel",
         "linux-x64-castos",
         "linux-x64-castos-audio",
         "linux-x64-castos-dbg",

@@ -608,17 +608,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-wpt-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
   "linux_chromium_archive_rel_ng": {
     "gn_args": {
       "dcheck_always_on": false,

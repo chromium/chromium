@@ -37,8 +37,8 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-wpt-fyi-rel",
-          "group": "tryserver.chromium.linux"
+          "builder": "linux-wpt-chromium-rel",
+          "group": "tryserver.blink"
         }
       ]
     }

@@ -59,6 +59,25 @@ try_.builder(
     main_list_view = "try",
 )
 
+# TODO(crbug.com/1474702): Once `chrome_wpt_tests` is on CQ/CI (`linux-rel` and
+# `Linux Tests`), remove `ci/linux-wpt-fyi-rel` and move its definition here.
+#
+# `linux-wpt-chromium-rel` (tests chrome) is distinct from `linux-blink-rel`
+# (tests content shell) to avoid coupling their build configurations.
+try_.builder(
+    name = "linux-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    mirrors = ["ci/linux-wpt-fyi-rel"],
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "win10.20h2-blink-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,

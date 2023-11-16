@@ -34,7 +34,8 @@
           "builder": "linux-wpt-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "retry_failed_shards": false
     }
   },
   "$build/reclient": {
@@ -50,6 +51,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.linux",
+  "builder_group": "tryserver.blink",
   "recipe": "chromium_trybot"
 }

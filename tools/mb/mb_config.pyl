@@ -727,6 +727,7 @@
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
+      'linux-wpt-chromium-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
@@ -968,7 +969,6 @@
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-wpt-content-shell-leak-detection': 'release_bot_blink_minimal_symbols_reclient',
-      'linux-wpt-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux_chromium_archive_rel_ng': 'release_bot_reclient',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_asan_siso_rel_ng': 'asan_lsan_release_trybot_reclient',
