@@ -22,11 +22,6 @@ const char kAppStoreRatingLoosenedTriggersDescription[] =
     "When enabled, App Store Rating promo will have loosened trigger "
     "requirements.";
 
-const char kAutofillAccountProfilesStorageName[] =
-    "Enable profile saving in Google Account";
-const char kAutofillAccountProfilesStorageDescription[] =
-    "When enabled, the profiles would be saved to the Google Account";
-
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

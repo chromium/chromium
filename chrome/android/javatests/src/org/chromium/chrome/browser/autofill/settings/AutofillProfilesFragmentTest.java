@@ -68,7 +68,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
-    ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
     ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE
 })
 @DisabledTest(message = "https://crbug.com/1496405")
@@ -707,7 +706,6 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
         ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE
     })
     public void testLocalProfiles_NoRequiredFeatureFlags() throws Exception {

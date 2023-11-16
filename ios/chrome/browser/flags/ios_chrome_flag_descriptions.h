@@ -22,11 +22,6 @@ extern const char kAppStoreRatingDescription[];
 extern const char kAppStoreRatingLoosenedTriggersName[];
 extern const char kAppStoreRatingLoosenedTriggersDescription[];
 
-// Title and description for the flag to enable save of profiles in Google
-// Account.
-extern const char kAutofillAccountProfilesStorageName[];
-extern const char kAutofillAccountProfilesStorageDescription[];
-
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];

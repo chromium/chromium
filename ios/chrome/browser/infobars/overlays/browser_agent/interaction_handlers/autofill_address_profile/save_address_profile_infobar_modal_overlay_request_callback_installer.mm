@@ -48,16 +48,9 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfileStorage)) {
-    EditedProfileSaveAction* info =
-        response->GetInfo<EditedProfileSaveAction>();
-    interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
-  } else {
-    LegacyEditedProfileSaveAction* info =
-        response->GetInfo<LegacyEditedProfileSaveAction>();
-    interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
-  }
+  EditedProfileSaveAction* info =
+      response->GetInfo<EditedProfileSaveAction>();
+  interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
 }
 
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::

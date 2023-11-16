@@ -87,18 +87,10 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
        SaveEditedProfile) {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfileStorage)) {
-    autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-    EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, &profile));
-    request_->GetCallbackManager()->DispatchResponse(
-        OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(&profile));
-  } else {
-    NSDictionary* empty = @{}.mutableCopy;
-    EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, empty));
-    request_->GetCallbackManager()->DispatchResponse(
-        OverlayResponse::CreateWithInfo<LegacyEditedProfileSaveAction>(empty));
-  }
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, &profile));
+  request_->GetCallbackManager()->DispatchResponse(
+      OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(&profile));
 }
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,

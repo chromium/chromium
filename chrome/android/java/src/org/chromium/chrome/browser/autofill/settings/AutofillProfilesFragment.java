@@ -269,8 +269,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (profile.getSource() == Source.ACCOUNT) {
             return false;
         }
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE)
-                || !ChromeFeatureList.isEnabled(
+        if (!ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }

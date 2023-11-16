@@ -886,14 +886,9 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   // The CONTACT_INFO data type is only running for eligible users. See
-  // ContactInfoModelTypeController. Some additional countries are excluded
-  // based on their GeoIP.
+  // ContactInfoModelTypeController.
   return sync_service_ &&
-         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillAccountProfileStorage) &&
-         (features::kAutofillAccountProfileStorageFromUnsupportedIPs.Get() ||
-          IsCountryEligibleForAccountStorage(variations_country_code_));
+         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }
 
 bool PersonalDataManager::IsCountryEligibleForAccountStorage(
@@ -2286,10 +2281,8 @@ void PersonalDataManager::LogStoredDataMetrics() const {
   const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
-  if (base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
-    autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
-                                                     app_locale_);
-  }
+  autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
+                                                   app_locale_);
 
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,

@@ -167,11 +167,7 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   }
 
   const std::vector<AutofillProfile*>& profiles =
-      base::FeatureList::IsEnabled(
-                  features::kAutofillAccountProfileStorage)
-          ? personal_data_manager_->GetProfiles()
-          : personal_data_manager_->GetProfilesFromSource(
-                AutofillProfile::Source::kLocalOrSyncable);
+      personal_data_manager_->GetProfiles();
 
   // No need to de-duplicate if there are less than two profiles.
   if (profiles.size() < 2) {

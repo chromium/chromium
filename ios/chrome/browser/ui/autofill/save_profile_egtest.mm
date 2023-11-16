@@ -95,8 +95,6 @@ BOOL WaitForKeyboardToAppear() {
 
   if ([self isRunningTest:@selector(testUserData_MigrationToAccount)]) {
     config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfileStorage);
-    config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
 

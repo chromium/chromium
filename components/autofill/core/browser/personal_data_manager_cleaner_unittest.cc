@@ -402,8 +402,6 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
 
 // Tests that `kAccount` profiles are not deduplicated against each other.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   AutofillProfile account_profile1 = test::StandardProfile();
   account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile account_profile2 = test::StandardProfile();
@@ -416,8 +414,6 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
 // profile are deduplicated. The result is a Chrome account profile.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   // Create a non-Chrome account profile and a local profile.
   AutofillProfile account_profile = test::StandardProfile();
   const int non_chrome_service =
@@ -441,8 +437,6 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are not deduplicated.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile local_profile = test::StandardProfile();

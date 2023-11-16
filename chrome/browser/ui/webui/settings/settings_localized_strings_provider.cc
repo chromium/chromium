@@ -1245,11 +1245,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
-      "autofillAccountProfileStorage",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfileStorage));
-
-  html_source->AddBoolean(
       "syncEnableContactInfoDataTypeInTransportMode",
       base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeInTransportMode));
