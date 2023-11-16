@@ -6,20 +6,51 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
+#include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
+#include "ash/system/enterprise/enterprise_domain_observer.h"
+#include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
-#include "ash/system/unified/buttons.h"
+#include "ash/system/supervised/supervised_icon_string.h"
+#include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/update/eol_notice_quick_settings_view.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/devicetype_utils.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -36,7 +67,217 @@ constexpr gfx::Size kNarrowButtonSize(180, 32);
 // Header button size when the button is wide (e.g. one column layout).
 constexpr gfx::Size kWideButtonSize(408, 32);
 
+constexpr int kManagedStateCornerRadius = 16;
+constexpr float kManagedStateStrokeWidth = 1.0f;
+constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
+constexpr gfx::Size kManagedStateImageSize(20, 20);
+
+// Shows enterprise managed device information.
+void ShowEnterpriseInfo(UnifiedSystemTrayController* controller,
+                        const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kManagedButton);
+  controller->HandleEnterpriseInfoAction();
+}
+
+// Shows account settings in OS settings, which includes a link to install or
+// open the Family Link app to see supervision settings.
+void ShowAccountSettings() {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kSupervisedButton);
+  Shell::Get()->system_tray_model()->client()->ShowAccountSettings();
+}
+
 }  // namespace
+
+class QuickSettingsHeader::ManagedStateView : public views::Button {
+ public:
+  METADATA_HEADER(ManagedStateView);
+
+  ManagedStateView(PressedCallback callback,
+                   int label_id,
+                   const gfx::VectorIcon& icon)
+      : views::Button(std::move(callback)), icon_(icon) {
+    auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+        kUnifiedSystemInfoSpacing));
+
+    // Image goes first.
+    image_ = AddChildView(std::make_unique<views::ImageView>());
+    label_ = AddChildView(std::make_unique<views::Label>());
+
+    // Inset the icon and label so they aren't too close to the rounded corners.
+    layout_manager->set_inside_border_insets(kManagedStateBorderInsets);
+    layout_manager->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    label_->SetAutoColorReadabilityEnabled(false);
+    label_->SetSubpixelRenderingEnabled(false);
+    label_->SetText(l10n_util::GetStringUTF16(label_id));
+
+    image_->SetPreferredSize(kManagedStateImageSize);
+    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                          *label_);
+    SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kManagedStateCornerRadius);
+  }
+
+  ManagedStateView(const ManagedStateView&) = delete;
+
+  ManagedStateView& operator=(const ManagedStateView&) = delete;
+
+  ~ManagedStateView() override = default;
+
+  views::Label* label() { return label_; }
+
+ private:
+  // views::Button:
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
+    // Tooltip events should be handled by this top-level view.
+    return HitTestPoint(point) ? this : nullptr;
+  }
+
+  // views::Button:
+  // TODO(b/311234537): consider to remove this override and set color ids.
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    const std::pair<SkColor, float> base_color_and_opacity =
+        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+    views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
+    image_->SetImage(gfx::CreateVectorIcon(
+        *icon_,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)));
+  }
+
+  // views::Button:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    // Draw a button outline similar to ChannelIndicatorQuickSettingsView's
+    // VersionButton outline.
+    cc::PaintFlags flags;
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(kManagedStateStrokeWidth);
+    flags.setAntiAlias(true);
+    const float half_stroke_width = kManagedStateStrokeWidth / 2.0f;
+    gfx::RectF bounds(GetLocalBounds());
+    bounds.Inset(half_stroke_width);
+    canvas->DrawRoundRect(bounds, kManagedStateCornerRadius, flags);
+  }
+
+  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
+
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+};
+
+BEGIN_METADATA(QuickSettingsHeader, ManagedStateView, views::Button)
+END_METADATA
+
+class QuickSettingsHeader::EnterpriseManagedView
+    : public ManagedStateView,
+      public EnterpriseDomainObserver,
+      public SessionObserver {
+ public:
+  METADATA_HEADER(EnterpriseManagedView);
+
+  explicit EnterpriseManagedView(UnifiedSystemTrayController* controller)
+      : ManagedStateView(base::BindRepeating(&ShowEnterpriseInfo,
+                                             base::Unretained(controller)),
+                         IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
+                         kQuickSettingsManagedIcon) {
+    DCHECK(Shell::Get());
+    SetID(VIEW_ID_QS_MANAGED_BUTTON);
+    SetProperty(views::kElementIdentifierKey, kEnterpriseManagedView);
+    Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);
+    Shell::Get()->session_controller()->AddObserver(this);
+    Update();
+  }
+
+  EnterpriseManagedView(const EnterpriseManagedView&) = delete;
+  EnterpriseManagedView& operator=(const EnterpriseManagedView&) = delete;
+
+  ~EnterpriseManagedView() override {
+    Shell::Get()->system_tray_model()->enterprise_domain()->RemoveObserver(
+        this);
+    Shell::Get()->session_controller()->RemoveObserver(this);
+  }
+
+  // Adjusts the layout for a narrower appearance, using a shorter label for
+  // the button.
+  void SetNarrowLayout(bool narrow) {
+    narrow_layout_ = narrow;
+    Update();
+  }
+
+ private:
+  // EnterpriseDomainObserver:
+  void OnDeviceEnterpriseInfoChanged() override { Update(); }
+  void OnEnterpriseAccountDomainChanged() override { Update(); }
+
+  // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus status) override { Update(); }
+
+  // Updates the view visibility and displayed string.
+  void Update() {
+    EnterpriseDomainModel* model =
+        Shell::Get()->system_tray_model()->enterprise_domain();
+    SessionControllerImpl* session_controller =
+        Shell::Get()->session_controller();
+    const std::string enterprise_domain_manager =
+        model->enterprise_domain_manager();
+    const std::string account_domain_manager = model->account_domain_manager();
+
+    const bool visible = session_controller->ShouldDisplayManagedUI() ||
+                         model->active_directory_managed() ||
+                         !enterprise_domain_manager.empty() ||
+                         !account_domain_manager.empty();
+    SetVisible(visible);
+
+    if (!visible) {
+      return;
+    }
+
+    // Display device and user management based on the enterprise enrollment
+    // state.
+    std::u16string managed_string;
+    if (enterprise_domain_manager.empty() && account_domain_manager.empty()) {
+      managed_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName());
+    } else if (!enterprise_domain_manager.empty() &&
+               !account_domain_manager.empty() &&
+               enterprise_domain_manager != account_domain_manager) {
+      managed_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_SHORT_MANAGED_BY_MULTIPLE,
+          base::UTF8ToUTF16(enterprise_domain_manager),
+          base::UTF8ToUTF16(account_domain_manager));
+    } else {
+      const std::u16string display_domain_manager =
+          enterprise_domain_manager.empty()
+              ? base::UTF8ToUTF16(account_domain_manager)
+              : base::UTF8ToUTF16(enterprise_domain_manager);
+      managed_string = l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                                  display_domain_manager);
+      // Narrow layout uses the string "Managed" and wide layout uses the full
+      // string "Managed by example.com".
+      label()->SetText(narrow_layout_
+                           ? l10n_util::GetStringUTF16(
+                                 IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT)
+                           : managed_string);
+    }
+    SetTooltipText(managed_string);
+  }
+
+  // See SetNarrowLayout().
+  bool narrow_layout_ = false;
+};
+
+BEGIN_METADATA(QuickSettingsHeader, EnterpriseManagedView, ManagedStateView)
+END_METADATA
 
 QuickSettingsHeader::QuickSettingsHeader(
     UnifiedSystemTrayController* controller) {
@@ -47,7 +288,16 @@ QuickSettingsHeader::QuickSettingsHeader(
   enterprise_managed_view_ =
       AddChildView(std::make_unique<EnterpriseManagedView>(controller));
 
-  supervised_view_ = AddChildView(std::make_unique<SupervisedUserView>());
+  // A view that shows whether the user is supervised or a child.
+  supervised_view_ = AddChildView(std::make_unique<ManagedStateView>(
+      base::BindRepeating(&ShowAccountSettings),
+      IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL, GetSupervisedUserIcon()));
+  supervised_view_->SetID(VIEW_ID_QS_SUPERVISED_BUTTON);
+  const bool visible = Shell::Get()->session_controller()->IsUserChild();
+  supervised_view_->SetVisible(visible);
+  if (visible) {
+    supervised_view_->SetTooltipText(GetSupervisedUserMessage());
+  }
 
   const bool is_active_state =
       Shell::Get()->session_controller()->GetSessionState() ==
@@ -77,6 +327,14 @@ QuickSettingsHeader::~QuickSettingsHeader() = default;
 
 void QuickSettingsHeader::ChildVisibilityChanged(views::View* child) {
   UpdateVisibilityAndLayout();
+}
+
+views::Label* QuickSettingsHeader::GetManagedButtonLabelForTest() {
+  return enterprise_managed_view_->label();
+}
+
+views::Label* QuickSettingsHeader::GetSupervisedButtonLabelForTest() {
+  return supervised_view_->label();
 }
 
 void QuickSettingsHeader::UpdateVisibilityAndLayout() {

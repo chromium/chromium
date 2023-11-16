@@ -2156,8 +2156,6 @@ component("ash") {
     "system/tray/unfocusable_label.cc",
     "system/tray/unfocusable_label.h",
     "system/tray/view_click_listener.h",
-    "system/unified/buttons.cc",
-    "system/unified/buttons.h",
     "system/unified/classroom_bubble_base_view.cc",
     "system/unified/classroom_bubble_base_view.h",
     "system/unified/classroom_bubble_student_view.cc",

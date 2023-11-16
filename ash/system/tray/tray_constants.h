@@ -153,7 +153,6 @@ inline constexpr auto kUnifiedTopShortcutPadding = gfx::Insets::VH(0, 16);
 inline constexpr auto kUnifiedNotificationHiddenPadding =
     gfx::Insets::VH(6, 16);
 inline constexpr int kUnifiedNotificationSeparatorThickness = 1;
-inline constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 inline constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
 inline constexpr gfx::Insets kUnifiedSystemInfoBatteryIconPadding =
     gfx::Insets::TLBR(2, 2, 2, 6);

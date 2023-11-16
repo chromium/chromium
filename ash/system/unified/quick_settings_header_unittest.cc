@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/unified/buttons.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/update/eol_notice_quick_settings_view.h"
@@ -76,9 +75,7 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   }
 
   views::Label* GetManagedButtonLabel() {
-    views::View* view = GetManagedButton();
-    DCHECK(views::IsViewClass<EnterpriseManagedView>(view));
-    return views::AsViewClass<EnterpriseManagedView>(view)->label();
+    return header_->GetManagedButtonLabelForTest();
   }
 
   views::View* GetSupervisedButton() {
@@ -86,9 +83,7 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   }
 
   views::Label* GetSupervisedButtonLabel() {
-    views::View* view = GetSupervisedButton();
-    DCHECK(views::IsViewClass<SupervisedUserView>(view));
-    return views::AsViewClass<SupervisedUserView>(view)->label();
+    return header_->GetSupervisedButtonLabelForTest();
   }
 
   raw_ptr<TestShellDelegate, DanglingUntriaged | ExperimentalAsh>
