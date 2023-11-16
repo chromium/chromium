@@ -1015,7 +1015,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
 
 VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
     scoped_refptr<VideoFrame> video_frame) {
-  TRACE_EVENT0("cc", "VideoResourceUpdater::CreateForHardwarePlanes");
+  TRACE_EVENT0("media", "VideoResourceUpdater::CreateForHardwarePlanes");
   DCHECK(video_frame->HasTextures());
   if (!context_provider_) {
     return VideoFrameExternalResources();
@@ -1097,7 +1097,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
 
 VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     scoped_refptr<VideoFrame> video_frame) {
-  TRACE_EVENT0("cc", "VideoResourceUpdater::CreateForSoftwarePlanes");
+  TRACE_EVENT0("media", "VideoResourceUpdater::CreateForSoftwarePlanes");
   const VideoPixelFormat input_frame_format = video_frame->format();
 
   size_t bits_per_channel = video_frame->BitDepth();
