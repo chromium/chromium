@@ -262,7 +262,12 @@ def _GetNativeLibrariesToAdd(native_libs, android_abi, fast_align,
       lib_android_abi = 'arm64-v8a-hwasan'
 
     apk_path = 'lib/%s/%s' % (lib_android_abi, basename)
-    alignment = 0 if compress and not fast_align else 0x1000
+    if compress and not fast_align:
+      alignment = 0
+    elif '64' in android_abi:
+      alignment = 0x4000  # 16k alignment
+    else:
+      alignment = 0x1000  # 4k alignment
     libraries_to_add.append((apk_path, path, compress, alignment))
 
   return libraries_to_add
