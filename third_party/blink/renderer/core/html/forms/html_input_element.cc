@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
@@ -106,6 +107,8 @@ using mojom::blink::FormControlType;
 namespace {
 
 const unsigned kMaxEmailFieldLength = 254;
+
+const unsigned kMinStrongPasswordLabelWidth = 220;
 
 static bool is_default_font_prewarmed_ = false;
 
@@ -1213,6 +1216,10 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
       placeholder->classList().Remove(reveal);
     }
 
+    // Prevent fade out and displaying strong password label in narrow forms.
+    if (getBoundingClientRect()->width() < kMinStrongPasswordLabelWidth) {
+      should_show_strong_password_label_ = false;
+    }
     const AtomicString fade_out("fade-out-password");
     if (should_show_strong_password_label_) {
       placeholder->classList().Add(fade_out);
