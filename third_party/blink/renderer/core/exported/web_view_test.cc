@@ -1670,6 +1670,25 @@ TEST_F(WebViewTest, ExtendSelectionAndDelete) {
   EXPECT_EQ("ijklmnopqrstuvwxyz", info.value.Utf8());
 }
 
+TEST_F(WebViewTest, EditContextExtendSelectionAndDelete) {
+  RegisterMockedHttpURLLoad("edit_context.html");
+  WebViewImpl* web_view =
+      web_view_helper_.InitializeAndLoad(base_url_ + "edit_context.html");
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
+  frame->SetEditableSelectionOffsets(10, 10);
+  frame->ExtendSelectionAndDelete(5, 8);
+  WebInputMethodController* active_input_method_controller =
+      frame->GetInputMethodController();
+  WebTextInputInfo info = active_input_method_controller->TextInputInfo();
+  EXPECT_EQ("01234ijklmnopqrstuvwxyz", info.value.Utf8());
+  EXPECT_EQ(5, info.selection_start);
+  EXPECT_EQ(5, info.selection_end);
+  frame->ExtendSelectionAndDelete(10, 0);
+  info = active_input_method_controller->TextInputInfo();
+  EXPECT_EQ("ijklmnopqrstuvwxyz", info.value.Utf8());
+}
+
 TEST_F(WebViewTest, DeleteSurroundingText) {
   RegisterMockedHttpURLLoad("input_field_populated.html");
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(

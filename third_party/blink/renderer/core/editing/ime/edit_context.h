@@ -189,6 +189,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // `after` characters following the current `selection_end_`.
   void DeleteSurroundingText(int before, int after);
 
+  // Called from WebLocalFrame to change the selection range.
+  // Unlike updateSelection(), we need to dispatch TextInputEvent to notify the
+  // page that the selection has changed since in this case the change was not
+  // triggered by the page.
+  void SetSelection(int start, int end);
+
   // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
   // for the character range specified by `location` and `length`.
   // Returns true on success, false on failure (in which case

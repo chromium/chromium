@@ -636,6 +636,18 @@ void EditContext::DeleteSurroundingText(int before, int after) {
                           update_range_end, selection_start_, selection_end_);
 }
 
+void EditContext::SetSelection(int start, int end) {
+  TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
+               std::to_string(start) + ", " + std::to_string(end));
+
+  selection_start_ = start;
+  selection_end_ = end;
+
+  DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
+                          /*update_range_end=*/0, selection_start_,
+                          selection_end_);
+}
+
 void EditContext::AttachElement(HTMLElement* element_to_attach) {
   if (base::Contains(attached_elements_, element_to_attach,
                      &Member<HTMLElement>::Get)) {

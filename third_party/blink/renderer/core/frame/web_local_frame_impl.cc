@@ -1618,6 +1618,11 @@ void WebLocalFrameImpl::MoveCaretSelection(
 
 bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setEditableSelectionOffsets");
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    edit_context->SetSelection(start, end);
+    return true;
+  }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.

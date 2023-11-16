@@ -82,6 +82,7 @@ testing/data/div_with_image.html
 testing/data/domfocusout_domfocusin_events.html
 testing/data/double_press_selection.html
 testing/data/dv-size.html
+testing/data/edit_context.html
 testing/data/editable_elements.html
 testing/data/email-form.html
 testing/data/enter_key_hint_default.html
