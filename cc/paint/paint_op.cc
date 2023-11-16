@@ -318,75 +318,21 @@ bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};
 bool PaintOp::g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-#undef TYPES
-
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
 
 std::string PaintOpTypeToString(PaintOpType type) {
   switch (type) {
-    case PaintOpType::kAnnotate:
-      return "Annotate";
-    case PaintOpType::kClippath:
-      return "ClipPath";
-    case PaintOpType::kCliprect:
-      return "ClipRect";
-    case PaintOpType::kCliprrect:
-      return "ClipRRect";
-    case PaintOpType::kConcat:
-      return "Concat";
-    case PaintOpType::kCustomdata:
-      return "CustomData";
-    case PaintOpType::kDrawcolor:
-      return "DrawColor";
-    case PaintOpType::kDrawdrrect:
-      return "DrawDRRect";
-    case PaintOpType::kDrawimage:
-      return "DrawImage";
-    case PaintOpType::kDrawimagerect:
-      return "DrawImageRect";
-    case PaintOpType::kDrawirect:
-      return "DrawIRect";
-    case PaintOpType::kDrawline:
-      return "DrawLine";
-    case PaintOpType::kDrawoval:
-      return "DrawOval";
-    case PaintOpType::kDrawpath:
-      return "DrawPath";
-    case PaintOpType::kDrawrecord:
-      return "DrawRecord";
-    case PaintOpType::kDrawrect:
-      return "DrawRect";
-    case PaintOpType::kDrawrrect:
-      return "DrawRRect";
-    case PaintOpType::kDrawskottie:
-      return "DrawSkottie";
-    case PaintOpType::kDrawslug:
-      return "DrawSlug";
-    case PaintOpType::kDrawtextblob:
-      return "DrawTextBlob";
-    case PaintOpType::kNoop:
-      return "Noop";
-    case PaintOpType::kRestore:
-      return "Restore";
-    case PaintOpType::kRotate:
-      return "Rotate";
-    case PaintOpType::kSave:
-      return "Save";
-    case PaintOpType::kSavelayer:
-      return "SaveLayer";
-    case PaintOpType::kSavelayeralpha:
-      return "SaveLayerAlpha";
-    case PaintOpType::kScale:
-      return "Scale";
-    case PaintOpType::kSetmatrix:
-      return "SetMatrix";
-    case PaintOpType::kSetnodeid:
-      return "SetNodeId";
-    case PaintOpType::kTranslate:
-      return "Translate";
+#define M(T)     \
+  case T::kType: \
+    return #T;
+
+  TYPES(M)
+#undef M
   }
-  return "UNKNOWN";
+  NOTREACHED_NORETURN();
 }
+
+#undef TYPES
 
 std::ostream& operator<<(std::ostream& os, PaintOpType type) {
   return os << PaintOpTypeToString(type);
@@ -1679,8 +1625,8 @@ size_t PaintOp::Serialize(void* memory,
                               original_ctm);
 
   // Convert DrawTextBlobOp to DrawSlugOp.
-  if (GetType() == PaintOpType::kDrawtextblob) {
-    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::kDrawslug));
+  if (GetType() == PaintOpType::kDrawTextBlob) {
+    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::kDrawSlug));
   }
   return writer.FinishOp(type);
 }
@@ -1733,78 +1679,78 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
   DCHECK(op.IsDrawOp());
 
   switch (op.GetType()) {
-    case PaintOpType::kDrawcolor:
+    case PaintOpType::kDrawColor:
       return false;
-    case PaintOpType::kDrawdrrect: {
+    case PaintOpType::kDrawDRRect: {
       const auto& rect_op = static_cast<const DrawDRRectOp&>(op);
       *rect = rect_op.outer.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawimage: {
+    case PaintOpType::kDrawImage: {
       const auto& image_op = static_cast<const DrawImageOp&>(op);
       *rect = SkRect::MakeXYWH(image_op.left, image_op.top,
                                image_op.image.width(), image_op.image.height());
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawimagerect: {
+    case PaintOpType::kDrawImageRect: {
       const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
       *rect = image_rect_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawirect: {
+    case PaintOpType::kDrawIRect: {
       const auto& rect_op = static_cast<const DrawIRectOp&>(op);
       *rect = SkRect::Make(rect_op.rect);
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawline: {
+    case PaintOpType::kDrawLine: {
       const auto& line_op = static_cast<const DrawLineOp&>(op);
       rect->setLTRB(line_op.x0, line_op.y0, line_op.x1, line_op.y1);
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawoval: {
+    case PaintOpType::kDrawOval: {
       const auto& oval_op = static_cast<const DrawOvalOp&>(op);
       *rect = oval_op.oval;
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawpath: {
+    case PaintOpType::kDrawPath: {
       const auto& path_op = static_cast<const DrawPathOp&>(op);
       *rect = path_op.path.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawrect: {
+    case PaintOpType::kDrawRect: {
       const auto& rect_op = static_cast<const DrawRectOp&>(op);
       *rect = rect_op.rect;
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawrrect: {
+    case PaintOpType::kDrawRRect: {
       const auto& rect_op = static_cast<const DrawRRectOp&>(op);
       *rect = rect_op.rrect.rect();
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawrecord:
+    case PaintOpType::kDrawRecord:
       return false;
-    case PaintOpType::kDrawskottie: {
+    case PaintOpType::kDrawSkottie: {
       const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
       *rect = skottie_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawtextblob: {
+    case PaintOpType::kDrawTextBlob: {
       const auto& text_op = static_cast<const DrawTextBlobOp&>(op);
       *rect = text_op.blob->bounds().makeOffset(text_op.x, text_op.y);
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawslug: {
+    case PaintOpType::kDrawSlug: {
       const auto& slug_op = static_cast<const DrawSlugOp&>(op);
       *rect = slug_op.slug->sourceBoundsWithOrigin();
       rect->sort();
@@ -1896,16 +1842,16 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
     return true;
   }
 
-  if (op.GetType() == PaintOpType::kDrawimage &&
+  if (op.GetType() == PaintOpType::kDrawImage &&
       static_cast<const DrawImageOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::kDrawimagerect &&
+  } else if (op.GetType() == PaintOpType::kDrawImageRect &&
              static_cast<const DrawImageRectOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::kDrawrecord &&
+  } else if (op.GetType() == PaintOpType::kDrawRecord &&
              static_cast<const DrawRecordOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::kDrawskottie &&
+  } else if (op.GetType() == PaintOpType::kDrawSkottie &&
              static_cast<const DrawSkottieOp&>(op).HasDiscardableImages()) {
     return true;
   }

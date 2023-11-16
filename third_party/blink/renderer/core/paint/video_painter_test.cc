@@ -31,7 +31,7 @@ void ExtractLinks(const PaintRecord& record,
               reinterpret_cast<const char*>(annotate_op.data->data()),
               annotate_op.data->size())),
           annotate_op.rect));
-    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       ExtractLinks(record_op.record, links);
     }
@@ -41,17 +41,17 @@ void ExtractLinks(const PaintRecord& record,
 size_t CountImagesOfType(const PaintRecord& record, cc::ImageType image_type) {
   size_t count = 0;
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::kDrawimage) {
+    if (op.GetType() == cc::PaintOpType::kDrawImage) {
       const auto& image_op = static_cast<const cc::DrawImageOp&>(op);
       if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
-    } else if (op.GetType() == cc::PaintOpType::kDrawimagerect) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
-    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       count += CountImagesOfType(record_op.record, image_type);
     }

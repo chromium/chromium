@@ -135,13 +135,13 @@ DrawingDisplayItem::BackgroundColorInfo DrawingDisplayItem::BackgroundColor()
     }
     SkRect item_rect;
     switch (op.GetType()) {
-      case cc::PaintOpType::kDrawrect:
+      case cc::PaintOpType::kDrawRect:
         item_rect = static_cast<const cc::DrawRectOp&>(op).rect;
         break;
-      case cc::PaintOpType::kDrawirect:
+      case cc::PaintOpType::kDrawIRect:
         item_rect = SkRect::Make(static_cast<const cc::DrawIRectOp&>(op).rect);
         break;
-      case cc::PaintOpType::kDrawrrect:
+      case cc::PaintOpType::kDrawRRect:
         item_rect = static_cast<const cc::DrawRRectOp&>(op).rrect.rect();
         may_be_solid_color = false;
         break;
@@ -189,11 +189,11 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
       break;
 
     // Deal with the common pattern of clipped bleed avoiding images like:
-    // kSave, kCliprect, kDraw..., kRestore.
+    // kSave, kClipRect, kDraw..., kRestore.
     if (op.GetType() == cc::PaintOpType::kSave) {
       continue;
     }
-    if (op.GetType() == cc::PaintOpType::kCliprect) {
+    if (op.GetType() == cc::PaintOpType::kClipRect) {
       clip_rect.Intersect(gfx::ToEnclosedRect(
           gfx::SkRectToRectF(static_cast<const cc::ClipRectOp&>(op).rect)));
       continue;
@@ -203,7 +203,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
       break;
 
     gfx::Rect op_opaque_rect;
-    if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       op_opaque_rect = CalculateRectKnownToBeOpaqueForRecord(
           static_cast<const cc::DrawRecordOp&>(op).record);
     } else {
@@ -218,11 +218,11 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
       }
 
       switch (op.GetType()) {
-        case cc::PaintOpType::kDrawrect:
+        case cc::PaintOpType::kDrawRect:
           op_opaque_rect = gfx::ToEnclosedRect(
               gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect));
           break;
-        case cc::PaintOpType::kDrawrrect: {
+        case cc::PaintOpType::kDrawRRect: {
           const SkRRect& rrect = static_cast<const cc::DrawRRectOp&>(op).rrect;
           SkVector top_left = rrect.radii(SkRRect::kUpperLeft_Corner);
           SkVector top_right = rrect.radii(SkRRect::kUpperRight_Corner);
@@ -243,11 +243,11 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           op_opaque_rect = ToEnclosedRect(contained);
           break;
         }
-        case cc::PaintOpType::kDrawirect:
+        case cc::PaintOpType::kDrawIRect:
           op_opaque_rect =
               gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect);
           break;
-        case cc::PaintOpType::kDrawimage: {
+        case cc::PaintOpType::kDrawImage: {
           const auto& draw_image_op = static_cast<const cc::DrawImageOp&>(op);
           const auto& image = draw_image_op.image;
           if (!image.IsOpaque())
@@ -256,7 +256,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
                                      image.width(), image.height());
           break;
         }
-        case cc::PaintOpType::kDrawimagerect: {
+        case cc::PaintOpType::kDrawImageRect: {
           const auto& draw_image_rect_op =
               static_cast<const cc::DrawImageRectOp&>(op);
           const auto& image = draw_image_rect_op.image;
@@ -296,19 +296,19 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(const gfx::Rect& visual_rect,
 
   gfx::Rect item_rect;
   switch (op.GetType()) {
-    case cc::PaintOpType::kDrawrect:
+    case cc::PaintOpType::kDrawRect:
       item_rect = gfx::ToEnclosingRect(
           gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect));
       break;
-    case cc::PaintOpType::kDrawirect:
+    case cc::PaintOpType::kDrawIRect:
       item_rect =
           gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect);
       break;
-    case cc::PaintOpType::kDrawrrect:
+    case cc::PaintOpType::kDrawRRect:
       item_rect = gfx::ToEnclosingRect(gfx::SkRectToRectF(
           static_cast<const cc::DrawRRectOp&>(op).rrect.rect()));
       break;
-    // TODO(pdr): Support image PaintOpTypes such as kDrawimage{rect}.
+    // TODO(pdr): Support image PaintOpTypes such as kDrawImage{rect}.
     // TODO(pdr): Consider checking PaintOpType::kDrawtextblob too.
     default:
       return visual_rect;

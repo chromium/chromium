@@ -27,7 +27,7 @@ void ExtractLinks(const PaintRecord& record, std::vector<GURL>* links) {
       links->push_back(GURL(
           std::string(reinterpret_cast<const char*>(annotate_op.data->data()),
                       annotate_op.data->size())));
-    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       ExtractLinks(record_op.record, links);
     }
