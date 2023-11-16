@@ -3431,4 +3431,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private boolean skipSavingNonActiveNtps() {
         return StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet());
     }
+
+    public void showStartSurfaceForTesting() {
+        showOverview(StartSurfaceState.SHOWING_START);
+    }
 }

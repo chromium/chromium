@@ -304,13 +304,16 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testOpenRecentTabOnStartAndTapBackButtonReturnToStartSurface()
             throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        if (!mImmediateReturn) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        cta.showStartSurfaceForTesting();
+                    });
+        }
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Taps on the "Recent tabs" menu item.
@@ -327,8 +330,8 @@ public class StartSurfaceBackButtonTest {
 
         // Tap the back on the "Recent tabs" should take us back to the start surface homepage, and
         // the Tab should be deleted.
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
+        onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
     }
 
