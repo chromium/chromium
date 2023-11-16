@@ -23,6 +23,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -479,19 +481,35 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
     return;
   }
 
-  // TODO(crbug.com/1502099): Improve this simple heuristic by including and
-  // using `password_manager::FormDataParser`.
-  if (!base::ranges::any_of(
-          *form_structure, [](const std::unique_ptr<AutofillField>& field) {
-            return field->server_type() == ServerFieldType::PASSWORD ||
-                   (field->server_type() == ServerFieldType::NO_SERVER_DATA &&
-                    field->form_control_type ==
-                        FormControlType::kInputPassword);
-          })) {
+  // Transform the predictions data to a format the `FormDataParser` can handle
+  // and parse the form.
+  FormData form_data = form_structure->ToFormData();
+  auto autofill_predictions =
+      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
+          *form_structure, /*comp=*/{},
+          /*proj=*/[](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(),
+                                  AutofillType::ServerPrediction(*field));
+          });
+  password_manager::FormDataParser parser;
+  // The driver id is irrelevant here because it would only be used by password
+  // manager logic that handles the `PasswordForm` returned by the parser.
+  // Therefore we pass a dummy a value.
+  parser.set_predictions(password_manager::ConvertToFormPredictions(
+      /*driver_id=*/0, form_data, autofill_predictions));
+  // On Chrome, the parser can use stored usernames to identify a filled
+  // username field by the value it contains. Since we do not have access to
+  // credentials, we leave it empty.
+  std::unique_ptr<password_manager::PasswordForm> password_form =
+      parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
+                   /*stored_usernames=*/{});
+  // Currently, prefill requests are limited to likely login forms for
+  // simplicity - these are the most common use cases on WebView.
+  if (!password_form || !password_form->IsLikelyLoginForm()) {
     return;
   }
-  cached_form_ = std::make_unique<FormDataAndroid>(form_structure->ToFormData(),
-                                                   GetSessionId());
+
+  cached_form_ = std::make_unique<FormDataAndroid>(form_data, GetSessionId());
   cached_form_->UpdateFieldTypes(*form_structure);
   bridge_->SendPrefillRequest(*cached_form_);
 }

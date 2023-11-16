@@ -112,6 +112,7 @@ static_library("android") {
     ":features",
     ":jni_headers",
     "//components/autofill/content/browser",
+    "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
     "//ui/android",
   ]
