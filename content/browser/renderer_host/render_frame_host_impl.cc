@@ -2516,6 +2516,15 @@ void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
       std::move(media_player_action));
 }
 
+void RenderFrameHostImpl::RequestVideoFrameAt(
+    const gfx::Point& location,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  gfx::PointF point_in_view = GetView()->TransformRootPointToViewCoordSpace(
+      gfx::PointF(location.x(), location.y()));
+  GetAssociatedLocalFrame()->RequestVideoFrameAt(
+      gfx::Point(point_in_view.x(), point_in_view.y()), std::move(callback));
+}
+
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {

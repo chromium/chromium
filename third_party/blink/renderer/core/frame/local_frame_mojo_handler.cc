@@ -696,6 +696,14 @@ void LocalFrameMojoHandler::MediaPlayerActionAt(
                                            action->enable);
 }
 
+void LocalFrameMojoHandler::RequestVideoFrameAt(
+    const gfx::Point& window_point,
+    RequestVideoFrameAtCallback callback) {
+  gfx::Point viewport_position =
+      frame_->GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
+  frame_->RequestVideoFrameAt(viewport_position, std::move(callback));
+}
+
 void LocalFrameMojoHandler::AdvanceFocusInFrame(
     mojom::blink::FocusType focus_type,
     const absl::optional<RemoteFrameToken>& source_frame_token) {

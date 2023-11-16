@@ -1755,6 +1755,15 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/frame/local_frame.cc',
+            'third_party/blink/renderer/core/frame/local_frame.h',
+        ],
+        'allowed': [
+            'gfx::ImageSkia',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/local_frame_view.cc'],
         'allowed': [
             'base::LapTimer',

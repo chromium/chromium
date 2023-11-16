@@ -497,6 +497,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,
       const blink::mojom::MediaPlayerAction& action) override;
+  void RequestVideoFrameAt(
+      const gfx::Point& viewport_position,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback) override;
   bool CreateNetworkServiceDefaultFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver) override;

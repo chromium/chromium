@@ -206,7 +206,9 @@ class ContextMenuBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
   ContextMenuBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, media::kContextMenuSaveVideoFrameAs}, {});
+        {features::kReadAnything, media::kContextMenuSaveVideoFrameAs,
+         media::kContextMenuSearchForVideoFrame},
+        {});
   }
 
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeNone(
@@ -2971,8 +2973,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_TRUE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -2986,6 +2991,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_FALSE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ContextMenuForEncryptedVideo) {

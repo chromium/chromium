@@ -34,6 +34,7 @@ specific_include_rules = {
     "+base/run_loop.h",
   ],
   "local_frame\.h": [
+    "+ui/gfx/image/image_skia.h",
     "+ui/gfx/transform.h"
   ],
   "local_frame\.cc": [

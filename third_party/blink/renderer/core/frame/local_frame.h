@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -731,6 +732,9 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& viewport_position,
       const blink::mojom::blink::MediaPlayerActionType type,
       bool enable);
+  void RequestVideoFrameAt(
+      const gfx::Point& viewport_position,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // Handle the request as a download. If the request is for a blob: URL,
   // a BlobURLToken should be provided as |blob_url_token| to ensure the

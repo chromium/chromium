@@ -39,6 +39,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -859,6 +860,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point& location,
       const blink::mojom::MediaPlayerAction& action) = 0;
+
+  virtual void RequestVideoFrameAt(
+      const gfx::Point& location,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.
   //

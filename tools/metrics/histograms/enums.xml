@@ -54692,6 +54692,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="139" label="IDC_CONTEXT_COMPOSE"/>
   <int value="140" label="IDC_CONTEXT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS"/>
   <int value="141" label="IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS"/>
+  <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
+  <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
 </enum>
 
 <enum name="ReportCheckMembershipResponseCases">

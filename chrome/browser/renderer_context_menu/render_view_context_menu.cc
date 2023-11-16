@@ -139,6 +139,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_metrics.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
@@ -511,13 +512,15 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTEXT_COMPOSE, 139},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS, 140},
        {IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS, 141},
+       {IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME, 142},
+       {IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME, 143},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 142}});
+       {0, 144}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1323,6 +1326,12 @@ int RenderViewContextMenu::GetRegionSearchIdc() const {
              : IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH;
 }
 
+int RenderViewContextMenu::GetSearchForVideoFrameIdc() const {
+  return search::DefaultSearchProviderIsGoogle(GetProfile())
+             ? IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME
+             : IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME;
+}
+
 const TemplateURL* RenderViewContextMenu::GetImageSearchProvider() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
@@ -1996,6 +2005,23 @@ void RenderViewContextMenu::AppendVideoItems() {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME,
                                     IDS_CONTENT_CONTEXT_COPYVIDEOFRAME);
   }
+
+  if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
+    const auto* provider = GetImageSearchProvider();
+    if (!provider) {
+      return;
+    }
+
+    menu_model_.AddItem(
+        GetSearchForVideoFrameIdc(),
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
+                                   GetImageSearchProviderName(provider)));
+    if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
+      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    }
+    MaybePrepareForLensQuery();
+  }
+
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYAVLOCATION,
                                   IDS_CONTENT_CONTEXT_COPYVIDEOLOCATION);
   menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
@@ -2709,6 +2735,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS:
     case IDC_CONTENT_CONTEXT_COPYVIDEOFRAME:
+    case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
+    case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
       return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
              (params_.media_flags &
               ContextMenuData::kMediaHasReadableVideoFrame) != 0;
@@ -3046,6 +3074,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYVIDEOFRAME:
       ExecCopyVideoFrame();
+      break;
+
+    case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
+    case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
+      ExecSearchForVideoFrame();
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
@@ -4157,16 +4190,29 @@ void RenderViewContextMenu::ExecSaveVideoFrameAs() {
       gfx::Point(params_.x, params_.y),
       blink::mojom::MediaPlayerAction(
           blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs,
-          !IsCommandIdChecked(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS)));
+          /*enable=*/true));
 }
 
 void RenderViewContextMenu::ExecCopyVideoFrame() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_CopyVideoFrame"));
-  MediaPlayerActionAt(
+  MediaPlayerActionAt(gfx::Point(params_.x, params_.y),
+                      blink::mojom::MediaPlayerAction(
+                          blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
+                          /*enable=*/true));
+}
+
+void RenderViewContextMenu::ExecSearchForVideoFrame() {
+  base::RecordAction(UserMetricsAction("MediaContextMenu_SearchForVideoFrame"));
+
+  RenderFrameHost* frame_host = GetRenderFrameHost();
+  if (!frame_host) {
+    return;
+  }
+
+  frame_host->RequestVideoFrameAt(
       gfx::Point(params_.x, params_.y),
-      blink::mojom::MediaPlayerAction(
-          blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
-          !IsCommandIdChecked(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME)));
+      base::BindOnce(&RenderViewContextMenu::SearchForVideoFrame,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 void RenderViewContextMenu::ExecLiveCaption() {
@@ -4318,6 +4364,27 @@ void RenderViewContextMenu::MediaPlayerActionAt(
   RenderFrameHost* frame_host = GetRenderFrameHost();
   if (frame_host)
     frame_host->ExecuteMediaPlayerActionAtLocation(location, action);
+}
+
+void RenderViewContextMenu::SearchForVideoFrame(const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    return;
+  }
+
+  CoreTabHelper* core_tab_helper =
+      CoreTabHelper::FromWebContents(source_web_contents_);
+  if (!core_tab_helper) {
+    return;
+  }
+
+  // TODO(crbug.com/1453681): Add an entry point for VideoFrame search.
+  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    core_tab_helper->SearchWithLens(
+        gfx::Image(image), image.size(), {},
+        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM);
+  } else {
+    core_tab_helper->SearchByImage(gfx::Image(image), image.size());
+  }
 }
 
 void RenderViewContextMenu::PluginActionAt(

@@ -3401,6 +3401,43 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
   }
 }
 
+void LocalFrame::RequestVideoFrameAt(
+    const gfx::Point& viewport_position,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
+  Node* node = result.InnerNode();
+  auto* video = DynamicTo<HTMLVideoElement>(node);
+
+  if (!video) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  auto image = video->CreateStaticBitmapImage();
+  if (!image) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  auto bitmap = image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
+
+  // Only kN32_SkColorType bitmaps can be sent across IPC, so convert if
+  // necessary.
+  SkBitmap converted_bitmap;
+  if (bitmap.colorType() == kN32_SkColorType) {
+    converted_bitmap = bitmap;
+  } else {
+    SkImageInfo info = bitmap.info().makeColorType(kN32_SkColorType);
+    if (converted_bitmap.tryAllocPixels(info)) {
+      bitmap.readPixels(info, converted_bitmap.getPixels(),
+                        converted_bitmap.rowBytes(), 0, 0);
+    }
+  }
+
+  std::move(callback).Run(gfx::ImageSkia::CreateFromBitmap(converted_bitmap,
+                                                           /*scale=*/1));
+}
+
 void LocalFrame::DownloadURL(
     const ResourceRequest& request,
     network::mojom::blink::RedirectMode cross_origin_redirect_behavior) {

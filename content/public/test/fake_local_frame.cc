@@ -88,6 +88,10 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
+void FakeLocalFrame::RequestVideoFrameAt(const gfx::Point& window_point,
+                                         RequestVideoFrameAtCallback callback) {
+}
+
 void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
                                     blink::mojom::PluginActionType action) {}
 

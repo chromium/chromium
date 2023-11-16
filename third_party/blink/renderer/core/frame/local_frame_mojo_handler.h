@@ -120,9 +120,10 @@ class LocalFrameMojoHandler
   void ReportBlinkFeatureUsage(const Vector<mojom::blink::WebFeature>&) final;
   void RenderFallbackContent() final;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
-  void MediaPlayerActionAt(
-      const gfx::Point& window_point,
-      blink::mojom::blink::MediaPlayerActionPtr action) final;
+  void MediaPlayerActionAt(const gfx::Point& window_point,
+                           mojom::blink::MediaPlayerActionPtr action) final;
+  void RequestVideoFrameAt(const gfx::Point& window_point,
+                           RequestVideoFrameAtCallback callback) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
       const absl::optional<RemoteFrameToken>& source_frame_token) final;

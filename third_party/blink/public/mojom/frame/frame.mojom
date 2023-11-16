@@ -72,6 +72,7 @@ import "ui/base/ime/mojom/virtual_keyboard_types.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -912,6 +913,10 @@ interface LocalFrame {
   // Tells the renderer to perform the given action on the media player location
   // at the given point in the view coordinate space.
   MediaPlayerActionAt(gfx.mojom.Point location, blink.mojom.MediaPlayerAction action);
+
+  // Requests the current video frame (as `image`) from the media player at the
+  // given `location`.
+  RequestVideoFrameAt(gfx.mojom.Point location) => (gfx.mojom.ImageSkia image);
 
   // Tells the renderer to perform the given action on the plugin location at
   // the given point in the view coordinate space.
