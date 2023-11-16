@@ -18,10 +18,8 @@ class RichAnswersDefinitionView : public RichAnswersView {
  public:
   METADATA_HEADER(RichAnswersDefinitionView);
 
-  explicit RichAnswersDefinitionView(
-      const gfx::Rect& anchor_view_bounds,
-      base::WeakPtr<QuickAnswersUiController> controller,
-      const quick_answers::QuickAnswer& result);
+  RichAnswersDefinitionView(const gfx::Rect& anchor_view_bounds,
+                            base::WeakPtr<QuickAnswersUiController> controller);
 
   RichAnswersDefinitionView(const RichAnswersDefinitionView&) = delete;
   RichAnswersDefinitionView& operator=(const RichAnswersDefinitionView&) =

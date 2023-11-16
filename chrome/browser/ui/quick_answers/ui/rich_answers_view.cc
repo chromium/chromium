@@ -82,10 +82,10 @@ namespace quick_answers {
 RichAnswersView::RichAnswersView(
     const gfx::Rect& anchor_view_bounds,
     base::WeakPtr<QuickAnswersUiController> controller,
-    const quick_answers::QuickAnswer& result)
+    const ResultType result_type)
     : anchor_view_bounds_(anchor_view_bounds),
       controller_(std::move(controller)),
-      result_(result),
+      result_type_(result_type),
       rich_answers_view_handler_(
           std::make_unique<quick_answers::RichAnswersPreTargetHandler>(this)),
       focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
@@ -110,17 +110,17 @@ views::UniqueWidgetPtr RichAnswersView::CreateWidget(
   switch (result.result_type) {
     case quick_answers::ResultType::kDefinitionResult: {
       child_view = std::make_unique<RichAnswersDefinitionView>(
-          anchor_view_bounds, controller, result);
+          anchor_view_bounds, controller);
       break;
     }
     case quick_answers::ResultType::kTranslationResult: {
       child_view = std::make_unique<RichAnswersTranslationView>(
-          anchor_view_bounds, controller, result);
+          anchor_view_bounds, controller);
       break;
     }
     case quick_answers::ResultType::kUnitConversionResult: {
       child_view = std::make_unique<RichAnswersUnitConversionView>(
-          anchor_view_bounds, controller, result);
+          anchor_view_bounds, controller);
       break;
     }
     case quick_answers::ResultType::kKnowledgePanelEntityResult:
@@ -229,10 +229,9 @@ void RichAnswersView::AddResultTypeIcon() {
 
   vector_icon_ =
       vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
-  vector_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(GetResultTypeIcon(result_->result_type),
-                                     cros_tokens::kCrosSysSystemBaseElevated,
-                                     /*icon_size=*/kResultTypeIconSizeDip));
+  vector_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      GetResultTypeIcon(result_type_), cros_tokens::kCrosSysSystemBaseElevated,
+      /*icon_size=*/kResultTypeIconSizeDip));
 }
 
 void RichAnswersView::AddFrameButtons() {

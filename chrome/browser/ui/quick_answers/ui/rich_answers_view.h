@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
@@ -42,10 +43,6 @@ class RichAnswersView : public views::View {
 
   static constexpr char kWidgetName[] = "RichAnswersViewWidget";
 
-  RichAnswersView(const gfx::Rect& anchor_view_bounds,
-                  base::WeakPtr<QuickAnswersUiController> controller,
-                  const quick_answers::QuickAnswer& result);
-
   RichAnswersView(const RichAnswersView&) = delete;
   RichAnswersView& operator=(const RichAnswersView&) = delete;
 
@@ -64,6 +61,11 @@ class RichAnswersView : public views::View {
 
   ui::ImageModel GetIconImageModelForTesting();
 
+ protected:
+  RichAnswersView(const gfx::Rect& anchor_view_bounds,
+                  base::WeakPtr<QuickAnswersUiController> controller,
+                  const ResultType result_type);
+
  private:
   void InitLayout();
   void AddResultTypeIcon();
@@ -79,7 +81,7 @@ class RichAnswersView : public views::View {
 
   base::WeakPtr<QuickAnswersUiController> controller_;
 
-  const raw_ref<const quick_answers::QuickAnswer> result_;
+  const ResultType result_type_;
 
   raw_ptr<views::View> base_view_ = nullptr;
   raw_ptr<views::View> main_view_ = nullptr;

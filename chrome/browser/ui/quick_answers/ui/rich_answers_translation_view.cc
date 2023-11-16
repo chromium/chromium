@@ -19,9 +19,10 @@ namespace quick_answers {
 
 RichAnswersTranslationView::RichAnswersTranslationView(
     const gfx::Rect& anchor_view_bounds,
-    base::WeakPtr<QuickAnswersUiController> controller,
-    const quick_answers::QuickAnswer& result)
-    : RichAnswersView(anchor_view_bounds, controller, result) {
+    base::WeakPtr<QuickAnswersUiController> controller)
+    : RichAnswersView(anchor_view_bounds,
+                      controller,
+                      ResultType::kTranslationResult) {
   InitLayout();
 
   // TODO (b/274184294): Add custom focus behavior according to
