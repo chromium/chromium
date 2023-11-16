@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -62,10 +63,12 @@ std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
     PasswordStoreBackend* built_in_backend,
     PasswordStoreBackend* android_backend,
-    PrefService* prefs)
+    PrefService* prefs,
+    IsAccountStore is_account_store)
     : built_in_backend_(built_in_backend),
       android_backend_(android_backend),
-      prefs_(prefs) {}
+      prefs_(prefs),
+      is_account_store_(is_account_store) {}
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
@@ -297,16 +300,24 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
 template <typename ResultT>
 void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
-        retry_callback,
+        fallback_callback,
     const MethodName& method_name,
     base::OnceCallback<void(ResultT)> result_callback,
     ResultT result) {
+  if (!is_account_store_ &&
+      password_manager_android_util::UsesUPMForLocal(prefs_)) {
+    // The backend for local passwords doesn't support unenrollment and as such
+    // doesn't support fallbacks.
+    std::move(result_callback).Run(std::move(result));
+    return;
+  }
+
   if (absl::holds_alternative<PasswordStoreBackendError>(result) &&
       ShouldErrorResultInFallback(
           absl::get<PasswordStoreBackendError>(result))) {
     base::UmaHistogramBoolean(GetFallbackMetricNameForMethod(method_name),
                               true);
-    std::move(retry_callback).Run(std::move(result_callback));
+    std::move(fallback_callback).Run(std::move(result_callback));
   } else {
     std::move(result_callback).Run(std::move(result));
   }
@@ -335,6 +346,28 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 }
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
+  if (is_account_store_) {
+    // The account store shouldn't be used unless the split happened.
+    CHECK(password_manager_android_util::UsesUPMForLocal(prefs_));
+    return UsesAndroidBackendAsMainBackendForAccount();
+  }
+  return UsesAndroidBackendAsMainBackendForProfile();
+}
+
+bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForAccount() {
+  CHECK(is_account_store_);
+  return !prefs_->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
+bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForProfile() {
+  CHECK(!is_account_store_);
+  if (password_manager_android_util::UsesUPMForLocal(prefs_)) {
+    return true;
+  }
+
+  // If this is the profile store being used prior to the store split,
+  // then it would use the Android backend only for enrolled syncing users.
   if (prefs_->GetBoolean(
           prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
     return false;

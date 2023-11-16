@@ -73,7 +73,8 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   // to avoid data loss.
   ps = new password_manager::PasswordStore(CreatePasswordStoreBackend(
       profile->GetPath(), profile->GetPrefs(),
-      AffiliationsPrefetcherFactory::GetForProfile(profile)));
+      AffiliationsPrefetcherFactory::GetForProfile(profile),
+      password_manager::IsAccountStore(false)));
 #else
   NOTIMPLEMENTED();
 #endif

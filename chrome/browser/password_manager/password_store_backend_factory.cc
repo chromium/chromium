@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
@@ -25,7 +26,8 @@ std::unique_ptr<password_manager::PasswordStoreBackend>
 CreatePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher,
+    password_manager::IsAccountStore is_account_store) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
@@ -55,8 +57,9 @@ CreatePasswordStoreBackend(
             syncer::WipeModelUponSyncDisabledBehavior::kNever),
         std::make_unique<password_manager::PasswordStoreAndroidBackend>(
             prefs, affiliations_prefetcher),
-        prefs);
+        prefs, is_account_store);
   }
+  CHECK(!is_account_store);
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       password_manager::CreateLoginDatabaseForProfileStorage(
           login_db_directory),

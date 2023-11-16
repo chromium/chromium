@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -30,7 +31,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   PasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs);
+      PrefService* prefs,
+      IsAccountStore is_account_store);
   PasswordStoreBackendMigrationDecorator(
       const PasswordStoreBackendMigrationDecorator&) = delete;
   PasswordStoreBackendMigrationDecorator(
