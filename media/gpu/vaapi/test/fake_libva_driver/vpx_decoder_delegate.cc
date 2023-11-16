@@ -16,7 +16,8 @@
 namespace media::internal {
 
 VpxDecoderDelegate::VpxDecoderDelegate(int picture_width_hint,
-                                       int picture_height_hint) {
+                                       int picture_height_hint,
+                                       VAProfile profile) {
   vpx_codec_dec_cfg_t vpx_config = {0};
   vpx_config.w = base::checked_cast<unsigned int>(picture_width_hint);
   vpx_config.h = base::checked_cast<unsigned int>(picture_height_hint);
@@ -30,8 +31,12 @@ VpxDecoderDelegate::VpxDecoderDelegate(int picture_width_hint,
   }
 
   vpx_codec_ = std::make_unique<vpx_codec_ctx>();
+  CHECK(profile == VAProfileVP8Version0_3 || profile == VAProfileVP9Profile0);
   const vpx_codec_err_t status = vpx_codec_dec_init(
-      vpx_codec_.get(), vpx_codec_vp9_dx(), &vpx_config, /*flags=*/0);
+      vpx_codec_.get(),
+      (profile == VAProfileVP8Version0_3) ? vpx_codec_vp8_dx()
+                                          : vpx_codec_vp9_dx(),
+      &vpx_config, /*flags=*/0);
 
   CHECK_EQ(status, VPX_CODEC_OK);
 }
@@ -68,10 +73,10 @@ void VpxDecoderDelegate::Run() {
 
   vpx_codec_iter_t iter = nullptr;
   const vpx_image_t* vpx_image = vpx_codec_get_frame(vpx_codec_.get(), &iter);
-
   // The user of libva should ensure that at most one frame is available for
   // output for each vaBeginPicture()/vaRenderPicture()/vaEndPicture() cycle.
-  CHECK(!iter);
+  CHECK(!vpx_codec_get_frame(vpx_codec_.get(), &iter));
+
   encoded_data_buffer_ = nullptr;
 
   // No show reference only frame.

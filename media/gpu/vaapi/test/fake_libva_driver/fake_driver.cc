@@ -56,8 +56,8 @@ FakeContext::IdType FakeDriver::CreateContext(
     int picture_height,
     int flag,
     std::vector<VASurfaceID> render_targets) {
-  return context_.CreateObject(config_id, picture_width, picture_height, flag,
-                               std::move(render_targets));
+  return context_.CreateObject(GetConfig(config_id), picture_width,
+                               picture_height, flag, std::move(render_targets));
 }
 
 bool FakeDriver::ContextExists(FakeContext::IdType id) {
