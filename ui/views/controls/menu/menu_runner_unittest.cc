@@ -333,18 +333,17 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
                     ui::MENU_SOURCE_NONE, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
-  std::unique_ptr<TestMenuDelegate> nested_delegate(new TestMenuDelegate);
-  MenuItemView* nested_menu = new MenuItemView(nested_delegate.get());
-  std::unique_ptr<MenuRunner> nested_runner(
-      new MenuRunner(nested_menu, MenuRunner::IS_NESTED));
-  nested_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
-                           MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
-                           nullptr);
-  EXPECT_TRUE(nested_runner->IsRunning());
+  auto nested_delegate = std::make_unique<TestMenuDelegate>();
+  MenuRunner nested_runner(
+      MenuRunner(std::make_unique<MenuItemView>(nested_delegate.get()),
+                 MenuRunner::IS_NESTED));
+  nested_runner.RunMenuAt(owner(), nullptr, gfx::Rect(),
+                          MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
+                          nullptr);
+  EXPECT_TRUE(nested_runner.IsRunning());
   EXPECT_FALSE(runner->IsRunning());
-  TestMenuDelegate* delegate = menu_delegate();
-  EXPECT_EQ(1, delegate->on_menu_closed_called());
-  EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
+  EXPECT_EQ(1, menu_delegate()->on_menu_closed_called());
+  EXPECT_NE(nullptr, menu_delegate()->on_menu_closed_menu());
 }
 
 namespace {

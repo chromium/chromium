@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -287,9 +288,9 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
   views::MenuModelAdapter delegate(&model);
 
   // Create menu.  Build menu twice to check that rebuilding works properly.
-  MenuItemView* menu = new views::MenuItemView(&delegate);
-  // MenuRunner takes ownership of menu.
-  std::unique_ptr<MenuRunner> menu_runner(new MenuRunner(menu, 0));
+  auto menu_owning = std::make_unique<MenuItemView>(&delegate);
+  MenuItemView* menu = menu_owning.get();
+  MenuRunner menu_runner(std::move(menu_owning), 0);
   delegate.BuildMenu(menu);
   delegate.BuildMenu(menu);
   EXPECT_TRUE(menu->HasSubmenu());

@@ -263,8 +263,9 @@ class ViewAXPlatformNodeDelegateMenuTest
     owner_->Show();
 
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
-    menu_ = new views::TestMenuItemView(menu_delegate_.get());
-    runner_ = std::make_unique<MenuRunner>(menu_, 0);
+    auto menu_owning = std::make_unique<TestMenuItemView>(menu_delegate_.get());
+    menu_ = menu_owning.get();
+    runner_ = std::make_unique<MenuRunner>(std::move(menu_owning), 0);
 
     menu_->AppendMenuItemImpl(0, u"normal", ui::ImageModel(),
                               MenuItemView::Type::kNormal);
@@ -304,13 +305,11 @@ class ViewAXPlatformNodeDelegateMenuTest
   }
 
  private:
-  // Owned by runner_.
-  raw_ptr<views::TestMenuItemView, AcrossTasksDanglingUntriaged> menu_ =
-      nullptr;
-
   raw_ptr<SubmenuView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
+  // Owned by runner_.
+  raw_ptr<views::TestMenuItemView> menu_ = nullptr;
   UniqueWidgetPtr owner_;
 };
 

@@ -186,9 +186,11 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
     widget_->Show();
 
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
-    menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
+    auto menu_item_view_owning =
+        std::make_unique<TestMenuItemView>(menu_delegate_.get());
+    menu_item_view_ = menu_item_view_owning.get();
     menu_runner_ = std::make_unique<MenuRunner>(
-        menu_item_view_, MenuRunner::USE_ASH_SYS_UI_LAYOUT);
+        std::move(menu_item_view_owning), MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
                             ui::MENU_SOURCE_KEYBOARD);
@@ -363,7 +365,9 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     menu_delegate_ = CreateMenuDelegate();
-    menu_item_view_ = new MenuItemView(menu_delegate_.get());
+    auto menu_item_view_owning =
+        std::make_unique<MenuItemView>(menu_delegate_.get());
+    menu_item_view_ = menu_item_view_owning.get();
 
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
@@ -371,7 +375,8 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    menu_runner_ = std::make_unique<MenuRunner>(menu_item_view_, 0);
+    menu_runner_ =
+        std::make_unique<MenuRunner>(std::move(menu_item_view_owning), 0);
   }
 
   void TearDown() override {
