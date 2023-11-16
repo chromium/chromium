@@ -4,6 +4,9 @@
 
 #include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 
+#include <string>
+#include <vector>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -60,8 +63,12 @@ GetProcessSharingInvitationResultForIgnoredInvitations(
                    kSharedCredentialsExistWithDifferentSenderAndDifferentPassword;
 }
 
-PasswordForm IncomingSharingInvitationToPasswordForm(
+// Converts a IncomingPasswordSharingInvitationSpecifics that represents only
+// one credentials to a password form. Should be used to convert the legacy
+// IncomingPasswordSharingInvitationSpecifics data layout.
+PasswordForm LegacyIncomingSharingInvitationToPasswordForm(
     const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
+  CHECK(invitation.client_only_unencrypted_data().has_password_data());
   const sync_pb::PasswordSharingInvitationData::PasswordData&
       incoming_credentials =
           invitation.client_only_unencrypted_data().password_data();
@@ -92,6 +99,55 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
   form.date_received = base::Time::Now();
   form.sharing_notification_displayed = false;
   return form;
+}
+
+// Converts a IncomingPasswordSharingInvitationSpecifics that represents a group
+// of credentials to a list of password forms. Should be used to convert the new
+// IncomingPasswordSharingInvitationSpecifics data layout.
+std::vector<PasswordForm> ModernIncomingSharingInvitationToPasswordForms(
+    const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
+  CHECK(invitation.client_only_unencrypted_data().has_password_group_data());
+  std::vector<PasswordForm> forms;
+
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      incoming_credentials =
+          invitation.client_only_unencrypted_data().password_group_data();
+
+  for (const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+           password_group_element_data : incoming_credentials.element_data()) {
+    PasswordForm form;
+    form.username_value =
+        base::UTF8ToUTF16(incoming_credentials.username_value());
+    form.password_value =
+        base::UTF8ToUTF16(incoming_credentials.password_value());
+
+    form.url = GURL(password_group_element_data.origin());
+    form.username_element =
+        base::UTF8ToUTF16(password_group_element_data.username_element());
+    form.password_element =
+        base::UTF8ToUTF16(password_group_element_data.password_element());
+    form.signon_realm = password_group_element_data.signon_realm();
+    form.scheme =
+        static_cast<PasswordForm::Scheme>(password_group_element_data.scheme());
+    form.display_name =
+        base::UTF8ToUTF16(password_group_element_data.display_name());
+    form.date_created = base::Time::Now();
+    form.type = PasswordForm::Type::kReceivedViaSharing;
+
+    // Invitation metadata.
+    const sync_pb::UserDisplayInfo& sender_info =
+        invitation.sender_info().user_display_info();
+    form.sender_email = base::UTF8ToUTF16(sender_info.email());
+    form.sender_name = base::UTF8ToUTF16(sender_info.display_name());
+    form.sender_profile_image_url = GURL(sender_info.profile_image_url());
+
+    form.date_received = base::Time::Now();
+    form.sharing_notification_displayed = false;
+
+    forms.push_back(std::move(form));
+  }
+
+  return forms;
 }
 
 }  // namespace
@@ -209,12 +265,23 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
 
   // TODO(crbug.com/1445868): fill in creation date if still relevant and verify
   // incoming invitations.
-  auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
-      IncomingSharingInvitationToPasswordForm(invitation), password_store,
-      /*done_callback=*/
-      base::BindOnce(&PasswordReceiverServiceImpl::RemoveTaskFromTasksList,
-                     base::Unretained(this)));
-  process_invitations_tasks_.push_back(std::move(task));
+  std::vector<PasswordForm> incoming_credentials_list;
+  if (invitation.client_only_unencrypted_data().has_password_data()) {
+    incoming_credentials_list.push_back(
+        LegacyIncomingSharingInvitationToPasswordForm(invitation));
+  } else if (invitation.client_only_unencrypted_data()
+                 .has_password_group_data()) {
+    incoming_credentials_list =
+        ModernIncomingSharingInvitationToPasswordForms(invitation);
+  }
+  for (const PasswordForm& incoming_credentials : incoming_credentials_list) {
+    auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
+        incoming_credentials, password_store,
+        /*done_callback=*/
+        base::BindOnce(&PasswordReceiverServiceImpl::RemoveTaskFromTasksList,
+                       base::Unretained(this)));
+    process_invitations_tasks_.push_back(std::move(task));
+  }
 }
 
 void PasswordReceiverServiceImpl::RemoveTaskFromTasksList(

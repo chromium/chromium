@@ -943,6 +943,7 @@ VISIT_PROTO_FIELDS(
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSharingInvitationData& proto) {
   VISIT(password_data);
+  VISIT(password_group_data);
 }
 
 VISIT_PROTO_FIELDS(
@@ -953,6 +954,25 @@ VISIT_PROTO_FIELDS(
   VISIT(origin);
   VISIT(username_element);
   VISIT(username_value);
+  VISIT(password_element);
+  VISIT(display_name);
+  VISIT(avatar_url);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::PasswordSharingInvitationData::PasswordGroupData& proto) {
+  VISIT(username_value);
+  VISIT(password_value);
+  VISIT_REP(element_data);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+        proto) {
+  VISIT(scheme);
+  VISIT(signon_realm);
+  VISIT(origin);
+  VISIT(username_element);
   VISIT(password_element);
   VISIT(display_name);
   VISIT(avatar_url);
