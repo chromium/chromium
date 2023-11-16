@@ -1723,14 +1723,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
   // If we have the correct compositing reason, we should be associated with a
   // node. In the case we are not, the effect is no longer valid.
   auto* element = DynamicTo<Element>(object_.GetNode());
-  CHECK(element && element->GetRegionCaptureCropId());
+  CHECK(element);
+  CHECK(element->GetRestrictionTargetId());
   CHECK(context_.current.clip);
   CHECK(context_.current.transform);
   EffectPaintPropertyNode::State state;
   state.direct_compositing_reasons = CompositingReason::kElementCapture;
   state.local_transform_space = context_.current.transform;
   state.output_clip = context_.current.clip;
-  state.element_capture_id = *element->GetRegionCaptureCropId();
+  state.restriction_target_id = *element->GetRestrictionTargetId();
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       object_.UniqueId(), CompositorElementIdNamespace::kElementCapture);
 

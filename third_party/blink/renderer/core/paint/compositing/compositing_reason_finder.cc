@@ -359,7 +359,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
     auto* element = DynamicTo<Element>(object.GetNode());
-    if (element && element->GetRegionCaptureCropId()) {
+    if (element && element->GetRestrictionTargetId()) {
       reasons |= CompositingReason::kElementCapture;
     }
   }
