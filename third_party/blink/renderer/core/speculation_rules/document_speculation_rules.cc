@@ -185,7 +185,20 @@ DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
     : Supplement(document), host_(document.GetExecutionContext()) {}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
-  CountSpeculationRulesLoadOutcome(SpeculationRulesLoadOutcome::kSuccess);
+  SpeculationRulesLoadOutcome outcome = SpeculationRulesLoadOutcome::kSuccess;
+  if (rule_set->ShouldReportUMAForError()) {
+    if (rule_set->source()->IsFromRequest()) {
+      outcome = SpeculationRulesLoadOutcome::kParseErrorFetched;
+    } else if (rule_set->source()->IsFromInlineScript()) {
+      outcome = SpeculationRulesLoadOutcome::kParseErrorInline;
+    } else if (rule_set->source()->IsFromBrowserInjected()) {
+      outcome = SpeculationRulesLoadOutcome::kParseErrorBrowserInjected;
+    } else {
+      NOTREACHED() << "error with unknown rule source";
+    }
+  }
+  CountSpeculationRulesLoadOutcome(outcome);
+
   DCHECK(!base::Contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
   if (rule_set->has_document_rule()) {

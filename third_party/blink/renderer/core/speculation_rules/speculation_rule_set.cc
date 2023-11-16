@@ -44,11 +44,6 @@ void AddConsoleMessageForSpeculationRuleSetValidation(
   CHECK(!script_element || !resource);
 
   if (speculation_rule_set.HasError()) {
-    if (speculation_rule_set.ShouldReportUMAForError()) {
-      CountSpeculationRulesLoadOutcome(
-          script_element ? SpeculationRulesLoadOutcome::kParseErrorInline
-                         : SpeculationRulesLoadOutcome::kParseErrorFetched);
-    }
     String error_message;
     if (script_element) {
       error_message = "While parsing speculation rules: " +

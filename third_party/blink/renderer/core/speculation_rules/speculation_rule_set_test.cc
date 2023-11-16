@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/strong_alias.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -4485,6 +4487,62 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintNoErrorOrWarningMessages) {
     EXPECT_FALSE(rule_set->HasError());
     EXPECT_FALSE(rule_set->HasWarnings());
   }
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsSuccessMetric) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText("{}");
+  document.head()->appendChild(script);
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromScript) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText("{---}");
+  document.head()->appendChild(script);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorInline, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromRequest) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  SpeculationRuleSet* rule_set = SpeculationRuleSet::Parse(
+      SpeculationRuleSet::Source::FromRequest(
+          "{---}", KURL("https://fake.test/sr.json"), 0),
+      document.GetExecutionContext());
+  DocumentSpeculationRules::From(document).AddRuleSet(rule_set);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorFetched, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromBrowserInjection) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  SpeculationRuleSet* rule_set = SpeculationRuleSet::Parse(
+      SpeculationRuleSet::Source::FromBrowserInjected("{---}", KURL()),
+      document.GetExecutionContext());
+  DocumentSpeculationRules::From(document).AddRuleSet(rule_set);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorBrowserInjected, 1);
 }
 
 }  // namespace
