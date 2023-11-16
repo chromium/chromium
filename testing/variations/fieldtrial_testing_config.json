@@ -4141,29 +4141,6 @@
             ]
         }
     ],
-    "CompressionDictionaryTransportBackend": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "task_priority": "user_blocking"
-                    },
-                    "enable_features": [
-                        "CompressionDictionaryTransportBackend"
-                    ]
-                }
-            ]
-        }
-    ],
     "ConfigurableV8CodeCacheHotHours": [
         {
             "platforms": [
