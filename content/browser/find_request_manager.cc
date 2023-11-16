@@ -508,22 +508,16 @@ void FindRequestManager::SetActiveMatchOrdinal(RenderFrameHostImpl* rfh,
 }
 
 void FindRequestManager::RemoveFrame(RenderFrameHost* rfh) {
-  if (current_session_id_ == kInvalidId ||
-      !base::Contains(find_in_page_clients_, rfh)) {
-    return;
-  }
-
-  // Make sure to always clear the highlighted selection. It is useful in case
-  // the user goes back to the same page using the BackForwardCache.
-  static_cast<RenderFrameHostImpl*>(rfh)->GetFindInPage()->StopFinding(
-      blink::mojom::StopFindAction::kStopFindActionClearSelection);
-
   // If matches are counted for the frame that is being removed, decrement the
   // match total before erasing that entry.
   auto it = find_in_page_clients_.find(rfh);
   if (it != find_in_page_clients_.end()) {
     number_of_matches_ -= it->second->number_of_matches();
     find_in_page_clients_.erase(it);
+  } else {
+    // If there's no FindInPageClient for `rfh`, the state related to it must
+    // have been cleared already.
+    return;
   }
 
   // If this is a primary main frame, then clear the search queue as well, since
@@ -557,6 +551,21 @@ void FindRequestManager::RemoveFrame(RenderFrameHost* rfh) {
   RemoveNearestFindResultPendingReply(rfh);
   RemoveFindMatchRectsPendingReply(rfh);
 #endif
+
+  if (current_session_id_ == kInvalidId) {
+    // Just remove `rfh` from things that might point to it, but don't trigger
+    // any extra processing as there is no current find session ongoing.
+    pending_initial_replies_.erase(rfh);
+    if (pending_find_next_reply_ == rfh) {
+      pending_find_next_reply_ = nullptr;
+    }
+    return;
+  }
+
+  // Make sure to always clear the highlighted selection. It is useful in case
+  // the user goes back to the same page using the BackForwardCache.
+  static_cast<RenderFrameHostImpl*>(rfh)->GetFindInPage()->StopFinding(
+      blink::mojom::StopFindAction::kStopFindActionClearSelection);
 
   // If no pending find replies are expected for the removed frame, then just
   // report the updated results.
