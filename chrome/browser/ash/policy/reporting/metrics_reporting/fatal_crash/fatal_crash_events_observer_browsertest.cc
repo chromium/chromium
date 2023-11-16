@@ -44,10 +44,10 @@ bool IsRecordCrashEvent(const ::reporting::Record& record) {
   MetricData record_data;
   EXPECT_TRUE(record_data.ParseFromString(record.data()));
   return
-      // Destination must be TELEMETRY_METRIC.
+      // Destination must be EVENT_METRIC.
       record.has_destination() &&
       record.destination() == Destination::EVENT_METRIC &&
-      // Event type must be CRASH_FATALLY
+      // Event type must be CRASH_FATALLY.
       record_data.has_event_data() && record_data.event_data().has_type() &&
       record_data.event_data().type() == MetricEventType::CRASH_FATALLY;
 }
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
 
   const auto [priority, record] =
       missive_event_observer.GetNextEnqueuedRecord();
-  EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
+  EXPECT_THAT(priority, Eq(Priority::IMMEDIATE));
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 

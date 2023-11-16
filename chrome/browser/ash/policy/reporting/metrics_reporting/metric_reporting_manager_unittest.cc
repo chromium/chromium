@@ -272,6 +272,8 @@ const MetricReportingSettingData runtime_counters_telemetry_settings = {
     ::ash::kDeviceReportRuntimeCountersCheckingRateMs, 1};
 const MetricReportingSettingData website_event_settings = {
     kReportWebsiteActivityAllowlist, false, "", 1};
+const MetricReportingSettingData fatal_crash_event_settings = {
+    ::ash::kReportDeviceCrashReportInfo, false, "", 1};
 
 struct MetricReportingManagerTestCase {
   std::string test_name;
@@ -353,6 +355,9 @@ class MetricReportingManagerTest
     event_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kDevice, Destination::EVENT_METRIC,
         Priority::SLOW_BATCH);
+    immediate_event_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kDevice, Destination::EVENT_METRIC,
+        Priority::IMMEDIATE);
     user_telemetry_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kUser, Destination::TELEMETRY_METRIC,
         Priority::MANUAL_BATCH);
@@ -385,6 +390,8 @@ class MetricReportingManagerTest
       telemetry_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      immediate_event_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       peripheral_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
@@ -576,6 +583,16 @@ TEST_P(MetricReportingManagerEventTest, Default) {
       *mock_delegate_ptr,
       CreateEventObserverManager(
           _, website_event_queue_ptr_.get(), _,
+          test_case.setting_data.enable_setting_path,
+          test_case.setting_data.setting_enabled_default_value, _, init_delay))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateEventObserverManager(
+          _, immediate_event_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
@@ -783,6 +800,34 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, website_event_settings,
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"FatalCrashEvents_Unaffiliated_FeatureUnchanged",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, fatal_crash_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"FatalCrashEvents_Unaffiliated_FeatureEnabled",
+          /*enabled_features=*/{kEnableFatalCrashEventsObserver},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, fatal_crash_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/1,
+          /*expected_count_after_login=*/1},
+         {"FatalCrashEvents_Default_FeatureUnchanged",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, fatal_crash_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"FatalCrashEvents_Default_FeatureEnabled",
+          /*enabled_features=*/{kEnableFatalCrashEventsObserver},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, fatal_crash_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
