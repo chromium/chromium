@@ -5,6 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
 
+#include <bit>
 #include <cstdint>
 
 #include "partition_alloc/partition_alloc_base/bits.h"
@@ -236,8 +237,7 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
   const size_t order =
-      kBitsPerSizeT -
-      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
+      kBitsPerSizeT - static_cast<size_t>(std::countl_zero(size));
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =

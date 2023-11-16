@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -2265,11 +2266,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
       // PartitionAlloc only guarantees alignment for power-of-two sized
       // allocations. To make sure this applies here, round up the allocation
       // size.
-      raw_size =
-          static_cast<size_t>(1)
-          << (int{sizeof(size_t) * 8} -
-              partition_alloc::internal::base::bits::CountLeadingZeroBits(
-                  raw_size - 1));
+      raw_size = static_cast<size_t>(1)
+                 << (int{sizeof(size_t) * 8} - std::countl_zero(raw_size - 1));
     }
     PA_DCHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.

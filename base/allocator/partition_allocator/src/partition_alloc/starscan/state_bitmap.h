@@ -5,13 +5,13 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_STATE_BITMAP_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_STATE_BITMAP_H_
 
-#include <climits>
-#include <cstddef>
-#include <cstdint>
-
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <bit>
+#include <climits>
+#include <cstddef>
+#include <cstdint>
 #include <tuple>
 #include <utility>
 
@@ -404,7 +404,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     CellType value = LoadCell(cell_index);
     while (value) {
       const size_t trailing_zeroes =
-          static_cast<size_t>(base::bits::CountTrailingZeroBits(value) & ~0b1);
+          static_cast<size_t>(std::countr_zero(value) & ~0b1);
       const size_t clear_value_mask =
           ~(static_cast<CellType>(kStateMask) << trailing_zeroes);
       const CellType bits = (value >> trailing_zeroes) & kStateMask;
