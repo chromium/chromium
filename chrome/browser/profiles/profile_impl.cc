@@ -398,9 +398,6 @@ void ProfileImpl::RegisterProfilePrefs(
 #if BUILDFLAG(ENABLE_PRINTING)
   registry->RegisterBooleanPref(prefs::kPrintingEnabled, true);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
-#endif
   registry->RegisterBooleanPref(prefs::kPrintPreviewDisabled, false);
   registry->RegisterStringPref(
       prefs::kPrintPreviewDefaultDestinationSelectionRules, std::string());

@@ -28,7 +28,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #endif
 
@@ -167,7 +166,8 @@ void FetchCapabilities(const std::string& printer_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (::printing::IsOopPrintingEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          ::printing::features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Fetching printer capabilities via service";
     ::printing::PrintBackendServiceManager& service_mgr =
         ::printing::PrintBackendServiceManager::GetInstance();

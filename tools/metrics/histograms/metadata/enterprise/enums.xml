@@ -1989,7 +1989,6 @@ chromium-metrics-reviews@google.com.
   <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
   <int value="1182" label="FeedbackSurveysEnabled"/>
   <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
-  <int value="1184" label="OopPrintDriversEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

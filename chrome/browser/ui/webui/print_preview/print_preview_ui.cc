@@ -91,7 +91,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/printing_features.h"
 #endif
@@ -457,14 +456,14 @@ PrintPreviewUI::~PrintPreviewUI() {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 void PrintPreviewUI::RegisterPrintBackendServiceManagerClient() {
-  if (IsOopPrintingEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     service_manager_client_id_ =
         PrintBackendServiceManager::GetInstance().RegisterQueryClient();
   }
 }
 
 void PrintPreviewUI::UnregisterPrintBackendServiceManagerClient() {
-  if (IsOopPrintingEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     PrintBackendServiceManager::GetInstance().UnregisterClient(
         service_manager_client_id_);
   }
