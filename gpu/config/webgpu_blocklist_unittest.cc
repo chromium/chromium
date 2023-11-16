@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "gpu/config/webgpu_blocklist.h"
+
 #include "build/build_config.h"
+#include "gpu/config/webgpu_blocklist_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/dawn/include/dawn/webgpu.h"
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
-
-#if BUILDFLAG(USE_DAWN)
-#include "third_party/dawn/include/dawn/webgpu.h"
 
 namespace gpu {
 
@@ -197,5 +197,3 @@ TEST_F(WebGPUBlocklistTest, BlockDriverDescription) {
 #endif  // BUILDFLAG(IS_ANDROID) else
 
 }  // namespace gpu
-
-#endif

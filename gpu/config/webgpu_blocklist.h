@@ -5,8 +5,6 @@
 #ifndef GPU_CONFIG_WEBGPU_BLOCKLIST_H_
 #define GPU_CONFIG_WEBGPU_BLOCKLIST_H_
 
-#include <string>
-
 #include "gpu/gpu_export.h"
 
 struct WGPUAdapterProperties;
@@ -14,8 +12,6 @@ struct WGPUAdapterProperties;
 namespace gpu {
 
 GPU_EXPORT bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties&);
-GPU_EXPORT bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties&,
-                                           const std::string& blocklist);
 
 }  // namespace gpu
 
