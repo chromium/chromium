@@ -6711,7 +6711,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20231018_Dogfood",
+                    "name": "Enabled_20231115",
                     "params": {
                         "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
                         "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
@@ -6722,7 +6722,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_20231018",
+                    "name": "Enabled_20231115_Dogfood",
                     "params": {
                         "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
                         "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
