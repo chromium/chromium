@@ -15,11 +15,19 @@ namespace chromeos {
 
 COMPONENT_EXPORT(CHROMEOS_PRINTING) extern const char kPrinterId[];
 
-// Returns a new printer populated with the fields from |pref|.  Processes
-// dictionaries from policy.
+// Returns a new printer populated with the fields from `pref` or nullptr if
+// `pref` does not represent a valid printer configuration from the `Printers`
+// policy.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
 std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     const base::Value::Dict& pref);
+
+// Returns a new printer populated with the fields from `printer` or nullptr if
+// `printer` does not represent a valid managed printer configuration. See
+// `BulkPrintersConfiguration` and `DevicePrinters` policies.
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+std::unique_ptr<Printer> ManagedPrinterToPrinter(
+    const base::Value::Dict& printer);
 
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
 // printer uri cannot be parsed, the relevant fields are populated with default
