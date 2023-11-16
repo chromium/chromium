@@ -67,7 +67,7 @@ public class LaunchIntentDispatcher {
     public static final String EXTRA_LAUNCH_MODE =
             "com.google.android.apps.chrome.EXTRA_LAUNCH_MODE";
 
-    private static final String TAG = "ActivitiyDispatcher";
+    private static final String TAG = "ActivityDispatcher";
 
     private final Activity mActivity;
     private Intent mIntent;
