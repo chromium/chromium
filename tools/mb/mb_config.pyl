@@ -127,22 +127,6 @@
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
     },
 
-    # TODO: b/278144885 - Rename build perf builders.
-    'chromium.build': {
-      # Keep in sync with win-rel
-      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      'build-perf-windows-siso': {
-        'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
-        'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      },
-      # Keep in sync with linux-chromeos-rel
-      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-chromeos-build-perf-siso': {
-        'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
-        'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      },
-    },
-
     'chromium.cft': {
       'linux-arm64-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
@@ -1734,13 +1718,6 @@
       'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
     ],
 
-    'chromeos_with_codecs_release_trybot_code_coverage_siso': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
-      'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
-      'no_goma', 'no_reclient', 'siso',
-    ],
-
     'chromeos_with_codecs_release_trybot_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
     ],
@@ -2063,13 +2040,6 @@
       'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
-    ],
-
-    'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso': [
-      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag',
-      'no_goma', 'no_reclient', 'siso',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
@@ -3464,10 +3434,6 @@
       'gn_args': 'use_gnome_keyring=false',
     },
 
-    'no_goma': {
-      'gn_args': 'use_goma=false',
-    },
-
     'no_keystone_registration_framework': {
       'gn_args': 'enable_keystone_registration_framework=false',
     },
@@ -3673,10 +3639,6 @@
 
     'shared_release_trybot_reclient': {
       'mixins': ['shared_release_bot_reclient', 'no_symbols', 'dcheck_always_on', 'use_dummy_lastchange'],
-    },
-
-    'siso': {
-      'gn_args': 'enable_precompiled_headers=false',
     },
 
     'skip_generate_fuzzer_owners': {

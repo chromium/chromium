@@ -236,6 +236,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "windows",
         short_name = "ninja",
     ),
+    gn_args = "try/win-rel",
 )
 
 cq_build_perf_builder(
@@ -264,6 +265,15 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "windows",
         short_name = "siso",
     ),
+    gn_args = {
+        "builtin": gn_args.config(
+            args = {
+                "use_goma": False,
+            },
+            configs = ["try/win-rel", "no_reclient", "siso"],
+        ),
+        "reproxy": "try/win-rel",
+    },
 )
 
 cq_build_perf_builder(
@@ -292,6 +302,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "cros",
         short_name = "ninja",
     ),
+    gn_args = "try/linux-chromeos-rel",
 )
 
 cq_build_perf_builder(
@@ -321,6 +332,15 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "cros",
         short_name = "siso",
     ),
+    gn_args = {
+        "builtin": gn_args.config(
+            args = {
+                "use_goma": False,
+            },
+            configs = ["try/linux-chromeos-rel", "no_reclient", "siso"],
+        ),
+        "reproxy": "try/linux-chromeos-rel",
+    },
 )
 
 cq_build_perf_builder(
