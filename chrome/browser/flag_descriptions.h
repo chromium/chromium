@@ -465,9 +465,6 @@ extern const char kCommerceHintAndroidDescription[];
 extern const char kConsumerAutoUpdateToggleAllowedName[];
 extern const char kConsumerAutoUpdateToggleAllowedDescription[];
 
-extern const char kContextMenuSearchWithGoogleLensName[];
-extern const char kContextMenuSearchWithGoogleLensDescription[];
-
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];

@@ -1243,11 +1243,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "context-menu-search-with-google-lens",
-    "owners": [ "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "contextual-nudges",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 83

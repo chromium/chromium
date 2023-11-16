@@ -808,12 +808,6 @@ const char kConsumerAutoUpdateToggleAllowedName[] =
 const char kConsumerAutoUpdateToggleAllowedDescription[] =
     "Allow enabling the consumer auto update toggle in settings";
 
-const char kContextMenuSearchWithGoogleLensName[] =
-    "Google Lens powered image search in the context menu.";
-const char kContextMenuSearchWithGoogleLensDescription[] =
-    "Replaces default image search with an intent to Google Lens when "
-    "supported.";
-
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
     "navigation";
