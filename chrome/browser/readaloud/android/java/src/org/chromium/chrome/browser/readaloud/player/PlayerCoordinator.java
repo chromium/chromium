@@ -10,7 +10,6 @@ import android.view.ViewStub;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
@@ -118,14 +117,11 @@ public class PlayerCoordinator implements Player {
     public void playbackFailed() {
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.ERROR);
-        Log.e(TAG, "PlayerController.playbackFailed() UI changes not implemented.");
     }
 
     /** Show expanded player. */
     void expand() {
-        if (mPlayback != null) {
-            mExpandedPlayer.show();
-        }
+        mExpandedPlayer.show();
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -103,6 +104,12 @@ public class PlayerCoordinatorUnitTest {
         doReturn(Mockito.mock(TextView.class))
                 .when(mExpandedPlayerContentView)
                 .findViewById(anyInt());
+        doReturn(Mockito.mock(LinearLayout.class))
+                .when(mExpandedPlayerContentView)
+                .findViewById(R.id.normal_layout);
+        doReturn(Mockito.mock(LinearLayout.class))
+                .when(mExpandedPlayerContentView)
+                .findViewById(R.id.error_layout);
         doReturn(Mockito.mock(SeekBar.class))
                 .when(mExpandedPlayerContentView)
                 .findViewById(R.id.readaloud_expanded_player_seek_bar);
@@ -168,8 +175,6 @@ public class PlayerCoordinatorUnitTest {
 
     @Test
     public void testExpand() {
-        mPlayerCoordinator.expand();
-        verify(mExpandedPlayer, never()).show();
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
         mPlayerCoordinator.expand();
         verify(mExpandedPlayer).show();

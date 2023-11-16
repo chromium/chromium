@@ -216,6 +216,12 @@
       <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
         Playback is unavailable for this page.
       </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR" desc="Message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Playback unavailable
+      </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR_DESCRIPTION" desc="Description message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Unfortunately, playback is unavailable for this page at this time. Please try again later.
+      </message>
        <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
       </message>

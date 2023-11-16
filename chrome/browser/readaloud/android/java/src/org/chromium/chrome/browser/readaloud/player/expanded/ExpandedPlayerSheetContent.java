@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,6 +43,9 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private OptionsMenuSheetContent mOptionsMenu;
     private SpeedMenuSheetContent mSpeedMenu;
     private TextView mSpeedButton;
+
+    private LinearLayout mNormalLayout;
+    private LinearLayout mErrorLayout;
 
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController, PropertyModel model) {
@@ -75,8 +81,29 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mContentView
                 .findViewById(R.id.readaloud_seek_forward_button)
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
+        mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
+        mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         setSpeed(DEFAULT_INITIAL_SPEED);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+    }
+
+    public void onPlaybackStateChanged(@PlaybackListener.State int state) {
+        setPlaying(state == PlaybackListener.State.PLAYING);
+        if (state == PlaybackListener.State.ERROR) {
+            showOnly(mErrorLayout);
+        } else {
+            showOnly(mNormalLayout);
+        }
+    }
+
+    // Show `layout` and hide the other layouts.
+    private void showOnly(LinearLayout layout) {
+        setVisibleIfMatch(mNormalLayout, layout);
+        setVisibleIfMatch(mErrorLayout, layout);
+    }
+
+    private static void setVisibleIfMatch(LinearLayout a, LinearLayout b) {
+        a.setVisibility(a == b ? View.VISIBLE : View.GONE);
     }
 
     public void show() {

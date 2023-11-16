@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -61,6 +63,8 @@ public class ExpandedPlayerSheetContentUnitTest {
     private SeekBar mSeekbar;
     private View mContentView;
     private Activity mActivity;
+    private LinearLayout mNormalLayout;
+    private LinearLayout mErrorLayout;
 
     @Before
     public void setUp() {
@@ -84,6 +88,8 @@ public class ExpandedPlayerSheetContentUnitTest {
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
         mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
         mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+        mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
+        mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mContent =
                 new ExpandedPlayerSheetContent(
                         mContext, mBottomSheetController, mContentView, mModel);
@@ -192,6 +198,23 @@ public class ExpandedPlayerSheetContentUnitTest {
 
         mContent.setProgress(0.75f);
         assertEquals(mSeekbar.getProgress(), (int) (mSeekbar.getMax() * 0.75f));
+    }
+
+    @Test
+    public void testOnPlaybackStateChanged() {
+        mContent.onPlaybackStateChanged(PlaybackListener.State.ERROR);
+        assertTrue(mErrorLayout.getVisibility() == View.VISIBLE);
+        assertTrue(mNormalLayout.getVisibility() == View.GONE);
+
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
+        assertEquals(mPlayPauseButton.getContentDescription(), "Pause");
+
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PAUSED);
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
+        assertEquals(mPlayPauseButton.getContentDescription(), "Play");
     }
 
     @Test

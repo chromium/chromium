@@ -32,23 +32,75 @@ found in the LICENSE file.
                 android:layout_gravity="center_horizontal|top"
                 android:importantForAccessibility="no"
                 android:src="@drawable/drag_handlebar" />
-            <TextView
-                android:id="@+id/chrome_now_playing_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/readaloud_now_playing_spacing"
-                android:text="@string/readaloud_chrome_now_playing"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Error layout. -->
     <LinearLayout
+        android:id="@+id/error_layout"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/error_24"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"/>
+
+            <!-- Error message -->
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
+                android:text="@string/readaloud_expanded_playback_error"
+                android:textAppearance="@style/TextAppearance.Headline2"
+                android:textAlignment="center"
+                android:clickable="false"
+                android:focusable="false"
+                android:ellipsize="none"/>
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/readaloud_expanded_playback_error_description"
+                android:textAppearance="@style/TextAppearance.TextMedium"
+                android:paddingVertical="4dp"
+                android:textAlignment="center"
+                android:clickable="false"
+                android:focusable="false"
+                android:ellipsize="none"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Normal layout. -->
+    <LinearLayout
+        android:id="@+id/normal_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/readaloud_expanded_player_margin_horizontal"
         android:layout_marginBottom="@dimen/readaloud_expanded_player_margin_bottom"
         android:orientation="vertical">
+        <TextView
+            android:id="@+id/chrome_now_playing_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/readaloud_now_playing_spacing"
+            android:text="@string/readaloud_chrome_now_playing"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
         <!-- Title. -->
         <TextView
             android:id="@+id/readaloud_expanded_player_title"

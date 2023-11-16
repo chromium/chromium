@@ -153,8 +153,8 @@ public class ExpandedPlayerCoordinatorUnitTest {
     public void testBindPlaybackState() {
         mCoordinator.show();
         mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
-        verify(mSheetContent).setPlaying(true);
+        verify(mSheetContent).onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PAUSED);
-        verify(mSheetContent).setPlaying(false);
+        verify(mSheetContent).onPlaybackStateChanged(PlaybackListener.State.PAUSED);
     }
 }
