@@ -427,7 +427,7 @@
     },
 
     'chromium.memory': {
-      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
+      'Linux ASan LSan Builder': 'asan_lsan_failsan_release_trybot_reclient',
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
@@ -920,8 +920,8 @@
       'linux-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-wpt-content-shell-leak-detection': 'release_bot_blink_minimal_symbols_reclient',
       'linux_chromium_archive_rel_ng': 'release_bot_reclient',
-      'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
-      'linux_chromium_asan_siso_rel_ng': 'asan_lsan_release_trybot_reclient',
+      'linux_chromium_asan_rel_ng': 'asan_lsan_failsan_release_trybot_reclient',
+      'linux_chromium_asan_siso_rel_ng': 'asan_lsan_failsan_release_trybot_reclient',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient_use_dummy_last_change',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot_reclient',
