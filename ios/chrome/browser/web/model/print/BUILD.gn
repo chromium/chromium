@@ -4,10 +4,11 @@
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
-source_set("font_size") {
+source_set("print") {
   sources = [
-    "font_size_java_script_feature.h",
-    "font_size_tab_helper.h",
+    "print_java_script_feature.h",
+    "print_tab_helper.h",
+    "web_state_printer.h",
   ]
-  public_deps = [ "//ios/chrome/browser/web/font_size" ]
+  public_deps = [ "//ios/chrome/browser/web/print" ]
 }

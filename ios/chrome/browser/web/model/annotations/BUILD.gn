@@ -7,34 +7,9 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("annotations") {
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//components/shared_highlighting/ios",
-    "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/mailto_handler",
-    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
-    "//ios/chrome/browser/parcel_tracking:util",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/text_selection/model",
-    "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
-    "//ios/web/annotations",
-    "//ios/web/common",
-    "//ios/web/public",
-    "//ios/web/public:web_state_observer",
-    "//ios/web/public/annotations",
-    "//ios/web/public/annotations:custom_text_check_result",
-    "//ios/web/public/js_messaging",
-    "//ios/web/public/navigation",
-    "//ios/web/public/navigation:referrer",
-    "//ui/base",
-  ]
-  public_deps = [ "//ios/chrome/browser/web/annotations:annotations" ]
-
   sources = [
     "annotations_tab_helper.h",
     "annotations_util.h",
   ]
+  public_deps = [ "//ios/chrome/browser/web/annotations" ]
 }

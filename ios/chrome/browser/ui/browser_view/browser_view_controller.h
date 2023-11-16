@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
-#import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;

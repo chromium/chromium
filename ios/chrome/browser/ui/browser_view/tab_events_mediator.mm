@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
