@@ -35,7 +35,7 @@ using DeviceId = InputDeviceSettingsController::DeviceId;
 
 // The floss bluetooth handler adds a fake mouse device to the system with the
 // following properties. It is filted out based on the name and vid/pid.
-const char kFlossExtraMouseName[] = "suspend uhid";
+const char kFlossExtraMouseName[] = "VIRTUAL_SUSPEND_UHID";
 constexpr VendorProductId kFlossExtraMouseVidPid = {0x0000, 0x0000};
 
 bool AreOnLoginScreen() {

@@ -58,7 +58,7 @@ const ui::InputDevice kSampleMouseBluetooth = {25, ui::INPUT_DEVICE_BLUETOOTH,
 const ui::InputDevice kSampleMouseInternal = {30, ui::INPUT_DEVICE_INTERNAL,
                                               "kSampleMouseInternal"};
 const ui::InputDevice kSampleFlossExtraMouse = {35, ui::INPUT_DEVICE_UNKNOWN,
-                                                "suspend uhid"};
+                                                "VIRTUAL_SUSPEND_UHID"};
 
 template <typename Comp = base::ranges::less>
 void SortDevices(std::vector<ui::KeyboardDevice>& devices, Comp comp = {}) {
