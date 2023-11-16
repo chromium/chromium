@@ -680,10 +680,12 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
 // Test that we don't create an entry in the password store if IsLeaked is
 // false.
 TEST_F(PasswordCheckDelegateTest, NoLeakedFound) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   store().AddLogin(form);
   RunUntilIdle();
 
+  delegate().StartPasswordCheck();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
   RunUntilIdle();
