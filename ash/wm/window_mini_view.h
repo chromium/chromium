@@ -45,6 +45,9 @@ class WindowMiniViewBase : public views::View {
   void SetRoundedCornersRadius(
       const gfx::RoundedCornersF& exposed_rounded_corners);
 
+  // Shows or hides a focus ring around this.
+  void UpdateFocusState(bool focus);
+
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
 
@@ -70,8 +73,14 @@ class WindowMiniViewBase : public views::View {
   // Returns the exposed rounded corners.
   virtual gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
-  // Shows or hides a focus ring around this.
-  virtual void UpdateFocusState(bool focus) = 0;
+  // Sets `this` as selected for focus and applies the focus ring around it.
+  // Note that `window` is the window that will be activated if `this` is
+  // selected while focused. `window` must be contained within `this` (See
+  // `Contains()` above).
+  virtual void SetSelectedWindowForFocus(aura::Window* window) = 0;
+
+  // Clears the focus on all the windows associated with `this`.
+  virtual void ClearFocusSelection() = 0;
 
  protected:
   WindowMiniViewBase();
@@ -81,6 +90,9 @@ class WindowMiniViewBase : public views::View {
   absl::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
   absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
   absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
+
+  // True if `this` is focused when using keyboard navigation.
+  bool is_focused_ = false;
 };
 
 // WindowMiniView is a view which contains a header and optionally a mirror of
@@ -114,7 +126,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   views::View* backdrop_view() { return backdrop_view_; }
   WindowPreviewView* preview_view() { return preview_view_; }
   const WindowPreviewView* preview_view() const { return preview_view_; }
-  bool is_mini_view_focused() const { return is_focused_; }
 
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
@@ -139,7 +150,8 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetShowPreview(bool show) override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
-  void UpdateFocusState(bool focus) override;
+  void SetSelectedWindowForFocus(aura::Window* window) override;
+  void ClearFocusSelection() override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);
@@ -186,9 +198,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Optionally shows a preview of |window_|.
   raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh>
       preview_view_ = nullptr;
-
-  // True if `this` is focused when using keyboard navigation.
-  bool is_focused_ = false;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

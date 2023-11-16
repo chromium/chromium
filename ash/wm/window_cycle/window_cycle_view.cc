@@ -402,13 +402,13 @@ void WindowCycleView::SetTargetWindow(aura::Window* new_target) {
   // border of the new one.
   if (target_window_) {
     if (auto* view = GetCycleViewForWindow(target_window_)) {
-      view->UpdateFocusState(/*focus=*/false);
+      view->ClearFocusSelection();
     }
   }
 
   target_window_ = new_target;
   if (auto* view = GetCycleViewForWindow(target_window_)) {
-    view->UpdateFocusState(/*focus=*/true);
+    view->SetSelectedWindowForFocus(target_window_);
   }
 
   // Focus the target window if the user is not currently switching the mode

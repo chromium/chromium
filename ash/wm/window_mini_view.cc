@@ -85,6 +85,15 @@ void WindowMiniViewBase::SetRoundedCornersRadius(
                            exposed_rounded_corners.lower_left());
 }
 
+void WindowMiniViewBase::UpdateFocusState(bool focus) {
+  if (is_focused_ == focus) {
+    return;
+  }
+
+  is_focused_ = focus;
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
 WindowMiniViewBase::WindowMiniViewBase() = default;
 
 BEGIN_METADATA(WindowMiniViewBase, views::View)
@@ -92,13 +101,13 @@ END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
 
-void WindowMiniView::UpdateFocusState(bool focus) {
-  if (is_focused_ == focus) {
-    return;
-  }
+void WindowMiniView::SetSelectedWindowForFocus(aura::Window* window) {
+  CHECK_EQ(window, source_window_);
+  UpdateFocusState(/*focus=*/true);
+}
 
-  is_focused_ = focus;
-  views::FocusRing::Get(this)->SchedulePaint();
+void WindowMiniView::ClearFocusSelection() {
+  UpdateFocusState(/*focus=*/false);
 }
 
 void WindowMiniView::SetBackdropVisibility(bool visible) {

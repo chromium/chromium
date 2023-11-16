@@ -79,13 +79,18 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   void RefreshItemVisuals() override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
-  void UpdateFocusState(bool focus) override;
+  void SetSelectedWindowForFocus(aura::Window* window) override;
+  void ClearFocusSelection() override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   std::vector<WindowCycleItemView*> mini_views_;
+
+  // True if `this` is the first time a focus selection request is made to this
+  // item.
+  bool is_first_focus_selection_request_ = true;
 };
 
 }  // namespace ash

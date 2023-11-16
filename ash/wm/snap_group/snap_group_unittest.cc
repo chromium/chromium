@@ -2547,7 +2547,6 @@ TEST_F(SnapGroupTest, WindowReorderInAltTab) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
   SnapTwoTestWindows(window0.get(), window1.get());
-  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   wm::ActivateWindow(window2.get());
   // Initial window activation order: window2, [window1, window0].
@@ -2568,7 +2567,7 @@ TEST_F(SnapGroupTest, WindowReorderInAltTab) {
   EXPECT_EQ(windows.at(1), window0.get());
   EXPECT_EQ(windows.at(2), window1.get());
   CompleteWindowCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
   // With the activation of `window1`, `window0` will be inserted right before
   // `window1`.
@@ -2662,25 +2661,25 @@ TEST_F(SnapGroupTest, SteppingInWindowCycleView) {
   // window3, [window0, window1], window2
   CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
   CompleteWindowCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Window cycle list:
-  // window2, window3, [window0, window1]
-  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
-  CompleteWindowCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
-
-  // Window cycle list:
-  // window3, window2, [window0, window1]
-  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
-  CompleteWindowCycling();
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Window cycle list:
   // [window0, window1], window3, window2
-  CycleWindow(WindowCyclingDirection::kBackward, /*steps=*/1);
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+
+  // Window cycle list:
+  // [window0, window1], window3, window2
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
   CompleteWindowCycling();
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Window cycle list:
+  // window2, [window0, window1], window3
+  CycleWindow(WindowCyclingDirection::kBackward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
 }
 
 // Tests that the exposed rounded corners of the cycling items are rounded

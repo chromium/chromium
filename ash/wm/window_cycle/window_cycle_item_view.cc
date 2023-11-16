@@ -10,9 +10,11 @@
 #include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
-#include "base/containers/cxx20_erase_vector.h"
+#include "ash/wm/window_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -263,9 +265,37 @@ gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
   return gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left);
 }
 
-void GroupContainerCycleView::UpdateFocusState(bool focus) {
+void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
+  const bool old_is_first_focus_selection_request =
+      is_first_focus_selection_request_;
+  is_first_focus_selection_request_ = false;
+
+  if (mini_views_.size() == 1u) {
+    mini_views_[0]->UpdateFocusState(/*focus=*/true);
+    return;
+  }
+
+  CHECK_EQ(mini_views_.size(), 2u);
+  // If `this` is the first item in the cycle list with secondary snapped window
+  // focused, cycle the primary snapped window first.
+  if (old_is_first_focus_selection_request &&
+      window_util::GetActiveWindow() == mini_views_[1]->source_window()) {
+    mini_views_[0]->UpdateFocusState(/*focus=*/true);
+  } else {
+    // For normal use case, follow the window cycle order and `UpdateFocusState`
+    // on the cycle item that contains the target window.
+    for (auto* mini_view : mini_views_) {
+      if (mini_view->Contains(window)) {
+        mini_view->UpdateFocusState(/*focus=*/true);
+        break;
+      }
+    }
+  }
+}
+
+void GroupContainerCycleView::ClearFocusSelection() {
   for (auto* mini_view : mini_views_) {
-    mini_view->UpdateFocusState(focus);
+    mini_view->UpdateFocusState(/*focus=*/false);
   }
 }
 

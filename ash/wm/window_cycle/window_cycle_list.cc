@@ -22,7 +22,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -225,24 +224,16 @@ void WindowCycleList::Step(WindowCyclingDirection direction,
   // mode, all windows are minimized, or all windows are in other desks.
   //
   // Note:
-  // 1. Simply checking the active status of the first window won't work
+  // Simply checking the active status of the first window won't work
   // because when the ChromeVox is enabled, the widget is activatable, so the
-  // first window in MRU becomes inactive;
-  // 2. We want to exclude the case when `active_window_before_window_cycle_`
-  // is not the most recently used window but belongs to a most recent used snap
-  // group.
+  // first window in MRU becomes inactive.
   if (starting_alt_tab_or_switching_mode &&
       direction == WindowCyclingDirection::kForward &&
-      (active_window_before_window_cycle_ != windows_[0] &&
-       !IsWindowInSnapGroup(active_window_before_window_cycle_))) {
+      (active_window_before_window_cycle_ != windows_[0])) {
     offset = 0;
     current_index_ = 0;
   }
 
-  if (ShouldDoubleCycleStep(windows_[GetOffsettedWindowIndex(offset)],
-                            direction)) {
-    offset = offset * 2;
-  }
   SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
   Scroll(offset);
 }
@@ -316,35 +307,6 @@ void WindowCycleList::OnModePrefsChanged() {
 // static
 void WindowCycleList::SetDisableInitialDelayForTesting(bool disabled) {
   g_disable_initial_delay = disabled;
-}
-
-bool WindowCycleList::ShouldDoubleCycleStep(
-    aura::Window* window,
-    WindowCyclingDirection direction) const {
-  if (!IsWindowInSnapGroup(window)) {
-    return false;
-  }
-
-  SnapGroup* snap_group =
-      SnapGroupController::Get()->GetSnapGroupForGivenWindow(window);
-  aura::Window* window1 = snap_group->window1();
-  aura::Window* window2 = snap_group->window2();
-
-  // We should show group cycle item view only when both windows belong to the
-  // same app if cycling for the same app.
-  if (!same_app_only_ || (same_app_only_ && base::Contains(windows_, window1) &&
-                          base::Contains(windows_, window2))) {
-    switch (direction) {
-      case WindowCyclingDirection::kForward: {
-        return window == window1;
-      }
-      case WindowCyclingDirection::kBackward: {
-        return window == window2;
-      }
-    }
-  }
-
-  return false;
 }
 
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {
