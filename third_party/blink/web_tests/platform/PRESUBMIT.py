@@ -38,9 +38,18 @@ def _CheckForExtraPlatformBaselines(input_api, output_api):
 
     from blinkpy.common.host import Host
     port_factory = Host().port_factory
-    all_ports = [
+    all_ports_with_builders = [
         port_factory.get(port_name)
         for port_name in port_factory.all_port_names() + ['ios']
+    ]
+    # get any additional supported versions (that might not currently have
+    # builders)
+    all_ports = [
+        port_factory.get(port_name) for port_name in set([
+            "{}-{}".format(port.port_name, supported_version)
+            for port in all_ports_with_builders
+            for supported_version in port.SUPPORTED_VERSIONS
+        ])
     ]
     known_platforms = set([
         fallback_path for port in all_ports
