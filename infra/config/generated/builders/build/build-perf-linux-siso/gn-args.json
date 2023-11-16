@@ -16,7 +16,6 @@
         "symbol_level": 0,
         "use_clang_coverage": true,
         "use_dummy_lastchange": true,
-        "use_goma": false,
         "use_remoteexec": false
       }
     },

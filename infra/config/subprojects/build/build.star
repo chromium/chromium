@@ -208,14 +208,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         short_name = "siso",
     ),
     gn_args = {
-        "builtin": gn_args.config(
-            # TODO: Remove after migrating to Starlark.
-            # This is a workaround to pass gn-args-verifier.
-            args = {
-                "use_goma": False,
-            },
-            configs = ["try/linux-rel", "no_reclient", "siso"],
-        ),
+        "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient", "siso"]),
         "reproxy": "try/linux-rel",
     },
 )
