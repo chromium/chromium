@@ -61,6 +61,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private FPSCookieInfo mFPSInfo;
     private boolean mTrackingProtectionUI;
     private boolean mBlockAll3PC;
+    private boolean mIsIncognito;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -75,6 +76,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public boolean showTrackingProtectionUI;
         // Block all third-party cookies when Tracking Protection is on.
         public boolean blockAll3PC;
+        public boolean isIncognito;
     }
 
     @Override
@@ -109,6 +111,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     public void setParams(PageInfoCookiesViewParams params) {
         mTrackingProtectionUI = params.showTrackingProtectionUI;
         mBlockAll3PC = params.blockAll3PC;
+        mIsIncognito = params.isIncognito;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         NoUnderlineClickableSpan linkSpan =
@@ -118,7 +121,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             mOnCookieSettingsLinkClicked.run();
                         });
         int summaryString;
-        if (mTrackingProtectionUI && mBlockAll3PC) {
+        if (mTrackingProtectionUI && mIsIncognito) {
+            summaryString =
+                    R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
+        } else if (mTrackingProtectionUI && mBlockAll3PC) {
             summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
         } else if (mTrackingProtectionUI) {
             summaryString = R.string.page_info_tracking_protection_description;
@@ -299,12 +305,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
             int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
-            mThirdPartyCookiesTitle.setTitle(days == 0
-                            ? getContext().getString(
-                                    R.string.page_info_cookies_blocking_restart_today_title)
-                            : getContext().getResources().getQuantityString(
-                                    R.plurals.page_info_cookies_blocking_restart_title, days,
-                                    days));
+            updateThirdPartyCookiesTitleTemporary(days);
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getContext()
@@ -468,6 +469,47 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                     R.plurals.page_info_sites_allowed,
                                     mAllowedSites,
                                     mAllowedSites));
+        }
+    }
+
+    private void updateThirdPartyCookiesTitleTemporary(int days) {
+        if (mTrackingProtectionUI && (mBlockAll3PC || mIsIncognito)) {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getContext()
+                                    .getString(
+                                            R.string.page_info_cookies_blocking_restart_today_title)
+                            : getContext()
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals
+                                                    .page_info_cookies_blocking_restart_tracking_protection_title,
+                                            days,
+                                            days));
+        } else if (mTrackingProtectionUI) {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getContext()
+                                    .getString(
+                                            R.string.page_info_cookies_limiting_restart_today_title)
+                            : getContext()
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.page_info_cookies_limiting_restart_title,
+                                            days,
+                                            days));
+        } else {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getContext()
+                                    .getString(
+                                            R.string.page_info_cookies_blocking_restart_today_title)
+                            : getContext()
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.page_info_cookies_blocking_restart_title,
+                                            days,
+                                            days));
         }
     }
 

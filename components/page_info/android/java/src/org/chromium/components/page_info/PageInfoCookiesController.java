@@ -52,6 +52,7 @@ public class PageInfoCookiesController
     private Website mWebsite;
     private boolean mTrackingProtectionUI;
     private boolean mBlockAll3PC;
+    private boolean mIsIncognito;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
             PageInfoControllerDelegate delegate) {
@@ -60,6 +61,7 @@ public class PageInfoCookiesController
         mTrackingProtectionUI =
                 PageInfoFeatures.USER_BYPASS_UI.isEnabled() && delegate.showTrackingProtectionUI();
         mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
+        mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
         mRowView = rowView;
@@ -126,6 +128,7 @@ public class PageInfoCookiesController
         params.hostName = mMainController.getURL().getHost();
         params.showTrackingProtectionUI = mTrackingProtectionUI;
         params.blockAll3PC = mBlockAll3PC;
+        params.isIncognito = mIsIncognito;
         mSubPage.setParams(params);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
             mSubPage.setCookieStatus(mStatus, mEnforcement, mExpiration);
