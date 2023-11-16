@@ -111,21 +111,6 @@ class PrefetchProxyConfiguratorTest : public testing::Test {
   std::unique_ptr<TestCustomProxyConfigClient> config_client_;
 };
 
-TEST_F(PrefetchProxyConfiguratorTest, ExperimentOverrides) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_header_key", "test-header"}});
-
-  base::RunLoop loop;
-  configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
-  loop.Run();
-
-  net::HttpRequestHeaders headers;
-  headers.SetHeader("test-header", "key=" + std::string(kApiKey));
-  VerifyLatestProxyConfig(prefetch_proxy_url(), headers);
-}
-
 TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
   base::HistogramTester histogram_tester;
 
@@ -264,15 +249,14 @@ TEST_F(PrefetchProxyConfiguratorTest, ServerExperimentGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kPrefetchUseContentRefactor,
-      {{"proxy_header_key", "test-header"},
-       {"server_experiment_group", "test_group"}});
+      {{"server_experiment_group", "test_group"}});
 
   base::RunLoop loop;
   configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
   loop.Run();
 
   net::HttpRequestHeaders headers;
-  headers.SetHeader("test-header",
+  headers.SetHeader("chrome-tunnel",
                     "key=" + std::string(kApiKey) + ",exp=test_group");
   VerifyLatestProxyConfig(prefetch_proxy_url(), headers);
 }

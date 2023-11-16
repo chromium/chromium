@@ -42,7 +42,7 @@ PrefetchProxyConfigurator::PrefetchProxyConfigurator(const GURL& proxy_url,
       "key=" + api_key +
       (server_experiment_group != "" ? ",exp=" + server_experiment_group : "");
 
-  connect_tunnel_headers_.SetHeader(PrefetchProxyHeaderKey(), header_value);
+  connect_tunnel_headers_.SetHeader("chrome-tunnel", header_value);
 }
 
 PrefetchProxyConfigurator::~PrefetchProxyConfigurator() = default;

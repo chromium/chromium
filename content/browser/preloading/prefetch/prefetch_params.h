@@ -19,9 +19,6 @@ namespace content {
 // The url of the tunnel proxy.
 CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
 
-// The header name used to connect to the tunnel proxy.
-std::string PrefetchProxyHeaderKey();
-
 // This value is included in the |PrefetchProxyHeaderKey| request header.
 // The tunnel proxy will use this to determine what, if any, experimental
 // behavior to apply to requests. If the client is not in any server experiment

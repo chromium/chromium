@@ -151,11 +151,6 @@ class PrefetcherTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", "https://testproxyhost.com"}});
-
   MockContentBrowserClient browser_client;
   auto prefetcher = Prefetcher(GetPrimaryMainFrame());
   base::WeakPtr<MockSpeculationHostDelegate> delegate =

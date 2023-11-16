@@ -31,22 +31,7 @@ GURL PrefetchProxyHost(const GURL& default_proxy_url) {
     LOG(ERROR) << "--isolated-prerender-tunnel-proxy value is invalid";
   }
 
-  GURL url(base::GetFieldTrialParamValueByFeature(
-      features::kPrefetchUseContentRefactor, "proxy_host"));
-  if (url.is_valid() && url.SchemeIs(url::kHttpsScheme)) {
-    return url;
-  }
-
   return default_proxy_url;
-}
-
-std::string PrefetchProxyHeaderKey() {
-  std::string header = base::GetFieldTrialParamValueByFeature(
-      features::kPrefetchUseContentRefactor, "proxy_header_key");
-  if (!header.empty()) {
-    return header;
-  }
-  return "chrome-tunnel";
 }
 
 std::string PrefetchProxyServerExperimentGroup() {

@@ -47,12 +47,6 @@ class TestPrefetchService : public PrefetchService {
 
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:
-  PrefetchDocumentManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"proxy_host", "https://testproxyhost.com"}});
-  }
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -149,8 +143,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;

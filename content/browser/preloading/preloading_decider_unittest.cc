@@ -172,11 +172,6 @@ enum class EventType {
 
 class PreloadingDeciderTest : public RenderViewHostTestHarness {
  public:
-  PreloadingDeciderTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"proxy_host", "https://testproxyhost.com"}});
-  }
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -219,7 +214,6 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 };
