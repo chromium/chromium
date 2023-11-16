@@ -8152,6 +8152,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "vulkan-from-angle",
+    "owners": [ "hob@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "wait-threshold-seconds-for-capabilities-api",
     "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
     // Used for manual testing to extend the wait time for capabilities fetching on iOS devices.

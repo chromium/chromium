@@ -36170,6 +36170,7 @@ from previous Chrome versions.
   <int value="-744037223" label="BluetoothQualityReport:enabled"/>
   <int value="-743590125" label="TabEngagementReportingAndroid:enabled"/>
   <int value="-743103250" label="enable-linkable-ephemeral-apps"/>
+  <int value="-742730757" label="VulkanFromANGLE:disabled"/>
   <int value="-742469530" label="DriveFS:disabled"/>
   <int value="-742455458"
       label="ExperimentalAccessibilityGoogleTtsHighQualityVoices:disabled"/>
@@ -41880,6 +41881,7 @@ from previous Chrome versions.
   <int value="1981341759" label="PipTilt:enabled"/>
   <int value="1982576646" label="PanelSelfRefresh2:disabled"/>
   <int value="1984029104" label="test-third-party-cookie-phaseout:enabled"/>
+  <int value="1985567360" label="VulkanFromANGLE:enabled"/>
   <int value="1985584246" label="PageInfoHistory:enabled"/>
   <int value="1985952454"
       label="GetDisplayMediaSetAutoSelectAllScreens:enabled"/>

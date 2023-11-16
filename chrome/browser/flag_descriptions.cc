@@ -3733,6 +3733,10 @@ const char kDefaultAngleVulkanName[] = "Default ANGLE Vulkan";
 const char kDefaultAngleVulkanDescription[] =
     "Use the Vulkan backend for ANGLE by default.";
 
+const char kVulkanFromAngleName[] = "Vulkan from ANGLE";
+const char kVulkanFromAngleDescription[] =
+    "Initialize Vulkan from inside ANGLE and share the instance with Chrome.";
+
 const char kResponsiveToolbarName[] = "Responsive toolbar";
 const char kResponsiveToolbarDescription[] =
     "Toolbar icons overflow to a chevron icon when the browser width is "
