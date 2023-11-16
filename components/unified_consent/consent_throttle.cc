@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "components/unified_consent/consent_throttle.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -43,12 +45,15 @@ void ConsentThrottle::OnUrlKeyedDataCollectionConsentStateChanged(
     return;
   }
 
-  for (auto& request_callback : enqueued_request_callbacks_) {
+  request_processing_timer_.Stop();
+
+  // The request callbacks can modify the vector while running. Swap the vector
+  // onto the stack to prevent crashing. https://crbug.com/1483454.
+  std::vector<RequestCallback> callbacks;
+  std::swap(callbacks, enqueued_request_callbacks_);
+  for (auto& request_callback : callbacks) {
     FulfillRequestCallback(consent_state, std::move(request_callback));
   }
-
-  enqueued_request_callbacks_.clear();
-  request_processing_timer_.Stop();
 }
 
 void ConsentThrottle::EnqueueRequest(RequestCallback callback) {
@@ -71,12 +76,16 @@ void ConsentThrottle::EnqueueRequest(RequestCallback callback) {
 }
 
 void ConsentThrottle::OnTimeoutExpired() {
-  for (auto& request_callback : enqueued_request_callbacks_) {
-    CHECK_EQ(consent_helper_->GetConsentState(),
-             UrlKeyedDataCollectionConsentHelper::State::kInitializing);
+  CHECK_EQ(consent_helper_->GetConsentState(),
+           UrlKeyedDataCollectionConsentHelper::State::kInitializing);
+
+  // The request callbacks can modify the vector while running. Swap the vector
+  // onto the stack to prevent crashing. https://crbug.com/1483454.
+  std::vector<RequestCallback> callbacks;
+  std::swap(callbacks, enqueued_request_callbacks_);
+  for (auto& request_callback : callbacks) {
     std::move(request_callback).Run(false);
   }
-  enqueued_request_callbacks_.clear();
 }
 
 }  // namespace unified_consent
