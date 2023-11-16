@@ -4832,6 +4832,10 @@ crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iter
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5033626
+crbug.com/1467464 http/tests/devtools/a11y-axe-core/settings/menu-a11y-test.js [ Failure Pass Timeout ]
+crbug.com/1467464 http/tests/devtools/a11y-axe-core/settings/shortcuts-a11y-test.js [ Failure Pass Timeout ]
+
 # Sheriff 2021-04-09
 crbug.com/1197528 pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 
