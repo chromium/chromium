@@ -76,15 +76,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   void GetAllDataForTesting(DataCallback callback);
 
  private:
-  template <class Item>
-  struct AutofillWalletDiff {
-    int items_added = 0;
-    int items_removed = 0;
-    std::vector<AutofillDataModelChange<Item>> changes;
-
-    bool IsEmpty() const { return items_added == 0 && items_removed == 0; }
-  };
-
   // Sends all Wallet Data to the |callback|. If |enforce_utf8|, the string
   // fields that are in non-UTF-8 get encoded so that they conform to UTF-8.
   void GetAllDataImpl(DataCallback callback, bool enforce_utf8);
@@ -118,18 +109,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // data).
   bool SetCreditCardCloudTokenData(
       const std::vector<CreditCardCloudTokenData>& cloud_token_data);
-
-  // Computes a "diff" (items added, items removed) of two vectors of items,
-  // which should be either CreditCard or AutofillProfile. This is used for
-  // three purposes:
-  // 1) Detecting if anything has changed, so that we don't write to disk in the
-  //    common case where nothing has changed.
-  // 3) Notifying |web_data_backend_| of any changes.
-  // 2) Recording metrics on the number of added/removed items.
-  template <class Item>
-  AutofillWalletDiff<Item> ComputeAutofillWalletDiff(
-      const std::vector<std::unique_ptr<Item>>& old_data,
-      const std::vector<Item>& new_data);
 
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();

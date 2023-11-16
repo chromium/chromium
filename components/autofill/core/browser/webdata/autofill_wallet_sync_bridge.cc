@@ -332,32 +332,46 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   AutofillTable* table = GetAutofillTable();
   CopyRelevantWalletMetadataFromDisk(*table, &wallet_cards);
 
-  // In the common case, the database won't have changed. Committing an update
-  // to the database will require at least one DB page write and will schedule
-  // a fsync. To avoid this I/O, it should be more efficient to do a read and
-  // only do the writes if something changed.
   std::vector<std::unique_ptr<CreditCard>> existing_cards;
-  table->GetServerCreditCards(&existing_cards);
-  AutofillWalletDiff<CreditCard> diff =
-      ComputeAutofillWalletDiff(existing_cards, wallet_cards);
+  if (!table->GetServerCreditCards(&existing_cards)) {
+    return false;
+  }
 
-  if (!diff.IsEmpty()) {
+  table->SetServerCardsData(wallet_cards);
+  bool found_diff = false;
+  for (const std::unique_ptr<CreditCard>& existing_card : existing_cards) {
+    bool has_orphan_card =
+        base::ranges::none_of(wallet_cards, [&](const CreditCard& card) {
+          return card.Compare(*existing_card) == 0;
+        });
+    if (has_orphan_card) {
+      found_diff = true;
+      if (notify_webdata_backend) {
+        web_data_backend_->NotifyOfCreditCardChanged(
+            CreditCardChange(CreditCardChange::REMOVE,
+                             existing_card->server_id(), *existing_card));
+      }
+    }
+  }
+  for (const CreditCard& wallet_card : wallet_cards) {
+    bool has_new_card = base::ranges::none_of(
+        existing_cards, [&](const std::unique_ptr<CreditCard>& card) {
+          return card->Compare(wallet_card) == 0;
+        });
+    if (has_new_card) {
+      found_diff = true;
+      if (notify_webdata_backend) {
+        web_data_backend_->NotifyOfCreditCardChanged(CreditCardChange(
+            CreditCardChange::ADD, wallet_card.server_id(), wallet_card));
+      }
+    }
+  }
+  if (found_diff) {
     // Check if there is any update on cards' virtual card metadata. If so log
     // it.
     LogVirtualCardMetadataChanges(existing_cards, wallet_cards);
-
-    table->SetServerCardsData(wallet_cards);
-
-    if (notify_webdata_backend) {
-      // We are notifying Metadata and Wallet credential sync bridges for
-      // the card changes.
-      for (const CreditCardChange& change : diff.changes)
-        web_data_backend_->NotifyOfCreditCardChanged(change);
-    }
-
-    return true;
   }
-  return false;
+  return found_diff;
 }
 
 bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
@@ -371,17 +385,18 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
 
   GetAutofillTable()->SetServerIbans(wallet_ibans);
   bool found_diff = false;
-  if (notify_webdata_backend) {
     for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
       bool has_orphan_iban = base::ranges::none_of(
           wallet_ibans,
           [&](const Iban& iban) { return iban.Compare(*existing_iban) == 0; });
       if (has_orphan_iban) {
-        web_data_backend_->NotifyOfIbanChanged(
-            IbanChange(IbanChange::REMOVE,
-                       base::NumberToString(existing_iban->instrument_id()),
-                       *existing_iban));
         found_diff = true;
+        if (notify_webdata_backend) {
+          web_data_backend_->NotifyOfIbanChanged(
+              IbanChange(IbanChange::REMOVE,
+                         base::NumberToString(existing_iban->instrument_id()),
+                         *existing_iban));
+        }
       }
     }
     for (const Iban& wallet_iban : wallet_ibans) {
@@ -390,13 +405,14 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
             return iban->Compare(wallet_iban) == 0;
           });
       if (has_new_iban) {
-        web_data_backend_->NotifyOfIbanChanged(IbanChange(
-            IbanChange::ADD, base::NumberToString(wallet_iban.instrument_id()),
-            wallet_iban));
         found_diff = true;
+        if (notify_webdata_backend) {
+          web_data_backend_->NotifyOfIbanChanged(IbanChange(
+              IbanChange::ADD,
+              base::NumberToString(wallet_iban.instrument_id()), wallet_iban));
+        }
       }
     }
-  }
   return found_diff;
 }
 
@@ -441,76 +457,6 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
     return true;
   }
   return false;
-}
-
-// TODO(crbug.com/1020740): Move the shared code for ComputeAutofillWalletDiff
-// and ShouldResetAutofillWalletData into a util function in
-// autofill_sync_bridge_util.*.
-template <class Item>
-AutofillWalletSyncBridge::AutofillWalletDiff<Item>
-AutofillWalletSyncBridge::ComputeAutofillWalletDiff(
-    const std::vector<std::unique_ptr<Item>>& old_data,
-    const std::vector<Item>& new_data) {
-  // Build vectors of pointers, so that we can mutate (sort) them.
-  std::vector<const Item*> old_ptrs;
-  old_ptrs.reserve(old_data.size());
-  for (const std::unique_ptr<Item>& old_item : old_data)
-    old_ptrs.push_back(old_item.get());
-  std::vector<const Item*> new_ptrs;
-  new_ptrs.reserve(new_data.size());
-  for (const Item& new_item : new_data)
-    new_ptrs.push_back(&new_item);
-
-  // Sort our vectors.
-  auto compare = [](const Item* lhs, const Item* rhs) {
-    return lhs->Compare(*rhs) < 0;
-  };
-  std::sort(old_ptrs.begin(), old_ptrs.end(), compare);
-  std::sort(new_ptrs.begin(), new_ptrs.end(), compare);
-
-  AutofillWalletDiff<Item> result;
-  // We collect ADD changes separately to ensure proper order.
-  std::vector<AutofillDataModelChange<Item>> add_changes;
-
-  // Walk over both of them and count added/removed elements.
-  auto old_it = old_ptrs.begin();
-  auto new_it = new_ptrs.begin();
-  while (old_it != old_ptrs.end() || new_it != new_ptrs.end()) {
-    int cmp;
-    if (old_it != old_ptrs.end() && new_it != new_ptrs.end()) {
-      cmp = (*old_it)->Compare(**new_it);
-    } else if (new_it == new_ptrs.end()) {
-      cmp = -1;  // At the end of new items, *old_it needs to get removed.
-    } else {
-      cmp = 1;  // At the end of old items, *new_it needs to get added.
-    }
-
-    if (cmp < 0) {
-      ++result.items_removed;
-      result.changes.emplace_back(AutofillDataModelChange<Item>::REMOVE,
-                                  (*old_it)->server_id(), **old_it);
-      ++old_it;
-    } else if (cmp == 0) {
-      ++old_it;
-      ++new_it;
-    } else {
-      ++result.items_added;
-      add_changes.emplace_back(AutofillDataModelChange<Item>::ADD,
-                               (*new_it)->server_id(), **new_it);
-      ++new_it;
-    }
-  }
-
-  // Append ADD changes to make sure they all come after all REMOVE changes.
-  // Since we CopyRelevantWalletMetadataFromDisk(), the ADD contains all current
-  // metadata if we happen to REMOVE and ADD the same entity.
-  result.changes.insert(result.changes.end(), add_changes.begin(),
-                        add_changes.end());
-
-  DCHECK_EQ(old_data.size() + result.items_added - result.items_removed,
-            new_data.size());
-
-  return result;
 }
 
 AutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
