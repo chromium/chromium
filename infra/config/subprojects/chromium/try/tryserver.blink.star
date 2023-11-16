@@ -74,6 +74,7 @@ Chrome.\
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
