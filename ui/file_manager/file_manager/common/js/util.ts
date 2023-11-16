@@ -22,11 +22,11 @@ export function iconSetToCSSBackgroundImageValue(
   }
 
   if (lowDpiPart && highDpiPart) {
-    return '-webkit-image-set(' + lowDpiPart + ', ' + highDpiPart + ')';
+    return 'image-set(' + lowDpiPart + ', ' + highDpiPart + ')';
   } else if (lowDpiPart) {
-    return '-webkit-image-set(' + lowDpiPart + ')';
+    return 'image-set(' + lowDpiPart + ')';
   } else if (highDpiPart) {
-    return '-webkit-image-set(' + highDpiPart + ')';
+    return 'image-set(' + highDpiPart + ')';
   }
 
   return 'none';

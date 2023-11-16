@@ -57,7 +57,7 @@ select {
   -webkit-appearance: none;
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/select.png) 1x,
           url(../images/2x/select.png) 2x),
       linear-gradient(#ededed, #ededed 38%, #dedede);
@@ -121,7 +121,7 @@ input[type='search'] {
 /* Checked ********************************************************************/
 
 input[type='checkbox']:checked::before {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../images/check.png) 1x,
       url(../images/2x/check.png) 2x);
   background-size: 100% 100%;
@@ -175,7 +175,7 @@ input[type='radio']:checked::before {
 :enabled:hover:-webkit-any(select) {
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/select.png) 1x,
           url(../images/2x/select.png) 2x),
       linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
@@ -220,7 +220,7 @@ select:disabled {
 select:disabled {
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/disabled_select.png) 1x,
           url(../images/2x/disabled_select.png) 2x),
       linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
