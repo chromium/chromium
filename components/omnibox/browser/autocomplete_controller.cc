@@ -1218,7 +1218,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       keyword_provider_->GetKeywordForText(input_.text());
 
   std::set<std::u16string> keywords;
-  for (auto& match : *result) {
+  for (AutocompleteMatch& match : *result) {
     std::u16string keyword(
         match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
     if (!keyword.empty()) {
@@ -1233,6 +1233,18 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // keyword of their own creation.)  So use |exact_keyword| if it's
     // available.
     if (!exact_keyword.empty() && !keywords.count(exact_keyword)) {
+      // Prevent starter-pack keywords from attaching to non-starter-pack
+      // matches. Those will have a dedicated UI with an explicit match
+      // selection to enter keyword mode.
+      if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+          match.type != AutocompleteMatchType::STARTER_PACK) {
+        TemplateURL* turl =
+            template_url_service_->GetTemplateURLForKeyword(exact_keyword);
+        if (turl && turl->starter_pack_id() != 0) {
+          continue;
+        }
+      }
+
       keywords.insert(exact_keyword);
       // If the match has an answer, it will look strange to try to display
       // it along with a keyword hint. Prefer the keyword hint, and revert
@@ -1251,18 +1263,30 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // fill_into_edit, which should take inline autocompletions into account.
     keyword = keyword_provider_->GetKeywordForText(match.fill_into_edit);
 
-    // Only add the keyword if the match does not have a duplicate keyword with
-    // a more relevant match.
-    if (!keyword.empty() &&
-        (!keywords.count(keyword) ||
-         (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-          match.type == AutocompleteMatchType::STARTER_PACK))) {
-      keywords.insert(keyword);
-      match.associated_keyword = std::make_unique<AutocompleteMatch>(
-          keyword_provider_->CreateVerbatimMatch(match.fill_into_edit, keyword,
-                                                 input_));
-    } else {
-      match.associated_keyword.reset();
+    if (!keyword.empty()) {
+      // Prevent starter-pack keywords from attaching to non-starter-pack
+      // matches.
+      if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+          match.type != AutocompleteMatchType::STARTER_PACK) {
+        TemplateURL* turl =
+            template_url_service_->GetTemplateURLForKeyword(keyword);
+        if (turl && turl->starter_pack_id() != 0) {
+          continue;
+        }
+      }
+
+      // Only add the keyword if the match does not have a duplicate keyword
+      // with a more relevant match.
+      if (!keywords.count(keyword) ||
+          (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+           match.type == AutocompleteMatchType::STARTER_PACK)) {
+        keywords.insert(keyword);
+        match.associated_keyword = std::make_unique<AutocompleteMatch>(
+            keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
+                                                   keyword, input_));
+      } else {
+        match.associated_keyword.reset();
+      }
     }
   }
 }
