@@ -237,6 +237,7 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
           },
           'uncompressNativeLibraries': {
               'enabled': True,
+              'alignment': 'PAGE_ALIGNMENT_16K'
           },
           'uncompressDexFiles': {
               'enabled': True,  # Applies only for P+.
