@@ -136,6 +136,7 @@
         'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       },
       # Keep in sync with linux-chromeos-rel
+      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-build-perf-siso': {
         'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
         'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
@@ -1735,7 +1736,7 @@
 
     'chromeos_with_codecs_release_trybot_code_coverage_siso': [
       'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
       'no_goma', 'no_reclient', 'siso',
     ],
