@@ -4000,9 +4000,9 @@ const flags_ui::FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOn[] = {{"default_on", "true"}};
+    kDesktopPWAsLinkCapturingDefaultOn[] = {{"on_by_default", "true"}};
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOff[] = {{"default_on", "false"}};
+    kDesktopPWAsLinkCapturingDefaultOff[] = {{"on_by_default", "false"}};
 const flags_ui::FeatureEntry::FeatureVariation
     kDesktopPWAsLinkCapturingVariations[] = {
         {"On by default", kDesktopPWAsLinkCapturingDefaultOn,
