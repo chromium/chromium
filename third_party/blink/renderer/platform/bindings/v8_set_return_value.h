@@ -159,6 +159,16 @@ void V8SetReturnValue(const CallbackInfo& info, bool value) {
 }
 
 template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info, int16_t value) {
+  info.GetReturnValue().Set(value);
+}
+
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info, uint16_t value) {
+  info.GetReturnValue().Set(value);
+}
+
+template <typename CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info, int32_t value) {
   info.GetReturnValue().Set(value);
 }
