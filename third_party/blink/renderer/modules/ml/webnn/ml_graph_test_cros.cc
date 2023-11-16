@@ -75,6 +75,34 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_ADD(),
                /* min_version = */ 1,
                /* max_version = */ 2);
+    AddBuiltin(tflite::BuiltinOperator_SUB,
+               tflite::ops::builtin::Register_SUB(),
+               /* min_version = */ 1,
+               /* max_version = */ 3);
+    AddBuiltin(tflite::BuiltinOperator_MUL,
+               tflite::ops::builtin::Register_MUL(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_DIV,
+               tflite::ops::builtin::Register_DIV(),
+               /* min_version */ 1,
+               /* max_version */ 2);
+    AddBuiltin(tflite::BuiltinOperator_MAXIMUM,
+               tflite::ops::builtin::Register_MAXIMUM(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_MINIMUM,
+               tflite::ops::builtin::Register_MINIMUM(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_POW,
+               tflite::ops::builtin::Register_POW());
+    AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
+               tflite::ops::builtin::Register_SOFTMAX(),
+               /* min_version = */ 1,
+               /* max_version = */ 3);
+    AddBuiltin(tflite::BuiltinOperator_RESHAPE,
+               tflite::ops::builtin::Register_RESHAPE());
   }
 };
 

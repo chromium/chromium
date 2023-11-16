@@ -78,8 +78,7 @@ struct ElementWiseBinaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseBinaryTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test element-wise add operator for two 0-D scalars.
     // The expected results should be the sum of the values of the two input
@@ -290,8 +289,7 @@ struct PowTester {
 };
 
 TEST_P(MLGraphTest, PowTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test element-wise pow operator with exponent = 2.
     PowTester<float>{.lhs = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1512,8 +1510,7 @@ struct ReshapeTester {
 };
 
 TEST_P(MLGraphTest, ReshapeTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test reshaping 1-D 1-element tensor to 0-D scalar.
     ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
