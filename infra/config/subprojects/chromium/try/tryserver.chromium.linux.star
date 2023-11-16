@@ -201,12 +201,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-mbi-mode-per-site-instance-rel",
-    mirrors = builder_config.copy_from("linux-rel"),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-lacros-fyi-rel",
     mirrors = [
         "ci/linux-lacros-builder-fyi-rel",

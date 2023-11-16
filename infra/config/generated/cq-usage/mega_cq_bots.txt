@@ -100,7 +100,6 @@ chromium/try/linux-lacros-asan-lsan-rel
 chromium/try/linux-lacros-dbg
 chromium/try/linux-lacros-rel
 chromium/try/linux-mbi-mode-per-render-process-host-rel
-chromium/try/linux-mbi-mode-per-site-instance-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
 chromium/try/linux-rel

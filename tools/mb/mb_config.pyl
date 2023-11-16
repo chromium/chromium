@@ -907,7 +907,6 @@
       'linux-layout-tests-edit-ng': 'release_trybot_reclient',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
-      'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient',
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-ubsan-fyi-rel': 'ubsan_no_recover_release_bot_reclient',
@@ -1998,10 +1997,6 @@
 
     'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_render_process_host'
-    ],
-
-    'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_site_instance'
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
@@ -3394,10 +3389,6 @@
 
     'mbi_mode_per_render_process_host': {
       'gn_args': 'mbi_mode=\"per_render_process_host\"',
-    },
-
-    'mbi_mode_per_site_instance': {
-      'gn_args': 'mbi_mode=\"per_site_instance\"',
     },
 
     'minimal_symbols': {

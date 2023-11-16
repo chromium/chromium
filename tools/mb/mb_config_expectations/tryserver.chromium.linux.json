@@ -496,19 +496,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-mbi-mode-per-site-instance-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "mbi_mode": "per_site_instance",
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-perfetto-rel": {
     "gn_args": {
       "dcheck_always_on": true,

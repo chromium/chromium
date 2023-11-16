@@ -691,7 +691,6 @@ _exempted_from_contact_builders = {
         "linux-layout-tests-edit-ng",
         "linux-libfuzzer-asan-rel",
         "linux-mbi-mode-per-render-process-host-rel",
-        "linux-mbi-mode-per-site-instance-rel",
         "linux-msan-chained-origins-rel",
         "linux-msan-no-origins-rel",
         "linux-official",
