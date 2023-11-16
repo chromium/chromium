@@ -109,20 +109,6 @@
       ]
     },
     {
-      "id": 26,
-      "description": "Disable use of Direct3D 11 on Windows Vista and lower",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<=",
-          "value": "6.0"
-        }
-      },
-      "features": [
-        "disable_d3d11"
-      ]
-    },
-    {
       "id": 31,
       "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528],
       "description": "The Mali-3xx/4xx/Txxx driver does not guarantee flush ordering",
@@ -187,21 +173,6 @@
       "gl_vendor": "Qualcomm.*",
       "features": [
         "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 39,
-      "cr_bugs": [290391],
-      "description": "Multisampled renderbuffer allocation must be validated on some Macs",
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.10"
-        }
-      },
-      "features": [
-        "validate_multisample_buffer_allocation"
       ]
     },
     {
@@ -483,27 +454,6 @@
       ]
     },
     {
-      "id": 94,
-      "description": "Disable EGL_KHR_wait_sync on NVIDIA with GLES 3.1",
-      "cr_bugs": [433057],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<=",
-          "value": "5.0.2"
-        }
-      },
-      "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
-      "gl_version": {
-        "op": "=",
-        "value": "3.1"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_wait_sync"
-      ]
-    },
-    {
       "id": 95,
       "cr_bugs": [421271],
       "description": "glClear does not always work on these drivers",
@@ -547,36 +497,11 @@
       ]
     },
     {
-      "id": 100,
-      "description": "Disable Direct3D11 on systems with AMD switchable graphics",
-      "cr_bugs": [451420, 721121, 755722],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10"
-        }
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "op": "<",
-        "value": "20.19.0.32837"
-      },
-      "multi_gpu_style": "amd_switchable",
-      "features": [
-        "disable_d3d11"
-      ]
-    },
-    {
       "id": 102,
       "description": "Adreno 420 driver loses FBO attachment contents on bound FBO deletion",
       "cr_bugs": [457027],
       "os": {
-        "type": "android",
-        "version": {
-          "op": ">",
-          "value": "5.0.2"
-        }
+        "type": "android"
       },
       "gl_renderer": "Adreno \\(TM\\) 4.*",
       "features": [
@@ -617,29 +542,6 @@
       "gl_renderer": "PowerVR SGX 544",
       "disabled_extensions": [
         "GL_EXT_occlusion_query_boolean"
-      ]
-    },
-    {
-      "id": 107,
-      "description": "Workaround IMG PowerVR G6xxx drivers bugs",
-      "cr_bugs": [480992],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "between",
-          "value": "5.0.0",
-          "value2": "5.1.99"
-        }
-      },
-      "gl_vendor": ".*Imagination.*",
-      "gl_renderer": ".*PowerVR Rogue.*",
-      "driver_version": {
-        "op": "between",
-        "value": "1.3",
-        "value2": "1.4"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_wait_sync"
       ]
     },
     {
@@ -743,26 +645,6 @@
       },
       "disabled_extensions": [
         "GL_EXT_disjoint_timer_query"
-      ]
-    },
-    {
-      "id": 116,
-      "description": "Adreno 420 support for EXT_multisampled_render_to_texture is buggy on Android < 5.1",
-      "comment": "Corresponds to software rendering list #149",
-      "cr_bugs": [490379, 767913],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "5.1"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ],
-      "features": [
-        "disable_chromium_framebuffer_multisample"
       ]
     },
     {
@@ -1032,21 +914,6 @@
       ]
     },
     {
-      "id": 149,
-      "description": "Direct composition flashes black initially on Win <10",
-      "cr_bugs": [588588],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0"
-        }
-      },
-      "features": [
-        "disable_direct_composition"
-      ]
-    },
-    {
       "id": 153,
       "cr_bugs": [594016],
       "description": "Vivante GC1000 with EXT_multisampled_render_to_texture fails glReadPixels",
@@ -1192,21 +1059,6 @@
       ]
     },
     {
-      "id": 170,
-      "description": "Zero copy DXGI video hangs on shutdown on Win < 8.1",
-      "cr_bugs": [621190],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "8.1"
-        }
-      },
-      "features": [
-        "disable_dxgi_zero_copy_video"
-      ]
-    },
-    {
       "id": 174,
       "description": "Adreno 4xx support for EXT_multisampled_render_to_texture is buggy on Android 7.0",
       "cr_bugs": [612474],
@@ -1220,22 +1072,6 @@
         }
       },
       "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ]
-    },
-    {
-      "id": 175,
-      "description": "Adreno 5xx support for EXT_multisampled_render_to_texture is buggy on Android < 7.0",
-      "cr_bugs": [612474],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "7.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 5.*",
       "disabled_extensions": [
         "GL_EXT_multisampled_render_to_texture"
       ]
@@ -1267,22 +1103,6 @@
       ]
     },
     {
-      "id": 182,
-      "cr_bugs": [638691],
-      "description": "Frequent hang in glClear on old android versions on Mali-T7xx",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "6.0"
-        }
-      },
-      "gl_renderer": ".*Mali-T7.*",
-      "features": [
-        "gl_clear_broken"
-      ]
-    },
-    {
       "id": 185,
       "description": "Zero-copy NV12 video displays incorrect colors on NVIDIA drivers.",
       "cr_bugs": [635319],
@@ -1308,21 +1128,6 @@
       "vendor_id": "0x8086",
       "features": [
         "add_and_true_to_loop_condition"
-      ]
-    },
-    {
-      "id": 187,
-      "description": "Rewrite do-while loops to simpler constructs on Mac",
-      "cr_bugs": [644669],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.11"
-        }
-      },
-      "features": [
-        "rewrite_do_while_loops"
       ]
     },
     {
@@ -1766,22 +1571,6 @@
       "gl_vendor": "Intel.*",
       "features": [
         "msaa_is_slow"
-      ]
-    },
-    {
-      "id": 242,
-      "description": "Code produced by local variable initialization often triggers crashes in Marshmallow Adreno driver",
-      "cr_bugs": [728271],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "7.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "features": [
-        "dont_initialize_uninitialized_locals"
       ]
     },
     {
@@ -3347,21 +3136,6 @@
       ],
       "features": [
         "disable_skia_reduce_ops_task_splitting"
-      ]
-    },
-    {
-      "id": 392,
-      "cr_bugs": [1305679],
-      "description": "OOPR Canvas is unreliable on MacOS 10.12 and older.",
-      "os": {
-        "type" : "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.13"
-        }
-      },
-      "features": [
-        "disable_canvas_oop_rasterization"
       ]
     },
     {
