@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/test_child_modal_parent.h"
+#include "ash/wm/test/test_child_modal_parent.h"
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,7 +101,7 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
 
 TestChildModalParent::~TestChildModalParent() = default;
 
-aura::Window* TestChildModalParent::GetModalParent() const {
+aura::Window* TestChildModalParent::GetModalParent() {
   return modal_parent_->GetNativeView();
 }
 

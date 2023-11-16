@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/test_activation_delegate.h"
+#include "ash/wm/test/test_activation_delegate.h"
 
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_TEST_CHILD_MODAL_PARENT_H_
-#define ASH_WM_TEST_CHILD_MODAL_PARENT_H_
+#ifndef ASH_WM_TEST_TEST_CHILD_MODAL_PARENT_H_
+#define ASH_WM_TEST_TEST_CHILD_MODAL_PARENT_H_
 
 #include <memory>
 
@@ -37,7 +37,7 @@ class TestChildModalParent : public views::WidgetDelegateView,
   ~TestChildModalParent() override;
 
   // Returns the modal parent window hosted within the top-level window.
-  aura::Window* GetModalParent() const;
+  aura::Window* GetModalParent();
 
   // Create, show, and returns a child-modal window.
   aura::Window* ShowModalChild();
@@ -71,4 +71,4 @@ class TestChildModalParent : public views::WidgetDelegateView,
 
 }  // namespace ash
 
-#endif  // ASH_WM_TEST_CHILD_MODAL_PARENT_H_
+#endif  // ASH_WM_TEST_TEST_CHILD_MODAL_PARENT_H_

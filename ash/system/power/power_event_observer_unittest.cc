@@ -15,7 +15,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"

@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_TEST_SESSION_STATE_ANIMATOR_H_
-#define ASH_WM_TEST_SESSION_STATE_ANIMATOR_H_
+#ifndef ASH_WM_TEST_TEST_SESSION_STATE_ANIMATOR_H_
+#define ASH_WM_TEST_TEST_SESSION_STATE_ANIMATOR_H_
 
 #include <stddef.h>
 
 #include <map>
 #include <vector>
 
-#include "ash/ash_export.h"
 #include "ash/wm/session_state_animator.h"
 #include "base/time/time.h"
 
@@ -30,8 +29,6 @@ class TestSessionStateAnimator : public SessionStateAnimator {
   TestSessionStateAnimator& operator=(const TestSessionStateAnimator&) = delete;
 
   ~TestSessionStateAnimator() override;
-
-  int last_animation_epoch() { return last_animation_epoch_; }
 
   // Resets the current animation epoch back to 0 and aborts all currently
   // active animations.
@@ -155,12 +152,12 @@ class TestSessionStateAnimator : public SessionStateAnimator {
 
   // A time counter that tracks the last scheduled animation or animation
   // sequence.
-  int last_animation_epoch_;
+  int last_animation_epoch_ = 0;
 
   // Tracks whether the wallpaper is hidden or not.
-  bool is_wallpaper_hidden_;
+  bool is_wallpaper_hidden_ = false;
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_TEST_SESSION_STATE_ANIMATOR_H_
+#endif  // ASH_WM_TEST_TEST_SESSION_STATE_ANIMATOR_H_

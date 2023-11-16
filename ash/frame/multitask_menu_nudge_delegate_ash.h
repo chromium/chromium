@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_MULTITASK_MENU_NUDGE_DELEGATE_ASH_
-#define ASH_WM_MULTITASK_MENU_NUDGE_DELEGATE_ASH_
+#ifndef ASH_FRAME_MULTITASK_MENU_NUDGE_DELEGATE_ASH_H_
+#define ASH_FRAME_MULTITASK_MENU_NUDGE_DELEGATE_ASH_H_
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
@@ -36,4 +36,4 @@ class MultitaskMenuNudgeDelegateAsh
 
 }  // namespace ash
 
-#endif  // ASH_WM_MULTITASK_MENU_NUDGE_DELEGATE_ASH_
+#endif  // ASH_FRAME_MULTITASK_MENU_NUDGE_DELEGATE_ASH_H_

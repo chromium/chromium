@@ -52,7 +52,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"

@@ -14,7 +14,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/multitask_menu_nudge_delegate_ash.h"
+#include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"

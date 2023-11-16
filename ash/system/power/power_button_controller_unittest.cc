@@ -20,7 +20,7 @@
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"

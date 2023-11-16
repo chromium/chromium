@@ -630,6 +630,8 @@ component("ash") {
     "focus_cycler.h",
     "frame/frame_context_menu_controller.cc",
     "frame/frame_context_menu_controller.h",
+    "frame/multitask_menu_nudge_delegate_ash.cc",
+    "frame/multitask_menu_nudge_delegate_ash.h",
     "frame/non_client_frame_view_ash.cc",
     "frame/non_client_frame_view_ash.h",
     "frame/snap_controller_impl.cc",
@@ -998,8 +1000,6 @@ component("ash") {
     "wm/multi_display/persistent_window_controller.h",
     "wm/multi_display/persistent_window_info.cc",
     "wm/multi_display/persistent_window_info.h",
-    "wm/multitask_menu_nudge_delegate_ash.cc",
-    "wm/multitask_menu_nudge_delegate_ash.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn. The "test api" files are
@@ -3277,6 +3277,7 @@ test("ash_unittests") {
     "frame/caption_buttons/frame_caption_button_container_view_unittest.cc",
     "frame/caption_buttons/frame_size_button_unittest.cc",
     "frame/default_frame_header_unittest.cc",
+    "frame/multitask_menu_nudge_controller_unittest.cc",
     "frame/non_client_frame_view_ash_unittest.cc",
     "frame_sink/frame_sink_holder_unittest.cc",
     "frame_sink/frame_sink_host_unittest.cc",
@@ -3757,7 +3758,6 @@ test("ash_unittests") {
     "wm/mru_window_tracker_unittest.cc",
     "wm/multi_display/multi_display_metrics_controller_unittest.cc",
     "wm/multi_display/persistent_window_controller_unittest.cc",
-    "wm/multitask_menu_nudge_controller_unittest.cc",
     "wm/native_cursor_manager_ash_unittest.cc",
     "wm/overlay_layout_manager_unittest.cc",
     "wm/overview/cleanup_animation_observer_unittest.cc",
@@ -4113,7 +4113,7 @@ test("ash_pixeltests") {
     "test/pixel/demo_ash_pixel_diff_test.cc",
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
     "user_education/welcome_tour/welcome_tour_dialog_pixeltest.cc",
-    "wm/wm_pixel_diff_test.cc",
+    "wm/test/wm_pixel_diff_test.cc",
   ]
 
   deps = [
@@ -4477,12 +4477,12 @@ static_library("test_support") {
     "wm/overview/overview_test_util.h",
     "wm/tablet_mode/tablet_mode_controller_test_api.cc",
     "wm/tablet_mode/tablet_mode_controller_test_api.h",
-    "wm/test_activation_delegate.cc",
-    "wm/test_activation_delegate.h",
-    "wm/test_child_modal_parent.cc",
-    "wm/test_child_modal_parent.h",
-    "wm/test_session_state_animator.cc",
-    "wm/test_session_state_animator.h",
+    "wm/test/test_activation_delegate.cc",
+    "wm/test/test_activation_delegate.h",
+    "wm/test/test_child_modal_parent.cc",
+    "wm/test/test_child_modal_parent.h",
+    "wm/test/test_session_state_animator.cc",
+    "wm/test/test_session_state_animator.h",
     "wm/window_preview_view_test_api.cc",
     "wm/window_preview_view_test_api.h",
     "wm/workspace_controller_test_api.cc",

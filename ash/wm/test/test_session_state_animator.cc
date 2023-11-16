@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 
 #include <utility>
 
@@ -32,8 +32,6 @@ class TestSessionStateAnimator::AnimationSequence
   AnimationSequence(AnimationCallback callback,
                     TestSessionStateAnimator* animator)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
-        sequence_count_(0),
-        sequence_aborted_(false),
         animator_(animator) {}
 
   AnimationSequence(const AnimationSequence&) = delete;
@@ -65,10 +63,10 @@ class TestSessionStateAnimator::AnimationSequence
 
  private:
   // Tracks the number of contained animations.
-  int sequence_count_;
+  int sequence_count_ = 0;
 
   // True if the sequence was aborted.
-  bool sequence_aborted_;
+  bool sequence_aborted_ = false;
 
   // The TestSessionAnimator that created this.  Not owned.
   raw_ptr<TestSessionStateAnimator, ExperimentalAsh> animator_;
@@ -99,8 +97,7 @@ TestSessionStateAnimator::ActiveAnimation::operator=(ActiveAnimation&& other) =
 
 TestSessionStateAnimator::ActiveAnimation::~ActiveAnimation() = default;
 
-TestSessionStateAnimator::TestSessionStateAnimator()
-    : last_animation_epoch_(0), is_wallpaper_hidden_(false) {}
+TestSessionStateAnimator::TestSessionStateAnimator() = default;
 
 TestSessionStateAnimator::~TestSessionStateAnimator() {
   CompleteAllAnimations(false);
