@@ -956,10 +956,9 @@ DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
 
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
-  if (DOMSharedArrayBuffer* shared_array_buffer =
-          ToScriptWrappable(v8_shared_array_buffer)
-              ->ToImpl<DOMSharedArrayBuffer>()) {
-    return shared_array_buffer;
+  if (ScriptWrappable* shared_array_buffer =
+          ToScriptWrappable(v8_shared_array_buffer)) {
+    return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -241,7 +243,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
     // Avoid copying the encoded data unless the caller needs it.
     if (should_keep_encoded_data_) {
       encoded_data_copy = std::make_unique<char[]>(size);
-      memcpy(encoded_data_copy.get(), encoded_data, size);
+      std::copy_n(encoded_data, size, encoded_data_copy.get());
     }
 
     bool post_task;
