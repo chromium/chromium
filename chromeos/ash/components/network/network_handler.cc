@@ -187,7 +187,7 @@ void NetworkHandler::Init() {
                               hotspot_feature_usage_metrics_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
-    hotspot_configuration_handler_->Init(hotspot_controller_.get());
+    hotspot_configuration_handler_->Init();
     hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
                                           hotspot_controller_.get());
     hotspot_metrics_helper_->Init(

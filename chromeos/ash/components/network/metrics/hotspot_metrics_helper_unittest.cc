@@ -68,7 +68,7 @@ class HotspotMetricsHelperTest : public testing::Test {
                               technology_state_controller_.get());
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
-    hotspot_configuration_handler_->Init(hotspot_controller_.get());
+    hotspot_configuration_handler_->Init();
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
     hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),

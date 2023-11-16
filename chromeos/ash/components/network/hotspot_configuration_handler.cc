@@ -6,53 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-
-namespace {
-
-bool DoesStringValueMatch(const base::Value::Dict& config_to_set,
-                          const base::Value::Dict& current_config,
-                          const std::string& property_name) {
-  const std::string* value1 = config_to_set.FindString(property_name);
-  const std::string* value2 = current_config.FindString(property_name);
-  return value1 && value2 && *value1 == *value2;
-}
-
-bool DoesBoolValueMatch(const base::Value::Dict& config_to_set,
-                        const base::Value::Dict& current_config,
-                        const std::string& property_name) {
-  absl::optional<bool> value1 = config_to_set.FindBool(property_name);
-  absl::optional<bool> value2 = current_config.FindBool(property_name);
-  return value1 && value2 && *value1 == *value2;
-}
-
-bool IsHotspotRestartNeeded(
-    const base::Value::Dict& config_to_set,
-    const absl::optional<base::Value::Dict>& current_config) {
-  if (!current_config) {
-    return false;
-  }
-
-  // No need to restart if only AutoDisable is changed.
-  return !DoesStringValueMatch(config_to_set, *current_config,
-                               shill::kTetheringConfSSIDProperty) ||
-         !DoesStringValueMatch(config_to_set, *current_config,
-                               shill::kTetheringConfPassphraseProperty) ||
-         !DoesStringValueMatch(config_to_set, *current_config,
-                               shill::kTetheringConfSecurityProperty) ||
-         !DoesStringValueMatch(config_to_set, *current_config,
-                               shill::kTetheringConfBandProperty) ||
-         !DoesBoolValueMatch(config_to_set, *current_config,
-                             shill::kTetheringConfMARProperty);
-}
-
-}  // namespace
 
 HotspotConfigurationHandler::HotspotConfigurationHandler() = default;
 
@@ -65,8 +24,7 @@ HotspotConfigurationHandler::~HotspotConfigurationHandler() {
   }
 }
 
-void HotspotConfigurationHandler::Init(HotspotController* hotspot_controller) {
-  hotspot_controller_ = hotspot_controller;
+void HotspotConfigurationHandler::Init() {
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);
   }
@@ -124,14 +82,12 @@ void HotspotConfigurationHandler::SetHotspotConfig(
 
   base::Value::Dict shill_tethering_config =
       MojomConfigToShillConfig(std::move(mojom_config));
-  bool need_restart_hotspot =
-      IsHotspotRestartNeeded(shill_tethering_config, hotspot_config_);
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->SetProperty(
       shill::kTetheringConfigProperty,
       base::Value(std::move(shill_tethering_config)),
       base::BindOnce(&HotspotConfigurationHandler::OnSetHotspotConfigSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), need_restart_hotspot,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_split.first)),
       base::BindOnce(&HotspotConfigurationHandler::OnSetHotspotConfigFailure,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -139,16 +95,12 @@ void HotspotConfigurationHandler::SetHotspotConfig(
 }
 
 void HotspotConfigurationHandler::OnSetHotspotConfigSuccess(
-    bool need_restart_hotspot,
     SetHotspotConfigCallback callback) {
   HotspotMetricsHelper::RecordSetHotspotConfigResult(
       hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
   ShillManagerClient::Get()->GetProperties(base::BindOnce(
       &HotspotConfigurationHandler::UpdateHotspotConfigAndRunCallback,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  if (need_restart_hotspot) {
-    hotspot_controller_->RestartHotspotIfActive();
-  }
 }
 
 void HotspotConfigurationHandler::OnSetHotspotConfigFailure(
