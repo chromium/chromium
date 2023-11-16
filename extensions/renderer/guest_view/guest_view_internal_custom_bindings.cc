@@ -89,8 +89,8 @@ void GuestViewInternalCustomBindings::AddRoutes() {
       base::BindRepeating(&GuestViewInternalCustomBindings::AttachIframeGuest,
                           base::Unretained(this)));
   RouteHandlerFunction(
-      "GetRoutingId",
-      base::BindRepeating(&GuestViewInternalCustomBindings::GetRoutingId,
+      "GetFrameToken",
+      base::BindRepeating(&GuestViewInternalCustomBindings::GetFrameToken,
                           base::Unretained(this)));
   RouteHandlerFunction(
       "DestroyContainer",
@@ -211,17 +211,25 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   args.GetReturnValue().Set(true);
 }
 
-void GuestViewInternalCustomBindings::GetRoutingId(
+void GuestViewInternalCustomBindings::GetFrameToken(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(args.Length(), 1);
   if (!args[0]->IsObject()) {
-    args.GetReturnValue().Set(MSG_ROUTING_NONE);
+    args.GetReturnValue().SetEmptyString();
     return;
   }
 
   content::RenderFrame* render_frame = GetRenderFrame(args[0]);
-  args.GetReturnValue().Set(render_frame ? render_frame->GetRoutingID()
-                                         : MSG_ROUTING_NONE);
+  if (!render_frame) {
+    args.GetReturnValue().SetEmptyString();
+    return;
+  }
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
+  std::string frame_token_string = frame_token.ToString();
+  auto return_object = v8::String::NewFromUtf8(
+      args.GetIsolate(), frame_token_string.data(), v8::NewStringType::kNormal,
+      frame_token_string.size());
+  args.GetReturnValue().Set(return_object.ToLocalChecked());
 }
 
 void GuestViewInternalCustomBindings::DestroyContainer(

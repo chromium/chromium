@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/token.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -55,8 +56,20 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   // however, for the guest to be embedded in another same-process frame upon
   // attachment.
   const int sender_process_id = render_frame_host()->GetProcess()->GetID();
-  content::RenderFrameHost* owner_rfh = content::RenderFrameHost::FromID(
-      sender_process_id, params->owner_routing_id);
+
+  content::RenderFrameHost* owner_rfh = nullptr;
+  auto token = base::Token::FromString(params->owner_frame_token);
+  if (token) {
+    auto unguessable_token =
+        base::UnguessableToken::Deserialize(token->high(), token->low());
+    if (unguessable_token) {
+      owner_rfh = content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(
+              sender_process_id,
+              blink::LocalFrameToken(unguessable_token.value())));
+    }
+  }
+
   if (!owner_rfh) {
     // If the renderer can't determine the owner at creation, fall back to
     // assuming the main frame.
