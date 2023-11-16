@@ -44,6 +44,8 @@ src/common/runtime/helper/test_worker-worker.ts
 src/common/tools/checklist.ts
 src/common/tools/crawl.ts
 src/common/tools/dev_server.ts
+src/common/util/crc32.ts
+src/common/util/parse_imports.ts
 src/common/tools/gen_cache.ts
 src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
@@ -117,6 +119,7 @@ src/unittests/async_expectations.spec.ts
 src/unittests/basic.spec.ts
 src/unittests/check_contents.spec.ts
 src/unittests/conversion.spec.ts
+src/unittests/crc32.spec.ts
 src/webgpu/shader/execution/expression/case_cache.ts
 src/webgpu/util/compare.ts
 src/webgpu/shader/execution/expression/expression.ts
@@ -129,6 +132,7 @@ src/unittests/logger.spec.ts
 src/unittests/maths.spec.ts
 src/unittests/params_builder_and_utils.spec.ts
 src/unittests/params_builder_toplevel.spec.ts
+src/unittests/parse_imports.spec.ts
 src/unittests/preprocessor.spec.ts
 src/webgpu/util/prng.ts
 src/unittests/prng.spec.ts
