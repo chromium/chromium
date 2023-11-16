@@ -17,6 +17,7 @@ import './cellular_setup_icons.html.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_item.html.js';
@@ -57,6 +58,6 @@ Polymer({
     if (!this.profileProperties) {
       return '';
     }
-    return String.fromCharCode(...this.profileProperties.name.data);
+    return mojoString16ToString(this.profileProperties.name);
   },
 });

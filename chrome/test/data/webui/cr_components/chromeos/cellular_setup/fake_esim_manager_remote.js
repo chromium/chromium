@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimManagerInterface, ESimManagerObserverInterface, ESimOperationResult, ESimProfile, ESimProfileProperties, ESimProfileRemote, EuiccInterface, EuiccProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
@@ -12,15 +13,9 @@ export class FakeProfile {
       eid,
       iccid,
       activationCode: 'activation-code-' + iccid,
-      name: {
-        data: this.stringToCharCodeArray_('profile' + iccid),
-      },
-      nickname: {
-        data: this.stringToCharCodeArray_('profile' + iccid),
-      },
-      serviceProvider: {
-        data: this.stringToCharCodeArray_('provider' + iccid),
-      },
+      name: stringToMojoString16('profile' + iccid),
+      nickname: stringToMojoString16('profile' + iccid),
+      serviceProvider: stringToMojoString16('provider' + iccid),
       state: ProfileState.kPending,
     };
 
@@ -95,18 +90,6 @@ export class FakeProfile {
    */
   setEsimOperationResultForTest(result) {
     this.esimOperationResult_ = result;
-  }
-
-  /**
-   * @param {string} string
-   * @private
-   */
-  stringToCharCodeArray_(string) {
-    const res = [];
-    for (let i = 0; i < string.length; i++) {
-      res.push(string.charCodeAt(i));
-    }
-    return res;
   }
 
   /**
