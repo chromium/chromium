@@ -7,14 +7,15 @@
 
 #include <map>
 
-#include "chrome/browser/performance_manager/policies/revisit_cdf_container.h"
+#include "chrome/browser/performance_manager/policies/probability_distribution.h"
 
 namespace performance_manager {
 
 // Returns a map of revisit count -> cumulative distribution function of the
 // time to revisit a background tab. There should be
 // `TabRevisitTracker::kMaxNumRevisit` entries in the map.
-std::map<int64_t, RevisitCdfContainer> CreatePerRevisitCountTimeToRevisitCdfs();
+std::map<int64_t, ProbabilityDistribution>
+CreatePerRevisitCountTimeToRevisitCdfs();
 
 // Returns a map of revisit count -> probability of tab being revisited. There
 // should be `TabRevisitTracker::kMaxNumRevisit` entries in the map.

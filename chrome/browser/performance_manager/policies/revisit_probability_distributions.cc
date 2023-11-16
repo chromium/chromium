@@ -6,7 +6,7 @@
 
 namespace performance_manager {
 
-std::map<int64_t, RevisitCdfContainer>
+std::map<int64_t, ProbabilityDistribution>
 CreatePerRevisitCountTimeToRevisitCdfs() {
   // TODO(crbug.com/1469337): Compute these distributions from UMA data and
   // include the values here. Returning the empty map is safe because the

@@ -12,7 +12,7 @@ namespace performance_manager {
 
 RevisitCountRevisitEstimator::RevisitCountRevisitEstimator(
     Graph* graph,
-    std::map<int64_t, RevisitCdfContainer> time_to_revisit_probabilities,
+    std::map<int64_t, ProbabilityDistribution> time_to_revisit_probabilities,
     std::map<int64_t, float> revisit_probabilities)
     : graph_(graph),
       time_to_revisit_probabilities_(std::move(time_to_revisit_probabilities)),

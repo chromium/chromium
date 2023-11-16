@@ -54,7 +54,7 @@ class RevisitCountRevisitEstimatorTest : public GraphTestHarness {
 
   void InitializeEstimator(
       std::map<int64_t, float> revisit_probabilities,
-      std::map<int64_t, RevisitCdfContainer> cdf_containers) {
+      std::map<int64_t, ProbabilityDistribution> cdf_containers) {
     estimator_ = std::make_unique<RevisitCountRevisitEstimator>(
         graph(), cdf_containers, std::move(revisit_probabilities));
   }
@@ -94,7 +94,7 @@ TEST_F(RevisitCountRevisitEstimatorTest, ComputesProbability) {
           {0L, 0.3f},
       },
       {
-          {0L, RevisitCdfContainer({
+          {0L, ProbabilityDistribution::FromCDFData({
                    {1, 0.1},
                    {10, 0.3},
                    {base::Hours(24).InSeconds(), 1.0},
@@ -133,12 +133,12 @@ TEST_F(RevisitCountRevisitEstimatorTest, ComputesCorrectlyForFirstLastBuckets) {
           {1L, 0.5f},
       },
       {
-          {0L, RevisitCdfContainer({
+          {0L, ProbabilityDistribution::FromCDFData({
                    {1, 0.1},
                    {10, 0.3},
                    {base::Hours(24).InSeconds(), 1.0},
                })},
-          {1L, RevisitCdfContainer({
+          {1L, ProbabilityDistribution::FromCDFData({
                    {1L, 0.1},
                    {10L, 0.3},
                    {100L, 1.0},
@@ -167,7 +167,7 @@ TEST_F(RevisitCountRevisitEstimatorTest, ComputesCorrectlyForMiddleBuckets) {
           {2L, 1.0f},
       },
       {
-          {2L, RevisitCdfContainer({
+          {2L, ProbabilityDistribution::FromCDFData({
                    {1, 0.1},
                    {10, 0.3},
                    {base::Hours(24).InSeconds(), 0.5},
@@ -199,7 +199,7 @@ TEST_F(RevisitCountRevisitEstimatorTest,
       },
       {
           {TabRevisitTracker::kMaxNumRevisit - 1,
-           RevisitCdfContainer({
+           ProbabilityDistribution::FromCDFData({
                {1, 0.1},
                {10, 0.2},
                {base::Hours(24).InSeconds(), 0.5},
