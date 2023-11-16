@@ -14,6 +14,10 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace user_education {
 
 class HelpBubbleHandlerBase;
@@ -23,6 +27,10 @@ class HelpBubbleHandlerBase;
 class HelpBubbleWebUI : public HelpBubble {
  public:
   ~HelpBubbleWebUI() override;
+
+  // Retrieves the `WebContents` that hosts this help bubble, if any, or null if
+  // none. Will return null if the bubble is closed.
+  content::WebContents* GetWebContents();
 
   // HelpBubble:
   bool ToggleFocusForAccessibility() override;

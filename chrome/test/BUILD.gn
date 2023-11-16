@@ -10978,6 +10978,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/translate/translate_icon_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/browser_feature_promo_controller_interactive_uitest.cc",
+        "../browser/ui/views/user_education/browser_user_education_service_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_dialog_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_lifecycle_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_registry_interactive_uitest.cc",

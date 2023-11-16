@@ -143,6 +143,48 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
   }
 };
 
+// Help bubble factory that can show an embedded (WebUI-based) help bubble on a
+// tab in the browser. This takes the added step of focusing the contents pane
+// of the browser if the help bubble is in the active tab.
+class TabWebUIHelpBubbleFactoryBrowser
+    : public user_education::HelpBubbleFactoryWebUI {
+ public:
+  explicit TabWebUIHelpBubbleFactoryBrowser() = default;
+  ~TabWebUIHelpBubbleFactoryBrowser() override = default;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  // user_education::HelpBubbleFactoryWebUI:
+  std::unique_ptr<user_education::HelpBubble> CreateBubble(
+      ui::TrackedElement* element,
+      user_education::HelpBubbleParams params) override {
+    const bool has_buttons = !params.buttons.empty();
+    auto result =
+        HelpBubbleFactoryWebUI::CreateBubble(element, std::move(params));
+
+    // Bubbles with action buttons should start focused.
+    if (result && has_buttons) {
+      // Assuming the help bubble is in the active web contents in a browser
+      // window, in order to be consistent with other help bubbles, we should
+      // ensure the contents pane is focused.
+      if (const auto* const contents =
+              result->AsA<user_education::HelpBubbleWebUI>()
+                  ->GetWebContents()) {
+        if (const auto* browser = chrome::FindBrowserWithTab(contents)) {
+          if (browser->tab_strip_model()->GetActiveWebContents() == contents) {
+            BrowserView::GetBrowserViewForBrowser(browser)
+                ->FocusWebContentsPane();
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TabWebUIHelpBubbleFactoryBrowser)
+
 // Help bubble factory that can show a floating (Views-based) help bubble on a
 // WebUI element, but only for non-tab WebUI.
 class FloatingWebUIHelpBubbleFactoryBrowser
@@ -228,7 +270,7 @@ void RegisterChromeHelpBubbleFactories(
   // Try to create a floating bubble first, if it's allowed.
   registry.MaybeRegister<FloatingWebUIHelpBubbleFactoryBrowser>(delegate);
   // Fall back to in-WebUI help bubble if the floating bubble doesn't apply.
-  registry.MaybeRegister<user_education::HelpBubbleFactoryWebUI>();
+  registry.MaybeRegister<TabWebUIHelpBubbleFactoryBrowser>();
 #if BUILDFLAG(IS_MAC)
   registry.MaybeRegister<user_education::HelpBubbleFactoryMac>(delegate);
 #endif
