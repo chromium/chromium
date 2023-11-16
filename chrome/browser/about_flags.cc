@@ -3439,6 +3439,24 @@ const FeatureEntry::FeatureVariation
          std::size(kMemorySavingsReportingVeryFrequent), nullptr},
 };
 
+const FeatureEntry::FeatureParam kProbabilisticMemorySaverSimulated[] = {
+    {"proactive_discarding_target_false_positive_percent", "35"},
+    {"proactive_discarding_sampling_interval", "10m"},
+    {"proactive_discarding_simulation_mode", "true"},
+};
+
+const FeatureEntry::FeatureParam kProbabilisticMemorySaverActive[] = {
+    {"proactive_discarding_target_false_positive_percent", "35"},
+    {"proactive_discarding_sampling_interval", "10m"},
+    {"proactive_discarding_simulation_mode", "false"},
+};
+
+const FeatureEntry::FeatureVariation kProbabilisticMemorySaverMode[] = {
+    {"Simulated", kProbabilisticMemorySaverSimulated,
+     std::size(kProbabilisticMemorySaverSimulated), nullptr},
+    {"Active", kProbabilisticMemorySaverActive,
+     std::size(kProbabilisticMemorySaverActive), nullptr},
+};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -10232,6 +10250,14 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kMemorySavingsReportingImprovements,
          kHighEfficiencyMemorySavingsReportingVariations,
          "MemorySavingsReportingImprovements")},
+
+    {"probabilistic-memory-saver",
+     flag_descriptions::kProbabilisticMemorySaverName,
+     flag_descriptions::kProbabilisticMemorySaverDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         performance_manager::features::kProbabilisticProactiveDiscarding,
+         kProbabilisticMemorySaverMode,
+         "ProbabilisticProactiveDiscarding")},
 
 #endif
 

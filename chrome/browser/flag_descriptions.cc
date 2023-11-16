@@ -5058,6 +5058,11 @@ const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[] =
     "Omnibox Drive suggestions don't require the user to have enabled Chrome "
     "Sync and are available when all other requirements are met.";
 
+const char kProbabilisticMemorySaverName[] = "Probabilistic Memory Saver Mode";
+const char kProbabilisticMemorySaverDescription[] =
+    "Memory Saver uses some probability distributions to estimate the chance "
+    "of tab revisit based on observations about the tab's state.";
+
 const char kRealboxSecondaryZeroSuggestName[] =
     "Enables showing secondary zero-prefix suggestions in NTP realbox.";
 const char kRealboxSecondaryZeroSuggestDescription[] =

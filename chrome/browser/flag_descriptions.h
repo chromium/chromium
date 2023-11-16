@@ -2933,6 +2933,9 @@ extern const char kOmniboxDriveSuggestionsNoSettingDescription[];
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementName[];
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[];
 
+extern const char kProbabilisticMemorySaverName[];
+extern const char kProbabilisticMemorySaverDescription[];
+
 extern const char kRealboxSecondaryZeroSuggestName[];
 extern const char kRealboxSecondaryZeroSuggestDescription[];
 
