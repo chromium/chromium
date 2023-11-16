@@ -559,9 +559,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // The account-storage opt-in gets cleared when turning off Sync, so opt in
-  // again.
-  OptInToAccountStorage(GetProfile(0)->GetPrefs(), GetSyncService(0));
+  // The account-storage opt-in is still present, so PASSWORDS should become
+  // active.
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Now the password should be in both stores: The profile store does *not* get

@@ -61,8 +61,6 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
   void OnAccountsCookieDeletedByUserAction() override;
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   void OnOptInStateMaybeChanged();

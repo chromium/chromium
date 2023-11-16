@@ -295,12 +295,6 @@ void OptOutOfAccountStorageAndClearSettings(
     return;
   }
 
-  OptOutOfAccountStorageAndClearSettingsForAccount(pref_service, gaia_id);
-}
-
-void OptOutOfAccountStorageAndClearSettingsForAccount(
-    PrefService* pref_service,
-    const std::string& gaia_id) {
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .ClearAllSettings();

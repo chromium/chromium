@@ -137,24 +137,6 @@ void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void CredentialModelTypeController::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
-  // removed. See ConsentLevel::kSync documentation for details.
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    // Note: kCleared event for ConsentLevel::kSync basically means that the
-    // consent for Sync-the-feature was revoked. In this case, also clear any
-    // possible matching opt-in for the account-scoped storage, since it'd
-    // probably be surprising to the user if their account passwords still
-    // remained after disabling Sync.
-    features_util::OptOutOfAccountStorageAndClearSettingsForAccount(
-        pref_service_, event.GetPreviousState().primary_account.gaia);
-  }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
 void CredentialModelTypeController::OnOptInStateMaybeChanged() {
   // Note: This method gets called in many other situations as well, not just
   // when the opt-in state changes, but DataTypePreconditionChanged() is cheap

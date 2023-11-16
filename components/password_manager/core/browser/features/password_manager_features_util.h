@@ -169,12 +169,6 @@ void OptOutOfAccountStorageAndClearSettings(
     PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
-// Like OptOutOfAccountStorageAndClearSettings(), but applies to a specific
-// given |gaia_id| rather than to the current signed-in user.
-void OptOutOfAccountStorageAndClearSettingsForAccount(
-    PrefService* pref_service,
-    const std::string& gaia_id);
-
 // Sets the default storage location for signed-in but non-syncing users. This
 // store is used for saving new credentials and adding blacking listing entries.
 // |pref_service| and |sync_service| must not be null.
