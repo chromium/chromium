@@ -21,22 +21,6 @@
 
 namespace content {
 
-namespace {
-
-void RecordAddressContainsDerivedField(
-    const payments::mojom::PaymentAddress& address) {
-  if (address.address_line.empty() || address.address_line.front().empty())
-    return;
-
-  bool has_derived_field = !address.city.empty() || !address.country.empty() ||
-                           !address.postal_code.empty() ||
-                           !address.region.empty();
-  base::UmaHistogramBoolean("Android.ContactsPicker.AddressHasDerivedField",
-                            has_derived_field);
-}
-
-}  // namespace
-
 ContactsProviderAndroid::ContactsProviderAndroid(
     RenderFrameHostImpl* render_frame_host) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -125,7 +109,6 @@ void ContactsProviderAndroid::AddContact(
               env->GetDirectBufferCapacity(j_address.obj()), &address)) {
         continue;
       }
-      RecordAddressContainsDerivedField(*address);
       addresses_vector.push_back(std::move(address));
     }
 
