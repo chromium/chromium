@@ -22931,6 +22931,24 @@ should be able to be added at any place in this file.
   <description>User exited the iOS tab grid (by any means).</description>
 </action>
 
+<action name="MobileTabGridFailedCreateIncognitoTab">
+  <owner>ddac@chromium.org</owner>
+  <owner>vincb@chromium.org</owner>
+  <description>
+    User in the iOS tab grid tried to create a new incognito tab using the new
+    tab button, but it was not allowed by the policy.
+  </description>
+</action>
+
+<action name="MobileTabGridFailedCreateRegularTab">
+  <owner>ddac@chromium.org</owner>
+  <owner>vincb@chromium.org</owner>
+  <description>
+    User in the iOS tab grid tried to create a new regular tab using the new tab
+    button, but it was not allowed by the policy.
+  </description>
+</action>
+
 <action name="MobileTabGridMoveToExistingTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

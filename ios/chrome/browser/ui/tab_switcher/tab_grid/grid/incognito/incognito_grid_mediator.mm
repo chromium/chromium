@@ -112,12 +112,17 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   [self.gridConsumer setPageIdleStatus:NO];
   base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self.gridConsumer prepareForDismissal];
-  [self addNewItem];
-  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
-  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
-                                       focusOmnibox:NO];
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
+  // Present the tab only if it have been added.
+  if ([self addNewItem]) {
+    [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
+                                         focusOmnibox:NO];
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridFailedCreateIncognitoTab"));
+  }
 }
 
 #pragma mark - Parent's function

@@ -435,7 +435,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 #pragma mark - GridCommands
 
-- (void)addNewItem {
+- (BOOL)addNewItem {
   if (self.browserState &&
       !IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
                                   self.browserState->IsOffTheRecord())) {
@@ -448,12 +448,13 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // softly cancelled without a notice (this approach is better than allowing
     // a policy violation).
     base::debug::DumpWithoutCrashing();
-    return;
+    return NO;
   }
 
   NSUInteger itemIndex =
       [self itemIndexFromWebStateListIndex:self.webStateList->count()];
   [self insertNewItemAtIndex:itemIndex];
+  return YES;
 }
 
 - (void)insertNewItemAtIndex:(NSUInteger)index {

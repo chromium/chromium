@@ -17,8 +17,9 @@ class WebStateID;
 
 // Commands issued to a model backing a grid UI.
 @protocol GridCommands <TabCollectionCommands>
-// Tells the receiver to insert a new item at the end of the list.
-- (void)addNewItem;
+// Tells the receiver to insert a new item at the end of the list. Return YES if
+// it inserted an element, NO otherwise.
+- (BOOL)addNewItem;
 // Tells the receiver to insert a new item at `index`. It is an error to call
 // this method with an `index` greater than the number of items in the model.
 - (void)insertNewItemAtIndex:(NSUInteger)index;

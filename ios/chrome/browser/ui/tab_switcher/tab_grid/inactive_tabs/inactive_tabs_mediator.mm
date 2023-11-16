@@ -348,7 +348,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 #pragma mark - GridCommands
 
-- (void)addNewItem {
+- (BOOL)addNewItem {
   NOTREACHED_NORETURN();
 }
 
