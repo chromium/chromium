@@ -1,0 +1,1593 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanCodePathUsage">
+  <summary>The result if a code path is being used.</summary>
+  <int value="0" label="Unused Code Path"/>
+  <int value="1" label="Used Code Path"/>
+</enum>
+
+<enum name="CryptohomeAuthBlockType">
+  <int value="0" label="Pin Weaver"/>
+  <int value="1" label="Challenge Credential"/>
+  <int value="2" label="Double Wrapped Compat"/>
+  <int value="3" label="TPM Bound To Pcr"/>
+  <int value="4" label="TPM Not Bound To Pcr"/>
+  <int value="5" label="Lib Scrypt Compat"/>
+  <int value="6" label="Cryptohome Recovery"/>
+  <int value="7" label="TPM ECC"/>
+</enum>
+
+<enum name="CryptohomeAuthFactorBackingStoreConfig">
+  <int value="0" label="No AuthFactor"/>
+  <int value="1" label="Vault Keyset"/>
+  <int value="2" label="User Secret Stash"/>
+  <int value="3" label="Mixed Backing Stores"/>
+</enum>
+
+<enum name="CryptohomeBackupKeysetCleanupResult">
+  <int value="0" label="Removed backup password"/>
+  <int value="1" label="Removed backup PIN"/>
+  <int value="2" label="Removed backup of other type"/>
+  <int value="3" label="AddResetSecret failed"/>
+  <int value="4" label="GetValidKeyset failed"/>
+  <int value="5" label="Remove file failed for PIN"/>
+  <int value="6" label="Remove file failed for password"/>
+  <int value="7" label="Remove file failed for other type"/>
+</enum>
+
+<enum name="CryptohomeCryptoError">
+  <summary>
+    The error enum defined in platform2/cryptohome/crypto_error.h
+  </summary>
+  <int value="0" label="No error"/>
+  <int value="1" label="TPM fatal error"/>
+  <int value="2" label="TPM communication failure"/>
+  <int value="3" label="TPM is in the defense mode"/>
+  <int value="4" label="TPM crypto error"/>
+  <int value="5" label="TPM state requires reboot"/>
+  <int value="6" label="Scrypt failed"/>
+  <int value="7" label="Other fatal error"/>
+  <int value="8" label="Other crypto error"/>
+  <int value="9" label="No TPM public key hash"/>
+  <int value="10"
+      label="Low Entropy (LE) credential protection is not supported"/>
+  <int value="11" label="The LE secret provided during decryption is invalid"/>
+  <int value="12" label="Flags and policy mismatch"/>
+  <int value="13" label="The LE credential had been locked"/>
+</enum>
+
+<enum name="CryptohomeDiskCleanupProgress">
+  <int value="1" label="Ephemeral User Profiles cleaned">
+    Ephemeral users were enabled. Removed all profiles except those currently
+    mounted or belonging to the owner.
+  </int>
+  <int value="2" label="Browser Cache cleaned above target">
+    Successfully freed space above the 2GB target.
+  </int>
+  <int value="3" label="Google Drive Cache cleaned above target">
+    Successfully freed space above the 2GB target.
+  </int>
+  <int value="4" label="Google Drive Cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
+  <int value="5" label="Android Cache cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="6" label="Android Cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
+  <int value="7" label="Whole User Profiles cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="8" label="Whole User Profiles cleaned">
+    Disk space was not above 2GB target.
+  </int>
+  <int value="9" label="No unmounted cryptohomes">
+    No users or no logged-out users.
+  </int>
+  <int value="10" label="Dmcrypt cache vaults cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="11" label="Dmcrypt cache vaults cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
+  <int value="12" label="Some ephemeral user profiles cleaned above target">
+    Ephemeral users were enabled. Removed all profiles except those currently
+    mounted, belonging to the owner or non-ephemeral. Succesfully freed space
+    above 2GB target.
+  </int>
+  <int value="13" label="Some ephemeral user profiles cleaned">
+    Ephemeral users were enabled. Removed all profiles except those currently
+    mounted, belonging to the owner or non-ephemeral.
+  </int>
+</enum>
+
+<enum name="CryptohomeDiskCleanupResult">
+  <int value="1" label="Success">Cleanup performed successfully.</int>
+  <int value="2" label="Error">Cleanup failed.</int>
+  <int value="3" label="Skip">
+    Cleanup skipped, enough free space is available.
+  </int>
+</enum>
+
+<enum name="CryptohomeError">
+  <int value="1" label="TPM returned TPM_E_FAIL"/>
+  <int value="2" label="TCS key load failed"/>
+  <int value="3" label="TPM dictionary defense lock is running"/>
+  <int value="4" label="Decrypt attempt but TPM key is missing"/>
+  <int value="5" label="Decrypt attempt but TPM is not owned"/>
+  <int value="6" label="Decrypt attempt but TPM is not available"/>
+  <int value="7" label="Decrypt attempt but TPM key is mismatched"/>
+  <int value="8" label="Decrypt attempt with TPM key failed (general)"/>
+  <int value="9" label="Cannot load TPM SRK"/>
+  <int value="10" label="Cannot read TPM SRK public info"/>
+  <int value="11" label="Cannot load cryptohome TPM key"/>
+  <int value="12" label="Cannot read cryptohome TPM key public info"/>
+  <int value="13"
+      label="TPM failed to load a key because of a bad key property"/>
+  <int value="14" label="Failed to load a PKCS #11 token"/>
+  <int value="15" label="Failed to encrypt with cryptohome TPM key"/>
+  <int value="16" label="TSS communication error"/>
+  <int value="17" label="TSS invalid handle"/>
+  <int value="18" label="Keyset wrapped both by TPM and Scrypt"/>
+  <int value="19" label="Failed to clean up ephemeral cryptohome"/>
+  <int value="20" label="TPM out of memory"/>
+</enum>
+
+<enum name="CryptohomeErrorHashed">
+<!--
+  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It only populate values that indeed occurs in the wild, and the set of such values is gathered from the logs.
+
+  The labels are of the format: <Error Location>/<Error Location Enum Value> ...
+  Whereby Error Location and enum values are defined in platform2/cryptohome/error/locations.h
+  -->
+
+  <int value="706395249"
+      label="kLocUserDataAuthSessionNotFoundInExtendAuthSession/288"/>
+  <int value="4104955507"
+      label="kLocUserDataAuthSessionNotFoundInAuthAuthSession/286"/>
+</enum>
+
+<enum name="CryptohomeErrorLocation">
+<!--
+  This enum is intended to be populated automatically by
+  platform2/cryptohome/error/tool/location_db.py. It populates all values
+  found in the cryptohome code base.
+
+  It is allowed to manually add <int> error location to this file, and the
+  added error location will continue to be updated when the script runs the
+  next time. However, the label, and all changes to the label field may be
+  overwritten by the tool. Furthermore, removal of <int> may be added back
+  if that bucket is still observed in the field.
+
+  The labels are the Cryptohome Error Location enum defined in
+  platform2/cryptohome/error/locations.h
+  -->
+
+  <int value="100" label="kLocUserSessionMountEphemeralFailed"/>
+  <int value="103" label="kLocUserDataAuthMountGuestSessionMountFailed"/>
+  <int value="104" label="kLocUserDataAuthNoEphemeralMountForOwner"/>
+  <int value="105" label="kLocUserDataAuthEphemeralMountWithoutCreate"/>
+  <int value="109" label="kLocUserDataAuthMountCantGetPublicMountSalt"/>
+  <int value="114" label="kLocChalCredDecryptCantStartProcessing"/>
+  <int value="115" label="kLocChalCredDecryptOperationAborted"/>
+  <int value="124" label="kLocChalCredDecryptCreateUnsealingSessionFailed"/>
+  <int value="125" label="kLocChalCredDecryptSaltResponseNoSignature"/>
+  <int value="126" label="kLocChalCredDecryptUnsealingResponseNoSignature"/>
+  <int value="129" label="kUserDataAuthInvalidAuthBlockTypeInCreateKeyBlobs"/>
+  <int value="130" label="kUserDataAuthInvalidAuthBlockTypeInDeriveKeyBlobs"/>
+  <int value="136" label="kLocTpmNotBoundToPcrAuthBlockTpmNotReadyInDerive"/>
+  <int value="138" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDerive"/>
+  <int value="139"
+      label="kLocTpmNotBoundToPcrAuthBlockNoCryptohomeKeyInCreate"/>
+  <int value="141" label="kLocTpmNotBoundToPcrAuthBlockEncryptFailedInCreate"/>
+  <int value="144" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt"/>
+  <int value="149"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate"/>
+  <int value="154" label="kLocPinWeaverAuthBlockCheckCredFailedInDerive"/>
+  <int value="156" label="kLocAuthBlockUtilCreateFailedInCreateKeyBlobs"/>
+  <int value="157" label="kLocAuthBlockUtilNoAuthBlockInCreateKeyBlobsAsync"/>
+  <int value="160" label="kLocAuthBlockUtilDeriveFailedInDeriveKeyBlobs"/>
+  <int value="161" label="kLocAuthBlockUtilNoAuthBlockInDeriveKeyBlobsAsync"/>
+  <int value="165" label="kLocAuthBlockUtilNoChalInGetAsyncAuthBlockWithType"/>
+  <int value="175" label="kLocRecoveryAuthBlockRevocationCreateFailedInCreate"/>
+  <int value="181" label="kLocRecoveryAuthBlockRevocationDeriveFailedInDerive"/>
+  <int value="193" label="kLocChalCredAuthBlockServiceDeriveFailedInDerive"/>
+  <int value="196" label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash"/>
+  <int value="197" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
+  <int value="199" label="kLocTpmAuthBlockUtilsTpmNotOwnedInCheckReadiness"/>
+  <int value="200"
+      label="kLocTpmAuthBlockUtilsNoCryptohomeKeyInCheckReadiness"/>
+  <int value="201" label="kLocTpmAuthBlockUtilsCHKeyMismatchInCheckReadiness"/>
+  <int value="204" label="kLocTpmBoundToPcrAuthBlockNoCryptohomeKeyInCreate"/>
+  <int value="208" label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate"/>
+  <int value="209"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate"/>
+  <int value="217" label="kLocTpmBoundToPcrAuthBlockTpmNotReadyInDerive"/>
+  <int value="218" label="kLocTpmBoundToPcrAuthBlockNoPubKeyHashInDerive"/>
+  <int value="219" label="kLocTpmBoundToPcrAuthBlockDecryptFailedInDerive"/>
+  <int value="221" label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt"/>
+  <int value="222" label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt"/>
+  <int value="231" label="kLocTpmEccAuthBlockCryptohomeKeyLoadFailedInCreate"/>
+  <int value="236" label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate"/>
+  <int value="240" label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate"/>
+  <int value="241" label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate"/>
+  <int value="244" label="kLocTpmEccAuthBlockLoadKeyFailedInDerive"/>
+  <int value="245" label="kLocTpmEccAuthBlockTpmNotReadyInDerive"/>
+  <int value="246" label="kLocTpmEccAuthBlockCantDeriveVKKInDerive"/>
+  <int value="247" label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK"/>
+  <int value="250" label="kLocTpmEccAuthBlockDeriveHVKKMFailedInDeriveVKK"/>
+  <int value="253" label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM"/>
+  <int value="256" label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM"/>
+  <int value="268" label="kLocLECredManInvalidTreeInInsertCred"/>
+  <int value="271" label="kLocLECredManTpmFailedInInsertCred"/>
+  <int value="272" label="kLocLECredManStoreFailedInInsertCred"/>
+  <int value="273" label="kLocLECredManInvalidTreeInRemoveCred"/>
+  <int value="274" label="kLocLECredManRetrieveLabelFailedInRemoveCred"/>
+  <int value="275" label="kLocLECredManRemoveCredFailedInRemoveCred"/>
+  <int value="276" label="kLocLECredManRemoveLabelFailedInRemoveCred"/>
+  <int value="277" label="kLocLECredManInvalidTreeInCheckSecret"/>
+  <int value="278" label="kLocLECredManInvalidMetadataInCheckSecret"/>
+  <int value="279" label="kLocLECredManStoreLabelFailedInCheckSecret"/>
+  <int value="280" label="kLocLECredManTpmFailedInCheckSecret"/>
+  <int value="281" label="kLocLECredManTreeGetDataFailedInRetrieveLabel"/>
+  <int value="282" label="kLocLECredManNonexistentInRetrieveLabel"/>
+  <int value="284" label="kLocLECredManConvertTpmError"/>
+  <int value="286" label="kLocUserDataAuthSessionNotFoundInAuthAuthSession"/>
+  <int value="288" label="kLocUserDataAuthSessionNotFoundInExtendAuthSession"/>
+  <int value="293" label="kLocUserDataAuthCreateFailedInCreatePersistentUser"/>
+  <int value="295" label="kLocUserDataAuthSessionNotFoundInAuthAuthFactor"/>
+  <int value="298" label="kLocAuthSessionGetCredFailedInAddCred"/>
+  <int value="301" label="kLocAuthSessionInvalidBlockTypeInAddKeyset"/>
+  <int value="305" label="kLocAuthSessionCreateFailedInAddKeyset"/>
+  <int value="306" label="kLocAuthSessionAddFailedInAddKeyset"/>
+  <int value="309" label="kLocAuthSessionAddInitialFailedInAddKeyset"/>
+  <int value="314" label="kLocAuthSessionInvalidBlockTypeInUpdate"/>
+  <int value="317" label="kLocAuthSessionCreateFailedInUpdateKeyset"/>
+  <int value="318" label="kLocAuthSessionUpdateWithBlobFailedInUpdateKeyset"/>
+  <int value="322" label="kLocAuthSessionFactorNotFoundInAuthAuthFactor"/>
+  <int value="325" label="kLocAuthSessionVKConverterFailedInAuthAuthFactor"/>
+  <int value="326" label="kLocAuthSessionInvalidBlockTypeInAuthViaVaultKey"/>
+  <int value="327" label="kLocAuthSessionBlockStateMissingInAuthViaVaultKey"/>
+  <int value="329" label="kLocAuthSessionDeriveFailedInLoadVaultKeyset"/>
+  <int value="330"
+      label="kLocAuthSessionGetValidKeysetFailedInLoadVaultKeyset"/>
+  <int value="332" label="kLocAuthSessionEmptyPublicMountKeyInGetCred"/>
+  <int value="335" label="kLocAuthSessionNoInputInAddAuthFactor"/>
+  <int value="339" label="kLocAuthSessionAddMainKeyFailedInAddSecretToUSS"/>
+  <int value="341" label="kLocAuthSessionPersistFactorFailedInPersistToUSS"/>
+  <int value="346" label="kLocAuthSessionLoadUSSFailedInLoadUSS"/>
+  <int value="347" label="kLocAuthSessionDecryptUSSFailedInLoadUSS"/>
+  <int value="353" label="kLocAuthFactorManagerWriteFailedInSave"/>
+  <int value="364" label="kLocVaultKeysetWrapAESDFailedInEncryptEx"/>
+  <int value="371" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapVKK"/>
+  <int value="373" label="kLocVaultKeysetChapsDecryptFailedInUnwrapVKK"/>
+  <int value="375" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapScrypt"/>
+  <int value="376" label="kLocVaultKeysetChapsDecryptFailedInUnwrapScrypt"/>
+  <int value="377" label="kLocVaultKeysetResetSeedDecryptFailedInUnwrapScrypt"/>
+  <int value="380" label="kLocVaultKeysetMissingFieldInWrapAESD"/>
+  <int value="390" label="kLocVaultKeysetUnwrapVKKFailedInUnwrapVK"/>
+  <int value="391" label="kLocVaultKeysetUnwrapScryptFailedInUnwrapVK"/>
+  <int value="398" label="kLocChalCredOperationNoResponseInOnSigResponse"/>
+  <int value="404" label="kLocChalCredVerifyChallengeFailed"/>
+  <int value="406" label="kLocChalCredHelperConcurrencyNotAllowed"/>
+  <int value="407" label="kLocChalCredNewAborted"/>
+  <int value="410" label="kLocChalCredNewGenerateRandomSaltFailed"/>
+  <int value="415" label="kLocKeyChallengeServiceKnownDBusErrorInChallengeKey"/>
+  <int value="418" label="kLocUserDataAuthChalCredFailedInChalRespMount"/>
+  <int value="427" label="kLocKeysetManagementDecryptFailedInGetValidKeyset"/>
+  <int value="430"
+      label="kLocKeysetManagementEncryptFailedInEncryptAndSaveKeyset"/>
+  <int value="432"
+      label="kLocKeysetManagementSaveFailedInEncryptAndSaveKeyset"/>
+  <int value="435"
+      label="kLocKeysetManagementFailedEncryptAndSaveKeysetWithKeyBlobs"/>
+  <int value="439"
+      label="kLocUserDataAuthRemoveUnrecoverableFailedInContinueMount"/>
+  <int value="440" label="kLocUserDataAuthCreateKeyBlobsFailedInLoadVK"/>
+  <int value="442" label="kLocUserDataAuthGetKeyLabelsFailedInLoadVK"/>
+  <int value="447"
+      label="kLocUserDataAuthAccountMissingInAttemptUserMountCred"/>
+  <int value="449" label="kLocUserDataAuthLoadVKFailedInAttemptUserMountCred"/>
+  <int value="450"
+      label="kLocUserDataAuthMountVaultFailedInAttemptUserMountCred"/>
+  <int value="455" label="kLocUserSessionMountFailedInMountVault"/>
+  <int value="456" label="kLocUserSessionOwnerNotSupportedInMountEphemeral"/>
+  <int value="457" label="kLocUserSessionMountFailedInMountEphemeral"/>
+  <int value="473" label="kLocUserDataAuthSessionNotFoundInGetAuthedAS"/>
+  <int value="475" label="kLocUserDataAuthGuestAlreadyMountedInGetMountableUS"/>
+  <int value="476"
+      label="kLocUserDataAuthSessionAlreadyMountedInGetMountableUS"/>
+  <int value="478"
+      label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
+  <int value="479" label="kLocUserDataAuthMountFailedInPrepareGuestVault"/>
+  <int value="481"
+      label="kLocUserDataAuthGetSessionFailedInPrepareEphemeralVault"/>
+  <int value="482" label="kLocUserDataAuthMountFailedInPrepareEphemeralVault"/>
+  <int value="483"
+      label="kLocUserDataAuthNoAuthSessionInPreparePersistentVault"/>
+  <int value="484" label="kLocUserDataAuthNonExistentInPreparePersistentVault"/>
+  <int value="485"
+      label="kLocUserDataAuthGetSessionFailedInPreparePersistentVault"/>
+  <int value="486" label="kLocUserDataAuthMountFailedInPreparePersistentVault"/>
+  <int value="487" label="kLocUserDataAuthNoAuthSessionInAddAuthFactor"/>
+  <int value="490" label="kLocUSSStorageReadFailedInLoadPersisted"/>
+  <int value="498" label="kLocUSSDeserializeFailedInGetContainerFromFB"/>
+  <int value="513" label="kLocUSSDecryptFailedInUnwrapMKFromBlocks"/>
+  <int value="518" label="kLocUSSDeserializeFailedInFromEncPayload"/>
+  <int value="520" label="kLocUSSGetFromFBFailedInFromEncContainerWithWK"/>
+  <int value="521" label="kLocUSSUnwrapMKFailedInFromEncContainerWithWK"/>
+  <int value="522" label="kLocUSSFromPayloadFailedInFromEncContainerWithWK"/>
+  <int value="527" label="kLocUSSDuplicateWrappingInAddWrappedMainKey"/>
+  <int value="532" label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="548"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt"/>
+  <int value="553" label="kLocLECredManPinWeaverFailedInCheckSecret"/>
+  <int value="555" label="kLocUserDataAuthTPMNotReadyInInitChalRespAuth"/>
+  <int value="560"
+      label="kLocUserDataAuthInitFailedInInitAuthBlockUtilChalResp"/>
+  <int value="572"
+      label="kLocUserDataAuthAccountNotFoundInContinueMountWithCred"/>
+  <int value="575"
+      label="kLocUserDataAuthPublicMountPointBusyInContinueMountWithCred"/>
+  <int value="578"
+      label="kLocUserDataAuthCredVerifyFailedInContinueMountWithCred"/>
+  <int value="579" label="kLocUserDataAuthMountFailedInContinueMountWithCred"/>
+  <int value="580" label="kLocUserDataAuthInitChalRespFailedInAddCredentials"/>
+  <int value="581" label="kLocUserDataAuthRemoveAllMountsFailedInUnmount"/>
+  <int value="584" label="kLocUserDataAuthUserNonexistentInListKeys"/>
+  <int value="586" label="kLocUserDataAuthNoIDInRemove"/>
+  <int value="589" label="kLocUserDataAuthUserActiveInRemove"/>
+  <int value="590" label="kLocUserDataAuthRemoveFailedInRemove"/>
+  <int value="591" label="kLocPinWeaverAuthBlockCheckCredLockedInDerive"/>
+  <int value="596" label="kLocAuthBlockUtilNoAuthBlockInPrepareForRemoval"/>
+  <int value="601" label="kLocUserDataAuthSessionNotFoundInRemoveAuthFactor"/>
+  <int value="602" label="kLocAuthSessionFactorNotFoundInRemoveAuthFactor"/>
+  <int value="604" label="kLocAuthSessionRemoveFactorFailedInRemoveAuthFactor"/>
+  <int value="605" label="kLocAuthFactorPrepareForRemovalFailed"/>
+  <int value="608"
+      label="kLocAuthFactorManagerPrepareForRemovalFailedInRemove"/>
+  <int value="610" label="kLocAuthSessionRemoveVKFailedInRemoveAuthFactor"/>
+  <int value="611"
+      label="kLocAuthSessionRemoveMainKeyFailedInRemoveSecretFromUss"/>
+  <int value="614" label="kLocAuthSessionInvalidBlockTypeInAddAuthFactor"/>
+  <int value="616" label="kLocAuthSessionCreateFailedInPersistToUSS"/>
+  <int value="620"
+      label="kLocAuthFactorManagerPrepareForRemovalFailedInUpdate"/>
+  <int value="623" label="kLocAuthSessionDeriveFailedInLoadUSS"/>
+  <int value="626" label="kLocChalCredDecryptUnsealingResponseNoChallenge"/>
+  <int value="628" label="kLocUserDataAuthHwsecNotReadyInInitChalRespAuth"/>
+  <int value="629" label="kLocUserDataAuthUserNonexistentInListAuthFactors"/>
+  <int value="630" label="kLocUserDataAuthNoAuthSessionInUpdateAuthFactor"/>
+  <int value="634" label="kLocAuthSessionFactorNotFoundInUpdateAuthFactor"/>
+  <int value="639" label="kLocAuthSessionInvalidBlockTypeInUpdateAuthFactor"/>
+  <int value="640" label="kLocAuthSessionAddVaultKeysetFailedinAddAuthFactor"/>
+  <int value="642" label="kLocAuthSessionCreateFailedInUpdateViaUSS"/>
+  <int value="644" label="kLocAuthSessionRemoveFromUSSFailedInUpdateViaUSS"/>
+  <int value="647" label="kLocAuthSessionPersistFactorFailedInUpdateViaUSS"/>
+  <int value="649" label="kLocAuthSessionAddToUssFailedInPersistToUSS"/>
+  <int value="653"
+      label="kLocUserDataAuthOtherSessionActiveInPrepareEphemeralVault"/>
+  <int value="655"
+      label="kLocUserDataAuthNoKeyChallengeServiceInAddAuthFactor"/>
+  <int value="657" label="kLocNoWrappedSeedInAuthInputForAdd"/>
+  <int value="661" label="kLocCreateFailedInAuthInputForAuth"/>
+  <int value="662" label="kLocCreateFailedInAuthInputForAdd"/>
+  <int value="663" label="kLocNoVkInAuthInputForAdd"/>
+  <int value="665" label="kLocVerifierAlreadySetInAddFactorForEphemeral"/>
+  <int value="666" label="kLocVerifierSettingErrorInAddFactorForEphemeral"/>
+  <int value="668" label="kLocUserDataAuthUserInactiveInResetAppContainer"/>
+  <int value="669" label="kLocUserDataAuthUserFailedResetAppContainer"/>
+  <int value="672" label="kLocAuthSessionMismatchedAuthTypes"/>
+  <int value="692"
+      label="kLocAuthSessionRemoveAuthFactorViaUserSecretStashFailed"/>
+  <int value="696" label="kLocRevocationInsertCredentialFailedInCreate"/>
+  <int value="701" label="kLocRevocationCheckCredentialFailedInDerive"/>
+  <int value="711" label="kLocAuthSessionPrepareWebAuthnSecretNoUserSession"/>
+  <int value="712" label="kLocFpServiceStartSessionFailure"/>
+  <int value="717" label="kLocFpServiceStartConcurrentSession"/>
+  <int value="723" label="kLocAuthBlockUtilNoTpmInGetAuthBlockWithType"/>
+  <int value="1502" label="kLocLECredManInvalidLESecretInConvertTpmError"/>
+  <int value="1504" label="kLocLECredManTooManyAttemptsInConvertTpmError"/>
+  <int value="1505" label="kLocLECredManPCRNotMatchInConvertTpmError"/>
+  <int value="1506" label="kLocLECredManHashTreeInConvertTpmError"/>
+  <int value="2103" label="kLocScryptVerifierVerifySecretMismatch"/>
+  <int value="2307" label="kLocSmartCardVerifierCannotVerify"/>
+  <int value="2310" label="kLocAuthSessionManagerAuthSessionNotFound"/>
+  <int value="2311" label="kLocPinWeaverAuthBlockCheckCredTPMLockedInDerive"/>
+  <int value="2504" label="kLocUpdateAuthInputNoWrappedSeedInVaultKeyset"/>
+  <int value="2701"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported"/>
+  <int value="2702"
+      label="kLocTpmBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2703"
+      label="kLocTpmBoundToPcrAuthBlockCannotUnsealWithUserAuthInIsSupported"/>
+  <int value="2705"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported"/>
+  <int value="2706"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2709" label="kLocChalCredAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2710" label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported"/>
+  <int value="2711" label="kLocTpmEccAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2714" label="kLocRecoveryAuthBlockHwsecReadyErrorInIsSupported"/>
+  <int value="2715" label="kLocRecoveryAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2717" label="kLocAuthBlockUtilNoSupportedInGetAuthBlockWithType"/>
+  <int value="2719"
+      label="kLocAuthBlockUtilNotSupportedInGetAuthBlockWithType"/>
+  <int value="2720"
+      label="kLocAuthBlockUtilNotSupportedInGetAsyncAuthBlockWithType"/>
+  <int value="2723" label="kLocPinWeaverAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="3390" label="kLocLECredManUnSyncedTreeInRemoveCred"/>
+  <int value="3508" label="kLocAuthSessionUpdateKeysetFailedInUpdateWithUSS"/>
+  <int value="3521"
+      label="kLocAuthSessionAuthInputParseFailed3InAuthAuthFactor"/>
+  <int value="65537" label="TPM_E_AUTHFAIL"/>
+  <int value="65545" label="TPM_E_FAIL"/>
+  <int value="65559" label="TPM_E_SIZE"/>
+  <int value="65565" label="TPM_E_AUTH2FAIL"/>
+  <int value="65569" label="TPM_E_DECRYPT_ERROR"/>
+  <int value="65570" label="TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="65574" label="TPM_E_INVALID_POSTINIT"/>
+  <int value="65667" label="TPM_RC_HASH"/>
+  <int value="65668" label="TPM_RC_VALUE"/>
+  <int value="65674" label="TPM_RC_TYPE"/>
+  <int value="65682" label="TPM_RC_SCHEME"/>
+  <int value="65685" label="TPM_RC_SIZE"/>
+  <int value="65686" label="TPM_RC_SYMMETRIC"/>
+  <int value="65690" label="TPM_RC_INSUFFICIENT"/>
+  <int value="65692" label="TPM_RC_KEY"/>
+  <int value="65695" label="TPM_RC_INTEGRITY"/>
+  <int value="65703" label="TPM_RC_ECC_POINT"/>
+  <int value="65792" label="TPM_RC_INITIALIZE"/>
+  <int value="65793" label="TPM_RC_FAILURE"/>
+  <int value="65839" label="TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="65858" label="TPM_RC_COMMAND_SIZE"/>
+  <int value="65859" label="TPM_RC_COMMAND_CODE"/>
+  <int value="65876" label="TPM_RC_NO_RESULT"/>
+  <int value="65877" label="TPM_RC_SENSITIVE"/>
+  <int value="65923" label="Handle 1: TPM_RC_HASH"/>
+  <int value="65929" label="Handle 1: TPM_RC_MODE"/>
+  <int value="65930" label="Handle 1: TPM_RC_TYPE"/>
+  <int value="65931" label="Handle 1: TPM_RC_HANDLE"/>
+  <int value="65941" label="Handle 1: TPM_RC_SIZE"/>
+  <int value="65942" label="Handle 1: TPM_RC_SYMMETRIC"/>
+  <int value="66015" label="Parameter 1: TPM_RC_INTEGRITY"/>
+  <int value="67587" label="TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="67842" label="TPM_RC_OBJECT_MEMORY"/>
+  <int value="67843" label="TPM_RC_SESSION_MEMORY"/>
+  <int value="67856" label="TPM_RC_REFERENCE_H0"/>
+  <int value="67864" label="TPM_RC_REFERENCE_S0"/>
+  <int value="67874" label="TPM_RC_RETRY"/>
+  <int value="67990" label="Session 1: TPM_RC_SYMMETRIC"/>
+  <int value="67997" label="Session 1: TPM_RC_POLICY_FAIL"/>
+  <int value="68002" label="Session 1: TPM_RC_BAD_AUTH"/>
+  <int value="69767" label="TDDL: TDDL_E_IOERROR"/>
+  <int value="73930" label="TCS: TCS_E_KM_LOADFAILED"/>
+  <int value="94209" label="TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="94212" label="TRUNKS_RC_WRITE_ERROR"/>
+  <int value="97443" label="Hashed Error 0x00a3"/>
+  <int value="97466" label="Hashed Error 0x00ba"/>
+  <int value="97573" label="Hashed Error 0x0125"/>
+  <int value="97613" label="Hashed Error 0x014d"/>
+  <int value="97622" label="Hashed Error 0x0156"/>
+  <int value="98147" label="Hashed Error 0x0363"/>
+  <int value="98273" label="Hashed Error 0x03e1"/>
+  <int value="98290" label="Hashed Error 0x03f2"/>
+  <int value="102401" label="SAPI_RC_INVALID_SESSIONS"/>
+  <int value="102404" label="SAPI_RC_BAD_PARAMETER"/>
+  <int value="102408" label="SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="102409" label="SAPI_RC_BAD_SIZE"/>
+  <int value="102416" label="SAPI_RC_NO_CONNECTION"/>
+  <int value="110731" label="Resource Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="110741" label="Resource Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="110743" label="Resource Manager: Handle 0: TPM_RC_TAG"/>
+  <int value="110746" label="Resource Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="131071" label="Unknown Error 0xffff"/>
+</enum>
+
+<enum name="CryptohomeErrorLocationWithTPMError">
+<!--
+  This enum is intended to be populated automatically by
+  platform2/cryptohome/error/tool/location_db.py. It populates all values
+  found in the cryptohome code base.
+
+  It is allowed to manually add <int> error location to this file, and the
+  added error location will continue to be updated when the script runs the
+  next time. However, the label, and all changes to the label field may be
+  overwritten by the tool. Furthermore, removal of <int> may be added back
+  if that bucket is still observed in the field.
+
+  The labels are the composites of Cryptohome Error Location enum defined in
+  platform2/cryptohome/error/locations.h
+  and respective TPM error code.
+  -->
+
+  <int value="0" label="Success"/>
+  <int value="6553600" label="kLocUserSessionMountEphemeralFailed"/>
+  <int value="8155140"
+      label="kLocChalCredDecryptCreateUnsealingSessionFailed -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="8159075"
+      label="kLocChalCredDecryptCreateUnsealingSessionFailed - Hashed Error
+             0x0363"/>
+  <int value="9109504"
+      label="kLocTpmNotBoundToPcrAuthBlockNoCryptohomeKeyInCreate"/>
+  <int value="9240735"
+      label="kLocTpmNotBoundToPcrAuthBlockEncryptFailedInCreate -
+             TPM_RC_INTEGRITY"/>
+  <int value="9240832"
+      label="kLocTpmNotBoundToPcrAuthBlockEncryptFailedInCreate -
+             TPM_RC_INITIALIZE"/>
+  <int value="9269252"
+      label="kLocTpmNotBoundToPcrAuthBlockEncryptFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="9437193"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - TPM_E_FAIL"/>
+  <int value="9437217"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_E_DECRYPT_ERROR"/>
+  <int value="9437316"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_VALUE"/>
+  <int value="9437343"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="9437440"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="9437441"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_FAILURE"/>
+  <int value="9437506"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="9439512"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_REFERENCE_S0"/>
+  <int value="9439650"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="9441415"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="9445578"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - TCS:
+             TCS_E_KM_LOADFAILED"/>
+  <int value="9465860"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="9474049"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             SAPI_RC_INVALID_SESSIONS"/>
+  <int value="9482379"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="9502719"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - Unknown
+             Error 0xffff"/>
+  <int value="12845195"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - TPM_RC_HANDLE"/>
+  <int value="12845218"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash -
+             TPM_RC_BAD_AUTH"/>
+  <int value="12877142"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - Hashed Error
+             0x0156"/>
+  <int value="12910592" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
+  <int value="13107200"
+      label="kLocTpmAuthBlockUtilsNoCryptohomeKeyInCheckReadiness"/>
+  <int value="13631511"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate - TPM_E_SIZE"/>
+  <int value="13631522"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="13631526"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_INVALID_POSTINIT"/>
+  <int value="13633539"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="13635719"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="13660164"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="13697047"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_SIZE"/>
+  <int value="13697058"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="13697062"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_INVALID_POSTINIT"/>
+  <int value="13701255"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="14483588"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - TPM_RC_VALUE"/>
+  <int value="14483594"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - TPM_RC_TYPE"/>
+  <int value="14483605"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - TPM_RC_SIZE"/>
+  <int value="14483610"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="14483615"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="14483712"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="14483778"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="14483797"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_SENSITIVE"/>
+  <int value="14483849"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - Handle 1:
+             TPM_RC_MODE"/>
+  <int value="14485762"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_OBJECT_MEMORY"/>
+  <int value="14485776"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="14485794"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - TPM_RC_RETRY"/>
+  <int value="14512132"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="14520328"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="14520336"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="14528651"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="14528661"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="14528663"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_TAG"/>
+  <int value="14528666"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="14548993"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_AUTHFAIL"/>
+  <int value="14549001"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_FAIL"/>
+  <int value="14549015"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_SIZE"/>
+  <int value="14549021"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_AUTH2FAIL"/>
+  <int value="14549025"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_DECRYPT_ERROR"/>
+  <int value="14549026"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="14549030"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_INVALID_POSTINIT"/>
+  <int value="14549123"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_RC_HASH"/>
+  <int value="14549124"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_RC_VALUE"/>
+  <int value="14549141"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_RC_SIZE"/>
+  <int value="14549151"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="14549248"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="14549314"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="14551043"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="14551299"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="14551312"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="14551320"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_REFERENCE_S0"/>
+  <int value="14551330"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_RC_RETRY"/>
+  <int value="14551453"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Session 1:
+             TPM_RC_POLICY_FAIL"/>
+  <int value="14551458"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="14553223"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="14577665"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="14577668"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="14585864"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="14585872"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="14594187"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="14594197"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="14594202"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="14614527"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Unknown Error
+             0xffff"/>
+  <int value="15466642"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_SCHEME"/>
+  <int value="15466650"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="15466652"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - TPM_RC_KEY"/>
+  <int value="15466655"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_INTEGRITY"/>
+  <int value="15466663"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_ECC_POINT"/>
+  <int value="15466752"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_INITIALIZE"/>
+  <int value="15466753"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_FAILURE"/>
+  <int value="15466799"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="15466818"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="15466836"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_NO_RESULT"/>
+  <int value="15468816"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="15495169"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="15495172"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15503361"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             SAPI_RC_INVALID_SESSIONS"/>
+  <int value="15503364"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             SAPI_RC_BAD_PARAMETER"/>
+  <int value="15503368"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="15503376"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="15511691"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="15728772"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_VALUE"/>
+  <int value="15728789"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_SIZE"/>
+  <int value="15728794"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_INSUFFICIENT"/>
+  <int value="15729027"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
+             TPM_RC_HASH"/>
+  <int value="15729033"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
+             TPM_RC_MODE"/>
+  <int value="15729045"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
+             TPM_RC_SIZE"/>
+  <int value="15729046"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
+             TPM_RC_SYMMETRIC"/>
+  <int value="15730947"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="15730960"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_REFERENCE_H0"/>
+  <int value="15730968"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_REFERENCE_S0"/>
+  <int value="15731094"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Session 1:
+             TPM_RC_SYMMETRIC"/>
+  <int value="15731106"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="15757313"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="15757316"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15765505"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             SAPI_RC_INVALID_SESSIONS"/>
+  <int value="15773845"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Resource Manager:
+             Handle 0: TPM_RC_SIZE"/>
+  <int value="15794308"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             TPM_RC_VALUE"/>
+  <int value="15794325"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate - TPM_RC_SIZE"/>
+  <int value="15794498"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="15796483"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="15796642"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="15822849"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="15822852"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15831056"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="15839386"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="15990784" label="kLocTpmEccAuthBlockLoadKeyFailedInDerive"/>
+  <int value="16187392" label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK"/>
+  <int value="16187523"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_HASH"/>
+  <int value="16187524"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_VALUE"/>
+  <int value="16187530"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_TYPE"/>
+  <int value="16187541"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SIZE"/>
+  <int value="16187546"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="16187551"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_INTEGRITY"/>
+  <int value="16187648"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_INITIALIZE"/>
+  <int value="16187649"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_FAILURE"/>
+  <int value="16187714"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16187715"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_COMMAND_CODE"/>
+  <int value="16187733"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SENSITIVE"/>
+  <int value="16187779"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
+             TPM_RC_HASH"/>
+  <int value="16187786"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
+             TPM_RC_TYPE"/>
+  <int value="16187787"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
+             TPM_RC_HANDLE"/>
+  <int value="16187797"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
+             TPM_RC_SIZE"/>
+  <int value="16187871"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Parameter 1:
+             TPM_RC_INTEGRITY"/>
+  <int value="16189698"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_OBJECT_MEMORY"/>
+  <int value="16189712"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="16189730"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_RETRY"/>
+  <int value="16216068"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16224264"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="16224272"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="16232587"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Resource Manager:
+             Handle 0: TPM_RC_HANDLE"/>
+  <int value="16232597"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Resource Manager:
+             Handle 0: TPM_RC_SIZE"/>
+  <int value="16232599"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Resource Manager:
+             Handle 0: TPM_RC_TAG"/>
+  <int value="16232602"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Resource Manager:
+             Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="16580740"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_VALUE"/>
+  <int value="16580757"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_SIZE"/>
+  <int value="16580762"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="16580764"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_KEY"/>
+  <int value="16580767"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_INTEGRITY"/>
+  <int value="16580775"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_ECC_POINT"/>
+  <int value="16580864"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_INITIALIZE"/>
+  <int value="16580911"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="16580930"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16580931"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_COMMAND_CODE"/>
+  <int value="16580948"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_NO_RESULT"/>
+  <int value="16582928"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="16583062"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Session 1:
+             TPM_RC_SYMMETRIC"/>
+  <int value="16583074"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="16609281"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="16609284"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16617473"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             SAPI_RC_INVALID_SESSIONS"/>
+  <int value="16617476"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             SAPI_RC_BAD_PARAMETER"/>
+  <int value="16617480"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="16617488"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="16625803"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="16625813"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="16625815"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_TAG"/>
+  <int value="16625818"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="16777347"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_HASH"/>
+  <int value="16777348"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_VALUE"/>
+  <int value="16777366"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_SYMMETRIC"/>
+  <int value="16777370"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="16777375"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_INTEGRITY"/>
+  <int value="16777472"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_INITIALIZE"/>
+  <int value="16777538"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16779523"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="16779536"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="16779544"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_REFERENCE_S0"/>
+  <int value="16779554"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - TPM_RC_RETRY"/>
+  <int value="16779677"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Session 1:
+             TPM_RC_POLICY_FAIL"/>
+  <int value="16779682"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="16805889"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="16805892"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16814088"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="16814096"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="16822411"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Resource Manager:
+             Handle 0: TPM_RC_HANDLE"/>
+  <int value="16822421"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Resource Manager:
+             Handle 0: TPM_RC_SIZE"/>
+  <int value="16822426"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Resource Manager:
+             Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="16842751"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Unknown Error
+             0xffff"/>
+  <int value="17563648" label="kLocLECredManInvalidTreeInInsertCred"/>
+  <int value="17760410"
+      label="kLocLECredManTpmFailedInInsertCred - TPM_RC_INSUFFICIENT"/>
+  <int value="17792293"
+      label="kLocLECredManTpmFailedInInsertCred - Hashed Error 0x0125"/>
+  <int value="17792993"
+      label="kLocLECredManTpmFailedInInsertCred - Hashed Error 0x03e1"/>
+  <int value="18022400" label="kLocLECredManRemoveCredFailedInRemoveCred"/>
+  <int value="18087936" label="kLocLECredManRemoveLabelFailedInRemoveCred"/>
+  <int value="18153472" label="kLocLECredManInvalidTreeInCheckSecret"/>
+  <int value="18219008" label="kLocLECredManInvalidMetadataInCheckSecret"/>
+  <int value="18481152" label="kLocLECredManNonexistentInRetrieveLabel"/>
+  <int value="19202048"
+      label="kLocUserDataAuthCreateFailedInCreatePersistentUser"/>
+  <int value="24576000"
+      label="kLocVaultKeysetKeysetDecryptFailedInUnwrapScrypt"/>
+  <int value="29818880" label="kLocUserSessionMountFailedInMountVault"/>
+  <int value="29949952" label="kLocUserSessionMountFailedInMountEphemeral"/>
+  <int value="31129600"
+      label="kLocUserDataAuthGuestAlreadyMountedInGetMountableUS"/>
+  <int value="31195136"
+      label="kLocUserDataAuthSessionAlreadyMountedInGetMountableUS"/>
+  <int value="31326208"
+      label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
+  <int value="32112640" label="kLocUSSStorageReadFailedInLoadPersisted"/>
+  <int value="33619968" label="kLocUSSDecryptFailedInUnwrapMKFromBlocks"/>
+  <int value="34537472" label="kLocUSSDuplicateWrappingInAddWrappedMainKey"/>
+  <int value="34865152"
+      label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="35913860"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_VALUE"/>
+  <int value="35913877"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_SIZE"/>
+  <int value="35913884"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_KEY"/>
+  <int value="35913887"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="35913984"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="35913985"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_FAILURE"/>
+  <int value="35914031"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="35914050"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="35914051"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_COMMAND_CODE"/>
+  <int value="35916048"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="35916194"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Session
+             1: TPM_RC_BAD_AUTH"/>
+  <int value="35942401"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="35942404"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="35950593"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             SAPI_RC_INVALID_SESSIONS"/>
+  <int value="35950596"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             SAPI_RC_BAD_PARAMETER"/>
+  <int value="35950608"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="35958923"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="35958933"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="35958938"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="36241562"
+      label="kLocLECredManPinWeaverFailedInCheckSecret - TPM_RC_INSUFFICIENT"/>
+  <int value="36278281"
+      label="kLocLECredManPinWeaverFailedInCheckSecret - SAPI_RC_BAD_SIZE"/>
+  <int value="38404096" label="kLocUserDataAuthNoIDInRemove"/>
+  <int value="38600704" label="kLocUserDataAuthUserActiveInRemove"/>
+  <int value="38666240" label="kLocUserDataAuthRemoveFailedInRemove"/>
+  <int value="39452672"
+      label="kLocAuthSessionFactorNotFoundInRemoveAuthFactor"/>
+  <int value="41222144"
+      label="kLocUserDataAuthUserNonexistentInListAuthFactors"/>
+  <int value="41549824"
+      label="kLocAuthSessionFactorNotFoundInUpdateAuthFactor"/>
+  <int value="42795008"
+      label="kLocUserDataAuthOtherSessionActiveInPrepareEphemeralVault"/>
+  <int value="43843584" label="kLocUserDataAuthUserFailedResetAppContainer"/>
+  <int value="44040192" label="kLocAuthSessionMismatchedAuthTypes"/>
+  <int value="46596096"
+      label="kLocAuthSessionPrepareWebAuthnSecretNoUserSession"/>
+  <int value="46989312" label="kLocFpServiceStartConcurrentSession"/>
+  <int value="98435072" label="kLocLECredManInvalidLESecretInConvertTpmError"/>
+  <int value="98566144" label="kLocLECredManTooManyAttemptsInConvertTpmError"/>
+  <int value="98697216" label="kLocLECredManHashTreeInConvertTpmError"/>
+  <int value="137822208" label="kLocScryptVerifierVerifySecretMismatch"/>
+  <int value="151388160" label="kLocAuthSessionManagerAuthSessionNotFound"/>
+  <int value="177044643"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
+             Error 0x00a3"/>
+  <int value="177044666"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
+             Error 0x00ba"/>
+  <int value="177044813"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
+             Error 0x014d"/>
+  <int value="177078272"
+      label="kLocTpmBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="177143808"
+      label="kLocTpmBoundToPcrAuthBlockCannotUnsealWithUserAuthInIsSupported"/>
+  <int value="177306810"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported -
+             Hashed Error 0x00ba"/>
+  <int value="177306957"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported -
+             Hashed Error 0x014d"/>
+  <int value="177307634"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported -
+             Hashed Error 0x03f2"/>
+  <int value="177340416"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="177634490"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x00ba"/>
+  <int value="177634637"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x014d"/>
+  <int value="177635314"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x03f2"/>
+  <int value="177896634"
+      label="kLocRecoveryAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x00ba"/>
+  <int value="178454528"
+      label="kLocPinWeaverAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="222167040" label="kLocLECredManUnSyncedTreeInRemoveCred"/>
+  <int value="2013331456" label="Unknown Loc 30721"/>
+</enum>
+
+<enum name="CryptohomeFingerprintScanResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Retry"/>
+  <int value="2" label="Lockout"/>
+  <int value="3" label="Fatal error"/>
+  <int value="4" label="Partial"/>
+  <int value="5" label="Insufficient"/>
+  <int value="6" label="Sensor dirty"/>
+  <int value="7" label="Too slow"/>
+  <int value="8" label="Too fast"/>
+  <int value="9" label="Immobile"/>
+  <int value="10" label="Enroll other"/>
+</enum>
+
+<enum name="CryptohomeLECredError">
+  <summary>
+    The result when a Low Entropy CheckCredential operation was performed.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid LE secret"/>
+  <int value="2" label="Invalid Reset Secret"/>
+  <int value="3" label="Too many attempts"/>
+  <int value="4" label="Hash tree error"/>
+  <int value="5" label="Invalid LE label"/>
+  <int value="6" label="No free LE label"/>
+  <int value="7" label="Invalid Metadata"/>
+  <int value="8" label="Unclassified Error"/>
+  <int value="9" label="LE Locked"/>
+</enum>
+
+<enum name="CryptohomeLEReplayError">
+  <summary>
+    The result when a Low Entropy LogReplay operation was performed.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid log entry type"/>
+  <int value="2" label="Individual operation error"/>
+  <int value="3" label="Hash mismatch after replay"/>
+  <int value="4" label="Failed to remove leaf inserted during replay"/>
+</enum>
+
+<enum name="CryptohomeLoginDiskCleanupProgress">
+  <int value="0" label="(unused)">Unused</int>
+  <int value="1" label="Whole User Profiles cleaned above target">
+    Successfully freed space above 1GB target by removing users.
+  </int>
+  <int value="2" label="Whole User Profiles cleaned">
+    Disk space was not above 1GB target, even after removing all possible users.
+  </int>
+  <int value="3" label="No unmounted cryptohomes">
+    There are no unmounted cryptohomes to clean.
+  </int>
+</enum>
+
+<enum name="CryptohomeOOPMountCleanupResult">
+  <summary>
+    The possible results of attempting an unmount/mount clean-up using the
+    out-of-process mount helper.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to poke helper"/>
+  <int value="2" label="Failed to wait for helper"/>
+  <int value="3" label="Failed to kill helper"/>
+</enum>
+
+<enum name="CryptohomeOOPMountOperationResult">
+  <summary>
+    The possible results of attempting a mount operation using the
+    out-of-process mount helper.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to start"/>
+  <int value="2" label="Failed to write request protobuf"/>
+  <int value="3" label="Helper process timed out"/>
+  <int value="4" label="Failed to read response protobuf"/>
+</enum>
+
+<enum name="CryptohomeTpmResults">
+  <int value="1" label="TPM Success"/>
+  <int value="2" label="TPM Error Authentication Fail"/>
+  <int value="3" label="TPM Error Bad Parameter"/>
+  <int value="4" label="TPM Error Bad Index"/>
+  <int value="5" label="TPM Error Audit Fail"/>
+  <int value="6" label="TPM Error Clear Disabled"/>
+  <int value="7" label="TPM Error TPM Deactivated"/>
+  <int value="8" label="TPM Error TPM Disabled"/>
+  <int value="9" label="TPM Error Failed"/>
+  <int value="10" label="TPM Error Bad Ordinal"/>
+  <int value="11" label="TPM Error Owner Install Disabled"/>
+  <int value="12" label="TPM Error Invalid KeyHandle"/>
+  <int value="13" label="TPM Error Key Not Found"/>
+  <int value="14" label="TPM Error Bad Encryption Scheme"/>
+  <int value="15" label="TPM Error Migration Authorization Fail"/>
+  <int value="16" label="TPM Error Invalid PCR Info"/>
+  <int value="17" label="TPM Error No Space To Load Key"/>
+  <int value="18" label="TPM Error No SRK"/>
+  <int value="19" label="TPM Error Invalid Encrypted Blob"/>
+  <int value="20" label="TPM Error Owner Already Set"/>
+  <int value="21" label="TPM Error Not Enough TPM Resources"/>
+  <int value="22" label="TPM Error Random String Too Short"/>
+  <int value="23" label="TPM Error TPM Out Of Space"/>
+  <int value="24" label="TPM Error Wrong PCR Value"/>
+  <int value="25" label="TPM Error Bad Parameter Size"/>
+  <int value="26" label="TPM Error No Sha1 Thread"/>
+  <int value="27" label="TPM Error Sha1 Error"/>
+  <int value="28" label="TPM Error TPM Self Test Failed"/>
+  <int value="29" label="TPM Error Second Authorization Failed"/>
+  <int value="30" label="TPM Error Bad Tag"/>
+  <int value="31" label="TPM Error IO Error"/>
+  <int value="32" label="TPM Error Encryption Error"/>
+  <int value="33" label="TPM Error Decryption Error"/>
+  <int value="34" label="TPM Error Invalid Authorization Handle"/>
+  <int value="35" label="TPM Error No Endorsement"/>
+  <int value="36" label="TPM Error Invalid Key Usage"/>
+  <int value="37" label="TPM Error Wrong Entity Type"/>
+  <int value="38" label="TPM Error Invalid Post Init Sequence"/>
+  <int value="39" label="TPM Error Invalid Signature Format"/>
+  <int value="40" label="TPM Error Bad Key Property"/>
+  <int value="41" label="TPM Error Bad Migration"/>
+  <int value="42" label="TPM Error Bad Scheme"/>
+  <int value="43" label="TPM Error Bad Data Size"/>
+  <int value="44" label="TPM Error Bad Mode Parameter"/>
+  <int value="45" label="TPM Error Bad Presence Value"/>
+  <int value="46" label="TPM Error Bad Version"/>
+  <int value="47" label="TPM Error Wrap Transport Not Allowed"/>
+  <int value="48" label="TPM Error Audit Fail Command Unsuccessful"/>
+  <int value="49" label="TPM Error Audit Fail Command Successful"/>
+  <int value="50" label="TPM Error PCR Register Not Resetable"/>
+  <int value="51" label="TPM Error PCR Register Reset Requires Locality"/>
+  <int value="52" label="TPM Error Bad Type Of Identity Blob"/>
+  <int value="53" label="TPM Error Bad Resource Type"/>
+  <int value="54" label="TPM Error Command Available Only In FIPS Mode"/>
+  <int value="55" label="TPM Error Invalid Family Id"/>
+  <int value="56" label="TPM Error No NvRam Permission"/>
+  <int value="57" label="TPM Error Signed Command Required"/>
+  <int value="58" label="TPM Error NvRam Key Not Supported"/>
+  <int value="59" label="TPM Error Authorization Conflict"/>
+  <int value="60" label="TPM Error NvRam Area Locked"/>
+  <int value="61" label="TPM Error Bad Locality"/>
+  <int value="62" label="TPM Error NvRam Area Read Only"/>
+  <int value="63" label="TPM Error NvRam Area No Write Protection"/>
+  <int value="64" label="TPM Error Family Count Mismatch"/>
+  <int value="65" label="TPM Error NvRam Area Write Locked"/>
+  <int value="66" label="TPM Error NvRam Area Bad Attributes"/>
+  <int value="67" label="TPM Error Invalid Structure"/>
+  <int value="68" label="TPM Error Key Under Owner Control"/>
+  <int value="69" label="TPM Error Bad Counter Handle"/>
+  <int value="70" label="TPM Error Not A Full Write"/>
+  <int value="71" label="TPM Error Context Gap"/>
+  <int value="72" label="TPM Error Max NvRam Writes"/>
+  <int value="73" label="TPM Error No Operator"/>
+  <int value="74" label="TPM Error Resource Missing"/>
+  <int value="75" label="TPM Error Delagte Locked"/>
+  <int value="76" label="TPM Error Delegate Family"/>
+  <int value="77" label="TPM Error Delegate Admin"/>
+  <int value="78" label="TPM Error Transport Not Exclusive"/>
+  <int value="79" label="TPM Error Owner Control"/>
+  <int value="80" label="TPM Error DAA Resources Not Available"/>
+  <int value="81" label="TPM Error DAA Input Data0"/>
+  <int value="82" label="TPM Error DAA Input Data1"/>
+  <int value="83" label="TPM Error DAA Issuer Settings"/>
+  <int value="84" label="TPM Error DAA TPM Settings"/>
+  <int value="85" label="TPM Error DAA Stage"/>
+  <int value="86" label="TPM Error DAA Issuer Validity"/>
+  <int value="87" label="TPM Error DAA Wrong W"/>
+  <int value="88" label="TPM Error Bad Handle"/>
+  <int value="89" label="TPM Error Bad Delegate"/>
+  <int value="90" label="TPM Error Bad Context Blob"/>
+  <int value="91" label="TPM Error Too Many Contexts"/>
+  <int value="92" label="TPM Error Migration Authority Signature Fail"/>
+  <int value="93" label="TPM Error Migration Destination Not Authenticated"/>
+  <int value="94" label="TPM Error Bad Migration Source"/>
+  <int value="95" label="TPM Error Bad Migration Authority"/>
+  <int value="96" label="TPM Error Permanent EK"/>
+  <int value="97" label="TPM Error CMK Ticket Bad Signature"/>
+  <int value="98" label="TPM Error No Context Space"/>
+  <int value="99" label="TPM Error TPM Busy Retry Later"/>
+  <int value="100" label="TPM Error Needs Self Test"/>
+  <int value="101" label="TPM Error Doing Self Test"/>
+  <int value="102" label="TPM Error Defend Lock Running"/>
+  <int value="103" label="TPM Error TPM Command Disabled"/>
+  <int value="104" label="TPM Error Unknown Error"/>
+  <int value="105" label="TDDL Error General Fail"/>
+  <int value="106" label="TDDL Error Bad Parameter"/>
+  <int value="107" label="TDDL Error Internal Software Error"/>
+  <int value="108" label="TDDL Error Not Implemented"/>
+  <int value="109" label="TDDL Error Key Not Found In Persistent Storage"/>
+  <int value="110" label="TDDL Error Key Already Registered"/>
+  <int value="111" label="TDDL Error Action Canceled By Request"/>
+  <int value="112" label="TDDL Error Timeout"/>
+  <int value="113" label="TDDL Error Out Of Memory"/>
+  <int value="114" label="TDDL Error Unexpected TPM Output"/>
+  <int value="115" label="TDDL Error Communication Failure"/>
+  <int value="116" label="TDDL Error TPM Unsupported Feature"/>
+  <int value="117" label="TDDL Error Connection To TPM Device Failed"/>
+  <int value="118" label="TDDL Error Device Already Opened"/>
+  <int value="119" label="TDDL Error Bad Tag"/>
+  <int value="120" label="TDDL Error Receive Buffer Too Small"/>
+  <int value="121" label="TDDL Error Command Already Completed"/>
+  <int value="122" label="TDDL Error Command Aborted"/>
+  <int value="123" label="TDDL Error Device Driver Already Closed"/>
+  <int value="124" label="TDDL Error IO Error"/>
+  <int value="125" label="TDDL Error Unknown Error"/>
+  <int value="126" label="TCS Error General Fail"/>
+  <int value="127" label="TCS Error Bad Parameter"/>
+  <int value="128" label="TCS Error Internal Software Error"/>
+  <int value="129" label="TCS Error Not Implemented"/>
+  <int value="130" label="TCS Error Key Not Found In Persistent Storage"/>
+  <int value="131" label="TCS Error Key Already Registered"/>
+  <int value="132" label="TCS Error Action Canceled By Request"/>
+  <int value="133" label="TCS Error Timeout"/>
+  <int value="134" label="TCS Error Out Of Memory"/>
+  <int value="135" label="TCS Error Unexpected TPM Output"/>
+  <int value="136" label="TCS Error Communication Failure"/>
+  <int value="137" label="TCS Error TPM Unsupported Feature"/>
+  <int value="138" label="TCS Error Key Mismatch"/>
+  <int value="139" label="TCS Error Key Load Fail"/>
+  <int value="140" label="TCS Error Key Context Reload Fail"/>
+  <int value="141" label="TCS Error Bad Memory Index"/>
+  <int value="142" label="TCS Error Bad Context Handle"/>
+  <int value="143" label="TCS Error Bad Key Handle"/>
+  <int value="144" label="TCS Error Bad Authorization Handle"/>
+  <int value="145" label="TCS Error Authorization Session Closed By Tpm"/>
+  <int value="146" label="TCS Error Invalid Key"/>
+  <int value="147" label="TCS Error Unknown Error"/>
+  <int value="148" label="TSS Error General Fail"/>
+  <int value="149" label="TSS Error Bad Parameter"/>
+  <int value="150" label="TSS Error Internal Software Error"/>
+  <int value="151" label="TSS Error Not Implemented"/>
+  <int value="152" label="TSS Error Key Not Found In Persistent Storage"/>
+  <int value="153" label="TSS Error Key Already Registered"/>
+  <int value="154" label="TSS Error Action Canceled By Request"/>
+  <int value="155" label="TSS Error Timeout"/>
+  <int value="156" label="TSS Error Out Of Memory"/>
+  <int value="157" label="TSS Error Unexpected TPM Output"/>
+  <int value="158" label="TSS Error Communication Failure"/>
+  <int value="159" label="TSS Error TPM Unsupported Feature"/>
+  <int value="160" label="TSS Error Bad Object Type"/>
+  <int value="161" label="TSS Error Bad Object Init Flag"/>
+  <int value="162" label="TSS Error Invalid Handle"/>
+  <int value="163" label="TSS Error No Core Service Connection"/>
+  <int value="164" label="TSS Error Core Service Connection Fail"/>
+  <int value="165" label="TSS Error Core Service Connection Broken"/>
+  <int value="166" label="TSS Error Invalid Hash Algorithm"/>
+  <int value="167" label="TSS Error Bad Hash Length"/>
+  <int value="168" label="TSS Error Hash Object Has No Value"/>
+  <int value="169" label="TSS Error Silent Context Needs User Input"/>
+  <int value="170" label="TSS Error Bad Attribute Flag"/>
+  <int value="171" label="TSS Error Bad Attribute Sub Flag"/>
+  <int value="172" label="TSS Error Bad Attribute Data"/>
+  <int value="173" label="TSS Error No PCR Registers Set"/>
+  <int value="174" label="TSS Error Key Not Loaded"/>
+  <int value="175" label="TSS Error Key Not Set"/>
+  <int value="176" label="TSS Error Validation Failed"/>
+  <int value="177" label="TSS Error TSP Authorization Required"/>
+  <int value="178" label="TSS Error TSP Multiple Authorization Required"/>
+  <int value="179" label="TSS Error TSP Authorization Failed"/>
+  <int value="180" label="TSS Error TSP Multiple Authorization Failed"/>
+  <int value="181" label="TSS Error Key Has No Migration Policy"/>
+  <int value="182" label="TSS Error Policy Has No Secret"/>
+  <int value="183" label="TSS Error Bad Object Access"/>
+  <int value="184" label="TSS Error Bad Encryption Scheme"/>
+  <int value="185" label="TSS Error Bad Signature Scheme"/>
+  <int value="186" label="TSS Error Encrypted Object Bad Length"/>
+  <int value="187" label="TSS Error Encrypted Object Has No Data"/>
+  <int value="188" label="TSS Error Encrypted Object Bad Type"/>
+  <int value="189" label="TSS Error Bad Key Usage"/>
+  <int value="190" label="TSS Error Verification Failed"/>
+  <int value="191" label="TSS Error No Hash Algorithm Id"/>
+  <int value="192" label="TSS Error NvRam Area Already Exists"/>
+  <int value="193" label="TSS Error NvRam Area Doesn't Exist"/>
+  <int value="194" label="TSS Error Unknown Error"/>
+</enum>
+
+<enum name="HomedirEncryptionType">
+  <int value="1" label="Ecryptfs"/>
+  <int value="2" label="Ext4 Dir Encryption"/>
+  <int value="3" label="Dmcrypt"/>
+</enum>
+
+<enum name="MigrationUIFirstScreen">
+  <int value="0" label="Ready"/>
+  <int value="1" label="Resume"/>
+  <int value="2" label="LowStorage"/>
+  <int value="3" label="ArcKiosk"/>
+  <int value="4" label="StartAutomatically"/>
+  <int value="5" label="ResumeMinimal"/>
+  <int value="6" label="StartAutomaticallyMinimal"/>
+</enum>
+
+<enum name="MigrationUIMigrationResult">
+  <int value="0" label="Success in new migration"/>
+  <int value="1" label="Success in resumed migration"/>
+  <int value="2" label="General failure in new migration"/>
+  <int value="3" label="General failure in resumed migration"/>
+  <int value="4" label="Request failure in new migration"/>
+  <int value="5" label="Request failure in resumed migration"/>
+  <int value="6" label="Mount failure in new migration"/>
+  <int value="7" label="Mount failure in resumed migration"/>
+  <int value="8" label="Success in arc kiosk migration"/>
+  <int value="9" label="General failure in arc kiosk migration"/>
+  <int value="10" label="Request failure in arc kiosk migration"/>
+  <int value="11" label="Mount failure in arc kiosk migration"/>
+</enum>
+
+<enum name="MigrationUIRemoveCryptohomeResult">
+  <int value="0" label="Success in new migration"/>
+  <int value="1" label="Success in resumed migration"/>
+  <int value="2" label="Failure in new migration"/>
+  <int value="3" label="Failure in resumed migration"/>
+  <int value="4" label="Success in arc kiosk migration"/>
+  <int value="5" label="Failure in arc kiosk migration"/>
+</enum>
+
+<enum name="MigrationUIScreen">
+  <int value="0" label="Initial"/>
+  <int value="1" label="Ready"/>
+  <int value="2" label="Migrating"/>
+  <int value="3" label="Migration failed"/>
+  <int value="4" label="Not enough storage"/>
+  <int value="5" label="Migrating minimal"/>
+</enum>
+
+<enum name="MigrationUIUserChoice">
+  <int value="0" label="Update"/>
+  <int value="1" label="Skip"/>
+  <int value="2" label="Restart on migration failure"/>
+  <int value="3" label="Restart on low storage"/>
+  <int value="4" label="Report an issue"/>
+</enum>
+
+<enum name="VkToUssMigrationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed persisting to USS"/>
+  <int value="2" label="Failed constructing input"/>
+  <int value="3" label="Failed creating USS"/>
+  <int value="4" label="Failed creating USS migration secret"/>
+  <int value="5" label="Failed decrypting USS"/>
+  <int value="6" label="Failed recording migrated tag in the VK"/>
+</enum>
+
+<enum name="WrappingKeyDerivation">
+  <int value="0" label="Backed by scrypt"/>
+  <int value="1" label="Backed by LECredential"/>
+  <int value="2" label="Backed by Signature Challenge"/>
+  <int value="3" label="Backed by TPM/GSC bound to PCR"/>
+  <int value="4" label="Backed by TPM/GSC not bound to PCR"/>
+  <int value="5" label="(Deprecated) Backed by scrypt and TPM/GSC"/>
+  <int value="6" label="Recovery key, backed by TPM/GSC and Mediator Service"/>
+  <int value="7" label="Backed by GSC with elliptic-curve algorithm"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
