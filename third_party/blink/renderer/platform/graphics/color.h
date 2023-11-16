@@ -372,7 +372,8 @@ class PLATFORM_EXPORT Color {
   Color::ColorSpace GetColorInterpolationSpace() const;
 
   ColorSpace GetColorSpace() const { return color_space_; }
-  void ConvertToColorSpace(ColorSpace destination_color_space);
+  void ConvertToColorSpace(ColorSpace destination_color_space,
+                           bool resolve_missing_components = true);
 
   // Colors can parse calc(NaN) and calc(Infinity). At computed value time this
   // function is called which resolves all NaNs to zero and +/-infinities to
@@ -388,6 +389,7 @@ class PLATFORM_EXPORT Color {
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ConvertToColorSpace);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, toSkColor4fValidation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ExportAsXYZD50Floats);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, ResolveMissingComponents);
 
  private:
   String SerializeLegacyColorAsCSSColor() const;
@@ -421,6 +423,7 @@ class PLATFORM_EXPORT Color {
 
   float PremultiplyColor();
   void UnpremultiplyColor();
+  void ResolveMissingComponents();
 
   // HueInterpolation assumes value1 and value2 are degrees, it will interpolate
   // value1 and value2 as per CSS Color 4 spec.

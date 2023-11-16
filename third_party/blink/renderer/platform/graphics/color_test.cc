@@ -181,7 +181,7 @@ TEST(BlinkColor, ColorInterpolation) {
     Color expected;
   };
 
-  // Tests extracted from the CSS Color 4 spec.
+  // Tests extracted from the CSS Color 4 spec, among others.
   // https://csswg.sesse.net/css-color-4/#interpolation-alpha
   ColorsTest colors_test[] = {
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.12f,
@@ -190,6 +190,20 @@ TEST(BlinkColor, ColorInterpolation) {
                              1.0f),
        Color::ColorSpace::kSRGB, absl::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.19f, 0.81f,
+                             1.0f)},
+
+      {Color::FromColorSpace(Color::ColorSpace::kHSL, absl::nullopt, 0.5f, 0.5f,
+                             1.0f),
+       Color::FromColorSpace(Color::ColorSpace::kHSL, 180.0f, 0.1f, 0.1f, 1.0f),
+       Color::ColorSpace::kHSL, absl::nullopt, 0.5f,
+       Color::FromColorSpace(Color::ColorSpace::kHSL, 180.0f, 0.3f, 0.3f,
+                             1.0f)},
+
+      {Color::FromColorSpace(Color::ColorSpace::kHWB, absl::nullopt, 0.5f, 0.5f,
+                             1.0f),
+       Color::FromColorSpace(Color::ColorSpace::kHWB, 180.0f, 0.1f, 0.1f, 1.0f),
+       Color::ColorSpace::kHWB, absl::nullopt, 0.5f,
+       Color::FromColorSpace(Color::ColorSpace::kHWB, 180.0f, 0.3f, 0.3f,
                              1.0f)},
 
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f, absl::nullopt,
@@ -749,6 +763,51 @@ TEST(BlinkColor, ConvertToColorSpace) {
         << test.expected_color.param0_ << " " << test.expected_color.param1_
         << " " << test.expected_color.param2_ << " "
         << test.expected_color.alpha_;
+  }
+}
+TEST(BlinkColor, ResolveMissingComponents) {
+  struct ResolveMissingComponentsTest {
+    Color input_color;
+    Color expected_color;
+  };
+
+  ResolveMissingComponentsTest tests[] = {
+      {
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.2f,
+                                0.3f, 0.4f),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.0f, 0.2f, 0.3f,
+                                0.4f),
+      },
+      {
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, absl::nullopt,
+                                0.3f, 0.4f),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.0f, 0.3f,
+                                0.4f),
+      },
+      {
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f,
+                                absl::nullopt, 0.4f),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.0f,
+                                0.4f),
+      },
+      {
+          // Alpha remains unresolved
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.3f,
+                                absl::nullopt),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.3f,
+                                absl::nullopt),
+      },
+      {
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt,
+                                absl::nullopt, absl::nullopt, absl::nullopt),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.0f, 0.0f, 0.0f,
+                                absl::nullopt),
+      },
+  };
+
+  for (auto& test : tests) {
+    test.input_color.ResolveMissingComponents();
+    EXPECT_EQ(test.input_color, test.expected_color);
   }
 }
 }  // namespace blink
