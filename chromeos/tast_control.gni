@@ -137,6 +137,10 @@ tast_disabled_tests_from_chrome_all = [
   "login.AuthError",
   "login.Offline",
 
+  # b/311116565
+  "wmp.DesksTemplatesBasic",
+  "wmp.DesksTemplatesLaunch",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
