@@ -252,14 +252,6 @@ BASE_FEATURE(kAutofillUseTwoDotsForLastFourDigits,
              "AutofillUseTwoDotsForLastFourDigits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When this and the above `kAutofillEnablePaymentsMandatoryReauth` are both
-// enabled, in use-cases where we would not have triggered any user-visible
-// authentication to autofill payment methods, we will trigger a device
-// authentication on Bling.
-BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling,
-             "AutofillEnablePaymentsMandatoryReauthOnBling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When this is enabled, virtual card enrollment and retrieval will be enabled
 // on Bling.
 BASE_FEATURE(kAutofillEnableVirtualCards,

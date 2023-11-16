@@ -630,11 +630,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-enable-payments-mandatory-reauth-on-bling",
-    "owners": [ "siyua@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "autofill-enable-ranking-formula-address-profiles",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
     "expiry_milestone": 125

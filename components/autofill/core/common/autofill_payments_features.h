@@ -52,7 +52,6 @@ BASE_DECLARE_FEATURE(kAutofillUpstream);
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
-BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
 #endif
 

@@ -1490,13 +1490,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption,
                                     kTabResumptionVariations,
                                     "TabResumption")},
-    {"autofill-enable-payments-mandatory-reauth-on-bling",
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthOnBlingName,
-     flag_descriptions::
-         kAutofillEnablePaymentsMandatoryReauthOnBlingDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentsMandatoryReauthOnBling)},
     {"bottom-omnibox-default-setting",
      flag_descriptions::kBottomOmniboxDefaultSettingName,
      flag_descriptions::kBottomOmniboxDefaultSettingDescription,
