@@ -1243,6 +1243,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the time for a profile to be fully downloaded from a provided
     activation code.
+
+    This histogram was updated on 11/16/23 to only start counting how long it
+    takes to install a profile until AFTER we inhibit the cellular device.
   </summary>
 </histogram>
 

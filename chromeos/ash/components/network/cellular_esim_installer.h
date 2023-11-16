@@ -166,6 +166,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const base::Value::Dict& new_shill_properties,
       bool is_initial_install,
       cellular_setup::mojom::ProfileInstallMethod install_method,
+      const base::Time installation_start_time,
       HermesResponseStatus status,
       dbus::DBusResult dbus_result,
       const dbus::ObjectPath* object_path);

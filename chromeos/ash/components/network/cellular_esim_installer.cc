@@ -33,28 +33,6 @@ using ash::cellular_setup::mojom::ProfileInstallMethod;
 namespace ash {
 namespace {
 
-// Measures the time from which this function is called to when |callback|
-// is expected to run. The measured time difference should capture the time it
-// took for a profile to be fully downloaded from a provided activation code.
-CellularESimInstaller::InstallProfileFromActivationCodeCallback
-CreateTimedInstallProfileCallback(
-    CellularESimInstaller::InstallProfileFromActivationCodeCallback callback) {
-  return base::BindOnce(
-      [](CellularESimInstaller::InstallProfileFromActivationCodeCallback
-             callback,
-         base::Time installation_start_time, HermesResponseStatus result,
-         absl::optional<dbus::ObjectPath> esim_profile_path,
-         absl::optional<std::string> service_path) -> void {
-        std::move(callback).Run(result, esim_profile_path, service_path);
-        if (result != HermesResponseStatus::kSuccess)
-          return;
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
-            base::Time::Now() - installation_start_time);
-      },
-      std::move(callback), base::Time::Now());
-}
-
 void AppendRequiredCellularProperties(
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
@@ -223,8 +201,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
           &CellularESimInstaller::PerformInstallProfileFromActivationCode,
           weak_ptr_factory_.GetWeakPtr(), activation_code, confirmation_code,
           euicc_path, std::move(new_shill_properties), is_initial_install,
-          install_method,
-          CreateTimedInstallProfileCallback(std::move(callback))));
+          install_method, std::move(callback)));
 }
 
 void CellularESimInstaller::PerformInstallProfileFromActivationCode(
@@ -269,7 +246,7 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(inhibit_lock), euicc_path,
                      std::move(new_shill_properties), is_initial_install,
-                     install_method));
+                     install_method, base::Time::Now()));
 }
 
 void CellularESimInstaller::OnProfileInstallResult(
@@ -279,6 +256,7 @@ void CellularESimInstaller::OnProfileInstallResult(
     const base::Value::Dict& new_shill_properties,
     bool is_initial_install,
     ProfileInstallMethod install_method,
+    const base::Time installation_start_time,
     HermesResponseStatus status,
     dbus::DBusResult dbusResult,
     const dbus::ObjectPath* profile_path) {
@@ -305,6 +283,10 @@ void CellularESimInstaller::OnProfileInstallResult(
                             /*service_path=*/absl::nullopt);
     return;
   }
+
+  UMA_HISTOGRAM_LONG_TIMES_100(
+      "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
+      base::Time::Now() - installation_start_time);
 
   RecordInstallESimProfileResultLegacy(InstallESimProfileResult::kSuccess,
                                        is_managed, is_initial_install,
