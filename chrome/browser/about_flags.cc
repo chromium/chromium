@@ -3067,8 +3067,6 @@ constexpr char kClipboardHistoryUrlTitlesInternalName[] =
     "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
-constexpr char kEnableSuspendToDiskAllowS4InternalName[] =
-    "enable-suspend-to-disk-allow-s4";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4464,10 +4462,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSuspendToDisk,
                                     kHibernateFeatureVariations,
                                     "SuspendToDisk")},
-    {kEnableSuspendToDiskAllowS4InternalName,
-     flag_descriptions::kEnableSuspendToDiskAllowS4,
-     flag_descriptions::kEnableSuspendToDiskAllowS4Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSuspendToDiskAllowS4)},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
@@ -11508,17 +11502,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !arc::IsArcVmEnabled();
   }
 
-  if (!strcmp(kEnableSuspendToDiskInternalName, entry.internal_name) ||
-      !strcmp(kEnableSuspendToDiskAllowS4InternalName, entry.internal_name)) {
+  if (!strcmp(kEnableSuspendToDiskInternalName, entry.internal_name)) {
     // All Suspend to disk flags require that hibernate is supported.
     if (!ash::HibernateManager::IsHibernateSupported()) {
       return true;
-    }
-
-    // We only show the suspend to disk allow S4 flag on systems that have
-    // aeskl.
-    if (!strcmp(kEnableSuspendToDiskAllowS4InternalName, entry.internal_name)) {
-      return !ash::HibernateManager::HasAESKL();
     }
 
     return false;
