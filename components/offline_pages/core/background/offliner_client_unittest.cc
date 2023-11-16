@@ -34,83 +34,94 @@ SavePageRequest TestRequest() {
 
 class OfflinerClientTest : public testing::Test {
  protected:
+  void CreateOfflinerClient(bool enable_callback) {
+    offliner_ = std::make_unique<OfflinerStub>();
+    offliner_->enable_callback(enable_callback);
+    client_ = std::make_unique<OfflinerClient>(std::move(offliner_),
+                                               progress_callback_.Get());
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_{
       new base::TestMockTimeTaskRunner};
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_{task_runner_};
 
   MockProgressCallback progress_callback_;
-  raw_ptr<OfflinerStub, DanglingUntriaged> offliner_ = new OfflinerStub;
-  OfflinerClient client_{std::unique_ptr<OfflinerStub>(offliner_),
-                         progress_callback_.Get()};
+  std::unique_ptr<OfflinerStub> offliner_;
+  std::unique_ptr<OfflinerClient> client_;
 };
 
 TEST_F(OfflinerClientTest, NoRequests) {
-  EXPECT_TRUE(client_.Ready());
-  EXPECT_FALSE(client_.Active());
-  EXPECT_EQ(nullptr, client_.ActiveRequest());
+  CreateOfflinerClient(false);
+  EXPECT_TRUE(client_->Ready());
+  EXPECT_FALSE(client_->Active());
+  EXPECT_EQ(nullptr, client_->ActiveRequest());
 }
 
 // Call Stop() when the offliner is not active. It should do nothing.
 TEST_F(OfflinerClientTest, StopWithNoRequest) {
-  client_.Stop(Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED);
+  CreateOfflinerClient(false);
+  client_->Stop(Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED);
 
-  EXPECT_FALSE(client_.Active());
+  EXPECT_FALSE(client_->Active());
 }
 
 TEST_F(OfflinerClientTest, LoadAndSave) {
-  offliner_->enable_callback(true);
+  CreateOfflinerClient(true);
 
   // Load a page. Completion callback and progress callback should be called.
   MockCompleteCallback complete_callback;
   EXPECT_CALL(complete_callback, Run(_, Offliner::RequestStatus::SAVED));
   EXPECT_CALL(progress_callback_, Run(_, _));
   ASSERT_TRUE(
-      client_.LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
-  EXPECT_TRUE(client_.Active());
+      client_->LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
+  EXPECT_TRUE(client_->Active());
 
   task_runner_->RunUntilIdle();
-  EXPECT_FALSE(client_.Active());
+  EXPECT_FALSE(client_->Active());
 }
 
 TEST_F(OfflinerClientTest, LoadAndSaveTimeout) {
+  CreateOfflinerClient(false);
   MockCompleteCallback complete_callback;
   EXPECT_CALL(complete_callback,
               Run(_, Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT));
   ASSERT_TRUE(
-      client_.LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
-  EXPECT_TRUE(client_.Active());
+      client_->LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
+  EXPECT_TRUE(client_->Active());
 
   task_runner_->FastForwardBy(kOneMinute);
-  EXPECT_FALSE(client_.Active());
+  EXPECT_FALSE(client_->Active());
 }
 
 TEST_F(OfflinerClientTest, StopInFlight) {
+  CreateOfflinerClient(false);
   MockCompleteCallback complete_callback;
   // Simulate loading in progress.
   ASSERT_TRUE(
-      client_.LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
+      client_->LoadAndSave(TestRequest(), kOneMinute, complete_callback.Get()));
   task_runner_->FastForwardBy(kOneMinute / 2);
 
   // Call Stop(), and verify the corrrect status is returned.
   EXPECT_CALL(complete_callback,
               Run(_, Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED));
-  client_.Stop(Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED);
-  EXPECT_TRUE(client_.Active());  // Cancellation isn't yet complete.
+  client_->Stop(Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED);
+  EXPECT_TRUE(client_->Active());  // Cancellation isn't yet complete.
   task_runner_->RunUntilIdle();
-  EXPECT_FALSE(client_.Active());
+  EXPECT_FALSE(client_->Active());
 }
 
 TEST_F(OfflinerClientTest, LoadAndSaveFailsWhileAlreadyActive) {
+  CreateOfflinerClient(false);
   MockCompleteCallback complete_callback1;
-  ASSERT_TRUE(
-      client_.LoadAndSave(TestRequest(), kOneMinute, complete_callback1.Get()));
+  ASSERT_TRUE(client_->LoadAndSave(TestRequest(), kOneMinute,
+                                   complete_callback1.Get()));
   EXPECT_CALL(complete_callback1, Run(_, _)).Times(1);
 
   MockCompleteCallback complete_callback2;
   EXPECT_CALL(complete_callback2, Run(_, _)).Times(0);
-  EXPECT_FALSE(
-      client_.LoadAndSave(TestRequest(), kOneMinute, complete_callback2.Get()));
+  EXPECT_FALSE(client_->LoadAndSave(TestRequest(), kOneMinute,
+                                    complete_callback2.Get()));
 
   task_runner_->FastForwardUntilNoTasksRemain();
 }
