@@ -67,18 +67,6 @@ constexpr auto kAdvancedMemorySafetyChecks =
 // Define type traits to determine type |T|'s memory safety check status.
 namespace {
 
-// Primary template: having |value = 0| (none) as a default.
-template <typename T, typename AlwaysVoid = void>
-struct GetChecksInternal {
-  static constexpr MemorySafetyCheck kValue = static_cast<MemorySafetyCheck>(0);
-};
-
-// Specialization: having |value = T::kMemorySafetyChecks| is present.
-template <typename T>
-struct GetChecksInternal<T, std::void_t<decltype(T::kMemorySafetyChecks)>> {
-  static constexpr MemorySafetyCheck kValue = T::kMemorySafetyChecks;
-};
-
 // Allocator type traits.
 constexpr bool ShouldUsePartitionAlloc(MemorySafetyCheck checks) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -113,11 +101,16 @@ constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
 
 // Public utility type traits.
 template <typename T>
-constexpr MemorySafetyCheck get_memory_safety_checks =
-    GetChecksInternal<T>::kValue;
+inline constexpr MemorySafetyCheck get_memory_safety_checks = [] {
+  if constexpr (requires { T::kMemorySafetyChecks; }) {
+    return T::kMemorySafetyChecks;
+  } else {
+    return static_cast<MemorySafetyCheck>(0);
+  }
+}();
 
 template <typename T, MemorySafetyCheck c>
-constexpr bool is_memory_safety_checked =
+inline constexpr bool is_memory_safety_checked =
     (get_memory_safety_checks<T> & c) == c;
 
 // Allocator functions.
