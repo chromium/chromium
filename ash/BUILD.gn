@@ -2818,6 +2818,7 @@ component("ash") {
     "//ash/in_session_auth",
     "//ash/keyboard/ui",
     "//ash/login/resources:resources_grit",
+    "//ash/picker",
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
     "//ash/quick_pair/companion_app",

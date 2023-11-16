@@ -96,6 +96,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_capture/multi_capture_service_client.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
@@ -1740,6 +1741,11 @@ void Shell::Init(
   if (features::IsCoralFeatureEnabled() &&
       CoralController::IsSecretKeyMatched()) {
     coral_controller_ = std::make_unique<CoralController>();
+  }
+
+  if (features::IsPickerUpdateEnabled() &&
+      PickerController::IsFeatureKeyMatched()) {
+    picker_controller_ = std::make_unique<PickerController>();
   }
 
   // Injects the factory which fulfills the implementation of the text context

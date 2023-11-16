@@ -4020,6 +4020,10 @@ bool IsPhoneHubCallNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
 }
 
+bool IsPickerUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kPicker);
+}
+
 bool IsPinAutosubmitBackfillFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
 }

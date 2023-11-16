@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("picker") {
   sources = [
+    "picker_controller.cc",
+    "picker_controller.h",
     "views/picker_view.cc",
     "views/picker_view.h",
   ]
@@ -19,6 +21,7 @@ source_set("picker") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
   ]
@@ -27,7 +30,10 @@ source_set("picker") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "views/picker_view_unittest.cc" ]
+  sources = [
+    "picker_controller_unittest.cc",
+    "views/picker_view_unittest.cc",
+  ]
 
   deps = [
     ":picker",
@@ -35,5 +41,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/views:test_support",
   ]
 }

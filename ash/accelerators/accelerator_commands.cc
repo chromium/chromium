@@ -26,6 +26,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -1103,7 +1104,11 @@ void ShiftPrimaryDisplay() {
 }
 
 void ShowEmojiPicker() {
-  ui::ShowEmojiPanel();
+  if (auto* picker_controller = Shell::Get()->picker_controller()) {
+    picker_controller->ToggleWidget();
+  } else {
+    ui::ShowEmojiPanel();
+  }
 }
 
 void ShowKeyboardShortcutViewer() {
