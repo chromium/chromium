@@ -30,7 +30,6 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -46,8 +45,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -366,13 +363,6 @@ void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void PasswordGenerationPopupControllerImpl::
-    OnGooglePasswordManagerLinkClicked() {
-  NavigateToManagePasswordsPage(
-      chrome::FindBrowserWithTab(GetWebContents()),
-      password_manager::ManagePasswordsReferrer::kPasswordGenerationPrompt);
-}
-
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)

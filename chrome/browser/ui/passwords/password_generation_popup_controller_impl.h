@@ -157,7 +157,6 @@ class PasswordGenerationPopupControllerImpl
   void EditPasswordClicked() override;
   void EditPasswordHovered(bool hovered) override;
 #if !BUILDFLAG(IS_ANDROID)
-  void OnGooglePasswordManagerLinkClicked() override;
   std::u16string GetPrimaryAccountEmail() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void PasswordAccepted() override;

@@ -38,7 +38,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/vector_icons.h"
@@ -115,8 +114,7 @@ std::unique_ptr<views::FlexLayoutView> CreateLabelWithCheckIcon(
 
 // Creates help text listing benefits of password generation in bullet points.
 std::unique_ptr<views::View> CreateCrossDeviceFooter(
-    const std::u16string& primary_account_email,
-    base::RepeatingClosure open_password_manager_closure) {
+    const std::u16string& primary_account_email) {
   auto cross_device_footer = std::make_unique<views::View>();
 
   auto* layout =
@@ -135,13 +133,11 @@ std::unique_ptr<views::View> CreateCrossDeviceFooter(
   cross_device_footer->AddChildView(CreateLabelWithCheckIcon(
       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK)));
 
-  views::StyledLabel* help_label =
-      cross_device_footer->AddChildView(CreateGooglePasswordManagerLabel(
-          GetHelpTextMessageId(),
-          /*link_message_id=*/
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          primary_account_email, open_password_manager_closure));
-  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
+  cross_device_footer->AddChildView(CreateGooglePasswordManagerLabel(
+      GetHelpTextMessageId(),
+      /*link_message_id=*/
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+      primary_account_email));
 
   return cross_device_footer;
 }
@@ -272,8 +268,7 @@ END_METADATA
 // Creates custom password generation view with key icon, title and two buttons
 // for `kNudgePassword` variant of `kPasswordGenerationExperiment`.
 std::unique_ptr<views::View> CreateNudgePasswordView(
-    base::WeakPtr<PasswordGenerationPopupController> controller,
-    base::RepeatingClosure open_password_manager_closure) {
+    base::WeakPtr<PasswordGenerationPopupController> controller) {
   auto nudge_password_view = std::make_unique<views::View>();
 
   auto* layout =
@@ -285,13 +280,11 @@ std::unique_ptr<views::View> CreateNudgePasswordView(
 
   nudge_password_view->AddChildView(CreatePasswordLabelWithIcon());
 
-  views::StyledLabel* help_label =
-      nudge_password_view->AddChildView(CreateGooglePasswordManagerLabel(
-          GetHelpTextMessageId(),
-          /*link_message_id=*/
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          controller->GetPrimaryAccountEmail(), open_password_manager_closure));
-  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
+  nudge_password_view->AddChildView(CreateGooglePasswordManagerLabel(
+      GetHelpTextMessageId(),
+      /*link_message_id=*/
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+      controller->GetPrimaryAccountEmail()));
 
   nudge_password_view->AddChildView(
       std::make_unique<NudgePasswordButtons>(controller));
@@ -535,21 +528,12 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
-  base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
-      [](PasswordGenerationPopupViewViews* view) {
-        if (!view->controller_) {
-          return;
-        }
-        view->controller_->OnGooglePasswordManagerLinkClicked();
-      },
-      base::Unretained(this));
-
   if (controller_->state() ==
           PasswordGenerationPopupController::kOfferGeneration &&
       password_manager::features::kPasswordGenerationExperimentVariationParam
               .Get() == PasswordGenerationVariation::kNudgePassword) {
-    auto* nudge_password_view = AddChildView(
-        CreateNudgePasswordView(controller_, open_password_manager_closure));
+    auto* nudge_password_view =
+        AddChildView(CreateNudgePasswordView(controller_));
     nudge_password_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
     AddChildView(std::move(nudge_password_view));
@@ -585,24 +569,21 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
 
   if (password_manager::features::kPasswordGenerationExperimentVariationParam
           .Get() == PasswordGenerationVariation::kCrossDevice) {
-    auto* cross_device_footer = AddChildView(CreateCrossDeviceFooter(
-        controller_->GetPrimaryAccountEmail(), open_password_manager_closure));
+    auto* cross_device_footer = AddChildView(
+        CreateCrossDeviceFooter(controller_->GetPrimaryAccountEmail()));
     cross_device_footer->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
     return;
   }
 
-  views::StyledLabel* help_label =
-      AddChildView(CreateGooglePasswordManagerLabel(
-          GetHelpTextMessageId(),
-          /*link_message_id=*/
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          controller_->GetPrimaryAccountEmail(),
-          open_password_manager_closure));
+  views::Label* help_label = AddChildView(CreateGooglePasswordManagerLabel(
+      GetHelpTextMessageId(),
+      /*link_message_id=*/
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+      controller_->GetPrimaryAccountEmail()));
 
   help_label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
-  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
 }
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(

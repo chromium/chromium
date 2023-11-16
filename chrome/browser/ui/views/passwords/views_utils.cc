@@ -16,6 +16,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -68,6 +69,23 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
       gfx::Range(offsets.at(0), offsets.at(0) + link.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(open_link_closure));
 
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateGooglePasswordManagerLabel(
+    int text_message_id,
+    int password_manager_message_id,
+    const std::u16string& email,
+    int context) {
+  const std::u16string password_manager =
+      l10n_util::GetStringUTF16(password_manager_message_id);
+  std::u16string text =
+      l10n_util::GetStringFUTF16(text_message_id, password_manager, email);
+
+  auto label = std::make_unique<views::Label>(text, context,
+                                              views::style::STYLE_SECONDARY);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
 }
 
