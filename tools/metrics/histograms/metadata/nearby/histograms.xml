@@ -417,6 +417,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.Storage.Initialization.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall result of initialization of the Nearby Presence
+    Credential Storage component. Emitted after the initialization attempt
+    completes.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
     units="attempts" expires_after="2024-07-10">
   <owner>julietlevesque@google.com</owner>

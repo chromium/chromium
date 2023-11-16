@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +109,8 @@ class CredentialStorageInitializerTest : public testing::Test {
 
   mojo::Remote<mojom::NearbyPresenceCredentialStorage>
       nearby_presence_credential_storage_remote_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(CredentialStorageInitializerTest, Initialize) {
@@ -118,6 +121,9 @@ TEST_F(CredentialStorageInitializerTest, Initialize) {
 
   EXPECT_EQ(1,
             nearby_presence_credential_storage_->GetInitializationCallsCount());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Storage.Initialization.Result",
+      /*bucket: success=*/true, 1);
 
   EXPECT_TRUE(nearby_presence_credential_storage_remote_.is_bound());
   EXPECT_TRUE(nearby_presence_credential_storage_remote_.is_connected());

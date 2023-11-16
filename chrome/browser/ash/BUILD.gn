@@ -3999,6 +3999,7 @@ source_set("ash") {
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/mojo_service_manager",
     "//chrome/browser/ash/nearby:bluetooth_adapter_manager",
+    "//chrome/browser/ash/nearby/presence/credential_storage/metrics",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",

@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"
+
+#include "chrome/browser/ash/nearby/presence/credential_storage/metrics/credential_storage_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/cross_device/logging/logging.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace ash::nearby::presence {
@@ -44,13 +47,16 @@ void CredentialStorageInitializer::Initialize() {
 }
 
 void CredentialStorageInitializer::OnInitialized(bool initialization_success) {
+  metrics::RecordCredentialStorageInitializationResult(
+      /*success=*/initialization_success);
+
   // We don't expect initialization to fail very often -- comparable usages
   // have a 99.9% success rate. Simply fail for now. Later, we'll analyze
   // metrics post-MVP to understand the failure rate and if we need to
   // handle the failure case.
   if (!initialization_success) {
-    // TODO(b/306205385): Add metrics to understand failure rate.
-    return;
+    CD_LOG(ERROR, Feature::NP)
+        << __func__ << ": failed to initialize credential storage.";
   }
 }
 
