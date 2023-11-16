@@ -57,36 +57,6 @@
     overflow: hidden;
     transition: height 250ms var(--standard-curve);
   }
-
-  #footer {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #footer[shown] {
-    animation: fadeIn 200ms linear forwards;
-  }
-
-  :host(.changed-state) #footer[shown] {
-    animation: fadeIn 100ms linear 100ms forwards,
-               displayIn 200ms linear forwards;
-  }
-
-  #footer:not([shown]) {
-    height: 0px;
-    position: absolute;
-    visibility: hidden;
-  }
-
-  :host(.changed-state.from-failure) #footer:not([shown]) {
-    animation: fadeOut 100ms linear forwards,
-               displayOut 200ms linear forwards;
-  }
-
-  .footer-container {
-    background-color: var(--color-bubble-footer-background);
-    padding: 16px var(--mwb-list-item-horizontal-margin);
-  }
 </style>
 
 <div id="contents">
@@ -112,17 +82,9 @@
     </tab-organization-results>
     <tab-organization-failure id="failure"
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
-        error="[[error_]]">
+        show-fre="[[showFRE_]]"
+        error="[[error_]]"
+        on-tip-click="onTipClick_">
     </tab-organization-failure>
-  </div>
-  <div class="footer-container">
-    <div id="footer" shown$="[[showFooter_(state_, showFRE_)]]">
-      <div class="tab-organization-body">
-        <b>$i18n{tipTitle}</b> $i18n{tipBody}
-      </div>
-      <div class="tab-organization-link" on-click="onTipClick_">
-        $i18n{tipAction}
-      </div>
-    </div>
   </div>
 </div>

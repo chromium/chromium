@@ -20,10 +20,12 @@ export class TabOrganizationFailureElement extends PolymerElement {
   static get properties() {
     return {
       error: Object,
+      showFre: Boolean,
     };
   }
 
   error: TabOrganizationError = TabOrganizationError.kNone;
+  showFre: boolean;
 
   static get template() {
     return getTemplate();
@@ -49,6 +51,13 @@ export class TabOrganizationFailureElement extends PolymerElement {
       default:
         return '';
     }
+  }
+
+  private onTipClick_() {
+    this.dispatchEvent(new CustomEvent('tip-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 

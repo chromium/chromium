@@ -298,9 +298,11 @@ suite('TabOrganizationPageTest', () => {
 
     assertEquals(0, testApiProxy.getCallCount('startTabGroupTutorial'));
 
-    const tipAction =
-        tabOrganizationPage.shadowRoot!.querySelector<HTMLElement>(
-            '.tab-organization-link');
+    const failure = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-failure');
+    assertTrue(!!failure);
+    const tipAction = failure.shadowRoot!.querySelector<HTMLElement>(
+        '.tab-organization-link');
     assertTrue(!!tipAction);
     tipAction.click();
     await flushTasks();

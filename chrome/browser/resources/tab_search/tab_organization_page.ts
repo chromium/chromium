@@ -21,7 +21,6 @@ import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabO
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const BODY_VERTICAL_MARGIN: number = 32;
-const FOOTER_VERTICAL_PADDING: number = 32;
 
 export interface TabOrganizationPageElement {
   $: {
@@ -118,10 +117,6 @@ export class TabOrganizationPageElement extends PolymerElement {
       case TabOrganizationState.kFailure:
         contentsHeight = this.$.failure.scrollHeight -
             this.getPaddingTopValue_(this.$.failure) + BODY_VERTICAL_MARGIN;
-        if (this.showFooter_()) {
-          contentsHeight +=
-              this.$.footer.scrollHeight + FOOTER_VERTICAL_PADDING;
-        }
         break;
     }
     this.$.contents.style.height = contentsHeight + 'px';
@@ -164,10 +159,6 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   private isState_(state: TabOrganizationState): boolean {
     return this.state_ === state;
-  }
-
-  private showFooter_(): boolean {
-    return this.state_ === TabOrganizationState.kFailure && this.showFRE_;
   }
 
   private onSyncClick_() {
