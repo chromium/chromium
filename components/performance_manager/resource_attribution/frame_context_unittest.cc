@@ -25,10 +25,10 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
-using FrameContextTest = PerformanceManagerTestHarness;
-using FrameContextNoPMTest = content::RenderViewHostTestHarness;
+using ResourceAttrFrameContextTest = PerformanceManagerTestHarness;
+using ResourceAttrFrameContextNoPMTest = content::RenderViewHostTestHarness;
 
-TEST_F(FrameContextTest, FrameContexts) {
+TEST_F(ResourceAttrFrameContextTest, FrameContexts) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   // Navigate to an initial page.
@@ -85,7 +85,7 @@ TEST_F(FrameContextTest, FrameContexts) {
   });
 }
 
-TEST_F(FrameContextNoPMTest, FrameContextWithoutPM) {
+TEST_F(ResourceAttrFrameContextNoPMTest, FrameContextWithoutPM) {
   // There can be a delay between creating a RenderFrameHost and
   // PerformanceManager being notified of the new host. Simulate looking up a
   // FrameContext during that time by bypassing the PM test harness to create a

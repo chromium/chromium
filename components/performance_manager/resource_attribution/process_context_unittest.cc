@@ -30,10 +30,10 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
-using ProcessContextTest = PerformanceManagerTestHarness;
-using ProcessContextNoPMTest = content::RenderViewHostTestHarness;
+using ResourceAttrProcessContextTest = PerformanceManagerTestHarness;
+using ResourceAttrProcessContextNoPMTest = content::RenderViewHostTestHarness;
 
-TEST_F(ProcessContextTest, BrowserProcessContext) {
+TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
   // PerformanceManager creates a browser ProcessNode when the test harness
   // initializes it.
   const absl::optional<ProcessContext> process_context =
@@ -75,7 +75,7 @@ TEST_F(ProcessContextTest, BrowserProcessContext) {
   });
 }
 
-TEST_F(ProcessContextTest, RenderProcessContext) {
+TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   // Navigate to an initial page to create a renderer process.
@@ -144,7 +144,7 @@ TEST_F(ProcessContextTest, RenderProcessContext) {
   });
 }
 
-TEST_F(ProcessContextTest, BrowserChildProcessContext) {
+TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   auto utility_process =
       std::make_unique<TestBrowserChildProcess>(content::PROCESS_TYPE_UTILITY);
   utility_process->SimulateLaunch();
@@ -203,7 +203,7 @@ TEST_F(ProcessContextTest, BrowserChildProcessContext) {
   });
 }
 
-TEST_F(ProcessContextNoPMTest, ProcessContextWithoutPM) {
+TEST_F(ResourceAttrProcessContextNoPMTest, ProcessContextWithoutPM) {
   // When PerformanceManager isn't initialized, factory functions should return
   // nullopt, not a context that's missing PM info.
   EXPECT_EQ(absl::nullopt, ProcessContext::FromBrowserProcess());

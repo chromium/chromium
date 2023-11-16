@@ -36,10 +36,10 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
-using WorkerContextTest = PerformanceManagerTestHarness;
-using WorkerContextNoPMTest = content::RenderViewHostTestHarness;
+using ResourceAttrWorkerContextTest = PerformanceManagerTestHarness;
+using ResourceAttrWorkerContextNoPMTest = content::RenderViewHostTestHarness;
 
-TEST_F(WorkerContextTest, WorkerContexts) {
+TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   WorkerWatcher* worker_watcher =
@@ -122,7 +122,7 @@ TEST_F(WorkerContextTest, WorkerContexts) {
   });
 }
 
-TEST_F(WorkerContextNoPMTest, WorkerContextWithoutPM) {
+TEST_F(ResourceAttrWorkerContextNoPMTest, WorkerContextWithoutPM) {
   // Unknown worker token should not return a context. This also covers the
   // case where a worker exists for the token but PerformanceManager isn't
   // initialized so doesn't have a WorkerNode for it.

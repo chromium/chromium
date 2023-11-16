@@ -58,11 +58,11 @@ using MockQueryResultObserver =
     ::testing::StrictMock<LenientMockQueryResultObserver>;
 
 // Test QueryBuilder using mock graphs.
-using QueryBuilderTest = GraphTestHarness;
+using ResourceAttrQueryBuilderTest = GraphTestHarness;
 
 // Test ScopedResourceUsageQuery with PerformanceManagerTestHarness to test its
 // interactions on the PM sequence.
-class ScopedResourceUsageQueryTest : public PerformanceManagerTestHarness {
+class ResourceAttrScopedQueryTest : public PerformanceManagerTestHarness {
  protected:
   using Super = PerformanceManagerTestHarness;
 
@@ -86,7 +86,7 @@ class ScopedResourceUsageQueryTest : public PerformanceManagerTestHarness {
 
 }  // namespace
 
-TEST_F(QueryBuilderTest, Params) {
+TEST_F(ResourceAttrQueryBuilderTest, Params) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   QueryBuilder builder;
@@ -133,7 +133,7 @@ TEST_F(QueryBuilderTest, Params) {
   EXPECT_EQ(*scoped_query.GetParamsForTesting(), expected_params);
 }
 
-TEST_F(QueryBuilderTest, Clone) {
+TEST_F(ResourceAttrQueryBuilderTest, Clone) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   QueryBuilder builder;
   builder.AddResourceContext(mock_graph.page->GetResourceContext())
@@ -162,7 +162,7 @@ TEST_F(QueryBuilderTest, Clone) {
             expected_cloned_contexts);
 }
 
-TEST_F(ScopedResourceUsageQueryTest, AddRemoveScopedQuery) {
+TEST_F(ResourceAttrScopedQueryTest, AddRemoveScopedQuery) {
   QueryScheduler* scheduler = nullptr;
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
@@ -185,7 +185,7 @@ TEST_F(ScopedResourceUsageQueryTest, AddRemoveScopedQuery) {
   });
 }
 
-TEST_F(ScopedResourceUsageQueryTest, Movable) {
+TEST_F(ResourceAttrScopedQueryTest, Movable) {
   QueryScheduler* scheduler = nullptr;
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
@@ -232,7 +232,7 @@ TEST_F(ScopedResourceUsageQueryTest, Movable) {
   });
 }
 
-TEST_F(ScopedResourceUsageQueryTest, Observers) {
+TEST_F(ResourceAttrScopedQueryTest, Observers) {
   ScopedResourceUsageQuery scoped_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context.value())
@@ -291,7 +291,7 @@ TEST_F(ScopedResourceUsageQueryTest, Observers) {
   run_loop.Run();
 }
 
-TEST_F(ScopedResourceUsageQueryTest, GraphTeardown) {
+TEST_F(ResourceAttrScopedQueryTest, GraphTeardown) {
   // ScopedResourceUsageQuery registers with the QueryScheduler on creation and
   // unregisters on destruction. Make sure it's safe for it to outlive the
   // scheduler, which is deleted during graph teardown.

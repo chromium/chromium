@@ -61,7 +61,7 @@ void ExpectQueryResult(ScopedCPUQuery* query, auto matcher) {
 
 }  // namespace
 
-class QuerySchedulerTest : public GraphTestHarness {
+class ResourceAttrQuerySchedulerTest : public GraphTestHarness {
  protected:
   using Super = GraphTestHarness;
 
@@ -77,9 +77,9 @@ class QuerySchedulerTest : public GraphTestHarness {
   SimulatedCPUMeasurementDelegateFactory delegate_factory_;
 };
 
-using QuerySchedulerPMTest = PerformanceManagerTestHarness;
+using ResourceAttrQuerySchedulerPMTest = PerformanceManagerTestHarness;
 
-TEST_F(QuerySchedulerTest, CPUQueries) {
+TEST_F(ResourceAttrQuerySchedulerTest, CPUQueries) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
@@ -107,7 +107,7 @@ TEST_F(QuerySchedulerTest, CPUQueries) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_F(QuerySchedulerTest, ScopedQueries) {
+TEST_F(ResourceAttrQuerySchedulerTest, ScopedQueries) {
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
 
@@ -134,7 +134,7 @@ TEST_F(QuerySchedulerTest, ScopedQueries) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_F(QuerySchedulerTest, GraphTeardown) {
+TEST_F(ResourceAttrQuerySchedulerTest, GraphTeardown) {
   // Make sure queries that still exist when the scheduler is deleted during
   // graph teardown safely return no data.
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
@@ -158,7 +158,7 @@ TEST_F(QuerySchedulerTest, GraphTeardown) {
       base::ScopedClosureRunner(run_loop.QuitClosure())));
 }
 
-TEST_F(QuerySchedulerPMTest, CallOnGraphWithScheduler) {
+TEST_F(ResourceAttrQuerySchedulerPMTest, CallOnGraphWithScheduler) {
   QueryScheduler* scheduler_ptr = nullptr;
   Graph* graph_ptr = nullptr;
   RunInGraph([&](Graph* graph) {

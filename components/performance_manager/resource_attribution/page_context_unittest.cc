@@ -24,10 +24,10 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
-using PageContextTest = PerformanceManagerTestHarness;
-using PageContextNoPMTest = content::RenderViewHostTestHarness;
+using ResourceAttrPageContextTest = PerformanceManagerTestHarness;
+using ResourceAttrPageContextNoPMTest = content::RenderViewHostTestHarness;
 
-TEST_F(PageContextTest, PageContexts) {
+TEST_F(ResourceAttrPageContextTest, PageContexts) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   absl::optional<PageContext> page_context =
       PageContext::FromWebContents(web_contents.get());
@@ -89,7 +89,7 @@ TEST_F(PageContextTest, PageContexts) {
   EXPECT_NE(page_context2, page_context3);
 }
 
-TEST_F(PageContextNoPMTest, PageContextWithoutPM) {
+TEST_F(ResourceAttrPageContextNoPMTest, PageContextWithoutPM) {
   // When PerformanceManager isn't initialized, factory functions should return
   // nullopt, not a context that's missing PM info.
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();

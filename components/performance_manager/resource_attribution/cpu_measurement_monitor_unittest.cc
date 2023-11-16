@@ -83,7 +83,7 @@ constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 }  // namespace
 
 // A test that creates mock processes to simulate exact CPU usage.
-class CPUMeasurementMonitorTest : public GraphTestHarness {
+class ResourceAttrCPUMonitorTest : public GraphTestHarness {
  protected:
   using Super = GraphTestHarness;
 
@@ -196,7 +196,7 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
 
 // Tests that renderers created at various points around CPU measurement
 // snapshots are handled correctly.
-TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
+TEST_F(ResourceAttrCPUMonitorTest, CreateTiming) {
   // Renderer in existence before StartMonitoring().
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
@@ -300,7 +300,7 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
 
 // Tests that renderers exiting at various points around CPU measurement
 // snapshots are handled correctly.
-TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
+TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -404,7 +404,7 @@ TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
 
 // Tests that varying CPU usage between measurement snapshots is reported
 // correctly.
-TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
+TEST_F(ResourceAttrCPUMonitorTest, VaryingMeasurements) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -471,7 +471,7 @@ TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
 // Tests that CPU usage of processes is correctly distributed between frames and
 // workers in those processes, and correctly aggregated to pages containing
 // frames and workers from multiple processes.
-TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
+TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
 
   // Track CPU usage of the mock utility process to make sure that measuring it
@@ -647,7 +647,7 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
 
 // Tests that CPU usage of processes is correctly distributed between FrameNodes
 // and WorkerNodes that are added and removed between measurements.
-TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
+TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -846,7 +846,7 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
 
 // Tests that WorkerNode CPU usage is correctly distributed to pages as clients
 // are added and removed.
-TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
+TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -1028,7 +1028,7 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.
-TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
+TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -1120,7 +1120,7 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
 
 // A test that creates real processes, to verify that measurement works with the
 // timing of real node creation.
-class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
+class ResourceAttrCPUMonitorTimingTest : public PerformanceManagerTestHarness {
  protected:
   using Super = PerformanceManagerTestHarness;
 
@@ -1146,7 +1146,7 @@ class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
   std::unique_ptr<CPUMeasurementMonitor> cpu_monitor_;
 };
 
-TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
+TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   SetContents(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));

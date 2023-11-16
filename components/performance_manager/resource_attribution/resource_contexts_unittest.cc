@@ -18,11 +18,11 @@ const PublicNode* ToPublic(const TestNodeWrapper<NodeImpl>& wrapper) {
   return wrapper.get();
 }
 
-using ResourceContextTest = GraphTestHarness;
-using ResourceContextDeathTest = ResourceContextTest;
+using ResourceAttrResourceContextsTest = GraphTestHarness;
+using ResourceAttrResourceContextsDeathTest = ResourceAttrResourceContextsTest;
 
 // Tests the context tokens returned from PM nodes.
-TEST_F(ResourceContextTest, NodeContexts) {
+TEST_F(ResourceAttrResourceContextsTest, NodeContexts) {
   MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
 
   // Test each type of ProcessNode (browser, renderer, non-renderer child) since
@@ -48,7 +48,7 @@ TEST_F(ResourceContextTest, NodeContexts) {
             mock_graph.other_worker->GetResourceContext());
 }
 
-TEST_F(ResourceContextTest, ResourceContextComparators) {
+TEST_F(ResourceAttrResourceContextsTest, ResourceContextComparators) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   // Ensure tokens of the same type can be compared when wrapped in
@@ -86,7 +86,7 @@ TEST_F(ResourceContextTest, ResourceContextComparators) {
   EXPECT_NE(process_context, page_context);
 }
 
-TEST_F(ResourceContextTest, ResourceContextConverters) {
+TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {
   using ::testing::Optional;
 
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
@@ -108,7 +108,7 @@ TEST_F(ResourceContextTest, ResourceContextConverters) {
   EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), absl::nullopt);
 }
 
-TEST_F(ResourceContextDeathTest, FailedResourceContextConverters) {
+TEST_F(ResourceAttrResourceContextsDeathTest, FailedResourceContextConverters) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
   const ResourceContext page_context = mock_graph.page->GetResourceContext();
   EXPECT_DEATH_IF_SUPPORTED(AsContext<ProcessContext>(page_context),

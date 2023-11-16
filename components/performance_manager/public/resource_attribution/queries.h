@@ -71,8 +71,8 @@ class ScopedResourceUsageQuery {
       QueryResultObserver,
       base::RemoveObserverPolicy::kAddingSequenceOnly>;
 
-  FRIEND_TEST_ALL_PREFIXES(ScopedResourceUsageQueryTest, Movable);
-  FRIEND_TEST_ALL_PREFIXES(ScopedResourceUsageQueryTest, Observers);
+  FRIEND_TEST_ALL_PREFIXES(ResourceAttrScopedQueryTest, Movable);
+  FRIEND_TEST_ALL_PREFIXES(ResourceAttrScopedQueryTest, Observers);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
