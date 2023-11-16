@@ -183,6 +183,18 @@ public class FormFieldData {
         return mServerPredictions;
     }
 
+    public String getServerPredictionsString() {
+        String[] predictions = getServerPredictions();
+        return (predictions != null && predictions.length > 0)
+                ? String.join(",", predictions)
+                : getEmptyServerPredictionsString();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static String getEmptyServerPredictionsString() {
+        return "NO_SERVER_DATA";
+    }
+
     @CalledByNative
     public boolean isChecked() {
         return mIsChecked;

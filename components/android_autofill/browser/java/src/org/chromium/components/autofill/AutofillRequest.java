@@ -71,7 +71,8 @@ public class AutofillRequest {
             ViewStructure rootStructure = structure;
             structure = rootStructure.newChild(rootStructure.addChildCount(1));
             structure.setAutofillId(
-                    rootStructure.getAutofillId(), toVirtualId(mFormData.mSessionId, FORM_NODE_ID));
+                    rootStructure.getAutofillId(),
+                    toFieldVirtualId(mFormData.mSessionId, FORM_NODE_ID));
         }
         structure.setWebDomain(mFormData.mHost);
         structure.setHtmlInfo(
@@ -80,7 +81,7 @@ public class AutofillRequest {
         short fieldIndex = 0;
         for (FormFieldData field : mFormData.mFields) {
             ViewStructure child = structure.newChild(index++);
-            int virtualId = toVirtualId(mFormData.mSessionId, fieldIndex++);
+            int virtualId = toFieldVirtualId(mFormData.mSessionId, fieldIndex++);
             child.setAutofillId(structure.getAutofillId(), virtualId);
             field.setAutofillId(child.getAutofillId());
             if (field.mAutocompleteAttr != null && !field.mAutocompleteAttr.isEmpty()) {
@@ -221,16 +222,16 @@ public class AutofillRequest {
         }
     }
 
-    public int getVirtualId(short index) {
-        return toVirtualId(mFormData.mSessionId, index);
+    public int getFieldVirtualId(short fieldIndex) {
+        return toFieldVirtualId(mFormData.mSessionId, fieldIndex);
     }
 
     public FormData getForm() {
         return mFormData;
     }
 
-    public FormFieldData getField(short index) {
-        return mFormData.mFields.get(index);
+    public FormFieldData getField(short fieldIndex) {
+        return mFormData.mFields.get(fieldIndex);
     }
 
     private static int findIndex(String[] values, String value) {
@@ -242,15 +243,15 @@ public class AutofillRequest {
         return -1;
     }
 
-    private static int toSessionId(int virtualId) {
-        return (virtualId & 0xffff0000) >> 16;
+    private static int toSessionId(int fieldVirtualId) {
+        return (fieldVirtualId & 0xffff0000) >> 16;
     }
 
-    private static short toIndex(int virtualId) {
-        return (short) (virtualId & 0xffff);
+    private static short toIndex(int fieldVirtualId) {
+        return (short) (fieldVirtualId & 0xffff);
     }
 
-    private static int toVirtualId(int sessionId, short index) {
+    public static int toFieldVirtualId(int sessionId, short index) {
         return (sessionId << 16) | index;
     }
 

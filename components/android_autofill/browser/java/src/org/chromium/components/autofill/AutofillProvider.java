@@ -178,8 +178,10 @@ public class AutofillProvider {
     public void queryAutofillSuggestion() {
         if (shouldQueryAutofillSuggestion()) {
             FocusField focusField = mRequest.getFocusField();
-            mAutofillManager.requestAutofill(mContainerView,
-                    mRequest.getVirtualId(focusField.fieldIndex), focusField.absBound);
+            mAutofillManager.requestAutofill(
+                    mContainerView,
+                    mRequest.getFieldVirtualId(focusField.fieldIndex),
+                    focusField.absBound);
         }
     }
 
@@ -342,26 +344,26 @@ public class AutofillProvider {
         AutofillValue autofillValue = mRequest.getFieldNewValue(index);
         if (autofillValue == null) return;
         mAutofillManager.notifyVirtualValueChanged(
-                mContainerView, mRequest.getVirtualId((short) index), autofillValue);
+                mContainerView, mRequest.getFieldVirtualId((short) index), autofillValue);
     }
 
     private void notifyVirtualViewVisibilityChanged(int index, boolean isVisible) {
         if (isDatalistField(index)) return;
         mAutofillManager.notifyVirtualViewVisibilityChanged(
-                mContainerView, mRequest.getVirtualId((short) index), isVisible);
+                mContainerView, mRequest.getFieldVirtualId((short) index), isVisible);
     }
 
     private void notifyVirtualViewEntered(View parent, int index, Rect absBounds) {
         // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
         if (isDatalistField(index)) return;
         mAutofillManager.notifyVirtualViewEntered(
-                parent, mRequest.getVirtualId((short) index), absBounds);
+                parent, mRequest.getFieldVirtualId((short) index), absBounds);
     }
 
     private void notifyVirtualViewExited(View parent, int index) {
         // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
         if (isDatalistField(index)) return;
-        mAutofillManager.notifyVirtualViewExited(parent, mRequest.getVirtualId((short) index));
+        mAutofillManager.notifyVirtualViewExited(parent, mRequest.getFieldVirtualId((short) index));
     }
 
     /**
