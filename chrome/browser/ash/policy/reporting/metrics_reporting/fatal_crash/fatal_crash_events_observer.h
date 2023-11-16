@@ -108,6 +108,14 @@ class FatalCrashEventsObserver
   // Processes an event received via `OnEvent`.
   void ProcessEvent(ash::cros_healthd::mojom::EventInfoPtr info);
 
+  // Processes an unuploaded crash event received via `OnEvent`.
+  void ProcessUnuploadedCrashEvent(
+      ash::cros_healthd::mojom::CrashEventInfoPtr crash_event_info);
+
+  // Processes an uploaded crash event received via `OnEvent`.
+  void ProcessUploadedCrashEvent(
+      ash::cros_healthd::mojom::CrashEventInfoPtr crash_event_info);
+
   // Indicates whether the save files have been loaded.
   bool AreSaveFilesLoaded() const;
 

@@ -158,44 +158,66 @@ void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
   ProcessEvent(std::move(info));
 }
 
-// TODO(b/266018440): Split this method to two methods for cleaner code:
-// ProcessUploadedCrashEvent and ProcessUnuploadedCrashEvent.
 void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
-  CHECK(info->is_crash_event_info());
 
-  const auto& crash_event_info = info->get_crash_event_info();
-
+  auto& crash_event_info = info->get_crash_event_info();
   if (crash_event_info->upload_info.is_null()) {
-    // Unuploaded crash. Need to look up whether the crash has been reported or
-    // not.
-    const auto capture_timestamp_us =
-        ConvertTimeToMicroseconds(crash_event_info->capture_time);
-    const auto should_report_result = reported_local_id_manager_->ShouldReport(
-        crash_event_info->local_id, capture_timestamp_us);
-    // Currently impossible to reach `ShouldReportResult::kNegativeTimestamp`,
-    // as it can only happen when loading a save file.
-    base::UmaHistogramEnumeration(kUmaUnuploadedCrashShouldNotReportReason,
-                                  should_report_result);
-    if (should_report_result !=
-        ReportedLocalIdManager::ShouldReportResult::kYes) {
-      settings_for_test_->skipped_unuploaded_crash_callback.Run(
-          {.local_id = std::move(crash_event_info->local_id),
-           .capture_timestamp_us = capture_timestamp_us});
-      return;
-    }
+    ProcessUnuploadedCrashEvent(std::move(crash_event_info));
   } else {
-    // Uploaded crash.
-    if (!uploaded_crash_info_manager_->ShouldReport(
-            crash_event_info->upload_info)) {
-      // The crash is from an earlier part of uploads.log. Skip.
-      const auto& upload_info = crash_event_info->upload_info;
-      settings_for_test_->skipped_uploaded_crash_callback.Run(
-          upload_info->crash_report_id, upload_info->creation_time,
-          upload_info->offset);
-      return;
-    }
+    ProcessUploadedCrashEvent(std::move(crash_event_info));
+  }
+}
+
+void FatalCrashEventsObserver::ProcessUnuploadedCrashEvent(
+    CrashEventInfoPtr crash_event_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
+
+  // Look up whether the crash has been reported or not.
+  const auto capture_timestamp_us =
+      ConvertTimeToMicroseconds(crash_event_info->capture_time);
+  const auto should_report_result = reported_local_id_manager_->ShouldReport(
+      crash_event_info->local_id, capture_timestamp_us);
+  // Currently impossible to reach `ShouldReportResult::kNegativeTimestamp`,
+  // as it can only happen when loading a save file.
+  base::UmaHistogramEnumeration(kUmaUnuploadedCrashShouldNotReportReason,
+                                should_report_result);
+  if (should_report_result !=
+      ReportedLocalIdManager::ShouldReportResult::kYes) {
+    settings_for_test_->skipped_unuploaded_crash_callback.Run(
+        {.local_id = std::move(crash_event_info->local_id),
+         .capture_timestamp_us = capture_timestamp_us});
+    return;
+  }
+
+  MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
+  OnEventObserved(std::move(metric_data));
+  if (settings_for_test_->interrupted_after_event_observed) {
+    return;
+  }
+
+  // Update saved reported local IDs.
+  if (!reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
+                                                 capture_timestamp_us)) {
+    LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
+    return;
+  }
+}
+
+void FatalCrashEventsObserver::ProcessUploadedCrashEvent(
+    CrashEventInfoPtr crash_event_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
+
+  if (!uploaded_crash_info_manager_->ShouldReport(
+          crash_event_info->upload_info)) {
+    // The crash is from an earlier part of uploads.log. Skip.
+    const auto& upload_info = crash_event_info->upload_info;
+    settings_for_test_->skipped_uploaded_crash_callback.Run(
+        upload_info->crash_report_id, upload_info->creation_time,
+        upload_info->offset);
+    return;
   }
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
@@ -205,28 +227,16 @@ void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
     return;
   }
 
-  if (crash_event_info->upload_info.is_null()) {
-    // Unuploaded crash. Need to update saved reported local IDs.
-    if (auto capture_timestamp_us =
-            ConvertTimeToMicroseconds(crash_event_info->capture_time);
-        !reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
-                                                   capture_timestamp_us)) {
-      LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
-      return;
-    }
-  } else {
-    // Uploaded crash.
-    uploaded_crash_info_manager_->Update(
-        crash_event_info->upload_info->creation_time,
-        crash_event_info->upload_info->offset);
-    // Once uploaded, the crash's local ID must be removed from saved local IDs.
-    // Reason is that when the number of saved local IDs reach the max, the
-    // crash with the earliest capture time will be removed. However, crashes do
-    // not come in the order of capture time. If we leave uploaded crashes in
-    // the saved local IDs, some late-coming crashes with early capture time may
-    // not get reported because of this.
-    reported_local_id_manager_->Remove(crash_event_info->local_id);
-  }
+  uploaded_crash_info_manager_->Update(
+      crash_event_info->upload_info->creation_time,
+      crash_event_info->upload_info->offset);
+  // Once uploaded, the crash's local ID must be removed from saved local IDs.
+  // Reason is that when the number of saved local IDs reach the max, the crash
+  // with the earliest capture time will be removed. However, crashes do not
+  // come in the order of capture time. If we leave uploaded crashes in the
+  // saved local IDs, some late-coming crashes with early capture time may not
+  // get reported because of this.
+  reported_local_id_manager_->Remove(crash_event_info->local_id);
 }
 
 void FatalCrashEventsObserver::AddObserver() {
