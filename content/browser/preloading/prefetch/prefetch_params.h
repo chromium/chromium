@@ -122,13 +122,6 @@ CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
     blink::mojom::SpeculationEagerness eagerness);
 
-// Returns whether the client is involved in the Holdback Finch
-// experiment group.
-bool IsContentPrefetchHoldback();
-
-// The maximum retry-after header value that will be persisted.
-base::TimeDelta PrefetchMaximumRetryAfterDelta();
-
 // Returns true if |kPrefetchNewLimits| is enabled.
 bool PrefetchNewLimitsEnabled();
 // Returns the max number of eager prefetches allowed (only used when

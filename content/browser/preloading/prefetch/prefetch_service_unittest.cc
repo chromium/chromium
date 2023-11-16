@@ -2683,42 +2683,6 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
                        /*prefetch_header_latency=*/true);
 }
 
-class PrefetchServiceHoldbackTest : public PrefetchServiceTest {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"prefetch_holdback", "true"}}}},
-        {});
-  }
-};
-
-TEST_F(PrefetchServiceHoldbackTest, PrefetchHeldback) {
-  base::HistogramTester histogram_tester;
-
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager));
-  task_environment()->RunUntilIdle();
-
-  EXPECT_EQ(RequestCount(), 0);
-
-  // Holdback is checked and set after eligibility.
-  ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
-                                             /*is_eligible=*/true);
-  ExpectCorrectUkmLogs({.holdback = PreloadingHoldbackStatus::kHoldback,
-                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
-
-  Navigate(GURL("https://example.com"));
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchHeldback);
-}
-
 class PrefetchServiceIncognitoTest : public PrefetchServiceTest {
  protected:
   std::unique_ptr<BrowserContext> CreateBrowserContext() override {

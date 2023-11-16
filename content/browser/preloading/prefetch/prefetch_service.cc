@@ -204,13 +204,6 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (devtools_client_exist) {
     prefetch_container->preloading_attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
-  } else if (IsContentPrefetchHoldback()) {
-    // In addition to the globally-controlled preloading config, check for the
-    // feature-specific holdback. We disable the feature if the user is in
-    // either of those holdbacks.
-
-    prefetch_container->preloading_attempt()->SetHoldbackStatus(
-        PreloadingHoldbackStatus::kHoldback);
   }
 
   if (prefetch_container->preloading_attempt()->ShouldHoldback()) {
@@ -1248,8 +1241,10 @@ PrefetchService::OnPrefetchResponseStarted(
               retry_after_string, base::Time::Now(), &retry_after) &&
           delegate_) {
         // Cap the retry after value to a maximum.
-        if (retry_after > PrefetchMaximumRetryAfterDelta()) {
-          retry_after = PrefetchMaximumRetryAfterDelta();
+        static constexpr base::TimeDelta max_retry_after =
+            base::Seconds(1 * 60 * 60 * 24 * 7 /* 1 week */);
+        if (retry_after > max_retry_after) {
+          retry_after = max_retry_after;
         }
 
         delegate_->ReportOriginRetryAfter(prefetch_container->GetURL(),
