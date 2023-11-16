@@ -46,6 +46,16 @@ NSString* const kCarrierKey = @"carrier";
 
 }  // namespace
 
+@interface InfobarParcelTrackingTableViewController () <
+    UIEditMenuInteractionDelegate>
+
+// Used to create and show the actions users can execute when they tap on a row
+// in the tableView. These actions are displayed a pop-up.
+@property(nonatomic, strong)
+    UIEditMenuInteraction* editMenu API_AVAILABLE(ios(16));
+
+@end
+
 @implementation InfobarParcelTrackingTableViewController {
   // List of parcels.
   NSArray<CustomTextCheckingResult*>* parcelList_;
@@ -88,6 +98,11 @@ NSString* const kCarrierKey = @"carrier";
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
+  if (@available(iOS 16.0, *)) {
+    self.editMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self.tableView addInteraction:self.editMenu];
+  }
+
   [self loadModel];
 }
 
@@ -128,6 +143,30 @@ NSString* const kCarrierKey = @"carrier";
       toSectionWithIdentifier:SectionIdentifier::kContent];
 }
 
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  switch (itemType) {
+    case kTrackingNumber:
+      // Present an edit menu.
+      if (@available(iOS 16.0, *)) {
+        CGRect row = [self.tableView rectForRowAtIndexPath:indexPath];
+        CGPoint editMenuLocation =
+            CGPointMake(CGRectGetMidX(row), row.origin.y);
+        UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+            configurationWithIdentifier:[NSNumber numberWithInt:itemType]
+                            sourcePoint:editMenuLocation];
+        [self.editMenu presentEditMenuWithConfiguration:configuration];
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -145,6 +184,7 @@ NSString* const kCarrierKey = @"carrier";
                  addTarget:self
                     action:@selector(trackButtonWasPressed:)
           forControlEvents:UIControlEventTouchUpInside];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       // Hide the separator if "Track This Parcel" button is displayed.
       if (!trackingParcels_) {
         tableViewTextButtonCell.separatorInset =
@@ -160,10 +200,9 @@ NSString* const kCarrierKey = @"carrier";
     case ItemType::kCarrier:
       cell.accessoryView =
           [[UIImageView alloc] initWithFrame:kEmptyAccessoryViewFrame];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }
-
-  [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   return cell;
 }
@@ -186,6 +225,29 @@ NSString* const kCarrierKey = @"carrier";
       [[NSSortDescriptor alloc] initWithKey:kCarrierKey ascending:NO];
   parcelList_ = [parcels sortedArrayUsingDescriptors:@[ sortDescriptor ]];
   trackingParcels_ = tracking;
+}
+
+#pragma mark - UIEditMenuInteractionDelegate
+
+- (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
+          menuForConfiguration:(UIEditMenuConfiguration*)configuration
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  UITableViewCell* cell = [self.tableView
+      cellForRowAtIndexPath:self.tableView.indexPathForSelectedRow];
+  TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+  UIAction* copy = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_COPY_BUTTON)
+                image:nil
+           identifier:nil
+              handler:^(__kindof UIAction* _Nonnull action) {
+                StoreTextInPasteboard(
+                    tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
+              }];
+  [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                                animated:YES];
+  return [UIMenu menuWithChildren:@[ copy ]];
 }
 
 #pragma mark - Private
