@@ -137,6 +137,35 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     Mock::VerifyAndClearExpectations(distiller_);
   }
 
+  ui::AXTreeID SetUpPdfTrees() {
+    // Call OnActiveAXTreeIDChanged() to set is_pdf_ state.
+    GURL pdf_url("http://www.google.com/foo/bar.pdf");
+    OnActiveAXTreeIDChanged(tree_id_, pdf_url, true);
+
+    // PDF set up required for formatting checks.
+    ui::AXTreeID pdf_iframe_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+    // Send update for main web content with child tree (pdf web contents).
+    ui::AXTreeUpdate main_web_contents_update;
+    SetUpdateTreeID(&main_web_contents_update);
+    main_web_contents_update.nodes.resize(1);
+    main_web_contents_update.nodes[0].id = 1;
+    main_web_contents_update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+    AccessibilityEventReceived({main_web_contents_update});
+
+    // Send update for pdf web contents with child tree (iframe).
+    ui::AXTreeUpdate pdf_web_contents_update;
+    pdf_web_contents_update.nodes.resize(1);
+    pdf_web_contents_update.root_id = 1;
+    pdf_web_contents_update.nodes[0].id = 1;
+    pdf_web_contents_update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+    SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
+    AccessibilityEventReceived({pdf_web_contents_update});
+
+    return pdf_iframe_tree_id;
+  }
+
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
     SetUpdateTreeID(update, tree_id_);
   }
@@ -543,6 +572,73 @@ TEST_F(ReadAnythingAppControllerTest,
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(h3, GetHtmlTag(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
+  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+
+  // Send pdf iframe update with html tags to test.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  update.nodes.resize(3);
+  update.root_id = 1;
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "h1");
+  update.nodes[2].role = ax::mojom::Role::kHeading;
+  update.nodes[2].html_attributes.emplace_back("aria-level", "2");
+  AccessibilityEventReceived({update});
+
+  OnAXTreeDistilled({});
+  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
+  EXPECT_EQ("span", GetHtmlTag(1));
+  EXPECT_EQ("h1", GetHtmlTag(2));
+  EXPECT_EQ("h2", GetHtmlTag(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
+  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+
+  // Send pdf iframe update with html tags to test. Two headings next to each
+  // other should be spans. A heading that's too long should be turned into a
+  // paragraph.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  update.nodes.resize(5);
+  update.root_id = 1;
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 3, 4, 5};
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  update.nodes[4].id = 5;
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[1].role = ax::mojom::Role::kHeading;
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "h1");
+  update.nodes[2].role = ax::mojom::Role::kHeading;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "h1");
+  update.nodes[3].role = ax::mojom::Role::kLink;
+  update.nodes[4].role = ax::mojom::Role::kHeading;
+  update.nodes[4].html_attributes.emplace_back("aria-level", "1");
+  update.nodes[4].SetName(
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+      "tempor incididunt ut labore et dolore magna aliqua.");
+  update.nodes[4].SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  AccessibilityEventReceived({update});
+
+  OnAXTreeDistilled({});
+  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
+  EXPECT_EQ("span", GetHtmlTag(2));
+  EXPECT_EQ("span", GetHtmlTag(3));
+  EXPECT_EQ("a", GetHtmlTag(4));
+  EXPECT_EQ("p", GetHtmlTag(5));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
