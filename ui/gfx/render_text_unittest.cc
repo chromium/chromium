@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
@@ -1955,10 +1954,8 @@ INSTANTIATE_TEST_SUITE_P(ItemizeTextToRunsEmoji,
 
 struct ElideTextTestOptions {
   const ElideBehavior elide_behavior;
-  const bool use_early_eliding = false;
 };
 
-const bool kUseEarlyEliding = true;
 const bool kForceNoWhitespaceElision = false;
 const bool kForceWhitespaceElision = true;
 
@@ -1993,11 +1990,6 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
   SetGlyphWidth(kGlyphWidth);
 
   const ElideTextTestOptions options = std::get<0>(GetParam());
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (options.use_early_eliding) {
-    scoped_feature_list.InitAndEnableFeature(kRenderTextEarlyEliding);
-  }
-
   const ElideTextCase param = std::get<1>(GetParam());
   const std::u16string text = param.text;
   const std::u16string display_text = param.display_text;
@@ -2178,14 +2170,6 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(kElideTailTextCases)),
     RenderTextTestWithElideTextCase::ParamInfoToString);
 
-INSTANTIATE_TEST_SUITE_P(
-    EarlyElideTail,
-    RenderTextTestWithElideTextCase,
-    testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_TAIL,
-                                                          kUseEarlyEliding}),
-                     testing::ValuesIn(kElideTailTextCases)),
-    RenderTextTestWithElideTextCase::ParamInfoToString);
-
 const ElideTextCase kElideTruncateTextCases[] = {
     {"empty", u"", u""},
     {"letter_m_tail0", u"M", u""},
@@ -2254,14 +2238,6 @@ INSTANTIATE_TEST_SUITE_P(
     ElideTruncate,
     RenderTextTestWithElideTextCase,
     testing::Combine(testing::Values(ElideTextTestOptions{TRUNCATE}),
-                     testing::ValuesIn(kElideTruncateTextCases)),
-    RenderTextTestWithElideTextCase::ParamInfoToString);
-
-INSTANTIATE_TEST_SUITE_P(
-    EarlyElideTruncate,
-    RenderTextTestWithElideTextCase,
-    testing::Combine(testing::Values(ElideTextTestOptions{TRUNCATE,
-                                                          kUseEarlyEliding}),
                      testing::ValuesIn(kElideTruncateTextCases)),
     RenderTextTestWithElideTextCase::ParamInfoToString);
 
