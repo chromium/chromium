@@ -294,7 +294,13 @@ public class TrackingProtectionNoticeController {
                                             ? R.string
                                                     .tracking_protection_onboarding_notice_learn_more_button_label
                                             : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_label));
+                                                    .tracking_protection_offboarding_notice_learn_more_button_label),
+                            res.getString(
+                                    getNoticeType() == NoticeType.ONBOARDING
+                                            ? R.string
+                                                    .tracking_protection_onboarding_notice_learn_more_button_a11y_label
+                                            : R.string
+                                                    .tracking_protection_offboarding_notice_learn_more_button_a11y_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);
@@ -308,6 +314,11 @@ public class TrackingProtectionNoticeController {
 
         private ListItem getMenuItem(int itemID, String title) {
             return BrowserUiListMenuUtils.buildMenuListItem(title, itemID, 0, true);
+        }
+
+        private ListItem getMenuItem(int itemID, String title, String contentDescription) {
+            return BrowserUiListMenuUtils.buildMenuListItem(
+                    title, itemID, 0, contentDescription, true);
         }
 
         private Delegate onClickDelegate() {

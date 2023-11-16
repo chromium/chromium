@@ -2185,6 +2185,9 @@
   <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Onboarding notice secondary menu button text." formatter_data="android_java">
     Learn more
   </message>
+  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Onboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Learn more about Tracking Protection
+  </message>
 
   <!-- Tracking Protection: Offboarding -->
   <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_TITLE" desc="Title of the tracking protection offboarding notice" formatter_data="android_java">
@@ -2201,6 +2204,9 @@
   </message>
   <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Tracking protection offboarding notice secondary menu button text." formatter_data="android_java">
     Learn more
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Tracking protection offboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Learn more about Tracking Protection availability
   </message>
 
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="Title of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
