@@ -58,24 +58,8 @@ WGPUBindGroupLayoutEntry AsDawnType(
       return {};
     }
 
-    // Throw an exception for unsupported enums for GPUStorageTextureAccess
-    // to pretend Blink doesn't know of them.
     dawn_binding.storageTexture.access =
         AsDawnEnum(webgpu_binding->storageTexture()->access());
-    const V8GPUFeatureName::Enum kRWStorage =
-        V8GPUFeatureName::Enum::kChromiumExperimentalReadWriteStorageTexture;
-    if (dawn_binding.storageTexture.access !=
-            WGPUStorageTextureAccess_WriteOnly &&
-        !device->features()->has(kRWStorage)) {
-      exception_state.ThrowTypeError(String::Format(
-          "Use of the '%s' access mode requires the '%s' feature "
-          "to be enabled on %s.",
-          webgpu_binding->storageTexture()->access().AsCStr(),
-          V8GPUFeatureName(kRWStorage).AsCStr(),
-          device->formattedLabel().c_str()));
-      return {};
-    }
-
     dawn_binding.storageTexture.format =
         AsDawnEnum(webgpu_binding->storageTexture()->format());
     dawn_binding.storageTexture.viewDimension =

@@ -50,9 +50,6 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kBgra8UnormStorage;
     case WGPUFeatureName_ChromiumExperimentalDp4a:
       return V8GPUFeatureName::Enum::kChromiumExperimentalDp4A;
-    case WGPUFeatureName_ChromiumExperimentalReadWriteStorageTexture:
-      return V8GPUFeatureName::Enum::
-          kChromiumExperimentalReadWriteStorageTexture;
     case WGPUFeatureName_ChromiumExperimentalSubgroups:
       return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups;
     case WGPUFeatureName_ChromiumExperimentalSubgroupUniformControlFlow:
