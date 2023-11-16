@@ -998,9 +998,6 @@ export class BrowsingContextImpl {
     await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
       entryId: entry.id,
     });
-
-    this.#resetDeferredsIfFinished();
-    await this.lifecycleLoaded();
   }
 }
 

@@ -14,7 +14,8 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import execute_command, goto_url
+from test_helpers import (execute_command, goto_url, read_JSON_message,
+                          subscribe)
 
 HISTORY_LENGTH = 2
 
@@ -24,20 +25,24 @@ async def test_traverse_history(websocket, context_id, html):
     for i in range(HISTORY_LENGTH + 1):
         await goto_url(websocket, context_id, html(i))
 
+    await subscribe(websocket, ["browsingContext.load"])
+
     await traverse_history(websocket, context_id, -2)
-    await assert_href_equals(websocket, context_id, html(HISTORY_LENGTH - 2))
+    await assert_href_equals(websocket, html(HISTORY_LENGTH - 2))
 
     await traverse_history(websocket, context_id, 2)
-    await assert_href_equals(websocket, context_id, html(HISTORY_LENGTH))
+    await assert_href_equals(websocket, html(HISTORY_LENGTH))
 
     await traverse_history(websocket, context_id, -1)
-    await assert_href_equals(websocket, context_id, html(HISTORY_LENGTH - 1))
+    await assert_href_equals(websocket, html(HISTORY_LENGTH - 1))
 
     await traverse_history(websocket, context_id, 1)
-    await assert_href_equals(websocket, context_id, html(HISTORY_LENGTH))
+    await assert_href_equals(websocket, html(HISTORY_LENGTH))
 
+    # There is no event here.
     await traverse_history(websocket, context_id, 0)
-    await assert_href_equals(websocket, context_id, html(HISTORY_LENGTH))
+    await assert_location_href_equals(websocket, context_id,
+                                      html(HISTORY_LENGTH))
 
 
 @pytest.mark.asyncio
@@ -63,7 +68,12 @@ async def traverse_history(websocket, context_id, delta):
         })
 
 
-async def assert_href_equals(websocket, context_id, href):
+async def assert_href_equals(websocket, href):
+    response = await read_JSON_message(websocket)
+    assert response["params"]["url"] == href
+
+
+async def assert_location_href_equals(websocket, context_id, href):
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
