@@ -57,11 +57,11 @@ TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveDown) {
   VerifyCaretBrowsingPositionAndFocusUpdate(
       "<div>a|b</div><div><a href=\"foo\">cd</a></div>", "body",
       MoveCommands::ExecuteMoveDown,
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
       "<div>ab</div><div><a href=\"foo\">c|d</a></div>", "a");
 #else
       // MoveDown navigates visually, placing caret at different position for
-      // macOS.
+      // macOS and iOS.
       "<div>ab</div><div><a href=\"foo\">|cd</a></div>", "a");
 #endif
 }
@@ -185,11 +185,11 @@ TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveUp) {
   VerifyCaretBrowsingPositionAndFocusUpdate(
       "<div><a href=\"foo\">ab</a></div><div>c|d</div>", "body",
       MoveCommands::ExecuteMoveUp,
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
       "<div><a href=\"foo\">a|b</a></div><div>cd</div>", "a");
 #else
       // MoveUp navigates visually, placing caret at different position for
-      // macOS.
+      // macOS and iOS.
       "<div><a href=\"foo\">|ab</a></div><div>cd</div>", "a");
 #endif
 }

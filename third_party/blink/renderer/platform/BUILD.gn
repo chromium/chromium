@@ -1602,6 +1602,13 @@ component("platform") {
     ]
   }
 
+  if (is_apple) {
+    sources += [
+      "fonts/mac/font_platform_data_mac.h",
+      "fonts/mac/font_platform_data_mac.mm",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "audio/mac/fft_frame_mac.cc",
@@ -1611,8 +1618,6 @@ component("platform") {
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
-      "fonts/mac/font_platform_data_mac.h",
-      "fonts/mac/font_platform_data_mac.mm",
       "mac/color_mac.h",
       "mac/color_mac.mm",
       "mac/graphics_context_canvas.h",
