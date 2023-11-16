@@ -293,83 +293,56 @@ class [[nodiscard]] expected final {
   // either the value or error type is not implicitly convertible from `rhs`'s
   // corresponding type.
   template <typename U, typename G>
-    requires(internal::IsExplicitConversion<T, E, const U&, const G&>)
-  explicit constexpr expected(const expected<U, G>& rhs) noexcept
+    requires(internal::IsValidConversion<T, E, const U&, const G&>)
+  explicit(!std::convertible_to<const U&, T> ||
+           !std::convertible_to<const G&, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(const expected<U, G>& rhs) noexcept
       : impl_(rhs.impl_) {}
 
   template <typename U, typename G>
-    requires(internal::IsImplicitConversion<T, E, const U&, const G&>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(const expected<U, G>& rhs) noexcept
-      : impl_(rhs.impl_) {}
-
-  template <typename U, typename G>
-    requires(internal::IsExplicitConversion<T, E, U, G>)
-  explicit constexpr expected(expected<U, G>&& rhs) noexcept
-      : impl_(std::move(rhs.impl_)) {}
-
-  template <typename U, typename G>
-    requires(internal::IsImplicitConversion<T, E, U, G>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(expected<U, G>&& rhs) noexcept
+    requires(internal::IsValidConversion<T, E, U, G>)
+  explicit(!std::convertible_to<U, T> || !std::convertible_to<G, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(expected<U, G>&& rhs) noexcept
       : impl_(std::move(rhs.impl_)) {}
 
   // Deviation from the Standard, which allows implicit conversions as long as U
   // is implicitly convertible to T: Chromium additionally requires that U is
   // not implicitly convertible to E.
   template <typename U = T>
-    requires(internal::IsExplicitValueConstruction<T, E, U>)
-  explicit constexpr expected(U&& v) noexcept
-      : impl_(kValTag, std::forward<U>(v)) {}
-
-  template <typename U = T>
-    requires(internal::IsImplicitValueConstruction<T, E, U>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(U&& v) noexcept
+    requires(internal::IsValidValueConstruction<T, E, U>)
+  explicit(!std::convertible_to<U, T> || std::convertible_to<U, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(U&& v) noexcept
       : impl_(kValTag, std::forward<U>(v)) {}
 
   template <typename U>
-    requires(internal::IsExplicitConstruction<T, const U&>)
-  explicit constexpr expected(const ok<U>& o) noexcept
+    requires(std::constructible_from<T, const U&>)
+  explicit(!std::convertible_to<const U&, T>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(const ok<U>& o) noexcept
       : impl_(kValTag, o.value()) {}
 
   template <typename U>
-    requires(internal::IsImplicitConstruction<T, const U&>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(const ok<U>& o) noexcept
-      : impl_(kValTag, o.value()) {}
-
-  template <typename U>
-    requires(internal::IsExplicitConstruction<T, U>)
-  explicit constexpr expected(ok<U>&& o) noexcept
-      : impl_(kValTag, std::move(o.value())) {}
-
-  template <typename U>
-    requires(internal::IsImplicitConstruction<T, U>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(ok<U>&& o) noexcept
+    requires(std::constructible_from<T, U>)
+  explicit(!std::convertible_to<U, T>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(ok<U>&& o) noexcept
       : impl_(kValTag, std::move(o.value())) {}
 
   template <typename G>
-    requires(internal::IsExplicitConstruction<E, const G&>)
-  explicit constexpr expected(const unexpected<G>& e) noexcept
+    requires(std::constructible_from<E, const G&>)
+  explicit(!std::convertible_to<const G&, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(const unexpected<G>& e) noexcept
       : impl_(kErrTag, e.error()) {}
 
   template <typename G>
-    requires(internal::IsImplicitConstruction<E, const G&>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(const unexpected<G>& e) noexcept
-      : impl_(kErrTag, e.error()) {}
-
-  template <typename G>
-    requires(internal::IsExplicitConstruction<E, G>)
-  explicit constexpr expected(unexpected<G>&& e) noexcept
-      : impl_(kErrTag, std::move(e.error())) {}
-
-  template <typename G>
-    requires(internal::IsImplicitConstruction<E, G>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(unexpected<G>&& e) noexcept
+    requires(std::constructible_from<E, G>)
+  explicit(!std::convertible_to<G, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(unexpected<G>&& e) noexcept
       : impl_(kErrTag, std::move(e.error())) {}
 
   template <typename... Args>
@@ -468,18 +441,18 @@ class [[nodiscard]] expected final {
 
   template <typename U>
   constexpr T value_or(U&& v) const& noexcept {
-    static_assert(std::is_copy_constructible_v<T>,
+    static_assert(std::copy_constructible<T>,
                   "expected<T, E>::value_or: T must be copy constructible");
-    static_assert(std::is_convertible_v<U&&, T>,
+    static_assert(std::convertible_to<U&&, T>,
                   "expected<T, E>::value_or: U must be convertible to T");
     return has_value() ? value() : static_cast<T>(std::forward<U>(v));
   }
 
   template <typename U>
   constexpr T value_or(U&& v) && noexcept {
-    static_assert(std::is_move_constructible_v<T>,
+    static_assert(std::move_constructible<T>,
                   "expected<T, E>::value_or: T must be move constructible");
-    static_assert(std::is_convertible_v<U&&, T>,
+    static_assert(std::convertible_to<U&&, T>,
                   "expected<T, E>::value_or: U must be convertible to T");
     return has_value() ? std::move(value())
                        : static_cast<T>(std::forward<U>(v));
@@ -487,18 +460,18 @@ class [[nodiscard]] expected final {
 
   template <typename G>
   constexpr E error_or(G&& e) const& noexcept {
-    static_assert(std::is_copy_constructible_v<E>,
+    static_assert(std::copy_constructible<E>,
                   "expected<T, E>::error_or: E must be copy constructible");
-    static_assert(std::is_convertible_v<G&&, E>,
+    static_assert(std::convertible_to<G&&, E>,
                   "expected<T, E>::error_or: G must be convertible to E");
     return has_value() ? static_cast<E>(std::forward<G>(e)) : error();
   }
 
   template <typename G>
   constexpr E error_or(G&& e) && noexcept {
-    static_assert(std::is_move_constructible_v<E>,
+    static_assert(std::move_constructible<E>,
                   "expected<T, E>::error_or: E must be move constructible");
-    static_assert(std::is_convertible_v<G&&, E>,
+    static_assert(std::convertible_to<G&&, E>,
                   "expected<T, E>::error_or: G must be convertible to E");
     return has_value() ? static_cast<E>(std::forward<G>(e))
                        : std::move(error());
@@ -701,50 +674,34 @@ class [[nodiscard]] expected<T, E> final {
   // Converting copy and move constructors. These constructors are explicit if
   // the error type is not implicitly convertible from `rhs`'s error type.
   template <typename U, typename G>
-    requires(internal::IsExplicitVoidConversion<E, U, const G&>)
-  constexpr explicit expected(const expected<U, G>& rhs) noexcept
+    requires(internal::IsValidVoidConversion<E, U, const G&>)
+  explicit(!std::convertible_to<const G&, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(const expected<U, G>& rhs) noexcept
       : impl_(rhs.impl_) {}
 
   template <typename U, typename G>
-    requires(internal::IsImplicitVoidConversion<E, U, const G&>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr /* implicit */ expected(const expected<U, G>& rhs) noexcept
-      : impl_(rhs.impl_) {}
-
-  template <typename U, typename G>
-    requires(internal::IsExplicitVoidConversion<E, U, G>)
-  constexpr explicit expected(expected<U, G>&& rhs) noexcept
-      : impl_(std::move(rhs.impl_)) {}
-
-  template <typename U, typename G>
-    requires(internal::IsImplicitVoidConversion<E, U, G>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr /* implicit */ expected(expected<U, G>&& rhs) noexcept
+    requires(internal::IsValidVoidConversion<E, U, G>)
+  explicit(!std::convertible_to<G, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(expected<U, G>&& rhs) noexcept
       : impl_(std::move(rhs.impl_)) {}
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr /* implicit */ expected(base::ok<T>) noexcept {}
 
   template <typename G>
-    requires(internal::IsExplicitConstruction<E, const G&>)
-  explicit constexpr expected(const unexpected<G>& e) noexcept
+    requires(std::constructible_from<E, const G&>)
+  explicit(!std::convertible_to<const G&, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(const unexpected<G>& e) noexcept
       : impl_(kErrTag, e.error()) {}
 
   template <typename G>
-    requires(internal::IsImplicitConstruction<E, const G&>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(const unexpected<G>& e) noexcept
-      : impl_(kErrTag, e.error()) {}
-
-  template <typename G>
-    requires(internal::IsExplicitConstruction<E, G>)
-  explicit constexpr expected(unexpected<G>&& e) noexcept
-      : impl_(kErrTag, std::move(e.error())) {}
-
-  template <typename G>
-    requires(internal::IsImplicitConstruction<E, G>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ constexpr expected(unexpected<G>&& e) noexcept
+    requires(std::constructible_from<E, G>)
+  explicit(!std::convertible_to<G, E>)
+      // NOLINTNEXTLINE(google-explicit-constructor)
+      constexpr expected(unexpected<G>&& e) noexcept
       : impl_(kErrTag, std::move(e.error())) {}
 
   constexpr explicit expected(absl::in_place_t) noexcept {}
@@ -793,18 +750,18 @@ class [[nodiscard]] expected<T, E> final {
 
   template <typename G>
   constexpr E error_or(G&& e) const& noexcept {
-    static_assert(std::is_copy_constructible_v<E>,
+    static_assert(std::copy_constructible<E>,
                   "expected<T, E>::error_or: E must be copy constructible");
-    static_assert(std::is_convertible_v<G&&, E>,
+    static_assert(std::convertible_to<G&&, E>,
                   "expected<T, E>::error_or: G must be convertible to E");
     return has_value() ? static_cast<E>(std::forward<G>(e)) : error();
   }
 
   template <typename G>
   constexpr E error_or(G&& e) && noexcept {
-    static_assert(std::is_move_constructible_v<E>,
+    static_assert(std::move_constructible<E>,
                   "expected<T, E>::error_or: E must be move constructible");
-    static_assert(std::is_convertible_v<G&&, E>,
+    static_assert(std::convertible_to<G&&, E>,
                   "expected<T, E>::error_or: G must be convertible to E");
     return has_value() ? static_cast<E>(std::forward<G>(e))
                        : std::move(error());

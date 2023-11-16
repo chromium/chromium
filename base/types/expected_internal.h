@@ -107,28 +107,6 @@ inline constexpr bool IsValidValueConstruction =
     !std::is_same_v<remove_cvref_t<U>, expected<T, E>> && !IsOk<U> &&
     !IsUnexpected<U>;
 
-template <typename T, typename E, typename UF, typename GF>
-inline constexpr bool AreValueAndErrorConvertible =
-    std::is_convertible_v<UF, T> && std::is_convertible_v<GF, E>;
-
-template <typename T, typename E, typename UF, typename GF>
-inline constexpr bool IsExplicitConversion =
-    IsValidConversion<T, E, UF, GF> &&
-    !AreValueAndErrorConvertible<T, E, UF, GF>;
-
-template <typename T, typename E, typename UF, typename GF>
-inline constexpr bool IsImplicitConversion =
-    IsValidConversion<T, E, UF, GF> &&
-    AreValueAndErrorConvertible<T, E, UF, GF>;
-
-template <typename E, typename U, typename GF>
-inline constexpr bool IsExplicitVoidConversion =
-    IsValidVoidConversion<E, U, GF> && !std::is_convertible_v<GF, E>;
-
-template <typename E, typename U, typename GF>
-inline constexpr bool IsImplicitVoidConversion =
-    IsValidVoidConversion<E, U, GF> && std::is_convertible_v<GF, E>;
-
 template <typename T, typename U>
 inline constexpr bool IsOkValueConstruction =
     !std::is_same_v<remove_cvref_t<U>, ok<T>> &&
@@ -140,24 +118,6 @@ inline constexpr bool IsUnexpectedValueConstruction =
     !std::is_same_v<remove_cvref_t<U>, unexpected<T>> &&
     !std::is_same_v<remove_cvref_t<U>, absl::in_place_t> &&
     std::is_constructible_v<T, U>;
-
-template <typename T, typename E, typename U>
-inline constexpr bool IsExplicitValueConstruction =
-    IsValidValueConstruction<T, E, U> &&
-    (!std::is_convertible_v<U, T> || std::is_convertible_v<U, E>);
-
-template <typename T, typename E, typename U>
-inline constexpr bool IsImplicitValueConstruction =
-    IsValidValueConstruction<T, E, U> && std::is_convertible_v<U, T> &&
-    !std::is_convertible_v<U, E>;
-
-template <typename T, typename U>
-inline constexpr bool IsExplicitConstruction =
-    std::is_constructible_v<T, U> && !std::is_convertible_v<U, T>;
-
-template <typename T, typename U>
-inline constexpr bool IsImplicitConstruction =
-    std::is_constructible_v<T, U> && std::is_convertible_v<U, T>;
 
 template <typename T, typename E, typename U>
 inline constexpr bool IsValueAssignment =
