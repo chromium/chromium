@@ -14,7 +14,7 @@ load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./reproxy.star", "reproxy")
 load("./rust_linux.star", "rust")
-load("./typescript_linux.star", "typescript")
+load("./typescript_unix.star", "typescript")
 
 def __filegroups(ctx):
     fg = {}
