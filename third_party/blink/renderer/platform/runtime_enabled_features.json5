@@ -2151,6 +2151,11 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
+      name: "LazyLoadScrollMargin",
+      public: true,
+      status: "test",
+    },
+    {
       name: "LCPAnimatedImagesWebExposed",
       status: "test",
       base_feature: "none",
