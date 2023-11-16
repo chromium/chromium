@@ -29,9 +29,7 @@ MediaLicenseDatabase::MediaLicenseDatabase(const base::FilePath& path)
       // bytes) and that we'll typically only be pulling one file at a time
       // (playback), specify a large page size to allow inner nodes can pack
       // many keys, to keep the index B-tree flat.
-      db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 32768,
-                               .cache_size = 8}) {}
+      db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8}) {}
 
 MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenFile(
     const media::CdmType& cdm_type,

@@ -16,7 +16,7 @@
 namespace history {
 
 InMemoryDatabase::InMemoryDatabase()
-    : db_({.exclusive_locking = true, .page_size = 4096, .cache_size = 500}) {}
+    : db_({.page_size = 4096, .cache_size = 500}) {}
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 

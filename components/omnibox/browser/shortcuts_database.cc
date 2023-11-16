@@ -156,11 +156,7 @@ ShortcutsDatabase::Shortcut::~Shortcut() {
 // ShortcutsDatabase ----------------------------------------------------------
 
 ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
-    : db_({// Run the database in exclusive mode. Nobody else should be
-           // accessing the database while we're running, and this will give
-           // somewhat improved perf.
-           .exclusive_locking = true,
-           // Set the database page size to something a little larger to give us
+    : db_({// Set the database page size to something a little larger to give us
            // better performance (we're typically seek rather than bandwidth
            // limited). Must be a power of 2 and a max of 65536.
            .page_size = 4096,

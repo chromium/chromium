@@ -700,8 +700,8 @@ bool FirstPartySetsDatabase::LazyInit() {
     return db_status_ == InitStatus::kSuccess;
 
   CHECK_EQ(db_.get(), nullptr);
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("FirstPartySets");
   // base::Unretained is safe here because this FirstPartySetsDatabase owns
   // the sql::Database instance that stores and uses the callback. So,

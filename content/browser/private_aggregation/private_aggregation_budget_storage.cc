@@ -99,9 +99,7 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 4096,
-                               .cache_size = 32})) {}
+          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32})) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();

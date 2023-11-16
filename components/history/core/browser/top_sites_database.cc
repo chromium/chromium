@@ -318,8 +318,8 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   const bool file_existed = base::PathExists(db_name);
 
   // Settings copied from FaviconDatabase.
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("TopSites");
   db_->set_error_callback(
       base::BindRepeating(&TopSitesDatabase::DatabaseErrorCallback,

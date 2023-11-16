@@ -1064,7 +1064,7 @@ LoginDatabase::LoginDatabase(const base::FilePath& db_path,
     : db_path_(db_path),
       is_account_store_(is_account_store),
       // Set options for a small, private database (based on WebDatabase).
-      db_({.exclusive_locking = true, .page_size = 2048, .cache_size = 32}) {}
+      db_({.page_size = 2048, .cache_size = 32}) {}
 
 LoginDatabase::~LoginDatabase() = default;
 

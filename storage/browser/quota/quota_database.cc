@@ -914,7 +914,6 @@ QuotaError QuotaDatabase::EnsureOpened() {
   }
 
   sql::DatabaseOptions options{
-      .exclusive_locking = true,
       // The quota database is a critical storage component. If it's corrupted,
       // all client-side storage APIs fail, because they don't know where their
       // data is stored.
