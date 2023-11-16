@@ -151,6 +151,19 @@ class CORE_EXPORT StyleCascade {
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> GetCascadedValues()
       const;
 
+  // Resolves a single CSSValue in the context of some StyleResolverState.
+  //
+  // This is intended for use by the Inspector Agent.
+  //
+  // The function is primarily useful for eliminating var()/env() references.
+  // It will also handle other kinds of resolution (e.g. eliminate 'revert'),
+  // but note that the specified declaration will appear alone and uncontested
+  // in a temporary StyleCascade, so e.g. 'revert' always becomes 'unset',
+  // as there is nothing else to revert to.
+  static const CSSValue* Resolve(StyleResolverState&,
+                                 const CSSPropertyName&,
+                                 const CSSValue&);
+
  private:
   friend class TestCascade;
 

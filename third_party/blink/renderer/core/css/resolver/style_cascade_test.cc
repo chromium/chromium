@@ -154,6 +154,17 @@ class TestCascade {
                             resolver.InnerResolver());
   }
 
+  static const CSSValue* StaticResolve(StyleResolverState& state,
+                                       String name,
+                                       String value) {
+    const CSSPropertyValueSet* set =
+        ParseDeclarationBlock(name + ":" + value, kHTMLStandardMode);
+    DCHECK(set);
+    DCHECK(set->PropertyCount());
+    CSSPropertyValueSet::PropertyReference reference = set->PropertyAt(0);
+    return StyleCascade::Resolve(state, reference.Name(), reference.Value());
+  }
+
   std::unique_ptr<CSSBitset> GetImportantSet() {
     return cascade_.GetImportantSet();
   }
@@ -375,11 +386,17 @@ class StyleCascadeTest : public PageTestBase {
     return *CSSPropertyName::From(GetDocument().GetExecutionContext(), name);
   }
 
+  String CssText(const CSSValue* value) {
+    if (!value) {
+      return g_null_atom;
+    }
+    return value->CssText();
+  }
+
   String CssTextAt(
       const HeapHashMap<CSSPropertyName, Member<const CSSValue>>& map,
       String name) {
-    const CSSValue* value = map.at(PropertyName(name));
-    return value ? value->CssText() : g_null_atom;
+    return CssText(map.at(PropertyName(name)));
   }
 };
 
@@ -3652,6 +3669,71 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   EXPECT_EQ("linear", CssTextAt(map, "animation-timing-function"));
   EXPECT_EQ("10s", CssTextAt(map, "animation-duration"));
   EXPECT_EQ("-5s", CssTextAt(map, "animation-delay"));
+}
+
+TEST_F(StyleCascadeTest, StaticResolveNoVar) {
+  // We don't need this object, but it's an easy way of setting
+  // up a StyleResolverState.
+  TestCascade cascade(GetDocument());
+
+  EXPECT_EQ("thing", CssText(TestCascade::StaticResolve(cascade.State(), "--x",
+                                                        "thing")));
+  EXPECT_EQ("red", CssText(TestCascade::StaticResolve(cascade.State(), "color",
+                                                      "red")));
+  EXPECT_EQ("10px", CssText(TestCascade::StaticResolve(cascade.State(), "width",
+                                                       "10px")));
+  EXPECT_EQ("10em", CssText(TestCascade::StaticResolve(cascade.State(), "width",
+                                                       "10em")));
+  EXPECT_EQ("calc(1% + 1em)", CssText(TestCascade::StaticResolve(
+                                  cascade.State(), "width", "calc(1% + 1em)")));
+}
+
+TEST_F(StyleCascadeTest, StaticResolveVar) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:foo");
+  cascade.Apply();
+
+  EXPECT_EQ("foo", CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                                      "var(--x)")));
+  EXPECT_EQ("foo bar", CssText(TestCascade::StaticResolve(
+                           cascade.State(), "--y", "var(--x) bar")));
+  EXPECT_EQ("bar", CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                                      "var(--unknown,bar)")));
+  EXPECT_EQ("unset", CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                                        "var(--unknown)")));
+}
+
+TEST_F(StyleCascadeTest, StaticResolveRegisteredVar) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--y", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:100px");
+  cascade.Apply();
+
+  EXPECT_EQ("100px", CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                                        "var(--x)")));
+  EXPECT_EQ("100px", CssText(TestCascade::StaticResolve(cascade.State(), "--z",
+                                                        "var(--x)")));
+
+  EXPECT_EQ("50px", CssText(TestCascade::StaticResolve(
+                        cascade.State(), "--y", "var(--unknown, 50px)")));
+  EXPECT_EQ("50px", CssText(TestCascade::StaticResolve(
+                        cascade.State(), "--z", "var(--unknown, 50px)")));
+
+  EXPECT_EQ("unset", CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                                        "var(--unknown)")));
+  EXPECT_EQ("unset", CssText(TestCascade::StaticResolve(cascade.State(), "--z",
+                                                        "var(--unknown)")));
+
+  // StyleCacade::Resolve does not actually compute values, just eliminate
+  // var() references.
+  EXPECT_EQ("calc(5em + 100px)",
+            CssText(TestCascade::StaticResolve(cascade.State(), "--y",
+                                               "calc(5em + var(--x))")));
+  EXPECT_EQ("calc(5em + 100px)",
+            CssText(TestCascade::StaticResolve(cascade.State(), "--z",
+                                               "calc(5em + var(--x))")));
 }
 
 TEST_F(StyleCascadeTest, RevertOrigin) {

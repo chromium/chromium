@@ -365,6 +365,24 @@ StyleCascade::GetCascadedValues() const {
   return result;
 }
 
+const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
+                                      const CSSPropertyName& name,
+                                      const CSSValue& value) {
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+
+  // Since the cascade map is empty, the CascadeResolver isn't important,
+  // as there can be no cycles in an empty map. We just instantiate it to
+  // satisfy the API.
+  CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
+
+  // The origin is relevant for 'revert'. We pick kAuthor arbitrarily,
+  // but the behavior would be the same for any non-animated origin.
+  // (It always becomes 'unset').
+  CascadeOrigin origin = CascadeOrigin::kAuthor;
+
+  return cascade.Resolve(name, value, origin, resolver);
+}
+
 void StyleCascade::AnalyzeIfNeeded() {
   if (needs_match_result_analyze_) {
     AnalyzeMatchResult();
