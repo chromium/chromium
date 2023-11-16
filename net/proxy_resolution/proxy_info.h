@@ -181,13 +181,6 @@ class NET_EXPORT ProxyInfo {
   // Returns true if this proxy info is for IP Protection.
   bool is_for_ip_protection() const { return is_for_ip_protection_; }
 
-#ifdef UNIT_TEST
-  // Returns the first valid proxy server. `is_empty()` must be false to be able
-  // to call this function, and the first chain must not be multi-proxy.
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& proxy_server() const { return proxy_list_.Get(); }
-#endif
-
   // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.
   const ProxyChain& proxy_chain() const { return proxy_list_.First(); }
