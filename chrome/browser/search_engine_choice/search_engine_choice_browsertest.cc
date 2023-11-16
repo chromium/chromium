@@ -229,12 +229,17 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
         search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
   }
 
+  // We check that the histogram is recorded for at least `count` because
+  // navigations could happen multiple times in a browser and might record the
+  // histogram more than the number specified in `count`.
   void CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions condition,
       int count) {
-    histogram_tester_.ExpectBucketCount(
-        search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
-        condition, count);
+    EXPECT_GE(histogram_tester_.GetBucketCount(
+                  search_engines::
+                      kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                  condition),
+              count);
   }
 
   void CheckProfileInitConditionRecorded(
@@ -497,9 +502,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 }
 #endif
 
-// TODO(crbug.com/1502568): Fix and re-enable test.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DISABLED_DialogDoesNotShowAgainAfterSettingPref) {
+                       DialogDoesNotShowAgainAfterSettingPref) {
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
@@ -511,7 +515,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   EXPECT_TRUE(service->IsShowingDialog(browser()));
-
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
@@ -528,10 +531,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1502568): Fix and re-enable test.
-IN_PROC_BROWSER_TEST_F(
-    SearchEngineChoiceBrowserTest,
-    DISABLED_DialogDoesNotOverlapWithProfileCustomizationDialog) {
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       DialogDoesNotOverlapWithProfileCustomizationDialog) {
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
@@ -582,10 +583,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
             base::UTF8ToUTF16(kCustomSearchEngineDomain));
 }
 
-// TODO(crbug.com/1502568): Fix and re-enable test.
-IN_PROC_BROWSER_TEST_F(
-    SearchEngineChoiceBrowserTest,
-    DISABLED_DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
   Profile* profile = browser()->profile();
   auto* search_engine_choice_service =
       static_cast<MockSearchEngineChoiceService*>(
