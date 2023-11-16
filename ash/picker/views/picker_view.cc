@@ -8,7 +8,9 @@
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -20,6 +22,7 @@ namespace {
 
 constexpr int kBorderRadius = 20;
 constexpr int kShadowElevation = 3;
+constexpr ui::ColorId kBackgroundColor = cros_tokens::kCrosSysBaseElevated;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
@@ -33,6 +36,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 PickerView::PickerView() {
   SetShowCloseButton(false);
+  SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
 }
 
 PickerView::~PickerView() = default;

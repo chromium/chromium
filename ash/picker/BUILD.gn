@@ -18,7 +18,10 @@ source_set("picker") {
     "//ui/views",
   ]
 
-  deps = [ "//ui/gfx" ]
+  deps = [
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
+  ]
 }
 
 source_set("unit_tests") {
@@ -31,5 +34,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//base/test:test_support",
     "//testing/gtest",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
   ]
 }

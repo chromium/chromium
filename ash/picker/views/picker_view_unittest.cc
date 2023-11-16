@@ -7,6 +7,8 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/background.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -16,6 +18,11 @@ using ::testing::ElementsAre;
 using ::testing::Truly;
 
 using PickerViewTest = AshTestBase;
+
+PickerView* GetPickerViewFromWidget(views::Widget& widget) {
+  return views::AsViewClass<PickerView>(
+      widget.non_client_view()->client_view()->children().front());
+}
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
   auto widget = PickerView::CreateWidget();
@@ -34,6 +41,17 @@ TEST_F(PickerViewTest, CreateWidgetHasCorrectBorder) {
   auto widget = PickerView::CreateWidget();
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
+}
+
+TEST_F(PickerViewTest, BackgroundIsCorrect) {
+  auto widget = PickerView::CreateWidget();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  ASSERT_TRUE(view);
+  ASSERT_TRUE(view->background());
+  EXPECT_EQ(
+      view->background()->get_color(),
+      view->GetColorProvider()->GetColor(cros_tokens::kCrosSysBaseElevated));
 }
 
 }  // namespace
