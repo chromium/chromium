@@ -413,6 +413,9 @@ class CORE_EXPORT HTMLMediaElement
   // reason while in picture in picture mode.
   LocalFrame* LocalFrameForPlayer();
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
   static void AssertShadowRootChildren(ShadowRoot&);

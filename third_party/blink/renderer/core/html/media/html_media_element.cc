@@ -1450,6 +1450,64 @@ LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
                           : GetDocument().GetFrame();
 }
 
+bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
+                                            AtomicString& action) {
+  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+    return true;
+  }
+
+  if (!(EqualIgnoringASCIICase(action, keywords::kPlaypause) ||
+        EqualIgnoringASCIICase(action, keywords::kPause) ||
+        EqualIgnoringASCIICase(action, keywords::kPlay) ||
+        EqualIgnoringASCIICase(action, keywords::kMute))) {
+    return false;
+  }
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
+
+  if (EqualIgnoringASCIICase(action, keywords::kPlaypause)) {
+    if (paused_) {
+      if (LocalFrame::HasTransientUserActivation(frame)) {
+        Play();
+        return true;
+      } else {
+        String message = "Media cannot be played without a user gesture.";
+        document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning, message));
+        return false;
+      }
+    } else {
+      pause();
+      return true;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kPause)) {
+    if (!paused_) {
+      pause();
+    }
+    return true;
+  } else if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
+    if (paused_) {
+      if (LocalFrame::HasTransientUserActivation(frame)) {
+        Play();
+      } else {
+        String message = "Media cannot be played without a user gesture.";
+        document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning, message));
+        return false;
+      }
+    }
+    return true;
+  } else {
+    CHECK(EqualIgnoringASCIICase(action, keywords::kMute));
+    // No user activation check as `setMuted` already handles the autoplay
+    // policy check.
+    setMuted(!muted_);
+    return true;
+  }
+}
+
 void HTMLMediaElement::StartPlayerLoad() {
   DCHECK(!web_media_player_);
 

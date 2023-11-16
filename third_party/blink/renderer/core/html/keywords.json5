@@ -84,6 +84,11 @@
     "toggleFullscreen",
     "requestFullscreen",
     "exitFullscreen",
+    // invokeaction for audio and video
+    "playpause",
+    "pause",
+    "play",
+    "mute",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
