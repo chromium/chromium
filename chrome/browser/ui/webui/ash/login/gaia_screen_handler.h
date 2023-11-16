@@ -267,6 +267,11 @@ class GaiaScreenHandler
   // TODO(b/292242156) - Move to OnlineAuthenticationScreen
   void CompleteAuthentication(ash::login::OnlineSigninArtifacts artifacts);
 
+  // Utility method gathering all the metrics that are being recorded when Gaia
+  // sends 'completeAuthentication'.
+  void RecordCompleteAuthenticationMetrics(
+      const ash::login::OnlineSigninArtifacts& artifacts);
+
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,

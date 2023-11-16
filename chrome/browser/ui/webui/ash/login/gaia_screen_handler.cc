@@ -786,12 +786,8 @@ void GaiaScreenHandler::CompleteAuthWithCookies(
   CompleteAuthentication(std::move(signin_artifacts));
 }
 
-void GaiaScreenHandler::CompleteAuthentication(
-    ash::login::OnlineSigninArtifacts signin_artifacts) {
-  if (!LoginDisplayHost::default_host()) {
-    return;
-  }
-
+void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
+    const ash::login::OnlineSigninArtifacts& signin_artifacts) {
   if (!signin_artifacts.using_saml) {
     base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
                                   login_request_variant_);
@@ -811,6 +807,27 @@ void GaiaScreenHandler::CompleteAuthentication(
             : 0);
   }
 
+  // Record amount of time from the moment screen was shown till
+  // completeAuthentication signal come. Only for no SAML flow and only during
+  // first run in OOBE.
+  if (elapsed_timer_ && !signin_artifacts.using_saml &&
+      session_manager::SessionManager::Get()->session_state() ==
+          session_manager::SessionState::OOBE) {
+    base::UmaHistogramMediumTimes("OOBE.GaiaLoginTime",
+                                  elapsed_timer_->Elapsed());
+    elapsed_timer_.reset();
+  }
+}
+
+void GaiaScreenHandler::CompleteAuthentication(
+    ash::login::OnlineSigninArtifacts signin_artifacts) {
+  // Record screen-related metrics before continuing.
+  RecordCompleteAuthenticationMetrics(signin_artifacts);
+
+  if (!LoginDisplayHost::default_host()) {
+    return;
+  }
+
   const AccountId account_id = login::GetAccountId(
       signin_artifacts.email, signin_artifacts.gaia_id, AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
@@ -826,17 +843,6 @@ void GaiaScreenHandler::CompleteAuthentication(
                                                            user_type)) {
     ShowAllowlistCheckFailedError();
     return;
-  }
-
-  // Record amount of time from the moment screen was shown till
-  // completeAuthentication signal come. Only for no SAML flow and only during
-  // first run in OOBE.
-  if (elapsed_timer_ && !signin_artifacts.using_saml &&
-      session_manager::SessionManager::Get()->session_state() ==
-          session_manager::SessionState::OOBE) {
-    base::UmaHistogramMediumTimes("OOBE.GaiaLoginTime",
-                                  elapsed_timer_->Elapsed());
-    elapsed_timer_.reset();
   }
 
   // ------ Set user's email on the UI
