@@ -29,6 +29,11 @@ def init(ctx):
     }[runtime.os]
     step_config = {
         "platforms": {
+            "default": {
+                "OSFamily": "Linux",
+                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
+                "label:action_default": "1",
+            },
             # Large workers are usually used for Python actions like generate bindings, mojo generators etc
             # They can run on Linux workers.
             "large": {
