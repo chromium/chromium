@@ -2,6 +2,4 @@ SUCCESS!
 
 
 
-some textmore text
-and a block
-ruby text 2
+some textmore text and a blockruby text 2

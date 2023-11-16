@@ -1683,6 +1683,20 @@ class ComputedStyle final : public ComputedStyleBase {
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
   }
 
+  bool InlinifiesChildren() const {
+    EDisplay display = Display();
+    // https://drafts.csswg.org/css-ruby-1/#anon-gen-inlinize
+    if (display == EDisplay::kRuby || display == EDisplay::kBlockRuby ||
+        display == EDisplay::kRubyText) {
+      return true;
+    }
+    // https://drafts.csswg.org/css-display-4/#inlinify
+    // If an inline box (inline flow) is inlinified, it recursively inlinifies
+    // all of its in-flow children
+    return IsInInlinifyingDisplay() &&
+           (display == EDisplay::kContents || display == EDisplay::kInline);
+  }
+
   // Return true if an element with this computed style requires LayoutNG
   // (i.e. has no legacy layout implementation).
   bool DisplayTypeRequiresLayoutNG() const {

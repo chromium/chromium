@@ -657,15 +657,31 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     // Generate an anonymous table or reuse existing one from previous child
     // Per: 17.2.1 Anonymous table objects 3. Generate missing parents
     // http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes
-    LayoutObject* table;
+    LayoutObject* table = nullptr;
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : children->LastChild();
-    if (after_child && after_child->IsAnonymous() && after_child->IsTable() &&
+    if (after_child && after_child->IsAnonymous() &&
         !after_child->IsBeforeContent()) {
-      table = after_child;
-    } else {
+      if (after_child->IsTable()) {
+        table = after_child;
+      } else if (RuntimeEnabledFeatures::RubyInlinifyEnabled() &&
+                 after_child->IsAnonymousBlock()) {
+        // An anonymous table might be in an anonymous block.
+        after_child = To<LayoutBlock>(after_child)->LastChild();
+        if (after_child->IsAnonymous() && !after_child->IsBeforeContent() &&
+            after_child->IsTable()) {
+          table = after_child;
+        }
+      }
+    }
+    if (!table) {
       table = LayoutTable::CreateAnonymousWithParent(*this);
-      children->InsertChildNode(this, table, before_child);
+      if (RuntimeEnabledFeatures::RubyInlinifyEnabled()) {
+        // An anonymous table might be added to an anonymous block child.
+        AddChild(table, before_child);
+      } else {
+        children->InsertChildNode(this, table, before_child);
+      }
     }
     table->AddChild(new_child);
   } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||

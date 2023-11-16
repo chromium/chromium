@@ -2,8 +2,4 @@ SUCCESS!
 
 
 
-text
-block
-new ruby textmore
-text
-ruby text
+text blocknew ruby textmore textruby text

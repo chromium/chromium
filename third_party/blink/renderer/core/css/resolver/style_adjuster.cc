@@ -210,6 +210,63 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
   return EDisplay::kBlock;
 }
 
+// https://drafts.csswg.org/css-display/#inlinify
+static EDisplay EquivalentInlineDisplay(EDisplay display) {
+  switch (display) {
+    case EDisplay::kFlowRootListItem:
+      return EDisplay::kInlineFlowRootListItem;
+    case EDisplay::kBlock:
+    case EDisplay::kFlowRoot:
+      return EDisplay::kInlineBlock;
+    case EDisplay::kTable:
+      return EDisplay::kInlineTable;
+    case EDisplay::kWebkitBox:
+      return EDisplay::kWebkitInlineBox;
+    case EDisplay::kFlex:
+      return EDisplay::kInlineFlex;
+    case EDisplay::kGrid:
+      return EDisplay::kInlineGrid;
+    case EDisplay::kBlockMath:
+      return EDisplay::kMath;
+    case EDisplay::kBlockRuby:
+      return EDisplay::kRuby;
+    case EDisplay::kListItem:
+      return EDisplay::kInlineListItem;
+    case EDisplay::kLayoutCustom:
+      return EDisplay::kInlineLayoutCustom;
+
+    case EDisplay::kInlineFlex:
+    case EDisplay::kInlineFlowRootListItem:
+    case EDisplay::kInlineGrid:
+    case EDisplay::kInlineLayoutCustom:
+    case EDisplay::kInlineListItem:
+    case EDisplay::kInlineTable:
+    case EDisplay::kMath:
+    case EDisplay::kRuby:
+    case EDisplay::kWebkitInlineBox:
+
+    case EDisplay::kContents:
+    case EDisplay::kInline:
+    case EDisplay::kInlineBlock:
+    case EDisplay::kTableRowGroup:
+    case EDisplay::kTableHeaderGroup:
+    case EDisplay::kTableFooterGroup:
+    case EDisplay::kTableRow:
+    case EDisplay::kTableColumnGroup:
+    case EDisplay::kTableColumn:
+    case EDisplay::kTableCell:
+    case EDisplay::kTableCaption:
+    case EDisplay::kRubyText:
+      return display;
+
+    case EDisplay::kNone:
+      NOTREACHED();
+      return display;
+  }
+  NOTREACHED();
+  return EDisplay::kBlock;
+}
+
 static bool IsOutermostSVGElement(const Element* element) {
   auto* svg_element = DynamicTo<SVGElement>(element);
   return svg_element && svg_element->IsOutermostSVGSVGElement();
@@ -567,6 +624,16 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
         layout_parent_style.IsDisplayMathType()) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
+  }
+
+  // We need to avoid to inlinify children of a <fieldset>, which creates a
+  // dedicated LayoutObject and it assumes only block children.
+  if (RuntimeEnabledFeatures::RubyInlinifyEnabled() &&
+      layout_parent_style.InlinifiesChildren() &&
+      !builder.HasOutOfFlowPosition() && !builder.IsFloating() &&
+      !(element && IsA<HTMLFieldSetElement>(element->parentNode()))) {
+    builder.SetIsInInlinifyingDisplay();
+    builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
   }
 
   if (builder.Display() == EDisplay::kBlock) {

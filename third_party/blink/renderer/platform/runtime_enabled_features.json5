@@ -3147,6 +3147,12 @@
       status: "stable",
     },
     {
+      // crbug.com/1493273
+      name: "RubyInlinify",
+      status: "experimental",
+      depends_on: ["CssDisplayRuby"],
+    },
+    {
       name: "RubySimplePairing",
       status: "stable",
     },

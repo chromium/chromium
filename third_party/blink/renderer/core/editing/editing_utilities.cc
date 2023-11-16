@@ -1444,10 +1444,12 @@ bool IsRenderedAsNonInlineTableImageOrHR(const Node* node) {
   if (!node)
     return false;
   LayoutObject* layout_object = node->GetLayoutObject();
+  bool is_hr = RuntimeEnabledFeatures::RubyInlinifyEnabled()
+                   ? (layout_object->IsHR() && !layout_object->IsInline())
+                   : layout_object->IsHR();
   return layout_object &&
          ((layout_object->IsTable() && !layout_object->IsInline()) ||
-          (layout_object->IsImage() && !layout_object->IsInline()) ||
-          layout_object->IsHR());
+          (layout_object->IsImage() && !layout_object->IsInline()) || is_hr);
 }
 
 bool IsNonTableCellHTMLBlockElement(const Node* node) {

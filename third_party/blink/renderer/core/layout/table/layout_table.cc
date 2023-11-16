@@ -47,10 +47,18 @@ void LayoutTable::Trace(Visitor* visitor) const {
 
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
     const LayoutObject& parent) {
+  const ComputedStyle& parent_style = parent.StyleRef();
+  const bool is_parent_inline =
+      RuntimeEnabledFeatures::RubyInlinifyEnabled()
+          ? (parent.IsLayoutInline() || parent.IsRubyBase() ||
+             (parent.IsAnonymousBlock() && parent.Parent()->IsRubyBase()) ||
+             parent.IsRubyText() ||
+             (parent.IsAnonymousBlock() && parent.Parent()->IsRubyText()))
+          : parent.IsLayoutInline();
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(),
-          parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
+          parent_style,
+          is_parent_inline ? EDisplay::kInlineTable : EDisplay::kTable);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
   new_table->SetStyle(new_style);
