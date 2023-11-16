@@ -39,19 +39,6 @@ namespace {
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
 constexpr int kAutofillPopupPasswordMaxWidth = 108;
 
-// Popup items that use a leading icon instead of a trailing one.
-constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
-    PopupItemId::kClearForm,
-    PopupItemId::kShowAccountCards,
-    PopupItemId::kAutofillOptions,
-    PopupItemId::kEditAddressProfile,
-    PopupItemId::kDeleteAddressProfile,
-    PopupItemId::kAllSavedPasswordsEntry,
-    PopupItemId::kFillEverythingFromAddressProfile,
-    PopupItemId::kPasswordAccountStorageEmpty,
-    PopupItemId::kPasswordAccountStorageOptIn,
-    PopupItemId::kPasswordAccountStorageReSignin,
-    PopupItemId::kPasswordAccountStorageOptInAndGenerate};
 
 }  // namespace
 
@@ -208,84 +195,6 @@ PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
   std::vector<std::unique_ptr<views::View>> result;
   result.push_back(std::move(label));
   return result;
-}
-
-/************************** PopupFooterStrategy ******************************/
-
-PopupFooterStrategy::PopupFooterStrategy(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number)
-    : PopupRowBaseStrategy(std::move(controller), line_number) {}
-
-PopupFooterStrategy::~PopupFooterStrategy() = default;
-
-std::unique_ptr<PopupRowContentView> PopupFooterStrategy::CreateContent() {
-  if (!GetController()) {
-    return nullptr;
-  }
-
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupRowContentView>();
-  views::BoxLayout* layout_manager =
-      view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          popup_cell_utils::GetMarginsForContentCell(
-              /*has_control_element=*/false)));
-
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  std::unique_ptr<views::ImageView> icon =
-      popup_cell_utils::GetIconImageView(kSuggestion);
-
-  const bool kUseLeadingIcon =
-      base::Contains(kItemTypesUsingLeadingIcons, kSuggestion.popup_item_id);
-
-  if (kSuggestion.is_loading) {
-    view->AddChildView(std::make_unique<views::Throbber>())->Start();
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
-                                        /*resize=*/false);
-  } else if (icon && kUseLeadingIcon) {
-    view->AddChildView(std::move(icon));
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
-                                        /*resize=*/false);
-  }
-
-  layout_manager->set_minimum_cross_axis_size(
-      views::MenuConfig::instance().touchable_menu_height);
-
-  std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(kSuggestion.main_text,
-                                            views::style::STYLE_SECONDARY);
-  main_text_label->SetEnabled(!kSuggestion.is_loading);
-  view->TrackLabel(view->AddChildView(std::move(main_text_label)));
-
-  popup_cell_utils::AddSpacerWithSize(*view, *layout_manager, 0,
-                                      /*resize=*/true);
-
-  if (icon && !kUseLeadingIcon) {
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
-                                        /*resize=*/false);
-    view->AddChildView(std::move(icon));
-  }
-
-  std::unique_ptr<views::ImageView> trailing_icon =
-      popup_cell_utils::GetTrailingIconImageView(kSuggestion);
-  if (trailing_icon) {
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
-                                        /*resize=*/true);
-    view->AddChildView(std::move(trailing_icon));
-  }
-
-  // Force a refresh to ensure all the labels'styles are correct.
-  view->UpdateStyle(/*selected=*/false);
-
-  return view;
 }
 
 }  // namespace autofill

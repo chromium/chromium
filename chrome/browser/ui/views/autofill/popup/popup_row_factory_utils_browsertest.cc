@@ -56,6 +56,15 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kMagic,
                PopupItemId::kCompose),
+    Suggestion("Edit_address",
+               "label",
+               Suggestion::Icon::kEdit,
+               PopupItemId::kEditAddressProfile),
+    Suggestion("Promo_code",
+               "label",
+               Suggestion::Icon::kGlobe,
+               PopupItemId::kSeePromoCodeDetails),
+
 };
 }  // namespace
 

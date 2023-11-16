@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 
+#include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -18,7 +21,10 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -30,6 +36,19 @@ namespace {
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
+// Popup items that use a leading icon instead of a trailing one.
+constexpr auto kPopupItemTypesUsingLeadingIcons =
+    base::MakeFixedFlatSet<PopupItemId>(
+        {PopupItemId::kClearForm, PopupItemId::kShowAccountCards,
+         PopupItemId::kAutofillOptions, PopupItemId::kEditAddressProfile,
+         PopupItemId::kDeleteAddressProfile,
+         PopupItemId::kAllSavedPasswordsEntry,
+         PopupItemId::kFillEverythingFromAddressProfile,
+         PopupItemId::kPasswordAccountStorageEmpty,
+         PopupItemId::kPasswordAccountStorageOptIn,
+         PopupItemId::kPasswordAccountStorageReSignin,
+         PopupItemId::kPasswordAccountStorageOptInAndGenerate});
+
 // Returns a wrapper around `closure` that posts it to the default message
 // queue instead of executing it directly. This is to avoid that the callback's
 // caller can suicide by (unwittingly) deleting itself or its parent.
@@ -40,6 +59,71 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
             FROM_HERE, std::move(delayed_task));
       },
       std::move(task));
+}
+
+std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
+    const Suggestion& suggestion) {
+  auto view = std::make_unique<PopupRowContentView>();
+  views::BoxLayout* layout_manager =
+      view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          popup_cell_utils::GetMarginsForContentCell(
+              /*has_control_element=*/false)));
+
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  std::unique_ptr<views::ImageView> icon =
+      popup_cell_utils::GetIconImageView(suggestion);
+
+  const bool kUseLeadingIcon =
+      kPopupItemTypesUsingLeadingIcons.contains(suggestion.popup_item_id);
+
+  if (suggestion.is_loading) {
+    view->AddChildView(std::make_unique<views::Throbber>())->Start();
+    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+                                        PopupBaseView::GetHorizontalPadding(),
+                                        /*resize=*/false);
+  } else if (icon && kUseLeadingIcon) {
+    view->AddChildView(std::move(icon));
+    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+                                        PopupBaseView::GetHorizontalPadding(),
+                                        /*resize=*/false);
+  }
+
+  layout_manager->set_minimum_cross_axis_size(
+      views::MenuConfig::instance().touchable_menu_height);
+
+  std::unique_ptr<views::Label> main_text_label =
+      popup_cell_utils::CreateMainTextLabel(suggestion.main_text,
+                                            views::style::STYLE_SECONDARY);
+  main_text_label->SetEnabled(!suggestion.is_loading);
+  view->TrackLabel(view->AddChildView(std::move(main_text_label)));
+
+  popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+                                      /*spacer_width=*/0,
+                                      /*resize=*/true);
+
+  if (icon && !kUseLeadingIcon) {
+    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+                                        PopupBaseView::GetHorizontalPadding(),
+                                        /*resize=*/false);
+    view->AddChildView(std::move(icon));
+  }
+
+  std::unique_ptr<views::ImageView> trailing_icon =
+      popup_cell_utils::GetTrailingIconImageView(suggestion);
+  if (trailing_icon) {
+    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+                                        PopupBaseView::GetHorizontalPadding(),
+                                        /*resize=*/true);
+    view->AddChildView(std::move(trailing_icon));
+  }
+
+  // Force a refresh to ensure all the labels'styles are correct.
+  view->UpdateStyle(/*selected=*/false);
+
+  return view;
 }
 
 // Creates the row for an Autocomplete entry with a delete button.
@@ -122,8 +206,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     int line_number) {
   CHECK(controller);
 
-  PopupItemId popup_item_id =
-      controller->GetSuggestionAt(line_number).popup_item_id;
+  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
+  PopupItemId popup_item_id = suggestion.popup_item_id;
   std::optional<PopupRowView::ScopedNewBadgeTrackerWithAcceptAction>
       new_badge_tracker;
 
@@ -161,8 +245,9 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     } break;
     default:
       if (IsFooterPopupItemId(popup_item_id)) {
-        strategy =
-            std::make_unique<PopupFooterStrategy>(controller, line_number);
+        return std::make_unique<PopupRowView>(
+            a11y_selection_delegate, selection_delegate, controller,
+            line_number, CreateFooterPopupRowContentView(suggestion));
       } else {
         strategy =
             std::make_unique<PopupSuggestionStrategy>(controller, line_number);

@@ -129,19 +129,6 @@ class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
       PopupRowContentView& content_view) const;
 };
 
-// A `PopupRowStrategy` that creates the content for Autofill popup footers.
-class PopupFooterStrategy : public PopupRowBaseStrategy {
- public:
-  PopupFooterStrategy(base::WeakPtr<AutofillPopupController> controller,
-                      int line_number);
-  PopupFooterStrategy(const PopupFooterStrategy&) = delete;
-  PopupFooterStrategy& operator=(const PopupFooterStrategy&) = delete;
-  ~PopupFooterStrategy() override;
-
-  // PopupRowStrategy:
-  std::unique_ptr<PopupRowContentView> CreateContent() override;
-};
-
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_STRATEGY_H_

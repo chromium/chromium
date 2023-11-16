@@ -33,7 +33,6 @@ enum class StrategyType {
   kSuggestion,
   kComposeSuggestion,
   kPasswordSuggestion,
-  kFooter,
 };
 
 struct RowStrategyTestdata {
@@ -60,13 +59,6 @@ const RowStrategyTestdata kTestcases[] = {
                            PopupItemId::kAllSavedPasswordsEntry},
         .line_number = 0,
         .strategy_type = StrategyType::kPasswordSuggestion,
-    },
-    RowStrategyTestdata{
-        .popup_item_ids = {PopupItemId::kAddressEntry,
-                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
-                           PopupItemId::kAutofillOptions},
-        .line_number = 3,
-        .strategy_type = StrategyType::kFooter,
     },
     RowStrategyTestdata{
         .popup_item_ids = {PopupItemId::kAutocompleteEntry,
@@ -111,9 +103,6 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
       case StrategyType::kPasswordSuggestion:
         return std::make_unique<PopupPasswordSuggestionStrategy>(
             controller().GetWeakPtr(), line_number);
-      case StrategyType::kFooter:
-        return std::make_unique<PopupFooterStrategy>(controller().GetWeakPtr(),
-                                                     line_number);
     }
   }
 
