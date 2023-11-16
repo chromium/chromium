@@ -10,6 +10,9 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 
 import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
 
+const drive = chrome.fileManagerPrivate.VolumeType.DRIVE;
+const removable = chrome.fileManagerPrivate.VolumeType.REMOVABLE;
+
 /**
  * Creates new <xf-dlp-restriction-details-dialog> element for each test.
  */
@@ -167,7 +170,7 @@ export async function testBlockAllUrls(done: () => void) {
   const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
     level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
     urls: ['https://external.com', '*'],
-    components: ['drive'],
+    components: [drive],
   }];
   dialog.showDlpRestrictionDetailsDialog(details);
   assertFalse(blockDetails.hasAttribute('hidden'));
@@ -231,7 +234,7 @@ export async function testBlockComponents(done: () => void) {
   const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
     level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
     urls: [],
-    components: ['drive', 'removable'],
+    components: [drive, removable],
   }];
   dialog.showDlpRestrictionDetailsDialog(details);
   assertFalse(blockDetails.hasAttribute('hidden'));
@@ -264,7 +267,7 @@ export async function testMultipleDialogs(done: () => void) {
   const details1: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
     level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
     urls: ['https://external.com'],
-    components: ['drive'],
+    components: [drive],
   }];
   dialog.showDlpRestrictionDetailsDialog(details1);
   assertFalse(blockDetails.hasAttribute('hidden'));
@@ -283,7 +286,7 @@ export async function testMultipleDialogs(done: () => void) {
     {
       level: chrome.fileManagerPrivate.DlpLevel.WARN,
       urls: ['https://example.com'],
-      components: ['drive', 'removable'],
+      components: [drive, removable],
     },
     {
       level: chrome.fileManagerPrivate.DlpLevel.REPORT,
@@ -312,7 +315,7 @@ export async function testMultipleDialogs(done: () => void) {
     {
       level: chrome.fileManagerPrivate.DlpLevel.REPORT,
       urls: [],
-      components: ['drive', 'removable'],
+      components: [drive, removable],
     },
   ];
   dialog.showDlpRestrictionDetailsDialog(details3);

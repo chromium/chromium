@@ -84,7 +84,8 @@ mockChrome.fileManagerPrivate = {
     listener_: null,
   },
   getDriveConnectionState: function(
-      callback: chrome.fileManagerPrivate.GetDriveConnectionStateCallback) {
+      callback: (result: chrome.fileManagerPrivate.DriveConnectionState) =>
+          void) {
     callback({
       type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
       reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_NETWORK,

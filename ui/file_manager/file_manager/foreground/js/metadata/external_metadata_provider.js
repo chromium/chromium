@@ -42,8 +42,11 @@ export class ExternalMetadataProvider extends MetadataProvider {
           nameMap[requests[i].names[j]] = true;
         }
       }
+      const properties =
+          /** @type {Array<chrome.fileManagerPrivate.EntryPropertyName>} */ (
+              Object.keys(nameMap));
       chrome.fileManagerPrivate.getEntryProperties(
-          entries, Object.keys(nameMap), results => {
+          entries, properties, results => {
             if (!chrome.runtime.lastError) {
               fulfill(this.convertResults_(requests, nameMap, assert(results)));
             } else {

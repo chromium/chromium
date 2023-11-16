@@ -92,6 +92,8 @@ function setupFileGrid(): FileGrid {
 }
 
 function groupByModificationTime(fileListModel: FileListModel) {
+  const RecentDateBucket = chrome.fileManagerPrivate.RecentDateBucket;
+
   // Mock group by information.
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
@@ -113,27 +115,42 @@ function groupByModificationTime(fileListModel: FileListModel) {
   // (row 7)    Item 17   Item 18   Item 19
   fileListModel.getGroupBySnapshot = () => {
     return [
-      {startIndex: 0, endIndex: 1, label: 'today', group: 'today'},
-      {startIndex: 2, endIndex: 4, label: 'yesterday', group: 'yesterday'},
+      {
+        startIndex: 0,
+        endIndex: 1,
+        label: 'today',
+        group: RecentDateBucket.TODAY,
+      },
+      {
+        startIndex: 2,
+        endIndex: 4,
+        label: 'yesterday',
+        group: RecentDateBucket.YESTERDAY,
+      },
       {
         startIndex: 5,
         endIndex: 9,
         label: 'earlier_this_week',
-        group: 'earlier_this_week',
+        group: RecentDateBucket.EARLIER_THIS_WEEK,
       },
       {
         startIndex: 10,
         endIndex: 15,
         label: 'earlier_this_month',
-        group: 'earlier_this_month',
+        group: RecentDateBucket.EARLIER_THIS_MONTH,
       },
       {
         startIndex: 16,
         endIndex: 16,
         label: 'earlier_this_year',
-        group: 'earlier_this_year',
+        group: RecentDateBucket.EARLIER_THIS_YEAR,
       },
-      {startIndex: 17, endIndex: 19, label: 'older', group: 'older'},
+      {
+        startIndex: 17,
+        endIndex: 19,
+        label: 'older',
+        group: RecentDateBucket.OLDER,
+      },
     ];
   };
 }

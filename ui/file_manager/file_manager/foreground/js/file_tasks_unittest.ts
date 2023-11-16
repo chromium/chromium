@@ -99,7 +99,7 @@ export function setUp() {
       executeTask: function(
           _descriptor: any, _entries: any,
           onViewFiles: (result: chrome.fileManagerPrivate.TaskResult) => void) {
-        onViewFiles('failed');
+        onViewFiles(chrome.fileManagerPrivate.TaskResult.FAILED);
       },
       sharePathsWithCrostini: function(
           _vmName: any, _entries: Entry[], _persist: any,

@@ -9,6 +9,7 @@ import {str} from '../../common/js/translations.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
+
 const TEST_METADATA = {
   'a.txt': {
     contentMimeType: 'text/plain',
@@ -289,6 +290,8 @@ export function testShouldShowGroupHeading() {
 }
 
 export function testGroupByModificationTime() {
+  const RecentDateBucket = chrome.fileManagerPrivate.RecentDateBucket;
+
   /**
    * @type {!Array<{
    *  metadataMap: !Object<string, {modificationTime: Date}>,
@@ -315,13 +318,13 @@ export function testGroupByModificationTime() {
         startIndex: 0,
         endIndex: 0,
         label: str('RECENT_TIME_HEADING_TODAY'),
-        group: 'today',
+        group: RecentDateBucket.TODAY,
       }],
       expectedReversedGroups: [{
         startIndex: 0,
         endIndex: 0,
         label: str('RECENT_TIME_HEADING_TODAY'),
-        group: 'today',
+        group: RecentDateBucket.TODAY,
       }],
     },
     // All items are in the same group.
@@ -344,13 +347,13 @@ export function testGroupByModificationTime() {
         startIndex: 0,
         endIndex: 2,
         label: str('RECENT_TIME_HEADING_TODAY'),
-        group: 'today',
+        group: RecentDateBucket.TODAY,
       }],
       expectedReversedGroups: [{
         startIndex: 0,
         endIndex: 2,
         label: str('RECENT_TIME_HEADING_TODAY'),
-        group: 'today',
+        group: RecentDateBucket.TODAY,
       }],
     },
     // Items belong to different groups.
@@ -390,31 +393,31 @@ export function testGroupByModificationTime() {
           startIndex: 0,
           endIndex: 1,
           label: str('RECENT_TIME_HEADING_TODAY'),
-          group: 'today',
+          group: RecentDateBucket.TODAY,
         },
         {
           startIndex: 2,
           endIndex: 2,
           label: str('RECENT_TIME_HEADING_YESTERDAY'),
-          group: 'yesterday',
+          group: RecentDateBucket.YESTERDAY,
         },
         {
           startIndex: 3,
           endIndex: 4,
           label: str('RECENT_TIME_HEADING_THIS_WEEK'),
-          group: 'earlier_this_week',
+          group: RecentDateBucket.EARLIER_THIS_WEEK,
         },
         {
           startIndex: 5,
           endIndex: 5,
           label: str('RECENT_TIME_HEADING_THIS_MONTH'),
-          group: 'earlier_this_month',
+          group: RecentDateBucket.EARLIER_THIS_MONTH,
         },
         {
           startIndex: 6,
           endIndex: 6,
           label: str('RECENT_TIME_HEADING_THIS_YEAR'),
-          group: 'earlier_this_year',
+          group: RecentDateBucket.EARLIER_THIS_YEAR,
         },
       ],
       expectedReversedGroups: [
@@ -422,31 +425,31 @@ export function testGroupByModificationTime() {
           startIndex: 0,
           endIndex: 0,
           label: str('RECENT_TIME_HEADING_THIS_YEAR'),
-          group: 'earlier_this_year',
+          group: RecentDateBucket.EARLIER_THIS_YEAR,
         },
         {
           startIndex: 1,
           endIndex: 1,
           label: str('RECENT_TIME_HEADING_THIS_MONTH'),
-          group: 'earlier_this_month',
+          group: RecentDateBucket.EARLIER_THIS_MONTH,
         },
         {
           startIndex: 2,
           endIndex: 3,
           label: str('RECENT_TIME_HEADING_THIS_WEEK'),
-          group: 'earlier_this_week',
+          group: RecentDateBucket.EARLIER_THIS_WEEK,
         },
         {
           startIndex: 4,
           endIndex: 4,
           label: str('RECENT_TIME_HEADING_YESTERDAY'),
-          group: 'yesterday',
+          group: RecentDateBucket.YESTERDAY,
         },
         {
           startIndex: 5,
           endIndex: 6,
           label: str('RECENT_TIME_HEADING_TODAY'),
-          group: 'today',
+          group: RecentDateBucket.TODAY,
         },
       ],
     },

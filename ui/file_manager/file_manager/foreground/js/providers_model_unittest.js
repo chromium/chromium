@@ -21,7 +21,7 @@ import {ProvidersModel} from './providers_model.js';
  */
 const MOUNTED_SINGLE_PROVIDING_EXTENSION = {
   name: 'mounted-single-extension-name',
-  source: VolumeManagerCommon.Source.NETWORK,
+  source: chrome.fileManagerPrivate.ProviderSource.NETWORK,
 
   providerId: 'mounted-single-provider-id',
   iconSet: {
@@ -41,7 +41,7 @@ const MOUNTED_SINGLE_PROVIDING_EXTENSION = {
  */
 const NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION = {
   name: 'not-mounted-single-extension-name',
-  source: VolumeManagerCommon.Source.NETWORK,
+  source: chrome.fileManagerPrivate.ProviderSource.NETWORK,
 
   providerId: 'not-mounted-single-provider-id',
   iconSet: {
@@ -61,7 +61,7 @@ const NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION = {
  */
 const MOUNTED_MULTIPLE_PROVIDING_EXTENSION = {
   name: 'mounted-multiple-extension-name',
-  source: VolumeManagerCommon.Source.NETWORK,
+  source: chrome.fileManagerPrivate.ProviderSource.NETWORK,
 
   providerId: 'mounted-multiple-provider-id',
   iconSet: {
@@ -81,7 +81,7 @@ const MOUNTED_MULTIPLE_PROVIDING_EXTENSION = {
  */
 const NOT_MOUNTED_FILE_PROVIDING_EXTENSION = {
   name: 'file-extension-name',
-  source: VolumeManagerCommon.Source.FILE,
+  source: chrome.fileManagerPrivate.ProviderSource.FILE,
 
   providerId: 'file-provider-id',
   iconSet: {
@@ -102,7 +102,7 @@ const NOT_MOUNTED_FILE_PROVIDING_EXTENSION = {
  */
 const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
   name: 'device-extension-name',
-  source: VolumeManagerCommon.Source.DEVICE,
+  source: chrome.fileManagerPrivate.ProviderSource.DEVICE,
 
   providerId: 'device-provider-id',
   iconSet: {

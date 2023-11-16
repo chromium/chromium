@@ -163,19 +163,19 @@ export function createFakeVolumeMetadata(
     ): chrome.fileManagerPrivate.VolumeMetadata {
   return {
     volumeId: volumeInfo.volumeId,
-    volumeType: volumeInfo.volumeType,
+    volumeType: volumeInfo.volumeType as chrome.fileManagerPrivate.VolumeType,
     profile: {
       ...volumeInfo.profile,
       profileId: '',
     },
     configurable: volumeInfo.configurable,
     watchable: volumeInfo.watchable,
-    source: volumeInfo.source,
+    source: volumeInfo.source as chrome.fileManagerPrivate.Source,
     volumeLabel: volumeInfo.label,
     fileSystemId: undefined,
     providerId: volumeInfo.providerId,
     sourcePath: undefined,
-    deviceType: volumeInfo.deviceType,
+    deviceType: volumeInfo.deviceType as chrome.fileManagerPrivate.DeviceType,
     devicePath: volumeInfo.devicePath,
     isParentDevice: undefined,
     isReadOnly: volumeInfo.isReadOnly,

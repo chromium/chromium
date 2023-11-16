@@ -121,9 +121,8 @@ export function isTeleported(): Promise<boolean> {
  * in production environment.
  */
 export function testSendMessage(message: string): void {
-  const test = chrome.test || (window.top as ChromeWindow).chrome.test;
-  if (test) {
-    test.sendMessage(message);
+  if (chrome.test) {
+    chrome.test.sendMessage(message);
   }
 }
 

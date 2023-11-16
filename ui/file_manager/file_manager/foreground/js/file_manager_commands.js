@@ -2543,7 +2543,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
             });
 
         chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
-            entries, this.addsItems_);
+            entries, this.addsItems_, () => {});
 
         if (this.addsItems_) {
           HoldingSpaceUtil.maybeStoreTimeOfFirstPin();

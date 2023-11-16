@@ -331,31 +331,48 @@ function setupFileTableList(): FileTableList {
 /**
  */
 function enableGroupByForDataModel(fileListModel: FileListModel) {
+  const RecentDateBucket = chrome.fileManagerPrivate.RecentDateBucket;
+
   // Mock group by information.
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.getGroupBySnapshot = () => {
     return [
-      {startIndex: 0, endIndex: 1, label: 'today', group: 'today'},
-      {startIndex: 2, endIndex: 2, label: 'yesterday', group: 'yesterday'},
+      {
+        startIndex: 0,
+        endIndex: 1,
+        label: 'today',
+        group: RecentDateBucket.TODAY,
+      },
+      {
+        startIndex: 2,
+        endIndex: 2,
+        label: 'yesterday',
+        group: RecentDateBucket.YESTERDAY,
+      },
       {
         startIndex: 3,
         endIndex: 4,
         label: 'earlier_this_week',
-        group: 'earlier_this_week',
+        group: RecentDateBucket.EARLIER_THIS_WEEK,
       },
       {
         startIndex: 5,
         endIndex: 6,
         label: 'earlier_this_month',
-        group: 'earlier_this_month',
+        group: RecentDateBucket.EARLIER_THIS_MONTH,
       },
       {
         startIndex: 7,
         endIndex: 8,
         label: 'earlier_this_year',
-        group: 'earlier_this_year',
+        group: RecentDateBucket.EARLIER_THIS_YEAR,
       },
-      {startIndex: 9, endIndex: 9, label: 'older', group: 'older'},
+      {
+        startIndex: 9,
+        endIndex: 9,
+        label: 'older',
+        group: RecentDateBucket.OLDER,
+      },
     ];
   };
 }
