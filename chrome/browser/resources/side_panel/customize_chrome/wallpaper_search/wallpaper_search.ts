@@ -9,6 +9,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.c
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -115,12 +116,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
-  private emptyContainers_: number[];
+  private emptyContainers_: number[] = [];
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[category: string]: boolean} = {};
   private loading_: boolean;
-  private results_: WallpaperSearchResult[];
+  private results_: WallpaperSearchResult[] = [];
   private selectedDefaultColor_: string|undefined;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -350,6 +351,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
         e.model.item.id);
+  }
+
+  private shouldShowGrid_(): boolean {
+    return this.results_.length > 0 || this.emptyContainers_.length > 0;
   }
 }
 

@@ -1,4 +1,4 @@
-<style include="sp-shared-style">
+<style include="sp-shared-style cr-hidden-style">
   sp-heading {
     margin: 0 0 8px;
   }
@@ -255,6 +255,18 @@
       outline: var(--cr-focus-outline-hcm);
     }
   }
+
+  #footer {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    margin-block-start: 16px;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+    color: var(--color-side-panel-card-secondary-foreground);
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -366,7 +378,8 @@
         </svg>
       </cr-loading-gradient>
     </div>
-    <cr-grid columns="3" disable-arrow-navigation>
+    <cr-grid columns="3" disable-arrow-navigation
+        hidden$="[[!shouldShowGrid_(results_, emptyContainers_)]]">
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
         <div class="tile result" tabindex="0" role="button"
             on-click="onResultClick_">
@@ -385,6 +398,9 @@
         </div>
       </template>
     </cr-grid>
+    <div id="footer">
+      $i18n{experimentalFeatureDisclaimer}
+    </div>
   </div>
 </div>
 <hr class="sp-cards-separator">

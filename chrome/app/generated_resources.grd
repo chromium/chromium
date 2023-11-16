@@ -16506,6 +16506,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature." translateable="false">
       Thumbs up
     </message>
+    <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features." translateable="false">
+      This feature is experimental.
+    </message>
   </messages>
 </release>
 </grit>

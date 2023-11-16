@@ -146,6 +146,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchSubmitBtn", IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT},
       {"wallpaperSearchSubmitAgainBtn",
        IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT},
+      {"experimentalFeatureDisclaimer", IDS_EXPERIMENTAL_FEATURE_DISCLAIMER},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
