@@ -4,10 +4,10 @@
 
 #include "chromecast/device/bluetooth/le/gatt_client_manager_impl.h"
 
+#include <deque>
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -280,13 +280,13 @@ void GattClientManagerImpl::OnConnectChanged(
       disconnect_timeout_timer_.Stop();
       RunQueuedConnectRequest();
     } else {
-      base::EraseIf(pending_connect_requests_,
+      std::erase_if(pending_connect_requests_,
                     [addr](const PendingRequest& request) {
                       return request.addr == addr;
                     });
     }
 
-    base::Erase(pending_read_remote_rssi_requests_, addr);
+    std::erase(pending_read_remote_rssi_requests_, addr);
     read_remote_rssi_timeout_timer_.Stop();
 
     if (connected_devices_.empty()) {

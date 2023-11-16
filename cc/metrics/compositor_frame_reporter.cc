@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -1873,10 +1873,10 @@ void CompositorFrameReporter::DiscardOldPartialUpdateReporters() {
     return;
   }
   // Remove all destroyed reporters from `partial_update_dependents_`.
-  base::EraseIf(partial_update_dependents_,
+  std::erase_if(partial_update_dependents_,
                 [](const base::WeakPtr<CompositorFrameReporter>& reporter) {
-    return !reporter;
-  });
+                  return !reporter;
+                });
 }
 
 base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {

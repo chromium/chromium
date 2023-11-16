@@ -266,8 +266,6 @@ component("base") {
     "containers/contains.h",
     "containers/contiguous_iterator.h",
     "containers/cxx20_erase.h",
-    "containers/cxx20_erase_deque.h",
-    "containers/cxx20_erase_forward_list.h",
     "containers/cxx20_erase_internal.h",
     "containers/cxx20_erase_list.h",
     "containers/cxx20_erase_map.h",

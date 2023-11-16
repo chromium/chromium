@@ -5,6 +5,7 @@
 #include "chromecast/device/bluetooth/le/le_scan_manager_impl.h"
 
 #include <algorithm>
+#include <deque>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
@@ -202,7 +203,7 @@ void LeScanManagerImpl::OnScanResult(
 
     // Remove scan_result.addr to avoid duplicate addresses in
     // recent_scan_result_addr_list_.
-    base::Erase(scan_result_addr_list_, scan_result.addr);
+    std::erase(scan_result_addr_list_, scan_result.addr);
   }
 
   previous_scan_results.push_front(scan_result);

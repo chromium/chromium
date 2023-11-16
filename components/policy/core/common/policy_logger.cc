@@ -4,9 +4,9 @@
 
 #include "components/policy/core/common/policy_logger.h"
 
+#include <deque>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
@@ -195,7 +195,7 @@ void PolicyLogger::DeleteOldLogs() {
   // Delete older logs with lifetime `kTimeToLive` mins, set the flag and
   // reschedule the task.
   base::AutoLock lock(lock_);
-  base::EraseIf(logs_, IsLogExpired);
+  std::erase_if(logs_, IsLogExpired);
 
   if (logs_.size() > 0) {
     ScheduleOldLogsDeletion();

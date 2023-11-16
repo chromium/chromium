@@ -13,11 +13,6 @@ size_t GetSize(const Container& c) {
   return c.size();
 }
 
-template <typename T>
-size_t GetSize(const std::forward_list<T>& l) {
-  return std::distance(l.begin(), l.end());
-}
-
 template <typename Container>
 void RunEraseTest() {
   const std::pair<Container, Container> test_data[] = {
@@ -116,19 +111,9 @@ TEST(Erase, String16) {
   }
 }
 
-TEST(Erase, Deque) {
-  RunEraseTest<std::deque<int>>();
-  RunEraseIfTest<std::deque<std::pair<int, int>>>();
-}
-
 TEST(Erase, Vector) {
   RunEraseTest<std::vector<int>>();
   RunEraseIfTest<std::vector<std::pair<int, int>>>();
-}
-
-TEST(Erase, ForwardList) {
-  RunEraseTest<std::forward_list<int>>();
-  RunEraseIfTest<std::forward_list<std::pair<int, int>>>();
 }
 
 TEST(Erase, List) {

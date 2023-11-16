@@ -5,8 +5,6 @@
 #ifndef BASE_CONTAINERS_CXX20_ERASE_H_
 #define BASE_CONTAINERS_CXX20_ERASE_H_
 
-#include "base/containers/cxx20_erase_deque.h"
-#include "base/containers/cxx20_erase_forward_list.h"
 #include "base/containers/cxx20_erase_list.h"
 #include "base/containers/cxx20_erase_map.h"
 #include "base/containers/cxx20_erase_set.h"
