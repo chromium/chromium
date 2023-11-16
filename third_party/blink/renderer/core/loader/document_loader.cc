@@ -476,9 +476,7 @@ DocumentLoader::DocumentLoader(
       // at commit time in |params_|. Set it as the current history item of this
       // DocumentLoader. For other navigations, |history_item_| will be created
       // when the FrameLoader calls SetHistoryItemStateForCommit.
-      history_item_(IsBackForwardOrRestore(params_->frame_load_type)
-                        ? params_->history_item
-                        : nullptr),
+      history_item_(params_->history_item),
       original_referrer_(referrer_),
       response_(params_->response.ToResourceResponse()),
       response_wrapper_(response_),
@@ -589,9 +587,7 @@ DocumentLoader::DocumentLoader(
   for (const auto& resource : params_->early_hints_preloaded_resources)
     early_hints_preloaded_resources_.insert(resource, EarlyHintsPreloadEntry());
 
-  if (IsBackForwardOrRestore(params_->frame_load_type)) {
-    DCHECK(history_item_);
-  }
+  CHECK_EQ(IsBackForwardOrRestore(params_->frame_load_type), !!history_item_);
 
   if (params_->ad_auction_components) {
     ad_auction_components_.emplace();
@@ -894,7 +890,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_synchronously_committed,
     absl::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
-  DCHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
+  CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
 
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
