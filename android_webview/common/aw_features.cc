@@ -209,7 +209,7 @@ BASE_FEATURE(kWebViewImageDrag,
 // Enables injection of platform-specific JavaScript APIs.
 BASE_FEATURE(kWebViewInjectPlatformJsApis,
              "WebViewInjectPlatformJsApis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This enables uploading UMA data with a higher frequency.
 // This Feature is checked and used in downstream internal code.
