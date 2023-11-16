@@ -130,6 +130,7 @@
     # TODO: b/278144885 - Rename build perf builders.
     'chromium.build': {
       # Keep in sync with win-rel
+      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'build-perf-windows-siso': {
         'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
         'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
