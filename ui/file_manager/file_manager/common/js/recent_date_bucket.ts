@@ -12,12 +12,9 @@ import {getLocaleBasedWeekStart} from './translations.js';
 
 /**
  * Given a date and now date, return the date bucket it belongs to.
- *
- * @param {!Date|undefined} date
- * @param {!Date} now
- * @return {!chrome.fileManagerPrivate.RecentDateBucket}
  */
-export function getRecentDateBucket(date, now) {
+export function getRecentDateBucket(date: Date|undefined, now: Date):
+    chrome.fileManagerPrivate.RecentDateBucket {
   if (!date) {
     return chrome.fileManagerPrivate.RecentDateBucket.OLDER;
   }
@@ -49,11 +46,8 @@ export function getRecentDateBucket(date, now) {
   return chrome.fileManagerPrivate.RecentDateBucket.OLDER;
 }
 
-/**
- * @param {!chrome.fileManagerPrivate.RecentDateBucket} dateBucket
- * @return {!string}
- */
-export function getTranslationKeyForDateBucket(dateBucket) {
+export function getTranslationKeyForDateBucket(
+    dateBucket: chrome.fileManagerPrivate.RecentDateBucket): string {
   /** @type {Map<chrome.fileManagerPrivate.RecentDateBucket, string>} */
   const DATE_BUCKET_TO_TRANSLATION_KEY_MAP = new Map([
     [
@@ -81,9 +75,7 @@ export function getTranslationKeyForDateBucket(dateBucket) {
       'RECENT_TIME_HEADING_OLDER',
     ],
   ]);
-  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
-  // type 'string'.
-  return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket);
+  return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket)!;
 }
 
 /**
@@ -94,11 +86,10 @@ export function getTranslationKeyForDateBucket(dateBucket) {
  * many days are in the current month. For a year, it goes back by 365 days
  * since midnight, regardless if the current year is a leap year or not.
  *
- * @param {SearchRecency} recency
- * @param {!Date} now
- * @return {number} The earliest timestamp for the given recency option.
+ * @return The earliest timestamp for the given recency option.
  */
-export function getEarliestTimestamp(recency, now) {
+export function getEarliestTimestamp(
+    recency: SearchRecency, now: Date): number {
   const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const midnightMs = midnight.getTime();
   const dayMs = 24 * 60 * 60 * 1000;
