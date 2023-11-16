@@ -18,6 +18,19 @@ suite('MojoTypeUtilTest', () => {
     assertEquals(mojoString16ToString({data: [0x4f60, 0x597d]}), '你好');
   });
 
+  test('emojis', () => {
+    assertEquals('❤️', mojoString16ToString(stringToMojoString16('❤️')));
+    assertEquals(
+        '👨‍👨‍👦',
+        mojoString16ToString(stringToMojoString16('👨‍👨‍👦')));
+    assertEquals('🇯🇵', mojoString16ToString(stringToMojoString16('🇯🇵')));
+    assertEquals('🇺🇳', mojoString16ToString(stringToMojoString16('🇺🇳')));
+    assertEquals(
+        '👨‍👨‍👦🇯🇵👨‍👨‍👦a你❤️👨‍👨‍👦',
+        mojoString16ToString(stringToMojoString16(
+            '👨‍👨‍👦🇯🇵👨‍👨‍👦a你❤️👨‍👨‍👦')));
+  });
+
   test('Can convert strings to mojo Urls', () => {
     assertDeepEquals(stringToMojoUrl(''), {url: ''});
     assertDeepEquals(
