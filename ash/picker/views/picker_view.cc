@@ -20,6 +20,7 @@
 namespace ash {
 namespace {
 
+constexpr gfx::Size kPickerSize(420, 480);
 constexpr int kBorderRadius = 20;
 constexpr int kShadowElevation = 3;
 constexpr ui::ColorId kBackgroundColor = cros_tokens::kCrosSysBaseElevated;
@@ -37,6 +38,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 PickerView::PickerView() {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
+  SetPreferredSize(kPickerSize);
 }
 
 PickerView::~PickerView() = default;

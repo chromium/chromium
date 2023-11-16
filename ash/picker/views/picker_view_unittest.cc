@@ -54,5 +54,13 @@ TEST_F(PickerViewTest, BackgroundIsCorrect) {
       view->GetColorProvider()->GetColor(cros_tokens::kCrosSysBaseElevated));
 }
 
+TEST_F(PickerViewTest, SizeIsCorrect) {
+  auto widget = PickerView::CreateWidget();
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  EXPECT_EQ(view->size(), gfx::Size(420, 480));
+}
+
 }  // namespace
 }  // namespace ash
