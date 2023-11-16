@@ -213,7 +213,7 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
           gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format, size,
                                          buffer_usage));
 
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return client_shared_image;
 }
 
 scoped_refptr<gpu::ClientSharedImage>
