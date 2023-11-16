@@ -345,14 +345,13 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
 
 CookieSettings::~CookieSettings() = default;
 
+#if BUILDFLAG(IS_IOS)
+bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
+  return false;
+}
+#else
 bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-#if BUILDFLAG(IS_IOS)
-  if (!base::FeatureList::IsEnabled(kImprovedCookieControls)) {
-    return false;
-  }
-#endif
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
     return true;
@@ -377,6 +376,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   }
   return false;
 }
+#endif
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
   // Mitigations won't be enabled when Third Party Cookies Blocking is enabled
