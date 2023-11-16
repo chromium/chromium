@@ -40,6 +40,7 @@
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "base/pickle.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,6 +57,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
@@ -231,6 +233,24 @@ class DraggableView : public views::View {
   Delegate delegate_;
 };
 
+// LayerDestructionWaiter ------------------------------------------------------
+
+// A class that waits for a layer to be destroyed.
+class LayerDestructionWaiter : public ui::LayerObserver {
+ public:
+  void Wait(ui::Layer* layer) {
+    base::ScopedObservation<ui::Layer, ui::LayerObserver> observation{this};
+    observation.Observe(layer);
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::LayerObserver:
+  void LayerDestroyed(ui::Layer* layer) override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 // HoldingSpaceWallpaperNudgeControllerTest ------------------------------------
@@ -312,6 +332,21 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
         help_bubble_->AddOnCloseCallback(base::BindLambdaForTesting(
             [&](user_education::HelpBubble* help_bubble) { run_loop.Quit(); }));
     run_loop.Run();
+  }
+
+  // Waits until the ping on `tray` has closed. If the given `tray` has no ping,
+  // this method returns immediately.
+  void WaitForPingFinish(HoldingSpaceTray* tray) {
+    if (!HasPing(tray)) {
+      return;
+    }
+
+    for (auto* layer : tray->GetLayersInOrder()) {
+      if (layer->name() == UserEducationPingController::kPingParentLayerName) {
+        LayerDestructionWaiter().Wait(layer);
+        return;
+      }
+    }
   }
 
  private:
@@ -728,11 +763,12 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
   EXPECT_FALSE(HasWallpaperHighlight(secondary_display_id));
 
-  // Wait for the help bubble to close, if one exists. Note that animation
-  // durations are first scaled to zero to prevent having to wait for shelf/
-  // tray animations to complete before checking state.
+  // Wait for the ping to finish and the help bubble to close, if either exists.
+  // Note that animation durations are first scaled to zero to prevent having to
+  // wait for shelf/ tray animations to complete before checking state.
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  WaitForPingFinish(primary_tray);
   WaitForHelpBubbleClose();
   FlushMessageLoop();
 
@@ -864,6 +900,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     PressAndReleaseKey(ui::VKEY_ESCAPE);
     ReleaseLeftButton();
+    WaitForPingFinish(tray);
     WaitForHelpBubbleClose();
     FlushMessageLoop();
 
