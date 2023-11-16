@@ -99,10 +99,10 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewDialogBrowserTest() {
     feature_list_.InitWithFeatures(
-        {},
+        {safe_browsing::kRedInterstitialFacelift},
         {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
-         features::kHttpsUpgrades, safe_browsing::kRedInterstitialFacelift});
+         features::kHttpsUpgrades});
   }
 
   PageInfoBubbleViewDialogBrowserTest(

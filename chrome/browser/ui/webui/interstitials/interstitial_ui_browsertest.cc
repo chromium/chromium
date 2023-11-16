@@ -27,7 +27,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   ~InterstitialUITest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndDisableFeature(
+    scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kRedInterstitialFacelift);
     InProcessBrowserTest::SetUpCommandLine(command_line);
 
@@ -139,17 +139,17 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, EnterpriseWarnInterstitial) {
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=malware"),
-                   "Security error", IDS_MALWARE_V3_HEADING);
+                   "Security error", IDS_HEADING_NEW);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PhishingInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=phishing"),
-                   "Security error", IDS_PHISHING_V4_HEADING);
+                   "Security error", IDS_HEADING_NEW);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UnwantedSoftwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=unwanted"),
-                   "Security error", IDS_HARMFUL_V3_HEADING);
+                   "Security error", IDS_HEADING_NEW);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitialQuiet) {
@@ -179,13 +179,13 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitialQuiet) {
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsideMalwareInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_malware"),
-      "Security error", IDS_MALWARE_V3_HEADING);
+      "Security error", IDS_HEADING_NEW);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsidePhishingInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_phishing"),
-      "Security error", IDS_PHISHING_V4_HEADING);
+      "Security error", IDS_HEADING_NEW);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitial) {
