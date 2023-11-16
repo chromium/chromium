@@ -157,6 +157,7 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
     return;
   }
 
+  DisableEditorMenu();
   card_session_->panel_manager.StartEditingFlowWithPreset(
       std::string(text_query_id));
 }
@@ -167,6 +168,7 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
     return;
   }
 
+  DisableEditorMenu();
   card_session_->panel_manager.StartEditingFlowWithFreeform(
       base::UTF16ToUTF8(text));
 }
@@ -253,6 +255,13 @@ void EditorMenuControllerImpl::OnEditorCardHidden() {
   // The currently visible card is closing and being removed from the user's
   // view, the EditorCardSession has ended.
   card_session_ = nullptr;
+}
+
+void EditorMenuControllerImpl::DisableEditorMenu() {
+  auto* editor_menu_view = editor_menu_widget_->GetContentsView();
+  if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
+    views::AsViewClass<EditorMenuView>(editor_menu_view)->DisableMenu();
+  }
 }
 
 }  // namespace chromeos::editor_menu

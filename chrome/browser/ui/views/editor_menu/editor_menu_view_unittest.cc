@@ -28,6 +28,8 @@ namespace chromeos::editor_menu {
 
 namespace {
 
+using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::Property;
@@ -209,6 +211,32 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsFreeformQuery) {
   generator.PressAndReleaseKey(ui::VKEY_A);
   generator.PressAndReleaseKey(ui::VKEY_B);
   generator.PressAndReleaseKey(ui::VKEY_RETURN);
+}
+
+TEST_F(EditorMenuViewTest, DisablesMenu) {
+  NiceMock<MockEditorMenuViewDelegate> delegate;
+  const PresetTextQueries queries = {
+      PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
+      PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
+
+  views::UniqueWidgetPtr editor_menu_widget =
+      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget->Show();
+  auto* editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+  editor_menu_view->DisableMenu();
+
+  // Chips should be disabled.
+  const auto* chip_row =
+      editor_menu_view->chips_container_for_testing()->children()[0];
+  EXPECT_THAT(chip_row->children(),
+              Each(Property(&views::View::GetEnabled, false)));
+  // Textfield should be disabled.
+  EXPECT_FALSE(
+      editor_menu_view->textfield_for_testing()->textfield()->GetEnabled());
+  EXPECT_FALSE(
+      editor_menu_view->textfield_for_testing()->arrow_button()->GetEnabled());
 }
 
 }  // namespace

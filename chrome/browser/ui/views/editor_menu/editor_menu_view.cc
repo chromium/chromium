@@ -168,6 +168,19 @@ void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
       gfx::Size(editor_menu_width, GetHeightForWidth(editor_menu_width))));
 }
 
+void EditorMenuView::DisableMenu() {
+  settings_button_->SetEnabled(false);
+
+  for (auto* row : chips_container_->children()) {
+    for (auto* chip : row->children()) {
+      chip->SetEnabled(false);
+    }
+  }
+
+  textfield_->textfield()->SetEnabled(false);
+  textfield_->arrow_button()->SetEnabled(false);
+}
+
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorPrimaryBackground,

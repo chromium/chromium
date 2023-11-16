@@ -66,6 +66,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   void ResetPreTargetHandler();
 
+  void DisableMenu();
+
   views::View* chips_container_for_testing() { return chips_container_; }
 
   EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
