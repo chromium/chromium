@@ -53,6 +53,9 @@ class TabOrganizationService : public KeyedService {
   // existing session, they should first call GetSessionForBrowser to confirm.
   TabOrganizationSession* CreateSessionForBrowser(const Browser* browser);
 
+  // If the session exists, destroys the session, calls CreateSessionForBrowser.
+  TabOrganizationSession* ResetSessionForBrowser(const Browser* browser);
+
   void AcceptTabOrganization(Browser* browser,
                              TabOrganization::ID session_id,
                              TabOrganization::ID organization_id);

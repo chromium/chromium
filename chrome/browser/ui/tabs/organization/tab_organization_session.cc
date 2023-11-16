@@ -33,6 +33,9 @@ TabOrganizationSession::TabOrganizationSession(
 }
 
 TabOrganizationSession::~TabOrganizationSession() {
+  for (auto& organization : tab_organizations_) {
+    organization->RemoveObserver(this);
+  }
   for (auto& observer : observers_) {
     observer.OnTabOrganizationSessionDestroyed(session_id());
   }
@@ -65,7 +68,8 @@ TabOrganizationSession::CreateSessionForBrowser(
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
   for (auto& tab_organization : tab_organizations_) {
-    if (!tab_organization->choice().has_value()) {
+    if (tab_organization->IsValidForOrganizing() &&
+        !tab_organization->choice().has_value()) {
       return tab_organization.get();
     }
   }
@@ -74,7 +78,8 @@ const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
 
 TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
   for (auto& tab_organization : tab_organizations_) {
-    if (!tab_organization->choice().has_value()) {
+    if (tab_organization->IsValidForOrganizing() &&
+        !tab_organization->choice().has_value()) {
       return tab_organization.get();
     }
   }
@@ -90,7 +95,7 @@ bool TabOrganizationSession::IsComplete() const {
 
   // If there are still tab organizations that havent been acted on, then the
   // session is still not completed.
-  return GetNextTabOrganization();
+  return !(GetNextTabOrganization());
 }
 
 void TabOrganizationSession::AddObserver(
@@ -189,6 +194,11 @@ void TabOrganizationSession::PopulateOrganizations(
         std::make_unique<TabOrganization>(std::move(tab_datas_for_org),
                                           std::move(names), 0u, absl::nullopt);
 
+    if (!organization->IsValidForOrganizing()) {
+      continue;
+    }
+
+    organization->AddObserver(this);
     tab_organizations_.emplace_back(std::move(organization));
   }
 }

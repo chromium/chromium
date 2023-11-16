@@ -73,6 +73,8 @@ class TabOrganization : public TabData::Observer {
   absl::optional<UserChoice> choice_;
   ID organization_id_;
 
+  bool invalidated_by_tab_change_ = false;
+
   base::ObserverList<Observer>::Unchecked observers_;
 };
 

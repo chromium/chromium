@@ -215,3 +215,18 @@ TEST_F(TabOrganizationServiceTest,
   EXPECT_EQ(browser1->tab_strip_model()->group_model()->ListTabGroups().size(),
             1u);
 }
+
+TEST_F(TabOrganizationServiceTest,
+       TabOrganizationSessionResetSessionForBrowser) {
+  const int valid_tab_count = 2;
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < valid_tab_count; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  TabOrganizationSession::ID session_id_1 =
+      service()->CreateSessionForBrowser(browser1)->session_id();
+  TabOrganizationSession::ID session_id_2 =
+      service()->ResetSessionForBrowser(browser1)->session_id();
+  EXPECT_NE(session_id_1, session_id_2);
+}

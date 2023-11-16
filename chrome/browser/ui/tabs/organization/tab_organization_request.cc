@@ -70,7 +70,6 @@ void TabOrganizationRequest::CompleteRequest(
 
   state_ = State::COMPLETED;
   response_ = std::move(response);
-
   if (response_callback_) {
     std::move(response_callback_).Run(response_.get());
   }
@@ -79,7 +78,6 @@ void TabOrganizationRequest::CompleteRequest(
 void TabOrganizationRequest::FailRequest() {
   CHECK(state_ != State::COMPLETED);
   state_ = State::FAILED;
-
   if (response_callback_) {
     std::move(response_callback_).Run(response_.get());
   }
@@ -88,10 +86,10 @@ void TabOrganizationRequest::FailRequest() {
 void TabOrganizationRequest::CancelRequest() {
   CHECK(state_ == State::STARTED);
   CHECK(backend_cancel_request_lambda_);
-  state_ = State::CANCELED;
 
   std::move(backend_cancel_request_lambda_).Run(this);
   if (response_callback_) {
     std::move(response_callback_).Run(response_.get());
   }
+  state_ = State::CANCELED;
 }

@@ -82,6 +82,15 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
   return pair.first->second.get();
 }
 
+TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
+    const Browser* browser) {
+  if (base::Contains(browser_session_map_, browser)) {
+    browser_session_map_.erase(browser);
+  }
+
+  return CreateSessionForBrowser(browser);
+}
+
 void TabOrganizationService::StartRequest(const Browser* browser) {
   TabOrganizationSession* session = GetSessionForBrowser(browser);
   if (!session) {

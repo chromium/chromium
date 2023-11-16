@@ -27,6 +27,9 @@ TabOrganization::TabOrganization(
       current_name_(current_name),
       choice_(choice),
       organization_id_(kNextOrganizationID) {
+  for (auto& tab_data : tab_datas_) {
+    tab_data->AddObserver(this);
+  }
   kNextOrganizationID++;
 
   // TabDatas must not be duplicates, immediately destroy TabDatas that are.
@@ -70,6 +73,10 @@ void TabOrganization::RemoveObserver(TabOrganization::Observer* observer) {
 }
 
 bool TabOrganization::IsValidForOrganizing() const {
+  if (invalidated_by_tab_change_) {
+    return false;
+  }
+
   // there must be at least 2 tabs that are valid for organization.
   int valid_tab_count = 0;
   for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
@@ -161,10 +168,14 @@ void TabOrganization::Reject() {
 }
 
 void TabOrganization::OnTabDataUpdated(const TabData* tab_data) {
+  if (!tab_data->IsValidForOrganizing()) {
+    invalidated_by_tab_change_ = true;
+  }
   NotifyObserversOfUpdate();
 }
 
 void TabOrganization::OnTabDataDestroyed(TabData::TabID tab_id) {
+  invalidated_by_tab_change_ = true;
   NotifyObserversOfUpdate();
 }
 

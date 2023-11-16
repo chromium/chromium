@@ -415,6 +415,8 @@ void TabSearchPageHandler::RequestTabOrganization() {
   TabOrganizationSession* session = service->GetSessionForBrowser(browser);
   if (!session) {
     session = service->CreateSessionForBrowser(browser);
+  } else if (session->IsComplete()) {
+    session = service->ResetSessionForBrowser(browser);
   }
 
   if (!base::Contains(listened_sessions_, session)) {
@@ -885,6 +887,10 @@ TabSearchPageHandler::GetMojoForTabOrganization(
 
   std::vector<tab_search::mojom::TabPtr> tabs;
   for (const std::unique_ptr<TabData>& tab_data : organization->tab_datas()) {
+    if (!tab_data->IsValidForOrganizing()) {
+      continue;
+    }
+
     tabs.emplace_back(GetMojoForTabData(tab_data.get()));
   }
 
@@ -919,11 +925,22 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
     }
     case TabOrganizationRequest::State::COMPLETED: {
       if (session->tab_organizations().size() > 0) {
-        mojo_session->state = tab_search::mojom::TabOrganizationState::kSuccess;
         for (const std::unique_ptr<TabOrganization>& organization :
              session->tab_organizations()) {
+          if (!organization->IsValidForOrganizing()) {
+            continue;
+          }
           organizations.emplace_back(
               GetMojoForTabOrganization(organization.get()));
+        }
+        if (organizations.size() > 0) {
+          mojo_session->state =
+              tab_search::mojom::TabOrganizationState::kSuccess;
+        } else {
+          mojo_session->state =
+              tab_search::mojom::TabOrganizationState::kFailure;
+          mojo_session->error =
+              tab_search::mojom::TabOrganizationError::kGrouping;
         }
       } else {
         mojo_session->state = tab_search::mojom::TabOrganizationState::kFailure;
