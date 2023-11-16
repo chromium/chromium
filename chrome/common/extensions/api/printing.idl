@@ -153,11 +153,12 @@ namespace printing {
   callback GetPrinterInfoCallback = void(GetPrinterInfoResponse response);
 
   interface Functions {
-    // Submits the job for print.
+    // Submits the job for printing.
     // Use the
     // <a href="https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist">
     // <code>PrintingAPIExtensionsAllowlist</code></a> to bypass promting
-    // the user to confirm printing.
+    // the user to confirm printing.<br/>
+    // Before Chrome 120, this function did not return a promise.
     [supportsPromises] static void submitJob(SubmitJobRequest request,
                                              SubmitJobCallback callback);
 
