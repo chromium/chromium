@@ -3865,8 +3865,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.InternalDisplayZoomPercentage" units="%"
-    expires_after="2024-04-28">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2024-06-17">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     The zoom percentage that the user has set on the internal display and is
@@ -3889,20 +3889,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
-    expires_after="2023-04-23">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2024-06-17">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     The types of mirror mode in which the displays connected to the device are
     in. This is emitted once when the normal or mixed mirror mode is enabled
     through API call, or the display configuration changes ( e.g. adding or
     removing a display) when mirror mode is on.
+
+    Warning: this histogram was expired from 2023-04-23 to 2024-11-16; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="DisplayManager.MultiDisplayMode" enum="MultiDisplayModes"
-    expires_after="2024-04-28">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2024-06-17">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     The mode in which the connected displays to the device are in. This is
@@ -3913,7 +3916,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
     enum="MultiDisplayModeDisplayCountRanges" expires_after="2024-06-17">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     The number of displays connected to the device when Unified Desktop mode is
@@ -3923,8 +3926,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.UpdateDisplayConfigurationTask.Success"
-    enum="BooleanSuccess" expires_after="2024-06-11">
-  <owner>zentaro@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2024-06-17">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records whether or not the display configuration was successfully updated.
