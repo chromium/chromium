@@ -375,6 +375,16 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CddResetToDefault) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
   RunTestCase("PrintToGoogleDriveCros");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       PolicyDefaultsOverrideDestinationDefaults) {
+  RunTestCase("PolicyDefaultsOverrideDestinationDefaults");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       UserSelectedOptionsOverridePolicyDefaults) {
+  RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
+}
 #endif
 
 class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {
