@@ -197,7 +197,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/7, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/8, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
@@ -234,7 +234,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/8, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/9, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.
