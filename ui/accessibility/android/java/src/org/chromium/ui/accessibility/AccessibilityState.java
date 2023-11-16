@@ -227,18 +227,6 @@ public class AccessibilityState {
     private static AccessibilityManager sAccessibilityManager;
 
     /**
-     * Whether the user has enabled the Android-OS speak password when in accessibility mode,
-     * available on pre-Android O. (Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD).
-     *
-     * From Android docs:
-     * @deprecated The speaking of passwords is controlled by individual accessibility services.
-     * Apps should ignore this setting and provide complete information to accessibility
-     * at all times, which was the behavior when this value was {@code true}.
-     */
-    @Deprecated
-    private static boolean sAccessibilitySpeakPasswordEnabled;
-
-    /**
      * The current font weight adjustment set at the Android-OS level. Initialized to be 0, the
      * default font weight. If a user has the bold text setting enabled, this will be 300.
      *
@@ -363,12 +351,6 @@ public class AccessibilityState {
     public static boolean isHighContrastEnabled() {
         if (!sExtraStateInitialized) updateExtraState();
         return sHighContrastEnabled;
-    }
-
-    @Deprecated
-    public static boolean isAccessibilitySpeakPasswordEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sAccessibilitySpeakPasswordEnabled;
     }
 
     public static int getFontWeightAdjustment() {
@@ -588,14 +570,11 @@ public class AccessibilityState {
             sFontWeightAdjustment = 0;
         }
 
-        // Update the user password show/speak preferences.
-        int textShowPasswordSetting = Settings.System.getInt(
-                context.getContentResolver(), Settings.System.TEXT_SHOW_PASSWORD, 1);
+        // Update the user show password preferences.
+        int textShowPasswordSetting =
+                Settings.System.getInt(
+                        context.getContentResolver(), Settings.System.TEXT_SHOW_PASSWORD, 1);
         boolean isTextShowPasswordEnabled = textShowPasswordSetting == 1;
-
-        int accessibilitySpeakPasswordSetting = Settings.Secure.getInt(
-                context.getContentResolver(), Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD, 0);
-        sAccessibilitySpeakPasswordEnabled = accessibilitySpeakPasswordSetting == 1;
 
         // Get the list of enabled accessibility services, from settings, in
         // case it's different.
@@ -657,42 +636,34 @@ public class AccessibilityState {
 
         boolean isOnlyAutofillRunning = false;
 
-        // Only explicitly check for Autofill on compatible versions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
-
-            if (autofillManager != null && autofillManager.isEnabled()
-                    && autofillManager.hasEnabledAutofillServices()) {
-                // Confirm that autofill service is the only service running that requires
-                // accessibility.
-                if (runningServiceNames.isEmpty()
-                        || (runningServiceNames.size() == 1
-                                && runningServiceNames.get(0).equals(
-                                        AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID))) {
-                    isOnlyAutofillRunning = true;
-                }
+        AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
+        if (autofillManager != null
+                && autofillManager.isEnabled()
+                && autofillManager.hasEnabledAutofillServices()) {
+            // Confirm that autofill service is the only service running that requires
+            // accessibility.
+            if (runningServiceNames.isEmpty()
+                    || (runningServiceNames.size() == 1
+                            && runningServiceNames
+                                    .get(0)
+                                    .equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID))) {
+                isOnlyAutofillRunning = true;
             }
         }
 
-        boolean isOnlyPasswordManagersEnabled = false;
-
+        boolean isOnlyPasswordManagersEnabled;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // If build is >= S, then check if there are no accessibility tools present, then turn
             // on form controls mode if the heuristic indicates that only password managers are
             // enabled or Autofill is the only service running.
             isOnlyPasswordManagersEnabled = !isAccessibilityToolPresent
                     && (areOnlyPasswordManagerMasksRequestedByServices || isOnlyAutofillRunning);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // If build is >= O and < S, isAccessibilityToolPresent will always be true.
+        } else {
+            // If build is < S, isAccessibilityToolPresent will always be true.
             // Turn on form controls mode if the heuristic indicates that only password managers are
             // enabled or Autofill is the only service running.
             isOnlyPasswordManagersEnabled =
                     areOnlyPasswordManagerMasksRequestedByServices || isOnlyAutofillRunning;
-        } else {
-            // If the build is < O, isAccessibilityToolPresent will always be true and
-            // isOnlyAutofillRunning will always be false. Turn on form controls mode if the
-            // heuristic indicates that only password managers are enabled.
-            isOnlyPasswordManagersEnabled = areOnlyPasswordManagerMasksRequestedByServices;
         }
 
         // Update all listeners that there was a state change and pass whether or not the

@@ -13,16 +13,10 @@ import org.chromium.ui.accessibility.AccessibilityState;
  */
 public class AccessibilityAutofillHelper {
     public static boolean shouldRespectDisplayedPasswordText() {
-        // Previous to O, shouldExposePasswordText() should be used to check a system setting
-        // that determines whether we should return the unobscured password or all dots,
-        // independent of what was displayed visually. Always return false here before Android O.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
-
-        // On Android O and higher, we should respect whatever is displayed in a password box and
-        // report that via accessibility APIs, whether that's the unobscured password, or all dots.
-        // However, we deviate from this rule if the only consumer of accessibility information is
-        // Autofill in order to allow third-party Autofill services to save the real, unmasked
-        // password.
+        // We should respect whatever is displayed in a password box and report that via
+        // accessibility APIs, whether that's the unobscured password, or all dots. However, we
+        // deviate from this rule if the only consumer of accessibility information is Autofill in
+        // order to allow third-party Autofill services to save the real, unmasked password.
         return isAutofillOnlyPossibleAccessibilityConsumer();
     }
 
@@ -36,12 +30,8 @@ public class AccessibilityAutofillHelper {
         }
 
         // When additional services are running besides Autofill, we fall back to checking the
-        // user's system preference. The preference to check varies by OS version.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return AccessibilityState.isTextShowPasswordEnabled();
-        }
-
-        return AccessibilityState.isAccessibilitySpeakPasswordEnabled();
+        // user's system preference.
+        return AccessibilityState.isTextShowPasswordEnabled();
     }
 
     public static boolean isAutofillOnlyPossibleAccessibilityConsumer() {
