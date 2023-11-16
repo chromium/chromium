@@ -37,6 +37,8 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
   void UntrackPackages(bool display_infobar);
   // Opens a new NTP.
   void OpenNTP();
+  // Sets the tracking step for the delegate.
+  void SetStep(ParcelTrackingStep step);
 
   // Getters.
   NSArray<CustomTextCheckingResult*>* GetParcelList() const {

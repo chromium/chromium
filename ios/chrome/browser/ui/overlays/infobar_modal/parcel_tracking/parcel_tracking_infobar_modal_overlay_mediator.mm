@@ -36,11 +36,15 @@
 - (void)parcelTrackingTableViewControllerDidTapTrackAllButton {
   self.parcelTrackingInfobarDelegate->TrackPackages(
       /*display_infobar=*/false);
+  self.parcelTrackingInfobarDelegate->SetStep(
+      ParcelTrackingStep::kNewPackageTracked);
 }
 
 - (void)parcelTrackingTableViewControllerDidTapUntrackAllButton {
   self.parcelTrackingInfobarDelegate->UntrackPackages(
       /*display_infobar=*/false);
+  self.parcelTrackingInfobarDelegate->SetStep(
+      ParcelTrackingStep::kPackageUntracked);
 }
 
 #pragma mark - Public

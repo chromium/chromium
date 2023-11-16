@@ -65,6 +65,10 @@ void ParcelTrackingInfobarDelegate::OpenNTP() {
   [application_commands_handler_ openURLInNewTab:[OpenNewTabCommand command]];
 }
 
+void ParcelTrackingInfobarDelegate::SetStep(ParcelTrackingStep step) {
+  step_ = step;
+}
+
 #pragma mark - ConfirmInfoBarDelegate
 
 infobars::InfoBarDelegate::InfoBarIdentifier
