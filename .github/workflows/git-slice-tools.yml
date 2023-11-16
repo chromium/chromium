@@ -1,0 +1,317 @@
+# git-slice-tools workflow
+# https://github.com/GitStartHQ/git-slice-tools-private
+# Please look at git-slice-tools repo for more details.
+# Setup steps:
+# - You need to correct "<input-*>" placeholders in "env:" object
+# - Create GIT_SLICE_UPSTREAM_REPO_PASSWORD repo secret with value is a PAT of GIT_SLICE_UPSTREAM_REPO_USERNAME account
+# - Create GIT_SLICE_SLICE_REPO_PASSWORD repo secret with value is a PAT of GIT_SLICE_SLICE_REPO_USERNAME account
+# - Create GIT_SLICE_UPSTREAM_REPO_CACHE_KEY repo secret with value is a dummy string
+# - Invite GIT_SLICE_SLICE_REPO_USERNAME account with "maintainer" role to slice repo. If slice repo has "Require a pull request before merging" config, please add GIT_SLICE_SLICE_REPO_USERNAME into "Allow specified actors to bypass required pull requests"
+
+name: git-slice-tools
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  # TODO: Revert this + update forked repo from GitStartHQ -> gitstart when instance is active again
+  # schedule:
+  #   - cron: '0 0 * * *'
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job'
+        type: choice
+        options:
+          - pull-the-main-branch
+          - pull-a-branch
+          - pull-an-issue
+        required: true
+      branch:
+        description: '[pull-a-branch] Which branch should be pulled?'
+        default: ''
+      targetBranch:
+        description: '[pull-a-branch] Raise a PR to merge the pulled upstream branch into this branch'
+        default: ''
+      upstreamIssue:
+        description: '[pull-an-issue] Upstream issue number or link to any issue which upstream account can access'
+      sliceIssue:
+        description: '[pull-an-issue] Slice issue number to update (optional)'
+
+# Terms:
+# - Upstream repo: client repo or forked repo in open source flow
+# - Slice repo: internal (private) repo
+
+env:
+  GIT_SLICE_UPSTREAM_REPO_DIR: ./upstream-repo
+  # Http git url of upstream repo, should be in this format : https://github.com/sourcegraph/sourcegraph.git
+  GIT_SLICE_UPSTREAM_REPO_URL: https://github.com/GitStartHQ/client-chromium-oss.git
+  # Name of default branch of upstream repo
+  GIT_SLICE_UPSTREAM_REPO_DEFAULT_BRANCH: main
+  # Username for git authentication and commit details on upstream repo
+  GIT_SLICE_UPSTREAM_REPO_USERNAME: gitstart
+  # User email for git authentication and commit details on upstream repo
+  GIT_SLICE_UPSTREAM_REPO_EMAIL: bot@gitstart.com
+  GIT_SLICE_UPSTREAM_REPO_PASSWORD: ${{ secrets.GIT_SLICE_UPSTREAM_REPO_PASSWORD }}
+  GIT_SLICE_SLICE_REPO_DIR: ./slice-repo
+  # Http git url of slice repo, should be in this format : https://github.com/GitStartHQ/client-sourcegraph.git
+  GIT_SLICE_SLICE_REPO_URL: ${{ github.repositoryUrl }}
+  # Name of default branch of slice repo
+  GIT_SLICE_SLICE_REPO_DEFAULT_BRANCH: main
+  # Username for git authentication and commit details on slice repo
+  GIT_SLICE_SLICE_REPO_USERNAME: gitstart
+  # User email for git authentication and commit details on slice repo
+  GIT_SLICE_SLICE_REPO_EMAIL: bot@gitstart.com
+  # Personal Access Token for git authentication on slice repo
+  GIT_SLICE_SLICE_REPO_PASSWORD: ${{ secrets.GIT_SLICE_SLICE_REPO_PASSWORD }}
+  # Array of glob patterns which are used to ignore files when syncing changes between 2 repos. ex: `['.git-slice.json', 'dev/*']`
+  GIT_SLICE_SLICE_IGNORES: '[]'
+  # Pattern for building branch name in upstream repo when pushing a branch in slice repo, git-slice-tools would replace '<branch_name>' with the name pushing branch. ex: 'dev/<branch_name>'
+  GIT_SLICE_PUSH_BRANCH_NAME_TEMPLATE: '<branch_name>'
+  # Regular expression which is used to validate commit messages
+  GIT_SLICE_PUSH_COMMIT_MSG_REGEX: '.*'
+  GIT_SLICE_CHECKOUT_CACHED_KEY: ${{ secrets.GIT_SLICE_UPSTREAM_REPO_CACHE_KEY }}
+  # Array of labels which git-slice-tools will add into new PR. Ex: ex: '["gitstart","team/frontend-platform"]'
+  GIT_SLICE_PR_LABELS: '[]'
+  # (`true` or `false`) git-slice-tools would raise new PR as draft PR or not
+  GIT_SLICE_PR_DRAFT: true
+  # (`true` or `false`) Use open source flow or not
+  GIT_SLICE_OPEN_SOURCE_FLOW: true
+  # Http git url of open source repo, should be in this format : https://github.com/cypress.io/cypress.git, please use empty string "" if it's not
+  GIT_SLICE_OPEN_SOURCE_URL: https://github.com/chromium/chromium.git
+  # (`git-logs` or `pr-assignees` or `none`) Where to get co-authors for adding into commit messages
+  GIT_SLICE_AUTO_CO_AUTHORS_COMMITS: pr-assignees
+  # Use GitStart gateway (If your repo has `Branch protection rule`, please add `gitstart-app` into `Allow specified actors to bypass required pull requests`)
+  # GIT_SLICE_GITSTART_GATEWAY_TOKEN: ${{ secrets.github_token }}
+  # GIT_SLICE_GITSTART_GATEWAY_URL: https://gateway.gitstart.com/graphql
+
+jobs:
+  git-slice-checkout:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        if: steps.cache-repos.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools CHECKOUT
+        uses: GitStartHQ/git-slice-tools-private/actions/checkout@v2.5.2
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-checkout failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
+
+  git-slice-pull:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    if: |
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'schedule' ||
+        github.event_name == 'push' ||
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/git-slice push '))
+      }}
+
+    needs: [git-slice-checkout]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools PULL
+        uses: GitStartHQ/git-slice-tools-private/actions/pull@v2.5.2
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-pull failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
+
+  git-slice-pull-branch:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'pull-a-branch' }}
+
+    needs: [git-slice-pull]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools PULL-BRANCH
+        uses: GitStartHQ/git-slice-tools-private/actions/pull-branch@v2.5.2
+        with:
+          branch: ${{ github.event.inputs.branch }}
+          target-branch: ${{ github.event.inputs.targetBranch }}
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-pull-branch failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
+
+  # Trigger git-slice pull-review action with pull request comment: /git-slice pull-review -from https://github.com/sourcegraph/sourcegraph/pull/37919#pullrequestreview-1025518547
+  # -from : Link to pull request review or comment (GitHub only)
+  git-slice-pull-review-comment:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    if: ${{ github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/git-slice pull-review ') }}
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools PULL-REVIEW-COMMENT (trigger by comments)
+        uses: GitStartHQ/git-slice-tools-private/actions/pull-review-comment@v2.5.2
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-pull-review-comment failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
+
+      - name: Failure report Comment reaction
+        uses: actions/github-script@v6
+        if: failure() || cancelled()
+        with:
+          result-encoding: string
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '-1'
+            });
+
+  # Trigger git-slice push action with pull request comment: /git-slice push -m "<commit message>" [-f] [-pr]
+  # -f : Override previous push (force push)
+  # -pr : Create a PR with the same title and body on the client side
+  git-slice-push-comment:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    if: ${{ github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/git-slice push') }}
+
+    needs: [git-slice-pull]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools PUSH (trigger by comments)
+        uses: GitStartHQ/git-slice-tools-private/actions/push-comment@v2.5.2
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-push-comment failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
+
+      - name: Failure report Comment reaction
+        uses: actions/github-script@v6
+        if: failure() || cancelled()
+        with:
+          result-encoding: string
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '-1'
+            });
+
+  git-slice-pull-issue:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'pull-an-issue' }}
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: git-slice-tools PULL-ISSUE
+        uses: GitStartHQ/git-slice-tools-private/actions/pull-issue@v2.5.2
+        with:
+          upstream-issue: ${{ github.event.inputs.upstreamIssue }}
+          slice-issue: ${{ github.event.inputs.sliceIssue }}
+          trigger-by: ${{ github.actor }}
+
+      - name: Failure report Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "git-slice-pull-issue failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.GIT_SLICE_TOOLS_SLACK_WEBHOOK_URL }}
