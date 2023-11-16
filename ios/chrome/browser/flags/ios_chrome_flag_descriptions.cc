@@ -584,6 +584,10 @@ const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[] =
     "Enables bulk uploading local passwords for eligible users in the iOS "
     "password settings.";
 
+const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
+const char kIOSPasswordSignInUffDescription[] =
+    "Enables filling the username in username-first sign-in flows.";
+
 const char kIOSPaymentsBottomSheetName[] = "IOS Payments Manager Bottom Sheet";
 const char kIOSPaymentsBottomSheetDescription[] =
     "Enables the display of the payments bottom sheet on IOS.";

@@ -493,6 +493,11 @@ extern const char kIOSPasswordBottomSheetDescription[];
 extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[];
 extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[];
 
+// Title and description for the flag to enable filling the username of single
+// username forms in sign-in UFF.
+extern const char kIOSPasswordSignInUffName[];
+extern const char kIOSPasswordSignInUffDescription[];
+
 // Title and description for the flag to enable payments bottom sheet on IOS.
 extern const char kIOSPaymentsBottomSheetName[];
 extern const char kIOSPaymentsBottomSheetDescription[];
