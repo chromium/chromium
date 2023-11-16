@@ -1,6 +1,8 @@
 {
   "Deterministic Fuchsia (dbg)": {
     "gn_args": {
+      "cast_streaming_enable_remoting": true,
+      "enable_cast_receiver": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -22,7 +24,9 @@
   },
   "fuchsia-arm64-rel": {
     "gn_args": {
+      "cast_streaming_enable_remoting": true,
       "dcheck_always_on": false,
+      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -52,7 +56,9 @@
   },
   "fuchsia-x64-rel": {
     "gn_args": {
+      "cast_streaming_enable_remoting": true,
       "dcheck_always_on": false,
+      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",

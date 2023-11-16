@@ -1,6 +1,8 @@
 {
   "fuchsia-fyi-arm64-dbg": {
     "gn_args": {
+      "cast_streaming_enable_remoting": true,
+      "enable_cast_receiver": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -23,6 +25,8 @@
   },
   "fuchsia-fyi-x64-dbg": {
     "gn_args": {
+      "cast_streaming_enable_remoting": true,
+      "enable_cast_receiver": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,

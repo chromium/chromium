@@ -1795,7 +1795,7 @@
     ],
 
     'debug_bot_fuchsia_arm64_reclient': [
-      'debug_bot_reclient', 'fuchsia', 'arm64', 'arm64_host',
+      'debug_bot_reclient', 'fuchsia', 'fuchsia_smart_display', 'arm64', 'arm64_host',
     ],
 
     'debug_bot_fuchsia_compile_only_reclient': [
@@ -1807,7 +1807,7 @@
     ],
 
     'debug_bot_fuchsia_reclient': [
-      'debug_bot_reclient', 'fuchsia',
+      'debug_bot_reclient', 'fuchsia', 'fuchsia_smart_display',
     ],
 
     'debug_bot_no_com_init_hooks_with_codecs_reclient': [
@@ -2569,7 +2569,7 @@
     ],
 
     'release_bot_fuchsia_arm64_reclient': [
-      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host',
+      'release_bot_reclient', 'fuchsia', 'fuchsia_smart_display', 'arm64', 'arm64_host',
     ],
 
     'release_bot_fuchsia_cast_receiver_reclient': [
@@ -2581,7 +2581,7 @@
     ],
 
     'release_bot_fuchsia_reclient': [
-      'release_bot_reclient', 'fuchsia',
+      'release_bot_reclient', 'fuchsia', 'fuchsia_smart_display'
     ],
 
     'release_bot_fuchsia_reclient_with_blink_symbol': [
@@ -3265,6 +3265,11 @@
 
     'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/","//third_party/fuchsia-sdk/images-internal/nelson-release/"]',
+    },
+
+    'fuchsia_smart_display': {
+      'gn_args': ('enable_cast_receiver=true '
+                  'cast_streaming_enable_remoting=true'),
     },
 
     'full_symbols': {
