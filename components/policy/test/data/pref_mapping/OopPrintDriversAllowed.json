@@ -1,0 +1,35 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OopPrintDriversAllowed": false
+        },
+        "prefs": {
+          "printing.oop_print_drivers_allowed_by_policy": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "OopPrintDriversAllowed": true
+        },
+        "prefs": {
+          "printing.oop_print_drivers_allowed_by_policy": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]
