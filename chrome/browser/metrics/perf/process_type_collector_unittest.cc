@@ -99,6 +99,8 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   19001 19008 DedicatedWorker   /opt/google/chrome/chrome --type=renderer
   19123 19234 ServiceWorker t   /opt/google/chrome/chrome --type=renderer
   19321 19335 WebRTC_Signalin   /opt/google/chrome/chrome --type=renderer
+  19321 19336 StackSamplingPr   /opt/google/chrome/chrome --type=renderer
+  19321 19337 VideoFrameCompo   /opt/google/chrome/chrome --type=renderer
   19321 19345 DrmThread         /opt/google/chrome/chrome --type=gpu-process
   19390 19428 AudioThread       /opt/google/chrome/chrome 
   12345 12456 OtherThread       /opt/google/chrome/chrome --ppapi-flash-path=...
@@ -142,6 +144,8 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   thread_types->insert(std::pair(19060, Thread::DAV1D_WORKER_THREAD));
   thread_types->insert(std::pair(19234, Thread::SERVICE_WORKER_THREAD));
   thread_types->insert(std::pair(19335, Thread::WEBRTC_THREAD));
+  thread_types->insert(std::pair(19336, Thread::STACK_SAMPLING_THREAD));
+  thread_types->insert(std::pair(19337, Thread::VIDEO_FRAME_COMPOSITOR_THREAD));
   thread_types->insert(std::pair(19345, Thread::DRM_THREAD));
   thread_types->insert(std::pair(19428, Thread::AUDIO_THREAD));
   thread_types->insert(std::pair(12456, Thread::OTHER_THREAD));
