@@ -737,6 +737,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Attestations.IsSiteAttested"
+    enum="PrivacySandboxApiAllowed" expires_after="2024-04-28">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the status of Privacy Sandbox APIs attestation checks. Each time a
+    Privacy Sandbox API attestation check takes place, the status is recorded.
+    The status can be allowed, or denied with reasons. This is an aggregate
+    metric across all Privacy Sandbox APIs that require attestations.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"

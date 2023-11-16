@@ -191,6 +191,30 @@ PrivacySandboxAttestations::~PrivacySandboxAttestations() = default;
 PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
     const net::SchemefulSite& site,
     PrivacySandboxAttestationsGatedAPI invoking_api) const {
+  PrivacySandboxSettingsImpl::Status status =
+      IsSiteAttestedInternal(site, invoking_api);
+  base::UmaHistogramEnumeration(kAttestationStatusUMA, status);
+
+  // If the attestations map is absent and feature
+  // `kDefaultAllowPrivacySandboxAttestations` is on, default allow.
+  switch (status) {
+    case PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetReady:
+    case PrivacySandboxSettingsImpl::Status::
+        kAttestationsDownloadedNotYetLoaded:
+    case PrivacySandboxSettingsImpl::Status::kAttestationsFileCorrupt:
+      return base::FeatureList::IsEnabled(
+                 kDefaultAllowPrivacySandboxAttestations)
+                 ? PrivacySandboxSettingsImpl::Status::kAllowed
+                 : status;
+    default:
+      return status;
+  }
+}
+
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxAttestations::IsSiteAttestedInternal(
+    const net::SchemefulSite& site,
+    PrivacySandboxAttestationsGatedAPI invoking_api) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If attestations aren't enabled, pass the check trivially.
   if (!base::FeatureList::IsEnabled(
@@ -208,7 +232,7 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
     return PrivacySandboxSettingsImpl::Status::kAllowed;
   }
 
-  // When the attestations map is not present, the behavior is default-deny.
+  // When the attestations map is not present, return the reason.
   if (!attestations_map_.has_value()) {
     // Break down by type of failure.
 

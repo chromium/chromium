@@ -172,9 +172,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
       ->SetAllPrivacySandboxAllowedForTesting();
 
-  // We do not add an attestation for the reporting origin.
+  // We add an empty attestation for the reporting origin. If feature
+  // `kDefaultAllowPrivacySandboxAttestations` is enabled, the attestation is
+  // default allowed if the map is absent. Creating a map with the reporting
+  // endpoint mapping to an empty set will make sure the attestation will fail.
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting({});
+      ->SetAttestationsForTesting(
+          privacy_sandbox::PrivacySandboxAttestationsMap{
+              {net::SchemefulSite(GURL(kReportEndpoint)), {}}});
 
   ExpectedReportWaiter expected_report(GURL(kReportEndpoint), &server_);
   ASSERT_TRUE(server_.Start());

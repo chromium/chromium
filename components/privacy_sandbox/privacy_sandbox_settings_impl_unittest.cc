@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -2176,9 +2177,12 @@ TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
            static_cast<int>(Status::kAllowed)}});
 }
 
-class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsM1Test {
+class PrivacySandboxAttestationsTest : public base::test::WithFeatureOverride,
+                                       public PrivacySandboxSettingsM1Test {
  public:
-  PrivacySandboxAttestationsTest() {
+  PrivacySandboxAttestationsTest()
+      : base::test::WithFeatureOverride(
+            kDefaultAllowPrivacySandboxAttestations) {
     // This test suite tests Privacy Sandbox Attestations related behaviors,
     // turn off the setting that makes all APIs considered attested.
     privacy_sandbox::PrivacySandboxAttestations::GetInstance()
@@ -2189,11 +2193,15 @@ class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsM1Test {
     feature_list_.InitAndEnableFeature(
         privacy_sandbox::kPrivacySandboxSettings4);
   }
+
+  bool IsAttestationsDefaultAllowed() { return IsParamFeatureEnabled(); }
 };
 
 // When the attestations map has not yet been downloaded, or the browser hasn't
-// confirmed that it is present in the filesystem, attestation fails.
-TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
+// confirmed that it is present in the filesystem, attestation:
+// 1. succeeds if `kDefaultAllowPrivacySandboxAttestations` is on.
+// 2. fails otherwise.
+TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2225,7 +2233,7 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed},
-           false},
+           IsAttestationsDefaultAllowed()},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
@@ -2236,12 +2244,14 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
                kIsEventReportingDestinationAttestedForFledgeMetric},
-           static_cast<int>(Status::kAttestationsFileNotYetReady)}});
+           static_cast<int>(IsAttestationsDefaultAllowed()
+                                ? Status::kAllowed
+                                : Status::kAttestationsFileNotYetReady)}});
 }
 
 // When the attestations map has no enrollments at all (i.e., no enrollment
 // for the site in question), attestation fails.
-TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
+TEST_P(PrivacySandboxAttestationsTest, NoEnrollments) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2287,7 +2297,7 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
 
 // When the site in question is enrolled but has no attestations at all (i.e.,
 // no attestation for the API in question), attestation fails.
-TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
+TEST_P(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2333,7 +2343,7 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
+TEST_P(PrivacySandboxAttestationsTest, TopicsAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2382,7 +2392,7 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
+TEST_P(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2433,7 +2443,7 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
+TEST_P(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2485,7 +2495,7 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
+TEST_P(PrivacySandboxAttestationsTest, FledgeAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2537,7 +2547,7 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
+TEST_P(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2590,7 +2600,7 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
+TEST_P(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -2642,7 +2652,7 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
-TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
+TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -2652,6 +2662,11 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
       /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
       /*managed_cookie_exceptions=*/{});
   privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+
+  // Set an empty attestations map to prevent the API being default allowed
+  // when feature `kDefaultAllowPrivacySandboxAttestations` is on.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(PrivacySandboxAttestationsMap{});
 
   GURL top_level_url("https://top-level-origin.com");
   GURL caller_url("https://embedded.com");
@@ -2673,7 +2688,7 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
       privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
 }
 
-TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
+TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
   static const struct TestCase {
     std::string name;
     std::string flags;
@@ -2701,6 +2716,11 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
   privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
   base::test::ScopedCommandLine scoped_command_line;
 
+  // Set an empty attestations map to prevent the API being default allowed
+  // when feature `kDefaultAllowPrivacySandboxAttestations` is on.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(PrivacySandboxAttestationsMap{});
+
   for (const auto& test : kTestCases) {
     // Reset the overrides flags from the previous test loop.
     scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
@@ -2725,6 +2745,8 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
         << test.name;
   }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PrivacySandboxAttestationsTest);
 
 struct PrivacySandbox3pcdTestCase {
   std::string disable_ads_apis_param = "false";
