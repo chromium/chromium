@@ -14,8 +14,8 @@
 namespace optimization_guide {
 namespace {
 
-using StartSessionFn = base::RepeatingCallback<
-    mojo::PendingRemote<on_device_model::mojom::Session>()>;
+using StartSessionFn = base::RepeatingCallback<void(
+    mojo::PendingReceiver<on_device_model::mojom::Session>)>;
 
 class OnDeviceSession
     : public optimization_guide::OptimizationGuideModelExecutor::Session,
@@ -99,7 +99,7 @@ class OnDeviceSession
  private:
   on_device_model::mojom::Session& GetOrCreateSession() {
     if (!session_) {
-      session_.Bind(start_session_fn_.Run());
+      start_session_fn_.Run(session_.BindNewPipeAndPassReceiver());
       session_.set_disconnect_handler(base::BindOnce(
           &OnDeviceSession::OnDisconnect, base::Unretained(this)));
     }
@@ -188,14 +188,13 @@ OnDeviceModelServiceController::StartSession(
     return nullptr;
   }
   return std::make_unique<OnDeviceSession>(
-      // base::Unretained is safe because |this| is owned by a KeyedService.
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       feature, config_interpreter_.get());
 }
 
-mojo::PendingRemote<on_device_model::mojom::Session>
-OnDeviceModelServiceController::StartMojoSession() {
+void OnDeviceModelServiceController::StartMojoSession(
+    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
   if (!model_remote_) {
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -206,9 +205,7 @@ OnDeviceModelServiceController::StartMojoSession() {
                        model_remote_.BindNewPipeAndPassReceiver()));
     model_remote_.reset_on_disconnect();
   }
-  mojo::PendingRemote<on_device_model::mojom::Session> session;
-  model_remote_->StartSession(session.InitWithNewPipeAndPassReceiver());
-  return session;
+  model_remote_->StartSession(std::move(session));
 }
 
 void OnDeviceModelServiceController::OnModelAssetsLoaded(
