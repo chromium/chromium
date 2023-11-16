@@ -135,8 +135,6 @@
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/policy/signin_policy_scene_agent.h"
-#import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
-#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
@@ -942,24 +940,6 @@ void InjectNTP(Browser* browser) {
                        initWithSceneUIProvider:self
                     applicationCommandsHandler:applicationCommandsHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
-
-  PrefService* prefService = browserState->GetPrefs();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-
-  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
-    policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForBrowserState(
-            browserState);
-    [sceneState
-        addAgent:[[UserPolicySceneAgent alloc]
-                        initWithSceneUIProvider:self
-                                    authService:authService
-                     applicationCommandsHandler:applicationCommandsHandler
-                                    prefService:prefService
-                                    mainBrowser:mainBrowser
-                                  policyService:userPolicyService]];
-  }
 
   // Now that the main browser's command dispatcher is created and the newly
   // started UI coordinators have registered with it, inject it into the

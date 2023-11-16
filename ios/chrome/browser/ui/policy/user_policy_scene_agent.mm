@@ -58,8 +58,7 @@
 @interface UserPolicySceneAgent () <UserPolicyPromptCoordinatorDelegate>
 @end
 
-// TODO(crbug.com/1325115): Remove the logic to show the notification dialog
-// once we determined that this isn't needed anymore.
+// TODO(crbug.com/1325115): Remove this.
 
 @implementation UserPolicySceneAgent
 
@@ -166,18 +165,7 @@
 
 // Shows the User Policy notification dialog if the requirements are fulfilled.
 - (void)maybeShowUserPolicyNotification {
-  if (![self isUIAvailableToShowNotification]) {
-    return;
-  }
-
-  if (!IsUserPolicyNotificationNeeded(self.authService, self.prefService)) {
-    // Skip notification if the notification isn't needed anymore. This
-    // situation can happen when the user had already dismissed the
-    // notification dialog during the same session.
-    return;
-  }
-
-  [self showNotification];
+  return;
 }
 
 // Shows the notification dialog on top of the active view controller (e.g. the
