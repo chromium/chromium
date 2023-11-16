@@ -291,6 +291,10 @@ class CheckBoxMenuItemView : public views::MenuItemView {
             static_cast<AppListSearchControlCategory>(GetCommand()))
             ? ax::mojom::CheckedState::kTrue
             : ax::mojom::CheckedState::kFalse);
+    // The title of the menu is not focusable but included in the position
+    // counting. Explicitly set the hierarchical level of the toggleable menu
+    // items to exclude the title.
+    node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
   }
 
  private:
