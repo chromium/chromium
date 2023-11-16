@@ -197,11 +197,6 @@ BASE_FEATURE(kJavaScriptSymbolAsWeakMapKey,
              "JavaScriptSymbolAsWeakMapKey",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the change-Array-by-copy proposal.
-BASE_FEATURE(kJavaScriptChangeArrayByCopy,
-             "JavaScriptChangeArrayByCopy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Resizable ArrayBuffer proposal.
 BASE_FEATURE(kJavaScriptRabGsab,
              "JavaScriptRabGsab",

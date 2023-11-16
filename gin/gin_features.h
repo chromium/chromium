@@ -57,7 +57,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseLibmTrigFunctions);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpUnicodeSets);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
