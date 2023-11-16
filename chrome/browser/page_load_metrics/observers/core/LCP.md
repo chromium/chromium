@@ -14,7 +14,7 @@ Since largest contentful paint can report either the largest text block or the
 largest image, there are parallel classes in the renderer which track images and
 text.
 
-* [`PaintTimingDetector`](/third_party/blink/renderer/core/paint/paint_timing_detector.h)
+* [`PaintTimingDetector`](/third_party/blink/renderer/core/paint/timing/paint_timing_detector.h)
   provides common infrastructure between image and text paint tracking. Its
   `NotifyTextPaint` and `NotifyImagePaint` methods are called by the paint code
   as text and image paints occur. It tracks the largest image and text paint
@@ -24,7 +24,7 @@ text.
   [`PageTimingMetricsSender::Update`()](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.cc;l=103;drc=054e08864177603f17edbc111db7ebc8586906bd;bpv=1;bpt=1?q=page_timing_metrics_sender.h&ss=chromium%2Fchromium%2Fsrc).
   (More info on the data flow
   [here](../../passing_data_from_renderer_to_browser.md)).
-  
+
   In this codepath,
   [`MetricsRenderFrameObserver::GetTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/metrics_render_frame_observer.cc;l=5;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f;bpv=1;bpt=1?q=metrics_render_frame_&ss=chromium%2Fchromium%2Fsrc)
   gets the values to report to the browser process about the largest contentful
@@ -42,7 +42,7 @@ text.
 * The [Largest Contentful Paint API](https://wicg.github.io/largest-contentful-paint/)
   reports each candidate (the largest contentful paint *so far*) as it is
   painted.
-  
+
   [`LargestContentfulPaintCalculator::UpdateLargestContentfulPaintCandidate()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.cc;l=25;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f;bpv=1;bpt=1)
   is called from the paint timing detector each time a new largest text
   or image candidate is found. If the candidate is larger than the previous
