@@ -5,12 +5,15 @@
 package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
+import android.text.TextUtils;
+import android.view.View;
 
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Mediator for the PWA Restore bottom sheet.
@@ -25,8 +28,13 @@ class PwaRestoreBottomSheetMediator {
     PwaRestoreBottomSheetMediator(
             Activity activity, Runnable onReviewButtonClicked, Runnable onBackButtonClicked) {
         mActivity = activity;
-        mModel = PwaRestoreProperties.createModel(onReviewButtonClicked, onBackButtonClicked,
-                this::onDeselectButtonClicked, this::onRestoreButtonClicked);
+        mModel =
+                PwaRestoreProperties.createModel(
+                        onReviewButtonClicked,
+                        onBackButtonClicked,
+                        this::onDeselectButtonClicked,
+                        this::onRestoreButtonClicked,
+                        this::onSelectionToggled);
 
         initializeState();
         setPeekingState();
@@ -72,11 +80,26 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void onDeselectButtonClicked() {
-        // TODO(finnur): Implement.
+        List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
+        for (PwaRestoreProperties.AppInfo app : appList) {
+            if (app.isSelected()) app.toggleSelection();
+        }
+        mModel.set(PwaRestoreProperties.APPS, appList);
     }
 
     private void onRestoreButtonClicked() {
         // TODO(finnur): Implement.
+    }
+
+    private void onSelectionToggled(View view) {
+        String appId = (String) view.getTag();
+
+        for (PwaRestoreProperties.AppInfo app : mModel.get(PwaRestoreProperties.APPS)) {
+            if (TextUtils.equals(app.getId(), appId)) {
+                app.toggleSelection();
+                break;
+            }
+        }
     }
 
     PropertyModel getModel() {

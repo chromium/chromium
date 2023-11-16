@@ -178,6 +178,35 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(1, true);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"PwaRestrore"})
+    public void testDeselectAll() {
+        // Ensure the promo dialog shows.
+        mPreferences.writeInt(
+                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        assertIsComboCheckedAtIndex(0, false);
+        assertIsComboCheckedAtIndex(1, false);
+        assertIsComboCheckedAtIndex(2, false);
+
+        // Ensure one entry is checked.
+        onView(withText("Foo")).check(matches(isDisplayed()));
+        onView(withText("Foo")).perform(click());
+        assertIsComboCheckedAtIndex(1, true);
+
+        // Now verify the Deselect function leaves everything in unchecked state.
+        onView(withId(R.id.deselect_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.deselect_button)).perform(click());
+        assertIsComboCheckedAtIndex(0, false);
+        assertIsComboCheckedAtIndex(1, false);
+        assertIsComboCheckedAtIndex(2, false);
+    }
+
     // A helper function to check whether a particular combo box in the PWA list ScrollView is
     // checked.
     private void assertIsComboCheckedAtIndex(int index, boolean checked) {

@@ -26,6 +26,7 @@ public class PwaRestoreProperties {
     public static class AppInfo {
         private final String mAppId;
         private final String mAppName;
+        private boolean mSelected;
 
         /**
          * @param appId the ID of the app.
@@ -34,10 +35,23 @@ public class PwaRestoreProperties {
         public AppInfo(String appId, String appName) {
             mAppId = appId;
             mAppName = appName;
+            mSelected = false;
         }
 
-        public String appName() {
+        public String getId() {
+            return mAppId;
+        }
+
+        public String getName() {
             return mAppName;
+        }
+
+        public boolean isSelected() {
+            return mSelected;
+        }
+
+        public void toggleSelection() {
+            mSelected = !mSelected;
         }
     }
 
@@ -58,7 +72,8 @@ public class PwaRestoreProperties {
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
 
     // App list:
-    static final WritableObjectPropertyKey<List<AppInfo>> APPS = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<List<AppInfo>> APPS =
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     // Simple labels:
     static final WritableObjectPropertyKey<String> PEEK_DESCRIPTION =
@@ -90,6 +105,10 @@ public class PwaRestoreProperties {
     static final ReadableObjectPropertyKey<OnClickListener> RESTORE_BUTTON_ON_CLICK_CALLBACK =
             new ReadableObjectPropertyKey<>();
 
+    // Checkbox handling:
+    static final ReadableObjectPropertyKey<OnClickListener> SELECTION_TOGGLE_CLICK_CALLBACK =
+            new ReadableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         VIEW_STATE,
         APPS,
@@ -106,15 +125,21 @@ public class PwaRestoreProperties {
         REVIEW_BUTTON_ON_CLICK_CALLBACK,
         DESELECT_BUTTON_ON_CLICK_CALLBACK,
         RESTORE_BUTTON_ON_CLICK_CALLBACK,
+        SELECTION_TOGGLE_CLICK_CALLBACK,
     };
 
-    static PropertyModel createModel(Runnable onReviewClicked, Runnable onBackClicked,
-            Runnable onDeselectClicked, Runnable onRestoreClicked) {
+    static PropertyModel createModel(
+            Runnable onReviewClicked,
+            Runnable onBackClicked,
+            Runnable onDeselectClicked,
+            Runnable onRestoreClicked,
+            OnClickListener onAppToggled) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(BACK_BUTTON_ON_CLICK_CALLBACK, v -> onBackClicked.run())
                 .with(REVIEW_BUTTON_ON_CLICK_CALLBACK, v -> onReviewClicked.run())
                 .with(DESELECT_BUTTON_ON_CLICK_CALLBACK, v -> onDeselectClicked.run())
                 .with(RESTORE_BUTTON_ON_CLICK_CALLBACK, v -> onRestoreClicked.run())
+                .with(SELECTION_TOGGLE_CLICK_CALLBACK, onAppToggled)
                 .build();
     }
 }

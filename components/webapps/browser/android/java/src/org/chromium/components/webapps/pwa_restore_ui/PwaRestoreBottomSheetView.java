@@ -57,6 +57,9 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
     // The listener to notify when the Back button is clicked.
     private OnClickListener mBackButtonListener;
 
+    // The listener to notify when an app checkbox is toggled in the app list.
+    private OnClickListener mSelectionToggleButtonListener;
+
     // The back button arrow in the top bar of the content view.
     private Drawable mBackArrow;
 
@@ -108,6 +111,7 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
     protected void setAppList(
             List<PwaRestoreProperties.AppInfo> appList, String recentAppLabel, String oldAppLabel) {
         LinearLayout scrollViewContent = getContentView().findViewById(R.id.scroll_view_content);
+        scrollViewContent.removeAllViews();
 
         // Set the heading for the app list.
         View label =
@@ -137,17 +141,16 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
             item += 1;
 
             ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(placeholder);
-            ((TextView) appView.findViewById(R.id.app_name)).setText(app.appName());
+            ((TextView) appView.findViewById(R.id.app_name)).setText(app.getName());
+            CheckBox checkBox = (CheckBox) appView.findViewById(R.id.checkbox);
+            checkBox.setTag(app.getId());
+            checkBox.setChecked(app.isSelected());
+            checkBox.setOnClickListener(this::onClick);
 
             // Any click on an app item, that is not handled by the view itself, should be treated
             // as an attempt to toggle the checkbox.
-            appView.setOnClickListener(
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ((CheckBox) view.findViewById(R.id.checkbox)).toggle();
-                        }
-                    });
+            appView.setOnClickListener(this::onClick);
+
             scrollViewContent.addView(appView);
 
             // Add a 2pt separator view as a separate item in the ScrollView so as to not affect the
@@ -165,8 +168,27 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
         }
     }
 
+    public void onClick(View view) {
+        CheckBox checkBox = null;
+        if (view instanceof CheckBox) {
+            checkBox = (CheckBox) view;
+        } else {
+            // Clicks outside the checkbox, that are not handled by the corresponding view, are
+            // forwarded to the checkbox.
+            checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+            checkBox.toggle();
+        }
+
+        // Notify of the change.
+        mSelectionToggleButtonListener.onClick(checkBox);
+    }
+
     protected void setBackButtonListener(OnClickListener listener) {
         mBackButtonListener = listener;
+    }
+
+    protected void setSelectionToggleButtonListener(OnClickListener listener) {
+        mSelectionToggleButtonListener = listener;
     }
 
     // Called through the {@link PwaRestoreBottomSheetViewBinder} bindings when the property model

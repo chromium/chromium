@@ -65,6 +65,9 @@ class PwaRestoreBottomSheetViewBinder {
                     .setOnClickListener(
                             model.get(PwaRestoreProperties.RESTORE_BUTTON_ON_CLICK_CALLBACK));
             ((Button) view.getContentView().findViewById(R.id.restore_button)).setEnabled(true);
+        } else if (propertyKey.equals(PwaRestoreProperties.SELECTION_TOGGLE_CLICK_CALLBACK)) {
+            view.setSelectionToggleButtonListener(
+                    model.get(PwaRestoreProperties.SELECTION_TOGGLE_CLICK_CALLBACK));
         }
     }
 }
