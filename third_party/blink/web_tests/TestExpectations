@@ -1431,19 +1431,13 @@ crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001
 
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 
-# lab color space not yet implemented
-# color() function not implemented
-crbug.com/1068610 external/wpt/css/css-color/t32-opacity-basic-0.6-a.xht [ Failure ]
+# All browsers fail
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
 
-# tests failing due to small round errors (.5 values getting rounded up or down)
-crbug.com/1068610 external/wpt/css/css-color/xyz-003.html [ Failure ]
-crbug.com/1068610 external/wpt/css/css-color/xyz-d65-003.html [ Failure ]
-
+# Borders and shadows don't correctly implement currentcolor
 crbug.com/1343361 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 
-crbug.com/1299585 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-opaque-cross-origin.sub.html [ Failure Pass ]
-
+# Propagate preferred color-scheme to non-top frames.
 crbug.com/1357623 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-preferred.html [ Failure ]
 
 # @supports
