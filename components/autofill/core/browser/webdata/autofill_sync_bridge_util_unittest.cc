@@ -147,8 +147,8 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
-  PopulateWalletTypesFromSyncData(entity_data, &wallet_cards, wallet_ibans,
-                                  &customer_data, &cloud_token_data);
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data);
 
   ASSERT_EQ(2U, wallet_cards.size());
 

@@ -106,13 +106,12 @@ void CopyRelevantWalletMetadataFromDisk(
     std::vector<CreditCard>* cards_from_server);
 
 // Populates the wallet datatypes from the sync data.
-// TODO(crbug.com/1500315): Refactor to take parameters as reference.
 void PopulateWalletTypesFromSyncData(
     const ::syncer::EntityChangeList& entity_data,
-    std::vector<CreditCard>* wallet_cards,
+    std::vector<CreditCard>& wallet_cards,
     std::vector<Iban>& wallet_ibans,
-    std::vector<PaymentsCustomerData>* customer_data,
-    std::vector<CreditCardCloudTokenData>* cloud_token_data);
+    std::vector<PaymentsCustomerData>& customer_data,
+    std::vector<CreditCardCloudTokenData>& cloud_token_data);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison

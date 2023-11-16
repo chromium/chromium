@@ -583,10 +583,10 @@ void CopyRelevantWalletMetadataFromDisk(
 
 void PopulateWalletTypesFromSyncData(
     const syncer::EntityChangeList& entity_data,
-    std::vector<CreditCard>* wallet_cards,
+    std::vector<CreditCard>& wallet_cards,
     std::vector<Iban>& wallet_ibans,
-    std::vector<PaymentsCustomerData>* customer_data,
-    std::vector<CreditCardCloudTokenData>* cloud_token_data) {
+    std::vector<PaymentsCustomerData>& customer_data,
+    std::vector<CreditCardCloudTokenData>& cloud_token_data) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -595,18 +595,18 @@ void PopulateWalletTypesFromSyncData(
 
     switch (autofill_specifics.type()) {
       case sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD:
-        wallet_cards->push_back(
+        wallet_cards.push_back(
             CardFromSpecifics(autofill_specifics.masked_card()));
         break;
       case sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS:
         // POSTAL_ADDRESS is deprecated.
         break;
       case sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA:
-        customer_data->push_back(
+        customer_data.push_back(
             CustomerDataFromSpecifics(autofill_specifics.customer_data()));
         break;
       case sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA:
-        cloud_token_data->push_back(
+        cloud_token_data.push_back(
             CloudTokenDataFromSpecifics(autofill_specifics.cloud_token_data()));
         break;
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
