@@ -355,11 +355,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
   }
 }
 
-void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service) {
-  DCHECK(pref_service);
-  pref_service->ClearPref(prefs::kAccountStoragePerAccountSettings);
-}
-
 void RecordMoveOfferedToNonOptedInUser(
     PrefService* pref_service,
     const syncer::SyncService* sync_service) {

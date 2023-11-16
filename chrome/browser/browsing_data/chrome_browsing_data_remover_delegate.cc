@@ -1389,8 +1389,8 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   if (should_clear_password_account_storage_settings_) {
     should_clear_password_account_storage_settings_ = false;
 #if !BUILDFLAG(IS_ANDROID)
-    password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
-        profile_->GetPrefs());
+    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
+        profile_->GetPrefs(), {});
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 

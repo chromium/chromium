@@ -185,12 +185,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
 
-// Clears all account-storage-related settings for all users. Most notably, this
-// includes the opt-in, but also all other related settings like the default
-// password store. Meant to be called when account cookies were cleared.
-// |pref_service| must not be null.
-void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service);
-
 // Increases the count of how many times Chrome automatically offered a user
 // not opted-in to the account-scoped passwords storage to move a password to
 // their account. Should only be called if the user is signed-in and not

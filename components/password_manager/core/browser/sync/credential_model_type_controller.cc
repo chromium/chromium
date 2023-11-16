@@ -133,7 +133,7 @@ void CredentialModelTypeController::OnAccountsInCookieUpdated(
 
 void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  features_util::ClearAccountStorageSettingsForAllUsers(pref_service_);
+  features_util::KeepAccountStorageSettingsOnlyForUsers(pref_service_, {});
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
