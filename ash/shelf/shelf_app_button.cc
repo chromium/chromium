@@ -88,10 +88,13 @@ constexpr int kInkDropRippleActivationTimeMs = 650;
 constexpr float kAppIconScale = 1.2f;
 
 // The icon for promise apps should be scaled down by this factor.
-constexpr float kPromiseIconScale = 0.77f;
+constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
+constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
-// The amount of space between the progress ring and the promise app background.
-constexpr gfx::Insets kProgressRingMargin = gfx::Insets(-2);
+// The amount of space between the progress ring and the promise app background
+// and icon.
+constexpr gfx::Insets kProgressRingMarginInstalling = gfx::Insets(-1);
+constexpr gfx::Insets kProgressRingMarginPending = gfx::Insets(-2);
 
 // The drag and drop app icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionMs = 200;
@@ -528,7 +531,7 @@ void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
 }
 
 void ShelfAppButton::UpdateIconImage() {
-  if (has_host_badge_) {
+  if (has_host_badge_ || is_promise_app_) {
     icon_view_->SetImage(GetIconImage());
     return;
   }
@@ -807,8 +810,9 @@ void ShelfAppButton::AnimateInFromPromiseApp(
   // TODO(b/297866814): Shadow insets are ignored for promise apps when
   // calculating icon bounds - make `GetIconViewBounds()` explicitly ignore
   // them.
-  gfx::Rect promise_icon_bounds = GetIconViewBounds(
-      GetContentsBounds(), kPromiseIconScale, /*ignore_shadow_insets=*/true);
+  gfx::Rect promise_icon_bounds =
+      GetIconViewBounds(GetContentsBounds(), kPromiseIconScaleInstalling,
+                        /*ignore_shadow_insets=*/true);
   icon_view_->layer()->SetTransform(gfx::TransformBetweenRects(
       gfx::RectF(icon_bounds), gfx::RectF(promise_icon_bounds)));
 
@@ -1432,14 +1436,19 @@ void ShelfAppButton::UpdateProgressRingBounds() {
     progress_indicator_->SetOuterRingTrackVisible(false);
   }
 
-  const gfx::Rect button_bounds(GetContentsBounds());
+  gfx::Rect progress_indicator_bounds = views::View::ConvertRectToTarget(
+      icon_view_, this, icon_view_->GetImageBounds());
 
-  gfx::Rect progress_indicator_bounds = GetIconViewBounds(
-      button_bounds, icon_scale_, /*ignore_shadow_insets=*/true);
+  const gfx::Insets progress_ring_padding =
+      icon_image_model_.IsVectorIcon() || app_status() == AppStatus::kPending
+          ? kProgressRingMarginPending
+          : kProgressRingMarginInstalling;
+
+  progress_indicator_bounds.Inset(progress_ring_padding);
 
   SetBackground(std::make_unique<PromiseIconBackground>(
       cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
-      kProgressRingMargin));
+      progress_ring_padding));
 
   progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
   layer()->StackAtBottom(progress_indicator_->layer());
@@ -1449,7 +1458,21 @@ void ShelfAppButton::UpdateProgressRingBounds() {
 float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
   // Account for the promise icon scale (if needed).
   if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
-    return icon_scale_ * kPromiseIconScale;
+    switch (app_status_) {
+      case AppStatus::kPending:
+        return icon_scale_ * kPromiseIconScalePending;
+      case AppStatus::kInstalling:
+      case AppStatus::kInstallCancelled:
+      case AppStatus::kInstallSuccess:
+      case AppStatus::kPaused:
+        if (icon_image_model_.IsVectorIcon()) {
+          return icon_scale_ * kPromiseIconScalePending;
+        }
+        return icon_scale_ * kPromiseIconScaleInstalling;
+      case AppStatus::kReady:
+      case AppStatus::kBlocked:
+        return icon_scale_;
+    }
   }
 
   return icon_scale_;
