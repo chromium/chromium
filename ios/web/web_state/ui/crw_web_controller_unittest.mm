@@ -1193,6 +1193,24 @@ TEST_F(WindowOpenByDomTest, CloseWindow) {
   EXPECT_TRUE(delegate_.popups().empty());
 }
 
+// Tests that calling document.write() on a newly-opened window doesn't crash.
+TEST_F(WindowOpenByDomTest, DocumentWrite) {
+  delegate_.allow_popups(opener_url_);
+
+  NSString* const kDocumentWriteScript =
+      @"var w = window.open();"
+      @"w.document.write('<p>Hello</p>');"
+      @"w.document.write(\"<meta http-equiv='refresh' content='0; url=\""
+      @"+ location.toString() + \"'>\");"
+      @"w.document.close();";
+
+  ExecuteJavaScript(kDocumentWriteScript);
+  EXPECT_EQ(1U, delegate_.child_windows().size());
+
+  EXPECT_TRUE(test::WaitForWebViewNotContainingText(
+      delegate_.child_windows()[0].get(), "Hello"));
+}
+
 // Tests page title changes.
 typedef WebTestWithWebState CRWWebControllerTitleTest;
 

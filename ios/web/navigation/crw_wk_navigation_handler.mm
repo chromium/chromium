@@ -225,7 +225,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
 
     if (action.navigationType == WKNavigationTypeReload &&
-        web::wk_navigation_util::URLNeedsUserAgentType(URLForUserAgent)) {
+        web::wk_navigation_util::URLNeedsUserAgentType(URLForUserAgent) &&
+        webView.backForwardList.currentItem) {
       // When reloading the page, the UserAgent will be updated to the one for
       // the new page.
       web::NavigationItem* item = [[CRWNavigationItemHolder
