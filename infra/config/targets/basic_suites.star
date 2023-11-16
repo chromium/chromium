@@ -1801,7 +1801,6 @@ targets.legacy_basic_suite(
         "headless_browsertests": None,
         "headless_unittests": None,
         "interactive_ui_tests": None,
-        "nacl_loader_unittests": None,
         "net_unittests": None,
         "pdf_unittests": None,
         "ppapi_unittests": None,

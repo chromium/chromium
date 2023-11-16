@@ -1513,7 +1513,6 @@
       'headless_browsertests': {},
       'headless_unittests': {},
       'interactive_ui_tests': {},
-      'nacl_loader_unittests': {},
       'net_unittests': {},
       'pdf_unittests': {},
       'ppapi_unittests': {},
