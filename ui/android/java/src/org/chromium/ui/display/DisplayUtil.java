@@ -6,11 +6,13 @@ package org.chromium.ui.display;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import org.chromium.base.compat.ApiHelperForR;
@@ -88,6 +90,7 @@ public abstract class DisplayUtil {
 
     /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
+     *
      * @param context The context used to retrieve the system {@link WindowManager}.
      * @param configuration The Configuration to scale up UI for.
      */
@@ -102,11 +105,28 @@ public abstract class DisplayUtil {
         int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
         float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
 
+        int screenWidthDp = displayMetrics.widthPixels;
+        int screenHeightDp = displayMetrics.heightPixels;
+
+        // Configuration.screenWidthDp and Configuration.screenHeightDp are not supposed to take
+        // into account system bars. Since we are scaling up the UI in automotive during a time when
+        // we cannot access the default Configuration (CompatActivity#attachBaseContext), we need
+        // to manually subtract the system bar insets ourselves.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Insets systemBarInsets =
+                    windowManager
+                            .getCurrentWindowMetrics()
+                            .getWindowInsets()
+                            .getInsets(WindowInsets.Type.systemBars());
+            screenHeightDp = screenHeightDp - systemBarInsets.top - systemBarInsets.bottom;
+            screenWidthDp = screenWidthDp - systemBarInsets.left - systemBarInsets.right;
+        }
+
         configuration.densityDpi = adjustedDensity;
         configuration.screenWidthDp =
-                (int) (displayMetrics.widthPixels / (displayMetrics.density * scaling));
+                Math.round(screenWidthDp / (displayMetrics.density * scaling));
         configuration.screenHeightDp =
-                (int) (displayMetrics.heightPixels / (displayMetrics.density * scaling));
+                Math.round(screenHeightDp / (displayMetrics.density * scaling));
         configuration.smallestScreenWidthDp =
                 Math.min(configuration.screenWidthDp, configuration.screenHeightDp);
     }
