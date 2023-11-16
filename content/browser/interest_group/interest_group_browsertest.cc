@@ -6233,6 +6233,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(console_observer.Wait());
 }
 
+// If this test fails, check that you haven't added a required field that's
+// alphabetically before directFromSellerSignalsHeaderAdSlot. See details at
+// https://github.com/WICG/turtledove/issues/803
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionDirectFromSellerSignalsHeaderAdSlotFeatureDetection) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_TRUE(EvalJs(shell(), R"(
+(async function() {
+  let dfss = false;
+  navigator.runAdAuction({
+      get directFromSellerSignalsHeaderAdSlot() { dfss = true; }
+  }).catch((e) => {});
+  return dfss;
+})())")
+                  .ExtractBool());
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionPromiseInvalidDirectFromSellerSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
