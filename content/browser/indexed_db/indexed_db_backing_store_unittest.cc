@@ -383,13 +383,12 @@ class IndexedDBBackingStoreTest : public testing::Test {
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
 
-      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
         base::RunLoop loop;
-        IndexedDBBucketContext* per_bucket_factory =
-            factory->GetBucketContext(bucket_id);
-
-        auto* leveldb_state =
-            per_bucket_factory->backing_store()->db()->leveldb_state();
+        auto* leveldb_state = factory->GetBucketContextForTesting(bucket_id)
+                                  ->backing_store()
+                                  ->db()
+                                  ->leveldb_state();
 
         base::WaitableEvent leveldb_close_event;
         base::WaitableEventWatcher event_watcher;

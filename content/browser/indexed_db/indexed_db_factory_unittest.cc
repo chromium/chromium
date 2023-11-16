@@ -100,7 +100,7 @@ class IndexedDBFactoryTest : public testing::Test {
       // Loop through all open storage keys, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
         context_->ForceClose(
             bucket_id,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
@@ -343,9 +343,9 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
     }
   }
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(5ul, factory()->GetOpenBuckets().size());
+    EXPECT_EQ(5ul, factory()->GetOpenBucketIdsForTesting().size());
   } else {
-    EXPECT_EQ(4ul, factory()->GetOpenBuckets().size());
+    EXPECT_EQ(4ul, factory()->GetOpenBucketIdsForTesting().size());
   }
 }
 
@@ -366,12 +366,13 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
   bucket_context_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+  EXPECT_TRUE(
+      factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
 
   factory()->ForceClose(bucket_locator.id, false);
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, ImmediateClose) {
@@ -393,10 +394,10 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
   bucket_context_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_EQ(0ul, factory()->GetOpenBuckets().size());
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
+  EXPECT_EQ(0ul, factory()->GetOpenBucketIdsForTesting().size());
 }
 
 TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
@@ -418,16 +419,19 @@ TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
   bucket_context_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+  EXPECT_TRUE(
+      factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
 
   EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
-            factory()->GetBucketContext(bucket_locator.id)->closing_stage());
+            factory()
+                ->GetBucketContextForTesting(bucket_locator.id)
+                ->closing_stage());
 
   task_environment_.FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
 
   // Move the clock to run the tasks in the next close sequence.
   // NOTE: The constants rate-limiting sweeps and compaction are currently the
@@ -446,16 +450,22 @@ TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetBucketContext(bucket_locator.id)->close_timer()->FireNow();
+  factory()
+      ->GetBucketContextForTesting(bucket_locator.id)
+      ->close_timer()
+      ->FireNow();
 
   // The pre-close tasks should be running now.
-  ASSERT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  ASSERT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
-            factory()->GetBucketContext(bucket_locator.id)->closing_stage());
-  ASSERT_TRUE(
-      factory()->GetBucketContext(bucket_locator.id)->pre_close_task_queue());
+            factory()
+                ->GetBucketContextForTesting(bucket_locator.id)
+                ->closing_stage());
+  ASSERT_TRUE(factory()
+                  ->GetBucketContextForTesting(bucket_locator.id)
+                  ->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetBucketContext(bucket_locator.id)
+                  ->GetBucketContextForTesting(bucket_locator.id)
                   ->pre_close_task_queue()
                   ->started());
 
@@ -474,16 +484,21 @@ TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
       IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   bucket_context_handle.Release();
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
-            factory()->GetBucketContext(bucket_locator.id)->closing_stage());
+            factory()
+                ->GetBucketContextForTesting(bucket_locator.id)
+                ->closing_stage());
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetBucketContext(bucket_locator.id)->close_timer()->FireNow();
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  factory()
+      ->GetBucketContextForTesting(bucket_locator.id)
+      ->close_timer()
+      ->FireNow();
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
   task_environment_.FastForwardBy(
@@ -493,15 +508,21 @@ TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
           ToBucketInfo(bucket_locator), context()->GetDataPath(bucket_locator),
           /*create_if_missing=*/true);
   bucket_context_handle.Release();
-  factory()->GetBucketContext(bucket_locator.id)->close_timer()->FireNow();
+  factory()
+      ->GetBucketContextForTesting(bucket_locator.id)
+      ->close_timer()
+      ->FireNow();
 
-  ASSERT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  ASSERT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
-            factory()->GetBucketContext(bucket_locator.id)->closing_stage());
-  ASSERT_TRUE(
-      factory()->GetBucketContext(bucket_locator.id)->pre_close_task_queue());
+            factory()
+                ->GetBucketContextForTesting(bucket_locator.id)
+                ->closing_stage());
+  ASSERT_TRUE(factory()
+                  ->GetBucketContextForTesting(bucket_locator.id)
+                  ->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetBucketContext(bucket_locator.id)
+                  ->GetBucketContextForTesting(bucket_locator.id)
                   ->pre_close_task_queue()
                   ->started());
 }
@@ -611,14 +632,15 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
                   ->in_memory());
   bucket_context_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+  EXPECT_FALSE(
+      factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
 
   factory()->ForceClose(bucket_locator.id, false);
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
 
   factory()->ForceClose(bucket_locator.id, true);
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
@@ -665,9 +687,9 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
   StorageBucketFromHandle(bucket_context_handle)->ForceClose(/*doom=*/false);
   bucket_context_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
 }
 
 // Tests that the backing store is closed when the connection is closed during
@@ -705,13 +727,15 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
                        /*transaction_id=*/1);
   run_loop.Run();
 
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+  EXPECT_FALSE(
+      factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
 
   // Drop the connection.
   pending_database.reset();
   factory_remote.FlushForTesting();
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(
+      factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
@@ -744,7 +768,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
     run_loop.Run();
 
     // Backing store shouldn't exist.
-    EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+    EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
   }
 
   // Now create a database and thus the backing store.
@@ -777,8 +801,9 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
     run_loop.Run();
 
     // Since there are no more references the factory should be closing.
-    ASSERT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-    EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+    ASSERT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+    EXPECT_TRUE(
+        factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
   }
 }
 
@@ -805,7 +830,7 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
         info_future;
     factory_remote->GetDatabaseInfo(info_future.GetCallback());
     ASSERT_TRUE(info_future.Wait());
-    EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+    EXPECT_FALSE(factory()->GetBucketContextForTesting(bucket_locator.id));
   }
 
   // Now create a database and thus the backing store.
@@ -835,8 +860,9 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
     factory_remote->GetDatabaseInfo(info_future.GetCallback());
     ASSERT_TRUE(info_future.Wait());
 
-    EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-    EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+    EXPECT_TRUE(factory()->GetBucketContextForTesting(bucket_locator.id));
+    EXPECT_FALSE(
+        factory()->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
   }
 }
 
@@ -877,33 +903,12 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
                        /*transaction_id=*/1);
   run_loop.Run();
 
+  // A disk full error results in an error reported to the quota system.
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
   EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
   EXPECT_EQ(1, quota_manager()->write_error_tracker().begin()->second);
 
   leveldb_env::SetDBFactoryForTesting({});
-}
-
-TEST_F(IndexedDBFactoryTest, NotifyQuotaOnDatabaseError) {
-  SetUpContext();
-  const blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting("www.example.com");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
-  factory()->OnDatabaseError(bucket_locator,
-                             leveldb::Status::Corruption("Corrupted stuff."),
-                             "Corrupted stuff.");
-  base::RunLoop().RunUntilIdle();
-  // Quota should not be notified unless the status is IOError.
-  ASSERT_EQ(0U, quota_manager()->write_error_tracker().size());
-
-  factory()->OnDatabaseError(bucket_locator,
-                             leveldb::Status::IOError("Disk is full."),
-                             "Disk is full.");
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
-  EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
-  EXPECT_EQ(1, quota_manager()->write_error_tracker().begin()->second);
 }
 
 TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
@@ -955,7 +960,10 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/2);
     run_loop.Run();
-    EXPECT_FALSE(factory()->IsDatabaseOpen(bucket_locator, db_name));
+    IndexedDBBucketContext* bucket_context =
+        factory()->GetBucketContextForTesting(bucket_locator.id);
+    ASSERT_TRUE(bucket_context);
+    EXPECT_FALSE(base::Contains(bucket_context->databases(), db_name));
   }
 }
 

@@ -243,7 +243,7 @@ class IndexedDBTest
       // Loop through all open buckets, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
         context_->ForceClose(
             bucket_id,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
@@ -528,7 +528,10 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
   VerifyForcedClosedCalled(
       base::BindOnce(
           [](IndexedDBFactory* factory, storage::BucketInfo* bucket_info) {
-            factory->HandleBackingStoreFailure(bucket_info->ToBucketLocator());
+            factory->GetBucketContextForTesting(bucket_info->id)
+                ->delegate()
+                .on_fatal_error.Run(
+                    leveldb::Status::NotSupported("operation not supported"));
           },
           context()->GetIDBFactory(), &bucket_info),
       &bucket_info);
@@ -564,7 +567,8 @@ TEST_P(IndexedDBTestFirstOrThirdParty,
       base::BindOnce(&IndexedDBFactory::ContextDestroyed,
                      base::Unretained(context()->GetIDBFactory())),
       &bucket_info);
-  EXPECT_FALSE(context()->GetIDBFactory()->GetBucketContext(bucket_info.id));
+  EXPECT_FALSE(
+      context()->GetIDBFactory()->GetBucketContextForTesting(bucket_info.id));
 }
 
 TEST_P(IndexedDBTestFirstOrThirdParty, DeleteFailsIfDirectoryLocked) {

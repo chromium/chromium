@@ -386,7 +386,8 @@ void IndexedDBFactory::DeleteDatabase(
     database->ScheduleDeleteDatabase(
         std::move(factory_client),
         base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
-                       weak_factory_.GetWeakPtr(), bucket_locator));
+                       idb_context_destruction_weak_factory_.GetWeakPtr(),
+                       bucket_locator));
     if (force_close) {
       leveldb::Status status = database->ForceCloseAndRunTasks();
       if (!status.ok()) {
@@ -427,7 +428,8 @@ void IndexedDBFactory::DeleteDatabase(
   database_ptr->ScheduleDeleteDatabase(
       std::move(factory_client),
       base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
-                     weak_factory_.GetWeakPtr(), bucket_locator));
+                     idb_context_destruction_weak_factory_.GetWeakPtr(),
+                     bucket_locator));
   if (force_close) {
     leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
     if (!status.ok()) {
@@ -531,11 +533,10 @@ void IndexedDBFactory::ContextDestroyed() {
   // Set `context_` to nullptr first to ensure no re-entry into the `context_`
   // object during shutdown. This can happen in methods like BlobFilesCleaned.
   context_ = nullptr;
-  // Invalidate the weak factory that is used by the IndexedDBBucketContexts
-  // to destruct themselves. This prevents modification of the
-  // `bucket_contexts_` map while it is iterated below, and allows us
-  // to avoid holding a handle to call ForceClose();
-  bucket_context_destruction_weak_factory_.InvalidateWeakPtrs();
+  // Invalidate the weak pointers that bind `on_ready_for_destruction` (among
+  // other callbacks) so that `ForceClose()` below doesn't mutate
+  // `bucket_contexts_` while it's being iterated.
+  idb_context_destruction_weak_factory_.InvalidateWeakPtrs();
   for (const auto& pair : bucket_contexts_) {
     pair.second->ForceClose(/*doom=*/false);
   }
@@ -616,7 +617,8 @@ base::Time IndexedDBFactory::GetLastModified(
   return backing_store->db()->LastModified();
 }
 
-std::vector<storage::BucketId> IndexedDBFactory::GetOpenBuckets() const {
+std::vector<storage::BucketId> IndexedDBFactory::GetOpenBucketIdsForTesting()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<storage::BucketId> output;
   output.reserve(bucket_contexts_.size());
@@ -626,7 +628,7 @@ std::vector<storage::BucketId> IndexedDBFactory::GetOpenBuckets() const {
   return output;
 }
 
-IndexedDBBucketContext* IndexedDBFactory::GetBucketContext(
+IndexedDBBucketContext* IndexedDBFactory::GetBucketContextForTesting(
     const storage::BucketId& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = bucket_contexts_.find(id);
@@ -770,7 +772,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
           factory->bucket_contexts_.erase(bucket_locator.id);
         }
       },
-      bucket_locator, bucket_context_destruction_weak_factory_.GetWeakPtr());
+      bucket_locator, idb_context_destruction_weak_factory_.GetWeakPtr());
   bucket_delegate.on_content_changed = base::BindRepeating(
       [](base::WeakPtr<IndexedDBFactory> factory,
          storage::BucketLocator bucket_locator,
@@ -781,7 +783,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
               bucket_locator, database_name, object_store_name);
         }
       },
-      bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
+      idb_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.on_writing_transaction_complete = base::BindRepeating(
       [](base::WeakPtr<IndexedDBFactory> factory,
          storage::BucketLocator bucket_locator, bool did_sync) {
@@ -790,7 +792,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
                                                         did_sync);
         }
       },
-      bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
+      idb_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.for_each_bucket_context = base::BindRepeating(
       &IndexedDBFactory::ForEachBucketContext, weak_factory_.GetWeakPtr());
 
@@ -1002,37 +1004,22 @@ void IndexedDBFactory::OnDatabaseError(
             : IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                      base::ASCIIToUTF16(status.ToString()));
     HandleBackingStoreCorruption(bucket_locator, error);
-  } else {
-    if (status.IsIOError()) {
-      context_->quota_manager_proxy()->OnClientWriteFailed(
-          bucket_locator.storage_key);
-    }
-    HandleBackingStoreFailure(bucket_locator);
+    return;
   }
+  if (status.IsIOError()) {
+    context_->quota_manager_proxy()->OnClientWriteFailed(
+        bucket_locator.storage_key);
+  }
+  HandleBackingStoreFailure(bucket_locator);
 }
 
 void IndexedDBFactory::OnDatabaseDeleted(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (call_on_database_deleted_for_testing_) {
-    call_on_database_deleted_for_testing_.Run(bucket_locator);
-  }
-
   if (!context_) {
     return;
   }
   context_->DatabaseDeleted(bucket_locator);
-}
-
-bool IndexedDBFactory::IsDatabaseOpen(
-    const storage::BucketLocator& bucket_locator,
-    const std::u16string& name) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return false;
-  }
-  return base::Contains(it->second->databases(), name);
 }
 
 bool IndexedDBFactory::OnMemoryDump(
@@ -1060,11 +1047,6 @@ bool IndexedDBFactory::OnMemoryDump(
                        total_memory_in_flight.ValueOrDefault(0));
   }
   return true;
-}
-
-void IndexedDBFactory::CallOnDatabaseDeletedForTesting(
-    OnDatabaseDeletedCallback callback) {
-  call_on_database_deleted_for_testing_ = std::move(callback);
 }
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
