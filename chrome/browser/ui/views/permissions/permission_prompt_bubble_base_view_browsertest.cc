@@ -255,8 +255,14 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
+// Flaky on Mac: http://crbug.com/1502621
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
+#else
+#define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
-                       AlertAccessibleEvent) {
+                       MAYBE_AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
