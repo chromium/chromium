@@ -434,6 +434,24 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self updateTableViewBackground];
 }
 
+- (void)triggerBatchUpload {
+  self.syncService->TriggerLocalDataMigration(
+      syncer::ModelTypeSet({syncer::BOOKMARKS}));
+}
+
+- (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
+                                      std::string user_email))completion {
+  std::string user_email = self.syncService->GetAccountInfo().email;
+  self.syncService->GetLocalDataDescriptions(
+      syncer::ModelTypeSet({syncer::BOOKMARKS}),
+      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+                           description) {
+        auto it = description.find(syncer::BOOKMARKS);
+        CHECK(it != description.end());
+        completion(it->second.item_count, std::move(user_email));
+      }));
+}
+
 - (bookmark_utils_ios::NodeSet&)selectedNodesForEditMode {
   return _selectedNodesForEditMode;
 }
@@ -723,14 +741,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   }
 
   __weak BookmarksHomeMediator* weakSelf = self;
-  self.syncService->GetLocalDataDescriptions(
-      syncer::ModelTypeSet({syncer::BOOKMARKS}),
-      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
-                           description) {
-        auto it = description.find(syncer::BOOKMARKS);
-        CHECK(it != description.end());
-        [weakSelf addBatchUploadSection:it->second.item_count];
-      }));
+  [self
+      queryLocalBookmarks:^(int local_bookmarks_count, std::string user_email) {
+        [weakSelf addBatchUploadSection:local_bookmarks_count];
+      }];
 }
 
 // Populates the batch upload section with recommendation item and button.

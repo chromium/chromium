@@ -55,16 +55,6 @@ void ExpectBatchUploadSection(int count, NSString* email) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Adds a bookmark. The storage type is determined based on whether the user is
-// signed in or not.
-void SaveBookmark(NSString* title, NSString* url) {
-  bookmarks::StorageType storageType = bookmarks::StorageType::kAccount;
-  if ([SigninEarlGreyAppInterface isSignedOut]) {
-    storageType = bookmarks::StorageType::kLocalOrSyncable;
-  }
-  [BookmarkEarlGrey addBookmarkWithTitle:title URL:url inStorage:storageType];
-}
-
 // Verifies that the batch upload section is not visible.
 void ExpectNoBatchUploadDialog() {
   [[EarlGrey
@@ -78,6 +68,48 @@ void ExpectNoBatchUploadDialog() {
           grey_allOf(
               grey_accessibilityID(kBookmarksHomeBatchUploadButtonIdentifier),
               grey_sufficientlyVisible(), nil)] assertWithMatcher:grey_nil()];
+}
+
+// Verifies that the batch upload alert (action sheet) is visible, with a
+// message formatted for `count` number of local bookmarks.
+void ExpectBatchUploadAlert(int count) {
+  NSString* alertTitle = l10n_util::GetPluralNSStringF(
+      IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE, count);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(alertTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  // No checks for the "cancel" button since the cancel button is not shown on
+  // iPads.
+}
+
+// Verifies that no batch upload alert is displayed.
+void ExpectNoBatchUploadAlert() {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Waits for snackbar item to show up after pressing save on the batch upload
+// alert.
+void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SNACKBAR_MESSAGE),
+          "count", count, "email", base::SysNSStringToUTF16(email)));
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       text)];
 }
 
 }  // namespace
@@ -124,7 +156,11 @@ void ExpectNoBatchUploadDialog() {
 // Tests that the batch upload dialog is not shown when the feature is disabled.
 - (void)testNoBatchUploadDialogIfFeatureDisabled {
   // Add one local bookmark.
-  SaveBookmark(@"example1", @"https://www.example1.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -155,7 +191,11 @@ void ExpectNoBatchUploadDialog() {
 // Tests that no batch upload dialog is shown if the user is not signed-in.
 - (void)testNoBatchUploadDialogIfNotSignedIn {
   // Add one local bookmark.
-  SaveBookmark(@"example1", @"https://www.example1.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -182,7 +222,11 @@ void ExpectNoBatchUploadDialog() {
 // single local bookmark.
 - (void)testBatchUploadDialogTestIfSingleLocalBookmark {
   // Add one local bookmark.
-  SaveBookmark(@"example1", @"https://www.example1.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -199,8 +243,15 @@ void ExpectNoBatchUploadDialog() {
 // multiple local bookmarks.
 - (void)testBatchUploadDialogTextIfMultipleLocalBookmarks {
   // Add two local bookmarks.
-  SaveBookmark(@"example1", @"https://www.example1.com");
-  SaveBookmark(@"example2", @"https://www.example2.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example2"
+                       URL:@"https://www.example2.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -217,7 +268,11 @@ void ExpectNoBatchUploadDialog() {
 // behind the screen.
 - (void)testBatchUploadDialogRemovedIfLocalBookmarkIsRemoved {
   // Add one local bookmark.
-  SaveBookmark(@"example1", @"https://www.example1.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -244,8 +299,15 @@ void ExpectNoBatchUploadDialog() {
 // on another screen.
 - (void)testBatchUploadDialogUpdateIfLocalBookmarkIsRemoved {
   // Add two local bookmarks.
-  SaveBookmark(@"example1", @"https://www.example1.com");
-  SaveBookmark(@"example2", @"https://www.example2.com");
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example2"
+                       URL:@"https://www.example2.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -266,6 +328,189 @@ void ExpectNoBatchUploadDialog() {
 
   // Verify that the batch upload dialog is updated.
   ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+}
+
+// Tests that an action sheet is shown with the correct text upon clicking the
+// batch upload button in bookmarks home.
+- (void)testBatchUploadAlert {
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeBatchUploadButtonIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that alert is visible.
+  ExpectBatchUploadAlert(1);
+}
+
+// Tests that dismissing the action sheet (upon clicking the batch upload button
+// in bookmarks home) does not alter the bookmarks home UI.
+- (void)testBatchUploadAlertDismiss {
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeBatchUploadButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that alert is visible.
+  ExpectBatchUploadAlert(1);
+
+  // Tap anywhere outside the alert to dismiss it.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the alert is no longer visible.
+  ExpectNoBatchUploadAlert();
+
+  // Verify that the batch upload dialog is still visible.
+  ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+}
+
+// Tests that upon clicking on the "save" button on the batch upload alert, the
+// alert is dismissed and the batch upload dialog has been removed.
+- (void)testBatchUploadAlertConfirm {
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeBatchUploadButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that alert is visible.
+  ExpectBatchUploadAlert(1);
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertAction(l10n_util::GetNSString(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that a snackbar is shown upon upload.
+  ExpectBatchUploadConfirmationSnackbar(1, fakeIdentity.userEmail);
+
+  // Verify that the alert is no longer visible.
+  ExpectNoBatchUploadAlert();
+
+  // Verify that the batch upload dialog is no longer visible.
+  ExpectNoBatchUploadDialog();
+
+  // TODO(crbug.com/1451511): Verify that the bookmarks have been moved to the
+  // account model and the local bookmark model is empty.
+}
+
+// Tests that upon completing the batch upload flow, there are no separate
+// profile and account sections.
+- (void)testBatchUploadRemovesProfileSection {
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Add one account bookmark.
+  [BookmarkEarlGrey addBookmarkWithTitle:@"example2"
+                                     URL:@"https://www.example2.com"
+                               inStorage:bookmarks::StorageType::kAccount];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  NSString* profile_header =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE);
+  NSString* account_header =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE);
+
+  // Verify there exists separate profile and account sections.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(profile_header),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(account_header),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeBatchUploadButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that alert is visible.
+  ExpectBatchUploadAlert(1);
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertAction(l10n_util::GetNSString(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify only single "Mobile Bookmarks" is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the profile and account headers no longer exist.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(profile_header),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(account_header),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

@@ -65,3 +65,5 @@ NSString* const kBookmarksHomeBatchUploadRecommendationItemIdentifier =
     @"kBookmarksHomeBatchUploadRecommendationItemIdentifier";
 NSString* const kBookmarksHomeBatchUploadButtonIdentifier =
     @"kBookmarksHomeBatchUploadButtonIdentifier";
+NSString* const kBookmarksHomeBatchUploadAlertIdentifier =
+    @"kBookmarksHomeBatchUploadAlertIdentifier";

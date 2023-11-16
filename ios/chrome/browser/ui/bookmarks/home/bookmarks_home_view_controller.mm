@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -904,6 +905,76 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                              navigationToUrls:urls
                                                   inIncognito:inIncognito
                                                        newTab:newTab];
+}
+
+- (void)showBatchUploadDialog:(CGRect)targetRect {
+  if (self.actionSheetCoordinator) {
+    return;
+  }
+  __weak BookmarksHomeViewController* weakSelf = self;
+  [self.mediator queryLocalBookmarks:^(int local_bookmarks_count,
+                                       std::string user_email) {
+    BookmarksHomeViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    NSString* alertTitle = l10n_util::GetPluralNSStringF(
+        IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE, local_bookmarks_count);
+    NSString* alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_DESCRIPTION),
+            "count", local_bookmarks_count, "email", user_email));
+    // queryLocalBookmarks() should execute the callback almost immediately.
+    // This CHECK ensures that the action sheet coordinator is never opened
+    // twice.
+    CHECK(!self.actionSheetCoordinator);
+    strongSelf.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:strongSelf
+                           browser:strongSelf->_browser.get()
+                             title:alertTitle
+                           message:alertDescription
+                              rect:targetRect
+                              view:strongSelf.tableView];
+    // Create the confirm button.
+    [strongSelf.actionSheetCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)
+                  action:^{
+                    [weakSelf triggerBatchUploadFor:local_bookmarks_count
+                                          userEmail:std::move(user_email)];
+                  }
+                   style:UIAlertActionStyleDefault];
+
+    // Create the cancel button.
+    [strongSelf.actionSheetCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_CANCEL)
+                  action:^{
+                    [weakSelf dismissActionSheetCoordinator];
+                  }
+                   style:UIAlertActionStyleCancel];
+
+    // Show the alert.
+    [strongSelf.actionSheetCoordinator start];
+  }];
+}
+
+- (void)triggerBatchUploadFor:(int)localBookmarksCount
+                    userEmail:(std::string)userEmail {
+  [self dismissActionSheetCoordinator];
+  [self.mediator triggerBatchUpload];
+  [self refreshContents];
+
+  NSString* snackbarMessage = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SNACKBAR_MESSAGE),
+          "count", localBookmarksCount, "email", userEmail));
+  [self.snackbarCommandsHandler showSnackbarWithMessage:snackbarMessage
+                                             buttonText:nil
+                                          messageAction:nil
+                                       completionAction:nil];
 }
 
 #pragma mark - Navigation Bar Callbacks
@@ -2520,6 +2591,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       }
       // Open URL. Pass this to the delegate.
       [self handleSelectUrlForNavigation:node->url()];
+    }
+  } else if (sectionIdentifier == BookmarksBatchUploadSectionIdentifier) {
+    // Open batch upload alert dialog if batch upload button clicked.
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    if (static_cast<BookmarksHomeItemType>(item.type) ==
+        BookmarksHomeItemTypeBatchUploadButton) {
+      CGRect targetRect = [tableView rectForRowAtIndexPath:indexPath];
+      [self showBatchUploadDialog:targetRect];
     }
   }
   // Deselect row.
