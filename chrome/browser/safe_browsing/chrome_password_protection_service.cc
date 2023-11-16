@@ -816,7 +816,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
   switch (outcome) {
     case RequestOutcome::MATCHED_ALLOWLIST:
       MaybeLogPasswordReuseLookupResult(web_contents,
-                                        PasswordReuseLookup::WHITELIST_HIT);
+                                        PasswordReuseLookup::ALLOWLIST_HIT);
       break;
     case RequestOutcome::RESPONSE_ALREADY_CACHED:
       MaybeLogPasswordReuseLookupResultWithVerdict(
@@ -838,7 +838,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     case RequestOutcome::MATCHED_ENTERPRISE_LOGIN_URL:
     case RequestOutcome::MATCHED_ENTERPRISE_CHANGE_PASSWORD_URL:
       MaybeLogPasswordReuseLookupResult(
-          web_contents, PasswordReuseLookup::ENTERPRISE_WHITELIST_HIT);
+          web_contents, PasswordReuseLookup::ENTERPRISE_ALLOWLIST_HIT);
       break;
     case RequestOutcome::PASSWORD_ALERT_MODE:
     case RequestOutcome::TURNED_OFF_BY_ADMIN:

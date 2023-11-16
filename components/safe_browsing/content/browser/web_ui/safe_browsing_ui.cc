@@ -1774,8 +1774,8 @@ base::Value SerializeReuseLookup(
     case PasswordReuseLookup::UNSPECIFIED:
       lookup_result = "UNSPECIFIED";
       break;
-    case PasswordReuseLookup::WHITELIST_HIT:
-      lookup_result = "WHITELIST_HIT";
+    case PasswordReuseLookup::ALLOWLIST_HIT:
+      lookup_result = "ALLOWLIST_HIT";
       break;
     case PasswordReuseLookup::CACHE_HIT:
       lookup_result = "CACHE_HIT";
@@ -1789,8 +1789,8 @@ base::Value SerializeReuseLookup(
     case PasswordReuseLookup::URL_UNSUPPORTED:
       lookup_result = "URL_UNSUPPORTED";
       break;
-    case PasswordReuseLookup::ENTERPRISE_WHITELIST_HIT:
-      lookup_result = "ENTERPRISE_WHITELIST_HIT";
+    case PasswordReuseLookup::ENTERPRISE_ALLOWLIST_HIT:
+      lookup_result = "ENTERPRISE_ALLOWLIST_HIT";
       break;
     case PasswordReuseLookup::TURNED_OFF_BY_POLICY:
       lookup_result = "TURNED_OFF_BY_POLICY";

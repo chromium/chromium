@@ -263,17 +263,17 @@ message ClientPhishingResponse {
   required bool phishy = 1;
 
   // A list of SafeBrowsing host-suffix / path-prefix expressions that
-  // are whitelisted.  The client must match the current top-level URL
-  // against these whitelisted expressions and only apply a positive
+  // are allowlisted.  The client must match the current top-level URL
+  // against these alllowlisted expressions and only apply a positive
   // phishing verdict above if the URL does not match any expression
-  // on this whitelist.  The client must not cache these whitelisted
-  // expressions.  This whitelist will be empty for the vast majority
+  // on this allowlist.  The client must not cache these allowlisted
+  // expressions.  This allowlist will be empty for the vast majority
   // of the responses but might contain up to 100 entries in emergency
   // situations.
   //
   // Marked OBSOLETE because the URL is sent for all users, so the server
-  // can do whitelist matching.
-  repeated string OBSOLETE_whitelist_expression = 2;
+  // can do allowlist matching.
+  repeated string OBSOLETE_allowlist_expression = 2;
 }
 
 // The message is used for client request to determine whether the provided URL
