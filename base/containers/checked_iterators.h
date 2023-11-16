@@ -5,6 +5,7 @@
 #ifndef BASE_CONTAINERS_CHECKED_ITERATORS_H_
 #define BASE_CONTAINERS_CHECKED_ITERATORS_H_
 
+#include <concepts>
 #include <iterator>
 #include <memory>
 #include <type_traits>
@@ -23,17 +24,15 @@ class CheckedContiguousIterator {
   using value_type = std::remove_cv_t<T>;
   using pointer = T*;
   using reference = T&;
-  using iterator_category = std::random_access_iterator_tag;
-#if defined(__cpp_lib_ranges)
+  using iterator_category = std::contiguous_iterator_tag;
   using iterator_concept = std::contiguous_iterator_tag;
-#endif
 
   // Required for converting constructor below.
   template <typename U>
   friend class CheckedContiguousIterator;
 
-  // Required for certain libc++ algorithm optimizations that are not available
-  // for NaCl.
+  // Required to be able to get to the underlying pointer without triggering
+  // CHECK failures.
   template <typename Ptr>
   friend struct std::pointer_traits;
 
@@ -56,10 +55,9 @@ class CheckedContiguousIterator {
   // are unsafe. Furthermore, this is the same condition as used by the
   // converting constructors of std::span<T> and std::unique_ptr<T[]>.
   // See https://wg21.link/n4042 for details.
-  template <
-      typename U,
-      std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>>* = nullptr>
+  template <typename U>
   constexpr CheckedContiguousIterator(const CheckedContiguousIterator<U>& other)
+    requires(std::convertible_to<U (*)[], T (*)[]>)
       : start_(other.start_), current_(other.current_), end_(other.end_) {
     // We explicitly don't delegate to the 3-argument constructor here. Its
     // CHECKs would be redundant, since we expect |other| to maintain its own
@@ -79,33 +77,10 @@ class CheckedContiguousIterator {
     return lhs.current_ == rhs.current_;
   }
 
-  friend constexpr bool operator!=(const CheckedContiguousIterator& lhs,
-                                   const CheckedContiguousIterator& rhs) {
+  friend constexpr auto operator<=>(const CheckedContiguousIterator& lhs,
+                                    const CheckedContiguousIterator& rhs) {
     lhs.CheckComparable(rhs);
-    return lhs.current_ != rhs.current_;
-  }
-
-  friend constexpr bool operator<(const CheckedContiguousIterator& lhs,
-                                  const CheckedContiguousIterator& rhs) {
-    lhs.CheckComparable(rhs);
-    return lhs.current_ < rhs.current_;
-  }
-
-  friend constexpr bool operator<=(const CheckedContiguousIterator& lhs,
-                                   const CheckedContiguousIterator& rhs) {
-    lhs.CheckComparable(rhs);
-    return lhs.current_ <= rhs.current_;
-  }
-  friend constexpr bool operator>(const CheckedContiguousIterator& lhs,
-                                  const CheckedContiguousIterator& rhs) {
-    lhs.CheckComparable(rhs);
-    return lhs.current_ > rhs.current_;
-  }
-
-  friend constexpr bool operator>=(const CheckedContiguousIterator& lhs,
-                                   const CheckedContiguousIterator& rhs) {
-    lhs.CheckComparable(rhs);
-    return lhs.current_ >= rhs.current_;
+    return lhs.current_ <=> rhs.current_;
   }
 
   constexpr CheckedContiguousIterator& operator++() {
@@ -231,53 +206,15 @@ using CheckedContiguousConstIterator = CheckedContiguousIterator<const T>;
 
 }  // namespace base
 
-// Specialize both std::__is_cpp17_contiguous_iterator and std::pointer_traits
-// for CCI in case we compile with libc++ outside of NaCl. The former is
-// required to enable certain algorithm optimizations (e.g. std::copy can be a
-// simple std::memmove under certain circumstances), and is a precursor to
-// C++20's std::contiguous_iterator concept [1]. Once we actually use C++20 it
-// will be enough to add `using iterator_concept = std::contiguous_iterator_tag`
-// to the iterator class [2], and we can get rid of this non-standard
-// specialization.
+// Specialize std::pointer_traits so that we can obtain the underlying raw
+// pointer without resulting in CHECK failures. The important bit is the
+// `to_address(pointer)` overload, which is the standard blessed way to
+// customize `std::to_address(pointer)` in C++20 [1].
 //
-// The latter is required to obtain the underlying raw pointer without resulting
-// in CHECK failures. The important bit is the `to_address(pointer)` overload,
-// which is the standard blessed way to customize `std::to_address(pointer)` in
-// C++20 [3].
-//
-// [1] https://wg21.link/iterator.concept.contiguous
-// [2] https://wg21.link/std.iterator.tags
-// [3] https://wg21.link/pointer.traits.optmem
-
-#if defined(_LIBCPP_VERSION)
-
-// TODO(crbug.com/1284275): Remove when C++20 is on by default, as the use
-// of `iterator_concept` above should suffice.
-_LIBCPP_BEGIN_NAMESPACE_STD
-
-// TODO(crbug.com/1449299): https://reviews.llvm.org/D150801 renamed this from
-// `__is_cpp17_contiguous_iterator` to `__libcpp_is_contiguous_iterator`. Clean
-// up the old spelling after libc++ rolls.
-template <typename T>
-struct __is_cpp17_contiguous_iterator;
-template <typename T>
-struct __is_cpp17_contiguous_iterator<::base::CheckedContiguousIterator<T>>
-    : true_type {};
+// [1] https://wg21.link/pointer.traits.optmem
 
 template <typename T>
-struct __libcpp_is_contiguous_iterator;
-template <typename T>
-struct __libcpp_is_contiguous_iterator<::base::CheckedContiguousIterator<T>>
-    : true_type {};
-
-_LIBCPP_END_NAMESPACE_STD
-
-#endif
-
-namespace std {
-
-template <typename T>
-struct pointer_traits<::base::CheckedContiguousIterator<T>> {
+struct std::pointer_traits<::base::CheckedContiguousIterator<T>> {
   using pointer = ::base::CheckedContiguousIterator<T>;
   using element_type = T;
   using difference_type = ptrdiff_t;
@@ -293,7 +230,5 @@ struct pointer_traits<::base::CheckedContiguousIterator<T>> {
     return p.current_;
   }
 };
-
-}  // namespace std
 
 #endif  // BASE_CONTAINERS_CHECKED_ITERATORS_H_
