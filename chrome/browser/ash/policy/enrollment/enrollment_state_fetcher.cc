@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -526,7 +525,7 @@ class EnrollmentState {
  public:
   struct Response {
     base::Value::Dict dict;
-    AutoEnrollmentState state = AutoEnrollmentState::kPending;
+    AutoEnrollmentState state;
   };
   using Result = base::expected<Response, AutoEnrollmentState>;
   using CompletionCallback = base::OnceCallback<void(Result)>;
@@ -976,9 +975,6 @@ class EnrollmentStateFetcherImpl::Sequence {
                            AutoEnrollmentState state) {
     std::string uma_suffix;
     switch (state) {
-      case AutoEnrollmentState::kPending:
-        NOTREACHED();
-        break;
       case AutoEnrollmentState::kConnectionError:
         uma_suffix = kUMASuffixConnectionError;
         break;
@@ -1011,7 +1007,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void ReportResult(AutoEnrollmentState state) {
-    DCHECK(state != AutoEnrollmentState::kPending);
     ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
     std::move(report_result_).Run(state);
   }

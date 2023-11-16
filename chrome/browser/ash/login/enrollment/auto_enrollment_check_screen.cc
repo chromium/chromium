@@ -86,9 +86,9 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
                       : NetworkState::PortalState::kUnknown;
 
   // Perform an initial UI update.
-  if (!UpdateCaptivePortalState(new_captive_portal_state) &&
+  if (!ShowCaptivePortalState(new_captive_portal_state) &&
       auto_enrollment_controller_->state().has_value()) {
-    UpdateAutoEnrollmentState(auto_enrollment_controller_->state().value());
+    ShowAutoEnrollmentState(auto_enrollment_controller_->state().value());
   }
 
   captive_portal_state_ = new_captive_portal_state;
@@ -151,19 +151,19 @@ void AutoEnrollmentCheckScreen::UpdateState(
       auto_enrollment_controller_->state();
 
   // Configure the error screen to show the appropriate error message.
-  if (!UpdateCaptivePortalState(new_captive_portal_state) &&
+  if (!ShowCaptivePortalState(new_captive_portal_state) &&
       new_auto_enrollment_state.has_value()) {
-    UpdateAutoEnrollmentState(new_auto_enrollment_state.value());
+    ShowAutoEnrollmentState(new_auto_enrollment_state.value());
   }
-
-  // Update the connecting indicator.
-  error_screen_->ShowConnectingIndicator(new_auto_enrollment_state ==
-                                         policy::AutoEnrollmentState::kPending);
 
   // Determine whether a retry is in order.
   const bool retry =
       (new_captive_portal_state == NetworkState::PortalState::kOnline) &&
       (captive_portal_state_ != NetworkState::PortalState::kOnline);
+
+  // Update the connecting indicator if state determination attempt will be in
+  // progress.
+  error_screen_->ShowConnectingIndicator(/*show=*/retry);
 
   // Save the new state.
   captive_portal_state_ = new_captive_portal_state;
@@ -174,11 +174,12 @@ void AutoEnrollmentCheckScreen::UpdateState(
 
   // Retry if applicable. This is last so eventual callbacks find consistent
   // state.
-  if (retry)
+  if (retry) {
     auto_enrollment_controller_->Retry();
+  }
 }
 
-bool AutoEnrollmentCheckScreen::UpdateCaptivePortalState(
+bool AutoEnrollmentCheckScreen::ShowCaptivePortalState(
     NetworkState::PortalState new_captive_portal_state) {
   switch (new_captive_portal_state) {
     case NetworkState::PortalState::kUnknown:
@@ -201,10 +202,9 @@ bool AutoEnrollmentCheckScreen::UpdateCaptivePortalState(
   }
 }
 
-bool AutoEnrollmentCheckScreen::UpdateAutoEnrollmentState(
+bool AutoEnrollmentCheckScreen::ShowAutoEnrollmentState(
     policy::AutoEnrollmentState new_auto_enrollment_state) {
   switch (new_auto_enrollment_state) {
-    case policy::AutoEnrollmentState::kPending:
     case policy::AutoEnrollmentState::kEnrollment:
     case policy::AutoEnrollmentState::kNoEnrollment:
     case policy::AutoEnrollmentState::kDisabled:
@@ -273,7 +273,6 @@ bool AutoEnrollmentCheckScreen::IsCompleted() const {
   }
 
   switch (auto_enrollment_controller_->state().value()) {
-    case policy::AutoEnrollmentState::kPending:
     case policy::AutoEnrollmentState::kConnectionError:
       return false;
     case policy::AutoEnrollmentState::kServerError:

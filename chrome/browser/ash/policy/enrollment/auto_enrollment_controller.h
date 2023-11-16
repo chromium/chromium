@@ -230,6 +230,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Handles timeout of the safeguard timer and stops waiting for a result.
   void Timeout();
 
+  bool IsInProgress() const;
+
   // Used for checking ownership.
   raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service_;
 
@@ -265,6 +267,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // something goes wrong, the timer will ensure that a decision gets made
   // eventually, which is crucial to not block OOBE forever. See
   // http://crbug.com/433634 for background.
+  // The timer is expected to run during the state determination. The controller
+  // is considered idle and can be restarted when the timer is not running.
   base::OneShotTimer safeguard_timer_;
 
   // Enrollment state fetcher. Invokes `UpdateState` on success or failure.

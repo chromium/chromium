@@ -110,8 +110,6 @@ int GetSanitizedArg(const std::string& switch_name) {
 
 std::string AutoEnrollmentStateToString(AutoEnrollmentState state) {
   switch (state) {
-    case AutoEnrollmentState::kPending:
-      return "Pending";
     case AutoEnrollmentState::kConnectionError:
       return "Connection error";
     case AutoEnrollmentState::kServerError:
@@ -154,7 +152,6 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 bool IsFinalAutoEnrollmentState(AutoEnrollmentState state) {
   switch (state) {
-    case AutoEnrollmentState::kPending:
     case AutoEnrollmentState::kConnectionError:
     case AutoEnrollmentState::kServerError:
       return false;
@@ -162,19 +159,6 @@ bool IsFinalAutoEnrollmentState(AutoEnrollmentState state) {
     case AutoEnrollmentState::kNoEnrollment:
     case AutoEnrollmentState::kDisabled:
       return true;
-  }
-}
-
-bool IsInProgressAutoEnrollmentState(AutoEnrollmentState state) {
-  switch (state) {
-    case AutoEnrollmentState::kPending:
-      return true;
-    case AutoEnrollmentState::kConnectionError:
-    case AutoEnrollmentState::kServerError:
-    case AutoEnrollmentState::kEnrollment:
-    case AutoEnrollmentState::kNoEnrollment:
-    case AutoEnrollmentState::kDisabled:
-      return false;
   }
 }
 
@@ -272,10 +256,6 @@ AutoEnrollmentController::~AutoEnrollmentController() = default;
 void AutoEnrollmentController::Start() {
   LOG(WARNING) << "Starting auto-enrollment controller.";
 
-  if (state_.has_value() && IsInProgressAutoEnrollmentState(state_.value())) {
-    return;
-  }
-
   if (state_.has_value() && IsFinalAutoEnrollmentState(state_.value())) {
     return;
   }
@@ -297,18 +277,8 @@ void AutoEnrollmentController::Start() {
     return;
   }
 
-  if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
-    // If a fetcher has already been created, bail out.
-    if (enrollment_state_fetcher_) {
-      LOG(ERROR) << "Enrollment state fetcher is already running.";
-      return;
-    }
-  } else {
-    // If a client is being created or already existing, bail out.
-    if (client_start_weak_factory_.HasWeakPtrs() || client_) {
-      LOG(ERROR) << "Enrollment state client is already running.";
-      return;
-    }
+  if (IsInProgress()) {
+    return;
   }
 
   // Arm the belts-and-suspenders timer to avoid hangs.
@@ -320,9 +290,6 @@ void AutoEnrollmentController::Start() {
     // Emulate required FRE to prevent users from skipping enrollment.
     auto_enrollment_check_type_ = AutoEnrollmentTypeChecker::CheckType::
         kForcedReEnrollmentExplicitlyRequired;
-    // Set state to kPending since EnrollmentStateFetcher does not invoke update
-    // state callback until final state is available.
-    UpdateState(AutoEnrollmentState::kPending);
 
     device_management_service_->ScheduleInitialization(0);
     enrollment_state_fetcher_ = enrollment_state_fetcher_factory_.Run(
@@ -377,11 +344,6 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
     DCHECK_EQ(system_clock_sync_state_, SystemClockSyncState::kCanWaitForSync);
     system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
 
-    // Set state before waiting for the system clock sync, because
-    // `WaitForSystemClockSync` may invoke its callback synchronously if the
-    // system clock sync status is already known.
-    UpdateState(AutoEnrollmentState::kPending);
-
     LOG(WARNING) << "Waiting for clock sync";
     // Use `client_start_weak_factory_` so the callback is not invoked if
     // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
@@ -393,8 +355,6 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
     return;
   }
 
-  // Start by checking if the device has already been owned.
-  UpdateState(AutoEnrollmentState::kPending);
   LOG(WARNING) << "Get ownership status to check if it's enrollment recovery";
   device_settings_service_->GetOwnershipStatusAsync(
       base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
@@ -595,13 +555,11 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
     network_state_observation_.Reset();
   }
 
-  if (!IsInProgressAutoEnrollmentState(state_.value())) {
-    // Stop the safeguard timer once a result comes in.
-    safeguard_timer_.Stop();
-    // Reset enrollment state fetcher to allow restarting.
-    enrollment_state_fetcher_.reset();
-    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
-  }
+  // Stop the safeguard timer once a result comes in.
+  safeguard_timer_.Stop();
+  // Reset enrollment state fetcher to allow restarting.
+  enrollment_state_fetcher_.reset();
+  ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
 
   // Device disabling mode is relying on device state stored in install
   // attributes. In case that file is corrupted, this should prevent device
@@ -727,6 +685,37 @@ void AutoEnrollmentController::Timeout() {
 
   // Make sure to nuke pending `client_` start sequences.
   client_start_weak_factory_.InvalidateWeakPtrs();
+}
+
+bool AutoEnrollmentController::IsInProgress() const {
+  if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
+    if (enrollment_state_fetcher_) {
+      // If a fetcher has already been created, bail out.
+      LOG(ERROR) << "Enrollment state fetcher is already running.";
+      return true;
+    }
+
+    return false;
+  }
+
+  // If a client is being created or already existing, bail out.
+  if (client_start_weak_factory_.HasWeakPtrs() || client_) {
+    LOG(ERROR) << "Enrollment state client is already running.";
+    return true;
+  }
+
+  // The timer runs from `Start()` where controller starts determining state,
+  // till `UpdateState()` where the controller receives a state or an error.
+  // Hence it can be used to decide whether the controller is running or not.
+  // If any of steps between `Start()` and `UpdateState()` are excluded from
+  // the timing, or the timer is extended to some other steps, the check will
+  // become wrong.
+  if (safeguard_timer_.IsRunning()) {
+    LOG(ERROR) << "State determination is already running.";
+    return true;
+  }
+
+  return false;
 }
 
 void AutoEnrollmentController::SetEnrollmentStateFetcherFactoryForTesting(

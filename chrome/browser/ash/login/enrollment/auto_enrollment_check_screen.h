@@ -88,12 +88,12 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   // Configures the UI to reflect the updated captive portal state.
   // Returns true if a UI change has been made.
-  bool UpdateCaptivePortalState(
+  bool ShowCaptivePortalState(
       NetworkState::PortalState new_captive_portal_state);
 
   // Configures the UI to reflect `new_auto_enrollment_state`. Returns true if
   // and only if a UI change has been made.
-  bool UpdateAutoEnrollmentState(
+  bool ShowAutoEnrollmentState(
       policy::AutoEnrollmentState new_auto_enrollment_state);
 
   // Configures the error screen.

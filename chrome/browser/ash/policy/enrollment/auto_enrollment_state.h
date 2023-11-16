@@ -9,11 +9,6 @@ namespace policy {
 
 // Indicates the current state of the auto-enrollment check.
 enum class AutoEnrollmentState {
-  // TODO(b/265923216): Deprecate kIdle and kPending states after fully
-  // migrating to EnrollmentStateFetcher and removing AutoEnrollmentClient.
-
-  // Working, another event will be fired eventually.
-  kPending = 1,
   // Failed to connect to DMServer or to synchronize the system clock.
   kConnectionError = 2,
   // Connection successful, but the server failed to generate a valid reply.
