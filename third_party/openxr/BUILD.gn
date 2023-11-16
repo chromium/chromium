@@ -112,8 +112,8 @@ if (enable_openxr) {
       "src/src/loader/runtime_interface.hpp",
       "src/src/loader/xr_generated_loader.cpp",
       "src/src/loader/xr_generated_loader.hpp",
-      "src/src/xr_generated_dispatch_table.c",
-      "src/src/xr_generated_dispatch_table.h",
+      "src/src/xr_generated_dispatch_table_core.c",
+      "src/src/xr_generated_dispatch_table_core.h",
     ]
 
     include_dirs = [
