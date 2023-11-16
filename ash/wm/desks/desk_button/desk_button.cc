@@ -41,22 +41,14 @@
 
 namespace ash {
 
-namespace {
-
-constexpr int kDeskSwitchButtonWidth = 20;
-constexpr int kDeskSwitchButtonHeight = 36;
-constexpr int kButtonCornerRadius = 12;
-constexpr int kFocusRingHaloInset = -3;
-
-}  // namespace
-
 ////////////////////////////////////////////////////////////////////////////////
 // DeskSwitchButton:
 DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
     : ImageButton(callback) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetSize(gfx::Size(kDeskSwitchButtonWidth, kDeskSwitchButtonHeight));
+  SetSize(
+      gfx::Size(kDeskButtonSwitchButtonWidth, kDeskButtonSwitchButtonHeight));
   SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   SetImageVerticalAlignment(
@@ -136,7 +128,7 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   SetNotifyEnterExitOnChild(true);
   layer()->SetFillsBoundsOpaquely(false);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kButtonCornerRadius));
+      cros_tokens::kCrosSysSystemOnBaseOpaque, kDeskButtonCornerRadius));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -161,7 +153,8 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   prev_desk_button_->SetAccessibleName(u"Previous desk:");
   prev_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{kButtonCornerRadius, 0, 0, kButtonCornerRadius},
+      gfx::RoundedCornersF{kDeskButtonCornerRadius, 0, 0,
+                           kDeskButtonCornerRadius},
       /*for_border_thickness=*/0));
   SetupFocus(prev_desk_button_);
 
@@ -171,7 +164,8 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   next_desk_button_->SetAccessibleName(u"Next desk:");
   next_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{0, kButtonCornerRadius, kButtonCornerRadius, 0},
+      gfx::RoundedCornersF{0, kDeskButtonCornerRadius, kDeskButtonCornerRadius,
+                           0},
       /*for_border_thickness=*/0));
   SetupFocus(next_desk_button_);
 
@@ -252,7 +246,7 @@ void DeskButton::SetActivation(bool is_activated) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                     : cros_tokens::kCrosSysSystemOnBaseOpaque,
-      kButtonCornerRadius));
+      kDeskButtonCornerRadius));
   desk_name_label_->SetEnabledColorId(
       is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);
@@ -562,7 +556,8 @@ void DeskButton::SetupFocus(views::Button* view) {
   views::FocusRing::Get(view)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(view)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
-      view, gfx::Insets(kFocusRingHaloInset), kButtonCornerRadius);
+      view, gfx::Insets(kDeskButtonFocusRingHaloInset),
+      kDeskButtonCornerRadius);
   view->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
