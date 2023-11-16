@@ -122,12 +122,29 @@ ClipboardMac::~ClipboardMac() {
 
 void ClipboardMac::OnPreShutdown() {}
 
-// DataTransferEndpoint is not used on this platform.
 absl::optional<DataTransferEndpoint> ClipboardMac::GetSource(
     ClipboardBuffer buffer) const {
+  return GetSourceInternal(buffer, GetPasteboard());
+}
+
+absl::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
+    ClipboardBuffer buffer,
+    NSPasteboard* pasteboard) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return absl::nullopt;
+
+  NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceURL];
+
+  if (!source_url) {
+    return absl::nullopt;
+  }
+
+  GURL gurl(base::SysNSStringToUTF8(source_url));
+  if (!gurl.is_valid()) {
+    return absl::nullopt;
+  }
+
+  return DataTransferEndpoint(std::move(gurl));
 }
 
 const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(
@@ -190,10 +207,15 @@ void ClipboardMac::MarkAsConfidential() {
 }
 
 void ClipboardMac::Clear(ClipboardBuffer buffer) {
+  ClearInternal(buffer, GetPasteboard());
+}
+
+void ClipboardMac::ClearInternal(ClipboardBuffer buffer,
+                                 NSPasteboard* pasteboard) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  [GetPasteboard() declareTypes:@[] owner:nil];
+  [pasteboard clearContents];
 }
 
 std::vector<std::u16string> ClipboardMac::GetStandardFormats(
@@ -418,21 +440,35 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
     result->assign(static_cast<const char*>([data bytes]), [data length]);
 }
 
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
+  WritePortableAndPlatformRepresentationsInternal(
+      buffer, objects, std::move(platform_representations), std::move(data_src),
+      GetPasteboard());
+}
+
+void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
+    ClipboardBuffer buffer,
+    const ObjectMap& objects,
+    std::vector<Clipboard::PlatformRepresentation> platform_representations,
+    std::unique_ptr<DataTransferEndpoint> data_src,
+    NSPasteboard* pasteboard) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  [GetPasteboard() declareTypes:@[] owner:nil];
+  [pasteboard declareTypes:@[] owner:nil];
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects)
     DispatchPortableRepresentation(object.second);
+
+  if (data_src && data_src->IsUrlType()) {
+    [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())
+                  forType:kUTTypeChromiumSourceURL];
+  }
 }
 
 void ClipboardMac::WriteText(base::StringPiece text) {

@@ -127,6 +127,10 @@ extern NSString* const kUTTypeWebKitWebSmartPaste;
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeWebKitWebURLsWithTitles;
 
+// A type used to track the source URL of data put in the clipboard.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern NSString* const kUTTypeChromiumSourceURL;
+
 #endif  // BUILDFLAG(IS_APPLE)
 
 // ----- ANDROID MIME TYPES -----
