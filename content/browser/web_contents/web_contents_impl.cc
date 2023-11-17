@@ -1774,7 +1774,10 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   // Allow fullscreen requests shortly after user-generated screens changes.
   // TODO(crbug.com/1169291): Mac should not activate this on local process
   // display::Screen signals, but via RenderWidgetHostViewMac screen updates.
-  transient_allow_fullscreen_.Activate();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWindowPlacementFullscreenOnScreensChange)) {
+    transient_allow_fullscreen_.Activate();
+  }
 
   // Mac display info may originate from a remote process hosting the NSWindow;
   // this local process display::Screen signal should not trigger updates.
