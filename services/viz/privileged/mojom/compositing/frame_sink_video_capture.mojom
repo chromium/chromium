@@ -227,4 +227,10 @@ interface FrameSinkVideoCaptureOverlay {
   // non-empty bounds are provided, and hiding the overlay otherwise. |bounds|
   // has the same semantics as described in ShowImageAt().
   SetBounds(gfx.mojom.RectF bounds);
+
+  // Called to indicate mouse |coordinates| change. |coordinates| are absolute
+  // values inside the bound of the source content (e.g., 0 refers to the top
+  // or left edge, height-1 to the bottom edge and width-1 to the right edge).
+  // The special value (-1, -1) indicates out-of-bound mouse position.
+  OnCapturedMouseEvent(gfx.mojom.Point coordinates);
 };

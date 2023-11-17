@@ -95,6 +95,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay
   // mojom::FrameSinkVideoCaptureOverlay implementation:
   void SetImageAndBounds(const SkBitmap& image, const gfx::RectF& bounds) final;
   void SetBounds(const gfx::RectF& bounds) final;
+  void OnCapturedMouseEvent(const gfx::Point& coordinates) final {}
 
   const SkBitmap& bitmap() const { return image_; }
 

@@ -21,6 +21,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace base {
+class TickClock;
+}  // namespace base
+
 namespace content {
 
 // MouseCursorOverlayController is used by FrameSinkVideoCaptureDevice to manage
@@ -78,6 +82,8 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // Returns a weak pointer.
   base::WeakPtr<MouseCursorOverlayController> GetWeakPtr();
 
+  bool ShouldSendMouseEvents() const { return should_send_mouse_events_; }
+
  private:
   friend class MouseCursorOverlayControllerBrowserTest;
 
@@ -104,6 +110,10 @@ class CONTENT_EXPORT MouseCursorOverlayController {
     mouse_move_behavior_atomic_.store(behavior, std::memory_order_relaxed);
   }
 
+  // Send the latest mouse event reported by the captured view to the associated
+  // mouse cursor overlay.
+  void SendMouseEvent();
+
   // Examines the current mouse movement behavior, view properties, and cursor
   // changes to determine whether to show or hide the overlay. |location| is the
   // current mouse cursor location.
@@ -127,6 +137,13 @@ class CONTENT_EXPORT MouseCursorOverlayController {
 
   // Returns the image of the mouse cursor.
   static SkBitmap GetCursorImage(const gfx::NativeCursor&);
+
+  // Called from platform-specific code to report on mouse events within the
+  // captured view.
+  void OnMouseCoordinatesUpdated(const gfx::Point& coordinates);
+
+  // Overrides the tick clock used by |this| for testing.
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // Platform-specific mouse event observer. Updated by SetTargetView().
   std::unique_ptr<Observer> observer_;
@@ -160,9 +177,29 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // The target's size, if set explicitly by SetTargetSize.
   gfx::Size target_size_;
 
+  // Whether to transmit mouse events to the renderer process for dispatching
+  // it via the Captured Mouse Events API.
+  // See https://screen-share.github.io/captured-mouse-events/
+  bool should_send_mouse_events_ = false;
+
+  // Latest coordinates reported to OnMouseCoordinatesUpdated() and timer to
+  // postpone forwarding them to SendMouseEvent(), if necessary. Note that the
+  // initial value of last_observed_coordinates_ does not matter here, since
+  // it is always set in OnMouseCoordinatesUpdated() before being read in
+  // SendMouseEvent().
+  gfx::Point last_observed_coordinates_;
+  base::OneShotTimer last_observed_coordinates_timer_;
+
+  // Latest coordinates sent to the the overlay and time when it happened.
+  absl::optional<gfx::Point> last_emitted_coordinates_;
+  base::TimeTicks last_emitted_coordinates_time_;
+
   // Everything except the constructor and IsUserInteractingWithView() must be
   // called on the UI BrowserThread.
   SEQUENCE_CHECKER(ui_sequence_checker_);
+
+  // Tick clock used for controlling event delays.
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   base::WeakPtrFactory<MouseCursorOverlayController> weak_factory_{this};
 
@@ -173,6 +210,21 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // Amount of time to elapse with no mouse activity before the cursor should
   // stop showing.
   static constexpr base::TimeDelta kIdleTimeout = base::Seconds(2);
+
+  // Special value from the Captured Mouse Events specification to indicate that
+  // the mouse is outside the captured view.
+  // See
+  // https://screen-share.github.io/captured-mouse-events/#captured-mouse-change-event
+  static constexpr gfx::Point kOutsideSurface = {-1, -1};
+
+  // The specification contains some hints to limit the frequency with which
+  // events are fired. This is implemented using a minimal time to wait between
+  // two reports of mouse coordinates (corresponding to a max frequency of 30
+  // dispatched events per seconds).
+  // See
+  // https://screen-share.github.io/captured-mouse-events/#captured-mouse-change-event
+  static constexpr base::TimeDelta kMinWaitInterval =
+      base::Milliseconds(1000 / (30 - 1));
 };
 
 }  // namespace content

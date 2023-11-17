@@ -83,6 +83,26 @@ class MouseCursorOverlayController::Observer final
     return location;
   }
 
+  gfx::Point CoordinatesForMouseEvent(const ui::Event& event) const {
+    if (!IsWindowActive() || event.type() == ui::ET_MOUSE_EXITED) {
+      return kOutsideSurface;
+    }
+    gfx::PointF location = AsLocationInWindow(event);
+    int x = std::round(location.x());
+    int y = std::round(location.y());
+
+    // When performing a drag on some platforms, it's possible to
+    // trigger mouse events with coordinates outside the surface, so
+    // make sure we don't transmit such coordinates.
+    const gfx::Size& window_size = window_->bounds().size();
+    if (x < 0 || y < 0 || x >= window_size.width() ||
+        y >= window_size.height()) {
+      return kOutsideSurface;
+    }
+
+    return gfx::Point(x, y);
+  }
+
   // ui::EventHandler overrides.
   void OnEvent(ui::Event* event) final {
     switch (event->type()) {
@@ -94,8 +114,11 @@ class MouseCursorOverlayController::Observer final
         if (IsWindowActive()) {
           controller_->OnMouseMoved(AsLocationInWindow(*event));
         }
+        if (controller_->ShouldSendMouseEvents()) {
+          controller_->OnMouseCoordinatesUpdated(
+              CoordinatesForMouseEvent(*event));
+        }
         break;
-
       case ui::ET_MOUSE_PRESSED:
       case ui::ET_MOUSE_RELEASED:
       case ui::ET_MOUSEWHEEL:
@@ -123,6 +146,8 @@ class MouseCursorOverlayController::Observer final
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()
+    // base::Unretained(this) is safe because we own mouse_activity_ended_timer_
+    // and its destructor calls TimerBase::AbandonScheduledTask().
     : mouse_activity_ended_timer_(
           FROM_HERE,
           kIdleTimeout,

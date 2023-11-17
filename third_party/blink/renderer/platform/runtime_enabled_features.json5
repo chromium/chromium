@@ -584,6 +584,11 @@
       base_feature: "none",
     },
     {
+      // TODO(crbug.com/1444712): Before enabling that flag by default,
+      // make sure MouseCursorOverlayController does not transmit mouse
+      // events to a CaptureController that don't have any
+      // capturedmousechange listener attached to it.
+      // See https://github.com/screen-share/mouse-events/issues/14
       name: "CapturedMouseEvents",
       "depends_on": ["CaptureController"],
       status: {"Android": "", "default": "test"},

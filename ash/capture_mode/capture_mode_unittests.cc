@@ -4918,6 +4918,7 @@ class TestVideoCaptureOverlay : public Overlay {
     last_bounds_ = bounds;
   }
   void SetBounds(const gfx::RectF& bounds) override { last_bounds_ = bounds; }
+  void OnCapturedMouseEvent(const gfx::Point& coordinates) override {}
 
  private:
   mojo::Receiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver_;

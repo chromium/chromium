@@ -57,6 +57,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
     void SetImageAndBounds(const SkBitmap& image,
                            const gfx::RectF& bounds) final;
     void SetBounds(const gfx::RectF& bounds) final;
+    void OnCapturedMouseEvent(const gfx::Point& coordinates) final;
 
    private:
     friend class ClientFrameSinkVideoCapturer;
