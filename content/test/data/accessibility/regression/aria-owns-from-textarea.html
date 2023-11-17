@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:done
+-->
+<!-- Inspired by the search bar on google.com -->
+<html>
+  <textarea aria-owns="owned" autofocus></textarea>
+  <div id="owned" role="presentation" style="display: none;">
+    <p>a</p>
+  </div>
+
+  <script async defer>
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.querySelector('#owned').style.display = 'block';
+        document.querySelector('textarea').innerText = 'b';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.title = 'done';
+          });
+        });
+      });
+    });
+  </script>
+</html>
