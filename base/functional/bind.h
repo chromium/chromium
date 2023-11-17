@@ -61,12 +61,12 @@ inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
   static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
                     (std::is_rvalue_reference<Functor&&>() &&
                      !std::is_const<std::remove_reference_t<Functor>>()),
-                "BindOnce requires non-const rvalue for OnceCallback binding."
-                " I.e.: base::BindOnce(std::move(callback)).");
+                "BindOnce requires non-const rvalue for OnceCallback binding, "
+                "i.e. base::BindOnce(std::move(callback)).");
   static_assert(
       std::conjunction_v<
           internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>,
-      "Use std::move() instead of base::Passed() with base::BindOnce()");
+      "Use std::move() instead of base::Passed() with base::BindOnce().");
 
   return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
                                           std::forward<Args>(args)...);

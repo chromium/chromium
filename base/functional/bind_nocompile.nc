@@ -165,7 +165,7 @@ void WontCompile() {
   no_ref_const_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
 
 // Method bound to non-refcounted object. It fails to compile with
 // std::reference_wrapper.
@@ -176,7 +176,7 @@ void WontCompile() {
   no_ref_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
 
 // Method bound to non-refcounted object. It fails to compile with
 // a native reference.
@@ -199,7 +199,7 @@ void WontCompile() {
   no_ref_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
 
 // Method bound to non-refcounted object. It fails to compile with
 // std::reference_wrapper.
@@ -210,7 +210,7 @@ void WontCompile() {
   has_ref_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
 
 // Method bound to non-refcounted object. It fails to compile with
 // a native reference.
@@ -377,7 +377,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<const HasRef*>, for_raw_ptr);
 }
 
-#elif defined(NCTEST_WEAKPTR_BIND_MUST_RETURN_VOID)  // [r"fatal error: static assertion failed due to requirement 'std::is_void_v<int>': weak_ptrs can only bind to methods without return values"]
+#elif defined(NCTEST_WEAKPTR_BIND_MUST_RETURN_VOID)  // [r"fatal error: static assertion failed due to requirement 'std::is_void_v<int>': WeakPtrs can only bind to methods without return values."]
 
 // WeakPtrs cannot be bound to methods with return types.
 void WontCompile() {
@@ -430,7 +430,7 @@ void WontCompile() {
   BindRepeating(BindOnce([](int) {}), 42);
 }
 
-#elif defined(NCTEST_DISALLOW_BINDONCE_LVALUE_ONCECALLBACK)  // [r"fatal error: static assertion failed due to requirement '!internal::IsOnceCallback<std::decay_t<OnceCallback<void (int)> &> >() || (std::is_rvalue_reference<OnceCallback<void (int)> &>() && !std::is_const<std::remove_reference_t<OnceCallback<void (int)> &> >())': BindOnce requires non-const rvalue for OnceCallback binding. I.e.: base::BindOnce(std::move(callback))."]
+#elif defined(NCTEST_DISALLOW_BINDONCE_LVALUE_ONCECALLBACK)  // [r"fatal error: static assertion failed due to requirement '!internal::IsOnceCallback<std::decay_t<OnceCallback<void (int)> &> >() || (std::is_rvalue_reference<OnceCallback<void (int)> &>() && !std::is_const<std::remove_reference_t<OnceCallback<void (int)> &> >())': BindOnce requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback))."]
 void WontCompile() {
   auto cb = BindOnce([](int) {});
   BindOnce(cb, 42);
@@ -470,14 +470,14 @@ void WontCompile() {
   BindRepeating(NonEmptyFunctor());
 }
 
-#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_LVALUE_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting requires non-const rvalue for mutable lambda binding\. I\.e\.: base::BindLambdaForTesting\(std::move\(lambda\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_LVALUE_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)."]
 void WontCompile() {
   int foo = 42;
   auto mutable_lambda = [&]() mutable {};
   BindLambdaForTesting(mutable_lambda);
 }
 
-#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_RVALUE_CONST_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting requires non-const rvalue for mutable lambda binding\. I\.e\.: base::BindLambdaForTesting\(std::move\(lambda\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_RVALUE_CONST_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)."]
 
 void WontCompile() {
   int foo = 42;
@@ -498,7 +498,7 @@ void WontCompile() {
   BindOnce([] (const UncopyableUnmovable&) {}, u);
 }
 
-#elif defined(NCTEST_BIND_ONCE_WITH_PASSED)  // [r"static assertion failed.+?Use std::move\(\) instead of base::Passed\(\) with base::BindOnce\(\)"]
+#elif defined(NCTEST_BIND_ONCE_WITH_PASSED)  // [r"static assertion failed.+?Use std::move\(\) instead of base::Passed\(\) with base::BindOnce\(\)\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;

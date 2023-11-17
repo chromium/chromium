@@ -129,7 +129,7 @@ class UnretainedWrapper {
 
   static_assert(TypeSupportsUnretainedV<T>,
                 "Callback cannot capture an unprotected C++ pointer since this "
-                "Type is annotated with DISALLOW_UNRETAINED(). Please see "
+                "type is annotated with DISALLOW_UNRETAINED(). Please see "
                 "base/functional/disallow_unretained.h for alternatives.");
 
   // Raw pointer makes sense only if there are no PtrTraits. If there are,
@@ -878,7 +878,7 @@ struct InvokeHelper<true, ReturnType, index_target, index_tail...> {
   // Otherwise, the function result would be undefined if the WeakPtr<>
   // is invalidated.
   static_assert(std::is_void_v<ReturnType>,
-                "weak_ptrs can only bind to methods without return values");
+                "WeakPtrs can only bind to methods without return values.");
 
   template <typename Functor, typename BoundArgsTuple, typename... RunArgs>
   static inline void MakeItSo(Functor&& functor,
@@ -1255,8 +1255,26 @@ using TransformToUnwrappedType =
 // If |is_method| is true, tries to dereference the first argument to support
 // smart pointers.
 template <bool is_once, bool is_method, typename... Args>
-struct MakeUnwrappedTypeListImpl {
+struct MakeUnwrappedTypeList {
   using Type = TypeList<TransformToUnwrappedType<is_once, Args>...>;
+};
+
+// Converts `this` arguments to underlying pointer types. E.g.
+//   `int*` -> `int*`
+//   `std::unique_ptr<int>` -> `int*`
+// When this isn't sensical (e.g. argument type is `int`), `static_assert`s.
+template <typename T>
+struct UnderlyingReceiverType {
+  using Type = T;  // Not used, but reduces the number of compile errors.
+  static_assert(AlwaysFalse<T>,
+                "Cannot convert `this` argument to address. Method calls must "
+                "be bound using a pointer-like `this` argument.");
+};
+
+template <typename T>
+  requires requires { &*std::declval<T>(); }
+struct UnderlyingReceiverType<T> {
+  using Type = decltype(&*std::declval<T>());
 };
 
 // Performs special handling for this pointers.
@@ -1264,18 +1282,18 @@ struct MakeUnwrappedTypeListImpl {
 //   int* -> int*,
 //   std::unique_ptr<int> -> int*.
 template <bool is_once, typename Receiver, typename... Args>
-struct MakeUnwrappedTypeListImpl<is_once, true, Receiver, Args...> {
+struct MakeUnwrappedTypeList<is_once, true, Receiver, Args...> {
+ private:
   using ReceiverStorageType =
       typename MethodReceiverStorageType<std::decay_t<Receiver>>::Type;
   using UnwrappedReceiver =
       TransformToUnwrappedType<is_once, ReceiverStorageType>;
-  using Type = TypeList<decltype(&*std::declval<UnwrappedReceiver>()),
-                        TransformToUnwrappedType<is_once, Args>...>;
-};
 
-template <bool is_once, bool is_method, typename... Args>
-using MakeUnwrappedTypeList =
-    typename MakeUnwrappedTypeListImpl<is_once, is_method, Args...>::Type;
+ public:
+  using Type =
+      TypeList<typename UnderlyingReceiverType<UnwrappedReceiver>::Type,
+               TransformToUnwrappedType<is_once, Args>...>;
+};
 
 // IsOnceCallback<T> is a std::true_type if |T| is a OnceCallback.
 template <typename T>
@@ -1422,7 +1440,7 @@ struct AssertConstructible {
           BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
               Storage>::kMayBeDanglingMustBeUsed,
       "base::Bind() target functor has a parameter of type raw_ptr<T>. "
-      "raw_ptr<T> should not be used for function parameters, please use T* or "
+      "raw_ptr<T> should not be used for function parameters; please use T* or "
       "T& instead.");
 
   // A bound functor must take a dangling pointer argument (e.g. bound using the
@@ -1547,7 +1565,8 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
   using FunctorTraits = typename Helper::FunctorTraits;
   using BoundArgsList = typename Helper::BoundArgsList;
   using UnwrappedArgsList =
-      MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
+      typename MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method,
+                                     Args&&...>::Type;
   using BoundParamsList = typename Helper::BoundParamsList;
   static_assert(!kIsFunctionRef,
                 "base::Bind{Once,Repeating} require strong ownership: "

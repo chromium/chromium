@@ -69,8 +69,8 @@ decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
   static_assert(
       std::is_rvalue_reference<Lambda&&>() &&
           !std::is_const<std::remove_reference_t<Lambda>>(),
-      "BindLambdaForTesting requires non-const rvalue for mutable lambda "
-      "binding. I.e.: base::BindLambdaForTesting(std::move(lambda)).");
+      "BindLambdaForTesting() requires non-const rvalue for mutable lambda "
+      "binding, i.e. base::BindLambdaForTesting(std::move(lambda)).");
   using Signature = internal::ExtractCallableRunType<std::decay_t<Lambda>>;
   return BindOnce(&internal::BindLambdaHelper<Lambda, Signature>::RunOnce,
                   std::move(lambda));
