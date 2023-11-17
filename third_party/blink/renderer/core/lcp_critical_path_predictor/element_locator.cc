@@ -110,6 +110,14 @@ HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
   return set;
 }
 
+// A restricted of tags against which this TokenStreamMatcher will initiate
+// a match, when match_against_restricted_set flag is turned on, to reduce
+// performance hit.
+HashSet<const StringImpl*>& RestrictedTagSubset() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
+  return set;
+}
+
 }  // namespace
 
 void TokenStreamMatcher::InitSets() {
@@ -172,10 +180,16 @@ void TokenStreamMatcher::InitSets() {
     set.insert(html_names::kTrackTag.LocalName().Impl());
     set.insert(html_names::kHrTag.LocalName().Impl());
   }
+  {
+    HashSet<const StringImpl*>& set = RestrictedTagSubset();
+    set.insert(html_names::kImgTag.LocalName().Impl());
+  }
 }
 
-TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators)
-    : locators_(locators) {}
+TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators,
+                                       bool match_against_restricted_set)
+    : locators_(locators),
+      match_against_restricted_set_(match_against_restricted_set) {}
 
 TokenStreamMatcher::~TokenStreamMatcher() = default;
 namespace {
@@ -314,12 +328,17 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
       .tag_name = tag_name,
       .id_attr = id_attr ? AtomicString(id_attr->Value()) : g_null_atom});
 
-  auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
   bool matched = false;
-  for (const ElementLocator& locator : locators_) {
-    if (MatchLocator(locator, stack_span)) {
-      matched = true;
-      break;
+  // Invoke matching only if set to match all tags, or this is an IMG tag.
+  bool should_match_at_this_tag = !match_against_restricted_set_ ||
+                                  (RestrictedTagSubset().Contains(tag_name));
+  if (should_match_at_this_tag) {
+    auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
+    for (const ElementLocator& locator : locators_) {
+      if (MatchLocator(locator, stack_span)) {
+        matched = true;
+        break;
+      }
     }
   }
 
