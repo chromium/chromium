@@ -24,6 +24,9 @@ NSString* const kWebSearchBarEntryPointPath = @"/web-search-box";
 // The path for the search translate box entry point.
 NSString* const kTranslateOneboxEntryPointPath = @"/translate-onebox";
 
+// The path for the web image search bar entry point.
+NSString* const kWebImagesSearchBarEntryPointPath = @"/web-images-search-box";
+
 }  // namespace
 
 LensTabHelper::LensTabHelper(web::WebState* web_state)
@@ -43,6 +46,9 @@ LensTabHelper::EntryPointForGoogleChromeActionURLPath(NSString* path) {
   } else if ([path caseInsensitiveCompare:kTranslateOneboxEntryPointPath] ==
              NSOrderedSame) {
     return LensEntrypoint::TranslateOnebox;
+  } else if ([path caseInsensitiveCompare:kWebImagesSearchBarEntryPointPath] ==
+             NSOrderedSame) {
+    return LensEntrypoint::WebImagesSearchBar;
   }
   return absl::nullopt;
 }

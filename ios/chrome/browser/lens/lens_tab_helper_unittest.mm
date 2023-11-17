@@ -126,6 +126,44 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_TranslateOnebox) {
   EXPECT_TRUE(request_policy.ShouldCancelNavigation());
 }
 
+// Test `ShouldAllowRequest` for the web images search bar.
+TEST_F(LensTabHelperTest, ShouldAllowRequest_WebImagesSearchBar) {
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"googlechromeaction://lens/"
+                                          @"web-images-search-box"]];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  __block bool callback_called = false;
+  __block web::WebStatePolicyDecider::PolicyDecision request_policy =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        request_policy = decision;
+        callback_called = true;
+      });
+
+  id mock_lens_commands_handler = OCMProtocolMock(@protocol(LensCommands));
+  [dispatcher_ startDispatchingToTarget:mock_lens_commands_handler
+                            forProtocol:@protocol(LensCommands)];
+
+  OCMExpect([mock_lens_commands_handler
+      openLensInputSelection:[OCMArg
+                                 checkWithBlock:^(
+                                     OpenLensInputSelectionCommand* command) {
+                                   return command.entryPoint ==
+                                          LensEntrypoint::WebImagesSearchBar;
+                                 }]]);
+
+  helper_->ShouldAllowRequest(request, request_info, std::move(callback));
+
+  EXPECT_OCMOCK_VERIFY(mock_lens_commands_handler);
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(request_policy.ShouldCancelNavigation());
+}
+
 // Test `EntryPointForGoogleChromeActionURLPath` for the web search bar.
 TEST_F(LensTabHelperTest, EntryPointForGoogleChromeActionURLPath_WebSearchBar) {
   absl::optional<LensEntrypoint> entry_point =
@@ -142,6 +180,16 @@ TEST_F(LensTabHelperTest,
           @"/translate-onebox");
   ASSERT_TRUE(entry_point);
   EXPECT_EQ(entry_point.value(), LensEntrypoint::TranslateOnebox);
+}
+
+// Test `EntryPointForGoogleChromeActionURLPath` for the web images search bar.
+TEST_F(LensTabHelperTest,
+       EntryPointForGoogleChromeActionURLPath_WebImagesSearchBar) {
+  std::optional<LensEntrypoint> entry_point =
+      LensTabHelper::EntryPointForGoogleChromeActionURLPath(
+          @"/web-images-search-box");
+  ASSERT_TRUE(entry_point);
+  EXPECT_EQ(entry_point.value(), LensEntrypoint::WebImagesSearchBar);
 }
 
 // Test `EntryPointForGoogleChromeActionURLPath` for an invalid entry point.
