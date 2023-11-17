@@ -892,8 +892,9 @@ void PasswordManager::UpdateStateOnUserInput(
   OnInformAboutUserInput(driver, *manager->observed_form());
 }
 
-void PasswordManager::OnPasswordNoLongerGenerated(
-    PasswordManagerDriver* driver) {
+// TODO(crbug/1399524): Unify this method with the cross-platform
+// PasswordManager::OnPasswordNoLongerGenerated implementation.
+void PasswordManager::OnPasswordNoLongerGenerated() {
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_)
     manager->PasswordNoLongerGenerated();
 }

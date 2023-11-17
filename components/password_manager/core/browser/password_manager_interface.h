@@ -97,9 +97,8 @@ class PasswordManagerInterface : public FormSubmissionObserver {
                                       autofill::FieldRendererId field_id,
                                       const std::u16string& field_value) = 0;
 
-  // Stops treating a password as generated. |driver| corresponds to the
-  // form parent frame.
-  virtual void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) = 0;
+  // Stops treating a password as generated.
+  virtual void OnPasswordNoLongerGenerated() = 0;
 
   // Call when a form is removed so that this class can decide if whether or not
   // the form was submitted.

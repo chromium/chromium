@@ -113,7 +113,7 @@ class PasswordManager : public PasswordManagerInterface {
                               autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
                               const std::u16string& field_value) override;
-  void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) override;
+  void OnPasswordNoLongerGenerated() override;
   void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
       const autofill::FieldDataManager& field_data_manager,

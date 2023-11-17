@@ -113,10 +113,7 @@ class MockPasswordManager : public PasswordManagerInterface {
                autofill::FieldRendererId,
                const std::u16string&),
               (override));
-  MOCK_METHOD(void,
-              OnPasswordNoLongerGenerated,
-              (PasswordManagerDriver*),
-              (override));
+  MOCK_METHOD(void, OnPasswordNoLongerGenerated, (), (override));
   MOCK_METHOD(void,
               OnPasswordFormRemoved,
               (PasswordManagerDriver*,

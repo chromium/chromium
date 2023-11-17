@@ -457,8 +457,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       LogPasswordGenerationEvent(
           autofill::password_generation::PASSWORD_DELETED);
       self.passwordGeneratedIdentifier = FieldRendererId();
-      _passwordManager->OnPasswordNoLongerGenerated(
-          [_driverHelper PasswordManagerDriver:frame]);
+      _passwordManager->OnPasswordNoLongerGenerated();
     } else {
       // Inject updated value to possibly update confirmation field.
       [self injectGeneratedPasswordForFormId:formQuery.uniqueFormID
@@ -896,11 +895,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                                   clearPotentialPassword];
                          } else {
                            clearPotentialPassword();
-                           IOSPasswordManagerDriver* driver =
-                               [strongSelf->_driverHelper
-                                   PasswordManagerDriver:frame];
                            strongSelf->_passwordManager
-                               ->OnPasswordNoLongerGenerated(driver);
+                               ->OnPasswordNoLongerGenerated();
                          }
                        }];
   };
