@@ -751,10 +751,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
                  PersistedPermissionOptions update_options) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (status_ == new_status) {
-      return;
-    }
-
+    auto permission_changed = status_ != new_status;
     status_ = new_status;
 
     if (context_ &&
@@ -811,7 +808,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       }
     }
 
-    NotifyPermissionStatusChanged();
+    if (permission_changed) {
+      NotifyPermissionStatusChanged();
+    }
   }
 
   base::Value::Dict AsValue() const {
@@ -1336,15 +1335,20 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OriginHasExtendedPermission(origin)) {
-    // When the origin has extended permission enabled, objects stored in
-    // content settings map via `ObjectPermissionContextBase` represent a valid
-    // set of grants.
+  auto persisted_grant_type = GetPersistedGrantType(origin);
+  if (persisted_grant_type == PersistedGrantType::kExtended ||
+      persisted_grant_type == PersistedGrantType::kShadow) {
+    // Objects stored in content settings map via `ObjectPermissionContextBase`
+    // represent a valid set of grants, if origin has extended or shadow grants.
+    // In the case of shadow grants, it should be matching the set of active
+    // permission map, but it may not have `PermissionStatus::GRANTED`, if the
+    // page is refreshed and `FileSystemAccessPermissionGrant` is
+    // garbage-collected, hence returning shadow grant objects directly here.
     return ObjectPermissionContextBase::GetGrantedObjects(origin);
   }
 
-  // When the extended permission is not enabled, a valid set of grants are
-  // stored in the in-memory map |active_permissions_map_|.
+  // Otherwise, a valid set of grants are stored in the in-memory map
+  // |active_permissions_map_|.
   // TODO(crbug.com/1466929): Update iteration logic below to handle the case of
   // write-only permission grants.
   std::vector<std::unique_ptr<Object>> objects;
