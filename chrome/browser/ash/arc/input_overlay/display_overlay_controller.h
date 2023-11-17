@@ -118,6 +118,10 @@ class DisplayOverlayController : public ui::EventHandler,
   void EnterButtonPlaceMode(ActionType action_type);
   void ExitButtonPlaceMode();
 
+  void AddActionHighlightWidget(Action* action);
+  void RemoveActionHighlightWidget();
+  void HideActionHighlightWidget();
+
   // Show education nudge for editing tip. It only shows up for the first new
   // action after closing `ButtonOptionsMenu`.
   void MayShowEduNudgeForEditingTip();
@@ -283,6 +287,7 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
   std::unique_ptr<views::Widget> target_widget_;
+  std::unique_ptr<views::Widget> action_highlight_widget_;
 
   // Each widget can associate with one education nudge widget.
   base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_highlight.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
@@ -54,6 +55,7 @@ constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
 constexpr char kEduationNudge[] = "GameControlsEducationNudge";
 constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
+constexpr char kActionHighlight[] = "ActionHighlight";
 
 std::unique_ptr<views::Widget> CreateTransientWidget(
     aura::Window* parent_window,
@@ -481,6 +483,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       break;
 
     case DisplayMode::kView: {
+      RemoveActionHighlightWidget();
       if (GetActiveActionsSize() == 0u) {
         // If there is no active action in `kView` mode, it doesn't create
         // `input_mapping_widget_` to save resources. When
@@ -792,6 +795,37 @@ void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
   if (delete_edit_shortcut_widget_) {
     delete_edit_shortcut_widget_->Close();
     delete_edit_shortcut_widget_.reset();
+  }
+}
+
+void DisplayOverlayController::AddActionHighlightWidget(Action* action) {
+  auto* anchor_view = action->action_view();
+  if (!action_highlight_widget_) {
+    action_highlight_widget_ = CreateTransientWidget(
+        touch_injector_->window(), /*widget_name=*/kActionHighlight,
+        /*accept_events=*/false, /*is_floating=*/false);
+    action_highlight_widget_->SetContentsView(
+        std::make_unique<ActionHighlight>(this, anchor_view));
+  }
+
+  auto* highlight = views::AsViewClass<ActionHighlight>(
+      action_highlight_widget_->GetContentsView());
+  highlight->UpdateAnchorView(anchor_view);
+
+  action_highlight_widget_->ShowInactive();
+  input_mapping_widget_->StackAboveWidget(action_highlight_widget_.get());
+}
+
+void DisplayOverlayController::RemoveActionHighlightWidget() {
+  if (action_highlight_widget_) {
+    action_highlight_widget_->Close();
+    action_highlight_widget_.reset();
+  }
+}
+
+void DisplayOverlayController::HideActionHighlightWidget() {
+  if (action_highlight_widget_) {
+    action_highlight_widget_->Hide();
   }
 }
 
@@ -1109,6 +1143,7 @@ void DisplayOverlayController::RemoveAllWidgets() {
   RemoveTargetWidget();
   RemoveButtonOptionsMenuWidget();
   RemoveEditingListWidget();
+  RemoveActionHighlightWidget();
   RemoveInputMappingWidget();
 }
 

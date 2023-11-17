@@ -169,6 +169,14 @@ class EditingListTest : public OverlayViewTestBase {
     return !!controller_->delete_edit_shortcut_widget_;
   }
 
+  bool IsActionHighlightVisible() {
+    if (!controller_->action_highlight_widget_) {
+      return false;
+    }
+    return controller_->action_highlight_widget_->GetContentsView()
+        ->GetVisible();
+  }
+
   bool IsButtonOptionsMenuVisible() {
     auto* menu_widget = controller_->button_options_widget_.get();
     return menu_widget && menu_widget->IsVisible();
@@ -285,6 +293,7 @@ TEST_F(EditingListTest, TestHoverAtActionViewListItem) {
                /*expect_ids=*/{0, 1, 2});
   HoverAtActionViewListItem(/*index=*/0);
   EXPECT_TRUE(DeleteEditShortcutExists());
+  EXPECT_TRUE(IsActionHighlightVisible());
   auto* action = GetDeleteEditShortcutAction();
 
   PressEditButton();
@@ -295,6 +304,7 @@ TEST_F(EditingListTest, TestHoverAtActionViewListItem) {
 
   HoverAtActionViewListItem(/*index=*/0);
   EXPECT_TRUE(DeleteEditShortcutExists());
+  EXPECT_TRUE(IsActionHighlightVisible());
   PressDeleteButton();
   EXPECT_FALSE(DeleteEditShortcutExists());
   EXPECT_EQ(2u, GetActionListItemsSize());

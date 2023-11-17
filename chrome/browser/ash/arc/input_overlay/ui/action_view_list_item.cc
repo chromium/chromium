@@ -36,6 +36,11 @@ void ActionViewListItem::ShowEduNudgeForEditingTip() {
 
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
   controller_->AddDeleteEditShortcutWidget(this);
+  controller_->AddActionHighlightWidget(action_);
+}
+
+void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {
+  controller_->HideActionHighlightWidget();
 }
 
 BEGIN_METADATA(ActionViewListItem)

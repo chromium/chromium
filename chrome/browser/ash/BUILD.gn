@@ -406,6 +406,8 @@ source_set("ash") {
     "arc/input_overlay/touch_injector_observer.h",
     "arc/input_overlay/ui/action_edit_view.cc",
     "arc/input_overlay/ui/action_edit_view.h",
+    "arc/input_overlay/ui/action_highlight.cc",
+    "arc/input_overlay/ui/action_highlight.h",
     "arc/input_overlay/ui/action_label.cc",
     "arc/input_overlay/ui/action_label.h",
     "arc/input_overlay/ui/action_type_button.cc",

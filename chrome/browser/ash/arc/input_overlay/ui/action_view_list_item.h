@@ -38,6 +38,7 @@ class ActionViewListItem : public ActionEditView {
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 };
 
 }  // namespace arc::input_overlay
