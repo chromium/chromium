@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/hls_live_rendition.h"
+#include "media/filters/hls_rendition_impl.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/test_helpers.h"
@@ -69,14 +69,30 @@ const std::string kSecondFetchLivePlaylist =
 using testing::_;
 using testing::Return;
 
-class HlsLiveRenditionTest : public testing::Test {
+class HlsRenditionImplUnittest : public testing::Test {
  protected:
   std::unique_ptr<MockManifestDemuxerEngineHost> mock_mdeh_;
   std::unique_ptr<MockHlsRenditionHost> mock_hrh_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<HlsLiveRendition> MakeLiveRendition(
+  std::unique_ptr<HlsRenditionImpl> MakeVodRendition(
+      base::StringPiece content) {
+    constexpr hls::types::DecimalInteger version = 3;
+    auto uri = GURL("https://example.m3u8");
+    auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
+    if (!parsed.has_value()) {
+      LOG(ERROR) << MediaSerialize(std::move(parsed).error());
+      return nullptr;
+    }
+    auto playlist = std::move(parsed).value();
+    auto duration = playlist->GetComputedDuration();
+    return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
+                                             "test", std::move(playlist),
+                                             duration, uri);
+  }
+
+  std::unique_ptr<HlsRenditionImpl> MakeLiveRendition(
       GURL uri,
       base::StringPiece content) {
     constexpr hls::types::DecimalInteger version = 3;
@@ -85,21 +101,21 @@ class HlsLiveRenditionTest : public testing::Test {
       LOG(ERROR) << MediaSerialize(std::move(parsed).error());
       return nullptr;
     }
-    return std::make_unique<HlsLiveRendition>(mock_mdeh_.get(), mock_hrh_.get(),
-                                              "test", std::move(parsed).value(),
-                                              absl::nullopt, uri);
+    return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
+                                             "test", std::move(parsed).value(),
+                                             absl::nullopt, uri);
   }
 
   MOCK_METHOD(void, CheckStateComplete, (base::TimeDelta delay), ());
 
   ManifestDemuxer::DelayCallback BindCheckState(base::TimeDelta time) {
     EXPECT_CALL(*this, CheckStateComplete(time));
-    return base::BindOnce(&HlsLiveRenditionTest::CheckStateComplete,
+    return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
                           base::Unretained(this));
   }
 
   ManifestDemuxer::DelayCallback BindCheckStateNoExpect() {
-    return base::BindOnce(&HlsLiveRenditionTest::CheckStateComplete,
+    return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
                           base::Unretained(this));
   }
 
@@ -171,14 +187,67 @@ class HlsLiveRenditionTest : public testing::Test {
   }
 
  public:
-  HlsLiveRenditionTest()
+  HlsRenditionImplUnittest()
       : mock_mdeh_(std::make_unique<MockManifestDemuxerEngineHost>()),
         mock_hrh_(std::make_unique<MockHlsRenditionHost>()) {
     EXPECT_CALL(*mock_mdeh_, RemoveRole("test"));
   }
 };
 
-TEST_F(HlsLiveRenditionTest, TestNonRealTimePlaybackRate) {
+TEST_F(HlsRenditionImplUnittest, TestCheckStateFromNoData) {
+  auto rendition = MakeVodRendition(kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  SupplyAndExpectJunkData(base::Seconds(0), base::Seconds(0), base::Seconds(1));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCheckStateWithLargeBufferCached) {
+  auto rendition = MakeVodRendition(kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  // Prime the download speed cache.
+  SupplyAndExpectJunkData(base::Seconds(0), base::Seconds(0), base::Seconds(1));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  // This time respond with a large range of loaded data.
+  // Time until underflow is going to be 12 seconds here - the fetch time
+  // average is zero, since this is a unittest, and we subtract 5 seconds flag
+  // giving a delay of 7 seconds.
+  RespondWithRange(base::Seconds(0), base::Seconds(12));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(7)));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCheckStateWithTooLateBuffer) {
+  auto rendition = MakeVodRendition(kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  RespondWithRange(base::Seconds(10), base::Seconds(12));
+  EXPECT_CALL(*mock_mdeh_, OnError(_));
+  rendition->CheckState(base::Seconds(0), 1.0, BindCheckStateNoExpect());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestStop) {
+  auto rendition = MakeVodRendition(kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  rendition->Stop();
+
+  // Should always be kNoTimestamp after `Stop()` and no network requests.
+  rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestNonRealTimePlaybackRate) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -190,7 +259,7 @@ TEST_F(HlsLiveRenditionTest, TestNonRealTimePlaybackRate) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestCreateRenditionPaused) {
+TEST_F(HlsRenditionImplUnittest, TestCreateRenditionPaused) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -211,7 +280,7 @@ TEST_F(HlsLiveRenditionTest, TestCreateRenditionPaused) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestPausedRenditionHasSomeData) {
+TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasSomeData) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -234,7 +303,7 @@ TEST_F(HlsLiveRenditionTest, TestPausedRenditionHasSomeData) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestPausedRenditionHasEnoughBufferedData) {
+TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasEnoughBufferedData) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -256,7 +325,7 @@ TEST_F(HlsLiveRenditionTest, TestPausedRenditionHasEnoughBufferedData) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestRenditionHasEnoughDataFetchNewManifest) {
+TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -285,7 +354,7 @@ TEST_F(HlsLiveRenditionTest, TestRenditionHasEnoughDataFetchNewManifest) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestRenditionHasEnoughDataDeleteOldContent) {
+TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataDeleteOldContent) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -311,7 +380,7 @@ TEST_F(HlsLiveRenditionTest, TestRenditionHasEnoughDataDeleteOldContent) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsLiveRenditionTest, TestStopLive) {
+TEST_F(HlsRenditionImplUnittest, TestStopLive) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);
@@ -322,7 +391,7 @@ TEST_F(HlsLiveRenditionTest, TestStopLive) {
   rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
 }
 
-TEST_F(HlsLiveRenditionTest, TestPauseAndUnpause) {
+TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   auto rendition =
       MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
   ASSERT_NE(rendition, nullptr);

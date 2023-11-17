@@ -249,14 +249,12 @@ source_set("filters") {
       "hls_data_source_provider.cc",
       "hls_data_source_provider.h",
       "hls_demuxer_status.h",
-      "hls_live_rendition.cc",
-      "hls_live_rendition.h",
       "hls_manifest_demuxer_engine.cc",
       "hls_manifest_demuxer_engine.h",
       "hls_rendition.cc",
       "hls_rendition.h",
-      "hls_vod_rendition.cc",
-      "hls_vod_rendition.h",
+      "hls_rendition_impl.cc",
+      "hls_rendition_impl.h",
       "manifest_demuxer.cc",
       "manifest_demuxer.h",
     ]
@@ -415,11 +413,10 @@ source_set("unit_tests") {
     sources += [
       "hls_codec_detector_unittest.cc",
       "hls_data_source_provider_unittest.cc",
-      "hls_live_rendition_unittest.cc",
       "hls_manifest_demuxer_engine_unittest.cc",
+      "hls_rendition_impl_unittest.cc",
       "hls_test_helpers.cc",
       "hls_test_helpers.h",
-      "hls_vod_rendition_unittest.cc",
       "manifest_demuxer_unittest.cc",
     ]
   }

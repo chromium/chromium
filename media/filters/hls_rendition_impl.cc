@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/hls_live_rendition.h"
+#include "media/filters/hls_rendition_impl.h"
 
 #include "base/task/bind_post_task.h"
 #include "media/filters/hls_manifest_demuxer_engine.h"
@@ -18,16 +18,16 @@ constexpr base::TimeDelta kBufferDuration = base::Seconds(10);
 // speed calculation.
 constexpr size_t kMovingAverageSampleSize = 128;
 
-HlsLiveRendition::~HlsLiveRendition() {
+HlsRenditionImpl::~HlsRenditionImpl() {
   engine_host_->RemoveRole(role_);
 }
 
-HlsLiveRendition::HlsLiveRendition(ManifestDemuxerEngineHost* engine_host,
-                                   HlsRenditionHost* rendition_host,
-                                   std::string role,
-                                   scoped_refptr<hls::MediaPlaylist> playlist,
-                                   std::optional<base::TimeDelta> duration,
-                                   GURL media_playlist_uri)
+HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
+                                 HlsRenditionHost* rendition_host,
+                                 std::string role,
+                                 scoped_refptr<hls::MediaPlaylist> playlist,
+                                 std::optional<base::TimeDelta> duration,
+                                 GURL media_playlist_uri)
     : engine_host_(engine_host),
       rendition_host_(rendition_host),
       segments_(std::make_unique<hls::SegmentStream>(
@@ -39,11 +39,11 @@ HlsLiveRendition::HlsLiveRendition(ManifestDemuxerEngineHost* engine_host,
       media_playlist_uri_(std::move(media_playlist_uri)),
       last_download_time_(base::TimeTicks::Now()) {}
 
-absl::optional<base::TimeDelta> HlsLiveRendition::GetDuration() {
+absl::optional<base::TimeDelta> HlsRenditionImpl::GetDuration() {
   return duration_;
 }
 
-void HlsLiveRendition::CheckState(
+void HlsRenditionImpl::CheckState(
     base::TimeDelta media_time,
     double playback_rate,
     ManifestDemuxer::DelayCallback time_remaining_cb) {
@@ -180,8 +180,8 @@ void HlsLiveRendition::CheckState(
   std::move(time_remaining_cb).Run(delay_time);
 }
 
-void HlsLiveRendition::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
-                                         base::TimeDelta media_time) {
+void HlsRenditionImpl::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
+                                        base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Live content should fetch an update if the segment queue is exhausted.
   if (IsLive() && segments_->Exhausted()) {
@@ -199,19 +199,19 @@ void HlsLiveRendition::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
   FetchNext(base::BindOnce(std::move(delay), base::Seconds(0)), media_time);
 }
 
-void HlsLiveRendition::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
-                                            base::TimeDelta delay) {
+void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
+                                           base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
   rendition_host_->UpdateRenditionManifestUri(
       role_, media_playlist_uri_,
-      base::BindOnce(&HlsLiveRendition::OnManifestUpdate,
+      base::BindOnce(&HlsRenditionImpl::OnManifestUpdate,
                      weak_factory_.GetWeakPtr(), std::move(cb), delay));
 }
 
-void HlsLiveRendition::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
-                                        base::TimeDelta delay) {
+void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
+                                       base::TimeDelta delay) {
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
     std::move(cb).Run(base::Seconds(0));
@@ -220,7 +220,7 @@ void HlsLiveRendition::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
   std::move(cb).Run(delay - update_duration);
 }
 
-void HlsLiveRendition::MaybeFetchManifestUpdates(
+void HlsRenditionImpl::MaybeFetchManifestUpdates(
     ManifestDemuxer::DelayCallback cb,
     base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -238,7 +238,7 @@ void HlsLiveRendition::MaybeFetchManifestUpdates(
   std::move(cb).Run(delay);
 }
 
-base::TimeDelta HlsLiveRendition::GetIdealBufferSize() const {
+base::TimeDelta HlsRenditionImpl::GetIdealBufferSize() const {
   // TODO(crbug.com/1266991): This buffer size _could_ be based on network
   // speed and video bitrate, but it's actually quite effective to keep it just
   // at a fixed size, due to the fact that the stream adaptation will always try
@@ -248,8 +248,8 @@ base::TimeDelta HlsLiveRendition::GetIdealBufferSize() const {
   return kBufferDuration;
 }
 
-ManifestDemuxer::SeekResponse HlsLiveRendition::Seek(
-    base::TimeDelta seek_time) {
+ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
+      base::TimeDelta seek_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
@@ -288,21 +288,21 @@ ManifestDemuxer::SeekResponse HlsLiveRendition::Seek(
   return ManifestDemuxer::SeekState::kNeedsData;
 }
 
-void HlsLiveRendition::StartWaitingForSeek() {
+void HlsRenditionImpl::StartWaitingForSeek() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void HlsLiveRendition::Stop() {
+void HlsRenditionImpl::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_stopped_for_shutdown_ = true;
 }
 
-void HlsLiveRendition::UpdatePlaylist(
+void HlsRenditionImpl::UpdatePlaylist(
     scoped_refptr<hls::MediaPlaylist> playlist) {
   segments_->SetNewPlaylist(std::move(playlist));
 }
 
-base::TimeDelta HlsLiveRendition::ClearOldSegments(base::TimeDelta media_time) {
+base::TimeDelta HlsRenditionImpl::ClearOldSegments(base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   base::TimeTicks removal_start = base::TimeTicks::Now();
@@ -328,7 +328,7 @@ base::TimeDelta HlsLiveRendition::ClearOldSegments(base::TimeDelta media_time) {
   return base::TimeTicks::Now() - removal_start;
 }
 
-void HlsLiveRendition::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
+void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   CHECK(!segments_->Exhausted());
@@ -340,16 +340,16 @@ void HlsLiveRendition::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
 
   rendition_host_->ReadFromUrl(
       segment->GetUri(), /*read_chunked=*/false, segment->GetByteRange(),
-      base::BindOnce(&HlsLiveRendition::OnSegmentData,
+      base::BindOnce(&HlsRenditionImpl::OnSegmentData,
                      weak_factory_.GetWeakPtr(), std::move(cb), time,
                      segment_end, base::TimeTicks::Now()));
 }
 
-void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
-                                     base::TimeDelta required_time,
-                                     base::TimeDelta parse_end,
-                                     base::TimeTicks net_req_start,
-                                     HlsDataSourceProvider::ReadResult result) {
+void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
+                                    base::TimeDelta required_time,
+                                    base::TimeDelta parse_end,
+                                    base::TimeTicks net_req_start,
+                                    HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_stopped_for_shutdown_) {
     std::move(cb).Run();
@@ -400,7 +400,7 @@ void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
   FetchNext(std::move(cb), required_time);
 }
 
-bool HlsLiveRendition::IsLive() const {
+bool HlsRenditionImpl::IsLive() const {
   return !duration_.has_value();
 }
 

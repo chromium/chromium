@@ -4,8 +4,7 @@
 
 #include "media/filters/hls_rendition.h"
 
-#include "media/filters/hls_live_rendition.h"
-#include "media/filters/hls_vod_rendition.h"
+#include "media/filters/hls_rendition_impl.h"
 #include "media/filters/manifest_demuxer.h"
 
 namespace media {
@@ -47,16 +46,9 @@ HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
                               GURL uri) {
   std::unique_ptr<HlsRendition> rendition;
   auto duration = GetPlaylistDuration(playlist.get());
-  // TODO(crbug.com/1266991) Unify these two types!
-  if (duration.has_value()) {
-    rendition = std::make_unique<HlsVodRendition>(
-        engine_host, rendition_host, std::move(role), std::move(playlist),
-        duration, std::move(uri));
-  } else {
-    rendition = std::make_unique<HlsLiveRendition>(
-        engine_host, rendition_host, std::move(role), std::move(playlist),
-        duration, std::move(uri));
-  }
+  rendition = std::make_unique<HlsRenditionImpl>(
+      engine_host, rendition_host, std::move(role), std::move(playlist),
+      duration, std::move(uri));
   return rendition;
 }
 

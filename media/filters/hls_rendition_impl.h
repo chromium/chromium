@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_HLS_LIVE_RENDITION_H_
-#define MEDIA_FILTERS_HLS_LIVE_RENDITION_H_
+#ifndef MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
+#define MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 
 #include "base/moving_window.h"
 #include "media/filters/hls_rendition.h"
@@ -11,20 +11,20 @@
 
 namespace media {
 
-class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
+class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
  public:
-  ~HlsLiveRendition() override;
+  ~HlsRenditionImpl() override;
 
   // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed
   // to access the chunk demuxer, and |engine_| is needed to make network
   // requests.
-  HlsLiveRendition(ManifestDemuxerEngineHost* engine_host,
-                   HlsRenditionHost* rendition_host,
-                   std::string role,
-                   scoped_refptr<hls::MediaPlaylist> playlist,
-                   std::optional<base::TimeDelta> duration,
-                   GURL media_playlist_uri);
+  HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
+                  HlsRenditionHost* rendition_host,
+                  std::string role,
+                  scoped_refptr<hls::MediaPlaylist> playlist,
+                  std::optional<base::TimeDelta> duration,
+                  GURL media_playlist_uri);
 
   // `HlsRendition` implementation
   absl::optional<base::TimeDelta> GetDuration() override;
@@ -119,9 +119,9 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<HlsLiveRendition> weak_factory_{this};
+  base::WeakPtrFactory<HlsRenditionImpl> weak_factory_{this};
 };
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_HLS_LIVE_RENDITION_H_
+#endif  // MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
