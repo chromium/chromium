@@ -1711,6 +1711,7 @@ fyi_ios_builder(
         category = "iOS|iOSM1",
         short_name = "iosM1",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 fyi_ios_builder(

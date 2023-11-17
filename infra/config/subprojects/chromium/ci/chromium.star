@@ -523,6 +523,7 @@ ci.builder(
         category = "mac",
         short_name = "rel",
     ),
+    contact_team_email = "bling-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -559,6 +560,7 @@ ci.builder(
         category = "mac|arm",
         short_name = "rel",
     ),
+    contact_team_email = "bling-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {

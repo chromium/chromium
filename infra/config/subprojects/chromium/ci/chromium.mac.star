@@ -323,6 +323,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "12",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -430,6 +431,7 @@ ci.thin_tester(
         category = "mac",
         short_name = "12",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(

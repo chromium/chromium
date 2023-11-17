@@ -810,6 +810,7 @@
         }
       },
       "Mac12 Tests": {
+        "contact_team_email": "bling-engprod@google.com",
         "thresholds": {
           "_default": "_default"
         }
@@ -2406,11 +2407,13 @@
         }
       },
       "mac-archive-rel": {
+        "contact_team_email": "bling-engprod@google.com",
         "thresholds": {
           "_default": "_default"
         }
       },
       "mac-arm64-archive-rel": {
+        "contact_team_email": "bling-engprod@google.com",
         "thresholds": {
           "_default": "_default"
         }
@@ -2463,6 +2466,7 @@
         }
       },
       "mac12-arm64-rel-tests": {
+        "contact_team_email": "bling-engprod@google.com",
         "thresholds": {
           "_default": "_default"
         }
