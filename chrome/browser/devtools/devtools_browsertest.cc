@@ -782,7 +782,14 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   extensions::ExtensionRegistry* extension_registry_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsServiceWorkerExtensionTest, AttachOnReload) {
+// TODO(crbug/1503023): Fix the memory leak and enable the test.
+#if defined(LEAK_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_AttachOnReload DISABLED_AttachOnReload
+#else
+#define MAYBE_AttachOnReload AttachOnReload
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsServiceWorkerExtensionTest,
+                       MAYBE_AttachOnReload) {
   base::FilePath extension_path =
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII("devtools")
