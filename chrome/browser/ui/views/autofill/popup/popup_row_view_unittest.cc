@@ -15,13 +15,16 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -62,6 +65,11 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    ON_CALL(mock_controller_, GetWebContents())
+        .WillByDefault(Return(web_contents_.get()));
   }
 
   void ShowView(int line_number, bool has_control) {
@@ -76,19 +84,18 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 
   void ShowView(int line_number, std::vector<Suggestion> suggestions) {
     mock_controller_.set_suggestions(suggestions);
-    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+    ShowView(line_number);
   }
 
   void ShowView(int line_number, std::vector<PopupItemId> suggestions) {
     mock_controller_.set_suggestions(suggestions);
-    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+    ShowView(line_number);
   }
 
-  void ShowView(std::unique_ptr<TestPopupRowStrategy> strategy) {
-    row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
-        mock_a11y_selection_delegate_, mock_selection_delegate_,
-        mock_controller_.GetWeakPtr(), strategy->GetLineNumber(),
-        strategy->CreateContent()));
+  void ShowView(int line_number) {
+    row_view_ = widget_->SetContentsView(CreatePopupRowView(
+        mock_controller_.GetWeakPtr(), mock_a11y_selection_delegate_,
+        mock_selection_delegate_, line_number));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
         .WillByDefault([this](absl::optional<CellIndex> cell,
                               PopupCellSelectionSource) {
@@ -137,6 +144,9 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   PopupRowView& row_view() { return *row_view_; }
 
  private:
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;

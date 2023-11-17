@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -33,11 +32,12 @@ namespace autofill {
 
 class AutofillPopupController;
 class PopupRowContentView;
-class PopupRowStrategy;
 
-// `PopupRowView` represents a single selectable popup row. Different styles
-// of the row can be achieved by injecting the respective `PopupRowStrategy`
-// objects in the constructor.
+// `PopupRowView` represents a single selectable popup row. It contains logic
+// common to all row types (like selection callbacks or a11y) but it is not
+// responsible for the view layout. It expects a `PopupRowContentView` instead.
+// It also supports the expanding control depending on whether the suggestion
+// has children or not (see `Suggestion::children`).
 class PopupRowView : public views::View, public views::ViewObserver {
   METADATA_HEADER(PopupRowView, views::View)
  public:

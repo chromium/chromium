@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
@@ -36,12 +34,11 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 

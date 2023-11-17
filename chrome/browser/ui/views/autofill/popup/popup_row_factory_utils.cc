@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -201,6 +200,29 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
   return view;
 }
 
+// Creates the content view for regular address and credit card suggestions.
+// Content views for suggestions of other types and special suggestions are
+// created by corresponding `Create*PopupRowContentView()` methods.
+std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
+    const Suggestion& suggestion,
+    PopupType popup_type) {
+  auto view = std::make_unique<PopupRowContentView>();
+  std::unique_ptr<views::Label> main_text_label =
+      popup_cell_utils::CreateMainTextLabel(
+          suggestion.main_text,
+          GetMainTextStyleForPopupItemId(suggestion.popup_item_id));
+  popup_cell_utils::FormatLabel(*main_text_label, suggestion.main_text,
+                                popup_type);
+  popup_cell_utils::AddSuggestionContentToView(
+      suggestion, std::move(main_text_label),
+      popup_cell_utils::CreateMinorTextLabel(suggestion.minor_text),
+      /*description_label=*/nullptr,
+      popup_cell_utils::CreateAndTrackSubtextViews(*view, suggestion,
+                                                   popup_type),
+      *view);
+  return view;
+}
+
 // Creates the row for an Autocomplete entry with a delete button.
 std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
     base::WeakPtr<AutofillPopupController> controller,
@@ -283,6 +305,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
 
   const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   PopupItemId popup_item_id = suggestion.popup_item_id;
+  PopupType popup_type = controller->GetPopupType();
 
   if (popup_item_id == PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
@@ -291,7 +314,12 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }
 
-  std::unique_ptr<PopupRowStrategy> strategy;
+  if (IsFooterPopupItemId(popup_item_id)) {
+    return std::make_unique<PopupRowView>(
+        a11y_selection_delegate, selection_delegate, controller, line_number,
+        CreateFooterPopupRowContentView(suggestion));
+  }
+
   switch (popup_item_id) {
     // These `popup_item_id` should never be displayed in a `PopupRowView`.
     case PopupItemId::kSeparator:
@@ -317,26 +345,18 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
               /*action_name=*/"compose_activated");
       auto row_view = std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateComposePopupRowContentView(
-              suggestion, controller->GetPopupType(), show_new_badge));
+          CreateComposePopupRowContentView(suggestion, popup_type,
+                                           show_new_badge));
       row_view->set_new_badge_tracker(std::move(new_badge_tracker));
       return row_view;
     };
     default:
-      if (IsFooterPopupItemId(popup_item_id)) {
-        return std::make_unique<PopupRowView>(
-            a11y_selection_delegate, selection_delegate, controller,
-            line_number, CreateFooterPopupRowContentView(suggestion));
-      } else {
-        strategy =
-            std::make_unique<PopupSuggestionStrategy>(controller, line_number);
-      }
-      break;
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreatePopupRowContentView(suggestion, popup_type));
   }
 
-  return std::make_unique<PopupRowView>(a11y_selection_delegate,
-                                        selection_delegate, controller,
-                                        line_number, strategy->CreateContent());
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace autofill

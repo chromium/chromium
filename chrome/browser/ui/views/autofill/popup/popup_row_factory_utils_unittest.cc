@@ -6,7 +6,6 @@
 #include "base/check_op.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 
 #include <memory>
 #include <utility>
