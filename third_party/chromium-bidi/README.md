@@ -458,15 +458,17 @@ third_party/bidimapper/build.sh
 ```
 
 3. Submit a CL with bug `chromedriver:4226`.
-4. [Regenerate WPT expectations metadata](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests_wptrunner.md#updating-expectations):
 
-4.1. Trigger a build and test run:
+4. [Regenerate WPT expectations or baselines](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md#test-expectations-and-baselines):
 
-```shell
-third_party/blink/tools/blink_tool.py update-metadata --build="linux-blink-rel" --verbose
-```
+   4.1. Trigger a build and test run:
 
-4.2. Once the test completes on the builder, rerun that command to update the metadata.
-Commit the changes (if any), and upload the new patch to the CL.
+   ```shell
+   third_party/blink/tools/blink_tool.py rebaseline-cl --build="linux-blink-rel" --verbose
+   ```
+
+   4.2. Once the test completes on the builder, rerun that command to update the
+   baselines. Update test expectations if there are any crashes or timeouts.
+   Commit the changes (if any), and upload the new patch to the CL.
 
 5. Add appropriate reviewers or comment the CL link on the PR.
