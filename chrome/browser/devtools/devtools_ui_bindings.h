@@ -116,6 +116,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
+  bool MayWriteLocalFiles() override;
 
   // DevToolsEmbedderMessageDispatcher::Delegate implementation.
   void ActivateWindow() override;

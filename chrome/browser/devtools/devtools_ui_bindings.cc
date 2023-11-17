@@ -765,6 +765,15 @@ void DevToolsUIBindings::AgentHostClosed(
   delegate_->InspectedContentsClosing();
 }
 
+bool DevToolsUIBindings::MayWriteLocalFiles() {
+  // Do not allow local file system access via the front-end on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 void DevToolsUIBindings::SendMessageAck(int request_id,
                                         const base::Value* arg) {
   if (arg) {
