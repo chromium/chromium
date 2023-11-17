@@ -532,7 +532,7 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
         ToString(input_method_private::LanguagePackStatus::kInstalled)));
   }
 
-  ash::language_packs::LanguagePackManager::GetInstance()->GetPackState(
+  ash::language_packs::LanguagePackManager::GetPackState(
       ash::language_packs::kHandwritingFeatureId, *handwriting_locale,
       // This `BindOnce` into a `.Then` is required to avoid having a method on
       // this class which has a language pack type in its function signature,

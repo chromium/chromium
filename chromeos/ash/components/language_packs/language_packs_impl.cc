@@ -112,13 +112,11 @@ void LanguagePacksImpl::BindReceiver(
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
                                     const std::string& language,
                                     GetPackInfoCallback mojo_callback) {
-
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->GetPackState(
+    LanguagePackManager::GetPackState(
         pack_id.value(), language,
         base::BindOnce(&OnOperationComplete, std::move(mojo_callback)));
   } else {
@@ -131,12 +129,11 @@ void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
 void LanguagePacksImpl::InstallPack(FeatureId feature_id,
                                     const std::string& language,
                                     InstallPackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->InstallPack(
+    LanguagePackManager::InstallPack(
         pack_id.value(), language,
         base::BindOnce(&OnOperationComplete, std::move(mojo_callback)));
   } else {
@@ -148,13 +145,13 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
 
 void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
                                         InstallBasePackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->InstallBasePack(*pack_id, base::BindOnce(&OnInstallBasePackComplete,
-                                                 std::move(mojo_callback)));
+    LanguagePackManager::InstallBasePack(
+        *pack_id,
+        base::BindOnce(&OnInstallBasePackComplete, std::move(mojo_callback)));
   } else {
     auto info = BasePackInfo::New();
     info->pack_state = PackState::ERROR;
@@ -165,13 +162,13 @@ void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
 void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
                                       const std::string& language,
                                       UninstallPackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   // We ignore the request if the input parameters are incorrect.
   if (pack_id.has_value()) {
-    lp->RemovePack(pack_id.value(), language, base::DoNothing());
+    LanguagePackManager::RemovePack(pack_id.value(), language,
+                                    base::DoNothing());
   }
 }
 

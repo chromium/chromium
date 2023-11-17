@@ -2747,7 +2747,7 @@ void AccessibilityManager::GetDlcContents(DlcType dlc,
 
   // Use LanguagePackManager to get the path of the DLC.
   std::string locale = kTtsDlcTypeToLocale.find(dlc)->second;
-  language_packs::LanguagePackManager::GetInstance()->GetPackState(
+  language_packs::LanguagePackManager::GetPackState(
       language_packs::kTtsFeatureId, locale,
       base::BindOnce(&AccessibilityManager::GetDlcContentsOnPackState,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
