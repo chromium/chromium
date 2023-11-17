@@ -117,7 +117,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                   ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer(ExceptionState& exception_state);
-  void reset();          // Called by the javascript interface
+  virtual void reset();  // Called by the javascript interface
   void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);

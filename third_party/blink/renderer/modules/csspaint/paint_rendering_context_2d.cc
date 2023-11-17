@@ -145,6 +145,12 @@ void PaintRenderingContext2D::resetTransform() {
                                     0);
 }
 
+void PaintRenderingContext2D::reset() {
+  BaseRenderingContext2D::reset();
+  BaseRenderingContext2D::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
+                                    0);
+}
+
 PaintRecord PaintRenderingContext2D::GetRecord() {
   if (!did_record_draw_commands_in_paint_recorder_ && !!previous_frame_) {
     return *previous_frame_;  // Reuse the previous frame

@@ -87,6 +87,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   DOMMatrix* getTransform() final;
   void resetTransform() final;
+  void reset() final;
 
   void FlushCanvas(FlushReason) final {}
 

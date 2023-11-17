@@ -156,6 +156,68 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
                                                        0, 0, 0, 1))));
 }
 
+TEST(PaintRenderingContext2DTest, resetWithDeviceScaleFactor) {
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  float zoom = 1.23;
+  PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
+      gfx::Size(kWidth, kHeight), context_settings, zoom,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
+  DOMMatrix* matrix = ctx->getTransform();
+  EXPECT_TRUE(matrix->isIdentity());
+  ctx->setTransform(2.1, 2.5, 1.4, 2.3, 20, 50);
+  matrix = ctx->getTransform();
+  EXPECT_FLOAT_EQ(matrix->a(), 2.1);
+  EXPECT_FLOAT_EQ(matrix->b(), 2.5);
+  EXPECT_FLOAT_EQ(matrix->c(), 1.4);
+  EXPECT_FLOAT_EQ(matrix->d(), 2.3);
+  EXPECT_FLOAT_EQ(matrix->e(), 20);
+  EXPECT_FLOAT_EQ(matrix->f(), 50);
+  ctx->reset();
+  matrix = ctx->getTransform();
+  EXPECT_TRUE(matrix->isIdentity());
+
+  cc::PaintFlags clear_flags;
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+
+  EXPECT_THAT(
+      ctx->GetRecord(),
+      RecordedOpsAre(PaintOpEq<DrawRectOp>(
+                         SkRect::MakeXYWH(0, 0, kWidth, kHeight), clear_flags),
+                     PaintOpEq<ConcatOp>(SkM44(zoom, 0, 0, 0,  //
+                                               0, zoom, 0, 0,  //
+                                               0, 0, 1, 0,     //
+                                               0, 0, 0, 1))));
+}
+
+TEST(PaintRenderingContext2DTest, resetWithDefaultDeviceScaleFactor) {
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
+  DOMMatrix* matrix = ctx->getTransform();
+  EXPECT_TRUE(matrix->isIdentity());
+  ctx->setTransform(1.2, 2.3, 3.4, 4.5, 56, 67);
+  matrix = ctx->getTransform();
+  EXPECT_FLOAT_EQ(matrix->a(), 1.2);
+  EXPECT_FLOAT_EQ(matrix->b(), 2.3);
+  EXPECT_FLOAT_EQ(matrix->c(), 3.4);
+  EXPECT_FLOAT_EQ(matrix->d(), 4.5);
+  EXPECT_FLOAT_EQ(matrix->e(), 56);
+  EXPECT_FLOAT_EQ(matrix->f(), 67);
+  ctx->reset();
+  matrix = ctx->getTransform();
+  EXPECT_TRUE(matrix->isIdentity());
+
+  cc::PaintFlags clear_flags;
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+
+  EXPECT_THAT(ctx->GetRecord(),
+              RecordedOpsAre(PaintOpEq<DrawRectOp>(
+                  SkRect::MakeXYWH(0, 0, kWidth, kHeight), clear_flags)));
+}
+
 TEST(PaintRenderingContext2DTest, overdrawOptimizationNotApplied) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
