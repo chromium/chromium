@@ -499,6 +499,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.SPARSE_OBJECT_PAINT_PROPERTIES),
         Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
+        Flag.baseFeature(BlinkFeatures.DYNAMIC_SCROLL_CULL_RECT_EXPANSION),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
         Flag.baseFeature(BlinkFeatures.SOLID_COLOR_LAYERS),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),

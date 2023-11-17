@@ -1061,7 +1061,7 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
   ExpectUkmGT(ukm,
               ukm::builders::MobileFriendliness::
                   kTextContentOutsideViewportPercentageNameHash,
-              90);
+              55);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {

@@ -84,9 +84,11 @@ bool CullRect::ApplyScrollTranslation(
   const auto* scroll = scroll_translation.ScrollNode();
   DCHECK(scroll);
 
-  rect_.Intersect(scroll->ContainerRect());
-  if (rect_.IsEmpty())
+  gfx::Rect container_rect = scroll->ContainerRect();
+  rect_.Intersect(container_rect);
+  if (rect_.IsEmpty()) {
     return false;
+  }
 
   ApplyTransform(scroll_translation);
 
@@ -99,15 +101,38 @@ bool CullRect::ApplyScrollTranslation(
       CompositedScrollingPreference::kNotPreferred) {
     return false;
   }
-  // We create scroll node for the root scroller even it's not scrollable.
-  // Don't expand in the case.
+
   gfx::Rect contents_rect = scroll->ContentsRect();
-  if (scroll->ContainerRect().width() >= contents_rect.width() &&
-      scroll->ContainerRect().height() >= contents_rect.height())
+  int scroll_range_x = contents_rect.width() - container_rect.width();
+  int scroll_range_y = contents_rect.height() - container_rect.height();
+  if (scroll_range_x <= 0 && scroll_range_y <= 0) {
     return false;
+  }
 
   // Expand the cull rect for scrolling contents for composited scrolling.
-  rect_.Outset(LocalPixelDistanceToExpand(root_transform, scroll_translation));
+  int outset = LocalPixelDistanceToExpand(root_transform, scroll_translation);
+  if (scroll_range_x <= 0) {
+    rect_.Outset(gfx::Outsets::VH(outset, 0));
+  } else if (scroll_range_y <= 0) {
+    rect_.Outset(gfx::Outsets::VH(0, outset));
+  } else if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    // If scroller is scrollable in both axes, expand by half to prevent the
+    // area of the cull rect from being too big (thus probably too slow to
+    // paint and composite).
+    int outset_x = outset / 2;
+    int outset_y = outset_x;
+    // Give the extra outset beyond scroll range in one axis to the other.
+    if (outset_x > scroll_range_x) {
+      outset_x = scroll_range_x;
+      outset_y += outset_x - scroll_range_x;
+    } else if (outset_y > scroll_range_y) {
+      outset_y = scroll_range_y;
+      outset_x += outset_y - scroll_range_y;
+    }
+    rect_.Outset(gfx::Outsets::VH(outset_y, outset_x));
+  } else {
+    rect_.Outset(outset);
+  }
   rect_.Intersect(contents_rect);
   return true;
 }
