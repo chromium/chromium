@@ -107,12 +107,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.ColorGamut" enum="ColorGamut"
-    expires_after="2022-02-06">
-  <owner>cblume@chromium.org</owner>
-  <owner>khushalsagar@chromium.org</owner>
+    expires_after="2024-04-16">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Every time a frame is presented, record the generalized color gamut of that
-    frame.
+    frame. Note: this metric was expired from 2022-02-06 to 2023-11-17.
   </summary>
 </histogram>
 
@@ -513,22 +513,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
-    units="microseconds" expires_after="2022-12-18">
+    units="microseconds" expires_after="2024-04-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures delta between the time when display compositor draw
     task's dependencies have been solved and the time when the Gpu Thread
     started processing it. Only reported for platforms supporting high
-    resolution clocks.
+    resolution clocks. Note: this metric was expired from 2022-12-18 to
+    2023-11-17.
   </summary>
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
-    units="microseconds" expires_after="2023-08-27">
+    units="microseconds" expires_after="2024-04-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
@@ -536,19 +537,21 @@ chromium-metrics-reviews@google.com.
     the time when the task's dependencies have been resolved and the task is
     ready for the Gpu Thread to start processing it. Recorded when swap
     completes. Only reported for platforms supporting high resolution clocks.
+    Note: this metric was expired from 2023-08-27 to 2023-11-17.
   </summary>
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
-    units="microseconds" expires_after="2022-12-18">
+    units="microseconds" expires_after="2024-04-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
     scheduled first draw task for the current frame on Viz Compositor thread and
     the time when Gpu Thread started processing it. Recorded when swap
     completes. Only reported for platforms supporting high resolution clocks.
+    Note: this metric was expired from 2022-12-18 to 2023-11-17.
   </summary>
 </histogram>
 
