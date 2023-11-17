@@ -103,13 +103,13 @@ public class SearchEngineUtilsUnitTest {
     public void testDefaultEnabledBehavior() {
         // Show DSE logo when using regular profile.
         doReturn(false).when(mProfile).isOffTheRecord();
+        mSearchEngineUtils = new SearchEngineUtils(mProfile);
         assertTrue(mSearchEngineUtils.shouldShowSearchEngineLogo());
-        assertTrue(SearchEngineUtils.staticShouldShowSearchEngineLogo(false));
 
         // Suppress DSE logo when using incognito profile.
         doReturn(true).when(mProfile).isOffTheRecord();
+        mSearchEngineUtils = new SearchEngineUtils(mProfile);
         assertFalse(mSearchEngineUtils.shouldShowSearchEngineLogo());
-        assertFalse(SearchEngineUtils.staticShouldShowSearchEngineLogo(true));
     }
 
     @Test

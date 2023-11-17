@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +43,7 @@ public class SearchEngineUtils implements Destroyable {
 
     // Cached values to prevent duplicate work.
     private final @NonNull Profile mProfile;
+    private final boolean mIsOffTheRecord;
     private final int mSearchEngineLogoTargetSizePixels;
     private @Nullable FaviconHelper mFaviconHelper;
     private @Nullable Bitmap mCachedComposedImage;
@@ -80,6 +82,7 @@ public class SearchEngineUtils implements Destroyable {
         mProfile = profile;
         mSearchEngineLogoTargetSizePixels = ContextUtils.getApplicationContext()
                 .getResources().getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_favicon_size);
+        mIsOffTheRecord = profile.isOffTheRecord();
     }
 
     @Override
@@ -100,19 +103,7 @@ public class SearchEngineUtils implements Destroyable {
 
     /** Returns whether the search engine logo should be shown. */
     public boolean shouldShowSearchEngineLogo() {
-        return staticShouldShowSearchEngineLogo(mProfile.isOffTheRecord());
-    }
-
-    /**
-     * Returns whether the search engine logo should be shown given the static context.
-     *
-     * Results are guaranteed to be equivalent to instance method, however the caller is responsible
-     * for providing accurate information.
-     *
-     * @param isOffTheRecord whether the activity runs in incognito mode
-     */
-    public static boolean staticShouldShowSearchEngineLogo(boolean isOffTheRecord) {
-        return !isOffTheRecord;
+        return !mIsOffTheRecord;
     }
 
     /**

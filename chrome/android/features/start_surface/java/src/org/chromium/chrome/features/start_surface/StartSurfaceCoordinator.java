@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -1205,15 +1204,14 @@ public class StartSurfaceCoordinator implements StartSurface {
 
                     // This function should be called together with
                     // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start
-                    // surface
-                    // toolbar together with the header.
+                    // surface toolbar together with the header.
+                    // Note: the logic below may need to be updated if Start is ever showing in
+                    // Incognito mode.
                     tasksView.updateFakeSearchBox(
                             fakeHeight - reducedHeight,
                             reducedHeight,
                             (int) (endPaddingDiff * (1 - expansionFraction) + realEndPadding),
-                            SearchEngineUtils.staticShouldShowSearchEngineLogo(false)
-                                    ? realTranslationX * expansionFraction
-                                    : 0,
+                            realTranslationX * expansionFraction,
                             (int)
                                     (fakeButtonSize
                                             + (realButtonSize - fakeButtonSize)

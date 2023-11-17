@@ -685,7 +685,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         boolean skipIconForNeutralState =
-                !SearchEngineUtils.staticShouldShowSearchEngineLogo(isIncognito())
+                (mProfile != null
+                                && !SearchEngineUtils.getForProfile(mProfile)
+                                        .shouldShowSearchEngineLogo())
                         || mNtpDelegate.isCurrentlyVisible()
                         || isInOverviewAndShowingOmnibox();
 

@@ -204,6 +204,7 @@ class LocationBarMediator
     private boolean mShouldClearOmniboxOnFocus = true;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private boolean mIsSurfacePolishOmniboxColorEnabled;
+    private SearchEngineUtils mSearchEngineUtils;
 
     /*package */ LocationBarMediator(
             @NonNull Context context,
@@ -1026,7 +1027,8 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
         mOmniboxPrerender.initializeForProfile(profile);
-        mLocationBarLayout.setSearchEngineUtils(SearchEngineUtils.getForProfile(profile));
+        mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
+        mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
     }
 
     private void focusCurrentTab() {
@@ -1241,8 +1243,7 @@ class LocationBarMediator
     private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo =
-                SearchEngineUtils.staticShouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito());
+                mSearchEngineUtils == null || mSearchEngineUtils.shouldShowSearchEngineLogo();
 
         // This branch will be hit if the search engine logo should be shown.
         if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
