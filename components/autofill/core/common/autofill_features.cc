@@ -419,7 +419,6 @@ BASE_FEATURE(kAutofillLabelAffixRemoval,
 
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
-// TODO(crbug.com/1465926): Remove when launched.
 BASE_FEATURE(kAutofillModelPredictions,
              "AutofillModelPredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
