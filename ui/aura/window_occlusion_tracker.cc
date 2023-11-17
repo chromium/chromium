@@ -95,22 +95,38 @@ gfx::Transform GetWindowTransformRelativeToRoot(
   return transform_relative_to_root;
 }
 
-SkIRect ComputeClippedAndTransformedBounds(
+// Applies `transform_relative_to_root` to `bounds` and returns the enclosing
+// bounds.
+SkIRect ComputeTransformedBoundsEnclosing(
     const gfx::Rect& bounds,
-    const gfx::Transform& transform_relative_to_root,
-    const SkIRect* clipped_bounds) {
+    const gfx::Transform& transform_relative_to_root) {
   DCHECK(transform_relative_to_root.Preserves2dAxisAlignment());
-  gfx::Rect transformed_bounds = transform_relative_to_root.MapRect(bounds);
-  SkIRect skirect_bounds = gfx::RectToSkIRect(transformed_bounds);
+  return gfx::RectToSkIRect(transform_relative_to_root.MapRect(bounds));
+}
+
+// Applies `transform_relative_to_root` to `bounds` and returns the enclosed
+// bounds.
+SkIRect ComputeTransformedBoundsEnclosed(
+    const gfx::Rect& bounds,
+    const gfx::Transform& transform_relative_to_root) {
+  DCHECK(transform_relative_to_root.Preserves2dAxisAlignment());
+  return gfx::RectToSkIRect(gfx::ToEnclosedRect(
+      transform_relative_to_root.MapRect(gfx::RectF(bounds))));
+}
+
+SkIRect ComputeClippedBounds(SkIRect bounds, const SkIRect* clipped_bounds) {
   // If necessary, clip the bounds.
-  if (clipped_bounds && !skirect_bounds.intersect(*clipped_bounds))
+  if (clipped_bounds && !bounds.intersect(*clipped_bounds)) {
     return SkIRect::MakeEmpty();
-  return skirect_bounds;
+  }
+  return bounds;
 }
 
 // Returns the bounds of |window| relative to its |root|.
 // |transform_relative_to_root| is the transform of |window| relative to its
 // root. If |clipped_bounds| is not null, the returned bounds are clipped by it.
+// If the bounds after transform have fractional coordinates, enclosed bounds in
+// integers are used.
 SkIRect GetWindowBoundsInRootWindow(
     Window* window,
     const gfx::Transform& transform_relative_to_root,
@@ -119,8 +135,9 @@ SkIRect GetWindowBoundsInRootWindow(
   // Compute the unclipped bounds of |window|.
   const gfx::Rect src_bounds =
       use_target_values ? window->layer()->GetTargetBounds() : window->bounds();
-  return ComputeClippedAndTransformedBounds(
-      gfx::Rect(src_bounds.size()), transform_relative_to_root, clipped_bounds);
+  const SkIRect transformed_bounds = ComputeTransformedBoundsEnclosed(
+      gfx::Rect(src_bounds.size()), transform_relative_to_root);
+  return ComputeClippedBounds(transformed_bounds, clipped_bounds);
 }
 
 // Returns the bounds that |window| should contribute to be used for occluding
@@ -130,6 +147,8 @@ SkIRect GetWindowBoundsInRootWindow(
 // contribute to occluding other windows because a translucent region should
 // not be considered to occlude other windows, but must be covered by something
 // opaque for it itself to be occluded.
+// If the bounds after transform have fractional coordinates, enclosing bounds
+// in integers are used.
 SkIRect GetOpaqueBoundsInRootWindow(
     Window* window,
     const gfx::Transform& transform_relative_to_root,
@@ -143,9 +162,9 @@ SkIRect GetOpaqueBoundsInRootWindow(
   // top-left corner of the window is considered to be the point (0, 0).
   gfx::Rect opaque_region = window->opaque_regions_for_occlusion()[0];
   opaque_region.Intersect(gfx::Rect(window->bounds().size()));
-
-  return ComputeClippedAndTransformedBounds(
-      opaque_region, transform_relative_to_root, clipped_bounds);
+  const SkIRect transformed_bounds = ComputeTransformedBoundsEnclosing(
+      opaque_region, transform_relative_to_root);
+  return ComputeClippedBounds(transformed_bounds, clipped_bounds);
 }
 
 float GetLayerCombinedTargetOpacity(const ui::Layer* layer) {

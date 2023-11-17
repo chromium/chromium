@@ -199,6 +199,13 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // bounds of |window| and its descendants. |occluded_region| is a region
   // covered by windows which are on top of |window|. Returns true if at least
   // one window in the hierarchy starting at |window| is NOT_OCCLUDED.
+  // If bounds such as window bounds or occluded region calculated with using
+  // |parent_transform_relative_to_root| end up with fractions, enclosed bounds
+  // are used for the former while enclosing bounds are used for the later,
+  // which makes the occludee (window bounds) smaller while the occluder
+  // (occluded region) larger. This is because if there is an off by 1 error due
+  // to scaling, it will be more performant to favor occlusion. See
+  // *FractionalWindow in unit tests for concrete examples.
   bool RecomputeOcclusionImpl(
       Window* window,
       const gfx::Transform& parent_transform_relative_to_root,
