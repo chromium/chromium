@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,6 +19,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+int g_dump_without_crashing_count = 0;
+
+class ScopedExpectDumpWithoutCrashing {
+ public:
+  ScopedExpectDumpWithoutCrashing() {
+    g_dump_without_crashing_count = 0;
+    base::debug::SetDumpWithoutCrashingFunction(&DumpWithoutCrashing);
+  }
+  ~ScopedExpectDumpWithoutCrashing() {
+    EXPECT_EQ(1, g_dump_without_crashing_count);
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+  }
+
+ private:
+  static void DumpWithoutCrashing() { ++g_dump_without_crashing_count; }
+};
 
 MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
   EXPECT_THAT(arg, testing::HasSubstr(
@@ -59,12 +77,13 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
 //
 // Note: Please use the `CheckDeathTest` fixture when using this check.
-// TODO(pbos): Try to update this macro to detect that non-fatal DCHECKs do
-// upload crash dumps without crashing.
 #define EXPECT_DCHECK(msg, check_expr)                                         \
   do {                                                                         \
     if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \
       EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg));     \
+    } else if (DCHECK_IS_ON()) {                                               \
+      ScopedExpectDumpWithoutCrashing expect_dump;                             \
+      check_expr;                                                              \
     } else {                                                                   \
       check_expr;                                                              \
     }                                                                          \
@@ -114,11 +133,13 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 #if DCHECK_IS_ON()
 #define EXPECT_DUMP_WILL_BE_CHECK EXPECT_DCHECK
 #else
-// TODO(pbos): Update this to expect a crash dump outside DCHECK builds.
-#define EXPECT_DUMP_WILL_BE_CHECK(expected_string, statement)             \
-  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),   \
-                                 base::Location::Current().line_number(), \
-                                 statement, expected_string "\n")
+#define EXPECT_DUMP_WILL_BE_CHECK(expected_string, statement)               \
+  do {                                                                      \
+    ScopedExpectDumpWithoutCrashing expect_dump;                            \
+    EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),   \
+                                   base::Location::Current().line_number(), \
+                                   statement, expected_string "\n");        \
+  } while (0)
 #endif  // DCHECK_IS_ON()
 
 TEST(CheckDeathTest, Basics) {
