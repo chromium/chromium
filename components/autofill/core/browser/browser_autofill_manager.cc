@@ -1977,8 +1977,6 @@ void BrowserAutofillManager::OnCreditCardFetched(
     return;
   }
 
-  DCHECK(credit_card);
-
   // If synced down card is a virtual card, let the client know so that it can
   // show the UI to help user to manually fill the form, if needed.
   if (credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
