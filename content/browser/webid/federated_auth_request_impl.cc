@@ -2502,6 +2502,11 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
           origin(), GetEmbeddingOrigin(), url::Origin::Create(config_url),
           absl::nullopt);
 
+  // The ExemptIdPWithThirdPartyCookie feature does not apply to `mediation:
+  // silent` to avoid unexpected conversion rate drop. Because if an IdP loses
+  // 3PC access on an RP, the request will fail silently. In contrast, with
+  // `mediation: optional`, users can still grant explicit permission on the
+  // account UI if the IdP loses 3PC access.
   if (!has_sharing_permission_for_any_account) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
