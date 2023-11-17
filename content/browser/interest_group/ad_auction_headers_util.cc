@@ -12,6 +12,7 @@
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -37,6 +38,7 @@ const char kAdAuctionAdditionalBidResponseHeaderKey[] =
     "Ad-Auction-Additional-Bid";
 
 namespace {
+
 // Common conditions checked for eligibility in both
 //`IsAdAuctionHeadersEligible` and `IsAdAuctionHeadersEligibleForNavigation`.
 bool IsAdAuctionHeadersEligibleInternal(Page& page,
@@ -44,21 +46,43 @@ bool IsAdAuctionHeadersEligibleInternal(Page& page,
                                         const url::Origin& top_frame_origin,
                                         const url::Origin& request_origin) {
   if (!page.IsPrimary()) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kNotPrimaryPage);
     return false;
   }
 
   if (request_origin.opaque()) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kOpaqueRequestOrigin);
     return false;
   }
 
   if (!network::IsOriginPotentiallyTrustworthy(request_origin)) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::
+            kNotPotentiallyTrustworthy);
     return false;
   }
 
-  return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-      render_frame_host, ContentBrowserClient::InterestGroupApiOperation::kSell,
-      top_frame_origin, request_origin);
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          render_frame_host,
+          ContentBrowserClient::InterestGroupApiOperation::kSell,
+          top_frame_origin, request_origin)) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kApiNotAllowed);
+    return false;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+      AdAuctionHeadersIsEligibleOutcomeForMetrics::kSuccess);
+  return true;
 }
+
 }  // namespace
 
 bool IsAdAuctionHeadersEligible(
@@ -68,11 +92,17 @@ bool IsAdAuctionHeadersEligible(
   // function return false regardless, but adding this check to be more
   // explicit.
   if (initiator_rfh.IsNestedWithinFencedFrame()) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kInFencedFrame);
     return false;
   }
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
   if (!initiator_rfh.GetMainFrame()->IsOutermostMainFrame()) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kNotOutermostMainFrame);
     return false;
   }
 
@@ -81,6 +111,10 @@ bool IsAdAuctionHeadersEligible(
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           url::Origin::Create(resource_request.url), resource_request)) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::
+            kDisabledByPermissionsPolicy);
     return false;
   }
 

@@ -945,6 +945,66 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.NumAdSlotsPerResponse"
+    units="ad slots" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total number of valid adSlot entries per Ad-Auction-Signals response,
+    reported after each response is processed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.NumParseAndFindCalls"
+    units="calls" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total number of times ParseAndFind() is called to find signals for an
+    adSlot during the lifetime of the page, reported when the page is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.NumResponsesReceivedPerPage"
+    units="responses" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total number of Ad-Auction-Signals responses received during the
+    lifetime of the page, reported when the page is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.OneResponseParseTime"
+    units="ms" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time taken to parse a single JSON response, reported each time a response is
+    parsed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
     name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.ParseAndFindMatchTime"
     units="ms" expires_after="2024-06-20">
   <owner>caraitto@chromium.org</owner>
@@ -953,6 +1013,115 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time required to find a matching directFromSignalsSignalsHeaderAdSlot,
     reported upon completion of the search.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.ProcessedBytesPerRound"
+    units="bytes" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Size in bytes of all the processed JSON responses since the last time the
+    unprocessed JSON queue was empty, reported each time the queue becomes empty
+    again.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.QueueDepthAtAdd"
+    units="entries" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The depth of the unprocessed responses queue (waiting for JSON parsing) in
+    number of entries, reported each time a new entry is enqueued, immediately
+    after adding the new entry.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.QueueDepthAtDestruction"
+    units="entries" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The depth of the unprocessed responses queue (waiting for JSON parsing) in
+    number of entries, reported when the page is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.ResponseSizeBytes"
+    units="bytes" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Size of each received Ad-Auction-Signals response, reported as each response
+    is received.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.RoundProcessingTime"
+    units="ms" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time taken to process all the JSON responses in the queue, from when
+    processing started until the queue is empty, reported each time the queue is
+    emptied.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.SignalsUsedInAuctionBytes"
+    units="bytes" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Size of the particular adSlot signals passed to an auction, reported each
+    time such signals are provided to an auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome"
+    enum="InterestGroupAdAuctionUrlLoaderInterceptorStartRequestOutcome"
+    expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The outcome of starting a fetch() request made with the {adAuctionHeaders:
+    true} option, or creating an iframe tag with the adAuctionHeaders attribute.
+    If not success, then the request is not made.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

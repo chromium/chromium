@@ -179,6 +179,7 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   void OnJsonDecoded(data_decoder::DataDecoder& decoder,
                      UnprocessedResponse current_unprocessed_response,
                      std::vector<std::string> errors,
+                     base::TimeTicks parse_start_time,
                      data_decoder::DataDecoder::ValueOrError result);
 
   // Start decoding the next UnprocessedResponse in `unprocessed_responses_`
@@ -220,6 +221,20 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   // behavior.
   std::map<ResultsKey, scoped_refptr<HeaderDirectFromSellerSignals::Result>>
       results_;
+
+  // For metrics -- the total amount of response bytes processed from
+  // `unprocessed_header_responses_` since the last time
+  // `unprocessed_header_responses_` was empty.
+  size_t processed_bytes_per_round_ = 0u;
+
+  // For metrics -- the last moment we started processing JSON responses.
+  base::TimeTicks last_round_started_time_ = base::TimeTicks::Min();
+
+  // For metrics -- the number of AddWitnessForOrigin() calls.
+  size_t num_add_witness_for_origin_calls_ = 0u;
+
+  // For metrics -- the number of ParseAndFind() calls.
+  size_t parse_and_find_calls_ = 0u;
 };
 
 }  // namespace content

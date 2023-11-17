@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/interest_group/ad_auction_headers_util.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/public/browser/page_user_data.h"
@@ -44,6 +45,9 @@ void AdAuctionURLLoaderInterceptor::WillStartRequest(
   RenderFrameHostImpl* request_initiator_frame =
       static_cast<RenderFrameHostImpl*>(document_.AsRenderFrameHostIfValid());
   if (!request_initiator_frame) {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
+        AdAuctionHeadersIsEligibleOutcomeForMetrics::kNoInitiatorFrame);
     return;
   }
 

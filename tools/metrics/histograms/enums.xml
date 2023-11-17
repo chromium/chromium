@@ -30185,6 +30185,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Intent picker dialog shown automatically"/>
 </enum>
 
+<enum name="InterestGroupAdAuctionUrlLoaderInterceptorStartRequestOutcome">
+  <int value="0" label="There was no initiator frame"/>
+  <int value="1" label="Start request in fenced frame is not allowed"/>
+  <int value="2" label="Start request in non-primary page is not allowed"/>
+  <int value="3"
+      label="Start request in non-outermost main frame is not allowed"/>
+  <int value="4"
+      label="Start request with opaque request origin is not allowed"/>
+  <int value="5"
+      label="Start request with not potentially-trustworty origin is not
+             allowed"/>
+  <int value="6" label="Start request disabled by permissions policy"/>
+  <int value="7" label="Start request API not allowed for selling"/>
+  <int value="8" label="Start request succeeded"/>
+</enum>
+
 <enum name="InterestGroupAuctionReporterState">
   <int value="0" label="The ad was never used"/>
   <int value="1" label="Running top-level seller reportResult()"/>

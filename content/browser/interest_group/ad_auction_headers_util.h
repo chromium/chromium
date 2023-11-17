@@ -16,6 +16,21 @@
 
 namespace content {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AdAuctionHeadersIsEligibleOutcomeForMetrics {
+  kNoInitiatorFrame = 0,
+  kInFencedFrame = 1,
+  kNotPrimaryPage = 2,
+  kNotOutermostMainFrame = 3,
+  kOpaqueRequestOrigin = 4,
+  kNotPotentiallyTrustworthy = 5,
+  kDisabledByPermissionsPolicy = 6,
+  kApiNotAllowed = 7,
+  kSuccess = 8,
+  kMaxValue = kSuccess,
+};
+
 // The request header key that triggers interception of the auction result,
 // signals, and additional bids from their associated response headers.
 extern const char kAdAuctionRequestHeaderKey[];

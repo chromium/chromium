@@ -28,6 +28,24 @@
 
 namespace content {
 
+namespace {
+
+size_t GetResultSizeBytes(const HeaderDirectFromSellerSignals::Result& result) {
+  size_t size = 0u;
+  if (result.seller_signals()) {
+    size += result.seller_signals()->size();
+  }
+  if (result.auction_signals()) {
+    size += result.auction_signals()->size();
+  }
+  for (const auto& [unused_origin, signals] : result.per_buyer_signals()) {
+    size += signals.size();
+  }
+  return size;
+}
+
+}  // namespace
+
 HeaderDirectFromSellerSignals::Result::Result() = default;
 
 HeaderDirectFromSellerSignals::Result::Result(
@@ -42,14 +60,26 @@ HeaderDirectFromSellerSignals::Result::~Result() = default;
 
 HeaderDirectFromSellerSignals::HeaderDirectFromSellerSignals() = default;
 
-HeaderDirectFromSellerSignals::~HeaderDirectFromSellerSignals() = default;
+HeaderDirectFromSellerSignals::~HeaderDirectFromSellerSignals() {
+  base::UmaHistogramCounts10000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "QueueDepthAtDestruction",
+      unprocessed_header_responses_.size());
+  base::UmaHistogramCounts10000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "NumResponsesReceivedPerPage",
+      num_add_witness_for_origin_calls_);
+  base::UmaHistogramCounts10000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "NumParseAndFindCalls",
+      parse_and_find_calls_);
+}
 
-// TODO(crbug.com/1462720): Add UMA for response size and for when processing
-// doesn't complete by destruction.
 void HeaderDirectFromSellerSignals::ParseAndFind(
     const url::Origin& origin,
     const std::string& ad_slot,
     ParseAndFindCompletedCallback callback) {
+  parse_and_find_calls_++;
   ParseAndFindCompletedInfo completed_info{
       /*start_time=*/base::TimeTicks::Now(), /*origin=*/std::move(origin),
       /*ad_slot=*/std::move(ad_slot), /*callback=*/std::move(callback)};
@@ -71,9 +101,19 @@ void HeaderDirectFromSellerSignals::AddWitnessForOrigin(
     const std::string& response,
     AddWitnessForOriginCompletedCallback callback) {
   CHECK(callback);
+  num_add_witness_for_origin_calls_++;
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "ResponseSizeBytes",
+      response.size());
   unprocessed_header_responses_.emplace(origin, response);
+  base::UmaHistogramCounts1000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "QueueDepthAtAdd",
+      unprocessed_header_responses_.size());
   if (!add_witness_for_origin_completed_callback_) {
     add_witness_for_origin_completed_callback_ = std::move(callback);
+    last_round_started_time_ = base::TimeTicks::Now();
     DecodeNextResponse(decoder,
                        /*errors=*/std::vector<std::string>());
   }
@@ -104,6 +144,10 @@ void HeaderDirectFromSellerSignals::ParseAndFindCompleted(
   const auto it = results_.find(std::make_pair(info.origin, info.ad_slot));
   if (it != results_.end()) {
     result = it->second;
+    base::UmaHistogramCounts100000(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "SignalsUsedInAuctionBytes",
+        GetResultSizeBytes(*result));
   }
   base::UmaHistogramTimes(
       "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
@@ -133,6 +177,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
     return;
   }
 
+  size_t num_ad_slots = 0u;
   std::set<std::string> ad_slots_from_response;
   for (const base::Value& list_item : *maybe_list) {
     const base::Value::Dict* maybe_dict = list_item.GetIfDict();
@@ -228,17 +273,36 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
         base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>(
             std::move(seller_signals), std::move(auction_signals),
             std::move(per_buyer_signals));
+    num_ad_slots++;
   }
+  base::UmaHistogramCounts10000(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "NumAdSlotsPerResponse",
+      num_ad_slots);
 }
 
 void HeaderDirectFromSellerSignals::OnJsonDecoded(
     data_decoder::DataDecoder& decoder,
     UnprocessedResponse current_unprocessed_response,
     std::vector<std::string> errors,
+    base::TimeTicks parse_start_time,
     data_decoder::DataDecoder::ValueOrError result) {
   ProcessOneResponse(result, current_unprocessed_response, errors);
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+      "OneResponseParseTime",
+      base::TimeTicks::Now() - parse_start_time);
 
   if (unprocessed_header_responses_.empty()) {
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "ProcessedBytesPerRound",
+        processed_bytes_per_round_);
+    base::UmaHistogramMediumTimes(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "RoundProcessingTime",
+        base::TimeTicks::Now() - last_round_started_time_);
+    processed_bytes_per_round_ = 0u;
     std::move(add_witness_for_origin_completed_callback_)
         .Run(std::move(errors));
     while (!parse_and_find_completed_infos_.empty()) {
@@ -259,6 +323,7 @@ void HeaderDirectFromSellerSignals::DecodeNextResponse(
   UnprocessedResponse next_unprocessed_response =
       std::move(unprocessed_header_responses_.front());
   unprocessed_header_responses_.pop();
+  processed_bytes_per_round_ += next_unprocessed_response.response_json.size();
 
   // NOTE: The class comment for HeaderDirectFromSellerSignals requires that the
   // DataDecoder instances passed to AddWitnessForOrigin() be destroyed before
@@ -267,7 +332,8 @@ void HeaderDirectFromSellerSignals::DecodeNextResponse(
       next_unprocessed_response.response_json,
       base::BindOnce(&HeaderDirectFromSellerSignals::OnJsonDecoded,
                      base::Unretained(this), std::ref(decoder),
-                     next_unprocessed_response, std::move(errors)));
+                     next_unprocessed_response, std::move(errors),
+                     base::TimeTicks::Now()));
 }
 
 }  // namespace content
