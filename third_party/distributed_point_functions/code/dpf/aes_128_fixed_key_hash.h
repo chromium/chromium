@@ -18,7 +18,9 @@
 #define DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_AES_128_FIXED_KEY_HASH_H_
 
 #include "absl/numeric/int128.h"
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/types/span.h"
 #include "openssl/cipher.h"
 
 namespace distributed_point_functions {

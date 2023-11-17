@@ -14,15 +14,20 @@
 
 #include "dpf/internal/evaluate_prg_hwy.h"
 
+#include <algorithm>
 #include <cstdint>
-#include <limits>
+#include <memory>
+#include <vector>
 
 #include "absl/base/config.h"
 #include "absl/base/optimization.h"
+#include "absl/container/inlined_vector.h"
+#include "absl/log/absl_check.h"
 #include "absl/numeric/int128.h"
 #include "absl/status/status.h"
+#include "absl/types/span.h"
+#include "dpf/aes_128_fixed_key_hash.h"
 #include "dpf/status_macros.h"
-#include "glog/logging.h"
 #include "hwy/aligned_allocator.h"
 #include "openssl/aes.h"
 
@@ -112,18 +117,21 @@ M IfThenElseMask(M condition, M true_value, M false_value) {
 template <typename V, typename D>
 auto IsBitSet(D d, const V input, int index) {
   // First create a 128-bit block with the `index`-th bit set.
-  HWY_ALIGN absl::uint128 shifted_index = absl::uint128{1} << index;
+  HWY_ALIGN absl::uint128 mask = 0;
+  if (index < 128) {
+    mask = absl::uint128{1} << index;
+  }
 
   // Now load it into a vector of 64-bit integers. Note that every second
   // element of that vector will be 0.
   const hn::Repartition<uint64_t, D> d64;
   static_assert(ABSL_IS_LITTLE_ENDIAN);
-  const auto index_64 =
-      hn::LoadDup128(d64, reinterpret_cast<const uint64_t*>(&shifted_index));
+  const auto mask_64 =
+      hn::LoadDup128(d64, reinterpret_cast<const uint64_t*>(&mask));
 
-  // Compute input AND index_64 on 64-bit integers.
+  // Compute input AND mask_64 on 64-bit integers.
   auto input_64 = hn::BitCast(d64, input);
-  input_64 = hn::And(input_64, index_64);
+  input_64 = hn::And(input_64, mask_64);
 
   // Take the OR of every two adjacent 64-bit integers. This ensures that each
   // half of an 128-bit block is nonzero iff at least one half was nonzero.
@@ -140,8 +148,9 @@ struct HWY_ALIGN Aligned128 {
 };
 
 absl::Status EvaluateSeedsHwy(
-    int64_t num_seeds, int num_levels, const absl::uint128* seeds_in,
-    const bool* control_bits_in, const absl::uint128* paths,
+    int64_t num_seeds, int num_levels, int num_correction_words,
+    const absl::uint128* seeds_in, const bool* control_bits_in,
+    const absl::uint128* paths, int paths_rightshift,
     const absl::uint128* correction_seeds, const bool* correction_controls_left,
     const bool* correction_controls_right, const Aes128FixedKeyHash& prg_left,
     const Aes128FixedKeyHash& prg_right, absl::uint128* seeds_out,
@@ -166,10 +175,11 @@ absl::Status EvaluateSeedsHwy(
   // - the number of bytes in a vector is a multiple of 16.
   if (ABSL_PREDICT_FALSE(!is_aligned || hn::Lanes(d8) < 16 ||
                          hn::Lanes(d8) % 16 != 0)) {
-    return EvaluateSeedsNoHwy(num_seeds, num_levels, seeds_in, control_bits_in,
-                              paths, correction_seeds, correction_controls_left,
-                              correction_controls_right, prg_left, prg_right,
-                              seeds_out, control_bits_out);
+    return EvaluateSeedsNoHwy(
+        num_seeds, num_levels, num_correction_words, seeds_in, control_bits_in,
+        paths, paths_rightshift, correction_seeds, correction_controls_left,
+        correction_controls_right, prg_left, prg_right, seeds_out,
+        control_bits_out);
   }
 
   // Do AES key schedule.
@@ -194,6 +204,9 @@ absl::Status EvaluateSeedsHwy(
   const auto mask_all_zero = hn::FirstN(d64, 0);
   const auto mask_all_one = hn::Not(mask_all_zero);
   const int64_t num_bytes = num_seeds * sizeof(absl::uint128);
+  const int bytes_per_vec = hn::Lanes(d8);
+  const int blocks_per_vec = bytes_per_vec / sizeof(absl::uint128);
+  const int64_t correction_words_per_level = num_correction_words / num_levels;
 
   // Pointer aliases for reading and writing data.
   const uint8_t* seeds_in_ptr = reinterpret_cast<const uint8_t*>(seeds_in);
@@ -201,27 +214,27 @@ absl::Status EvaluateSeedsHwy(
   uint8_t* seeds_out_ptr = reinterpret_cast<uint8_t*>(seeds_out);
   // Four vectors at a time.
   int64_t i = 0;
-  for (; i + 4 * hn::Lanes(d8) <= num_bytes; i += 4 * hn::Lanes(d8)) {
+  for (; i + 4 * bytes_per_vec <= num_bytes; i += 4 * bytes_per_vec) {
+    const int64_t start_block = i / sizeof(absl::uint128);
     // Load initial seeds and paths into vectors.
     auto vec_0 = hn::Load(d8, seeds_in_ptr + i);
-    auto vec_1 = hn::Load(d8, seeds_in_ptr + i + 1 * hn::Lanes(d8));
-    auto vec_2 = hn::Load(d8, seeds_in_ptr + i + 2 * hn::Lanes(d8));
-    auto vec_3 = hn::Load(d8, seeds_in_ptr + i + 3 * hn::Lanes(d8));
+    auto vec_1 = hn::Load(d8, seeds_in_ptr + i + 1 * bytes_per_vec);
+    auto vec_2 = hn::Load(d8, seeds_in_ptr + i + 2 * bytes_per_vec);
+    auto vec_3 = hn::Load(d8, seeds_in_ptr + i + 3 * bytes_per_vec);
     const auto path_0 = hn::Load(d8, paths_ptr + i);
-    const auto path_1 = hn::Load(d8, paths_ptr + i + 1 * hn::Lanes(d8));
-    const auto path_2 = hn::Load(d8, paths_ptr + i + 2 * hn::Lanes(d8));
-    const auto path_3 = hn::Load(d8, paths_ptr + i + 3 * hn::Lanes(d8));
-    auto control_mask_0 =
-        MaskFromBools(d64, control_bits_in + i / sizeof(absl::uint128));
-    auto control_mask_1 = MaskFromBools(
-        d64, control_bits_in + (i + 1 * hn::Lanes(d8)) / sizeof(absl::uint128));
-    auto control_mask_2 = MaskFromBools(
-        d64, control_bits_in + (i + 2 * hn::Lanes(d8)) / sizeof(absl::uint128));
-    auto control_mask_3 = MaskFromBools(
-        d64, control_bits_in + (i + 3 * hn::Lanes(d8)) / sizeof(absl::uint128));
+    const auto path_1 = hn::Load(d8, paths_ptr + i + 1 * bytes_per_vec);
+    const auto path_2 = hn::Load(d8, paths_ptr + i + 2 * bytes_per_vec);
+    const auto path_3 = hn::Load(d8, paths_ptr + i + 3 * bytes_per_vec);
+    auto control_mask_0 = MaskFromBools(d64, control_bits_in + start_block);
+    auto control_mask_1 =
+        MaskFromBools(d64, control_bits_in + start_block + 1 * blocks_per_vec);
+    auto control_mask_2 =
+        MaskFromBools(d64, control_bits_in + start_block + 2 * blocks_per_vec);
+    auto control_mask_3 =
+        MaskFromBools(d64, control_bits_in + start_block + 3 * blocks_per_vec);
     for (int j = 0; j < num_levels; ++j) {
       // Convert path bits to masks and evaluate PRG.
-      const int bit_index = num_levels - j - 1;
+      const int bit_index = num_levels - j - 1 + paths_rightshift;
       const auto path_mask_0 = IsBitSet(d8, path_0, bit_index);
       const auto path_mask_1 = IsBitSet(d8, path_1, bit_index);
       const auto path_mask_2 = IsBitSet(d8, path_2, bit_index);
@@ -233,20 +246,59 @@ absl::Status EvaluateSeedsHwy(
           vec_2, vec_3);
 
       // Apply correction.
-      const auto correction_seed = hn::LoadDup128(
-          d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
-      vec_0 = hn::Xor(
-          vec_0,
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_0, correction_seed)));
-      vec_1 = hn::Xor(
-          vec_1,
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_1, correction_seed)));
-      vec_2 = hn::Xor(
-          vec_2,
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_2, correction_seed)));
-      vec_3 = hn::Xor(
-          vec_3,
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_3, correction_seed)));
+      if (correction_words_per_level == 1) {
+        const auto correction_seed = hn::LoadDup128(
+            d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
+        vec_0 = hn::Xor(vec_0,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_0,
+                                                           correction_seed)));
+        vec_1 = hn::Xor(vec_1,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_1,
+                                                           correction_seed)));
+        vec_2 = hn::Xor(vec_2,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_2,
+                                                           correction_seed)));
+        vec_3 = hn::Xor(vec_3,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_3,
+                                                           correction_seed)));
+      } else {  // correction_words_per_level == num_seeds.
+        const uint8_t* correction_seeds_ptr = reinterpret_cast<const uint8_t*>(
+            correction_seeds + j * correction_words_per_level);
+        hn::Vec<decltype(d64)> correction_seed_0, correction_seed_1,
+            correction_seed_2, correction_seed_3;
+        if (ABSL_PREDICT_TRUE(
+                correction_words_per_level % blocks_per_vec == 0 || j == 0)) {
+          correction_seed_0 =
+              hn::BitCast(d64, hn::Load(d8, correction_seeds_ptr + i));
+          correction_seed_1 = hn::BitCast(
+              d64, hn::Load(d8, correction_seeds_ptr + i + 1 * bytes_per_vec));
+          correction_seed_2 = hn::BitCast(
+              d64, hn::Load(d8, correction_seeds_ptr + i + 2 * bytes_per_vec));
+          correction_seed_3 = hn::BitCast(
+              d64, hn::Load(d8, correction_seeds_ptr + i + 3 * bytes_per_vec));
+        } else {
+          correction_seed_0 =
+              hn::BitCast(d64, hn::LoadU(d8, correction_seeds_ptr + i));
+          correction_seed_1 = hn::BitCast(
+              d64, hn::LoadU(d8, correction_seeds_ptr + i + 1 * bytes_per_vec));
+          correction_seed_2 = hn::BitCast(
+              d64, hn::LoadU(d8, correction_seeds_ptr + i + 2 * bytes_per_vec));
+          correction_seed_3 = hn::BitCast(
+              d64, hn::LoadU(d8, correction_seeds_ptr + i + 3 * bytes_per_vec));
+        }
+        vec_0 = hn::Xor(vec_0,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_0,
+                                                           correction_seed_0)));
+        vec_1 = hn::Xor(vec_1,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_1,
+                                                           correction_seed_1)));
+        vec_2 = hn::Xor(vec_2,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_2,
+                                                           correction_seed_2)));
+        vec_3 = hn::Xor(vec_3,
+                        hn::BitCast(d8, hn::IfThenElseZero(control_mask_3,
+                                                           correction_seed_3)));
+      }
 
       // Extract control bit for next level.
       const auto next_control_mask_0 = IsBitSet(d8, vec_0, 0);
@@ -259,22 +311,57 @@ absl::Status EvaluateSeedsHwy(
       vec_3 = hn::And(vec_3, clear_lowest_bit);
 
       // Perform control bit correction.
-      const auto correction_control_mask_left =
-          correction_controls_left[j] ? mask_all_one : mask_all_zero;
-      const auto correction_control_mask_right =
-          correction_controls_right[j] ? mask_all_one : mask_all_zero;
-      const auto correction_control_mask_0 =
-          IfThenElseMask(path_mask_0, correction_control_mask_right,
-                         correction_control_mask_left);
-      const auto correction_control_mask_1 =
-          IfThenElseMask(path_mask_1, correction_control_mask_right,
-                         correction_control_mask_left);
-      const auto correction_control_mask_2 =
-          IfThenElseMask(path_mask_2, correction_control_mask_right,
-                         correction_control_mask_left);
-      const auto correction_control_mask_3 =
-          IfThenElseMask(path_mask_3, correction_control_mask_right,
-                         correction_control_mask_left);
+      auto correction_control_mask_0 = mask_all_zero,
+           correction_control_mask_1 = mask_all_zero,
+           correction_control_mask_2 = mask_all_zero,
+           correction_control_mask_3 = mask_all_zero;
+      if (correction_words_per_level == 1) {
+        const auto correction_control_mask_left =
+            correction_controls_left[j] ? mask_all_one : mask_all_zero;
+        const auto correction_control_mask_right =
+            correction_controls_right[j] ? mask_all_one : mask_all_zero;
+        correction_control_mask_0 =
+            IfThenElseMask(path_mask_0, correction_control_mask_right,
+                           correction_control_mask_left);
+        correction_control_mask_1 =
+            IfThenElseMask(path_mask_1, correction_control_mask_right,
+                           correction_control_mask_left);
+        correction_control_mask_2 =
+            IfThenElseMask(path_mask_2, correction_control_mask_right,
+                           correction_control_mask_left);
+        correction_control_mask_3 =
+            IfThenElseMask(path_mask_3, correction_control_mask_right,
+                           correction_control_mask_left);
+      } else {  // correction_words_per_level == num_seeds.
+        const bool* correction_controls_left_j =
+            correction_controls_left + j * correction_words_per_level +
+            start_block;
+        const bool* correction_controls_right_j =
+            correction_controls_right + j * correction_words_per_level +
+            start_block;
+        correction_control_mask_0 = IfThenElseMask(
+            path_mask_0, MaskFromBools(d64, correction_controls_right_j),
+            MaskFromBools(d64, correction_controls_left_j));
+        correction_control_mask_1 = IfThenElseMask(
+            path_mask_1,
+            MaskFromBools(d64,
+                          correction_controls_right_j + 1 * blocks_per_vec),
+            MaskFromBools(d64,
+                          correction_controls_left_j + 1 * blocks_per_vec));
+        correction_control_mask_2 = IfThenElseMask(
+            path_mask_2,
+            MaskFromBools(d64,
+                          correction_controls_right_j + 2 * blocks_per_vec),
+            MaskFromBools(d64,
+                          correction_controls_left_j + 2 * blocks_per_vec));
+        correction_control_mask_3 = IfThenElseMask(
+            path_mask_3,
+            MaskFromBools(d64,
+                          correction_controls_right_j + 3 * blocks_per_vec),
+            MaskFromBools(d64,
+                          correction_controls_left_j + 3 * blocks_per_vec));
+      }
+
       control_mask_0 =
           hn::Xor(next_control_mask_0,
                   (hn::And(control_mask_0, correction_control_mask_0)));
@@ -290,31 +377,27 @@ absl::Status EvaluateSeedsHwy(
     }
     // Write the evaluated outputs to memory.
     hn::Store(vec_0, d8, seeds_out_ptr + i);
-    hn::Store(vec_1, d8, seeds_out_ptr + i + 1 * hn::Lanes(d8));
-    hn::Store(vec_2, d8, seeds_out_ptr + i + 2 * hn::Lanes(d8));
-    hn::Store(vec_3, d8, seeds_out_ptr + i + 3 * hn::Lanes(d8));
-    BoolsFromMask(d64, control_mask_0,
-                  control_bits_out + i / sizeof(absl::uint128));
-    BoolsFromMask(
-        d64, control_mask_1,
-        control_bits_out + (i + 1 * hn::Lanes(d8)) / sizeof(absl::uint128));
-    BoolsFromMask(
-        d64, control_mask_2,
-        control_bits_out + (i + 2 * hn::Lanes(d8)) / sizeof(absl::uint128));
-    BoolsFromMask(
-        d64, control_mask_3,
-        control_bits_out + (i + 3 * hn::Lanes(d8)) / sizeof(absl::uint128));
+    hn::Store(vec_1, d8, seeds_out_ptr + i + 1 * bytes_per_vec);
+    hn::Store(vec_2, d8, seeds_out_ptr + i + 2 * bytes_per_vec);
+    hn::Store(vec_3, d8, seeds_out_ptr + i + 3 * bytes_per_vec);
+    BoolsFromMask(d64, control_mask_0, control_bits_out + start_block);
+    BoolsFromMask(d64, control_mask_1,
+                  control_bits_out + start_block + 1 * blocks_per_vec);
+    BoolsFromMask(d64, control_mask_2,
+                  control_bits_out + start_block + 2 * blocks_per_vec);
+    BoolsFromMask(d64, control_mask_3,
+                  control_bits_out + start_block + 3 * blocks_per_vec);
   }
-  DCHECK_GT(i + 4 * hn::Lanes(d8), num_bytes);
+  ABSL_DCHECK_GT(i + 4 * bytes_per_vec, num_bytes);
 
   // Single full vectors.
-  for (; i + hn::Lanes(d8) <= num_bytes; i += hn::Lanes(d8)) {
+  for (; i + bytes_per_vec <= num_bytes; i += bytes_per_vec) {
+    const int64_t start_block = i / sizeof(absl::uint128);
     auto vec = hn::Load(d8, seeds_in_ptr + i);
     const auto path = hn::Load(d8, paths_ptr + i);
-    auto control_mask =
-        MaskFromBools(d64, control_bits_in + i / sizeof(absl::uint128));
+    auto control_mask = MaskFromBools(d64, control_bits_in + start_block);
     for (int j = 0; j < num_levels; ++j) {
-      const int bit_index = num_levels - j - 1;
+      const int bit_index = num_levels - j - 1 + paths_rightshift;
       const auto path_mask = IsBitSet(d8, path, bit_index);
       HashOneWithKeyMask(
           d8, vec, path_mask,
@@ -322,84 +405,133 @@ absl::Status EvaluateSeedsHwy(
           reinterpret_cast<const uint8_t*>(expanded_key_1.rd_key), vec);
 
       // Apply correction.
-      const auto correction_seed = hn::LoadDup128(
-          d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
+      hn::Vec<decltype(d64)> correction_seed;
+      if (correction_words_per_level == 1) {
+        correction_seed = hn::LoadDup128(
+            d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
+      } else {
+        const uint64_t* correction_seeds_ptr =
+            reinterpret_cast<const uint64_t*>(correction_seeds +
+                                              j * correction_words_per_level +
+                                              start_block);
+        if (ABSL_PREDICT_TRUE(
+                correction_words_per_level % blocks_per_vec == 0 || j == 0)) {
+          correction_seed = hn::Load(d64, correction_seeds_ptr);
+        } else {
+          correction_seed = hn::LoadU(d64, correction_seeds_ptr);
+        }
+      }
       vec = hn::Xor(vec, hn::BitCast(d8, hn::IfThenElseZero(control_mask,
                                                             correction_seed)));
+
       // Extract control bit for next level.
       const auto next_control_mask = IsBitSet(d8, vec, 0);
       vec = hn::And(vec, clear_lowest_bit);
 
       // Perform control bit correction.
-      const auto correction_control_mask_left =
-          correction_controls_left[j] ? mask_all_one : mask_all_zero;
-      const auto correction_control_mask_right =
-          correction_controls_right[j] ? mask_all_one : mask_all_zero;
-
-      const auto correction_control_mask =
-          IfThenElseMask(path_mask, correction_control_mask_right,
-                         correction_control_mask_left);
+      auto correction_control_mask = mask_all_zero;
+      if (correction_words_per_level == 1) {
+        const auto correction_control_mask_left =
+            correction_controls_left[j] ? mask_all_one : mask_all_zero;
+        const auto correction_control_mask_right =
+            correction_controls_right[j] ? mask_all_one : mask_all_zero;
+        correction_control_mask =
+            IfThenElseMask(path_mask, correction_control_mask_right,
+                           correction_control_mask_left);
+      } else {
+        const bool* correction_controls_left_j =
+            correction_controls_left + j * correction_words_per_level +
+            start_block;
+        const bool* correction_controls_right_j =
+            correction_controls_right + j * correction_words_per_level +
+            start_block;
+        correction_control_mask = IfThenElseMask(
+            path_mask, MaskFromBools(d64, correction_controls_right_j),
+            MaskFromBools(d64, correction_controls_left_j));
+      }
       control_mask = hn::Xor(next_control_mask,
                              (hn::And(control_mask, correction_control_mask)));
     }
     hn::Store(vec, d8, seeds_out_ptr + i);
-    BoolsFromMask(d64, control_mask,
-                  control_bits_out + i / sizeof(absl::uint128));
+    BoolsFromMask(d64, control_mask, control_bits_out + start_block);
   }
-  DCHECK_GT(i + hn::Lanes(d8), num_bytes);
+  ABSL_DCHECK_GT(i + bytes_per_vec, num_bytes);
 
   // Elements less than a full vector.
   int remaining_blocks = num_seeds - i / sizeof(absl::uint128);
   if (remaining_blocks > 0) {
+    const int64_t start_block = i / sizeof(absl::uint128);
     const int remaining_bytes = num_bytes - i;
-    const int blocks_per_lane = hn::Lanes(d8) / sizeof(absl::uint128);
-    // Copy to a buffer first, to ensure we have at least hn::Lanes(d8) bytes
+    // Copy to a buffer first, to ensure we have at least bytes_per_vec bytes
     // to read. Calling MaskedLoad directly instead might lead to out-of-bounds
     // accesses.
-    auto buffer = hwy::AllocateAligned<absl::uint128>(2 * blocks_per_lane);
+    auto buffer = hwy::AllocateAligned<absl::uint128>(2 * blocks_per_vec);
     if (buffer == nullptr) {
       return absl::ResourceExhaustedError("Memory allocation error");
     }
     auto buffer_ptr = reinterpret_cast<uint8_t*>(buffer.get());
-    std::copy_n(seeds_in + i / sizeof(absl::uint128), remaining_blocks,
-                buffer.get());
-    std::copy_n(paths + i / sizeof(absl::uint128), remaining_blocks,
-                buffer.get() + blocks_per_lane);
+    std::copy_n(seeds_in + start_block, remaining_blocks, buffer.get());
+    std::copy_n(paths + start_block, remaining_blocks,
+                buffer.get() + blocks_per_vec);
     const auto load_mask = hn::FirstN(d8, remaining_bytes);
     auto vec = hn::MaskedLoad(load_mask, d8, buffer_ptr);
-    const auto path = hn::MaskedLoad(load_mask, d8, buffer_ptr + hn::Lanes(d8));
-    auto control_mask = MaskFromBools(
-        d64, control_bits_in + i / sizeof(absl::uint128), remaining_blocks);
+    const auto path = hn::MaskedLoad(load_mask, d8, buffer_ptr + bytes_per_vec);
+    auto control_mask =
+        MaskFromBools(d64, control_bits_in + start_block, remaining_blocks);
     for (int j = 0; j < num_levels; ++j) {
-      const int bit_index = num_levels - j - 1;
+      const int bit_index = num_levels - j - 1 + paths_rightshift;
       const auto path_mask = IsBitSet(d8, path, bit_index);
       HashOneWithKeyMask(
           d8, vec, path_mask,
           reinterpret_cast<const uint8_t*>(expanded_key_0.rd_key),
           reinterpret_cast<const uint8_t*>(expanded_key_1.rd_key), vec);
+
       // Perform seed correction.
-      const auto correction_seed = hn::LoadDup128(
-          d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
+      hn::Vec<decltype(d64)> correction_seed;
+      if (correction_words_per_level == 1) {
+        correction_seed = hn::LoadDup128(
+            d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
+      } else {
+        std::copy_n(
+            correction_seeds + j * correction_words_per_level + start_block,
+            remaining_blocks, buffer.get());
+        correction_seed =
+            hn::BitCast(d64, hn::MaskedLoad(load_mask, d8, buffer_ptr));
+      }
       vec = hn::Xor(vec, hn::BitCast(d8, hn::IfThenElseZero(control_mask,
                                                             correction_seed)));
       const auto next_control_mask = IsBitSet(d8, vec, 0);
       vec = hn::And(vec, clear_lowest_bit);
-      const auto correction_control_mask_left =
-          correction_controls_left[j] ? mask_all_one : mask_all_zero;
-      const auto correction_control_mask_right =
-          correction_controls_right[j] ? mask_all_one : mask_all_zero;
-      const auto correction_control_mask =
-          IfThenElseMask(path_mask, correction_control_mask_right,
-                         correction_control_mask_left);
+
+      // Perform control bit correction.
+      auto correction_control_mask = mask_all_zero;
+      if (correction_words_per_level == 1) {
+        const auto correction_control_mask_left =
+            correction_controls_left[j] ? mask_all_one : mask_all_zero;
+        const auto correction_control_mask_right =
+            correction_controls_right[j] ? mask_all_one : mask_all_zero;
+        correction_control_mask =
+            IfThenElseMask(path_mask, correction_control_mask_right,
+                           correction_control_mask_left);
+      } else {
+        const bool* correction_controls_left_j =
+            correction_controls_left + j * correction_words_per_level +
+            start_block;
+        const bool* correction_controls_right_j =
+            correction_controls_right + j * correction_words_per_level +
+            start_block;
+        correction_control_mask = IfThenElseMask(
+            path_mask,
+            MaskFromBools(d64, correction_controls_right_j, remaining_blocks),
+            MaskFromBools(d64, correction_controls_left_j, remaining_blocks));
+      }
       control_mask = hn::Xor(next_control_mask,
                              (hn::And(control_mask, correction_control_mask)));
     }
     // Store back into buffer, then copy to seeds_out.
     hn::Store(vec, d8, buffer_ptr);
-    std::copy_n(buffer.get(), remaining_blocks,
-                seeds_out + i / sizeof(absl::uint128));
-    BoolsFromMask(d64, control_mask,
-                  control_bits_out + i / sizeof(absl::uint128),
+    std::copy_n(buffer.get(), remaining_blocks, seeds_out + start_block);
+    BoolsFromMask(d64, control_mask, control_bits_out + start_block,
                   remaining_blocks);
   }
 
@@ -418,8 +550,9 @@ namespace distributed_point_functions {
 namespace dpf_internal {
 
 absl::Status EvaluateSeedsNoHwy(
-    int64_t num_seeds, int num_levels, const absl::uint128* seeds_in,
-    const bool* control_bits_in, const absl::uint128* paths,
+    int64_t num_seeds, int num_levels, int num_correction_words,
+    const absl::uint128* seeds_in, const bool* control_bits_in,
+    const absl::uint128* paths, int paths_rightshift,
     const absl::uint128* correction_seeds, const bool* correction_controls_left,
     const bool* correction_controls_right, const Aes128FixedKeyHash& prg_left,
     const Aes128FixedKeyHash& prg_right, absl::uint128* seeds_out,
@@ -454,12 +587,12 @@ absl::Status EvaluateSeedsNoHwy(
           seeds, absl::MakeSpan(buffer_right).subspan(0, current_batch_size)));
 
       // Merge back into result.
-      const int bit_index = num_levels - level - 1;
+      const int bit_index = num_levels - level - 1 + paths_rightshift;
       for (int i = 0; i < current_batch_size; ++i) {
         path_bits[i] = 0;
         if (bit_index < 128) {
           path_bits[i] =
-              (paths[start_block + i] & (absl::uint128{1} << bit_index)) != 0;
+              ((paths[start_block + i]) & (absl::uint128{1} << bit_index)) != 0;
         }
         if (path_bits[i] == 0) {
           seeds_out[start_block + i] = buffer_left[i];
@@ -474,17 +607,22 @@ absl::Status EvaluateSeedsNoHwy(
       std::copy_n(
           &(level == 0 ? control_bits_in : control_bits_out)[start_block],
           current_batch_size, &control_bits[0]);
+      int correction_index = level;
       for (int i = 0; i < current_batch_size; ++i) {
+        if (num_correction_words > num_levels) {
+          // We have num_levels * num_seeds correction words.
+          correction_index = level * num_seeds + start_block + i;
+        }
         if (control_bits[i]) {
-          seeds_out[start_block + i] ^= correction_seeds[level];
+          seeds_out[start_block + i] ^= correction_seeds[correction_index];
         }
         bool current_control_bit =
             ExtractAndClearLowestBit(seeds_out[start_block + i]);
         if (control_bits[i]) {
           if (path_bits[i] == 0) {
-            current_control_bit ^= correction_controls_left[level];
+            current_control_bit ^= correction_controls_left[correction_index];
           } else {
-            current_control_bit ^= correction_controls_right[level];
+            current_control_bit ^= correction_controls_right[correction_index];
           }
         }
         control_bits_out[start_block + i] = current_control_bit;
@@ -498,16 +636,25 @@ absl::Status EvaluateSeedsNoHwy(
 HWY_EXPORT(EvaluateSeedsHwy);
 
 absl::Status EvaluateSeeds(
-    int64_t num_seeds, int num_levels, const absl::uint128* seeds_in,
-    const bool* control_bits_in, const absl::uint128* paths,
+    int64_t num_seeds, int num_levels, int num_correction_words,
+    const absl::uint128* seeds_in, const bool* control_bits_in,
+    const absl::uint128* paths, int paths_rightshift,
     const absl::uint128* correction_seeds, const bool* correction_controls_left,
     const bool* correction_controls_right, const Aes128FixedKeyHash& prg_left,
     const Aes128FixedKeyHash& prg_right, absl::uint128* seeds_out,
     bool* control_bits_out) {
+  // Check that we either have one or `num_seeds` correction words per level.
+  if (num_correction_words != num_levels &&
+      num_correction_words != num_levels * num_seeds) {
+    return absl::InvalidArgumentError(
+        "`num_correction_words` must be equal to `num_levels` or `num_levels * "
+        "num_seeds`");
+  }
   return HWY_DYNAMIC_DISPATCH(EvaluateSeedsHwy)(
-      num_seeds, num_levels, seeds_in, control_bits_in, paths, correction_seeds,
-      correction_controls_left, correction_controls_right, prg_left, prg_right,
-      seeds_out, control_bits_out);
+      num_seeds, num_levels, num_correction_words, seeds_in, control_bits_in,
+      paths, paths_rightshift, correction_seeds, correction_controls_left,
+      correction_controls_right, prg_left, prg_right, seeds_out,
+      control_bits_out);
 }
 
 }  // namespace dpf_internal

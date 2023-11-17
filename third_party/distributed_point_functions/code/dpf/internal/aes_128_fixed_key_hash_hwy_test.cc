@@ -13,14 +13,18 @@
 // limitations under the License.
 
 #include <limits>
-#include <numeric>
+#include <memory>
+#include <vector>
 
 #include "absl/flags/parse.h"
+#include "absl/log/absl_log.h"
 #include "absl/numeric/int128.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/types/span.h"
 #include "dpf/aes_128_fixed_key_hash.h"
 #include "dpf/internal/get_hwy_mode.h"
 #include "dpf/internal/status_matchers.h"
-#include "glog/logging.h"
 #include "gtest/gtest.h"
 #include "hwy/aligned_allocator.h"
 #include "hwy/detect_targets.h"
@@ -213,15 +217,13 @@ HWY_BEFORE_TEST(Aes128FixedKeyHashHwyTest);
 HWY_EXPORT_AND_TEST_P(Aes128FixedKeyHashHwyTest, TestAllAes);
 
 TEST(Aes128FixedKeyHashHwy, LogHwyMode) {
-  LOG(INFO) << "Highway is in " << GetHwyModeAsString() << " mode";
+  ABSL_LOG(INFO) << "Highway is in " << GetHwyModeAsString() << " mode";
 }
 
 }  // namespace dpf_internal
 }  // namespace distributed_point_functions
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  FLAGS_logtostderr = 1;
   ::testing::InitGoogleTest(&argc, argv);
 
   return RUN_ALL_TESTS();

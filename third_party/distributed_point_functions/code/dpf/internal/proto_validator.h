@@ -17,8 +17,13 @@
 #ifndef DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_PROTO_VALIDATOR_H_
 #define DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_PROTO_VALIDATOR_H_
 
+#include <memory>
+#include <vector>
+
 #include "absl/container/flat_hash_map.h"
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/types/span.h"
 #include "dpf/distributed_point_function.pb.h"
 
 namespace distributed_point_functions {

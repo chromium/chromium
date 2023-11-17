@@ -14,7 +14,21 @@
 
 #include "dpf/internal/value_type_helpers.h"
 
+#include <stdint.h>
+
+#include <array>
+#include <string>
+#include <tuple>
+
+#include "absl/base/config.h"
+#include "absl/numeric/int128.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
+#include "dpf/distributed_point_function.pb.h"
+#include "dpf/int_mod_n.h"
 #include "dpf/internal/status_matchers.h"
+#include "dpf/tuple.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 

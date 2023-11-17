@@ -14,6 +14,14 @@
 
 #include "dpf/int_mod_n.h"
 
+#include <cmath>
+#include <string>
+
+#include "absl/numeric/int128.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_format.h"
+
 namespace distributed_point_functions {
 
 namespace dpf_internal {

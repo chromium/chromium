@@ -12,12 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <numeric>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "absl/container/btree_set.h"
+#include "absl/log/absl_check.h"
 #include "absl/numeric/int128.h"
 #include "absl/random/random.h"
+#include "absl/random/uniform_int_distribution.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
+#include "absl/types/span.h"
 #include "benchmark/benchmark.h"
 #include "dpf/distributed_point_function.h"
-#include "glog/logging.h"
+#include "google/protobuf/arena.h"
 #include "hwy/aligned_allocator.h"
 
 namespace distributed_point_functions {
@@ -34,7 +48,7 @@ void BM_EvaluateRegularDpf(benchmark::State& state) {
       DistributedPointFunction::Create(parameters).value();
   absl::uint128 alpha = 0;
   T beta{};
-  CHECK(dpf->RegisterValueType<T>().ok());
+  ABSL_CHECK(dpf->RegisterValueType<T>().ok());
   std::pair<DpfKey, DpfKey> keys = dpf->GenerateKeys(alpha, beta).value();
   EvaluationContext ctx_0 = dpf->CreateEvaluationContext(keys.first).value();
   for (auto s : state) {
@@ -78,7 +92,7 @@ BENCHMARK_TEMPLATE(
     Tuple<MyIntModN64, MyIntModN64, MyIntModN64, MyIntModN64, MyIntModN64>)
     ->DenseRange(12, 22, 2);
 BENCHMARK_TEMPLATE(BM_EvaluateRegularDpf, XorWrapper<absl::uint128>)
-    ->DenseRange(12, 24, 2);
+    ->DenseRange(1, 24, 1);
 
 // Benchmarks full evaluation of all hierarchy levels. Expects the first range
 // argument to specify the number of iterations. The output domain size is fixed
@@ -364,7 +378,7 @@ void BM_BatchEvaluation(benchmark::State& state) {
   std::vector<const DpfKey*> key_pointers(num_keys * evaluation_points_per_key);
   auto evaluation_points =
       hwy::AllocateAligned<absl::uint128>(num_keys * evaluation_points_per_key);
-  CHECK(evaluation_points != nullptr);
+  ABSL_CHECK(evaluation_points != nullptr);
   for (int i = 0; i < num_keys; ++i) {
     absl::uint128 alpha = absl::MakeUint128(absl::Uniform<uint64_t>(rng),
                                             absl::Uniform<uint64_t>(rng)) &

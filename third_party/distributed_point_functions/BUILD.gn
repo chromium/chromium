@@ -14,16 +14,18 @@ if (!defined(dpf_highway_cpp_dir)) {
 }
 
 # This is Chromium's interface with the third-party distributed_point_functions
-# library. It prevents macros like absl/log/check.h's CHECK from leaking into
-# Chromium code via header includes. Chromium already defines CHECK in
-# base/check.h, so direct includes can lead to macro redefinition errors. For
-# more context, see <https://crbug.com/1499970>.
-static_library("distributed_point_functions") {
+# library. Targets outside of //third_party/distributed_point_functions should
+# depend on this target rather than using the source directly. This extra layer
+# prevents macros from leaking into Chromium code via header includes.
+source_set("distributed_point_functions") {
   sources = [
     "shim/distributed_point_function_shim.cc",
     "shim/distributed_point_function_shim.h",
   ]
-  deps = [ ":internal" ]
+  deps = [
+    ":internal",
+    "$dpf_abseil_cpp_dir:absl",
+  ]
   public_deps = [ ":proto" ]
   configs += [ ":includes" ]
 }
@@ -62,7 +64,6 @@ visibility = [ ":*" ]
 
 config("includes") {
   include_dirs = [
-    ".",
     "code",
     "$target_gen_dir",
   ]
@@ -87,14 +88,12 @@ source_set("internal") {
     "code/dpf/status_macros.h",
     "code/dpf/tuple.h",
     "code/dpf/xor_wrapper.h",
-    "glog/logging.h",
   ]
 
   public_deps = [
     ":proto",
     "$dpf_abseil_cpp_dir:absl",
     "$dpf_highway_cpp_dir:libhwy",
-    "//base",
     "//third_party/boringssl",
     "//third_party/protobuf:protobuf_lite",
   ]
