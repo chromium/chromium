@@ -29,6 +29,10 @@ export class PanelButton extends HTMLElement {
     this.attachShadow({mode: 'open'}).appendChild(fragment);
   }
 
+  static get is() {
+    return 'xf-button' as const;
+  }
+
   /**
    * Registers this instance to listen to these attribute changes.
    */
@@ -79,4 +83,11 @@ export class PanelButton extends HTMLElement {
   }
 }
 
-window.customElements.define('xf-button', PanelButton);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [PanelButton.is]: PanelButton;
+  }
+}
+
+window.customElements.define(PanelButton.is, PanelButton);

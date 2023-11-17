@@ -132,7 +132,6 @@ preprocess_if_expr("preprocess_generated") {
     ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:polymer_elements",
-    "//ui/file_manager/file_manager/foreground/elements:web_components",
   ]
 }
 

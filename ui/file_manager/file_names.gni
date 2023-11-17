@@ -346,6 +346,8 @@ ts_files = [
   "file_manager/foreground/elements/files_spinner.ts",
   "file_manager/foreground/elements/xf_button.ts",
   "file_manager/foreground/elements/xf_circular_progress.ts",
+  "file_manager/foreground/elements/xf_display_panel.ts",
+  "file_manager/foreground/elements/xf_panel_item.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -392,6 +394,8 @@ ts_templates = [
   "file_manager/foreground/elements/files_spinner.html",
   "file_manager/foreground/elements/xf_button.html",
   "file_manager/foreground/elements/xf_circular_progress.html",
+  "file_manager/foreground/elements/xf_display_panel.html",
+  "file_manager/foreground/elements/xf_panel_item.html",
   "file_manager/widgets/xf_conflict_dialog.html",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
   "file_manager/widgets/xf_nudge.html",
@@ -505,6 +509,7 @@ ts_test_files = [
   # Foreground:
   "file_manager/foreground/elements/files_tooltip_unittest.ts",
   "file_manager/foreground/elements/files_toast_unittest.ts",
+  "file_manager/foreground/elements/files_xf_elements_unittest.ts",
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
   "file_manager/foreground/js/directory_contents_unittest.ts",
@@ -590,10 +595,6 @@ other_dts_files = [
 generated_js_files = [
   # Common:
   "file_manager/common/js/file_types_data.js",
-
-  # Elements:
-  "file_manager/foreground/elements/xf_display_panel.js",
-  "file_manager/foreground/elements/xf_panel_item.js",
 ]
 
 # END: generated_js_files.
@@ -617,7 +618,6 @@ unittest_files = [
   "file_manager/background/js/mock_volume_manager.js",
 
   # Foreground:
-  "file_manager/foreground/elements/files_xf_elements_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
   "file_manager/foreground/js/metadata/metadata_model_unittest.js",

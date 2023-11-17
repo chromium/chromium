@@ -8,6 +8,7 @@ import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType
 import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
+import {PanelType} from '../../elements/xf_panel_item.js';
 
 /**
  * Progress center panel.
@@ -462,11 +463,11 @@ export class ProgressCenterPanel {
           this.feedbackHost_.attachPanelItem(panelItem);
         }, this.PENDING_TIME_MS_);
         if (item.type === ProgressItemType.FORMAT) {
-          panelItem.panelType = panelItem.panelTypeFormatProgress;
+          panelItem.panelType = PanelType.FORMAT_PROGRESS;
         } else if (item.type === ProgressItemType.SYNC) {
-          panelItem.panelType = panelItem.panelTypeSyncProgress;
+          panelItem.panelType = PanelType.SYNC_PROGRESS;
         } else {
-          panelItem.panelType = panelItem.panelTypeProgress;
+          panelItem.panelType = PanelType.PROGRESS;
         }
         // TODO(lucmult): Remove `userData`, it's only used in
         // generatePrimaryString_() which already refers to `item`.
@@ -546,7 +547,7 @@ export class ProgressCenterPanel {
               donePanelItem.dataset.extraButtonText = extraButton.text;
             }
             donePanelItem.id = item.id;
-            donePanelItem.panelType = donePanelItem.panelTypeDone;
+            donePanelItem.panelType = PanelType.DONE;
             donePanelItem.primaryText = primaryText;
             donePanelItem.secondaryText = item.isDestinationDrive ?
                 str('READY_TO_SYNC_MY_DRIVE') :
@@ -593,7 +594,7 @@ export class ProgressCenterPanel {
             // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
             panelItem.dataset.extraButtonText = extraButton.text;
           }
-          panelItem.panelType = panelItem.panelTypeInfo;
+          panelItem.panelType = PanelType.INFO;
           this.feedbackHost_.attachPanelItem(panelItem);
           break;
         case ProgressItemState.ERROR:
@@ -602,7 +603,7 @@ export class ProgressCenterPanel {
             // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
             panelItem.dataset.extraButtonText = extraButton.text;
           }
-          panelItem.panelType = panelItem.panelTypeError;
+          panelItem.panelType = PanelType.ERROR;
           // Make sure the panel is attached so it shows immediately.
           this.feedbackHost_.attachPanelItem(panelItem);
           break;

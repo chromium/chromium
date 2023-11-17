@@ -2,21 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
-import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
-
-html_to_js("web_components") {
-  visibility += [ "//ui/file_manager/*" ]
-  js_files = [
-    "xf_display_panel.js",
-    "xf_panel_item.js",
-  ]
-}
 
 html_to_wrapper("polymer_elements") {
   visibility += [ "//ui/file_manager/*" ]
