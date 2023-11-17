@@ -112,7 +112,10 @@ void PaintRenderingContext2D::WillOverwriteCanvas() {
   if (did_record_draw_commands_in_paint_recorder_) {
     // Discard previous draw commands
     paint_recorder_.finishRecordingAsPicture();
-    InitializePaintRecorder();
+
+    cc::PaintCanvas* canvas = paint_recorder_.beginRecording(container_size_);
+    RestoreMatrixClipStack(canvas);
+    did_record_draw_commands_in_paint_recorder_ = false;
   }
 }
 

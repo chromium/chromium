@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 namespace {
@@ -19,7 +20,10 @@ namespace {
 using ::blink_testing::RecordedOpsAre;
 using ::cc::ConcatOp;
 using ::cc::DrawColorOp;
+using ::cc::DrawRectOp;
 using ::cc::PaintOpEq;
+using ::cc::RestoreOp;
+using ::cc::SaveOp;
 using ::cc::ScaleOp;
 using ::cc::SetMatrixOp;
 
@@ -150,6 +154,74 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
                                                        2.3, 4.5, 0, 67,  //
                                                        0, 0, 1, 0,       //
                                                        0, 0, 0, 1))));
+}
+
+TEST(PaintRenderingContext2DTest, overdrawOptimizationNotApplied) {
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
+  NonThrowableExceptionState exception_state;
+  ctx->fillRect(1, 1, 1, 1);
+  ctx->save();
+  ctx->fillRect(2, 2, 2, 2);
+  ctx->clearRect(3, 3, 3, 3);
+  ctx->fillRect(4, 4, 4, 4);
+  ctx->restore(exception_state);
+
+  cc::PaintFlags clear_flags;
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+
+  cc::PaintFlags rect_flags;
+  rect_flags.setAntiAlias(true);
+  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+
+  EXPECT_THAT(
+      ctx->GetRecord(),
+      RecordedOpsAre(
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), rect_flags),
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), rect_flags),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), clear_flags),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4), rect_flags),
+          PaintOpEq<RestoreOp>()));
+}
+
+TEST(PaintRenderingContext2DTest, overdrawOptimizationApplied) {
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
+  NonThrowableExceptionState exception_state;
+  ctx->fillRect(1, 1, 1, 1);
+  ctx->save();
+  ctx->fillRect(2, 2, 2, 2);
+  // Clear the whole canvas, triggering overdraw optimization and discarding all
+  // previous draw commands.
+  ctx->clearRect(0, 0, kWidth, kHeight);
+  ctx->fillRect(3, 3, 3, 3);
+  ctx->restore(exception_state);
+
+  cc::PaintFlags clear_flags;
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+
+  cc::PaintFlags rect_flags;
+  rect_flags.setAntiAlias(true);
+  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+
+  // Draw calls done before the `clearRect` are discarded, but the matrix clip
+  // stack remains untouched.
+  EXPECT_THAT(
+      ctx->GetRecord(),
+      RecordedOpsAre(
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, kWidth, kHeight),
+                                clear_flags),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), rect_flags),
+          PaintOpEq<RestoreOp>()));
 }
 
 }  // namespace
