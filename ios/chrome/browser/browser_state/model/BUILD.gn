@@ -96,7 +96,7 @@ source_set("model") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
+    "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/net",

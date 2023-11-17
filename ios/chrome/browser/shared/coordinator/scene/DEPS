@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/geolocation/model",
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/intents/user_activity_handler.h",
-  "+ios/chrome/browser/mailto_handler",
+  "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/main",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/policy",

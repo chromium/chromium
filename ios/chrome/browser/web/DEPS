@@ -14,7 +14,7 @@ include_rules = [
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/lens/lens_browser_agent.h",
   "+ios/chrome/browser/link_to_text/model",
-  "+ios/chrome/browser/mailto_handler",
+  "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",

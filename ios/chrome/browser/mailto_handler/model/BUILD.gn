@@ -4,11 +4,17 @@
 
 source_set("model") {
   sources = [
+    "mailto_handler_configuration.h",
+    "mailto_handler_configuration.mm",
     "mailto_handler_service.h",
+    "mailto_handler_service.mm",
   ]
- public_deps = [
-   "//ios/chrome/browser/mailto_handler",
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 # This is a separate target because the factory depends on the provider
@@ -18,8 +24,15 @@ source_set("model") {
 source_set("mailto_handler_factory") {
   sources = [
     "mailto_handler_service_factory.h",
+    "mailto_handler_service_factory.mm",
   ]
-  public_deps = [
-    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
+  deps = [
+    ":model",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
   ]
 }

@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/functional/callback_helpers.h"
-#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 
 namespace ios {
 namespace provider {
