@@ -214,6 +214,17 @@ class ContentAnalysisDialogBehaviorBrowserTest
     dialog_updated_ = true;
   }
 
+  void CancelDialogAndDeleteCalled(ContentAnalysisDialog* dialog,
+                                   FinalContentAnalysisResult result) override {
+    EXPECT_EQ(dialog_, dialog);
+    EXPECT_NE(result, FinalContentAnalysisResult::FAIL_CLOSED);
+
+    if (dialog_->is_cloud()) {
+      EXPECT_FALSE(dialog_->is_failure());
+      EXPECT_FALSE(dialog_->is_warning());
+    }
+  }
+
   void DestructorCalled(ContentAnalysisDialog* dialog) override {
     dtor_called_timestamp_ = base::TimeTicks::Now();
 

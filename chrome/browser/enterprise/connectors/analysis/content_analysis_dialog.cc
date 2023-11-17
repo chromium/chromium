@@ -541,25 +541,26 @@ void ContentAnalysisDialog::UpdateViews() {
   }
 }
 
-void ContentAnalysisDialog::UpdateDialog() {
-  if (!contents_view_) {
-    // If the dialog is no longer pending, a final verdict was received before
-    // the dialog was displayed.  If the verdict is success or it is not fail
-    // closed for local analysis, don't bother the user at all and close the
-    // dialog. Otherwise make sure it shows right away with the verdict.
-    if (!is_pending()) {
-      bool display_ui_for_local =
-          !is_cloud_ &&
-          final_result_ == FinalContentAnalysisResult::FAIL_CLOSED;
-      DVLOG(1) << __func__ << ": display_ui_for_local=" << display_ui_for_local;
-      if (is_success() || !display_ui_for_local) {
-        CancelDialogAndDelete();
-      } else {
-        ShowDialogNow();
-      }
+bool ContentAnalysisDialog::ShouldShowDialogNow() {
+  DCHECK(!is_pending());
+  // If the final result is fail closed, display ui regardless of cloud or local
+  // analysis.
+  if (final_result_ == FinalContentAnalysisResult::FAIL_CLOSED) {
+    DVLOG(1) << __func__ << ": show fail-closed ui.";
+    return true;
+  }
+  // Otherwise, show dialog now only if it is cloud analysis and the verdict is
+  // not success.
+  return is_cloud_ && !is_success();
+}
 
-      return;
-    }
+void ContentAnalysisDialog::UpdateDialog() {
+  if (!contents_view_ && !is_pending()) {
+    // If the dialog is no longer pending, a final verdict was received before
+    // the dialog was displayed.  Show the verdict right away only if
+    // ShouldShowDialogNow() returns true.
+    ShouldShowDialogNow() ? ShowDialogNow() : CancelDialogAndDelete();
+    return;
   }
 
   DCHECK(is_result());
@@ -992,6 +993,10 @@ bool ContentAnalysisDialog::is_print_scan() const {
 }
 
 void ContentAnalysisDialog::CancelDialogAndDelete() {
+  if (observer_for_testing) {
+    observer_for_testing->CancelDialogAndDeleteCalled(this, final_result_);
+  }
+
   if (contents_view_) {
     DVLOG(1) << __func__ << ": dialog will be canceled";
     CancelDialog();

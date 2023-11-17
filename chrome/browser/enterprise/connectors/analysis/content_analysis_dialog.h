@@ -77,6 +77,13 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     virtual void DialogUpdated(ContentAnalysisDialog* dialog,
                                FinalContentAnalysisResult result) {}
 
+    // Called at the start of CancelDialogAndDelete(). `dialog` is a pointer
+    // that will soon be destructed. Along with `result`, it is used by the test
+    // to validate the dialog should be canceled or deleted.
+    virtual void CancelDialogAndDeleteCalled(
+        ContentAnalysisDialog* dialog,
+        FinalContentAnalysisResult result) {}
+
     // Called at the end of ContentAnalysisDialog's destructor. `dialog` is a
     // pointer to the ContentAnalysisDialog being destructed. It can be used
     // to compare it to the pointer obtained from ConstructorCalled to ensure
@@ -129,6 +136,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   inline bool is_result() const { return !is_pending(); }
 
   inline bool is_pending() const { return dialog_state_ == State::PENDING; }
+
+  inline bool is_cloud() const { return is_cloud_; }
 
   bool has_custom_message() const {
     return delegate_->GetCustomMessage().has_value();
@@ -215,6 +224,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // it's already showing.
   // This function can only be called after the dialog widget is initialized.
   void UpdateDialog();
+
+  // Helper function to determine whether dialog should be shown immediately.
+  bool ShouldShowDialogNow();
 
   // Resizes the already shown dialog to accommodate changes in its content.
   void Resize(int height_to_add);
