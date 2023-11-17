@@ -21,6 +21,7 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:constants",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

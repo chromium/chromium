@@ -24,6 +24,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -948,7 +949,10 @@ void InjectNTP(Browser* browser) {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
-  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+  policy::UserCloudPolicyManager* userPolicyManager =
+      browserState->GetUserCloudPolicyManager();
+  if (IsUserPolicyNotificationNeeded(authService, prefService,
+                                     userPolicyManager)) {
     policy::UserPolicySigninService* userPolicyService =
         policy::UserPolicySigninServiceFactory::GetForBrowserState(
             browserState);
@@ -959,7 +963,8 @@ void InjectNTP(Browser* browser) {
                      applicationCommandsHandler:applicationCommandsHandler
                                     prefService:prefService
                                     mainBrowser:mainBrowser
-                                  policyService:userPolicyService]];
+                                  policyService:userPolicyService
+                              userPolicyManager:userPolicyManager]];
   }
 
   // Now that the main browser's command dispatcher is created and the newly

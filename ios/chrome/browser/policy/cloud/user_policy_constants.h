@@ -15,6 +15,9 @@ BASE_DECLARE_FEATURE(kUserPolicyForSigninOrSyncConsentLevel);
 // Enables User Policy for signed-in only and no sync users.
 BASE_DECLARE_FEATURE(kUserPolicyForSigninAndNoSyncConsentLevel);
 
+// Show the User Policy notification at startup iff needed.
+BASE_DECLARE_FEATURE(kShowUserPolicyNotificationAtStartupIfNeeded);
+
 }  // namespace policy
 
 #endif  // IOS_CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_CONSTANTS_H_
