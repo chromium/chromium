@@ -513,7 +513,7 @@ void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
 void PrivacyIndicatorsTrayItemView::UpdateIcons() {
   const ui::ColorId icon_color_id =
       chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+          ? cros_tokens::kCrosSysInverseOnSurface
           : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary);
 
   camera_icon_->SetImage(ui::ImageModel::FromVectorIcon(

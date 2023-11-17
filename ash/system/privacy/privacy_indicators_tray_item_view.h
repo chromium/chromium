@@ -104,6 +104,7 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   void UpdateVisibility();
 
  private:
+  friend class PrivacyIndicatorsTrayItemViewPixelTest;
   friend class PrivacyIndicatorsTrayItemViewTest;
   friend class CaptureModePrivacyIndicatorsTest;
 

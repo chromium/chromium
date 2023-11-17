@@ -4097,6 +4097,7 @@ test("ash_pixeltests") {
     "system/network/network_feature_tile_pixeltest.cc",
     "system/network/vpn_detailed_view_pixeltest.cc",
     "system/notification_center/notification_center_tray_pixeltest.cc",
+    "system/privacy/privacy_indicators_tray_item_view_pixeltest.cc",
     "system/status_area_pixeltest.cc",
     "system/time/calendar_unittest_utils.cc",
     "system/time/calendar_unittest_utils.h",
