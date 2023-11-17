@@ -148,10 +148,24 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void OnScriptsLoaded(std::unique_ptr<UserScriptList> user_scripts,
                        base::ReadOnlySharedMemoryRegion shared_memory);
 
+  enum class SendUpdateResult {
+    // This result indicates that no IPCs have been sent to the renderer
+    // process.  This may for example happen when the process hasn't fully
+    // launched yet.
+    kNoActionTaken,
+    // This result indicates that an IPC has been send to the renderer process
+    // to notify it about the new scripts.  After this result some follow-up
+    // action may need to be taken by callers of `SendUpdate` (such as notifying
+    // `ScriptInjectionTracker` after all the browser-side state has been
+    // updated).
+    kRendererHasBeenNotified,
+  };
   // Sends the renderer process a new set of user scripts for this
-  // UserScriptLoader's host.
-  void SendUpdate(content::RenderProcessHost* process,
-                  const base::ReadOnlySharedMemoryRegion& shared_memory);
+  // UserScriptLoader's host.  Be sure to update the `ScriptInjectionTracker` if
+  // the renderer was updated.
+  [[nodiscard]] SendUpdateResult SendUpdate(
+      content::RenderProcessHost* process,
+      const base::ReadOnlySharedMemoryRegion& shared_memory);
 
   bool is_loading() const {
     // |loaded_scripts_| is reset when loading.
