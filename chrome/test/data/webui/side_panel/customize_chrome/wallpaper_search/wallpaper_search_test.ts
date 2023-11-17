@@ -360,14 +360,17 @@ suite('WallpaperSearchTest', () => {
       // response, there should be 2 result tiles and the remaining 4 should be
       // empty.
       assertEquals(
-          wallpaperSearchElement.shadowRoot!.querySelectorAll('.tile').length,
+          wallpaperSearchElement.$.wallpaperSearch.querySelectorAll('.tile')
+              .length,
           6);
       assertEquals(
-          wallpaperSearchElement.shadowRoot!.querySelectorAll('.tile.result')
+          wallpaperSearchElement.$.wallpaperSearch
+              .querySelectorAll('.tile.result')
               .length,
           2);
       assertEquals(
-          wallpaperSearchElement.shadowRoot!.querySelectorAll('.tile.empty')
+          wallpaperSearchElement.$.wallpaperSearch
+              .querySelectorAll('.tile.empty')
               .length,
           4);
     });
@@ -391,7 +394,8 @@ suite('WallpaperSearchTest', () => {
           [[{high: 10, low: 1}], 321],
           handler.getArgs('setResultRenderTime').at(-1));
 
-      const result = $$(wallpaperSearchElement, '.tile.result');
+      const result =
+          $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
@@ -418,7 +422,7 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
 
       // Check that there are tiles.
-      let result = $$(wallpaperSearchElement, '.tile.result');
+      let result = $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
       assertTrue(!!result);
 
       // Create promise resolver so we have time between request and result to
@@ -431,11 +435,15 @@ suite('WallpaperSearchTest', () => {
       // resolved, including the empty tiles.
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
-      result = $$(wallpaperSearchElement, '.tile.result, .tile.empty');
+      result =
+          $$(wallpaperSearchElement,
+             '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
       assertFalse(!!result);
       newResultsResolver.resolve(exampleResults);
       await waitAfterNextRender(wallpaperSearchElement);
-      result = $$(wallpaperSearchElement, '.tile.result, .tile.empty');
+      result =
+          $$(wallpaperSearchElement,
+             '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
       assertTrue(!!result);
     });
 
@@ -673,7 +681,7 @@ suite('WallpaperSearchTest', () => {
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
       const historyElements =
-          wallpaperSearchElement.$.historyCard.querySelectorAll('img');
+          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.result');
       assertEquals(historyElements.length, 2);
     });
   });

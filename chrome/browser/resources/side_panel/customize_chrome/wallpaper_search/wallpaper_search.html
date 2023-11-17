@@ -409,8 +409,16 @@
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>
-  <template is="dom-repeat" items="[[history_]]">
-    <img src="data:image/png;base64,[[item.image]]">
-    </img>
-  </template>
+  <div class="content">
+    <cr-grid columns="3" disable-arrow-navigation>
+      <template is="dom-repeat" id="historyRepeat" items="[[history_]]">
+        <div class="tile result" tabindex="0" role="button">
+          <div class="image-container">
+            <img src="data:image/png;base64,[[item.image]]">
+            </img>
+          </div>
+        </div>
+      </template>
+    </cr-grid>
+  </div>
 </div>
