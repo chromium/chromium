@@ -139,10 +139,10 @@ class AppMenu : public views::MenuDelegate,
   // in |command_id_to_entry_|.
   size_t ModelIndexFromCommandId(int command_id) const;
 
-  // The views menu. Owned by |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged> root_ = nullptr;
-
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The views menu. Owned by `menu_runner_`.
+  raw_ptr<views::MenuItemView> root_ = nullptr;
 
   // Maps from the command ID in model to the model/index pair the item came
   // from.

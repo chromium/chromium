@@ -10,6 +10,7 @@
 #include <cmath>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -955,7 +956,8 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
 
   DCHECK(!root_);
-  root_ = new MenuItemView(this);
+  auto root = std::make_unique<MenuItemView>(/*delegate=*/this);
+  root_ = root.get();
   PopulateMenu(root_, model);
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -969,7 +971,7 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
   }
 
-  menu_runner_ = std::make_unique<views::MenuRunner>(root_, types);
+  menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 }
 
 AppMenu::~AppMenu() {
