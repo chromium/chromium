@@ -113,10 +113,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerDialogBaseTest) {
   RunTestURL("foreground/js/ui/file_manager_dialog_base_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
-  RunTestURL("background/js/file_operation_manager_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
   RunTestURL("common/js/files_app_entry_types_unittest.js");
 }

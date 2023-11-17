@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
-import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
+import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -15,9 +15,8 @@ import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
-import {visitURL} from '../../common/js/util.js';
+import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey} from '../../externs/ts/state.js';
@@ -117,6 +116,171 @@ const getClipboardData = (event: Event): DataTransfer|null => {
   return isClipboardEvent(event) ? event.clipboardData : null;
 };
 
+/**
+ * The type of a file operation error.
+ */
+export enum FileOperationErrorType {
+  UNEXPECTED_SOURCE_FILE = 0,
+  TARGET_EXISTS = 1,
+  FILESYSTEM_ERROR = 2,
+}
+
+
+/**
+ * Error class used to report problems with a copy operation.
+ * If the code is UNEXPECTED_SOURCE_FILE, data should be a path of the file.
+ * If the code is TARGET_EXISTS, data should be the existing Entry.
+ * If the code is FILESYSTEM_ERROR, data should be the FileError.
+ */
+class FileOperationError {
+  /**
+   * @param code Error type.
+   * @param data Additional data.
+   */
+  constructor(
+      public readonly code: FileOperationErrorType,
+      public readonly data: string|Entry|DOMError) {}
+}
+
+/**
+ * Resolves a path to either a DirectoryEntry or a FileEntry, regardless of
+ * whether the path is a directory or file.
+ *
+ * @param root The root of the filesystem to search.
+ * @param path The path to be resolved.
+ * @return Promise fulfilled with the resolved entry, or rejected with
+ *     FileError.
+ */
+export async function resolvePath(
+    root: DirectoryEntry, path: string): Promise<Entry> {
+  if (path === '' || path === '/') {
+    return root;
+  }
+  try {
+    return await getFile(root, path, {create: false});
+  } catch (error: unknown) {
+    const errorHasName = error && typeof error === 'object' && 'name' in error;
+    if (errorHasName && error.name === FileErrorToDomError.TYPE_MISMATCH_ERR) {
+      // Bah. It's a directory, ask again.
+      return getDirectory(root, path, {create: false});
+    }
+    throw error;
+  }
+}
+
+/**
+ * Checks if an entry exists at |relativePath| in |dirEntry|.
+ * If exists, tries to deduplicate the path by inserting parenthesized number,
+ * such as " (1)", before the extension. If it still exists, tries the
+ * deduplication again by increasing the number.
+ * For example, suppose "file.txt" is given, "file.txt", "file (1).txt",
+ * "file (2).txt", ... will be tried.
+ *
+ * @param dirEntry The target directory entry.
+ * @param optSuccessCallback Callback run with the deduplicated path on success.
+ * @param optErrorCallback Callback run on error.
+ * @return  Promise fulfilled with available path.
+ */
+export async function deduplicatePath(
+    dirEntry: DirectoryEntry, relativePath: string): Promise<string> {
+  // Crack the path into three part. The parenthesized number (if exists)
+  // will be replaced by incremented number for retry. For example, suppose
+  // |relativePath| is "file (10).txt", the second check path will be
+  // "file (11).txt".
+  const match = /^(.*?)(?: \((\d+)\))?(\.[^.]*?)?$/.exec(relativePath)!;
+  const prefix = match[1];
+  const ext = match[3] || '';
+
+  // Check to see if the target exists.
+  async function customResolvePath(
+      trialPath: string, copyNumber: number): Promise<string> {
+    try {
+      await resolvePath(dirEntry, trialPath);
+      const newTrialPath = prefix + ' (' + copyNumber + ')' + ext;
+      return await customResolvePath(newTrialPath, copyNumber + 1);
+    } catch (error: unknown) {
+      // We expect to be unable to resolve the target file, since
+      // we're going to create it during the copy.  However, if the
+      // resolve fails with anything other than NOT_FOUND, that's
+      // trouble.
+      const errorHasName =
+          error && typeof error === 'object' && 'name' in error;
+      if (errorHasName && error.name === FileErrorToDomError.NOT_FOUND_ERR) {
+        return trialPath;
+      }
+      throw error;
+    }
+  }
+
+  try {
+    return await customResolvePath(relativePath, 1);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new FileOperationError(
+        FileOperationErrorType.FILESYSTEM_ERROR, error as any);
+  }
+}
+
+/**
+ * Filters the entry in the same directory
+ *
+ * @param sourceEntries Entries of the source files.
+ * @param targetEntry The destination entry of the target directory.
+ * @param isMove True if the operation is "move", otherwise (i.e. if the
+ *     operation is "copy") false.
+ * @return Promise fulfilled with the filtered entry. This is not rejected.
+ */
+async function filterSameDirectoryEntry(
+    sourceEntries: Entry[], targetEntry: DirectoryEntry|FakeEntry,
+    isMove: boolean): Promise<Entry[]> {
+  if (!isMove) {
+    return sourceEntries;
+  }
+
+  // Check all file entries and keeps only those need sharing operation.
+  async function processEntry(entry: Entry): Promise<Entry|null> {
+    try {
+      const inParentEntry = await getParentEntry(entry);
+      return isSameEntry(inParentEntry, targetEntry) ? null : entry;
+    } catch (error: unknown) {
+      console.warn((error as any).stack || error);
+      return null;
+    }
+  }
+
+  // Call processEntry for each item of sourceEntries.
+  const result = await Promise.all(sourceEntries.map(processEntry));
+
+  // Remove null entries.
+  return result.filter(entry => !!entry) as Entry[];
+}
+
+/**
+ * Writes file to destination dir. This function is called when an image is
+ * dragged from a web page. In this case there is no FileSystem Entry to copy
+ * or move, just the JS File object with attached Blob. This operation does
+ * not use EventRouter or queue the task since it is not possible to track
+ * progress of the FileWriter.write().
+ *
+ * @param file The file entry to be written.
+ * @param dir The destination directory to write to.
+ */
+export async function writeFile(
+    file: File, dir: DirectoryEntry): Promise<FileEntry> {
+  const name = await deduplicatePath(dir, file.name);
+  return new Promise((resolve, reject) => {
+    dir.getFile(name, {create: true, exclusive: true}, f => {
+      f.createWriter(writer => {
+        writer.onwriteend = () => resolve(f);
+        writer.onerror = reject;
+        writer.write(file);
+      }, reject);
+    }, reject);
+  });
+}
+
 export class FileTransferController {
   /**
    * The array of the pending task IDs.
@@ -162,7 +326,6 @@ export class FileTransferController {
       directoryTree: DirectoryTree,
       private confirmationCallback_: ConfirmationCallback,
       private progressCenter_: ProgressCenter,
-      private fileOperationManager_: FileOperationManager,
       /**
        * Note: We use synchronous `getCache` method under assumption that fields
        * we request are already cached. See constants.js, specifically
@@ -457,10 +620,12 @@ export class FileTransferController {
   /**
    * Collects parameters of paste operation by the given command and the current
    * system clipboard.
+   * @param writeFileFunc Used for unittest.
    */
   preparePaste(
       clipboardData: DataTransfer|null,
-      destinationEntry?: FilesAppDirEntry|DirectoryEntry, effect?: string) {
+      destinationEntry?: FilesAppDirEntry|DirectoryEntry, effect?: string,
+      writeFileFunc = writeFile) {
     destinationEntry =
         destinationEntry || this.directoryModel_.getCurrentDirEntry();
 
@@ -486,7 +651,7 @@ export class FileTransferController {
           } else {
             // A File which does not resolve for webkitGetAsEntry() must be an
             // image drag drop from the browser. Write it to destination dir.
-            this.fileOperationManager_.writeFile(
+            writeFileFunc(
                 item.getAsFile()!, destinationEntry as DirectoryEntry);
           }
         }
@@ -540,9 +705,8 @@ export class FileTransferController {
     (async () => {
       try {
         const sourceEntries = await pastePlan.resolveEntries();
-        const entries =
-            await this.fileOperationManager_.filterSameDirectoryEntry(
-                sourceEntries, destinationEntry, toMove);
+        const entries = await filterSameDirectoryEntry(
+            sourceEntries, destinationEntry, toMove);
 
         if (entries.length > 0) {
           if (isAllTrashEntries(entries, this.volumeManager_)) {
@@ -762,7 +926,7 @@ export class FileTransferController {
     // If mouse moves from one element to another the 'dragenter'
     // event for the new element comes before the 'dragleave' event for
     // the old one. In this case event.target !== this.lastEnteredTarget_
-    // and handler of the 'dragenter' event has already caried of
+    // and handler of the 'dragenter' event has already carried of
     // drop target. So event.target === this.lastEnteredTarget_
     // could only be if mouse goes out of listened element.
     if (event.target === this.lastEnteredTarget_) {

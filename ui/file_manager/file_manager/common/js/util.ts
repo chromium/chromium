@@ -72,15 +72,6 @@ export function runningInBrowser(): boolean {
 }
 
 /**
- * The type of a file operation error.
- */
-export enum FileOperationErrorType {
-  UNEXPECTED_SOURCE_FILE = 0,
-  TARGET_EXISTS = 1,
-  FILESYSTEM_ERROR = 2,
-}
-
-/**
  * The last URL with visitURL().
  */
 let lastVisitedURL: string;

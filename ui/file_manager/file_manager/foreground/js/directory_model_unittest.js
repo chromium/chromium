@@ -4,7 +4,6 @@
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MockFileOperationManager} from '../../background/js/mock_file_operation_manager.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -54,11 +53,10 @@ function getDirectoryModel() {
   MockVolumeManager.installMockSingleton(volumeManager);
   const fileFilter = new FileFilter(volumeManager);
   const metadataModel = new MockMetadataModel({});
-  const fileOperationManager = new MockFileOperationManager();
   return new DirectoryModel(
       // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
       // assignable to parameter of type 'MetadataModel'.
-      false, fileFilter, metadataModel, volumeManager, fileOperationManager);
+      false, fileFilter, metadataModel, volumeManager);
 }
 
 /**

@@ -8,7 +8,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {FileType} from '../../common/js/file_type.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -168,17 +167,14 @@ export class FileSelection {
 export class FileSelectionHandler extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
-   * @param {!FileOperationManager} fileOperationManager
    * @param {!ListContainer} listContainer
    * @param {!MetadataModel} metadataModel
    * @param {!VolumeManager} volumeManager
    * @param {!AllowedPaths} allowedPaths
    */
   constructor(
-      // @ts-ignore: error TS6133: 'fileOperationManager' is declared but its
-      // value is never read.
-      directoryModel, fileOperationManager, listContainer, metadataModel,
-      volumeManager, allowedPaths) {
+      directoryModel, listContainer, metadataModel, volumeManager,
+      allowedPaths) {
     super();
 
     /**

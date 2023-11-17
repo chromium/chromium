@@ -15,7 +15,6 @@ import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -92,13 +91,8 @@ export class DirectoryModel extends EventTarget {
    * @param {!MetadataModel} metadataModel Metadata model.
    *     service.
    * @param {!VolumeManager} volumeManager The volume manager.
-   * @param {!FileOperationManager} fileOperationManager File operation manager.
    */
-  constructor(
-      singleSelection, fileFilter, metadataModel, volumeManager,
-      // @ts-ignore: error TS6133: 'fileOperationManager' is declared but its
-      // value is never read.
-      fileOperationManager) {
+  constructor(singleSelection, fileFilter, metadataModel, volumeManager) {
     super();
 
     this.fileListSelection_ = singleSelection ?

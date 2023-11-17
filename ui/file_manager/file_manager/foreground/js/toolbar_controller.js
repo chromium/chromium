@@ -10,7 +10,6 @@ import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {State} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
@@ -40,12 +39,11 @@ export class ToolbarController {
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
-   * @param {!FileOperationManager} fileOperationManager
    * @param {!A11yAnnounce} a11y
    */
   constructor(
       toolbar, navigationList, listContainer, selectionHandler, directoryModel,
-      volumeManager, fileOperationManager, a11y) {
+      volumeManager, a11y) {
     /**
      * @private @type {!HTMLElement}
      * @const
@@ -256,12 +254,6 @@ export class ToolbarController {
      * @const
      */
     this.volumeManager_ = volumeManager;
-
-    /**
-     * @private @type {!FileOperationManager}
-     * @const
-     */
-    this.fileOperationManager_ = fileOperationManager;
 
     /**
      * @private @type {!A11yAnnounce}

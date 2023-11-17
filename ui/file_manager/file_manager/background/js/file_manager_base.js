@@ -12,15 +12,12 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {CrostiniImpl} from './crostini.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
-import {FileOperationManagerImpl} from './file_operation_manager.js';
-import {fileOperationUtil} from './file_operation_util.js';
 import {launchFileManager, setInitializationPromise} from './launcher.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
@@ -61,14 +58,6 @@ export class FileManagerBase {
     this.progressCenter = new ProgressCenterImpl();
 
     /**
-     * File operation manager.
-     * @type {FileOperationManager}
-     */
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-    // 'FileOperationManager'.
-    this.fileOperationManager = null;
-
-    /**
      * Event handler for progress center.
      * @private @type {?FileOperationHandler}
      */
@@ -103,7 +92,6 @@ export class FileManagerBase {
         this.crostini.initVolumeManager(volumeManager);
       });
 
-      this.fileOperationManager = new FileOperationManagerImpl();
       this.fileOperationHandler_ =
           new FileOperationHandler(this.progressCenter);
     });
@@ -132,16 +120,6 @@ export class FileManagerBase {
   ready(callback) {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.initializationPromise_.then(callback);
-  }
-
-  /**
-   * Forces File Operation Util to return error for automated tests.
-   * @param {boolean} enable
-   */
-  forceFileOperationErrorForTest(enable) {
-    // @ts-ignore: error TS2339: Property 'forceErrorForTest' does not exist on
-    // type 'typeof fileOperationUtil'.
-    fileOperationUtil.forceErrorForTest = enable;
   }
 
   /**

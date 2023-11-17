@@ -35,7 +35,6 @@ import {DirectoryTreeContainer} from '../../containers/directory_tree_container.
 import {NudgeType} from '../../containers/nudge_container.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -144,12 +143,6 @@ export class FileManager extends EventTarget {
 
     /** @private @type {?ThumbnailModel} */
     this.thumbnailModel_ = null;
-
-    /**
-     * File operation manager.
-     * @private @type {?FileOperationManager}
-     */
-    this.fileOperationManager_ = null;
 
     /**
      * File filter.
@@ -570,15 +563,6 @@ export class FileManager extends EventTarget {
   }
 
   /**
-   * @return {FileOperationManager}
-   */
-  get fileOperationManager() {
-    // @ts-ignore: error TS2322: Type 'FileOperationManager | null' is not
-    // assignable to type 'FileOperationManager'.
-    return this.fileOperationManager_;
-  }
-
-  /**
    * @return {!FilteredVolumeManager}
    */
   get volumeManager() {
@@ -735,7 +719,6 @@ export class FileManager extends EventTarget {
     assert(this.selectionHandler_);
     assert(this.launchParams_);
     assert(this.volumeManager_);
-    assert(this.fileOperationManager_);
     assert(this.dialogDom_);
 
     // @ts-ignore: error TS2322: Type 'MetadataModel | null' is not assignable
@@ -767,7 +750,6 @@ export class FileManager extends EventTarget {
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
         this.selectionHandler_, this.directoryModel_, this.volumeManager_,
-        this.fileOperationManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
     this.actionsController_ = new ActionsController(
         // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
@@ -898,8 +880,8 @@ export class FileManager extends EventTarget {
         assert(this.ui_.directoryTree),
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.showConfirmationDialog.bind(this.ui_), this.progressCenter,
-        assert(this.fileOperationManager_), assert(this.metadataModel_),
-        assert(this.directoryModel_), assert(this.volumeManager_),
+        assert(this.metadataModel_), assert(this.directoryModel_),
+        assert(this.volumeManager_),
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.selectionHandler_), this.ui_.toast);
   }
@@ -1139,8 +1121,6 @@ export class FileManager extends EventTarget {
     if (runningInBrowser()) {
       this.fileBrowserBackground_.registerDialog(window);
     }
-    this.fileOperationManager_ =
-        this.fileBrowserBackground_.fileOperationManager;
     this.crostini_ = this.fileBrowserBackground_.crostini;
 
     recordInterval('Load.InitBackgroundPage');
@@ -1294,13 +1274,12 @@ export class FileManager extends EventTarget {
         this.dialogType == DialogType.SELECT_SAVEAS_FILE;
 
     assert(this.volumeManager_);
-    assert(this.fileOperationManager_);
     assert(this.metadataModel_);
     this.directoryModel_ = new DirectoryModel(
         // @ts-ignore: error TS2345: Argument of type 'FileFilter | null' is not
         // assignable to parameter of type 'FileFilter'.
         singleSelection, this.fileFilter_, this.metadataModel_,
-        this.volumeManager_, this.fileOperationManager_);
+        this.volumeManager_);
 
     this.folderShortcutsModel_ =
         new FolderShortcutsDataModel(this.volumeManager_);
@@ -1320,9 +1299,7 @@ export class FileManager extends EventTarget {
     this.store_.dispatch(addUiEntry({entry: this.recentEntry_}));
     assert(this.launchParams_);
     this.selectionHandler_ = new FileSelectionHandler(
-        // @ts-ignore: error TS2345: Argument of type 'FileOperationManager |
-        // null' is not assignable to parameter of type 'FileOperationManager'.
-        assert(this.directoryModel_), assert(this.fileOperationManager_),
+        assert(this.directoryModel_),
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.listContainer), assert(this.metadataModel_),
         // @ts-ignore: error TS2531: Object is possibly 'null'.
@@ -1465,7 +1442,7 @@ export class FileManager extends EventTarget {
           // is not assignable to parameter of type 'DirectoryModel'.
           directoryTree, assert(this.directoryModel_),
           assert(this.volumeManager_), assert(this.metadataModel_),
-          assert(this.fileOperationManager_), fakeEntriesVisible);
+          fakeEntriesVisible);
 
       directoryTree.dataModel = new NavigationListModel(
           // @ts-ignore: error TS2345: Argument of type

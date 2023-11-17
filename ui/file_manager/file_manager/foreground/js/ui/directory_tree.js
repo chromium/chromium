@@ -14,7 +14,6 @@ import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInt
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -2361,14 +2360,10 @@ export class DirectoryTree extends Tree {
    * @param {!DirectoryModel} directoryModel Current DirectoryModel.
    * @param {!VolumeManager} volumeManager VolumeManager of the system.
    * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
-   * @param {!FileOperationManager} fileOperationManager
    * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
    */
   decorateDirectoryTree(
-      // @ts-ignore: error TS6133: 'fileOperationManager' is declared but its
-      // value is never read.
-      directoryModel, volumeManager, metadataModel, fileOperationManager,
-      fakeEntriesVisible) {
+      directoryModel, volumeManager, metadataModel, fakeEntriesVisible) {
     // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
     // 'Tree'.
     Tree.prototype.decorate.call(this);
@@ -3041,12 +3036,10 @@ export class DirectoryTree extends Tree {
  * @param {!DirectoryModel} directoryModel Current DirectoryModel.
  * @param {!VolumeManager} volumeManager VolumeManager of the system.
  * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
- * @param {!FileOperationManager} fileOperationManager
  * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
  */
 DirectoryTree.decorate =
-    (el, directoryModel, volumeManager, metadataModel, fileOperationManager,
-     fakeEntriesVisible) => {
+    (el, directoryModel, volumeManager, metadataModel, fakeEntriesVisible) => {
       // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
       // 'HTMLElement'.
       el.__proto__ = DirectoryTree.prototype;
@@ -3054,8 +3047,7 @@ DirectoryTree.decorate =
       Object.freeze(directorytree);
 
       /** @type {DirectoryTree} */ (el).decorateDirectoryTree(
-          directoryModel, volumeManager, metadataModel, fileOperationManager,
-          fakeEntriesVisible);
+          directoryModel, volumeManager, metadataModel, fakeEntriesVisible);
 
       // @ts-ignore: error TS2339: Property 'rowElementDepthStyleHandler' does
       // not exist on type 'HTMLElement'.

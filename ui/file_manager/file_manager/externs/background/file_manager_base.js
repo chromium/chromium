@@ -7,7 +7,6 @@ import {VolumeManager} from '../volume_manager.js';
 
 import {Crostini} from './crostini.js';
 import {DriveSyncHandler} from './drive_sync_handler.js';
-import {FileOperationManager} from './file_operation_manager.js';
 import {ProgressCenter} from './progress_center.js';
 
 /**
@@ -35,11 +34,6 @@ export class FileManagerBaseInterface {
     this.stringData;
 
     /**
-     * @type {FileOperationManager}
-     */
-    this.fileOperationManager;
-
-    /**
      * @type {!Crostini}
      */
     this.crostini;
@@ -60,13 +54,6 @@ export class FileManagerBaseInterface {
   // @ts-ignore: error TS6133: 'callback' is declared but its value is never
   // read.
   ready(callback) {}
-
-  /**
-   * Forces File Operation Util to return error for automated tests.
-   * @param {boolean} enable
-   */
-  // @ts-ignore: error TS6133: 'enable' is declared but its value is never read.
-  forceFileOperationErrorForTest(enable) {}
 
   /**
    * Registers a dialog (file picker or save as) in the background page.

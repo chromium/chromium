@@ -18,7 +18,6 @@ import {TaskController} from '../foreground/js/task_controller.js';
 import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {Crostini} from './background/crostini.js';
-import {FileOperationManager} from './background/file_operation_manager.js';
 import {ProgressCenter} from './background/progress_center.js';
 import {FilesAppEntry} from './files_app_entry_interfaces.js';
 import {VolumeManager} from './volume_manager.js';
@@ -47,9 +46,6 @@ export class CommandHandlerDeps {
 
     /** @type {FileFilter} */
     this.fileFilter;
-
-    /** @type {FileOperationManager} */
-    this.fileOperationManager;
 
     /** @type {FileTransferController} */
     this.fileTransferController;
