@@ -1117,6 +1117,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   if (!_searchPasswordsUserActionWasRecorded) {
     base::RecordAction(
         base::UserMetricsAction("MobilePasswordManagerSearchPasswords"));
+    _searchPasswordsUserActionWasRecorded = YES;
   }
 }
 
