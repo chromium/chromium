@@ -3338,7 +3338,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Expect that the server card is stored in the account autofill table.
   std::vector<std::unique_ptr<CreditCard>> cards;
-  account_autofill_table_->GetServerCreditCards(&cards);
+  account_autofill_table_->GetServerCreditCards(cards);
   EXPECT_EQ(1U, cards.size());
   EXPECT_EQ(server_card.LastFourDigits(), cards[0]->LastFourDigits());
 

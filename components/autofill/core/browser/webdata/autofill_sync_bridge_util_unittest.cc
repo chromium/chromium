@@ -45,9 +45,9 @@ class TestAutofillTable : public AutofillTable {
   ~TestAutofillTable() override {}
 
   bool GetServerCreditCards(
-      std::vector<std::unique_ptr<CreditCard>>* cards) const override {
+      std::vector<std::unique_ptr<CreditCard>>& cards) const override {
     for (const auto& card_on_disk : cards_on_disk_)
-      cards->push_back(std::make_unique<CreditCard>(card_on_disk));
+      cards.push_back(std::make_unique<CreditCard>(card_on_disk));
     return true;
   }
 

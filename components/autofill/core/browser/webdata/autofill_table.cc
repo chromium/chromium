@@ -2097,8 +2097,8 @@ bool AutofillTable::GetCreditCards(
 }
 
 bool AutofillTable::GetServerCreditCards(
-    std::vector<std::unique_ptr<CreditCard>>* credit_cards) const {
-  credit_cards->clear();
+    std::vector<std::unique_ptr<CreditCard>>& credit_cards) const {
+  credit_cards.clear();
   auto instrument_to_cvc = base::MakeFlatMap<int64_t, std::u16string>(
       GetAllServerCvcs(), {}, [](const auto& server_cvc) {
         return std::make_pair(server_cvc->instrument_id, server_cvc->cvc);
@@ -2168,7 +2168,7 @@ bool AutofillTable::GetServerCreditCards(
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
     card->set_cvc(instrument_to_cvc[card->instrument_id()]);
-    credit_cards->push_back(std::move(card));
+    credit_cards.push_back(std::move(card));
   }
   return s.Succeeded();
 }
@@ -2335,8 +2335,8 @@ bool AutofillTable::RemoveServerCardMetadata(const std::string& id) {
 }
 
 bool AutofillTable::GetServerCardsMetadata(
-    std::map<std::string, AutofillMetadata>* cards_metadata) const {
-  cards_metadata->clear();
+    std::vector<AutofillMetadata>& cards_metadata) const {
+  cards_metadata.clear();
 
   sql::Statement s;
   SelectBuilder(db_, s, kServerCardMetadataTable,
@@ -2351,7 +2351,7 @@ bool AutofillTable::GetServerCardsMetadata(
     card_metadata.use_date =
         base::Time::FromInternalValue(s.ColumnInt64(index++));
     card_metadata.billing_address_id = s.ColumnString(index++);
-    (*cards_metadata)[card_metadata.id] = card_metadata;
+    cards_metadata.push_back(card_metadata);
   }
   return s.Succeeded();
 }
@@ -2475,9 +2475,9 @@ void AutofillTable::SetCreditCardCloudTokenData(
 }
 
 bool AutofillTable::GetCreditCardCloudTokenData(
-    std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
+    std::vector<std::unique_ptr<CreditCardCloudTokenData>>&
         credit_card_cloud_token_data) {
-  credit_card_cloud_token_data->clear();
+  credit_card_cloud_token_data.clear();
 
   sql::Statement s;
   SelectBuilder(
@@ -2494,7 +2494,7 @@ bool AutofillTable::GetCreditCardCloudTokenData(
     data->SetExpirationYearFromString(s.ColumnString16(index++));
     data->card_art_url = s.ColumnString(index++);
     data->instrument_token = s.ColumnString(index++);
-    credit_card_cloud_token_data->push_back(std::move(data));
+    credit_card_cloud_token_data.push_back(std::move(data));
   }
 
   return s.Succeeded();
@@ -2580,11 +2580,11 @@ void AutofillTable::SetPaymentsCustomerData(
 }
 
 bool AutofillTable::GetPaymentsCustomerData(
-    std::unique_ptr<PaymentsCustomerData>* customer_data) const {
+    std::unique_ptr<PaymentsCustomerData>& customer_data) const {
   sql::Statement s;
   SelectBuilder(db_, s, kPaymentsCustomerDataTable, {kCustomerId});
   if (s.Step()) {
-    *customer_data = std::make_unique<PaymentsCustomerData>(
+    customer_data = std::make_unique<PaymentsCustomerData>(
         /*customer_id=*/s.ColumnString(0));
   }
 

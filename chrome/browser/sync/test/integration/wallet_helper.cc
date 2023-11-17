@@ -162,10 +162,10 @@ void SetCreditCardCloudTokenDataOnDBSequence(
 
 void GetServerCardsMetadataOnDBSequence(
     AutofillWebDataService* wds,
-    std::map<std::string, AutofillMetadata>* cards_metadata) {
+    std::vector<AutofillMetadata>* cards_metadata) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   AutofillTable::FromWebDatabase(wds->GetDatabase())
-      ->GetServerCardsMetadata(cards_metadata);
+      ->GetServerCardsMetadata(*cards_metadata);
 }
 
 void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
@@ -232,8 +232,8 @@ void UpdateServerCardMetadata(int profile, const CreditCard& credit_card) {
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 
-std::map<std::string, AutofillMetadata> GetServerCardsMetadata(int profile) {
-  std::map<std::string, AutofillMetadata> cards_metadata;
+std::vector<AutofillMetadata> GetServerCardsMetadata(int profile) {
+  std::vector<AutofillMetadata> cards_metadata;
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetServerCardsMetadataOnDBSequence,
@@ -448,9 +448,9 @@ void AutofillWalletMetadataSizeChecker::OnPersonalDataChanged() {
 bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfiedImpl() {
   // There could be trailing metadata left on one of the clients. Check that
   // metadata.size() is the same on both clients.
-  std::map<std::string, AutofillMetadata> cards_metadata_a =
+  std::vector<AutofillMetadata> cards_metadata_a =
       wallet_helper::GetServerCardsMetadata(profile_a_);
-  std::map<std::string, AutofillMetadata> cards_metadata_b =
+  std::vector<AutofillMetadata> cards_metadata_b =
       wallet_helper::GetServerCardsMetadata(profile_b_);
   if (cards_metadata_a.size() != cards_metadata_b.size()) {
     DVLOG(1) << "Server cards metadata mismatch, expected "

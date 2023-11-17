@@ -558,7 +558,7 @@ void CopyRelevantWalletMetadataFromDisk(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
   std::vector<std::unique_ptr<CreditCard>> cards_on_disk;
-  table.GetServerCreditCards(&cards_on_disk);
+  table.GetServerCreditCards(cards_on_disk);
 
   // Since the number of cards is fairly small, the brute-force search is good
   // enough.

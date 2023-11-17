@@ -572,7 +572,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerCreditCards(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<CreditCard>> credit_cards;
-  AutofillTable::FromWebDatabase(db)->GetServerCreditCards(&credit_cards);
+  AutofillTable::FromWebDatabase(db)->GetServerCreditCards(credit_cards);
   return std::unique_ptr<WDTypedResult>(
       new WDResult<std::vector<std::unique_ptr<CreditCard>>>(
           AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards)));
@@ -807,7 +807,7 @@ std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetPaymentsCustomerData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::unique_ptr<PaymentsCustomerData> customer_data;
-  AutofillTable::FromWebDatabase(db)->GetPaymentsCustomerData(&customer_data);
+  AutofillTable::FromWebDatabase(db)->GetPaymentsCustomerData(customer_data);
   return std::make_unique<WDResult<std::unique_ptr<PaymentsCustomerData>>>(
       AUTOFILL_CUSTOMERDATA_RESULT, std::move(customer_data));
 }
@@ -817,7 +817,7 @@ AutofillWebDataBackendImpl::GetCreditCardCloudTokenData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
   AutofillTable::FromWebDatabase(db)->GetCreditCardCloudTokenData(
-      &cloud_token_data);
+      cloud_token_data);
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<CreditCardCloudTokenData>>>>(
       AUTOFILL_CLOUDTOKEN_RESULT, std::move(cloud_token_data));

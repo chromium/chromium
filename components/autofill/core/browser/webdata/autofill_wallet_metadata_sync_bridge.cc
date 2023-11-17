@@ -444,15 +444,15 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
   }
 
   // Load the data cache.
-  std::map<std::string, AutofillMetadata> cards_metadata;
-  if (!GetAutofillTable()->GetServerCardsMetadata(&cards_metadata)) {
+  std::vector<AutofillMetadata> cards_metadata;
+  if (!GetAutofillTable()->GetServerCardsMetadata(cards_metadata)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill data from WebDatabase."});
     return;
   }
-  for (const auto& [metadata_id, metadata] : cards_metadata) {
+  for (const auto& metadata : cards_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
-        WalletMetadataSpecifics::CARD, metadata_id)] = metadata;
+        WalletMetadataSpecifics::CARD, metadata.id)] = metadata;
   }
 
   // Load the metadata and send to the processor.
@@ -480,7 +480,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // Load up (metadata) ids for which data exists; we do not delete those.
   std::unordered_set<std::string> non_orphan_ids;
   std::vector<std::unique_ptr<CreditCard>> cards;
-  if (!GetAutofillTable()->GetServerCreditCards(&cards)) {
+  if (!GetAutofillTable()->GetServerCreditCards(cards)) {
     return;
   }
   for (const std::unique_ptr<CreditCard>& card : cards) {

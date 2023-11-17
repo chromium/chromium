@@ -750,7 +750,7 @@ class AutofillTable : public WebDatabaseTable,
   virtual bool GetCreditCards(
       std::vector<std::unique_ptr<CreditCard>>* credit_cards);
   virtual bool GetServerCreditCards(
-      std::vector<std::unique_ptr<CreditCard>>* credit_cards) const;
+      std::vector<std::unique_ptr<CreditCard>>& credit_cards) const;
 
   // Replaces all server credit cards with the given vector. Unmasked cards
   // present in the new list will be preserved (even if the input is MASKED).
@@ -792,7 +792,7 @@ class AutofillTable : public WebDatabaseTable,
   bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
-      std::map<std::string, AutofillMetadata>* cards_metadata) const;
+      std::vector<AutofillMetadata>& cards_metadata) const;
   bool AddOrUpdateServerIbanMetadata(const AutofillMetadata& iban_metadata);
   bool RemoveServerIbanMetadata(const std::string& instrument_id);
   std::vector<AutofillMetadata> GetServerIbansMetadata() const;
@@ -805,7 +805,7 @@ class AutofillTable : public WebDatabaseTable,
   void SetCreditCardCloudTokenData(const std::vector<CreditCardCloudTokenData>&
                                        credit_card_cloud_token_data);
   bool GetCreditCardCloudTokenData(
-      std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
+      std::vector<std::unique_ptr<CreditCardCloudTokenData>>&
           credit_card_cloud_token_data);
 
   // Returns true if server IBANs are successfully returned via `ibans` from
@@ -818,9 +818,9 @@ class AutofillTable : public WebDatabaseTable,
   // Passing null to the setter will clear the data.
   void SetPaymentsCustomerData(const PaymentsCustomerData* customer_data);
   // Getter returns false if it could not execute the database statement, and
-  // may return true but leave |customer_data| untouched if there is no data.
+  // may return true but leave `customer_data` untouched if there is no data.
   bool GetPaymentsCustomerData(
-      std::unique_ptr<PaymentsCustomerData>* customer_data) const;
+      std::unique_ptr<PaymentsCustomerData>& customer_data) const;
 
   // |autofill_offer_data| must include all existing offers, since table will
   // be completely overwritten.

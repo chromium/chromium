@@ -324,8 +324,8 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
   }
 
   void ExpectCountOfCreditCardMetadataInDB(unsigned int cards_count) {
-    std::map<std::string, AutofillMetadata> cards_metadata;
-    ASSERT_TRUE(table()->GetServerCardsMetadata(&cards_metadata));
+    std::vector<AutofillMetadata> cards_metadata;
+    ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
     EXPECT_EQ(cards_count, cards_metadata.size());
   }
 
@@ -831,7 +831,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
               UnorderedElementsAre(EqualsSpecifics(card_specifics)));
 
   std::vector<std::unique_ptr<CreditCard>> cards;
-  table()->GetServerCreditCards(&cards);
+  table()->GetServerCreditCards(cards);
   ASSERT_EQ(1U, cards.size());
 
   // Make sure that all the data was set properly.
@@ -873,7 +873,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllCloudTokenData) {
       UnorderedElementsAre(EqualsSpecifics(cloud_token_data_specifics)));
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
       cloud_token_data_vector;
-  table()->GetCreditCardCloudTokenData(&cloud_token_data_vector);
+  table()->GetCreditCardCloudTokenData(cloud_token_data_vector);
   ASSERT_EQ(1U, cloud_token_data_vector.size());
 
   EXPECT_EQ(cloud_token_data.masked_card_id,
@@ -990,7 +990,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   StartSyncing({card_specifics});
 
   std::vector<std::unique_ptr<CreditCard>> cards;
-  table()->GetServerCreditCards(&cards);
+  table()->GetServerCreditCards(cards);
   ASSERT_EQ(1U, cards.size());
 
   // Make sure that the correct instrument_id was set.

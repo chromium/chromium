@@ -595,10 +595,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
   EXPECT_EQ("data-2", cloud_token_data[0]->instrument_token);
 
   // Test that the non-default metadata values stayed around.
-  std::map<std::string, AutofillMetadata> cards_metadata =
-      GetServerCardsMetadata(0);
-  EXPECT_EQ(1U, cards_metadata.size());
-  EXPECT_EQ(2U, cards_metadata.begin()->second.use_count);
+  std::vector<AutofillMetadata> cards_metadata = GetServerCardsMetadata(0);
+  ASSERT_EQ(1U, cards_metadata.size());
+  EXPECT_EQ(2U, cards_metadata[0].use_count);
 }
 
 // If the server sends the same cards with changed data, they should change on
@@ -639,10 +638,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   EXPECT_EQ("data-2", cloud_token_data[0]->instrument_token);
 
   // Test that the non-default metadata values stayed around.
-  std::map<std::string, AutofillMetadata> cards_metadata =
-      GetServerCardsMetadata(0);
-  EXPECT_EQ(1U, cards_metadata.size());
-  EXPECT_EQ(2U, cards_metadata.begin()->second.use_count);
+  std::vector<AutofillMetadata> cards_metadata = GetServerCardsMetadata(0);
+  ASSERT_EQ(1U, cards_metadata.size());
+  EXPECT_EQ(2U, cards_metadata[0].use_count);
 }
 
 // If the server sends the same cards again, they should not change on the

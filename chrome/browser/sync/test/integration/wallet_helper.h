@@ -68,8 +68,7 @@ void SetCreditCardCloudTokenData(
 void UpdateServerCardMetadata(int profile,
                               const autofill::CreditCard& credit_card);
 
-std::map<std::string, autofill::AutofillMetadata> GetServerCardsMetadata(
-    int profile);
+std::vector<autofill::AutofillMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
 sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,

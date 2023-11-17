@@ -253,10 +253,10 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
   std::vector<std::unique_ptr<Iban>> ibans;
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
   std::unique_ptr<PaymentsCustomerData> customer_data;
-  if (!GetAutofillTable()->GetServerCreditCards(&cards) ||
+  if (!GetAutofillTable()->GetServerCreditCards(cards) ||
       !GetAutofillTable()->GetServerIbans(ibans) ||
-      !GetAutofillTable()->GetCreditCardCloudTokenData(&cloud_token_data) ||
-      !GetAutofillTable()->GetPaymentsCustomerData(&customer_data)) {
+      !GetAutofillTable()->GetCreditCardCloudTokenData(cloud_token_data) ||
+      !GetAutofillTable()->GetPaymentsCustomerData(customer_data)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -333,7 +333,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   CopyRelevantWalletMetadataFromDisk(*table, &wallet_cards);
 
   std::vector<std::unique_ptr<CreditCard>> existing_cards;
-  if (!table->GetServerCreditCards(&existing_cards)) {
+  if (!table->GetServerCreditCards(existing_cards)) {
     return false;
   }
 
@@ -420,7 +420,7 @@ bool AutofillWalletSyncBridge::SetPaymentsCustomerData(
     std::vector<PaymentsCustomerData> customer_data) {
   AutofillTable* table = GetAutofillTable();
   std::unique_ptr<PaymentsCustomerData> existing_entry;
-  table->GetPaymentsCustomerData(&existing_entry);
+  table->GetPaymentsCustomerData(existing_entry);
 
   // In case there were multiple entries (and there shouldn't!), we take the
   // pointer to the first entry in the vector.
@@ -450,7 +450,7 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
     const std::vector<CreditCardCloudTokenData>& cloud_token_data) {
   AutofillTable* table = GetAutofillTable();
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> existing_data;
-  table->GetCreditCardCloudTokenData(&existing_data);
+  table->GetCreditCardCloudTokenData(existing_data);
 
   if (AreAnyItemsDifferent(existing_data, cloud_token_data)) {
     table->SetCreditCardCloudTokenData(cloud_token_data);
