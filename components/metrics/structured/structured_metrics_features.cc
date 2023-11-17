@@ -49,6 +49,12 @@ constexpr base::FeatureParam<int> kUploadTimeInSeconds{
     40 * 60  // 40 minutes
 };
 
+constexpr base::FeatureParam<int> kExternalMetricsCollectionIntervalInSeconds{
+    &features::kStructuredMetrics,
+    "external_metrics_collection_interval_in_seconds",
+    10 * 60  // 10 minutes
+};
+
 constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{
     &features::kStructuredMetrics, "sm_upload_cadence_minutes", 45};
 
@@ -82,6 +88,10 @@ std::string GetDisabledProjects() {
 
 int GetUploadInterval() {
   return kUploadTimeInSeconds.Get();
+}
+
+base::TimeDelta GetExternalMetricsCollectionInterval() {
+  return base::Seconds(kExternalMetricsCollectionIntervalInSeconds.Get());
 }
 
 }  // namespace metrics::structured

@@ -24,8 +24,6 @@
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
-#include "event_validator.h"
-#include "project_validator.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics::structured {
@@ -35,9 +33,6 @@ using ::metrics::ChromeUserMetricsExtension;
 using ::metrics::SystemProfileProto;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// The interval between chrome's collection of metrics logged from cros.
-constexpr int kExternalMetricsIntervalMins = 10;
-
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
 #endif
@@ -205,7 +200,7 @@ void StructuredMetricsRecorder::OnProfileAdded(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   external_metrics_ = std::make_unique<ExternalMetrics>(
       base::FilePath(kExternalMetricsDir),
-      base::Minutes(kExternalMetricsIntervalMins),
+      GetExternalMetricsCollectionInterval(),
       base::BindRepeating(
           &StructuredMetricsRecorder::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
@@ -300,7 +295,7 @@ void StructuredMetricsRecorder::ProvideSystemProfile(
 void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
     const base::FilePath& dir) {
   external_metrics_ = std::make_unique<ExternalMetrics>(
-      dir, base::Minutes(kExternalMetricsIntervalMins),
+      dir, GetExternalMetricsCollectionInterval(),
       base::BindRepeating(
           &StructuredMetricsRecorder::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));

@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace metrics::features {
 // This is forward-declared since this file cannot have a direct dependency on
@@ -75,6 +76,10 @@ std::string GetDisabledProjects();
 
 // Retrieves the Structured Metrics upload interval (defaults to 40 minutes).
 int GetUploadInterval();
+
+// Retrieves the collection interval for external metrics (defaults to 10
+// minutes).
+base::TimeDelta GetExternalMetricsCollectionInterval();
 
 }  // namespace metrics::structured
 
