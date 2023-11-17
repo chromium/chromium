@@ -551,10 +551,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
 
-  // The global passwords pref is set to false. This can happen either because
-  // a) the user was syncing before and disabled the toggle, or b) a bug
-  // happened. This is a broken state where kEnablePasswordsAccountStorage
-  // doesn't work but the user has no idea why.
+  // The user opts out of Passwords.
   syncer::UserSelectableTypeSet selected_types =
       GetSyncService(0)->GetUserSettings()->GetRegisteredSelectableTypes();
   selected_types.Remove(syncer::UserSelectableType::kPasswords);
@@ -582,15 +579,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Bookmarks should be enabled as before. Passwords too - the broken state was
-  // fixed!
+  // Bookmarks and Passwords should still be enabled and disabled, respectively.
   // Note that GetSelectedTypes() now reads from the account-scoped prefs!
   // TODO(crbug.com/1494120): Re-enable
   // `syncer::kEnableBookmarksAccountStorage` when possible and reflect
   // expectations below.
   // EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
   //    syncer::UserSelectableType::kBookmarks));
-  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPasswords));
   // Preferences should've been disabled by the migration.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
