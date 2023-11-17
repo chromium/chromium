@@ -128,6 +128,9 @@ def _run_fuzzer_target(args):
   llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse'
                        ] + list(valid_profraws) + ['-o', target_profdata]
   subprocess.check_call(llvm_profdata_cmd)
+  # Free up disk space by deleting all non-zero-length profraw files
+  for f in valid_profraws:
+    os.unlink(f)
   verified_fuzzer_targets.append(target)
 
 
