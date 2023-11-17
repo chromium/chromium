@@ -135,7 +135,10 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   std::string get_precise_coverage =
       "{\"id\":40,\"method\":\"Profiler.takePreciseCoverage\"}";
   SendCommandMessage(host, get_precise_coverage);
-  AwaitCommandResponse(40);
+  if (!AwaitCommandResponse(40)) {
+    LOG(ERROR) << "Host has been destroyed whilst getting precise coverage";
+    return;
+  }
 
   script_coverage_ = std::move(value_);
   base::Value::Dict* result = script_coverage_.FindDict("result");
@@ -193,7 +196,9 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   script_id_map_.clear();
   scripts_.clear();
 
-  AwaitCommandResponse(42);
+  LOG_IF(ERROR, !AwaitCommandResponse(42))
+      << "Host has been destroyed whilst waiting, coverage coverage already "
+         "extracted though";
   value_.clear();
   all_scripts_parsed_ = false;
 }
@@ -271,7 +276,11 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
         ",\"params\":{\"scriptId\":\"%s\"}}",
         id.c_str());
     SendCommandMessage(host, get_script_source);
-    AwaitCommandResponse(50);
+    if (!AwaitCommandResponse(50)) {
+      LOG(ERROR) << "Host has been destroyed whilst getting script source, "
+                    "skipping remaining script sources";
+      return;
+    }
 
     std::string text;
     {
@@ -334,13 +343,17 @@ void DevToolsListener::SendCommandMessage(content::DevToolsAgentHost* host,
   host->DispatchProtocolMessage(this, message);
 }
 
-void DevToolsListener::AwaitCommandResponse(int id) {
+bool DevToolsListener::AwaitCommandResponse(int id) {
+  if (!attached_ && !navigated_) {
+    return false;
+  }
   value_.clear();
   value_id_ = id;
 
   base::RunLoop run_loop;
   value_closure_ = run_loop.QuitClosure();
   run_loop.Run();
+  return attached_ && navigated_;
 }
 
 void DevToolsListener::DispatchProtocolMessage(
@@ -381,9 +394,11 @@ bool DevToolsListener::MayAttachToURL(const GURL& url, bool is_webui) {
 }
 
 void DevToolsListener::AgentHostClosed(content::DevToolsAgentHost* host) {
-  CHECK(!value_closure_);
   navigated_ = false;
   attached_ = false;
+  if (value_closure_) {
+    std::move(value_closure_).Run();
+  }
 }
 
 }  // namespace coverage
