@@ -71,12 +71,10 @@ class MutationsDuringClickTracker {
   constructor(private readonly initialEvent: Event) {
     this.mutationObserver =
         new MutationObserver((mutationList: MutationRecord[]) => {
-          if (this.hasMutations) {
-            return;
-          }
           for (let mutation of mutationList) {
             if (mutation.target.contains(this.initialEvent.target as Node)) {
               this.hasMutations = true;
+              this.stopObserving();
               break;
             }
           }
@@ -218,8 +216,9 @@ function decorateAnnotations(annotations: Annotation[]): void {
   let failures = 0;
   decorations = [];
 
-  // Last checks when bubbling up event.
+  // Check CHROME_ANNOTATION on capturing and bubbling event.
   document.addEventListener('click', handleTopTap.bind(document));
+  document.addEventListener('click', handleTopTap.bind(document), true);
 
   annotations = removeOverlappingAnnotations(annotations);
 
@@ -527,14 +526,6 @@ function getPageText(maxChars: number): string {
 
 let mutationDuringClickObserver: MutationsDuringClickTracker|null;
 
-// Initiates a `mutationDuringClickObserver` that will be checked at document
-// level tab handler (`handleTopTap`), where it will be decided if any action
-// bubbling to objc is required (i.e. no DOM change occurs).
-function handleTap(event: Event) {
-  cancelObserver();
-  mutationDuringClickObserver = new MutationsDuringClickTracker(event);
-}
-
 // Stops observing DOM mutations.
 function cancelObserver(): void {
   mutationDuringClickObserver?.stopObserving();
@@ -544,24 +535,36 @@ function cancelObserver(): void {
 // Monitors taps at the top, document level. This checks if it is tap
 // triggered by an annotation and if no DOM mutation have happened while the
 // event is bubbling up. If it's the case, the annotation callback is called.
-function handleTopTap(event: Event) {
-  // Nothing happened to the page between `handleTap` and `handleTopTap`.
-  if (event.target instanceof HTMLElement &&
-      event.target.tagName === 'CHROME_ANNOTATION' &&
-      mutationDuringClickObserver &&
-      !mutationDuringClickObserver.hasPreventativeActivity(event)) {
-    const annotation = event.target;
-    mutationDuringClickObserver.extendObservation(() => {
-      if (mutationDuringClickObserver) {
-        highlightAnnotation(annotation);
+function handleTopTap(event: Event): void {
+  const annotation = event.target;
+  if (annotation instanceof HTMLElement &&
+      annotation.tagName === 'CHROME_ANNOTATION') {
+    if (event.eventPhase === Event.CAPTURING_PHASE) {
+      // Initiates a `mutationDuringClickObserver` that will be checked at
+      // bubble up phase where it will be decided if the click should be
+      // cancelled.
+      cancelObserver();
+      mutationDuringClickObserver = new MutationsDuringClickTracker(event);
+    } else if (mutationDuringClickObserver) {
+      // At BUBBLING_PHASE.
+      if (!mutationDuringClickObserver.hasPreventativeActivity(event)) {
+        mutationDuringClickObserver.extendObservation(() => {
+          if (mutationDuringClickObserver) {
+            highlightAnnotation(annotation);
+            onClickAnnotation(
+                annotation, mutationDuringClickObserver.hasMutations);
+          }
+        });
+      } else {
         onClickAnnotation(annotation, mutationDuringClickObserver.hasMutations);
       }
-    });
+    }
   } else {
-    onClickAnnotation(event.target as HTMLElement, true);
+    cancelObserver();
   }
 }
 
+// Sends click to Bling and cancel observer.
 function onClickAnnotation(annotation: HTMLElement, cancel: boolean): void {
   sendWebKitMessage('annotations', {
     command: 'annotations.onClick',
@@ -658,7 +661,6 @@ function replaceNode(
     }
 
     element.style.borderBottomColor = textColor;
-    element.addEventListener('click', handleTap.bind(element), true);
     parts.push(element);
     cursor = replacement.right;
   }
