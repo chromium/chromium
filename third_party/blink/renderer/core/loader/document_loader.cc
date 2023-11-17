@@ -2668,10 +2668,6 @@ void DocumentLoader::CommitNavigation() {
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
-  if (!response_.HttpHeaderField(http_names::kExpectCT).empty()) {
-    Deprecation::CountDeprecation(frame_->DomWindow(),
-                                  mojom::blink::WebFeature::kExpectCTHeader);
-  }
   for (const auto& policy : security_init.PermissionsPolicyHeader()) {
     if (policy.deprecated_feature.has_value()) {
       Deprecation::CountDeprecation(frame_->DomWindow(),

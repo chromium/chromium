@@ -24808,7 +24808,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_WebCodecsImageDecoderPremultiplyAlphaDeprecation"/>
   <int value="4300" label="CookieDomainNonASCII"/>
   <int value="4301" label="ClientHintsMetaEquivDelegateCH"/>
-  <int value="4302" label="ExpectCTHeader"/>
+  <int value="4302" label="OBSOLETE_ExpectCTHeader"/>
   <int value="4303" label="OBSOLETE_kNavigateEventTransitionWhile"/>
   <int value="4304" label="OBSOLETE_kNavigateEventRestoreScroll"/>
   <int value="4305" label="SendBeaconWithArrayBuffer"/>
