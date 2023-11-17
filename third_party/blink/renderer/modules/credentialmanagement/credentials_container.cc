@@ -1521,7 +1521,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       // TODO(kenrb): Add some renderer-side validation here, such as
       // validating |provider|, and making sure the calling context is legal.
       // Some of this has not been spec'd yet.
-
       if (!provider->hasConfigURL()) {
         exception_state.ThrowTypeError("Missing the provider's configURL.");
         resolver->Detach();
@@ -1539,7 +1538,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       String client_id = provider->clientId();
 
       ++provider_index;
-      if (!provider_url.IsValid() || client_id == "") {
+      if ((!provider_url.IsValid() &&
+           (!provider->hasRegistered() || !provider->registered())) ||
+          client_id == "") {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             String::Format("Provider %i information is incomplete.",

@@ -224,6 +224,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
+  std::vector<blink::mojom::IdentityProviderPtr> MaybeAddRegisteredProviders(
+      std::vector<blink::mojom::IdentityProviderPtr>& providers);
+
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& url);
   void ShowErrorDialog(const GURL& idp_config_url,

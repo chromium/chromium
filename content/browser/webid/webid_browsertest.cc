@@ -543,6 +543,53 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
   EXPECT_TRUE(sharing_context()->GetRegisteredIdPs().empty());
 }
 
+// Verify that an RP can request from registered IdPs.
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+
+  // Assert that the IdP was added to the Registry.
+  EXPECT_EQ(std::vector<GURL>{configURL},
+            sharing_context()->GetRegisteredIdPs());
+
+  // Navigate to the RP.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  std::string get_script = R"(
+        (async () => {
+          var {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: "",
+                clientId: "https://rp.example",
+                registered: true,
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), get_script));
+}
+
 // Verify that IDP sign-in headers work.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSigninToplevel) {
   GURL url = https_server().GetURL(kRpHostName, "/header/signin");

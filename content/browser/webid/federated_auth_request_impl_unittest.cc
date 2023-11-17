@@ -1340,6 +1340,35 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         url::Origin::Create(GURL(config_url)), accounts);
   }
 
+  std::vector<blink::mojom::IdentityProviderPtr> MaybeAddRegisteredProviders(
+      std::vector<blink::mojom::IdentityProviderPtr>& providers) {
+    return federated_auth_request_impl_->MaybeAddRegisteredProviders(providers);
+  }
+
+  blink::mojom::IdentityProviderPtr NewNamedIdP(GURL config_url,
+                                                std::string client_id) {
+    blink::mojom::IdentityProviderRequestOptionsPtr options =
+        blink::mojom::IdentityProviderRequestOptions::New();
+    blink::mojom::IdentityProviderConfigPtr config =
+        blink::mojom::IdentityProviderConfig::New();
+    config->config_url = config_url;
+    config->client_id = client_id;
+    options->config = std::move(config);
+    return blink::mojom::IdentityProvider::NewFederated(std::move(options));
+  }
+
+  blink::mojom::IdentityProviderPtr NewRegisteredIdP(std::string client_id) {
+    blink::mojom::IdentityProviderConfigPtr config =
+        blink::mojom::IdentityProviderConfig::New();
+    config->use_registered_config_urls = true;
+    config->client_id = client_id;
+    blink::mojom::IdentityProviderRequestOptionsPtr options =
+        blink::mojom::IdentityProviderRequestOptions::New();
+
+    options->config = std::move(config);
+    return blink::mojom::IdentityProvider::NewFederated(std::move(options));
+  }
+
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   raw_ptr<FederatedAuthRequestImpl, AcrossTasksDanglingUntriaged>
@@ -5374,6 +5403,129 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusClosePopupEmbargo) {
 
   EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
   EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.empty());
+}
+
+// Test that no registered IdP is added without a registry requested.
+TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersEmptyList) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  EXPECT_TRUE(result.empty());
+}
+
+// Test that no registered IdP with only named providers requested.
+TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersNamed) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+  providers.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  // Expects the vector to be the same.
+  std::vector<blink::mojom::IdentityProviderPtr> expected;
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+
+  EXPECT_EQ(expected, result);
+}
+
+// Test that a registered provider is added.
+TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersAdded) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+  providers.emplace_back(NewRegisteredIdP(kClientId));
+
+  std::vector<GURL> registry;
+  registry.emplace_back("https://idp.example");
+
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  // Expects that the registered IdP gets replaced by a named IdP.
+  std::vector<blink::mojom::IdentityProviderPtr> expected;
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+
+  EXPECT_EQ(expected, result);
+}
+
+// Test that all registered IdPs are expanded.
+TEST_F(FederatedAuthRequestImplTest,
+       MaybeAddRegisteredProvidersAllRequestsForRegisteredIdPsAreExpanded) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+  providers.emplace_back(NewRegisteredIdP(kClientId));
+  providers.emplace_back(NewRegisteredIdP(kClientId));
+
+  std::vector<GURL> registry;
+  registry.emplace_back("https://idp.example");
+
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  // Expects that the registered IdP gets replaced by a named IdP.
+  std::vector<blink::mojom::IdentityProviderPtr> expected;
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+
+  EXPECT_EQ(expected, result);
+}
+
+// Test that the registry can add two idps.
+TEST_F(FederatedAuthRequestImplTest,
+       MaybeAddRegisteredProvidersTwoRegisteredIdPs) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+  providers.emplace_back(NewRegisteredIdP(kClientId));
+
+  std::vector<GURL> registry;
+  registry.emplace_back("https://idp1.example");
+  registry.emplace_back("https://idp2.example");
+
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  std::vector<blink::mojom::IdentityProviderPtr> expected;
+  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
+
+  EXPECT_EQ(expected, result);
+}
+
+// Test that registered idps are inserted inline.
+TEST_F(FederatedAuthRequestImplTest,
+       MaybeAddRegisteredProvidersInsertedInline) {
+  std::vector<blink::mojom::IdentityProviderPtr> providers;
+  providers.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
+  providers.emplace_back(NewRegisteredIdP(kClientId));
+  providers.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
+
+  std::vector<GURL> registry;
+  registry.emplace_back("https://idp-registered1.example");
+  registry.emplace_back("https://idp-registered2.example");
+
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  std::vector<blink::mojom::IdentityProviderPtr> result =
+      MaybeAddRegisteredProviders(providers);
+
+  // Expects that the registered IdP gets replaced by a named IdP.
+  std::vector<blink::mojom::IdentityProviderPtr> expected;
+  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
+  expected.emplace_back(
+      NewNamedIdP(GURL("https://idp-registered2.example"), kClientId));
+  expected.emplace_back(
+      NewNamedIdP(GURL("https://idp-registered1.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
+
+  EXPECT_EQ(expected, result);
 }
 
 // Test that error dialog type metrics are recorded.

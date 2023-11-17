@@ -617,10 +617,56 @@ base::Value::Dict BuildDigitalCredentialRequest(
                                                 "fields", std::move(fields)))));
 }
 
+std::vector<blink::mojom::IdentityProviderPtr>
+FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
+    std::vector<blink::mojom::IdentityProviderPtr>& providers) {
+  std::vector<blink::mojom::IdentityProviderPtr> result;
+
+  std::vector<GURL> registered_config_urls =
+      permission_delegate_->GetRegisteredIdPs();
+
+  // TODO(crbug.com/1406698): we insert the registered IdPs to
+  // the list of IdPs in a reverse chronological order:
+  // first IdPs to be registered goes first. It is not clear
+  // yet what's the right order, but this seems like a reasonable
+  // starting point.
+  std::reverse(registered_config_urls.begin(), registered_config_urls.end());
+
+  for (auto& provider : providers) {
+    if (!provider->is_federated() ||
+        !provider->get_federated()->config->use_registered_config_urls) {
+      result.emplace_back(provider->Clone());
+      continue;
+    }
+
+    for (auto& configURL : registered_config_urls) {
+      blink::mojom::IdentityProviderPtr idp = provider->Clone();
+      idp->get_federated()->config->use_registered_config_urls = false;
+      idp->get_federated()->config->config_url = configURL;
+      result.emplace_back(std::move(idp));
+    }
+  }
+
+  // TODO(crbug.com/1406698): Consider removing duplicate
+  // IdPs in case they were present in the registry as well
+  // as added individually.
+
+  return result;
+}
+
 void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
+  // Expand the providers list with registered providers.
+  if (IsFedCmIdPRegistrationEnabled()) {
+    for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+      std::vector<blink::mojom::IdentityProviderPtr> providers =
+          MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
+      idp_get_params_ptr->providers = std::move(providers);
+    }
+  }
+
   // idp_get_params_ptrs should never be empty since it is the renderer-side
   // code which populates it.
   if (idp_get_params_ptrs.empty()) {

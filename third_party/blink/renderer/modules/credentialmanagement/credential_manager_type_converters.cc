@@ -838,6 +838,11 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   mojo_options->config->config_url = blink::KURL(options.configURL());
   mojo_options->config->client_id = options.clientId();
 
+  if (options.hasRegistered() &&
+      blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled()) {
+    mojo_options->config->use_registered_config_urls = options.registered();
+  }
+
   mojo_options->nonce = options.getNonceOr("");
   mojo_options->login_hint = options.getLoginHintOr("");
   mojo_options->domain_hint =
