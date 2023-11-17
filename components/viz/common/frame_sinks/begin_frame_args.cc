@@ -55,20 +55,6 @@ BeginFrameId& BeginFrameId::operator=(const BeginFrameId& id) = default;
 BeginFrameId::BeginFrameId(uint64_t source_id, uint64_t sequence_number)
     : source_id(source_id), sequence_number(sequence_number) {}
 
-bool BeginFrameId::operator<(const BeginFrameId& other) const {
-  if (source_id == other.source_id)
-    return (sequence_number < other.sequence_number);
-  return (source_id < other.source_id);
-}
-
-bool BeginFrameId::operator==(const BeginFrameId& other) const {
-  return (source_id == other.source_id &&
-          sequence_number == other.sequence_number);
-}
-bool BeginFrameId::operator!=(const BeginFrameId& other) const {
-  return !(*this == other);
-}
-
 bool BeginFrameId::IsNextInSequenceTo(const BeginFrameId& previous) const {
   return (source_id == previous.source_id &&
           sequence_number > previous.sequence_number);

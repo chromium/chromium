@@ -57,14 +57,8 @@ struct VIZ_COMMON_EXPORT VideoCaptureTarget {
   VideoCaptureTarget& operator=(const VideoCaptureTarget& other);
   VideoCaptureTarget& operator=(VideoCaptureTarget&& other);
 
-  inline bool operator==(const VideoCaptureTarget& other) const {
-    return frame_sink_id == other.frame_sink_id &&
-           sub_target == other.sub_target;
-  }
-
-  inline bool operator!=(const VideoCaptureTarget& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const VideoCaptureTarget&,
+                         const VideoCaptureTarget&) = default;
 
   // The target frame sink id. Must be valid.
   FrameSinkId frame_sink_id;

@@ -61,14 +61,14 @@ struct VIZ_COMMON_EXPORT BeginFrameId {
   // Creates an invalid set of values.
   BeginFrameId();
   BeginFrameId(const BeginFrameId& id);
+  BeginFrameId& operator=(const BeginFrameId& id);
   BeginFrameId(uint64_t source_id, uint64_t sequence_number);
 
-  bool operator<(const BeginFrameId& other) const;
-  bool operator==(const BeginFrameId& other) const;
-  bool operator!=(const BeginFrameId& other) const;
+  friend std::strong_ordering operator<=>(const BeginFrameId&,
+                                          const BeginFrameId&) = default;
+
   bool IsNextInSequenceTo(const BeginFrameId& previous) const;
   bool IsSequenceValid() const;
-  BeginFrameId& operator=(const BeginFrameId& id);
   std::string ToString() const;
 };
 

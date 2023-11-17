@@ -216,15 +216,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
     RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
 
-    bool operator==(const ReshapeParams& other) const {
-      return size == other.size &&
-             device_scale_factor == other.device_scale_factor &&
-             color_space == other.color_space && format == other.format &&
-             alpha_type == other.alpha_type;
-    }
-    bool operator!=(const ReshapeParams& other) const {
-      return !(*this == other);
-    }
+    friend bool operator==(const ReshapeParams&,
+                           const ReshapeParams&) = default;
   };
   virtual void Reshape(const ReshapeParams& params) = 0;
 
