@@ -1870,7 +1870,7 @@ See your search engine’s instructions for deleting your search history, if app
         Accept and Sign in
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_TITLE" desc="The title of the Sign in to a managed account dialog. [40em]">
-        Sign in With Managed Account
+        Sign In with Managed Account
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL" desc="The title of the Continue button of the Sign in to a managed account dialog when User Policy is enabled. [iOS only]">
         Continue
