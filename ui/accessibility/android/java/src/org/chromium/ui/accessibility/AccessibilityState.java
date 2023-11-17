@@ -509,7 +509,7 @@ public class AccessibilityState {
         }
     }
 
-    private static void calculateHeuristicState(AccessibilityServiceInfo service) {
+    protected static void calculateHeuristicState(AccessibilityServiceInfo service) {
         // Only check the event, feedback, flag, and capability types for the password manager
         // heuristic if the running service is not the AutofillCompatAccessibilityService. The
         // AutofillCompatAccessibilityService requests all events like a screenreader but

@@ -14,6 +14,9 @@ import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierFo
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.FLAGS_MASK_HEURISTIC;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.content.Context;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.filters.SmallTest;
@@ -22,9 +25,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,8 +42,12 @@ public class AccessibilityStateTest {
     private static final String EVENT_TYPE_MASK_ERROR =
             "Conversion of event masks to event types not correct.";
 
+    private Context mContext;
+
     @Before
     public void setUp() {
+        mContext = RuntimeEnvironment.getApplication();
+
         // Reset all flags to empty/default state.
         AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, 0);
         AccessibilityState.setStateMaskForTesting(FEEDBACK_TYPE_MASK, 0);
@@ -273,5 +283,141 @@ public class AccessibilityStateTest {
                 AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK);
 
         Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateHeuristicState_Autofill_passwordManager() {
+        AccessibilityServiceInfo myService =
+                new BuilderForTests(mContext)
+                        .setPackageName("android")
+                        .setClassName(
+                                "com.android.server.autofill.AutofillCompatAccessibilityService")
+                        .setEventTypes(AccessibilityState.PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                        .setFlags(AccessibilityState.PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                        .setCapabilities(AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                        .build();
+
+        Assert.assertNotNull(myService);
+        AccessibilityState.calculateHeuristicState(myService);
+        Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateHeuristicState_notAutofill_notPasswordManager() {
+        AccessibilityServiceInfo myService =
+                new BuilderForTests(mContext)
+                        .setEventTypes(~0)
+                        .setFlags(~0)
+                        .setCapabilities(~0)
+                        .build();
+
+        Assert.assertNotNull(myService);
+        AccessibilityState.calculateHeuristicState(myService);
+        Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateHeuristicState_notAutofill_passwordManager() {
+        AccessibilityServiceInfo myService =
+                new BuilderForTests(mContext)
+                        .setEventTypes(AccessibilityState.PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                        .setFlags(AccessibilityState.PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                        .setCapabilities(AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                        .build();
+
+        Assert.assertNotNull(myService);
+        AccessibilityState.calculateHeuristicState(myService);
+        Assert.assertTrue(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    public static class BuilderForTests {
+
+        private Context mContext;
+        private String mPackageName = "com.example.google";
+        private String mClassName = "app.accessibility.AccessibilityService";
+        private int mEventTypes;
+        private int mFeedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+        private int mFlags;
+        private int mCapabilities;
+
+        public BuilderForTests(Context context) {
+            this.mContext = context;
+        }
+
+        public BuilderForTests setPackageName(String packageName) {
+            this.mPackageName = packageName;
+            return this;
+        }
+
+        public BuilderForTests setClassName(String className) {
+            this.mClassName = className;
+            return this;
+        }
+
+        public BuilderForTests setEventTypes(int eventTypes) {
+            this.mEventTypes = eventTypes;
+            return this;
+        }
+
+        public BuilderForTests setFeedbackType(int feedbackType) {
+            this.mFeedbackType = feedbackType;
+            return this;
+        }
+
+        public BuilderForTests setFlags(int flags) {
+            this.mFlags = flags;
+            return this;
+        }
+
+        public BuilderForTests setCapabilities(int capabilities) {
+            this.mCapabilities = capabilities;
+            return this;
+        }
+
+        public AccessibilityServiceInfo build() {
+            ServiceInfo serviceInfo = new ServiceInfo();
+            serviceInfo.packageName = mPackageName;
+            serviceInfo.name = mClassName;
+            serviceInfo.flags = ServiceInfo.FLAG_SINGLE_USER;
+
+            ResolveInfo resolveInfo = new ResolveInfo();
+            resolveInfo.serviceInfo = serviceInfo;
+
+            AccessibilityServiceInfo service =
+                    constructAccessibilityServiceInfo(resolveInfo, mContext);
+            setCapabilities(service, mCapabilities);
+            assert service != null;
+            service.eventTypes = mEventTypes;
+            service.feedbackType = mFeedbackType;
+            service.flags = mFlags;
+
+            return service;
+        }
+
+        private void setCapabilities(AccessibilityServiceInfo info, int capabilities) {
+            try {
+                Method setResolveInfoMethod =
+                        AccessibilityServiceInfo.class.getMethod("setCapabilities", int.class);
+                setResolveInfoMethod.invoke(info, capabilities);
+            } catch (Exception ex) {
+                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+            }
+        }
+
+        private AccessibilityServiceInfo constructAccessibilityServiceInfo(
+                ResolveInfo resolveInfo, Context context) {
+            try {
+                Constructor<AccessibilityServiceInfo> ctr =
+                        AccessibilityServiceInfo.class.getConstructor(
+                                ResolveInfo.class, Context.class);
+                return ctr.newInstance(resolveInfo, context);
+            } catch (Exception ex) {
+                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+            }
+            return null;
+        }
     }
 }
