@@ -6,12 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/values_util.h"
-#include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -53,31 +50,13 @@ void InSessionAuthAsh::CheckToken(chromeos::auth::mojom::Reason reason,
                                   const std::string& token,
                                   CheckTokenCallback callback) {
   bool token_valid;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    token_valid = ash::AuthSessionStorage::Get()->IsValid(token);
-  } else {
-    auto account_id =
-        ash::Shell::Get()->session_controller()->GetActiveAccountId();
-
-    ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        ash::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
-    const ash::quick_unlock::AuthToken* auth_token =
-        quick_unlock_storage->GetAuthToken();
-    token_valid =
-        auth_token != nullptr && auth_token->GetAge().has_value() &&
-        token == auth_token->Identifier() &&
-        auth_token->GetAge() <= ash::quick_unlock::AuthToken::kTokenExpiration;
-  }
+  token_valid = ash::AuthSessionStorage::Get()->IsValid(token);
 
   std::move(callback).Run(token_valid);
 }
 
 void InSessionAuthAsh::InvalidateToken(const std::string& token) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Invalidate(token, base::DoNothing());
-  } else {
-    NOTIMPLEMENTED();
-  }
+  ash::AuthSessionStorage::Get()->Invalidate(token, base::DoNothing());
 }
 
 void InSessionAuthAsh::OnAuthComplete(RequestTokenCallback callback,

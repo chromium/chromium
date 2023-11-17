@@ -53,13 +53,11 @@ void OSAuthErrorScreen::OnUserAction(const base::Value::List& args) {
   CHECK_GE(args.size(), 1u);
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionRetry) {
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      if (context()->extra_factors_token.has_value()) {
-        AuthSessionStorage::Get()->Invalidate(
-            GetToken(), base::BindOnce(&OSAuthErrorScreen::OnTokenInvalidated,
-                                       weak_ptr_factory_.GetWeakPtr()));
-        return;
-      }
+    if (context()->extra_factors_token.has_value()) {
+      AuthSessionStorage::Get()->Invalidate(
+          GetToken(), base::BindOnce(&OSAuthErrorScreen::OnTokenInvalidated,
+                                     weak_ptr_factory_.GetWeakPtr()));
+      return;
     }
     exit_callback_.Run(Result::kAbortSignin);
     return;

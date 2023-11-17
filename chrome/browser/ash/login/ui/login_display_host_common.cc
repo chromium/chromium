@@ -586,24 +586,15 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
       RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy()) {
     return;
   }
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    wizard_context_->extra_factors_token = AuthSessionStorage::Get()->Store(
-        std::make_unique<UserContext>(user_context));
-  } else {
-    wizard_context_->extra_factors_auth_session =
-        std::make_unique<UserContext>(user_context);
-  }
+  wizard_context_->extra_factors_token = AuthSessionStorage::Get()->Store(
+      std::make_unique<UserContext>(user_context));
 }
 
 void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (wizard_context_->extra_factors_token.has_value()) {
-      AuthSessionStorage::Get()->Invalidate(
-          wizard_context_->extra_factors_token.value(), base::DoNothing());
-      wizard_context_->extra_factors_token = absl::nullopt;
-    }
-  } else {
-    wizard_context_->extra_factors_auth_session.reset();
+  if (wizard_context_->extra_factors_token.has_value()) {
+    AuthSessionStorage::Get()->Invalidate(
+        wizard_context_->extra_factors_token.value(), base::DoNothing());
+    wizard_context_->extra_factors_token = absl::nullopt;
   }
 }
 

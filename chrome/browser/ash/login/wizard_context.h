@@ -164,11 +164,6 @@ class WizardContext {
 
   KnowledgeFactorSetup knowledge_factor_setup;
 
-  // Authorization data that is required by PinSetup screen to add PIN as
-  // another possible auth factor. Can be empty (if PIN is not supported).
-  // In future will be replaced by AuthSession.
-  std::unique_ptr<UserContext> extra_factors_auth_session;
-
   // Same as above, but the actual context is stored in AuthSessionStorage,
   // and the token can be used to retrieve it.
   absl::optional<AuthProofToken> extra_factors_token;

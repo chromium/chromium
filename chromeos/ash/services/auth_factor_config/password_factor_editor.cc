@@ -46,13 +46,10 @@ mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
 
 }  // namespace
 
-PasswordFactorEditor::PasswordFactorEditor(AuthFactorConfig* auth_factor_config,
-                                           QuickUnlockStorageDelegate* storage)
+PasswordFactorEditor::PasswordFactorEditor(AuthFactorConfig* auth_factor_config)
     : auth_factor_config_(auth_factor_config),
-      quick_unlock_storage_(storage),
       auth_factor_editor_(UserDataAuthClient::Get()) {
   CHECK(auth_factor_config_);
-  CHECK(quick_unlock_storage_);
 }
 
 PasswordFactorEditor::~PasswordFactorEditor() = default;
@@ -69,71 +66,34 @@ void PasswordFactorEditor::UpdateLocalPassword(
     return;
   }
 
-  std::unique_ptr<UserContext> user_context;
-
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    ash::AuthSessionStorage::Get()->BorrowAsync(
-        FROM_HERE, auth_token,
-        base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
-                       weak_factory_.GetWeakPtr(), auth_token, new_password,
-                       cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-                       std::move(callback)));
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(user);
-  auto* user_context_ptr =
-      quick_unlock_storage_->GetUserContext(user, auth_token);
-  if (user_context_ptr == nullptr) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
-  UpdatePasswordWithContext(
-      auth_token, new_password,
-      cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-      std::move(callback), std::make_unique<UserContext>(*user_context_ptr));
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, new_password,
+                     cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
+                     std::move(callback)));
 }
 
 void PasswordFactorEditor::UpdateOnlinePassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  std::unique_ptr<UserContext> user_context;
-
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    ash::AuthSessionStorage::Get()->BorrowAsync(
-        FROM_HERE, auth_token,
-        base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
-                       weak_factory_.GetWeakPtr(), auth_token, new_password,
-                       cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
-                       std::move(callback)));
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(user);
-  auto* user_context_ptr =
-      quick_unlock_storage_->GetUserContext(user, auth_token);
-  if (user_context_ptr == nullptr) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
-  UpdatePasswordWithContext(
-      auth_token, new_password, cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
-      std::move(callback), std::make_unique<UserContext>(*user_context_ptr));
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, new_password,
+                     cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
+                     std::move(callback)));
 }
 
 void PasswordFactorEditor::SetLocalPassword(
@@ -148,71 +108,34 @@ void PasswordFactorEditor::SetLocalPassword(
     return;
   }
 
-  std::unique_ptr<UserContext> user_context;
-
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    ash::AuthSessionStorage::Get()->BorrowAsync(
-        FROM_HERE, auth_token,
-        base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
-                       weak_factory_.GetWeakPtr(), auth_token, new_password,
-                       cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-                       std::move(callback)));
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(user);
-  auto* user_context_ptr =
-      quick_unlock_storage_->GetUserContext(user, auth_token);
-  if (user_context_ptr == nullptr) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
-  SetPasswordWithContext(auth_token, new_password,
-                         cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-                         std::move(callback),
-                         std::make_unique<UserContext>(*user_context_ptr));
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, new_password,
+                     cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
+                     std::move(callback)));
 }
 
 void PasswordFactorEditor::SetOnlinePassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  std::unique_ptr<UserContext> user_context;
-
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    ash::AuthSessionStorage::Get()->BorrowAsync(
-        FROM_HERE, auth_token,
-        base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
-                       weak_factory_.GetWeakPtr(), auth_token, new_password,
-                       cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
-                       std::move(callback)));
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(user);
-  auto* user_context_ptr =
-      quick_unlock_storage_->GetUserContext(user, auth_token);
-  if (user_context_ptr == nullptr) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
-  SetPasswordWithContext(
-      auth_token, new_password, cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
-      std::move(callback), std::make_unique<UserContext>(*user_context_ptr));
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, new_password,
+                     cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
+                     std::move(callback)));
 }
 
 void PasswordFactorEditor::UpdatePasswordWithContext(

@@ -96,19 +96,8 @@ void CryptohomeRecoverySetupScreen::SetupRecovery() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   std::string token;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    CHECK(context()->extra_factors_token.has_value());
-    token = context()->extra_factors_token.value();
-  } else {
-    CHECK(context()->extra_factors_auth_session);
-
-    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        quick_unlock::QuickUnlockFactory::GetForProfile(
-            ProfileManager::GetActiveUserProfile());
-    CHECK(quick_unlock_storage);
-    token = quick_unlock_storage->CreateAuthToken(
-        *context()->extra_factors_auth_session);
-  }
+  CHECK(context()->extra_factors_token.has_value());
+  token = context()->extra_factors_token.value();
   auto& recovery_editor = auth::GetRecoveryFactorEditor(
       quick_unlock::QuickUnlockFactory::GetDelegate(),
       g_browser_process->local_state());
@@ -122,22 +111,14 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
     WizardContext& wizard_context,
     CryptohomeRecoverySetupScreen::Result result) {
   // Clear the auth session if it's not needed for PIN setup.
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (wizard_context.extra_factors_token.has_value()) {
-      auto& token = wizard_context.extra_factors_token.value();
-      auto* storage = ash::AuthSessionStorage::Get();
-      if (storage->IsValid(token) &&
-          cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
-              storage->Peek(token)->GetAccountId())) {
-        storage->Invalidate(token, base::DoNothing());
-        wizard_context.extra_factors_token = absl::nullopt;
-      }
-    }
-  } else {
-    if (wizard_context.extra_factors_auth_session != nullptr &&
+  if (wizard_context.extra_factors_token.has_value()) {
+    auto& token = wizard_context.extra_factors_token.value();
+    auto* storage = ash::AuthSessionStorage::Get();
+    if (storage->IsValid(token) &&
         cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
-            wizard_context.extra_factors_auth_session->GetAccountId())) {
-      wizard_context.extra_factors_auth_session.reset();
+            storage->Peek(token)->GetAccountId())) {
+      storage->Invalidate(token, base::DoNothing());
+      wizard_context.extra_factors_token = absl::nullopt;
     }
   }
 

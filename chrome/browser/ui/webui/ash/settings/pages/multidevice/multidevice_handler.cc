@@ -762,15 +762,7 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
 }
 
 bool MultideviceHandler::IsAuthTokenValid(const std::string& auth_token) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    return ash::AuthSessionStorage::Get()->IsValid(auth_token);
-  } else {
-    Profile* profile = Profile::FromWebUI(web_ui());
-    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        quick_unlock::QuickUnlockFactory::GetForProfile(profile);
-    return quick_unlock_storage->GetAuthToken() &&
-           auth_token == quick_unlock_storage->GetAuthToken()->Identifier();
-  }
+  return ash::AuthSessionStorage::Get()->IsValid(auth_token);
 }
 
 multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice

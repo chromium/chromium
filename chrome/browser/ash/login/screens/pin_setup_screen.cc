@@ -101,25 +101,16 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
 PinSetupScreen::~PinSetupScreen() = default;
 
 bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
-  // Just a precaution:
-  AccountId account_id;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!context.extra_factors_token.has_value()) {
-      return true;
-    }
-    if (!ash::AuthSessionStorage::Get()->IsValid(
-            context.extra_factors_token.value())) {
-      return true;
-    }
-    account_id = ash::AuthSessionStorage::Get()
-                     ->Peek(context.extra_factors_token.value())
-                     ->GetAccountId();
-  } else {
-    if (!context.extra_factors_auth_session) {
-      return true;
-    }
-    account_id = context.extra_factors_auth_session->GetAccountId();
+  if (!context.extra_factors_token.has_value()) {
+    return true;
   }
+  if (!ash::AuthSessionStorage::Get()->IsValid(
+          context.extra_factors_token.value())) {
+    return true;
+  }
+  AccountId account_id = ash::AuthSessionStorage::Get()
+                             ->Peek(context.extra_factors_token.value())
+                             ->GetAccountId();
   if (context.skip_post_login_screens_for_tests ||
       cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(account_id)) {
     return true;
@@ -163,21 +154,8 @@ void PinSetupScreen::ShowImpl() {
           ProfileManager::GetActiveUserProfile());
   quick_unlock_storage->MarkStrongAuth();
   std::string token;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    CHECK(context()->extra_factors_token);
-    token = *context()->extra_factors_token;
-  } else {
-    std::unique_ptr<UserContext> user_context =
-        std::move(context()->extra_factors_auth_session);
-
-    // Due to crbug.com/1203420 we need to mark the key as a wildcard (no
-    // label).
-    if (user_context->GetKey()->GetLabel() == kCryptohomeGaiaKeyLabel) {
-      user_context->GetKey()->SetLabel(kCryptohomeWildcardLabel);
-    }
-
-    token = quick_unlock_storage->CreateAuthToken(*user_context);
-  }
+  CHECK(context()->extra_factors_token);
+  token = *context()->extra_factors_token;
   bool is_child_account =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
@@ -212,14 +190,10 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
 }
 
 void PinSetupScreen::ClearAuthData(WizardContext& context) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (context.extra_factors_token.has_value()) {
-      ash::AuthSessionStorage::Get()->Invalidate(
-          context.extra_factors_token.value(), base::DoNothing());
-      context.extra_factors_token = absl::nullopt;
-    }
-  } else {
-    context.extra_factors_auth_session.reset();
+  if (context.extra_factors_token.has_value()) {
+    ash::AuthSessionStorage::Get()->Invalidate(
+        context.extra_factors_token.value(), base::DoNothing());
+    context.extra_factors_token = absl::nullopt;
   }
 }
 

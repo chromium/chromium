@@ -206,28 +206,14 @@ void PinBackend::Set(const AccountId& account_id,
   DCHECK(storage);
 
   if (cryptohome_backend_) {
-    std::unique_ptr<UserContext> user_context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
-        PostResponse(std::move(did_set), false);
-        return;
-      }
-      ash::AuthSessionStorage::Get()->BorrowAsync(
-          FROM_HERE, token,
-          base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
-                         account_id, token, pin, std::move(did_set)));
+    if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+      PostResponse(std::move(did_set), false);
       return;
-    } else {
-      // If `user_context` is null, then the token timed out.
-      const UserContext* maybe_context = storage->GetUserContext(token);
-      if (!maybe_context) {
-        PostResponse(std::move(did_set), false);
-        return;
-      }
-      user_context = std::make_unique<UserContext>(*maybe_context);
-      SetWithContext(account_id, token, pin, std::move(did_set),
-                     std::make_unique<UserContext>(*maybe_context));
     }
+    ash::AuthSessionStorage::Get()->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
+                       account_id, token, pin, std::move(did_set)));
   } else {
     storage->pin_storage_prefs()->SetPin(pin);
     storage->MarkStrongAuth();
@@ -319,27 +305,14 @@ void PinBackend::Remove(const AccountId& account_id,
   UpdatePinAutosubmitOnRemove(account_id);
 
   if (cryptohome_backend_) {
-    std::unique_ptr<UserContext> user_context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
-        PostResponse(std::move(did_remove), false);
-        return;
-      }
-      ash::AuthSessionStorage::Get()->BorrowAsync(
-          FROM_HERE, token,
-          base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
-                         account_id, token, std::move(did_remove)));
+    if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+      PostResponse(std::move(did_remove), false);
       return;
-    } else {
-      // If `user_context` is null, then the token timed out.
-      const UserContext* maybe_context = storage->GetUserContext(token);
-      if (!maybe_context) {
-        PostResponse(std::move(did_remove), false);
-        return;
-      }
-      RemoveWithContext(account_id, token, std::move(did_remove),
-                        std::make_unique<UserContext>(*maybe_context));
     }
+    ash::AuthSessionStorage::Get()->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
+                       account_id, token, std::move(did_remove)));
   } else {
     const bool had_pin = storage->pin_storage_prefs()->IsPinSet();
     storage->pin_storage_prefs()->RemovePin();
@@ -622,14 +595,7 @@ void PinBackend::OnAuthOperation(std::string auth_token,
                                  BoolCallback callback,
                                  std::unique_ptr<UserContext> user_context,
                                  absl::optional<AuthenticationError> error) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
-  } else {
-    QuickUnlockStorage* storage = GetPrefsBackend(user_context->GetAccountId());
-    if (storage) {
-      storage->ReplaceUserContext(auth_token, std::move(user_context));
-    }
-  }
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
   std::move(callback).Run(!error.has_value());
 }
 

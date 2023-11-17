@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -78,15 +79,10 @@ void LegacyQuickUnlockPrivateGetAuthTokenHelper::OnAuthSuccess(
   QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
   quick_unlock_storage->MarkStrongAuth();
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    token_info->token = ash::AuthSessionStorage::Get()->Store(
-        std::make_unique<ash::UserContext>(user_context));
-    // TODO(b/238606050): Determine authsession lifetime.
-    token_info->lifetime_seconds = AuthToken::kTokenExpiration.InSeconds();
-  } else {
-    token_info->token = quick_unlock_storage->CreateAuthToken(user_context);
-    token_info->lifetime_seconds = AuthToken::kTokenExpiration.InSeconds();
-  }
+  token_info->token = ash::AuthSessionStorage::Get()->Store(
+      std::make_unique<ash::UserContext>(user_context));
+  token_info->lifetime_seconds =
+      cryptohome::kAuthsessionInitialLifetime.InSeconds();
 
   // The user has successfully authenticated, so we should reset pin/fingerprint
   // attempt counts.
@@ -217,16 +213,10 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFactorsConfiguration(
   quick_unlock_storage->fingerprint_storage()->ResetUnlockAttemptCount();
 
   TokenInfo token_info;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    token_info.token =
-        ash::AuthSessionStorage::Get()->Store(std::move(user_context));
-    // TODO(b/238606050): Determine authsession lifetime.
-    token_info.lifetime_seconds = AuthToken::kTokenExpiration.InSeconds();
-  } else {
-    token_info.token =
-        quick_unlock_storage->CreateAuthToken(std::move(*user_context));
-    token_info.lifetime_seconds = AuthToken::kTokenExpiration.InSeconds();
-  }
+  token_info.token =
+      ash::AuthSessionStorage::Get()->Store(std::move(user_context));
+  token_info.lifetime_seconds =
+      cryptohome::kAuthsessionInitialLifetime.InSeconds();
 
   std::move(callback).Run(std::move(token_info), absl::nullopt);
 }

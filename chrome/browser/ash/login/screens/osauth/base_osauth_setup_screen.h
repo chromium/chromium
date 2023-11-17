@@ -33,9 +33,6 @@ class BaseOSAuthSetupScreen : public BaseScreen {
   ~BaseOSAuthSetupScreen() override;
 
  protected:
-  // In case when QuickUnlockStorage is used, would ensure
-  // that any modifications to UserContext happened while screen
-  // was show are correctly stored in WizardContext.
   // Resets AuthSession refresher if it was requested.
   void HideImpl() override;
 
@@ -61,13 +58,11 @@ class BaseOSAuthSetupScreen : public BaseScreen {
   void EstablishKnowledgeFactorGuard(base::OnceClosure continuation);
 
  private:
-  void EnsureQuickUnlockToken();
   void InspectContextAndContinueWithContext(
       InspectContextCallback inspect_callback,
       base::OnceClosure continuation,
       std::unique_ptr<UserContext> user_context);
 
-  void StoreQuickUnlockContext();
   void CheckForKnowledgeFactorPresence(base::OnceClosure continuation,
                                        UserContext* context);
 

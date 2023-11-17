@@ -66,22 +66,17 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
     // Wait for the recovery screen and copy the user context before it is
     // cleared.
     WaitForScreenExit();
-    std::unique_ptr<UserContext> user_context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      user_context = ash::AuthSessionStorage::Get()->BorrowForTests(
-          FROM_HERE, context->extra_factors_token.value());
-      context->extra_factors_token = absl::nullopt;
-    } else {
-      user_context =
-          std::make_unique<UserContext>(*context->extra_factors_auth_session);
-    }
+    std::unique_ptr<UserContext> user_context =
+        ash::AuthSessionStorage::Get()->BorrowForTests(
+            FROM_HERE, context->extra_factors_token.value());
+    context->extra_factors_token = absl::nullopt;
     cryptohome_.MarkUserAsExisting(user_context->GetAccountId());
     ContinueScreenExit();
     // Wait until the OOBE flow finishes before we set new values on the wizard
     // context.
     OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
 
-    // Set the values on the wizard context: the `extra_factors_auth_session`
+    // Set the values on the wizard context: the `extra_factors_token`
     // is available after the previous screens have run regularly, and it holds
     // an authenticated auth session.
     user_context->ResetAuthSessionIds();
@@ -90,12 +85,8 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
     user_context->SetAuthSessionIds(session_ids.first, session_ids.second);
     user_context->SetSessionLifetime(base::Time::Now() +
                                      cryptohome::kAuthsessionInitialLifetime);
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      context->extra_factors_token =
-          ash::AuthSessionStorage::Get()->Store(std::move(user_context));
-    } else {
-      context->extra_factors_auth_session = std::move(user_context);
-    }
+    context->extra_factors_token =
+        ash::AuthSessionStorage::Get()->Store(std::move(user_context));
     context->skip_post_login_screens_for_tests = false;
     // Clear the test state.
     result_ = absl::nullopt;
@@ -166,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest, SkippedOnOptOut) {
 }
 
 // If user opts in to recovery, the screen should be shown. In this case
-// `extra_factors_auth_session` should not be cleared.
+// auth session should not be cleared.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
                        ShowDoesntClearAuthSession) {
   LoginAsRegularUser();
@@ -179,16 +170,9 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
   base::HistogramTester histogram_tester;
 
   ShowScreen();
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    EXPECT_TRUE(LoginDisplayHost::default_host()
-                    ->GetWizardContextForTesting()
-                    ->extra_factors_token.has_value());
-  } else {
-    EXPECT_NE(LoginDisplayHost::default_host()
+  EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
-                  ->extra_factors_auth_session,
-              nullptr);
-  }
+                  ->extra_factors_token.has_value());
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::DONE);
@@ -200,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
 
 // If user opts in to recovery, the screen should be shown.
 // The PIN setup screen is skipped due to policy. In this case
-// `extra_factors_auth_session` should be cleared.
+// auth session should be cleared.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
                        ShowClearsAuthSession) {
   LoginAsRegularUser();
@@ -216,16 +200,9 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
   base::HistogramTester histogram_tester;
 
   ShowScreen();
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    EXPECT_FALSE(LoginDisplayHost::default_host()
-                     ->GetWizardContextForTesting()
-                     ->extra_factors_token.has_value());
-  } else {
-    EXPECT_EQ(LoginDisplayHost::default_host()
-                  ->GetWizardContextForTesting()
-                  ->extra_factors_auth_session,
-              nullptr);
-  }
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetWizardContextForTesting()
+                   ->extra_factors_token.has_value());
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::DONE);

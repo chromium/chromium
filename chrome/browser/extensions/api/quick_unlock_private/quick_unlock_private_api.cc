@@ -67,8 +67,7 @@ const char kInvalidCredential[] = "Invalid credential.";
 const char kInternalError[] = "Internal error.";
 const char kWeakCredential[] = "Weak credential.";
 
-const char kAuthTokenExpired[] = "Authentication token expired.";
-const char kAuthTokenInvalid[] = "Authentication token invalid.";
+const char kAuthTokenExpired[] = "Authentication token invalid or expired.";
 
 // PINs greater in length than |kMinLengthForWeakPin| will be checked for
 // weakness.
@@ -203,28 +202,11 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   return profile;
 }
 
-AuthToken* GetActiveProfileAuthToken(content::BrowserContext* browser_context) {
-  CHECK(!ash::features::ShouldUseAuthSessionStorage());
-  return ash::quick_unlock::QuickUnlockFactory::GetForProfile(
-             GetActiveProfile(browser_context))
-      ->GetAuthToken();
-}
-
 absl::optional<std::string> CheckTokenValidity(
     content::BrowserContext* browser_context,
     const std::string& token) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
-      return kAuthTokenExpired;
-    }
-  } else {
-    AuthToken* auth_token = GetActiveProfileAuthToken(browser_context);
-    if (!auth_token) {
-      return kAuthTokenExpired;
-    }
-    if (token != auth_token->Identifier()) {
-      return kAuthTokenInvalid;
-    }
+  if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+    return kAuthTokenExpired;
   }
   return absl::nullopt;
 }

@@ -7,15 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
 namespace ash {
@@ -27,79 +25,21 @@ BaseOSAuthSetupScreen::BaseOSAuthSetupScreen(OobeScreenId screen_id,
 BaseOSAuthSetupScreen::~BaseOSAuthSetupScreen() = default;
 
 void BaseOSAuthSetupScreen::HideImpl() {
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    StoreQuickUnlockContext();
-  }
   session_refresher_.reset();
 }
 
-void BaseOSAuthSetupScreen::EnsureQuickUnlockToken() {
-  CHECK(!ash::features::ShouldUseAuthSessionStorage());
-  if (quick_unlock_token_) {
-    return;
-  }
-  CHECK(context()->extra_factors_auth_session);
-
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  CHECK(quick_unlock_storage);
-  quick_unlock_token_ = quick_unlock_storage->CreateAuthToken(
-      *context()->extra_factors_auth_session);
-}
-
-void BaseOSAuthSetupScreen::StoreQuickUnlockContext() {
-  CHECK(!ash::features::ShouldUseAuthSessionStorage());
-  if (!quick_unlock_token_) {
-    return;
-  }
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  if (!quick_unlock_storage->GetUserContext(*quick_unlock_token_)) {
-    // Context already expired
-    quick_unlock_token_ = absl::nullopt;
-    return;
-  }
-  context()->extra_factors_auth_session = std::make_unique<UserContext>(
-      *quick_unlock_storage->GetUserContext(*quick_unlock_token_));
-  quick_unlock_storage->ReplaceUserContext(*quick_unlock_token_,
-                                           std::make_unique<UserContext>());
-  quick_unlock_token_ = absl::nullopt;
-}
-
 AuthProofToken BaseOSAuthSetupScreen::GetToken() {
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    EnsureQuickUnlockToken();
-    return *quick_unlock_token_;
-  }
   CHECK(context()->extra_factors_token.has_value());
   return *(context()->extra_factors_token);
 }
 
 void BaseOSAuthSetupScreen::KeepAliveAuthSession() {
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    return;
-  }
   session_refresher_ = AuthSessionStorage::Get()->KeepAlive(GetToken());
 }
 
 void BaseOSAuthSetupScreen::InspectContextAndContinue(
     InspectContextCallback inspect_callback,
     base::OnceClosure continuation) {
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    EnsureQuickUnlockToken();
-    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        quick_unlock::QuickUnlockFactory::GetForProfile(
-            ProfileManager::GetActiveUserProfile());
-    UserContext* context =
-        quick_unlock_storage->GetUserContext(*quick_unlock_token_);
-    std::move(inspect_callback).Run(context);
-    if (context) {
-      std::move(continuation).Run();
-    }
-    return;
-  }
   if (!context()->extra_factors_token.has_value()) {
     std::move(inspect_callback).Run(nullptr);
     return;

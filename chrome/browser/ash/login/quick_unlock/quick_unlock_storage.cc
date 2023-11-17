@@ -73,13 +73,6 @@ bool QuickUnlockStorage::TryAuthenticatePin(const Key& key, Purpose purpose) {
          pin_storage_prefs()->TryAuthenticatePin(key, purpose);
 }
 
-std::string QuickUnlockStorage::CreateAuthToken(
-    const UserContext& user_context) {
-  auth_token_ = std::make_unique<AuthToken>(user_context);
-  DCHECK(auth_token_->Identifier().has_value());
-  return *auth_token_->Identifier();
-}
-
 AuthToken* QuickUnlockStorage::GetAuthToken() {
   if (!auth_token_ || !auth_token_->Identifier().has_value())
     return nullptr;

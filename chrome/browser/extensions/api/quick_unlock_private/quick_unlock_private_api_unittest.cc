@@ -28,8 +28,6 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
@@ -41,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -272,13 +271,8 @@ class QuickUnlockPrivateUnitTest
           ash::AuthFactorsConfiguration());
     }
 
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      token_ = ash::AuthSessionStorage::Get()->Store(
-          std::make_unique<ash::UserContext>(auth_token_user_context_));
-    } else {
-      token_ = ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile)
-                   ->CreateAuthToken(auth_token_user_context_);
-    }
+    token_ = ash::AuthSessionStorage::Get()->Store(
+        std::make_unique<ash::UserContext>(auth_token_user_context_));
 
     base::RunLoop().RunUntilIdle();
 
@@ -702,16 +696,9 @@ TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
   absl::optional<quick_unlock_private::TokenInfo> token_info =
       GetAuthToken(kValidPassword);
 
-  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile());
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));
-  } else {
-    EXPECT_EQ(token_info->token,
-              quick_unlock_storage->GetAuthToken()->Identifier());
-  }
+  EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));
   EXPECT_EQ(token_info->lifetime_seconds,
-            ash::quick_unlock::AuthToken::kTokenExpiration.InSeconds());
+            cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
 // Verifies that GetAuthTokenValid fails when an invalid password is provided.
