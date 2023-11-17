@@ -294,4 +294,50 @@ TEST_F(AuthSessionStorageImplTest, LifetimeInvalidateUponTimerHadKeepalive) {
   ASSERT_FALSE(storage_->IsValid(token));
 }
 
+TEST_F(AuthSessionStorageImplTest, WithdrawTest) {
+  AuthProofToken token = storage_->Store(CreateContext());
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  base::test::TestFuture<std::unique_ptr<UserContext>> withdraw_future;
+
+  storage_->Withdraw(token, withdraw_future.GetCallback());
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(withdraw_future.IsReady());
+  ASSERT_NE(withdraw_future.Get().get(), nullptr);
+
+  ASSERT_FALSE(storage_->IsValid(token));
+}
+
+TEST_F(AuthSessionStorageImplTest, WithdrawPreceedsBorrow) {
+  AuthProofToken token = storage_->Store(CreateContext());
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  // Borrow context, token is still valid.
+  auto context = storage_->BorrowForTests(FROM_HERE, token);
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future;
+  base::test::TestFuture<std::unique_ptr<UserContext>> withdraw_future;
+
+  storage_->BorrowAsync(FROM_HERE, token, borrow_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(borrow_future.IsReady());
+
+  storage_->Withdraw(token, withdraw_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(withdraw_future.IsReady());
+
+  // Return context, token still valid
+  storage_->Return(token, std::move(context));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(withdraw_future.IsReady());
+  ASSERT_TRUE(borrow_future.IsReady());
+
+  ASSERT_EQ(borrow_future.Get().get(), nullptr);
+  ASSERT_NE(withdraw_future.Get().get(), nullptr);
+  ASSERT_FALSE(storage_->IsValid(token));
+}
+
 }  // namespace ash

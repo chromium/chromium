@@ -116,6 +116,11 @@ void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
+  if (data_it->second->withdraw_callback) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
   data_it->second->borrow_queue.emplace(location, std::move(callback));
 }
 
@@ -146,6 +151,23 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
     Invalidate(token, absl::nullopt);
     return;
   }
+
+  if (data_it->second->withdraw_callback) {
+    CHECK(data_it->second->context);
+    auto stored_context = std::move(data_it->second->context);
+    auto callback = std::move(data_it->second->withdraw_callback.value());
+    // Invalidation queue should be handled by condition above,
+    // and borrow queue should be empty per invariant
+    // in BorrowAsync/Withdraw methods.
+    CHECK(data_it->second->borrow_queue.empty());
+    CHECK(data_it->second->invalidation_queue.empty());
+    tokens_.erase(data_it);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(stored_context)));
+    return;
+  }
+
   if (data_it->second->keep_alive_counter > 0) {
     HandleSessionRefresh(token);
     auto check_still_alive = tokens_.find(token);
@@ -165,6 +187,47 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
     data_it->second->borrow_queue.pop();
     BorrowAsync(pending_borrow.first, token, std::move(pending_borrow.second));
   }
+}
+
+void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
+                                      BorrowCallback callback) {
+  auto data_it = tokens_.find(token);
+  if (data_it == std::end(tokens_)) {
+    LOG(ERROR) << "Accessing expired token";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  if (data_it->second->state == TokenState::kOwned) {
+    CHECK(data_it->second->context);
+    auto context = std::move(data_it->second->context);
+    // As context is owned, there should be no waiting borrow/invalidate
+    // callbacks.
+    CHECK(data_it->second->borrow_queue.empty());
+    CHECK(data_it->second->invalidation_queue.empty());
+    tokens_.erase(data_it);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(context)));
+    return;
+  }
+
+  if (data_it->second->state == TokenState::kInvalidating ||
+      data_it->second->invalidate_on_return) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  CHECK_EQ(data_it->second->state, TokenState::kBorrowed);
+  // Drain borrow queue.
+  while (!data_it->second->borrow_queue.empty()) {
+    std::pair<base::Location, BorrowCallback> pending_borrow =
+        std::move(data_it->second->borrow_queue.front());
+    data_it->second->borrow_queue.pop();
+    std::move(pending_borrow.second).Run(nullptr);
+  }
+
+  CHECK(!data_it->second->withdraw_callback) << "There can be only one!";
+  data_it->second->withdraw_callback = std::move(callback);
 }
 
 void AuthSessionStorageImpl::Invalidate(

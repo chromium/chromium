@@ -81,6 +81,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
                            const AuthProofToken& token,
                            BorrowCallback callback) = 0;
 
+  // Allows client to obtain UserContext without intent to return it back.
+  // Takes precedence over Borrow requests, but not over invalidate
+  // request.
+  // Withdrawing context from the storage makes associated token invalid.
+  //
+  // If context is borrowed at the moment of the call, the callback
+  // would be called once the context is returned to the storage.
+  // Note that callback might be called with `null` value, if
+  // the context would become invalid before it is returned.
+  //
+  // There can be only one Withdraw request at one time, requesting parallel
+  // Withdraw request would result in crash.
+  virtual void Withdraw(const AuthProofToken& token,
+                        BorrowCallback callback) = 0;
+
   // Allows to inspect stored UserContext. The reference is only valid within
   // same UI event, and should not be stored by caller.
   virtual const UserContext* Peek(const AuthProofToken& token) = 0;

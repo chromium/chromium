@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   const UserContext* Peek(const AuthProofToken& token) override;
   void Return(const AuthProofToken& token,
               std::unique_ptr<UserContext> context) override;
+  void Withdraw(const AuthProofToken& token, BorrowCallback callback) override;
   void Invalidate(const AuthProofToken& token,
                   absl::optional<InvalidationCallback> on_invalidated) override;
   std::unique_ptr<ScopedSessionRefresher> KeepAlive(
@@ -90,6 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     bool invalidate_on_return = false;
 
     std::queue<InvalidationCallback> invalidation_queue;
+    absl::optional<BorrowCallback> withdraw_callback;
     std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
 
     // Timer to perform next action (extending or invalidating session).
