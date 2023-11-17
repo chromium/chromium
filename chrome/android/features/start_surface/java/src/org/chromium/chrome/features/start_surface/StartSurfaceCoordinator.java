@@ -1211,7 +1211,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                             fakeHeight - reducedHeight,
                             reducedHeight,
                             (int) (endPaddingDiff * (1 - expansionFraction) + realEndPadding),
-                            SearchEngineUtils.getInstance().shouldShowSearchEngineLogo(false)
+                            SearchEngineUtils.staticShouldShowSearchEngineLogo(false)
                                     ? realTranslationX * expansionFraction
                                     : 0,
                             (int)

@@ -137,13 +137,11 @@ public class LocationBarLayout extends FrameLayout {
             @NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator,
             @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull SearchEngineUtils searchEngineUtils) {
+            @NonNull LocationBarDataProvider locationBarDataProvider) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
-        mSearchEngineUtils = searchEngineUtils;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -570,7 +568,9 @@ public class LocationBarLayout extends FrameLayout {
         }
 
         boolean isInSingleUrlBarMode =
-                isNtpOnPhone && mSearchEngineUtils.isDefaultSearchEngineGoogle();
+                isNtpOnPhone
+                        && mSearchEngineUtils != null
+                        && mSearchEngineUtils.isDefaultSearchEngineGoogle();
         if (mIsSurfacePolishEnabled && isInSingleUrlBarMode) {
             translationX +=
                     (getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding)
@@ -601,6 +601,11 @@ public class LocationBarLayout extends FrameLayout {
     int getFocusedStatusViewSpacingDelta() {
         return getEndPaddingPixelSizeOnFocusDelta()
                 + OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
+    }
+
+    /** Applies the new SearchEngineUtils. */
+    void setSearchEngineUtils(SearchEngineUtils searchEngineUtils) {
+        mSearchEngineUtils = searchEngineUtils;
     }
 
     public void notifyVoiceRecognitionCanceled() {}

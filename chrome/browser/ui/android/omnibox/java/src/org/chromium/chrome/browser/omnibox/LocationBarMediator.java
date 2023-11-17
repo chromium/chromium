@@ -178,7 +178,6 @@ class LocationBarMediator
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
-    private final SearchEngineUtils mSearchEngineUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
@@ -218,7 +217,6 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior,
             @NonNull WindowAndroid windowAndroid,
             boolean isTablet,
-            @NonNull SearchEngineUtils searchEngineUtils,
             @NonNull LensController lensController,
             @NonNull SaveOfflineButtonState saveOfflineButtonState,
             @NonNull OmniboxUma omniboxUma,
@@ -240,7 +238,6 @@ class LocationBarMediator
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
-        mSearchEngineUtils = searchEngineUtils;
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
@@ -1029,6 +1026,7 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
         mOmniboxPrerender.initializeForProfile(profile);
+        mLocationBarLayout.setSearchEngineUtils(SearchEngineUtils.getForProfile(profile));
     }
 
     private void focusCurrentTab() {
@@ -1243,7 +1241,7 @@ class LocationBarMediator
     private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo =
-                mSearchEngineUtils.shouldShowSearchEngineLogo(
+                SearchEngineUtils.staticShouldShowSearchEngineLogo(
                         mLocationBarDataProvider.isIncognito());
 
         // This branch will be hit if the search engine logo should be shown.

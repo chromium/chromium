@@ -1117,7 +1117,7 @@ public class ToolbarPhone extends ToolbarLayout
         // handled below. See comments in LocationBar#getLocationBarOffsetForFocusAnimation() for
         // implementation details.
         boolean isIncognito = getToolbarDataProvider().isIncognito();
-        if (SearchEngineUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
+        if (SearchEngineUtils.staticShouldShowSearchEngineLogo(isIncognito)) {
             locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
         }
 
@@ -1670,7 +1670,7 @@ public class ToolbarPhone extends ToolbarLayout
 
             // Offset the clip rect by a set amount to ensure the Google G is completely inside the
             // omnibox background when animating in.
-            if (SearchEngineUtils.getInstance().shouldShowSearchEngineLogo(isIncognito())
+            if (SearchEngineUtils.staticShouldShowSearchEngineLogo(isIncognito())
                     && isLocationBarShownInNTP()
                     && urlHasFocus()
                     && mUrlFocusChangeInProgress) {
@@ -2997,8 +2997,8 @@ public class ToolbarPhone extends ToolbarLayout
         if (statusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
-        if (!SearchEngineUtils.getInstance()
-                .shouldShowSearchEngineLogo(getToolbarDataProvider().isIncognito())) {
+        if (!SearchEngineUtils.staticShouldShowSearchEngineLogo(
+                getToolbarDataProvider().isIncognito())) {
             return 0;
         }
 

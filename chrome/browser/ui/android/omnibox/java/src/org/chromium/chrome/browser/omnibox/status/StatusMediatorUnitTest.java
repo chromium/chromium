@@ -118,6 +118,8 @@ public final class StatusMediatorUnitTest {
         mResources = mContext.getResources();
         mWindowAndroid = new WindowAndroid(mContext);
 
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
 
         mJniMocker.mock(CookieControlsBridgeJni.TEST_HOOKS, mCookieControlsBridgeJniMock);
@@ -131,8 +133,7 @@ public final class StatusMediatorUnitTest {
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(logoPromise)
                 .when(mSearchEngineUtils)
-                .getSearchEngineLogo(
-                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
+                .getSearchEngineLogo(eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any());
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
@@ -158,7 +159,6 @@ public final class StatusMediatorUnitTest {
                         isTablet,
                         mLocationBarDataProvider,
                         mPermissionDialogController,
-                        mSearchEngineUtils,
                         mTemplateUrlServiceSupplier,
                         () -> mProfile,
                         mPageInfoIPHController,
@@ -390,8 +390,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
 
         verify(mSearchEngineUtils, times(1))
-                .getSearchEngineLogo(
-                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
+                .getSearchEngineLogo(eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any());
 
         mMediator.setUrlFocusChangePercent(0.0f);
         Assert.assertEquals(false, mModel.get(StatusProperties.SHOW_STATUS_ICON));
@@ -489,8 +488,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.onTemplateURLServiceChanged();
         verify(mSearchEngineUtils, times(2))
-                .getSearchEngineLogo(
-                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
+                .getSearchEngineLogo(eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any());
     }
 
     @Test

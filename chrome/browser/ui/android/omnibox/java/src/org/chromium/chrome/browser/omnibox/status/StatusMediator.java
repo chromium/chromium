@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -68,7 +69,6 @@ public class StatusMediator
     static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
 
     private final PropertyModel mModel;
-    private final SearchEngineUtils mSearchEngineUtils;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<MerchantTrustSignalsCoordinator>
@@ -127,7 +127,6 @@ public class StatusMediator
      * @param isTablet Whether the current device is a tablet.
      * @param locationBarDataProvider Provides data to the location bar.
      * @param permissionDialogController Controls showing permission dialogs.
-     * @param searchEngineUtils Provides utilities around the search engine logo.
      * @param templateUrlServiceSupplier Supplies the {@link TemplateUrlService}.
      * @param profileSupplier Supplies the current {@link Profile}.
      * @param pageInfoIPHController Manages when an IPH bubble for PageInfo is shown.
@@ -144,7 +143,6 @@ public class StatusMediator
             boolean isTablet,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
-            SearchEngineUtils searchEngineUtils,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             Supplier<Profile> profileSupplier,
             PageInfoIPHController pageInfoIPHController,
@@ -154,7 +152,6 @@ public class StatusMediator
                             merchantTrustSignalsCoordinatorSupplier) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
-        mSearchEngineUtils = searchEngineUtils;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mTemplateUrlServiceSupplier.onAvailable(
                 (templateUrlService) -> {
@@ -571,7 +568,7 @@ public class StatusMediator
      * search engine icon. The icon is available immediately in most case, but may need to be
      * fetched asynchronously. The returned promise will never be rejected.
      */
-    private Promise<StatusIconResource> getStatusIconResourceForSearchEngineIcon() {
+    private @NonNull Promise<StatusIconResource> getStatusIconResourceForSearchEngineIcon() {
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             return Promise.fulfilled(
@@ -580,9 +577,14 @@ public class StatusMediator
                             ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
         }
 
-        Profile profile = mProfileSupplier.hasValue() ? mProfileSupplier.get() : null;
-        return mSearchEngineUtils.getSearchEngineLogo(
-                mResources, mBrandedColorScheme, profile, mTemplateUrlServiceSupplier.get());
+        var profile = mProfileSupplier.get();
+        if (profile == null) {
+            return Promise.fulfilled(SearchEngineUtils.getSearchLoupeResource(mBrandedColorScheme));
+        }
+
+        return SearchEngineUtils.getForProfile(profile)
+                .getSearchEngineLogo(
+                        mResources, mBrandedColorScheme, mTemplateUrlServiceSupplier.get());
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */

@@ -16,10 +16,12 @@ import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -31,11 +33,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Common Default Search Engine functions. */
-public class SearchEngineUtils {
+public class SearchEngineUtils implements Destroyable {
     private static final String TAG = "DSEUtils";
     private static final String DUMMY_URL_QUERY = "replace_me";
 
-    private static SearchEngineUtils sInstance;
+    private static ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils = ProfileKeyedMap.createMapOfDestroyables();
+
+    private static SearchEngineUtils sInstanceForTesting;
     // Cached values to prevent duplicate work.
     private static Bitmap sCachedComposedImage;
     private static String sCachedComposedBackgroundLogoUrl;
@@ -43,20 +47,8 @@ public class SearchEngineUtils {
     private static int sSearchEngineLogoComposedSizePixels;
     private Boolean mNeedToCheckForSearchEnginePromo;
 
-    /**
-     * Get the singleton instance of SearchEngineUtils. Avoid using in new code; instead - rely
-     * on plumbing supplied instance.
-     */
-    @Deprecated
-    public static SearchEngineUtils getInstance() {
-        ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new SearchEngineUtils();
-        }
-        return sInstance;
-    }
-
     // Lazy initialization for native-bound dependencies.
+    private final Profile mProfile;
     private FaviconHelper mFaviconHelper;
     private boolean mDoesSearchProviderHaveLogo;
 
@@ -87,15 +79,40 @@ public class SearchEngineUtils {
     }
 
     @VisibleForTesting
-    SearchEngineUtils() {}
+    SearchEngineUtils(Profile profile) {
+        mProfile = profile;
+    }
+
+    @Override
+    public void destroy() {
+    }
 
     /**
-     * Encapsulates the check for if the search engine logo should be shown.
-     *
-     * @param isOffTheRecord True if the user is currently using an incognito tab.
-     * @return True if we should show the search engine logo.
+     * Get the instance of SearchEngineUtils associated with the supplied Profile.
      */
-    public boolean shouldShowSearchEngineLogo(boolean isOffTheRecord) {
+    public static SearchEngineUtils getForProfile(Profile profile) {
+        ThreadUtils.assertOnUiThread();
+        if (sInstanceForTesting != null) return sInstanceForTesting;
+
+        assert profile != null;
+        return sProfileKeyedUtils.getForProfile(profile, () -> new SearchEngineUtils(profile));
+    }
+
+
+    /** Returns whether the search engine logo should be shown. */
+    public boolean shouldShowSearchEngineLogo() {
+        return staticShouldShowSearchEngineLogo(mProfile.isOffTheRecord());
+    }
+
+    /**
+     * Returns whether the search engine logo should be shown given the static context.
+     *
+     * Results are guaranteed to be equivalent to instance method, however the caller is responsible
+     * for providing accurate information.
+     *
+     * @param isOffTheRecord whether the activity runs in incognito mode
+     */
+    public static boolean staticShouldShowSearchEngineLogo(boolean isOffTheRecord) {
         return !isOffTheRecord;
     }
 
@@ -144,7 +161,6 @@ public class SearchEngineUtils {
     public Promise<StatusIconResource> getSearchEngineLogo(
             @NonNull Resources resources,
             @BrandedColorScheme int brandedColorScheme,
-            @Nullable Profile profile,
             @Nullable TemplateUrlService templateUrlService) {
         onDefaultSearchEngineChanged(templateUrlService);
 
@@ -155,7 +171,7 @@ public class SearchEngineUtils {
         // If TemplateUrlService is available and the default search engine is Google,
         // then we serve the Google icon we have locally.
         // Otherwise, the search engine is non-Google and we go to the network to fetch it.
-        if (profile == null || templateUrlService == null || needToCheckForSearchEnginePromo()) {
+        if (templateUrlService == null || needToCheckForSearchEnginePromo()) {
             return Promise.fulfilled(getSearchLoupeResource(brandedColorScheme));
         } else if (templateUrlService.isDefaultSearchEngineGoogle()) {
             return Promise.fulfilled(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
@@ -182,7 +198,7 @@ public class SearchEngineUtils {
         final int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         boolean willCallbackBeCalled =
                 mFaviconHelper.getLocalFaviconImageForURL(
-                        profile,
+                        mProfile,
                         new GURL(logoUrl),
                         logoSizePixels,
                         (image, iconUrl) -> {
@@ -202,8 +218,7 @@ public class SearchEngineUtils {
         return promise;
     }
 
-    @VisibleForTesting
-    StatusIconResource getSearchLoupeResource(@BrandedColorScheme int brandedColorScheme) {
+    public static StatusIconResource getSearchLoupeResource(@BrandedColorScheme int brandedColorScheme) {
         return new StatusIconResource(
                 R.drawable.ic_search, ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme));
     }
@@ -275,21 +290,19 @@ public class SearchEngineUtils {
 
     /** Set the favicon helper for testing. */
     void setFaviconHelperForTesting(FaviconHelper faviconHelper) {
-        var oldValue = mFaviconHelper;
         mFaviconHelper = faviconHelper;
-        ResettersForTesting.register(() -> mFaviconHelper = oldValue);
+        ResettersForTesting.register(() -> mFaviconHelper = null);
     }
 
     /** Set the instance for testing. */
-    static void setInstanceForTesting(SearchEngineUtils instance) {
-        var oldValue = sInstance;
-        sInstance = instance;
-        ResettersForTesting.register(() -> sInstance = oldValue);
+    public static void setInstanceForTesting(SearchEngineUtils instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /** Reset the cache values for testing. */
     static void resetForTesting() {
-        sInstance = null;
+        sInstanceForTesting = null;
         sCachedComposedImage = null;
         sCachedComposedBackgroundLogoUrl = null;
     }

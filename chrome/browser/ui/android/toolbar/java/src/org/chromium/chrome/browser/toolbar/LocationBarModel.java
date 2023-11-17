@@ -135,7 +135,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private final NewTabPageDelegate mNtpDelegate;
     private final @NonNull UrlFormatter mUrlFormatter;
     private final @NonNull OfflineStatus mOfflineStatus;
-    private final SearchEngineUtils mSearchEngineUtils;
     // Always null if optimizations are disabled. Otherwise, non-null and unchanging following
     // native init. Always tied to the original profile which is safe because no underlying
     // services have an incognito-specific instance.
@@ -189,14 +188,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             Context context,
             NewTabPageDelegate newTabPageDelegate,
             @NonNull UrlFormatter urlFormatter,
-            @NonNull OfflineStatus offlineStatus,
-            @NonNull SearchEngineUtils searchEngineUtils) {
+            @NonNull OfflineStatus offlineStatus) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
         mOfflineStatus = offlineStatus;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
-        mSearchEngineUtils = searchEngineUtils;
         mUrlForDisplay = "";
         mFormattedFullUrl = "";
     }
@@ -688,7 +685,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         boolean skipIconForNeutralState =
-                !mSearchEngineUtils.shouldShowSearchEngineLogo(isIncognito())
+                !SearchEngineUtils.staticShouldShowSearchEngineLogo(isIncognito())
                         || mNtpDelegate.isCurrentlyVisible()
                         || isInOverviewAndShowingOmnibox();
 

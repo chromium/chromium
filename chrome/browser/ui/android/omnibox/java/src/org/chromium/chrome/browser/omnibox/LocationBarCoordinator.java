@@ -131,7 +131,6 @@ public class LocationBarCoordinator
      * @param activityLifecycleDispatcher Allows observation of the activity state.
      * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
-     * @param searchEngineUtils Utils to query the state of the search engine logos feature.
      * @param pageInfoAction Displays page info popup.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
      * @param saveOfflineButtonState Whether the 'save offline' button should be enabled.
@@ -162,7 +161,6 @@ public class LocationBarCoordinator
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior,
-            SearchEngineUtils searchEngineUtils,
             @NonNull PageInfoAction pageInfoAction,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull SaveOfflineButtonState saveOfflineButtonState,
@@ -214,7 +212,6 @@ public class LocationBarCoordinator
                         backKeyBehavior,
                         windowAndroid,
                         isTabletWindow() && isTabletLayout(),
-                        searchEngineUtils,
                         LensController.getInstance(),
                         saveOfflineButtonState,
                         omniboxUma,
@@ -263,7 +260,6 @@ public class LocationBarCoordinator
                         mUrlCoordinator,
                         locationBarDataProvider,
                         templateUrlServiceSupplier,
-                        searchEngineUtils,
                         profileObservableSupplier,
                         windowAndroid,
                         pageInfoAction,
@@ -301,8 +297,7 @@ public class LocationBarCoordinator
                 mAutocompleteCoordinator,
                 mUrlCoordinator,
                 mStatusCoordinator,
-                locationBarDataProvider,
-                searchEngineUtils);
+                locationBarDataProvider);
 
         mDropdownStandardBackgroundColor =
                 ChromeColors.getSurfaceColor(

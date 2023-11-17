@@ -89,7 +89,6 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -566,8 +565,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                                 TraceEvent.end("isOfflinePage");
                                 return ret;
                             }
-                        },
-                        SearchEngineUtils.getInstance());
+                        });
         mControlContainer = controlContainer;
         assert mControlContainer != null;
 
@@ -732,7 +730,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                             activityLifecycleDispatcher,
                             overrideUrlLoadingDelegate,
                             new BackKeyBehaviorDelegate() {},
-                            SearchEngineUtils.getInstance(),
                             toolbarPageInfo::show,
                             IntentHandler::bringTabToFront,
                             DownloadUtils::isAllowedToDownloadPage,

@@ -69,6 +69,7 @@ public class SearchEngineUtilsUnitTest {
     @Mock TemplateUrlService mTemplateUrlService;
     @Mock LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock Resources mResources;
+    @Mock Profile mProfile;
 
     SearchEngineUtils mSearchEngineUtils;
     Bitmap mBitmap;
@@ -89,7 +90,7 @@ public class SearchEngineUtilsUnitTest {
         // Used when creating bitmaps, needs to be greater than 0.
         doReturn(1).when(mResources).getDimensionPixelSize(anyInt());
 
-        mSearchEngineUtils = new SearchEngineUtils();
+        mSearchEngineUtils = new SearchEngineUtils(mProfile);
         mSearchEngineUtils.setFaviconHelperForTesting(mFaviconHelper);
     }
 
@@ -101,8 +102,15 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void testDefaultEnabledBehavior() {
-        // Verify the default behavior of the feature being enabled matches expectations.
-        assertTrue(mSearchEngineUtils.shouldShowSearchEngineLogo(/* isOffTheRecord= */ false));
+        // Show DSE logo when using regular profile.
+        doReturn(false).when(mProfile).isOffTheRecord();
+        assertTrue(mSearchEngineUtils.shouldShowSearchEngineLogo());
+        assertTrue(SearchEngineUtils.staticShouldShowSearchEngineLogo(false));
+
+        // Suppress DSE logo when using incognito profile.
+        doReturn(true).when(mProfile).isOffTheRecord();
+        assertFalse(mSearchEngineUtils.shouldShowSearchEngineLogo());
+        assertFalse(SearchEngineUtils.staticShouldShowSearchEngineLogo(true));
     }
 
     @Test
@@ -124,7 +132,6 @@ public class SearchEngineUtilsUnitTest {
                 mSearchEngineUtils.getSearchEngineLogo(
                         mResources,
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
@@ -145,25 +152,17 @@ public class SearchEngineUtilsUnitTest {
     }
 
     @Test
-    public void getSearchEngineLogo_nullProfileOrTemplateUrlService() {
+    public void getSearchEngineLogo_nullTemplateUrlService() {
         StatusIconResource expected =
-                mSearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
+                SearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        null,
-                        mTemplateUrlService);
-        Promise<StatusIconResource> promise2 =
-                mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
-                        BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         null);
 
         assertEquals(promise.getResult(), expected);
-        assertEquals(promise2.getResult(), expected);
     }
 
     @Test
@@ -175,7 +174,6 @@ public class SearchEngineUtilsUnitTest {
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
         assertEquals(promise.getResult(), expected);
     }
@@ -188,7 +186,6 @@ public class SearchEngineUtilsUnitTest {
                 mSearchEngineUtils.getSearchEngineLogo(
                         mResources,
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
@@ -200,7 +197,6 @@ public class SearchEngineUtilsUnitTest {
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
         assertEquals(promise2.getResult(), expected);
 
@@ -222,14 +218,13 @@ public class SearchEngineUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_nullUrl() {
         StatusIconResource expected =
-                mSearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
+                SearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         doReturn(null).when(mTemplateUrlService).getUrlForSearchQuery(any());
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
 
         assertEquals(promise.getResult(), expected);
@@ -247,7 +242,7 @@ public class SearchEngineUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_faviconHelperError() {
         StatusIconResource expected =
-                mSearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
+                SearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         when(mFaviconHelper.getLocalFaviconImageForURL(
                         any(), any(), anyInt(), mCallbackCaptor.capture()))
@@ -257,7 +252,6 @@ public class SearchEngineUtilsUnitTest {
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
 
         assertEquals(promise.getResult(), expected);
@@ -276,13 +270,12 @@ public class SearchEngineUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_returnedBitmapNull() {
         StatusIconResource expected =
-                mSearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
+                SearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
                         Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
-                        Mockito.mock(Profile.class),
                         mTemplateUrlService);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
@@ -309,7 +302,7 @@ public class SearchEngineUtilsUnitTest {
                         R.drawable.ic_search, R.color.default_icon_color_white_tint_list);
         Assert.assertEquals(
                 expected,
-                mSearchEngineUtils.getSearchLoupeResource(
+                SearchEngineUtils.getSearchLoupeResource(
                         BrandedColorScheme.DARK_BRANDED_THEME));
 
         expected =
@@ -318,7 +311,7 @@ public class SearchEngineUtilsUnitTest {
                         ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ true));
         Assert.assertEquals(
                 expected,
-                mSearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.INCOGNITO));
+                SearchEngineUtils.getSearchLoupeResource(BrandedColorScheme.INCOGNITO));
     }
 
     @Test

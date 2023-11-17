@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -79,7 +78,6 @@ public class LocationBarModelUnitTest {
     @Mock private Profile mNonPrimaryOTRProfileMock;
 
     @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
-    @Mock private SearchEngineUtils mSearchEngineUtils;
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
@@ -124,21 +122,20 @@ public class LocationBarModelUnitTest {
             };
 
     private static class TestLocationBarModel extends LocationBarModel {
-        public TestLocationBarModel(SearchEngineUtils searchEngineUtils) {
+        public TestLocationBarModel() {
             super(
                     new ContextThemeWrapper(
                             ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
                     NewTabPageDelegate.EMPTY,
                     url -> url.getSpec(),
-                    OFFLINE_STATUS,
-                    searchEngineUtils);
+                    OFFLINE_STATUS);
         }
     }
 
     @Test
     @MediumTest
     public void getProfile_RegularTab_ReturnsRegularProfile() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         Profile profile = locationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
@@ -148,7 +145,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_IncognitoTab_ReturnsPrimaryOTRProfile() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(mIncognitoTabMock, mPrimaryOTRProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
@@ -158,7 +155,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_IncognitoTab_ReturnsNonPrimaryOTRProfile() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOTRProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
         Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
@@ -168,7 +165,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_NullTab() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(null, mRegularProfileMock);
         Assert.assertEquals(mRegularProfileMock, locationBarModel.getProfile());
 
@@ -184,7 +181,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_titleChange() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.addObserver(mLocationBarDataObserver);
         verify(mLocationBarDataObserver, never()).onTitleChanged();
 
@@ -205,7 +202,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void testObserversNotified_urlChange() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.initializeWithNative();
         locationBarModel.addObserver(mLocationBarDataObserver);
 
@@ -236,7 +233,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_ntpLoaded() {
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.addObserver(mLocationBarDataObserver);
         verify(mLocationBarDataObserver, never()).onNtpStartedLoading();
 
@@ -248,7 +245,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void testObserversNotified_setIsShowingTabSwitcher() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.initializeWithNative();
         locationBarModel.addObserver(mLocationBarDataObserver);
         doReturn(mExampleGurl)
@@ -279,7 +276,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void testObserversNotified_setIsShowingStartSurface() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.initializeWithNative();
         locationBarModel.addObserver(mLocationBarDataObserver);
         doReturn(mExampleGurl)
@@ -308,7 +305,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void testSpannableCache() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         doReturn(true).when(mRegularTabMock).isInitialized();
         locationBarModel.initializeWithNative();
@@ -346,7 +343,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void testUpdateVisibleGurlStartSurfaceShowing() {
         doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel(mSearchEngineUtils);
+        LocationBarModel locationBarModel = new TestLocationBarModel();
         locationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         doReturn(true).when(mRegularTabMock).isInitialized();
         doReturn(mExampleGurl)

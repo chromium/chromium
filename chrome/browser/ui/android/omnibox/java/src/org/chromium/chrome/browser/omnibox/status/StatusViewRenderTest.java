@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,8 +67,6 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
-    @Mock SearchEngineUtils mSearchEngineUtils;
-
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
 
@@ -84,8 +81,6 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
         mJniMocker.mock(
                 ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
                 mChromeAutocompleteSchemeClassifierJni);
-
-        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo(false);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
 
@@ -111,8 +106,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                                     mStatusView.getContext(),
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    mSearchEngineUtils);
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS);
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(

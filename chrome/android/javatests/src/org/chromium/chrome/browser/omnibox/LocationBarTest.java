@@ -122,10 +122,9 @@ public class LocationBarTest {
                 () -> {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
-                    SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
                     doReturn(new Promise<>())
                             .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any(), any());
+                            .getSearchEngineLogo(any(), anyInt(), any());
                 });
         UmaRecorderHolder.resetForTesting();
         // Prevents recreating Chrome when the default search engine is changed.
@@ -195,9 +194,6 @@ public class LocationBarTest {
                     doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
                     doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
                     doReturn(url).when(mSearchEngineUtils).getSearchLogoUrl(mTemplateUrlService);
-                    doReturn(true)
-                            .when(mSearchEngineUtils)
-                            .shouldShowSearchEngineLogo(/* incognito= */ false);
                     doReturn(isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine)
                             .when(mTemplateUrlService)
                             .getDefaultSearchEngineTemplateUrl();
@@ -212,7 +208,7 @@ public class LocationBarTest {
 
                     doReturn(logoPromise)
                             .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any(), any());
+                            .getSearchEngineLogo(any(), anyInt(), any());
                 });
     }
 
