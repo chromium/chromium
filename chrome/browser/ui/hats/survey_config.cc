@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 #include "survey_config.h"
-
 #include "base/feature_list.h"
 #include "base/features.h"
-#include "components/permissions/features.h"
-#include "components/permissions/permission_hats_trigger_helper.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_features.h"
 #include "components/performance_manager/public/features.h"         // nogncheck
 #include "components/permissions/constants.h"                       // nogncheck
+#include "components/permissions/features.h"                        // nogncheck
+#include "components/permissions/permission_hats_trigger_helper.h"  // nogncheck
 #include "components/safe_browsing/core/common/features.h"          // nogncheck
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
 #else
@@ -42,6 +41,7 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 // The permission prompt trigger permits configuring multiple triggers
 // simultaneously. Each trigger increments a counter at the end -->
 // "permission-prompt0", "permission-prompt1", ...
+constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
@@ -116,8 +116,6 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
-constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
-
 namespace {
 
 constexpr char kHatsSurveyProbability[] = "probability";
@@ -140,29 +138,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                                                       "Test Field 2"};
   default_survey.product_specific_string_data_fields = {"Test Field 3"};
   survey_configs.emplace_back(default_survey);
-
-  // Permissions surveys.
-  for (auto& trigger_id_pair : permissions::PermissionHatsTriggerHelper::
-           GetPermissionPromptTriggerIdPairs(
-               kHatsSurveyTriggerPermissionsPrompt)) {
-    // trigger_id_pair has structure <trigger_name, trigger_id>. trigger_name is
-    // a unique name used by the HaTS service integration, and trigger_id is an
-    // ID that specifies a survey in the Listnr backend.
-    survey_configs.emplace_back(
-        &permissions::features::kPermissionsPromptSurvey, trigger_id_pair.first,
-        trigger_id_pair.second,
-        std::vector<std::string>{
-            permissions::kPermissionsPromptSurveyHadGestureKey},
-        std::vector<std::string>{
-            permissions::kPermissionsPromptSurveyPromptDispositionKey,
-            permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
-            permissions::kPermissionsPromptSurveyActionKey,
-            permissions::kPermissionsPromptSurveyRequestTypeKey,
-            permissions::kPermissionsPromptSurveyReleaseChannelKey,
-            permissions::kPermissionsPromptSurveyDisplayTimeKey,
-            permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
-            permissions::kPermissionPromptSurveyUrlKey});
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.
@@ -457,6 +432,29 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopWhatsNew,
       kHatsSurveyTriggerWhatsNew);
+
+  // Permissions surveys.
+  for (auto& trigger_id_pair : permissions::PermissionHatsTriggerHelper::
+           GetPermissionPromptTriggerIdPairs(
+               kHatsSurveyTriggerPermissionsPrompt)) {
+    // trigger_id_pair has structure <trigger_name, trigger_id>. trigger_name is
+    // a unique name used by the HaTS service integration, and trigger_id is an
+    // ID that specifies a survey in the Listnr backend.
+    survey_configs.emplace_back(
+        &permissions::features::kPermissionsPromptSurvey, trigger_id_pair.first,
+        trigger_id_pair.second,
+        std::vector<std::string>{
+            permissions::kPermissionsPromptSurveyHadGestureKey},
+        std::vector<std::string>{
+            permissions::kPermissionsPromptSurveyPromptDispositionKey,
+            permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
+            permissions::kPermissionsPromptSurveyActionKey,
+            permissions::kPermissionsPromptSurveyRequestTypeKey,
+            permissions::kPermissionsPromptSurveyReleaseChannelKey,
+            permissions::kPermissionsPromptSurveyDisplayTimeKey,
+            permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+            permissions::kPermissionPromptSurveyUrlKey});
+  }
 
   // Performance Controls surveys.
   survey_configs.emplace_back(
