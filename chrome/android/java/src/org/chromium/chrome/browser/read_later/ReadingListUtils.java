@@ -12,11 +12,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkUndoController;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -42,19 +39,6 @@ public final class ReadingListUtils {
         // This should match ReadingListModel::IsUrlSupported(), having a separate function since
         // the UI may not load native library.
         return UrlUtilities.isHttpOrHttps(url);
-    }
-
-    /** Removes from the reading list the entry for the current tab. */
-    public static void deleteFromReadingList(final BookmarkModel bookmarkModel,
-            SnackbarManager snackbarManager, Activity activity, Tab currentTab) {
-        // This undo controller will dismiss itself when any action is taken.
-        BookmarkUndoController.createOneshotBookmarkUndoController(
-                activity, bookmarkModel, snackbarManager);
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            BookmarkItem bookmarkItem =
-                    bookmarkModel.getReadingListItem(currentTab.getOriginalUrl());
-            bookmarkModel.deleteBookmarks(bookmarkItem.getId());
-        });
     }
 
     /**

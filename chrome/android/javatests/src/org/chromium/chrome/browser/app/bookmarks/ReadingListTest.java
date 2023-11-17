@@ -183,7 +183,6 @@ public class ReadingListTest {
         BookmarkId bookmarkId =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> mBookmarkModel.addToReadingList(title, url));
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(url) != null);
         return bookmarkId;
     }
 
@@ -314,7 +313,6 @@ public class ReadingListTest {
         View more = readingListItem.findViewById(R.id.more);
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
         onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) == null);
     }
 
     @Test

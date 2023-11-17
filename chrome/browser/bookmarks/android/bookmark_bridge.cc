@@ -890,17 +890,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
               : ScopedJavaLocalRef<jobject>();
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListItem(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsLoaded());
-
-  const BookmarkNode* node =
-      reading_list_manager_->Get(*url::GURLAndroid::ToNativeGURL(env, j_url));
-  return node ? CreateJavaBookmark(node) : ScopedJavaLocalRef<jobject>();
-}
-
 void BookmarkBridge::SetReadStatus(JNIEnv* env,
                                    const JavaParamRef<jobject>& j_url,
                                    jboolean j_read) {

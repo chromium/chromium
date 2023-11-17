@@ -25,8 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -52,7 +50,6 @@ public class ReadingListUtilsUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mReadingListId).when(mReadingListItem).getId();
-        doReturn(mReadingListItem).when(mBookmarkModel).getReadingListItem(any());
         doAnswer(
                         (invocation) -> {
                             ((Runnable) invocation.getArgument(0)).run();
@@ -82,31 +79,6 @@ public class ReadingListUtilsUnitTest {
 
         // invalid url
         Assert.assertFalse(ReadingListUtils.isReadingListSupported(JUnitTestGURLs.INVALID_URL));
-    }
-
-    @Test
-    @SmallTest
-    public void deleteFromReadingList() {
-        BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
-        BookmarkId readingListId = Mockito.mock(BookmarkId.class);
-        BookmarkItem readingListItem = Mockito.mock(BookmarkItem.class);
-        doReturn(readingListId).when(readingListItem).getId();
-        doReturn(readingListItem).when(bookmarkModel).getReadingListItem(any());
-        doAnswer(
-                        (invocation) -> {
-                            ((Runnable) invocation.getArgument(0)).run();
-                            return null;
-                        })
-                .when(bookmarkModel)
-                .finishLoadingBookmarkModel(any());
-
-        ReadingListUtils.deleteFromReadingList(
-                bookmarkModel,
-                Mockito.mock(SnackbarManager.class),
-                Mockito.mock(Activity.class),
-                Mockito.mock(Tab.class));
-        verify(bookmarkModel).getReadingListItem(any());
-        verify(bookmarkModel).deleteBookmarks(readingListId);
     }
 
     @Test
@@ -288,18 +260,6 @@ public class ReadingListUtilsUnitTest {
     public void testTypeSwapBookmarksIfNecessary_TypeMatches() {
         BookmarkId parentId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
-        BookmarkItem existingBookmark =
-                new BookmarkItem(
-                        existingBookmarkId,
-                        "Test",
-                        JUnitTestGURLs.NTP_URL,
-                        /* isFolder= */ false,
-                        /* parent= */ null,
-                        /* isEditable= */ true,
-                        /* isManaged= */ false,
-                        /* dateAdded= */ 0,
-                        /* read= */ false,
-                        /* dateLastOpened= */ 0);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();

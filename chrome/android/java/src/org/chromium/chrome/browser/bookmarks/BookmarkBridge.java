@@ -776,19 +776,6 @@ class BookmarkBridge {
     }
 
     /**
-     * @param url The URL of the reading list item.
-     * @return The reading list item with the URL, or null if no such reading list item.
-     */
-    public BookmarkItem getReadingListItem(GURL url) {
-        ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return null;
-        assert url != null;
-        assert mIsNativeBookmarkModelLoaded;
-
-        return BookmarkBridgeJni.get().getReadingListItem(mNativeBookmarkBridge, url);
-    }
-
-    /**
      * Helper method to mark an article as read.
      *
      * @param url The URL of the reading list item.
@@ -1044,8 +1031,6 @@ class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkId parent, int index, String title, GURL url);
 
         BookmarkId addToReadingList(long nativeBookmarkBridge, String title, GURL url);
-
-        BookmarkItem getReadingListItem(long nativeBookmarkBridge, GURL url);
 
         void setReadStatus(long nativeBookmarkBridge, GURL url, boolean read);
 
