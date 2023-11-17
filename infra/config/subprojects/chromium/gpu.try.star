@@ -118,6 +118,15 @@ gpu_chromeos_builder(
     pool = "luci.chromium.gpu.chromeos.amd64.generic.try",
 )
 
+gpu_chromeos_builder(
+    name = "gpu-fyi-try-chromeos-skylab-volteer",
+    description_html = "Runs standard GPU tests on Skylab-hosted volteer devices",
+    mirrors = [
+        "ci/ChromeOS FYI Release Skylab (volteer)",
+    ],
+    pool = "luci.chromium.gpu.chromeos.volteer.try",
+)
+
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,

@@ -286,6 +286,42 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
+    name = "ChromeOS FYI Release Skylab (volteer)",
+    description_html = "Runs standard GPU tests on Skylab-hosted volteer devices",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "volteer",
+            ],
+        ),
+        run_tests_serially = True,
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "chromium-ci-skylab",
+            gs_extra = "chromeos_gpu",
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ChromeOS|Intel",
+        short_name = "vlt",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.gpu.linux_builder(
     name = "GPU Flake Finder",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # This will eventually be set up to run on a schedule, but only support
