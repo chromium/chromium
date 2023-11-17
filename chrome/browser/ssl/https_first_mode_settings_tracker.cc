@@ -524,11 +524,19 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
   auto* engagement_service =
       site_engagement::SiteEngagementService::Get(profile_);
 
-  // TODO(crbug.com/1435222): Sites dropping off from the engaged sites list
-  // should no longer have HTTPS enforced.
+  // Get all hostnames that have HTTPS enforced on them at some point. Some
+  // hostnames may no longer have a site engagement score thus be missing from
+  // `details`. We still want to process those hostnames because we want to
+  // unenforce HTTPS on these hostnames if the conditions no longer hold.
+  std::set<GURL> origins =
+      state->GetHttpsEnforcedHosts(profile_->GetDefaultStoragePartition());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (detail.origin.SchemeIsHTTPOrHTTPS() && detail.origin.port().empty()) {
-      MaybeEnableHttpsFirstModeForUrl(detail.origin, engagement_service, state);
+    origins.insert(detail.origin);
+  }
+
+  for (const GURL& origin : origins) {
+    if (origin.SchemeIsHTTPOrHTTPS() && origin.port().empty()) {
+      MaybeEnableHttpsFirstModeForUrl(origin, engagement_service, state);
     }
   }
 
@@ -541,6 +549,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     const GURL& url,
     site_engagement::SiteEngagementService* engagement_service,
     StatefulSSLHostStateDelegate* state) {
+  DCHECK(url.port().empty()) << "Url should have a default port";
   bool enforced =
       state->IsHttpsEnforcedForUrl(url, profile_->GetDefaultStoragePartition());
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);

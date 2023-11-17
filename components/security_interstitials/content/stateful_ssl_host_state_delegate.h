@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "components/security_interstitials/core/https_only_mode_enforcelist.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
+#include "url/gurl.h"
 
 class HostContentSettingsMap;
 class PrefService;
@@ -95,6 +97,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   bool IsHttpsEnforcedForUrl(
       const GURL& url,
       content::StoragePartition* storage_partition) override;
+  std::set<GURL> GetHttpsEnforcedHosts(
+      content::StoragePartition* storage_partition) const;
 
   // Clears all entries from the HTTP allowlist.
   void ClearHttpsOnlyModeAllowlist();

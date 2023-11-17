@@ -9,7 +9,6 @@
 #include <functional>
 #include <memory>
 #include <set>
-#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -398,6 +397,14 @@ bool StatefulSSLHostStateDelegate::IsHttpsEnforcedForUrl(
       storage_partition != browser_context_->GetDefaultStoragePartition();
   return https_only_mode_enforcelist_.IsEnforcedForUrl(url,
                                                        is_nondefault_storage);
+}
+
+std::set<GURL> StatefulSSLHostStateDelegate::GetHttpsEnforcedHosts(
+    content::StoragePartition* storage_partition) const {
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  return https_only_mode_enforcelist_.GetHosts(is_nondefault_storage);
 }
 
 void StatefulSSLHostStateDelegate::ClearHttpsOnlyModeAllowlist() {

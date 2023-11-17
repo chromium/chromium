@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ENFORCELIST_H_
 
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -52,6 +53,8 @@ class HttpsOnlyModeEnforcelist {
 
   // Revokes all HTTPS enforcements for host.
   void RevokeEnforcements(const std::string& host);
+
+  std::set<GURL> GetHosts(bool is_nondefault_storage) const;
 
   // Clears enforcelist for the given pattern filter. If the pattern filter is
   // empty, clears enforcelist for all hosts.

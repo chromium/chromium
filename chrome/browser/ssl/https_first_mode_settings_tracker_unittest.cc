@@ -452,10 +452,12 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
       http_url, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
 
-  // TODO(crbug.com/1435222): Sites that fall outside the site engagement list
-  // should no longer have HTTPS enforced.
-  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+  // Sites that fall outside the site engagement list should no longer have
+  // HTTPS enforced.
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
       GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
 
   service->Shutdown();
 }

@@ -126,6 +126,28 @@ bool HttpsOnlyModeEnforcelist::IsEnforcedForUrl(
   return dict.FindBool(kEnabledKey).value_or(false);
 }
 
+std::set<GURL> HttpsOnlyModeEnforcelist::GetHosts(
+    bool is_nondefault_storage) const {
+  std::set<GURL> urls;
+  if (is_nondefault_storage) {
+    for (const std::string& host :
+         enforce_https_hosts_for_non_default_storage_partitions_) {
+      urls.insert(GURL("https://" + host));
+    }
+    return urls;
+  }
+
+  for (const ContentSettingPatternSource& rule :
+       host_content_settings_map_->GetSettingsForOneType(
+           ContentSettingsType::HTTPS_ENFORCED)) {
+    GURL url(rule.primary_pattern.ToString());
+    if (!url.is_empty()) {
+      urls.insert(url);
+    }
+  }
+  return urls;
+}
+
 void HttpsOnlyModeEnforcelist::RevokeEnforcements(const std::string& host) {
   GURL url = GetSecureGURLForHost(host);
   host_content_settings_map_->SetWebsiteSettingDefaultScope(

@@ -112,7 +112,8 @@ class HttpsFirstModeService
   bool IsUserTypicallySecure();
 
   // Check the Site Engagement scores of the hostname of `url` and enable
-  // HFM on the hostname if the HTTPS score is high enough.
+  // HFM on the hostname if the HTTPS score is high enough. `url` should have a
+  // default port.
   void MaybeEnableHttpsFirstModeForUrl(
       const GURL& url,
       site_engagement::SiteEngagementService* engagement_service,
