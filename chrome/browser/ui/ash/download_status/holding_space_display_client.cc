@@ -65,6 +65,7 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   // `holding_space_item_id` with `display_metadata`.
   service->UpdateItem(item_id_by_guid->second)
       ->SetProgress(progress)
+      .SetSecondaryText(display_metadata.secondary_text)
       .SetText(display_metadata.text);
 
   // Since `item_ids_by_guids_` no longer needs `guid` after the download

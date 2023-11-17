@@ -116,9 +116,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
           test_api().GetHoldingSpaceItemId(cached_download_chip));
   EXPECT_EQ(item->progress().GetValue(), 0.f);
 
-  // Cache the primary label.
-  auto* const primary_label = views::AsViewClass<views::Label>(
+  // Cache pointers to the `primary_label` and `secondary_label`.
+  const auto* const primary_label = views::AsViewClass<views::Label>(
       cached_download_chip->GetViewByID(kHoldingSpaceItemPrimaryChipLabelId));
+  const auto* const secondary_label = views::AsViewClass<views::Label>(
+      cached_download_chip->GetViewByID(kHoldingSpaceItemSecondaryChipLabelId));
 
   // When the target file path is unavailable, the primary text should be the
   // display name of the file referenced by the full path.
@@ -126,6 +128,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   EXPECT_FALSE(download->target_file_path);
   EXPECT_EQ(primary_label->GetText(),
             download->full_path->BaseName().LossyDisplayName());
+
+  // Check the secondary text.
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"0/1,024 B");
 
   download->target_file_path = CreateFile();
   EXPECT_NE(download->target_file_path, download->full_path);
@@ -143,10 +149,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   EXPECT_NEAR(item->progress().GetValue().value(), 0.5f,
               std::numeric_limits<float>::epsilon());
 
+  // Check the secondary text.
+  EXPECT_EQ(secondary_label->GetText(), u"512/1,024 B");
+
   // Complete `download`. Verify that the download chip associated to `download`
   // still exists.
-  download->state = crosapi::mojom::DownloadState::kComplete;
   download->received_bytes = download->total_bytes;
+  download->state = crosapi::mojom::DownloadState::kComplete;
   Update(download->Clone());
   EXPECT_EQ(item->progress().GetValue(), 1.f);
   download_chips = test_api().GetDownloadChips();
@@ -157,6 +166,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   // file referenced by the full path.
   EXPECT_EQ(primary_label->GetText(),
             download->full_path->BaseName().LossyDisplayName());
+
+  // When download is no longer in progress, the `secondary_label` should be
+  // hidden.
+  EXPECT_FALSE(secondary_label->GetVisible());
 
   // Remove the download chip.
   Click(download_chips[0]);
@@ -176,6 +189,49 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   // Check that a new download chip is created.
   download_chips = test_api().GetDownloadChips();
   EXPECT_EQ(download_chips.size(), 1u);
+}
+
+// Verifies the secondary text in complicated cases.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       ComplicatedSecondaryText) {
+  // Create a download status with invalid received and total bytes counts.
+  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus();
+  download->received_bytes = -1;
+  download->total_bytes = 0;
+  Update(download->Clone());
+  test_api().Show();
+
+  // Verify the existence of a single download chip and cache the secondary
+  // label.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  const auto* const secondary_label = views::AsViewClass<views::Label>(
+      download_chips[0]->GetViewByID(kHoldingSpaceItemSecondaryChipLabelId));
+
+  // Since both received and total bytes counts are invalid, `secondary_label`
+  // should not be visible.
+  EXPECT_FALSE(secondary_label->GetVisible());
+
+  // Set the received bytes count of the download to zero. Then check
+  // `secondary_label`.
+  download->received_bytes = 0;
+  Update(download->Clone());
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"0 B");
+
+  // Update the received bytes count to another valid value and then check
+  // `secondary_label`.
+  download->received_bytes = 512;
+  Update(download->Clone());
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"512 B");
+
+  // Update the in-progress download with a valid total bytes count and then
+  // check `secondary_label`.
+  download->total_bytes = 1024;
+  Update(download->Clone());
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"512/1,024 B");
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,

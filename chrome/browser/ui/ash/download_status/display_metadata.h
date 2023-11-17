@@ -27,6 +27,9 @@ struct DisplayMetadata {
   // The received bytes of download.
   absl::optional<int64_t> received_bytes;
 
+  // The text that provides additional details about the download.
+  absl::optional<std::u16string> secondary_text;
+
   // The primary text of the displayed download.
   absl::optional<std::u16string> text;
 
