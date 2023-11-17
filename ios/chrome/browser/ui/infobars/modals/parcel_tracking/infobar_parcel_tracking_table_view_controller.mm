@@ -154,9 +154,7 @@ NSString* const kCarrierKey = @"carrier";
       break;
     }
     case ItemType::kTrackingNumber: {
-      cell.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultSymbolTemplateWithPointSize(
-                            kCopyActionSymbol, kSymbolAccessoryPointSize)];
+      cell.accessoryView = [self copyButton];
       cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
       break;
     }
@@ -169,24 +167,6 @@ NSString* const kCarrierKey = @"carrier";
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   return cell;
-}
-
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  if (itemType == ItemType::kTrackingNumber) {
-    TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
-        base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
-    StoreTextInPasteboard(
-        tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
-    // TODO(crbug.com/1473449): Show snackbar message.
-  }
-  [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 #pragma mark - InfobarParcelTrackingModalConsumer
@@ -223,6 +203,30 @@ NSString* const kCarrierKey = @"carrier";
 // Presents the "Send Feeback" page.
 - (void)reportIssueButtonWasPressed:(UIButton*)sender {
   [presenter_ showReportIssueView];
+}
+
+// Creates and returns the "copy" button.
+- (UIButton*)copyButton {
+  UIImage* copyImage = DefaultSymbolTemplateWithPointSize(
+      kCopyActionSymbol, kSymbolAccessoryPointSize);
+  UIButton* copyButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [copyButton addTarget:self
+                 action:@selector(copyButtonPressed:)
+       forControlEvents:UIControlEventTouchUpInside];
+  [copyButton
+      setFrame:CGRectMake(0, 0, copyImage.size.width, copyImage.size.height)];
+  [copyButton setImage:copyImage forState:UIControlStateNormal];
+  return copyButton;
+}
+
+// Handles touch events for the "copy" button. Stores the tracking number of the
+// associated cell in the pasteboard.
+- (void)copyButtonPressed:(UIButton*)sender {
+  UITableViewCell* cell = (UITableViewCell*)sender.superview;
+  TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+  StoreTextInPasteboard(
+      tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
 }
 
 // Returns the TableViewItem for the given carrier.
