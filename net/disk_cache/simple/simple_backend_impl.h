@@ -233,6 +233,15 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   net::Error DoomEntryFromHash(uint64_t entry_hash,
                                CompletionOnceCallback callback);
 
+  // Called when we tried to open an entry with hash alone. When a blank entry
+  // has been created and filled in with information from the disk - based on a
+  // hash alone - this checks that a duplicate active entry was not created
+  // using a key in the meantime.
+  void OnEntryOpenedFromHash(uint64_t hash,
+                             const scoped_refptr<SimpleEntryImpl>& simple_entry,
+                             EntryResultCallback callback,
+                             EntryResult result);
+
   // Called when we tried to open an entry from key. When the entry has been
   // opened, a check for key mismatch is performed.
   void OnEntryOpenedFromKey(const std::string key,
