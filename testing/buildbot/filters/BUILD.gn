@@ -130,6 +130,13 @@ source_set("components_unittests_filters") {
   ]
 }
 
+bundle_data("compositor_unittests_filters_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.compositor_unittests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("content_browsertests_filters") {
   testonly = true
 
@@ -395,7 +402,5 @@ source_set("webview_cts_tests_filters") {
 source_set("webview_instrumentation_test_apk_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
-  ]
+  data = [ "//testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter" ]
 }

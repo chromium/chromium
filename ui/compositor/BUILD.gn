@@ -265,7 +265,13 @@ test("compositor_unittests") {
     "//ui/resources",
   ]
 
-  data_deps = [ "//testing/buildbot/filters:compositor_unittests_filters" ]
+  if (is_ios) {
+    bundle_deps = [
+      "//testing/buildbot/filters:compositor_unittests_filters_bundle_data",
+    ]
+  } else {
+    data_deps = [ "//testing/buildbot/filters:compositor_unittests_filters" ]
+  }
 
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
