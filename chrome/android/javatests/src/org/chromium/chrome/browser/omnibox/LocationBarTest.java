@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.Promise;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -122,9 +121,9 @@ public class LocationBarTest {
                 () -> {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
-                    doReturn(new Promise<>())
+                    doReturn(new StatusIconResource(null))
                             .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(anyInt(), any());
+                            .getSearchEngineLogo(anyInt());
                 });
         UmaRecorderHolder.resetForTesting();
         // Prevents recreating Chrome when the default search engine is changed.
@@ -193,22 +192,18 @@ public class LocationBarTest {
                     // avoid occasional timeout in loading it.
                     doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
                     doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-                    doReturn(url).when(mSearchEngineUtils).getSearchLogoUrl(mTemplateUrlService);
                     doReturn(isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine)
                             .when(mTemplateUrlService)
                             .getDefaultSearchEngineTemplateUrl();
 
-                    Promise<StatusIconResource> logoPromise =
-                            Promise.fulfilled(
-                                    new StatusIconResource(
-                                            isGoogle
-                                                    ? R.drawable.ic_logo_googleg_20dp
-                                                    : R.drawable.ic_search,
-                                            0));
+                    StatusIconResource logo =
+                            new StatusIconResource(
+                                    isGoogle
+                                            ? R.drawable.ic_logo_googleg_20dp
+                                            : R.drawable.ic_search,
+                                    0);
 
-                    doReturn(logoPromise)
-                            .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(anyInt(), any());
+                    doReturn(logo).when(mSearchEngineUtils).getSearchEngineLogo(anyInt());
                 });
     }
 

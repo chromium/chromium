@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -125,15 +124,12 @@ public final class StatusMediatorUnitTest {
         mJniMocker.mock(CookieControlsBridgeJni.TEST_HOOKS, mCookieControlsBridgeJniMock);
 
         // By default return google g, but this behavior is overridden in some tests.
-        Promise<StatusIconResource> logoPromise =
-                Promise.fulfilled(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+        var logo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
 
         doReturn(false).when(mLocationBarDataProvider).isInOverviewAndShowingOmnibox();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doReturn(logoPromise)
-                .when(mSearchEngineUtils)
-                .getSearchEngineLogo(eq(BrandedColorScheme.APP_DEFAULT), any());
+        doReturn(logo).when(mSearchEngineUtils).getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
@@ -389,8 +385,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlFocusChangePercent(0.9f);
         Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
 
-        verify(mSearchEngineUtils, times(1))
-                .getSearchEngineLogo(eq(BrandedColorScheme.APP_DEFAULT), any());
+        verify(mSearchEngineUtils, times(1)).getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         mMediator.setUrlFocusChangePercent(0.0f);
         Assert.assertEquals(false, mModel.get(StatusProperties.SHOW_STATUS_ICON));
@@ -487,8 +482,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
 
         mMediator.onTemplateURLServiceChanged();
-        verify(mSearchEngineUtils, times(2))
-                .getSearchEngineLogo(eq(BrandedColorScheme.APP_DEFAULT), any());
+        verify(mSearchEngineUtils, times(2)).getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
