@@ -1520,6 +1520,7 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 # review for each CL), they have been added as "Skip". They will be
 # removed from this section as we address each one as part of
 # https://crbug.com/1488371.
+# See https://docs.google.com/document/d/1FH0iG8G8mEebjMpVA_zvSfHBWUhWqC92jRFctaGcxrc/edit#heading=h.pacsgp238vkn
 
 crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/history/history-replace-updates-current-item.html [ Skip Failure Timeout ]
@@ -1548,10 +1549,6 @@ crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xmlhttprequ
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xmlhttprequest-unload-sync.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/battery-status/no-leak-on-detached-use.https.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/basic/keepalive.any.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/navigating-across-documents/navigate-to-unparseable-url.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/001.html [ Skip Failure Timeout ]
@@ -1593,6 +1590,16 @@ crbug.com/1488371 virtual/deprecate-unload/wpt_internal/presentation/presentatio
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html [ Skip Failure Timeout ]
 
 # ========== End of Unload deprecation pending
+
+######## Unload Deprecation
+# This is for tests in the "deprecate-unload" virtual suite that
+# cannot be fixed and require a timeout expecation.
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/basic/keepalive.any.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Timeout ]
+
+######## End Unload Deprecation
 
 ### sheriff 2019-07-16
 

@@ -93,14 +93,12 @@ function assertStashedTokenAsync(
         }))
         .then(test.step_func(result => {
           if (expectTokenExist) {
-            assert_equals(
-                result, 'on', `token [${token}] should be on (stashed).`);
+            assert_equals(result, 'on', `token should be on (stashed).`);
             test.done();
           } else {
             assert_not_equals(
-                result, 'on', `token [${token}] should not be on (stashed).`);
-            return Promise.reject(
-                `Failed to retrieve token [${token}] from server`);
+                result, 'on', `token should not be on (stashed).`);
+            return Promise.reject(`Failed to retrieve token from server`);
           }
         }))
         .catch(test.step_func(e => {

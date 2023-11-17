@@ -615,7 +615,7 @@
               "http/tests/workers",
               "inspector-protocol/worker"
             ],
-    "args": ["--disable-features=PlzDedicatedWorker"],
+    "args": ["--disable-features=PlzDedicatedWorker,DeprecateUnload"],
     "owners": [
       "yyanagisawa@chromium.org",
       "kouhei@chromium.org"
@@ -2175,8 +2175,10 @@
   {
     "prefix": "orb-v02",
     "platforms": ["Linux"],
-    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "args": [
+      "--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02",
+      "--disable-features=OpaqueResponseBlockingErrorsForAllFetches,DeprecateUnload",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "bases": [
       "external/wpt/fetch/orb",
       "external/wpt/fetch/corb",
@@ -2399,6 +2401,7 @@
     ],
     "args": [
       "--enable-features=KeepAliveInBrowserMigration",
+      "--disable-features=DeprecateUnload",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
@@ -2460,6 +2463,7 @@
       "external/wpt/html/semantics/scripting-1"
     ],
     "args": ["--enable-features=ForceProduceCompileHints",
+             "--disable-features=DeprecateUnload",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
