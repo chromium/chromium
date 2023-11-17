@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -155,6 +156,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "StatusArea_Audio_AutoInputSelectionOverridden";
   static constexpr char kUserActionSwitchOutputOverridden[] =
       "StatusArea_Audio_AutoOutputSelectionOverridden";
+
+  // A series of histogram metrics to record system selection decision after
+  // audio device has changed. And the time delta if user has overridden the
+  // system selection afterwards.
+  static constexpr char kSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio";
+  static constexpr char kSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio";
+  static constexpr char kUserOverrideSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemNotSwitchTimeElapsed";
 
   class AudioObserver {
    public:
@@ -941,7 +958,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       absl::optional<int32_t> num_stream_ignore_ui_gains);
 
   // Record metrics when user switches audio device.
-  void RecordUserSwitchAudioDevice(bool is_input) const;
+  void RecordUserSwitchAudioDevice(bool is_input);
+
+  // Record the histogram of system decision of switching or not switching after
+  // audio device is added or removed. Only record if there are more than one
+  // available devices.
+  void MaybeRecordSystemSwitchDecision(bool is_input, bool is_switched);
+
+  // Clear the timer of system switch/not switch decision.
+  void ResetSystemSwitchTimestamp(bool is_input);
 
   // Static helper function to abstract the |AudioSurvey| from input
   // |survey_specific_data|.
@@ -1025,6 +1050,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Whether the speak-on-mute detection is enabled in CRAS.
   bool speak_on_mute_detection_on_ = false;
+
+  // The timestamp for recording the metrics of user overriding system decision
+  // of switching or not switching the active audio device.
+  std::optional<base::TimeTicks> input_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> input_not_switched_by_system_at_ =
+      std::nullopt;
+  std::optional<base::TimeTicks> output_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> output_not_switched_by_system_at_ =
+      std::nullopt;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
