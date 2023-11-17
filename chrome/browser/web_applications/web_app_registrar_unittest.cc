@@ -60,11 +60,18 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace web_app {
@@ -1665,4 +1672,147 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+class WebAppRegistrarTest_Shortstand : public WebAppRegistrarTest {
+ public:
+  WebAppRegistrarTest_Shortstand() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosShortstand);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_cros_shortstand_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebAppRegistrarTest_Shortstand, IsShortcut) {
+  InitSyncBridge();
+  // TODO(b/304660867): Test policy installed apps.
+  const GURL start_url = GURL("https://example.com/path");
+  const GURL scope = GURL("https://example.com/scope");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  {
+    // Verify that system web app is not shortcut.
+    auto web_app =
+        test::CreateWebApp(start_url, WebAppManagement::Type::kSystem);
+    const webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+#endif
+  // Verify that user installed app with a scope is always not a shortcut.
+  {
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::Type::kSync);
+    web_app->SetScope(scope);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that play stored installed app with a scope is always not a shortcut
+  {
+    auto web_app =
+        test::CreateWebApp(start_url, WebAppManagement::Type::kWebAppStore);
+    web_app->SetScope(scope);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that default installed app is not a shortcut
+  {
+    auto web_app =
+        test::CreateWebApp(start_url, WebAppManagement::Type::kDefault);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that default installed app is not a shortcut
+  {
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::Type::kOem);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that default installed app is not a shortcut
+  {
+    auto web_app =
+        test::CreateWebApp(start_url, WebAppManagement::Type::kApsDefault);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that default installed app with user install is not a shortcut
+  {
+    auto web_app =
+        test::CreateWebApp(start_url, WebAppManagement::Type::kDefault);
+    web_app->AddSource(WebAppManagement::kSync);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that user installed app with no scope is a shortcut if display mode
+  // is browser
+  {
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::Type::kSync);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_TRUE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that user installed app with no scope is not a shortcut if display
+  // mode is not browser
+  {
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::Type::kSync);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+
+  // Verify that user installed app with no scope is not a shortcut if display
+  // mode is not browser
+  {
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::Type::kSync);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kTabbed);
+    webapps::AppId web_app_id = web_app->app_id();
+
+    RegisterApp(std::move(web_app));
+    EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
+    UnregisterApp(web_app_id);
+  }
+}
+#endif
 }  // namespace web_app

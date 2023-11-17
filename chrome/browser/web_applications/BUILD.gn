@@ -846,7 +846,11 @@ source_set("web_applications_unit_tests") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
+      "//chromeos/startup:startup",
+    ]
   }
 
   if (is_win) {

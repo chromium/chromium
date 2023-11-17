@@ -540,7 +540,11 @@ bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
   }
   // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
   // using scope.
+#if BUILDFLAG(IS_CHROMEOS)
+  return IsShortcutAppChromeOs(app_id);
+#else
   return !GetAppScopeInternal(app_id).has_value();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
@@ -1752,5 +1756,55 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppIdsForAppSet(
 
   return app_ids;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool WebAppRegistrar::IsShortcutAppChromeOs(
+    const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+
+  // See go/shortstand-prd#bookmark=id.mbe9ojau9umf for detail.
+  if (!chromeos::features::IsCrosShortstandEnabled()) {
+    return !GetAppScopeInternal(app_id).has_value();
+  }
+
+  // For policy installed apps/shortcuts, it is a shortcut if admin set to open
+  // in browser or install_as_shortcut is set to true.
+  if (web_app->IsPolicyInstalledApp()) {
+    // TODO(b/304660867): Check the required field for policy installed apps.
+    return !GetAppScopeInternal(app_id).has_value();
+  }
+
+  // System web apps should always be considered as apps.
+  if (web_app->IsSystemApp()) {
+    return false;
+  }
+
+  // For web apps installed from Chrome Browser and play store by the user,
+  // everything is considered as app instead of shortcut.
+  if (web_app->WasInstalledByUser() &&
+      GetAppScopeInternal(app_id).has_value()) {
+    return false;
+  }
+
+  // Any default installed apps are considered as apps not shortcut.
+  if (web_app->GetSources().Has(WebAppManagement::kDefault) ||
+      web_app->GetSources().Has(WebAppManagement::kOem) ||
+      web_app->GetSources().Has(WebAppManagement::kApsDefault)) {
+    return false;
+  }
+
+  // For user created shortcuts via Chrome, we considered whether it is shortcut
+  // based on the display mode setting. If will be considered as shortcut only
+  // when it is set to open in the browser tab.
+  if (web_app->WasInstalledByUser() &&
+      !GetAppScopeInternal(app_id).has_value()) {
+    return web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser;
+  }
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
