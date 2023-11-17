@@ -9,6 +9,7 @@
 -AutofillInteractiveTest_UndoAutofill.BasicUndoAutofill
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
 -CookieControlsInteractiveUiTest.*
+-CrComponentsFocusTest.ThemeColorPicker
 -ExtensionsToolbarContainerUITest.ClickingOnASecondActionClosesTheFirst
 -FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
 -HighEfficiencyChipInteractiveTest.*

@@ -28,10 +28,6 @@ void AXRelationCache::Init() {
   if (Document* popup_doc = object_cache_->GetPopupDocumentIfShowing()) {
     DoInitialDocumentScan(*popup_doc);
   }
-
-#if DCHECK_IS_ON()
-  is_initialized_ = true;
-#endif
 }
 
 void AXRelationCache::DoInitialDocumentScan(Document& document) {
@@ -89,9 +85,6 @@ void AXRelationCache::CacheRelationIds(Element& element) {
 
 #if DCHECK_IS_ON()
 void AXRelationCache::CheckRelationsCached(Element& element) {
-  if (!is_initialized_) {
-    return;
-  }
   CheckElementWasProcessed(element);
 
   // Check aria-owns.
@@ -145,7 +138,7 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
   // Find first ancestor that was not processed.
   Node* ancestor = &element;
   if (element.GetDocument().IsFlatTreeTraversalForbidden()) {
-    DVLOG(1) << "Note: flat tree traversal forbidden.";
+    LOG(ERROR) << "Note: flat tree traversal forbidden.";
   } else {
     while (true) {
       Node* next_ancestor = FlatTreeTraversal::Parent(*ancestor);
@@ -411,11 +404,10 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   if (IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node))
     return false;
 
-  // aria-hidden is problematic for cycles, and does not solve a known use case.
+  // Problematic for cycles, and does not solve a known use case.
   // Easiest to omit the possibility.
-  if (child->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
+  if (child->IsAriaHidden())
     return false;
-  }
 
   return true;
 }
@@ -453,6 +445,11 @@ void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
       // get a new parent, and we want to avoid accidentally pruning it.
       if (!newly_owned_ids.Contains(removed_child_id)) {
         MaybeRestoreParentOfOwnedChild(removed_child);
+
+        // Now that the child is not owned, it's "included in tree" state must
+        // be recomputed because while owned children are always included in the
+        // tree, unowned children may not be included.
+        removed_child->UpdateCachedAttributeValuesIfNeeded(false);
       }
     }
   }
@@ -525,7 +522,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       validated_owned_children_result.push_back(child);
     } else if (child) {
       // Invalid owns relation: repair the parent that was set above.
-      MaybeRestoreParentOfOwnedChild(child);
+      object_cache_->RestoreParentOrPrune(child);
       DCHECK_NE(child->CachedParentObject(), owner);
     }
   }
@@ -609,12 +606,11 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
       // It will be cleared below if the owns relationship is found to be
       // invalid.
       AXObject* child = GetOrCreate(child_element, owner);
-      CHECK(!child || !child->IsMissingParent());
       if (IsValidOwnsRelation(const_cast<AXObject*>(owner), child)) {
         owned_children.push_back(child);
       } else if (child) {
         // Invalid owns relation: repair the parent that was set above.
-        MaybeRestoreParentOfOwnedChild(child);
+        object_cache_->RestoreParentOrPrune(child);
       }
     }
   }
@@ -713,11 +709,16 @@ void AXRelationCache::GetReverseRelated(
   }
 }
 
-AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
-  if (!node) {
-    return nullptr;
+void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
+  // This can happen if MarkAXObjectDirtyWithCleanLayout is
+  /// called and then UpdateRelatedTree is called on the same object,
+  // e.g. in TextChangedWithCleanLayout.
+  if (obj && obj->IsDetached()) {
+    return;
   }
+  HeapVector<Member<AXObject>> related_sources;
 #if DCHECK_IS_ON()
+  DCHECK(node);
   if (obj)
     DCHECK(!obj->IsDetached());
   AXObject* obj_for_node = object_cache_->SafeGet(node);
@@ -727,15 +728,16 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
       << "\n* obj_for_node = "
       << (obj_for_node ? obj_for_node->ToString(true, true) : "null");
 #endif
-
-  // First check for an existing aria-owns relation to the related AXObject.
   AXObject* related_target = obj ? obj : Get(node);
+  // Schedule an update on any previous owner.
+  if (related_target && IsAriaOwned(related_target)) {
+    AXObject* owned_parent = ValidatedAriaOwner(related_target);
+    if (owned_parent)
+      owner_ids_to_update_.insert(owned_parent->AXObjectID());
+  }
 
-  // Look for any new aria-owns relations.
   // Schedule an update on any potential new owner.
-  HeapVector<Member<AXObject>> related_sources;
   GetReverseRelated(node, id_attr_to_owns_relation_mapping_, related_sources);
-
   for (AXObject* related : related_sources) {
     if (related) {
       owner_ids_to_update_.insert(related->AXObjectID());
@@ -743,42 +745,8 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
     }
   }
 
-  // Schedule an update on any previous owner. This owner takes priority over
-  // any new owners.
-  if (related_target && IsAriaOwned(related_target)) {
-    AXObject* owned_parent = ValidatedAriaOwner(related_target);
-    if (owned_parent) {
-      owner_ids_to_update_.insert(owned_parent->AXObjectID());
-      return owned_parent;
-    }
-  }
-
-  // Only the first aria-owns relation can be used.
-  return related_sources.empty() ? nullptr : related_sources[0];
-}
-
-void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
-  // This can happen if MarkAXObjectDirtyWithCleanLayout is
-  /// called and then UpdateRelatedTree is called on the same object,
-  // e.g. in TextChangedWithCleanLayout.
-  if (obj && obj->IsDetached()) {
-    return;
-  }
-
-  if (AXObject* owner = GetOrCreateAriaOwnerFor(node, obj)) {
-    if (object_cache_->IsProcessingDeferredEvents()) {
-      // Ensure the aria-owns relation is processed, which in turn ensures that
-      // both the owner and owned child exist, and that the parent-child
-      // relations are correctly set on each.
-      ProcessUpdatesWithCleanLayout();
-      AXObject* owned = Get(node);
-      if (owned && IsAriaOwned(owned)) {
-        CHECK_EQ(owner, owned->CachedParentObject())
-            << "\n* Owned: " << owned
-            << "\n* ValidatedAriaOwner: " << ValidatedAriaOwner(owned);
-        CHECK_EQ(owner, ValidatedAriaOwner(owned));
-      }
-    }
+  if (object_cache_->IsProcessingDeferredEvents()) {
+    ProcessUpdatesWithCleanLayout();
   }
 
   UpdateRelatedText(node);
@@ -802,7 +770,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     GetReverseRelated(current_node, id_attr_to_text_relation_mapping_,
                       related_sources);
     for (AXObject* related : related_sources) {
-      if (related && related->LastKnownIsIncludedInTreeValue() &&
+      if (related && related->AccessibilityIsIncludedInTree() &&
           !related->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       }
@@ -812,7 +780,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     // should also handle text changed events when descendant content changes.
     if (current_node != node) {
       AXObject* obj = Get(current_node);
-      if (obj && obj->LastKnownIsIncludedInTreeValue() &&
+      if (obj && obj->AccessibilityIsIncludedInTree() &&
           obj->SupportsNameFromContents(/*recursive=*/false) &&
           !obj->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
@@ -914,21 +882,15 @@ Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
 }
 
 void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
-  // TODO Replace with AXObjectCacheImpl::RepairIncludedParentsChildren().
   DCHECK(child);
   if (child->IsDetached())
     return;
-  AXObject* old_parent = child->CachedParentObject();
-  if (object_cache_->IsProcessingDeferredEvents()) {
-    if (AXObject* new_parent =
-            object_cache_->RestoreParentOrPruneWithCleanLayout(child)) {
+  if (AXObject* new_parent = object_cache_->RestoreParentOrPrune(child)) {
+    if (object_cache_->IsProcessingDeferredEvents()) {
       object_cache_->ChildrenChangedWithCleanLayout(new_parent);
+    } else {
+      object_cache_->ChildrenChanged(new_parent);
     }
-    object_cache_->ChildrenChangedWithCleanLayout(old_parent);
-  } else if (AXObject* new_parent =
-                 object_cache_->RestoreParentOrPrune(child)) {
-    object_cache_->ChildrenChanged(new_parent);
-    object_cache_->ChildrenChanged(old_parent);
   }
 }
 

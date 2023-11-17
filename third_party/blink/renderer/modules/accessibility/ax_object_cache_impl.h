@@ -322,9 +322,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ObjectFromAXID(AXID id) const override;
   AXObject* Root() override;
 
-  // Create an AXObject, and do not check if a previous one exists.
-  // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
   // Used for objects without backing DOM nodes, layout objects, etc.
   AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
@@ -340,10 +337,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreate(const Node*);
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
 
-  // Compute the included parent and its children, and then return
-  // the AXObject for |child|.
-  AXObject* RepairChildrenOfIncludedParent(Node* child);
-
   AXID GetAXID(Node*) override;
 
   AXID GetExistingAXID(Node*) override;
@@ -355,7 +348,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Get an AXObject* backed by the passed-in DOM node.
   AXObject* Get(const Node*) override;
-
   // Get an AXObject* backed by the passed-in LayoutObject, or the
   // LayoutObject's DOM node, if that is available.
   // If |parent_for_repair| is provided, and the object had been detached from
@@ -389,7 +381,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Set the parent of |child|. If no parent is possible, this means the child
   // can no longer be in the AXTree, so remove the child.
   AXObject* RestoreParentOrPrune(AXObject* child);
-  AXObject* RestoreParentOrPruneWithCleanLayout(AXObject* child);
 
   // When an object is created or its id changes, this must be called so that
   // the relation cache is updated.
@@ -570,7 +561,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The document/cache are in the tear-down phase.
   bool HasBeenDisposed() const { return has_been_disposed_; }
   // Assert that tree is completely up-to-date.
-  void CheckTreeIsUpdated();
+  void CheckTreeIsUpdated() const;
   void CheckStyleIsComplete(Document& document) const;
 
   // Returns the `TextChangedOperation` associated with the `id` from the
@@ -644,6 +635,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // clean layout.
   void EnsureRelationCache();
 
+  // Create an AXObject, and do not check if a previous one exists.
+  // Also, initialize the object and add it to maps for later retrieval.
+  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
   // Helpers for CreateAndInit().
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
@@ -676,6 +670,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
+
   void ProcessSubtreeRemoval(Node*, bool remove_root);
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;

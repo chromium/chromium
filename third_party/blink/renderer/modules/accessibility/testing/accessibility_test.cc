@@ -54,7 +54,7 @@ AXObject* AccessibilityTest::GetAXFocusedObject() const {
 
 AXObject* AccessibilityTest::GetAXObjectByElementId(const char* id) const {
   const auto* element = GetElementById(id);
-  return GetAXObjectCache().Get(element);
+  return element ? GetAXObjectCache().GetOrCreate(element) : nullptr;
 }
 
 std::string AccessibilityTest::PrintAXTree() const {
