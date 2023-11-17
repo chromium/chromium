@@ -4103,7 +4103,7 @@ deps = {
   },
 
   # OpenGL ES 3.X Conformance tests.
-  "src/third_party/khronos_glcts": {
+  'src/third_party/khronos_glcts': {
       'url': Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +
         'eedb0baca9e88c53596874901ff5f6136102d20d',
       'condition': 'checkout_src_internal',
@@ -4182,7 +4182,7 @@ deps = {
       'condition': 'checkout_win and checkout_src_internal',
   },
 
-  "src/third_party/widevine/scripts": {
+  'src/third_party/widevine/scripts': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/scripts.git' + '@' +
         '6ae793a606aeed0d0f1c6f688117653710137744',
       'condition': 'checkout_src_internal',
