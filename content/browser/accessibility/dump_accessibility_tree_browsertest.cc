@@ -1138,8 +1138,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-grid.html"));
 }
 
+// TODO(crbug.com/1503056): Enable flaky tests
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityAriaTwoOwnersRemoveOne \
+  DISABLED_AccessibilityAriaTwoOwnersRemoveOne
+#else
+#define MAYBE_AccessibilityAriaTwoOwnersRemoveOne \
+  AccessibilityAriaTwoOwnersRemoveOne
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaTwoOwnersRemoveOne) {
+                       MAYBE_AccessibilityAriaTwoOwnersRemoveOne) {
   RunAriaTest(FILE_PATH_LITERAL("aria-two-owners-remove-one.html"));
 }
 
@@ -2431,7 +2439,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
   RunHtmlTest(FILE_PATH_LITERAL("input-search.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInsertBefore) {
+// TODO(crbug.com/1503056): Enable flaky tests
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityInsertBefore DISABLED_AccessibilityInsertBefore
+#else
+#define MAYBE_AccessibilityInsertBefore AccessibilityInsertBefore
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
 }
 
@@ -3305,9 +3320,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // TODO(https://crbug.com/1367886): Flaky on ASan builders.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_ASAN(AccessibilityTableMultipleRowAndColumnHeaders)) {
+// TODO(https://crbug.com/1503056): Flaky on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityTableMultipleRowAndColumnHeaders \
+  DISABLED_AccessibilityTableMultipleRowAndColumnHeaders
+#else
+#define MAYBE_AccessibilityTableMultipleRowAndColumnHeaders \
+  AccessibilityTableMultipleRowAndColumnHeaders
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityTableMultipleRowAndColumnHeaders) {
   RunHtmlTest(FILE_PATH_LITERAL("table-multiple-row-and-column-headers.html"));
 }
 
