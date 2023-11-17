@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/types/always_false.h"
+#include "base/types/is_instantiation.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
@@ -1534,6 +1535,10 @@ template <template <typename> class CallbackT,
           typename Functor,
           typename... Args>
 decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
+  static constexpr bool kIsFunctionRef =
+      is_instantiation_v<FunctionRef, std::remove_cvref_t<Functor>> ||
+      is_instantiation_v<absl::FunctionRef, std::remove_cvref_t<Functor>>;
+
   // This block checks if each |args| matches to the corresponding params of the
   // target function. This check does not affect the behavior of Bind, but its
   // error message should be more readable.
@@ -1544,8 +1549,14 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
   using UnwrappedArgsList =
       MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
   using BoundParamsList = typename Helper::BoundParamsList;
+  static_assert(!kIsFunctionRef,
+                "base::Bind{Once,Repeating} require strong ownership: "
+                "non-owning function references may not be bound as the "
+                "functor due to potential lifetime issues.");
   static_assert(
-      MakeFunctorTraits<Functor>::is_stateless,
+      // Function refs are never stateless; they'll already print the root
+      // cause error above, so suppress a second error here.
+      MakeFunctorTraits<Functor>::is_stateless || kIsFunctionRef,
       "Capturing lambdas and stateful lambdas are intentionally not supported. "
       "Please use base::Bind{Once,Repeating} directly to bind arguments.");
   static_assert(
@@ -1600,26 +1611,6 @@ template <template <typename> class CallbackT, typename Signature>
 RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
-}
-
-template <template <typename> class CallbackT, typename Signature>
-auto BindImpl(absl::FunctionRef<Signature>, ...) {
-  static_assert(
-      AlwaysFalse<Signature>,
-      "base::Bind{Once,Repeating} require strong ownership: non-owning "
-      "function references may not bound as the functor due to potential "
-      "lifetime issues.");
-  return nullptr;
-}
-
-template <template <typename> class CallbackT, typename Signature>
-auto BindImpl(FunctionRef<Signature>, ...) {
-  static_assert(
-      AlwaysFalse<Signature>,
-      "base::Bind{Once,Repeating} require strong ownership: non-owning "
-      "function references may not bound as the functor due to potential "
-      "lifetime issues.");
-  return nullptr;
 }
 
 }  // namespace internal

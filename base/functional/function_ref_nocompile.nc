@@ -19,7 +19,7 @@ void WontCompile() {
   FunctionRef<void()> ref(returns_int);
 }
 
-#elif defined(NCTEST_BIND_ONCE_TO_ABSL_FUNCTION_REF)  // [r"fatal error: static assertion failed due to requirement 'AlwaysFalse<void \(\)>': base::Bind{Once,Repeating} require strong ownership: non-owning function references may not bound as the functor due to potential lifetime issues\."]
+#elif defined(NCTEST_BIND_ONCE_TO_ABSL_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
 
 void WontCompile() {
   [] (absl::FunctionRef<void()> ref) {
@@ -27,7 +27,7 @@ void WontCompile() {
   }([] {});
 }
 
-#elif defined(NCTEST_BIND_REPEATING_TO_ABSL_FUNCTION_REF)  // [r"fatal error: static assertion failed due to requirement 'AlwaysFalse<void \(\)>': base::Bind{Once,Repeating} require strong ownership: non-owning function references may not bound as the functor due to potential lifetime issues\."]
+#elif defined(NCTEST_BIND_REPEATING_TO_ABSL_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
 
 void WontCompile() {
   [] (FunctionRef<void()> ref) {
@@ -35,7 +35,7 @@ void WontCompile() {
   }([] {});
 }
 
-#elif defined(NCTEST_BIND_ONCE_TO_BASE_FUNCTION_REF)  // [r"fatal error: static assertion failed due to requirement 'AlwaysFalse<void \(\)>': base::Bind{Once,Repeating} require strong ownership: non-owning function references may not bound as the functor due to potential lifetime issues\."]
+#elif defined(NCTEST_BIND_ONCE_TO_BASE_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
 
 void WontCompile() {
   [] (FunctionRef<void()> ref) {
@@ -43,7 +43,7 @@ void WontCompile() {
   }([] {});
 }
 
-#elif defined(NCTEST_BIND_REPEATING_TO_BASE_FUNCTION_REF)  // [r"fatal error: static assertion failed due to requirement 'AlwaysFalse<void \(\)>': base::Bind{Once,Repeating} require strong ownership: non-owning function references may not bound as the functor due to potential lifetime issues\."]
+#elif defined(NCTEST_BIND_REPEATING_TO_BASE_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
 
 void WontCompile() {
   [] (FunctionRef<void()> ref) {

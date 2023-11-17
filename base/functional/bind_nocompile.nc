@@ -396,7 +396,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<int>);
 }
 
-#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"static assertion failed due to requirement 'FunctorTraits<\(lambda at [^)]+\)>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   int i = 0, j = 0;
@@ -464,7 +464,7 @@ void WontCompile() {
   BindRepeating(&TakesMoveOnly, std::move(x));
 }
 
-#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"static assertion failed due to requirement 'FunctorTraits<base::NonEmptyFunctor>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   BindRepeating(NonEmptyFunctor());
