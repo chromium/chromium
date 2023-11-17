@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -63,7 +64,11 @@ class InlineLoginHandlerImpl : public ::InlineLoginHandler {
   // account.
   void ShowSigninErrorPage(const std::string& email,
                            const std::string& hosted_domain);
+  void GetDeviceId(const base::Value::List& args);
 
+  // Email address provided at the start of the flow. Empty optional if no email
+  // was provided.
+  absl::optional<std::string> initial_email_;
   base::RepeatingClosure close_dialog_closure_;
   base::RepeatingCallback<void(const std::string&, const std::string&)>
       show_signin_error_;

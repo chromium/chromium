@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -39,10 +40,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -80,7 +85,8 @@ std::string GetAccountDeviceId(const std::string& signin_scoped_device_id,
   return account_device_id;
 }
 
-std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
+std::string GetInlineLoginFlowName(Profile* profile,
+                                   const absl::optional<std::string>& email) {
   DCHECK(profile);
   if (!profile->IsChild()) {
     return kCrosAddAccountFlow;
@@ -132,6 +138,24 @@ base::Value::Dict GaiaAccountToValue(const ::account_manager::Account& account,
   return ::account_manager::Account{
       ::account_manager::AccountKey{*id, account_manager::AccountType::kGaia},
       *email};
+}
+
+std::string GetDeviceId(user_manager::KnownUser& known_user,
+                        const AccountId& device_account_id,
+                        const absl::optional<std::string>& initial_email) {
+  if (!initial_email ||
+      !gaia::AreEmailsSame(*initial_email, device_account_id.GetUserEmail())) {
+    // Return a random GUID for account additions (`!initial_email`) and
+    // Secondary Account reauth.
+    return base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
+
+  std::string device_id = known_user.GetDeviceId(device_account_id);
+  if (device_id.empty()) {
+    // This should not happen but we need to handle this gracefully.
+    device_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
+  return device_id;
 }
 
 class EduCoexistenceChildSigninHelper : public SigninHelper {
@@ -263,9 +287,16 @@ void InlineLoginHandlerImpl::RegisterMessages() {
       base::BindRepeating(
           &InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getDeviceId", base::BindRepeating(&InlineLoginHandlerImpl::GetDeviceId,
+                                         base::Unretained(this)));
 }
 
 void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
+  std::string* email = params.FindString("email");
+  if (email && !email->empty()) {
+    initial_email_ = *email;
+  }
   const GaiaUrls* const gaia_urls = GaiaUrls::GetInstance();
   params.Set("clientId", gaia_urls->oauth2_chrome_client_id());
 
@@ -277,7 +308,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   params.Set("platformVersion", version.value_or("0.0.0.0"));
   params.Set("constrained", "1");
   params.Set("flow", GetInlineLoginFlowName(Profile::FromWebUI(web_ui()),
-                                            params.FindString("email")));
+                                            initial_email_));
   params.Set("dontResizeNonEmbeddedPages", true);
   params.Set("enableGaiaActionButtons", true);
   params.Set("forceDarkMode",
@@ -487,6 +518,18 @@ void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(
   }
 
   close_dialog_closure_.Run();
+}
+
+void InlineLoginHandlerImpl::GetDeviceId(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  const std::string& callback_id = args[0].GetString();
+
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  const AccountId& device_account_id =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  ResolveJavascriptCallback(
+      callback_id,
+      ::ash::GetDeviceId(known_user, device_account_id, initial_email_));
 }
 
 }  // namespace ash
