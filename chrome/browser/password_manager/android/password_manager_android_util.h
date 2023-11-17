@@ -8,8 +8,10 @@
 class PrefService;
 
 namespace password_manager_android_util {
-// Checks that UPM for local can be used.
-bool UsesUPMForLocal(PrefService* pref_service);
+//  Checks whether the UPM for local users is activated for this client.
+//  This also means that the single password store has been split in
+//  account and local stores.
+bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service);
 
 // Checks that the GMS backend can be used, irrespective of whether for account
 // or local passwords.

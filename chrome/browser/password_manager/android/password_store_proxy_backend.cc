@@ -305,7 +305,7 @@ void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     base::OnceCallback<void(ResultT)> result_callback,
     ResultT result) {
   if (!is_account_store_ &&
-      password_manager_android_util::UsesUPMForLocal(prefs_)) {
+      password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_)) {
     // The backend for local passwords doesn't support unenrollment and as such
     // doesn't support fallbacks.
     std::move(result_callback).Run(std::move(result));
@@ -348,7 +348,7 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
   if (is_account_store_) {
     // The account store shouldn't be used unless the split happened.
-    CHECK(password_manager_android_util::UsesUPMForLocal(prefs_));
+    CHECK(password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_));
     return UsesAndroidBackendAsMainBackendForAccount();
   }
   return UsesAndroidBackendAsMainBackendForProfile();
@@ -362,7 +362,7 @@ bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForAccount() {
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForProfile() {
   CHECK(!is_account_store_);
-  if (password_manager_android_util::UsesUPMForLocal(prefs_)) {
+  if (password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_)) {
     return true;
   }
 

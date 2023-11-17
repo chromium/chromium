@@ -10,7 +10,7 @@
 
 namespace password_manager_android_util {
 
-bool UsesUPMForLocal(PrefService* pref_service) {
+bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
   bool is_upm_local_enabled = base::FeatureList::IsEnabled(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
@@ -30,7 +30,7 @@ bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
   if (is_pwd_sync_enabled) {
     return true;
   }
-  return UsesUPMForLocal(pref_service);
+  return UsesSplitStoresAndUPMForLocal(pref_service);
 }
 
 }  // namespace password_manager_android_util

@@ -27,7 +27,7 @@
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
 using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
-using password_manager_android_util::UsesUPMForLocal;
+using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
 using password_manager_upm_eviction::IsCurrentUserEvicted;
 
 namespace {
@@ -306,7 +306,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // unenrollment and need to fetch new settings from the local backend to
   // replace the account ones.
   if (!is_password_sync_enabled_ && IsCurrentUserEvicted(pref_service_) &&
-      !UsesUPMForLocal(pref_service_)) {
+      !UsesSplitStoresAndUPMForLocal(pref_service_)) {
     return;
   }
 
@@ -335,7 +335,8 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   absl::optional<SyncingAccount> account = absl::nullopt;
   bool is_final_fetch_for_local_user_without_upm =
       fetch_after_sync_status_change_in_progress_ &&
-      !is_password_sync_enabled_ && !UsesUPMForLocal(pref_service_);
+      !is_password_sync_enabled_ &&
+      !UsesSplitStoresAndUPMForLocal(pref_service_);
   if (is_password_sync_enabled_ || is_final_fetch_for_local_user_without_upm) {
     // Note: This method also handles the case where the previously-syncing
     // account has just signed out. So the account can't be queried via

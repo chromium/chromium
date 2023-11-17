@@ -24,22 +24,23 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
 };
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       UsesUPMForLocalFalseWhenFeatureDisabled) {
+       UsesSplitStoresAndUPMForLocalFalseWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 
-  EXPECT_FALSE(UsesUPMForLocal(&pref_service_));
+  EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(&pref_service_));
 }
 
-TEST_F(PasswordManagerAndroidUtilTest, UsesUPMForLocalTrueWhenFeatureEnabled) {
+TEST_F(PasswordManagerAndroidUtilTest,
+       UsesSplitStoresAndUPMForLocalTrueWhenFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 
-  EXPECT_TRUE(UsesUPMForLocal(&pref_service_));
+  EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(&pref_service_));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,

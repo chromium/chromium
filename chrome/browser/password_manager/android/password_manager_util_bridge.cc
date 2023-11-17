@@ -8,14 +8,14 @@
 #include "components/prefs/android/pref_service_android.h"
 
 using password_manager_android_util::CanUseUPMBackend;
-using password_manager_android_util::UsesUPMForLocal;
+using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
 
-jboolean JNI_PasswordManagerUtilBridge_UsesUpmForLocal(
+jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_pref_service) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
-  return UsesUPMForLocal(pref_service);
+  return UsesSplitStoresAndUPMForLocal(pref_service);
 }
 
 // Called via JNI when it's necessary to check that the user is either syncing
