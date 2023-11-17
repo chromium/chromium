@@ -129,9 +129,10 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 
   if (model()->IsActivityIndicatorVisible()) {
     constexpr int kActivityIndicatorHeight = 4;
-    auto activity_indicator = std::make_unique<views::ProgressBar>(
-        kActivityIndicatorHeight, false /* allow_round_corner */);
-    activity_indicator->SetValue(-1 /* inifinite animation */);
+    auto activity_indicator = std::make_unique<views::ProgressBar>();
+    activity_indicator->SetPreferredHeight(kActivityIndicatorHeight);
+    activity_indicator->SetPreferredCornerRadii(absl::nullopt);
+    activity_indicator->SetValue(-1 /* infinite animation */);
     activity_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
     activity_indicator->SetPreferredSize(
         gfx::Size(dialog_width, kActivityIndicatorHeight));

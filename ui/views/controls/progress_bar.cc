@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -29,27 +29,27 @@ namespace views {
 
 namespace {
 
-// In DP, the amount to round the corners of the progress bar (both bg and
-// fg, aka slice).
-constexpr int kCornerRadius = 3;
-constexpr int kSmallCornerRadius = 1;
-
-// Adds a rectangle to the path. The corners will be rounded with regular corner
-// radius if the progress bar height is larger than the regular corner radius.
-// Otherwise the corners will be rounded with the small corner radius if there
-// is room for it.
-void AddPossiblyRoundRectToPath(const gfx::Rect& rectangle,
-                                bool allow_round_corner,
-                                SkPath* path) {
-  if (!allow_round_corner || rectangle.height() < kSmallCornerRadius) {
+// Adds a rectangle to the path.
+void AddPossiblyRoundRectToPath(
+    const gfx::Rect& rectangle,
+    const gfx::RoundedCornersF& preferred_corner_radii,
+    SkPath* path) {
+  if (preferred_corner_radii.IsEmpty() || rectangle.height() == 0) {
     path->addRect(gfx::RectToSkRect(rectangle));
-  } else if (rectangle.height() < kCornerRadius) {
-    path->addRoundRect(gfx::RectToSkRect(rectangle), kSmallCornerRadius,
-                       kSmallCornerRadius);
-  } else {
-    path->addRoundRect(gfx::RectToSkRect(rectangle), kCornerRadius,
-                       kCornerRadius);
+    return;
   }
+  SkVector radii[4] = {{preferred_corner_radii.upper_left(),
+                        preferred_corner_radii.upper_left()},
+                       {preferred_corner_radii.upper_right(),
+                        preferred_corner_radii.upper_right()},
+                       {preferred_corner_radii.lower_right(),
+                        preferred_corner_radii.lower_right()},
+                       {preferred_corner_radii.lower_left(),
+                        preferred_corner_radii.lower_left()}};
+
+  SkRRect rr;
+  rr.setRectRadii(gfx::RectToSkRect(rectangle), radii);
+  path->addRRect(rr);
 }
 
 int RoundToPercent(double fractional_value) {
@@ -58,9 +58,7 @@ int RoundToPercent(double fractional_value) {
 
 }  // namespace
 
-ProgressBar::ProgressBar(int preferred_height, bool allow_round_corner)
-    : preferred_height_(preferred_height),
-      allow_round_corner_(allow_round_corner) {
+ProgressBar::ProgressBar() {
   SetFlipCanvasOnPaintForRTLUI(true);
   SetAccessibilityProperties(ax::mojom::Role::kProgressIndicator);
 }
@@ -101,8 +99,8 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
 
   // Draw background.
   SkPath background_path;
-  AddPossiblyRoundRectToPath(content_bounds, allow_round_corner_,
-                             &background_path);
+  gfx::RoundedCornersF rounded_corners = GetPreferredCornerRadii();
+  AddPossiblyRoundRectToPath(content_bounds, rounded_corners, &background_path);
   cc::PaintFlags background_flags;
   background_flags.setStyle(cc::PaintFlags::kFill_Style);
   background_flags.setAntiAlias(true);
@@ -119,7 +117,7 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
 
   gfx::Rect slice_bounds = content_bounds;
   slice_bounds.set_width(slice_width);
-  AddPossiblyRoundRectToPath(slice_bounds, allow_round_corner_, &slice_path);
+  AddPossiblyRoundRectToPath(slice_bounds, rounded_corners, &slice_path);
 
   cc::PaintFlags slice_flags;
   slice_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -227,6 +225,41 @@ void ProgressBar::SetBackgroundColorId(absl::optional<ui::ColorId> color_id) {
   OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
+int ProgressBar::GetPreferredHeight() const {
+  return preferred_height_;
+}
+
+void ProgressBar::SetPreferredHeight(const int preferred_height) {
+  if (preferred_height_ == preferred_height) {
+    return;
+  }
+  preferred_height_ = preferred_height;
+  OnPropertyChanged(&preferred_height_, kPropertyEffectsPreferredSizeChanged);
+}
+
+gfx::RoundedCornersF ProgressBar::GetPreferredCornerRadii() const {
+  if (!preferred_corner_radii_) {
+    return gfx::RoundedCornersF(0);
+  }
+  const float max_radius = GetContentsBounds().height();
+
+  // No corner should have a radius greater than the height of the bar.
+  return gfx::RoundedCornersF(
+      std::min(max_radius, preferred_corner_radii_->upper_left()),
+      std::min(max_radius, preferred_corner_radii_->upper_right()),
+      std::min(max_radius, preferred_corner_radii_->lower_right()),
+      std::min(max_radius, preferred_corner_radii_->lower_left()));
+}
+
+void ProgressBar::SetPreferredCornerRadii(
+    const absl::optional<gfx::RoundedCornersF> preferred_corner_radii) {
+  if (preferred_corner_radii_ == preferred_corner_radii) {
+    return;
+  }
+  preferred_corner_radii_ = preferred_corner_radii;
+  OnPropertyChanged(&preferred_corner_radii_, kPropertyEffectsPaint);
+}
+
 void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {
   DCHECK_EQ(animation, indeterminate_bar_animation_.get());
   DCHECK(IsIndeterminate());
@@ -250,8 +283,8 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
 
   // Draw background.
   SkPath background_path;
-  AddPossiblyRoundRectToPath(content_bounds, allow_round_corner_,
-                             &background_path);
+  gfx::RoundedCornersF rounded_corners = GetPreferredCornerRadii();
+  AddPossiblyRoundRectToPath(content_bounds, rounded_corners, &background_path);
   cc::PaintFlags background_flags;
   background_flags.setStyle(cc::PaintFlags::kFill_Style);
   background_flags.setAntiAlias(true);
@@ -295,10 +328,10 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   gfx::Rect slice_bounds = content_bounds;
   slice_bounds.set_x(content_bounds.x() + bar1_start_x);
   slice_bounds.set_width(bar1_end_x - bar1_start_x);
-  AddPossiblyRoundRectToPath(slice_bounds, allow_round_corner_, &slice_path);
+  AddPossiblyRoundRectToPath(slice_bounds, rounded_corners, &slice_path);
   slice_bounds.set_x(content_bounds.x() + bar2_start_x);
   slice_bounds.set_width(bar2_end_x - bar2_start_x);
-  AddPossiblyRoundRectToPath(slice_bounds, allow_round_corner_, &slice_path);
+  AddPossiblyRoundRectToPath(slice_bounds, rounded_corners, &slice_path);
 
   cc::PaintFlags slice_flags;
   slice_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -317,6 +350,9 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 }
 
 BEGIN_METADATA(ProgressBar, View)
+ADD_PROPERTY_METADATA(int, PreferredHeight)
+ADD_PROPERTY_METADATA(absl::optional<gfx::RoundedCornersF>,
+                      PreferredCornerRadii)
 ADD_PROPERTY_METADATA(SkColor, ForegroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ForegroundColorId);

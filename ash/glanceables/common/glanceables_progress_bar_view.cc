@@ -31,8 +31,9 @@ GlanceablesProgressBarView::GlanceablesProgressBarView() {
   SetPreferredSize(kProgressBarContainerPreferredSize);
   SetProperty(views::kMarginsKey, kProgressBarContainerMargins);
 
-  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>(
-      kProgressBarThickness, /*allow_round_corner=*/false));
+  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kProgressBarThickness);
+  progress_bar_->SetPreferredCornerRadii(absl::nullopt);
   progress_bar_->SetID(base::to_underlying(GlanceablesViewId::kProgressBar));
   progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);

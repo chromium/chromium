@@ -40,6 +40,7 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
 
  private:
   friend class FocusModeCountdownViewTest;
+
   // The main timer label, displays the amount of time left in the focus
   // session.
   raw_ptr<views::Label, ExperimentalAsh> time_remaining_label_ = nullptr;

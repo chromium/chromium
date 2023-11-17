@@ -510,9 +510,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                                     gfx::Size(kNumColumns, 1));
   progress_bar_holder_->SetProperty(views::kTableHorizAlignKey,
                                     views::LayoutAlignment::kStretch);
-  progress_bar_ =
-      progress_bar_holder_->AddChildView(std::make_unique<views::ProgressBar>(
-          /*preferred_height=*/kProgressBarHeight));
+  progress_bar_ = progress_bar_holder_->AddChildView(
+      std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_VERTICAL),

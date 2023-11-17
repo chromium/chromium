@@ -600,7 +600,8 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
-      AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
+      AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar->SetPreferredHeight(kProgressBarHeight);
   // Use an infinite animation: SetValue(-1).
   progress_bar->SetValue(-1);
   progress_bar->SetBackgroundColor(SK_ColorLTGRAY);

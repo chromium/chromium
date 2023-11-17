@@ -85,8 +85,9 @@ END_METADATA
 
 std::unique_ptr<views::ProgressBar>
 CreateSecurePaymentConfirmationProgressBarView() {
-  auto progress_bar = std::make_unique<views::ProgressBar>(
-      kProgressBarHeight, /*allow_round_corner=*/false);
+  auto progress_bar = std::make_unique<views::ProgressBar>();
+  progress_bar->SetPreferredHeight(kProgressBarHeight);
+  progress_bar->SetPreferredCornerRadii(absl::nullopt);
   progress_bar->SetValue(-1);  // infinite animation.
   progress_bar->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_bar->SetPreferredSize(

@@ -175,7 +175,8 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_container_view->AddChildView(learn_more_link_.get());
 
-  progress_bar_ = new views::ProgressBar(kProgressBarHeight);
+  progress_bar_ = new views::ProgressBar();
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));

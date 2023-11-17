@@ -84,8 +84,8 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
 
   // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
-      timer_container->AddChildView(std::make_unique<views::ProgressBar>(
-          /*preferred_height=*/kBarHeight, /*allow_round_corner*/ true));
+      timer_container->AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kBarHeight);
   progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
   progress_bar_->SetBorder(views::CreateEmptyBorder(

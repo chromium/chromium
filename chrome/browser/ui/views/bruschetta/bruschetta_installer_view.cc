@@ -163,7 +163,8 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       learn_more_url_));
   secondary_message_container_view->AddChildView(link_label_.get());
 
-  progress_bar_ = new views::ProgressBar(kProgressBarHeight);
+  progress_bar_ = new views::ProgressBar();
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));

@@ -573,8 +573,8 @@ void DownloadBubbleSecurityView::AddProgressBar() {
   progress_bar_holder->SetProperty(views::kTableHorizAlignKey,
                                    views::LayoutAlignment::kStretch);
   progress_bar_ =
-      progress_bar_holder->AddChildView(std::make_unique<views::ProgressBar>(
-          /*preferred_height=*/kProgressBarHeight));
+      progress_bar_holder->AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(

@@ -130,8 +130,9 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   close->SetVisible(false);
   close_ = AddChildView(std::move(close));
 
-  auto progress_indicator = std::make_unique<ProgressBar>(
-      kProgressIndicatorHeight, /*allow_round_corner=*/false);
+  auto progress_indicator = std::make_unique<ProgressBar>();
+  progress_indicator->SetPreferredHeight(kProgressIndicatorHeight);
+  progress_indicator->SetPreferredCornerRadii(absl::nullopt);
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
   progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);

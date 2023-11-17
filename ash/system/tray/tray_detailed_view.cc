@@ -235,9 +235,9 @@ void TrayDetailedView::Reset() {
 void TrayDetailedView::ShowProgress(double value, bool visible) {
   DCHECK(tri_view_);
   if (!progress_bar_) {
-    progress_bar_ = AddChildViewAt(
-        std::make_unique<views::ProgressBar>(kTitleRowProgressBarHeight),
-        kTitleRowProgressBarIndex + 1);
+    progress_bar_ = AddChildViewAt(std::make_unique<views::ProgressBar>(),
+                                   kTitleRowProgressBarIndex + 1);
+    progress_bar_->SetPreferredHeight(kTitleRowProgressBarHeight);
     progress_bar_->GetViewAccessibility().OverrideName(
         progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
