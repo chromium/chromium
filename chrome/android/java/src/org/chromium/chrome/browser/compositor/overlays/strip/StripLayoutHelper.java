@@ -9,7 +9,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -28,10 +27,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -63,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
@@ -187,6 +189,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
     private final LayoutManagerHost mManagerHost;
+    private final WindowAndroid mWindowAndroid;
     private TabModel mModel;
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabCreator mTabCreator;
@@ -310,6 +313,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param tabDragSource The @{@link TabDragSource} instance to initiate drag and drop.
      * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
      *     drop.
+     * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      */
     public StripLayoutHelper(
             Context context,
@@ -319,7 +323,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             boolean incognito,
             CompositorButton modelSelectorButton,
             @Nullable TabDragSource tabDragSource,
-            View toolbarContainerView) {
+            @NonNull View toolbarContainerView,
+            @NonNull WindowAndroid windowAndroid) {
         mTabOverlapWidth = ChromeFeatureList.sTabStripRedesign.isEnabled()
                 ? TAB_OVERLAP_WIDTH_LARGE_DP
                 : TAB_OVERLAP_WIDTH_DP;
@@ -331,6 +336,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
         mTabDragSource = tabDragSource;
+        mWindowAndroid = windowAndroid;
 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // Use toolbar menu button padding to align NTB with menu button.
@@ -3592,6 +3598,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
+        if (mWindowAndroid.getActivity().get() == null) return;
 
         // The start position is in the view coordinate system and related to the top left position
         // of the toolbar container view. Convert it to the screen coordinate system for window drag
@@ -3601,8 +3608,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         float startXInScreen = topLeftLocation[0] + startXInView;
         float startYInScreen = topLeftLocation[1] + startYInView;
 
-        Activity activity = (Activity) view.getContext();
-        int taskId = activity.getTaskId();
+        int taskId = ApplicationStatus.getTaskId(mWindowAndroid.getActivity().get());
 
         // Prepare the move window intent for the Android system to initiate move and take over the
         // user input events. The intent is ignored when not handled with no impact to existing
@@ -3613,6 +3619,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         intent.putExtra("MOVE_WINDOW_TASK_ID", taskId);
         intent.putExtra("MOVE_WINDOW_START_X", startXInScreen);
         intent.putExtra("MOVE_WINDOW_START_Y", startYInScreen);
-        view.getContext().sendBroadcast(intent);
+        mWindowAndroid.sendBroadcast(intent);
     }
 }

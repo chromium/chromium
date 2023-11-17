@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -95,7 +96,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
-            @NonNull ViewStub tabHoverCardViewStub) {
+            @NonNull ViewStub tabHoverCardViewStub,
+            @NonNull WindowAndroid windowAndroid) {
         super(
                 host,
                 contentContainer,
@@ -122,7 +124,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         toolbarContainerView,
                         tabHoverCardViewStub,
                         tabContentManagerSupplier,
-                        browserControlsStateProvider);
+                        browserControlsStateProvider,
+                        windowAndroid);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 

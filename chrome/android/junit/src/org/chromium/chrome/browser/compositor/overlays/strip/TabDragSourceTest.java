@@ -55,8 +55,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DropDataAndroid;
+
+import java.lang.ref.WeakReference;
 
 /** Tests for {@link TabDragSource}. */
 @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
@@ -80,6 +83,7 @@ public class TabDragSourceTest {
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TestTabModel mTabModel;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private Activity mActivity;
     private TabDragSource mTabDragSource;
@@ -105,6 +109,7 @@ public class TabDragSourceTest {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         mTabDragSource =
                 new TabDragSource(
@@ -112,7 +117,8 @@ public class TabDragSourceTest {
                         () -> mStripLayoutHelper,
                         mMultiInstanceManager,
                         mDragDropDelegate,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mWindowAndroid);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         mTabDragSource.setTabModelSelector(mTabModelSelector);
     }

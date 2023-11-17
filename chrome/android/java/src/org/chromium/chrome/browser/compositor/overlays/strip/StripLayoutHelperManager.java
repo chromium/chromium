@@ -69,6 +69,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
@@ -312,7 +313,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull WindowAndroid windowAndroid) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -441,7 +443,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                             () -> getActiveStripLayoutHelper(),
                             multiInstanceManager,
                             dragDropDelegate,
-                            browserControlsStateProvider);
+                            browserControlsStateProvider,
+                            windowAndroid);
         }
 
         mNormalHelper =
@@ -453,7 +456,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         false,
                         mModelSelectorButton,
                         mTabDragSource,
-                        toolbarContainerView);
+                        toolbarContainerView,
+                        windowAndroid);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -463,7 +467,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         true,
                         mModelSelectorButton,
                         mTabDragSource,
-                        toolbarContainerView);
+                        toolbarContainerView,
+                        windowAndroid);
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
             var hoverCardView = (StripTabHoverCardView) view;

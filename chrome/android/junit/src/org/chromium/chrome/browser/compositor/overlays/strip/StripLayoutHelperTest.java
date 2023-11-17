@@ -89,8 +89,10 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +118,8 @@ public class StripLayoutHelperTest {
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
     @Mock private CompositorOnClickHandler mClickHandler;
+    @Mock private TabDragSource mTabDragSource;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private Activity mActivity;
     private Context mContext;
@@ -123,7 +127,6 @@ public class StripLayoutHelperTest {
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
-    private @Mock TabDragSource mTabDragSource;
 
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
@@ -168,6 +171,7 @@ public class StripLayoutHelperTest {
 
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
     }
 
     @After
@@ -2764,7 +2768,8 @@ public class StripLayoutHelperTest {
                         incognito,
                         mModelSelectorBtn,
                         mTabDragSource,
-                        mToolbarContainerView);
+                        mToolbarContainerView,
+                        mWindowAndroid);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
@@ -2911,13 +2916,12 @@ public class StripLayoutHelperTest {
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.
         setTabDragSourceMock();
+        when(mToolbarContainerView.getContext()).thenReturn(mActivity);
         initializeTest(false, false, false, 0, 5);
-        Activity activity = Mockito.spy(mActivity);
-        when(mToolbarContainerView.getContext()).thenReturn(activity);
 
         // Act and verify the broadcast is sent.
         onLongPress_OffTab();
-        verify(activity, times(1)).sendBroadcast(any());
+        verify(mWindowAndroid, times(1)).sendBroadcast(any());
     }
 
     @Test

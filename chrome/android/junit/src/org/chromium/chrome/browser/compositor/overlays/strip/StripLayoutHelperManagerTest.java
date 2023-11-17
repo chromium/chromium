@@ -75,6 +75,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
 /** Tests for {@link StripLayoutHelperManager}. */
@@ -98,12 +99,12 @@ public class StripLayoutHelperManagerTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabModel mStandardTabModel;
-    @Mock private TabModel mIncognitoTabModel;
     @Mock private Tab mSelectedTab;
     @Mock private StripLayoutTab mHoveredStripTab;
     @Mock private ViewStub mTabHoverCardViewStub;
     @Mock private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier;
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -150,7 +151,8 @@ public class StripLayoutHelperManagerTest {
                         mToolbarContainerView,
                         mTabHoverCardViewStub,
                         mTabContentManagerSupplier,
-                        mBrowserControlStateProvider);
+                        mBrowserControlStateProvider,
+                        mWindowAndroid);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 
