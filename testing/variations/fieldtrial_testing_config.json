@@ -11636,6 +11636,21 @@
             ]
         }
     ],
+    "OmniboxRTLImprovements": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxSuggestionsRTLImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxRelaxedDriveRequirements": [
         {
             "platforms": [
