@@ -1,0 +1,7 @@
+Test that Fetch.fulfillRequest with invalid status code does not crash
+Intercepted request undefined
+{
+    code : -32602
+    message : Invalid http status code or phrase
+}
+

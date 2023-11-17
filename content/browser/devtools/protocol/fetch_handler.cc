@@ -192,6 +192,16 @@ void FetchHandler::FailRequest(const String& requestId,
                                            WrapCallback(std::move(callback)));
 }
 
+namespace {
+std::string GetReasonPhrase(int responseCode) {
+  if (const char* phrase = net::TryToGetHttpReasonPhrase(
+          static_cast<net::HttpStatusCode>(responseCode))) {
+    return phrase;
+  }
+  return "";
+}
+}  // namespace
+
 void FetchHandler::FulfillRequest(
     const String& requestId,
     int responseCode,
@@ -204,11 +214,9 @@ void FetchHandler::FulfillRequest(
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
     return;
   }
-  std::string status_phrase =
-      responsePhrase.has_value()
-          ? responsePhrase.value()
-          : net::GetHttpReasonPhrase(
-                static_cast<net::HttpStatusCode>(responseCode));
+  const std::string status_phrase = responsePhrase.has_value()
+                                        ? responsePhrase.value()
+                                        : GetReasonPhrase(responseCode);
   if (status_phrase.empty()) {
     callback->sendFailure(
         Response::InvalidParams("Invalid http status code or phrase"));
