@@ -15,7 +15,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
@@ -149,10 +149,10 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     const processedPath = modelPath;
     // </if>
     const newModel = new OnDeviceModelRemote();
-    const {error} = await this.proxy_.handler.loadModel(
+    const {result} = await this.proxy_.handler.loadModel(
         {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
-    if (error) {
-      this.error_ = error;
+    if (result !== LoadModelResult.kSuccess) {
+      this.error_ = 'Unable to load model';
     } else {
       this.model_ = newModel;
       this.startNewSession_();

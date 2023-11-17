@@ -66,9 +66,10 @@ class OnDeviceModelImpl : public OnDeviceModel {
 }  // namespace
 
 // static
-std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    mojom::LoadModelParamsPtr params) {
-  return std::make_unique<OnDeviceModelImpl>();
+base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
+  return base::ok<std::unique_ptr<OnDeviceModel>>(
+      std::make_unique<OnDeviceModelImpl>());
 }
 
 // static

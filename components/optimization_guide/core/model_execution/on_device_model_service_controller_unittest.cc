@@ -120,7 +120,7 @@ class FakeOnDeviceModelService
       LoadModelCallback callback) override {
     auto test_model = std::make_unique<FakeOnDeviceModel>();
     model_receivers_.Add(std::move(test_model), std::move(model));
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(on_device_model::mojom::LoadModelResult::kSuccess);
   }
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override {

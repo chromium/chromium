@@ -99,15 +99,21 @@ struct LoadModelParams {
   uint32 max_tokens;
 };
 
+enum LoadModelResult {
+  kSuccess,
+  kGpuBlocked,
+  kFailedToLoadLibrary,
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
  RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
-  // Initializes a new model instance given `assets`. If an error is returned,
-  // the model pipe will be reset.
+  // Initializes a new model instance given `assets`. If the model can not be
+  // created the model pipe will be reset.
   LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
-      (string? error);
+      (LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

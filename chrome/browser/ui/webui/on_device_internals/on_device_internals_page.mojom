@@ -13,7 +13,7 @@ interface OnDeviceInternalsPage {
   // from within `model_path`.
   LoadModel(mojo_base.mojom.FilePath model_path,
             pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
-      (string? error);
+      (on_device_model.mojom.LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>

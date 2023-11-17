@@ -73,15 +73,16 @@ void OnDeviceModelService::LoadModel(
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
   auto model_impl = CreateModel(std::move(params));
-  if (!model_impl) {
-    std::move(callback).Run("Failed to create model.");
+  if (!model_impl.has_value()) {
+    std::move(callback).Run(model_impl.error());
     return;
   }
 
   mojo::PendingRemote<mojom::OnDeviceModel> remote;
-  model_receivers_.Add(std::make_unique<ModelWrapper>(std::move(model_impl)),
-                       std::move(model));
-  std::move(callback).Run(std::nullopt);
+  model_receivers_.Add(
+      std::make_unique<ModelWrapper>(std::move(model_impl.value())),
+      std::move(model));
+  std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(

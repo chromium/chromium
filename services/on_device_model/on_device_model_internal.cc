@@ -15,18 +15,19 @@
 namespace on_device_model {
 
 // static
-std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    mojom::LoadModelParamsPtr params) {
+base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
   if (!GetChromeMLInstance()) {
-    return nullptr;
+    return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
   }
 
-  auto executor = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
-                                                    std::move(params));
-  if (!executor) {
-    return nullptr;
+  // TODO(sky): make Create() return base::expected.
+  auto result = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
+                                                  std::move(params));
+  if (result) {
+    return base::ok<std::unique_ptr<OnDeviceModel>>(std::move(result));
   }
-  return executor;
+  return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
 }
 
 // static

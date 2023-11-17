@@ -59,7 +59,7 @@ class OnDeviceModelServiceController {
       mojo::PendingReceiver<on_device_model::mojom::Session> session);
 
   // Invoked at the end of model load, to continue with model execution.
-  void OnLoadModelResult(const std::optional<std::string>& error);
+  void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
 
   // Called when the model assets have been loaded from disk and are ready to be
   // sent to the service.

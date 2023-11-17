@@ -76,10 +76,10 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
-    const std::optional<std::string>& error) {
-  if (error.has_value()) {
+    on_device_model::mojom::LoadModelResult result) {
+  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
     // TODO(b/302402576): Add error handling.
-    LOG(ERROR) << *error;
+    LOG(ERROR) << "Failed loading model, code=" << static_cast<int>(result);
   }
 }
 
