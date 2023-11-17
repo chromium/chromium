@@ -109,25 +109,6 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   const ExtensionIdSet& content_scripts() const { return content_scripts_; }
   const ExtensionIdSet& user_scripts() const { return user_scripts_; }
 
-  void AddFrameDebugString(content::RenderFrameHost& frame,
-                           const std::string& debug_string) {
-    std::string& stored_string =
-        frame_debug_strings_[frame.GetGlobalFrameToken()];
-    stored_string += debug_string;
-
-    // Elide all contents except the last 250 characters.  There are 2
-    // motivations for this:
-    // 1. Preventing unbounded memory usage
-    // 2. Only 256 characters fit into `base::debug::CrashKeySize::Size256`.
-    if (stored_string.size() > 250) {
-      stored_string.replace(0, stored_string.size() - 250, "...");
-    }
-  }
-
-  const std::string& GetFrameDebugString(content::RenderFrameHost& frame) {
-    return frame_debug_strings_[frame.GetGlobalFrameToken()];
-  }
-
  private:
   explicit RenderProcessHostUserData(content::RenderProcessHost& process)
       : process_(process) {
@@ -162,11 +143,6 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 
   // Only used for tracing.
   const raw_ref<content::RenderProcessHost> process_;
-
-  // TODO(https://crbug.com/1439642): Remove the ad-hoc debugging code after the
-  // bug is fixed.
-  std::map<content::GlobalRenderFrameHostToken, std::string>
-      frame_debug_strings_;
 };
 
 const char* RenderProcessHostUserData::kUserDataKey =
@@ -250,36 +226,18 @@ bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
 bool DoesScriptMatch(const UserScript& script,
                      content::RenderFrameHost& frame,
                      const GURL& url) {
-  content::RenderProcessHost& process = *frame.GetProcess();
-  const ExtensionId& extension_id = script.extension_id();
-
   // ScriptInjectionTracker only needs to track Javascript content scripts (e.g.
   // doesn't track CSS-only injections).
   if (script.js_scripts().empty()) {
-    TRACE_EVENT_INSTANT("extensions",
-                        "ScriptInjectionTracker/DoesScriptMatch=false(non-js)",
-                        ChromeTrackEvent::kRenderProcessHost, process,
-                        ChromeTrackEvent::kChromeExtensionId,
-                        ExtensionIdForTracing(extension_id));
     return false;
   }
 
   GURL effective_url =
       GetEffectiveDocumentURL(&frame, url, script.match_origin_as_fallback());
   if (script.url_patterns().MatchesSecurityOrigin(effective_url)) {
-    TRACE_EVENT_INSTANT("extensions",
-                        "ScriptInjectionTracker/DoesScriptMatch=true",
-                        ChromeTrackEvent::kRenderProcessHost, process,
-                        ChromeTrackEvent::kChromeExtensionId,
-                        ExtensionIdForTracing(extension_id));
     return true;
   }
 
-  TRACE_EVENT_INSTANT("extensions",
-                      "ScriptInjectionTracker/DoesScriptMatch=false(mismatch)",
-                      ChromeTrackEvent::kRenderProcessHost, process,
-                      ChromeTrackEvent::kChromeExtensionId,
-                      ExtensionIdForTracing(extension_id));
   return false;
 }
 
@@ -328,12 +286,6 @@ bool DoWebViewScripstMatch(const Extension& extension,
   auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
   if (!guest) {
     // Not a guest; no webview scripts.
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoWebViewScripstMatch=false(non-guest)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
     return false;
   }
 
@@ -356,21 +308,10 @@ bool DoWebViewScripstMatch(const Extension& extension,
     // difficult to achieve, because the UserScript objects are not retained
     // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
     if (!script_ids.empty()) {
-      TRACE_EVENT_INSTANT("extensions",
-                          "ScriptInjectionTracker/DoWebViewScripstMatch=true",
-                          ChromeTrackEvent::kRenderProcessHost, process,
-                          ChromeTrackEvent::kChromeExtensionId,
-                          ExtensionIdForTracing(extension.id()));
       return true;
     }
   }
 
-  TRACE_EVENT_INSTANT(
-      "extensions",
-      "ScriptInjectionTracker/DoWebViewScripstMatch=false(nomatch)",
-      ChromeTrackEvent::kRenderProcessHost, process,
-      ChromeTrackEvent::kChromeExtensionId,
-      ExtensionIdForTracing(extension.id()));
   return false;
 }
 
@@ -387,34 +328,13 @@ bool DoStaticContentScriptsMatch(const Extension& extension,
               ExtensionIdForTracing(extension.id()));
 
   if (!CanExtensionScriptsAffectFrame(frame, extension)) {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoStaticContentScriptMatch=false(webview)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
     return false;
   }
 
   std::vector<const UserScript*> static_content_scripts =
       GetVectorFromScriptList(
           ContentScriptsInfo::GetContentScripts(&extension));
-  if (DoScriptsMatch(static_content_scripts, frame, url)) {
-    TRACE_EVENT_INSTANT(
-        "extensions", "ScriptInjectionTracker/DoStaticContentScriptMatch=true",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
-    return true;
-  }
-
-  TRACE_EVENT_INSTANT(
-      "extensions",
-      "ScriptInjectionTracker/DoStaticContentScriptMatch=false(nomatch)",
-      ChromeTrackEvent::kRenderProcessHost, process,
-      ChromeTrackEvent::kChromeExtensionId,
-      ExtensionIdForTracing(extension.id()));
-  return false;
+  return DoScriptsMatch(static_content_scripts, frame, url);
 }
 
 // Returns whether an `extension` can inject JavaScript dynamic content scripts
@@ -431,34 +351,12 @@ bool DoDynamicContentScriptsMatch(const Extension& extension,
               ExtensionIdForTracing(extension.id()));
 
   if (!CanExtensionScriptsAffectFrame(frame, extension)) {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoDynamicContentScriptsMatch=false(webview)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
     return false;
   }
 
   std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
       extension.id(), UserScript::Source::kDynamicContentScript, process);
-  if (DoScriptsMatch(dynamic_user_scripts, frame, url)) {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoDynamicContentScriptsMatch=true",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
-    return true;
-  }
-
-  TRACE_EVENT_INSTANT(
-      "extensions",
-      "ScriptInjectionTracker/DoDynamicContentScriptsMatch=false(nomatch)",
-      ChromeTrackEvent::kRenderProcessHost, process,
-      ChromeTrackEvent::kChromeExtensionId,
-      ExtensionIdForTracing(extension.id()));
-  return false;
+  return DoScriptsMatch(dynamic_user_scripts, frame, url);
 }
 
 // Returns whether an `extension` can inject JavaScript dynamic user scripts
@@ -474,32 +372,12 @@ bool DoUserScriptsMatch(const Extension& extension,
               ExtensionIdForTracing(extension.id()));
 
   if (!CanExtensionScriptsAffectFrame(frame, extension)) {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoUserScriptsMatch=false(webview)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
     return false;
   }
 
   std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
       extension.id(), UserScript::Source::kDynamicUserScript, process);
-  if (DoScriptsMatch(dynamic_user_scripts, frame, url)) {
-    TRACE_EVENT_INSTANT(
-        "extensions", "ScriptInjectionTracker/DoUserScriptsMatch=true(dynamic)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension.id()));
-    return true;
-  }
-
-  TRACE_EVENT_INSTANT("extensions",
-                      "ScriptInjectionTracker/DoUserScriptsMatch=false",
-                      ChromeTrackEvent::kRenderProcessHost, process,
-                      ChromeTrackEvent::kChromeExtensionId,
-                      ExtensionIdForTracing(extension.id()));
-  return false;
+  return DoScriptsMatch(dynamic_user_scripts, frame, url);
 }
 
 // Returns all the extensions injecting content scripts into the `frame` /
@@ -681,69 +559,6 @@ bool DidProcessRunScriptFromExtension(
   return process_data->HasScript(script_type, extension_id);
 }
 
-std::string GetDynScriptsDebugString(
-    const std::vector<const UserScript*>& scripts) {
-  std::string result;
-  for (const UserScript* script : scripts) {
-    if (result.empty()) {
-      result += ";";
-    }
-    result += "<";
-    for (const URLPattern& pattern : script->url_patterns()) {
-      result += ",";
-      result += pattern.host();
-    }
-    result += ">";
-  }
-  return result;
-}
-
-constexpr char kExtensionAffectedByBug1439642[] =
-    "gpdjojdkbbmdfjfahjcgigfpmkopogic";
-
-void AddFrameDebugStringForBug1439642(const ExtensionRegistry& registry,
-                                      const char* debug_string_label,
-                                      content::RenderFrameHost& frame,
-                                      const GURL& url) {
-  // TODO(https://crbug.com/1439642): Remove the ad-hoc debugging code after the
-  // bug is fixed.
-  const ExtensionId extension_id = kExtensionAffectedByBug1439642;
-  const Extension* extension =
-      registry.enabled_extensions().GetByID(extension_id);
-  if (extension) {
-    std::string debug_string = ", ";
-    debug_string += debug_string_label;
-
-    debug_string += ":url=";
-    if (url.possibly_invalid_spec().size() < 30) {
-      debug_string += url.possibly_invalid_spec();
-    } else {
-      debug_string += url.possibly_invalid_spec().substr(0, 27);
-      debug_string += "...";
-    }
-
-    if (DoDynamicContentScriptsMatch(*extension, frame, url)) {
-      debug_string += "+dyn-match";
-    } else {
-      debug_string += "+no-dyn-match=";
-      auto dynamic_scripts = GetLoadedDynamicScripts(
-          extension_id, UserScript::Source::kDynamicContentScript,
-          *frame.GetProcess());
-      debug_string += GetDynScriptsDebugString(dynamic_scripts);
-    }
-    auto& process_data =
-        RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
-    process_data.AddFrameDebugString(frame, debug_string);
-  }
-}
-
-const std::string& GetFrameDebugStringForBug1439642(
-    content::RenderFrameHost& frame) {
-  auto& process_data =
-      RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
-  return process_data.GetFrameDebugString(frame);
-}
-
 }  // namespace
 
 // static
@@ -825,8 +640,6 @@ void ScriptInjectionTracker::ReadyToCommitNavigation(
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ScriptInjectionTracker>(), navigation,
       extensions_injecting_content_scripts);
-
-  AddFrameDebugStringForBug1439642(*registry, "RTCNav", frame, url);
 }
 
 // static
@@ -877,8 +690,6 @@ void ScriptInjectionTracker::DidFinishNavigation(
       extensions_injecting_content_scripts.size() +
       extensions_injecting_user_scripts.size();
   RecordUkm(navigation, num_extensions_injecting_scripts);
-
-  AddFrameDebugStringForBug1439642(*registry, "DFNav", frame, url);
 }
 
 // static
@@ -944,14 +755,6 @@ void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
                                   &any_frame_matches_user_scripts,
                                   &extension](content::RenderFrameHost* frame) {
     auto url = frame->GetLastCommittedURL();
-
-    if (extension->id() == kExtensionAffectedByBug1439642) {
-      const ExtensionRegistry* registry =
-          ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
-      DCHECK(registry);  // This method shouldn't be called during shutdown.
-      AddFrameDebugStringForBug1439642(*registry, "WUSIR", *frame, url);
-    }
-
     if (!any_frame_matches_content_scripts) {
       any_frame_matches_content_scripts =
           DoWebViewScripstMatch(*extension, *frame) ||
@@ -972,13 +775,6 @@ void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
     if (any_frame_matches_user_scripts) {
       process_data.AddScript(ScriptType::kUserScript, extension->id());
     }
-  } else {
-    TRACE_EVENT_INSTANT("extensions",
-                        "ScriptInjectionTracker::"
-                        "DidUpdateScriptsInRenderer - no matches",
-                        ChromeTrackEvent::kRenderProcessHost, process,
-                        ChromeTrackEvent::kChromeExtensionId,
-                        ExtensionIdForTracing(host_id.id));
   }
 }
 
@@ -1049,12 +845,6 @@ base::debug::CrashKeyString* GetLifecycleStateCrashKey() {
   return crash_key;
 }
 
-base::debug::CrashKeyString* GetFrameDebugStringCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "script_frame_debug_string", base::debug::CrashKeySize::Size256);
-  return crash_key;
-}
-
 base::debug::CrashKeyString* GetIsGuestCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "is_guest", base::debug::CrashKeySize::Size32);
@@ -1082,12 +872,6 @@ base::debug::CrashKeyString* GetDoDynamicContentScriptsMatchCrashKey() {
 base::debug::CrashKeyString* GetDoUserScriptsMatchCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "do_user_scripts_match", base::debug::CrashKeySize::Size32);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetDynamicScriptsStateCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "dynamic_scripts_state", base::debug::CrashKeySize::Size32);
   return crash_key;
 }
 
@@ -1123,8 +907,6 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
   lifecycle_state_crash_key_.emplace(
       GetLifecycleStateCrashKey(),
       base::NumberToString(static_cast<int>(frame.GetLifecycleState())));
-  frame_debug_string_crash_key_.emplace(
-      GetFrameDebugStringCrashKey(), GetFrameDebugStringForBug1439642(frame));
 
   auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
   is_guest_crash_key_.emplace(GetIsGuestCrashKey(),
@@ -1151,13 +933,6 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
     do_user_scripts_match_crash_key_.emplace(
         GetDoUserScriptsMatchCrashKey(),
         BoolToCrashKeyValue(DoUserScriptsMatch(*extension, frame, frame_url)));
-
-    auto dynamic_scripts = GetLoadedDynamicScripts(
-        extension_id, UserScript::Source::kDynamicContentScript,
-        *frame.GetProcess());
-    dynamic_scripts_state_crash_key_.emplace(
-        GetDynamicScriptsStateCrashKey(),
-        GetDynScriptsDebugString(dynamic_scripts));
   }
 }
 
