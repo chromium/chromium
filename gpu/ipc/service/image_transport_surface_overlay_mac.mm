@@ -55,7 +55,7 @@ BASE_FEATURE(kAVFoundationOverlays,
 // effect if kCVDisplayLinkBeginFrameSource is disabled.
 BASE_FEATURE(kDelayOnFramePresent,
              "DelayOnFramePresent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
