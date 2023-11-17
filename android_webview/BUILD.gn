@@ -943,6 +943,7 @@ android_assets("locale_pak_assets") {
 repack("repack_pack") {
   sources = [
     "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/content/histograms_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
@@ -955,6 +956,7 @@ repack("repack_pack") {
     ":generate_mojo_resources",
     ":generate_webui_resources",
     "//content:content_resources",
+    "//content/browser/resources/histograms:resources",
     "//net:net_resources",
     "//third_party/blink/public:devtools_inspector_resources",
     "//third_party/blink/public:resources",
