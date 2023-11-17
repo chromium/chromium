@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/optimization_guide/optimization_guide_test_app_interface.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
 
 #import <vector>
 
@@ -17,8 +17,8 @@
 #import "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/test_hints_component_creator.h"
 #import "components/optimization_guide/proto/hints.pb.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 void OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(

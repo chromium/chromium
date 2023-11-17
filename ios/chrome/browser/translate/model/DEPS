@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/language/model",
-  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/optimization_guide/model",
 ]
 
 specific_include_rules = {

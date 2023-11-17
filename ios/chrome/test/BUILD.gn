@@ -239,7 +239,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/net:unit_tests",
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha/model:unit_tests",
-    "//ios/chrome/browser/optimization_guide:unit_tests",
+    "//ios/chrome/browser/optimization_guide/model:unit_tests",
     "//ios/chrome/browser/overlays/model:unit_tests",
     "//ios/chrome/browser/overlays/model/public/common/confirmation:unit_tests",
     "//ios/chrome/browser/overlays/model/public/infobar_banner:unit_tests",

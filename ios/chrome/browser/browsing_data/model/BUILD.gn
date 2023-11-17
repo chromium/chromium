@@ -60,7 +60,7 @@ source_set("model") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/reading_list/model:reading_list_remover",
     "//ios/chrome/browser/search_engines/model",

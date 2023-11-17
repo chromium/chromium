@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
+#import "ios/chrome/browser/optimization_guide/model/prediction_model_download_client.h"
 
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_macros_local.h"
@@ -10,8 +10,8 @@
 #import "components/download/public/background_service/download_metadata.h"
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/core/prediction_model_download_manager.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "services/network/public/cpp/resource_request_body.h"
 
 namespace optimization_guide {

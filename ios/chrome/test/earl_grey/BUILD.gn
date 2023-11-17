@@ -91,7 +91,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/https_upgrades/model:eg_app_support+eg2",
     "//ios/chrome/browser/metrics:eg_app_support+eg2",
-    "//ios/chrome/browser/optimization_guide:eg_app_support+eg2",
+    "//ios/chrome/browser/optimization_guide/model:eg_app_support+eg2",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:eg_app_support+eg2",
     "//ios/chrome/browser/policy:eg_app_support+eg2",

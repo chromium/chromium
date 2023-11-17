@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_IOS_CHROME_HINTS_MANAGER_H_
-#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_IOS_CHROME_HINTS_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_HINTS_MANAGER_H_
+#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_HINTS_MANAGER_H_
 
 #include "components/optimization_guide/core/hints_manager.h"
 
@@ -34,4 +34,4 @@ class IOSChromeHintsManager : public HintsManager {
 
 }  // namespace optimization_guide
 
-#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_IOS_CHROME_HINTS_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_HINTS_MANAGER_H_

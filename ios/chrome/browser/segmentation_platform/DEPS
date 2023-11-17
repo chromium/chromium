@@ -6,6 +6,6 @@ include_rules = [
   "+ios/web/public",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/history",
-  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/metrics",
 ]

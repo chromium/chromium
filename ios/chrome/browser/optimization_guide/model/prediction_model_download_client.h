@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
-#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
+#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
+#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
@@ -56,4 +56,4 @@ class PredictionModelDownloadClient : public download::Client {
 
 }  // namespace optimization_guide
 
-#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
+#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_

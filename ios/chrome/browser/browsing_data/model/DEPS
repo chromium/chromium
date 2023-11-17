@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/external_files/model",
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/language/model",
-  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",

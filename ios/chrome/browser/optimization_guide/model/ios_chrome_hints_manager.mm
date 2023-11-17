@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
 
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

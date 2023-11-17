@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
-#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
+#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
+#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
 
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
@@ -47,4 +47,4 @@ class OptimizationGuidePushNotificationClient : public PushNotificationClient {
   ChromeBrowserState* last_used_browser_state_for_testing_ = nullptr;
 };
 
-#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
+#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_

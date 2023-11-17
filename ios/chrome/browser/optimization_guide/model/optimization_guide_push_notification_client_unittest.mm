@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/optimization_guide/optimization_guide_push_notification_client.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_push_notification_client.h"
 
 #import "base/base64.h"
 #import "base/functional/callback_helpers.h"
@@ -11,8 +11,8 @@
 #import "base/test/task_environment.h"
 #import "components/optimization_guide/core/hints_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"

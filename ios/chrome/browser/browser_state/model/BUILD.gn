@@ -100,7 +100,7 @@ source_set("model") {
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/net",
-    "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/plus_addresses/model",

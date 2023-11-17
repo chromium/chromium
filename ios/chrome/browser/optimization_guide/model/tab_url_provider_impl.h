@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_IMPL_H_
-#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_TAB_URL_PROVIDER_IMPL_H_
+#define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_TAB_URL_PROVIDER_IMPL_H_
 
 #include <vector>
 
@@ -34,4 +34,4 @@ class TabUrlProviderImpl : public optimization_guide::TabUrlProvider {
   base::Clock* clock_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_TAB_URL_PROVIDER_IMPL_H_
