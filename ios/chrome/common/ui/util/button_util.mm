@@ -13,6 +13,7 @@ const CGFloat kPrimaryButtonCornerRadius = 15;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
+  primary_blue_button.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (@available(iOS 15.0, *)) {
     UIButtonConfiguration* buttonConfiguration =
