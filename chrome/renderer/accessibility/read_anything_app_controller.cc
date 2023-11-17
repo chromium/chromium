@@ -396,7 +396,7 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : render_frame_id_(render_frame->GetRoutingID()) {
+    : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
   distiller_ = std::make_unique<AXTreeDistiller>(
       render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
@@ -446,8 +446,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(std::string script) {
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -1124,8 +1123,7 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -1391,8 +1389,7 @@ void ReadAnythingAppController::SetDefaultLanguageCode(
 void ReadAnythingAppController::SetContentForTesting(
     v8::Local<v8::Value> v8_snapshot_lite,
     std::vector<ui::AXNodeID> content_node_ids) {
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -1411,4 +1408,12 @@ void ReadAnythingAppController::SetContentForTesting(
   // Trigger a selection event (for testing selections).
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
                              {selectionEvent});
+}
+
+content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
+  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token_);
+  if (!web_frame) {
+    return nullptr;
+  }
+  return content::RenderFrame::FromWebFrame(web_frame);
 }

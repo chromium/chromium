@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
@@ -244,7 +245,9 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
-  const int render_frame_id_;
+  content::RenderFrame* GetRenderFrame();
+
+  const blink::LocalFrameToken frame_token_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;
