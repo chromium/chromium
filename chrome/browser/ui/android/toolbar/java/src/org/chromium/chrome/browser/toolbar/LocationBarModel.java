@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
@@ -135,7 +135,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private final NewTabPageDelegate mNtpDelegate;
     private final @NonNull UrlFormatter mUrlFormatter;
     private final @NonNull OfflineStatus mOfflineStatus;
-    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private final SearchEngineUtils mSearchEngineUtils;
     // Always null if optimizations are disabled. Otherwise, non-null and unchanging following
     // native init. Always tied to the original profile which is safe because no underlying
     // services have an incognito-specific instance.
@@ -183,20 +183,20 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @param urlFormatter Formatter returning the formatted version of the original version of URL
      *     of a distillation.
      * @param offlineStatus Offline-related status provider.
-     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
+     * @param searchEngineUtils Utils to query the state of the search engine logos feature.
      */
     public LocationBarModel(
             Context context,
             NewTabPageDelegate newTabPageDelegate,
             @NonNull UrlFormatter urlFormatter,
             @NonNull OfflineStatus offlineStatus,
-            @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
+            @NonNull SearchEngineUtils searchEngineUtils) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
         mOfflineStatus = offlineStatus;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
-        mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mSearchEngineUtils = searchEngineUtils;
         mUrlForDisplay = "";
         mFormattedFullUrl = "";
     }
@@ -688,8 +688,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         boolean skipIconForNeutralState =
-                !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
-                || mNtpDelegate.isCurrentlyVisible() || isInOverviewAndShowingOmnibox();
+                !mSearchEngineUtils.shouldShowSearchEngineLogo(isIncognito())
+                        || mNtpDelegate.isCurrentlyVisible()
+                        || isInOverviewAndShowingOmnibox();
 
         boolean useUpdatedConnectionSecurityIndicators =
                 mOmniboxUpdatedConnectionSecurityIndicatorsEnabled

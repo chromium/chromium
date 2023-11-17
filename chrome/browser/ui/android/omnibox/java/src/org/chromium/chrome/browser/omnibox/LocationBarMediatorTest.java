@@ -187,7 +187,7 @@ public class LocationBarMediatorTest {
     @Mock private ObjectAnimator mUrlAnimator;
     @Mock private View mRootView;
 
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -221,7 +221,7 @@ public class LocationBarMediatorTest {
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
-        SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -241,7 +241,7 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ false,
-                        mSearchEngineLogoUtils,
+                        mSearchEngineUtils,
                         mLensController,
                         tab -> true,
                         mOmniboxUma,
@@ -264,7 +264,7 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ true,
-                        mSearchEngineLogoUtils,
+                        mSearchEngineUtils,
                         mLensController,
                         tab -> true,
                         (tab, transition, isNtp) -> {},
@@ -833,7 +833,7 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ false,
-                        mSearchEngineLogoUtils,
+                        mSearchEngineUtils,
                         mLensController,
                         tab -> true,
                         mOmniboxUma,

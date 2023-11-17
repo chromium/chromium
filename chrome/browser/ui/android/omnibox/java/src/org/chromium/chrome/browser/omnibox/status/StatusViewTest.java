@@ -41,7 +41,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
@@ -60,7 +60,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class StatusViewTest extends BlankUiTestActivityTestCase {
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
 
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
@@ -263,7 +263,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                 new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0);
         runOnUiThreadBlocking(
                 () -> {
-                    doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
+                    doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo(false);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource);
                 });

@@ -178,7 +178,7 @@ class LocationBarMediator
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
-    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private final SearchEngineUtils mSearchEngineUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
@@ -218,7 +218,7 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior,
             @NonNull WindowAndroid windowAndroid,
             boolean isTablet,
-            @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
+            @NonNull SearchEngineUtils searchEngineUtils,
             @NonNull LensController lensController,
             @NonNull SaveOfflineButtonState saveOfflineButtonState,
             @NonNull OmniboxUma omniboxUma,
@@ -240,7 +240,7 @@ class LocationBarMediator
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
-        mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mSearchEngineUtils = searchEngineUtils;
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
@@ -1243,7 +1243,7 @@ class LocationBarMediator
     private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo =
-                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                mSearchEngineUtils.shouldShowSearchEngineLogo(
                         mLocationBarDataProvider.isIncognito());
 
         // This branch will be hit if the search engine logo should be shown.

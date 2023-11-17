@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,7 +68,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
-    @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock SearchEngineUtils mSearchEngineUtils;
 
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -85,7 +85,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                 ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
                 mChromeAutocompleteSchemeClassifierJni);
 
-        doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
+        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo(false);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
 
@@ -112,7 +112,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
                                     ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    mSearchEngineLogoUtils);
+                                    mSearchEngineUtils);
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(

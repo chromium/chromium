@@ -30,13 +30,12 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Collection of shared code for displaying search engine logos. */
-public class SearchEngineLogoUtils {
-    // Note: shortened to account for the 20 character limit.
-    private static final String TAG = "SearchLogoUtils";
+/** Common Default Search Engine functions. */
+public class SearchEngineUtils {
+    private static final String TAG = "DSEUtils";
     private static final String DUMMY_URL_QUERY = "replace_me";
 
-    private static SearchEngineLogoUtils sInstance;
+    private static SearchEngineUtils sInstance;
     // Cached values to prevent duplicate work.
     private static Bitmap sCachedComposedImage;
     private static String sCachedComposedBackgroundLogoUrl;
@@ -45,14 +44,14 @@ public class SearchEngineLogoUtils {
     private Boolean mNeedToCheckForSearchEnginePromo;
 
     /**
-     * Get the singleton instance of SearchEngineLogoUtils. Avoid using in new code; instead - rely
+     * Get the singleton instance of SearchEngineUtils. Avoid using in new code; instead - rely
      * on plumbing supplied instance.
      */
     @Deprecated
-    public static SearchEngineLogoUtils getInstance() {
+    public static SearchEngineUtils getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = new SearchEngineLogoUtils();
+            sInstance = new SearchEngineUtils();
         }
         return sInstance;
     }
@@ -88,7 +87,7 @@ public class SearchEngineLogoUtils {
     }
 
     @VisibleForTesting
-    SearchEngineLogoUtils() {}
+    SearchEngineUtils() {}
 
     /**
      * Encapsulates the check for if the search engine logo should be shown.
@@ -257,13 +256,8 @@ public class SearchEngineLogoUtils {
             Bitmap image,
             Resources resources,
             Promise<StatusIconResource> promise) {
-        // Scale the logo up to the desired size.
-        int logoSizePixels = getSearchEngineLogoSizePixels(resources);
-        Bitmap scaledIcon = Bitmap.createScaledBitmap(image, logoSizePixels, logoSizePixels, true);
-
         sCachedComposedImage = image;
         sCachedComposedBackgroundLogoUrl = logoUrl;
-
         promise.fulfill(new StatusIconResource(logoUrl, sCachedComposedImage, 0));
     }
 
@@ -280,7 +274,6 @@ public class SearchEngineLogoUtils {
     }
 
     /** Set the favicon helper for testing. */
-    @VisibleForTesting
     void setFaviconHelperForTesting(FaviconHelper faviconHelper) {
         var oldValue = mFaviconHelper;
         mFaviconHelper = faviconHelper;
@@ -288,15 +281,13 @@ public class SearchEngineLogoUtils {
     }
 
     /** Set the instance for testing. */
-    @VisibleForTesting
-    static void setInstanceForTesting(SearchEngineLogoUtils instance) {
+    static void setInstanceForTesting(SearchEngineUtils instance) {
         var oldValue = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /** Reset the cache values for testing. */
-    @VisibleForTesting
     static void resetForTesting() {
         sInstance = null;
         sCachedComposedImage = null;

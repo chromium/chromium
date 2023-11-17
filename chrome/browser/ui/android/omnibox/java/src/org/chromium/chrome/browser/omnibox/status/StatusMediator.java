@@ -24,7 +24,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -68,7 +68,7 @@ public class StatusMediator
     static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
 
     private final PropertyModel mModel;
-    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private final SearchEngineUtils mSearchEngineUtils;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<MerchantTrustSignalsCoordinator>
@@ -127,7 +127,7 @@ public class StatusMediator
      * @param isTablet Whether the current device is a tablet.
      * @param locationBarDataProvider Provides data to the location bar.
      * @param permissionDialogController Controls showing permission dialogs.
-     * @param searchEngineLogoUtils Provides utilities around the search engine logo.
+     * @param searchEngineUtils Provides utilities around the search engine logo.
      * @param templateUrlServiceSupplier Supplies the {@link TemplateUrlService}.
      * @param profileSupplier Supplies the current {@link Profile}.
      * @param pageInfoIPHController Manages when an IPH bubble for PageInfo is shown.
@@ -144,7 +144,7 @@ public class StatusMediator
             boolean isTablet,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
-            SearchEngineLogoUtils searchEngineLogoUtils,
+            SearchEngineUtils searchEngineUtils,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             Supplier<Profile> profileSupplier,
             PageInfoIPHController pageInfoIPHController,
@@ -154,7 +154,7 @@ public class StatusMediator
                             merchantTrustSignalsCoordinatorSupplier) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
-        mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mSearchEngineUtils = searchEngineUtils;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mTemplateUrlServiceSupplier.onAvailable(
                 (templateUrlService) -> {
@@ -581,7 +581,7 @@ public class StatusMediator
         }
 
         Profile profile = mProfileSupplier.hasValue() ? mProfileSupplier.get() : null;
-        return mSearchEngineLogoUtils.getSearchEngineLogo(
+        return mSearchEngineUtils.getSearchEngineLogo(
                 mResources, mBrandedColorScheme, profile, mTemplateUrlServiceSupplier.get());
     }
 

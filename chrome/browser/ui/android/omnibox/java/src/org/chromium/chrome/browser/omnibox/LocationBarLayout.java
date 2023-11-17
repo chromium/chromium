@@ -59,7 +59,7 @@ public class LocationBarLayout extends FrameLayout {
     protected LinearLayout mUrlActionContainer;
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
-    protected SearchEngineLogoUtils mSearchEngineLogoUtils;
+    protected SearchEngineUtils mSearchEngineUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
     private final boolean mIsSurfacePolishEnabled;
@@ -130,7 +130,7 @@ public class LocationBarLayout extends FrameLayout {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
-     * @param searchEngineLogoUtils Allows querying the state of the search engine logo feature.
+     * @param searchEngineUtils Allows querying the state of the search engine logo feature.
      */
     @CallSuper
     public void initialize(
@@ -138,12 +138,12 @@ public class LocationBarLayout extends FrameLayout {
             @NonNull UrlBarCoordinator urlCoordinator,
             @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
+            @NonNull SearchEngineUtils searchEngineUtils) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
-        mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mSearchEngineUtils = searchEngineUtils;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -570,7 +570,7 @@ public class LocationBarLayout extends FrameLayout {
         }
 
         boolean isInSingleUrlBarMode =
-                isNtpOnPhone && mSearchEngineLogoUtils.isDefaultSearchEngineGoogle();
+                isNtpOnPhone && mSearchEngineUtils.isDefaultSearchEngineGoogle();
         if (mIsSurfacePolishEnabled && isInSingleUrlBarMode) {
             translationX +=
                     (getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding)

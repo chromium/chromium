@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -1117,7 +1117,7 @@ public class ToolbarPhone extends ToolbarLayout
         // handled below. See comments in LocationBar#getLocationBarOffsetForFocusAnimation() for
         // implementation details.
         boolean isIncognito = getToolbarDataProvider().isIncognito();
-        if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
+        if (SearchEngineUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
             locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
         }
 
@@ -1670,8 +1670,10 @@ public class ToolbarPhone extends ToolbarLayout
 
             // Offset the clip rect by a set amount to ensure the Google G is completely inside the
             // omnibox background when animating in.
-            if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito())
-                    && isLocationBarShownInNTP() && urlHasFocus() && mUrlFocusChangeInProgress) {
+            if (SearchEngineUtils.getInstance().shouldShowSearchEngineLogo(isIncognito())
+                    && isLocationBarShownInNTP()
+                    && urlHasFocus()
+                    && mUrlFocusChangeInProgress) {
                 if (locationBarDirection == LAYOUT_DIRECTION_RTL) {
                     locationBarClipRight -= locationBarPaddingStart;
                 } else {
@@ -2995,8 +2997,8 @@ public class ToolbarPhone extends ToolbarLayout
         if (statusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
-        if (!SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(
-                    getToolbarDataProvider().isIncognito())) {
+        if (!SearchEngineUtils.getInstance()
+                .shouldShowSearchEngineLogo(getToolbarDataProvider().isIncognito())) {
             return 0;
         }
 

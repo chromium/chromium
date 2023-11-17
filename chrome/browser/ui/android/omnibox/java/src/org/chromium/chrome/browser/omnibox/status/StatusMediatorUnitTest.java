@@ -44,7 +44,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
@@ -83,7 +83,7 @@ public final class StatusMediatorUnitTest {
     private @Mock NewTabPageDelegate mNewTabPageDelegate;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
-    private @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private @Mock SearchEngineUtils mSearchEngineUtils;
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock PermissionDialogController mPermissionDialogController;
@@ -130,7 +130,7 @@ public final class StatusMediatorUnitTest {
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(logoPromise)
-                .when(mSearchEngineLogoUtils)
+                .when(mSearchEngineUtils)
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
 
@@ -158,7 +158,7 @@ public final class StatusMediatorUnitTest {
                         isTablet,
                         mLocationBarDataProvider,
                         mPermissionDialogController,
-                        mSearchEngineLogoUtils,
+                        mSearchEngineUtils,
                         mTemplateUrlServiceSupplier,
                         () -> mProfile,
                         mPageInfoIPHController,
@@ -389,7 +389,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlFocusChangePercent(0.9f);
         Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
 
-        verify(mSearchEngineLogoUtils, times(1))
+        verify(mSearchEngineUtils, times(1))
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
 
@@ -488,7 +488,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
 
         mMediator.onTemplateURLServiceChanged();
-        verify(mSearchEngineLogoUtils, times(2))
+        verify(mSearchEngineUtils, times(2))
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
     }

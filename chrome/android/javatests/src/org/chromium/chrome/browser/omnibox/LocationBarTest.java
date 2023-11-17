@@ -106,7 +106,7 @@ public class LocationBarTest {
     @Mock private LensController mLensController;
     @Mock private LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
 
     private ChromeTabbedActivity mActivity;
     private UrlBar mUrlBar;
@@ -122,9 +122,9 @@ public class LocationBarTest {
                 () -> {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
-                    SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
+                    SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
                     doReturn(new Promise<>())
-                            .when(mSearchEngineLogoUtils)
+                            .when(mSearchEngineUtils)
                             .getSearchEngineLogo(any(), anyInt(), any(), any());
                 });
         UmaRecorderHolder.resetForTesting();
@@ -194,11 +194,9 @@ public class LocationBarTest {
                     // avoid occasional timeout in loading it.
                     doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
                     doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-                    doReturn(url)
-                            .when(mSearchEngineLogoUtils)
-                            .getSearchLogoUrl(mTemplateUrlService);
+                    doReturn(url).when(mSearchEngineUtils).getSearchLogoUrl(mTemplateUrlService);
                     doReturn(true)
-                            .when(mSearchEngineLogoUtils)
+                            .when(mSearchEngineUtils)
                             .shouldShowSearchEngineLogo(/* incognito= */ false);
                     doReturn(isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine)
                             .when(mTemplateUrlService)
@@ -213,7 +211,7 @@ public class LocationBarTest {
                                             0));
 
                     doReturn(logoPromise)
-                            .when(mSearchEngineLogoUtils)
+                            .when(mSearchEngineUtils)
                             .getSearchEngineLogo(any(), anyInt(), any(), any());
                 });
     }
