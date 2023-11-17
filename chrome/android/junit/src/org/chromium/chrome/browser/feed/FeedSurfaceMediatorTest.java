@@ -1153,7 +1153,6 @@ public class FeedSurfaceMediatorTest {
                 tabId,
                 /* actionDelegate= */ null,
                 mOptionsCoordinator,
-                uiConfig,
-                mProfileMock);
+                uiConfig);
     }
 }

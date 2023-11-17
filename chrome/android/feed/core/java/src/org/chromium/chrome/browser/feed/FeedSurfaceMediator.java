@@ -257,23 +257,16 @@ public class FeedSurfaceMediator
      * @param openingTabId The {@link FeedSurfaceCoordinator.StreamTabId} the feed should open to.
      * @param optionsCoordinator The {@link FeedOptionsCoordinator} for the feed.
      * @param uiConfig The {@link UiConfig} for screen display.
-     * @param profile The {@link Profile} for the current user.
      */
-    FeedSurfaceMediator(
-            FeedSurfaceCoordinator coordinator,
-            Context context,
-            @Nullable SnapScrollHelper snapScrollHelper,
-            PropertyModel headerModel,
-            @FeedSurfaceCoordinator.StreamTabId int openingTabId,
-            FeedActionDelegate actionDelegate,
-            FeedOptionsCoordinator optionsCoordinator,
-            @Nullable UiConfig uiConfig,
-            Profile profile) {
+    FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
+            @Nullable SnapScrollHelper snapScrollHelper, PropertyModel headerModel,
+            @FeedSurfaceCoordinator.StreamTabId int openingTabId, FeedActionDelegate actionDelegate,
+            FeedOptionsCoordinator optionsCoordinator, @Nullable UiConfig uiConfig) {
         mCoordinator = coordinator;
         mHasContentListener = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
-        mProfile = profile;
+        mProfile = Profile.getLastUsedRegularProfile();
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
         mActionDelegate = actionDelegate;
@@ -651,7 +644,7 @@ public class FeedSurfaceMediator
         }
         int tabId = getTabIdForSection(StreamKind.FOLLOWING);
         boolean hasWebFeedTab = tabId != -1;
-        boolean shouldHaveWebFeedTab = FeedFeatures.isWebFeedUIEnabled(mProfile);
+        boolean shouldHaveWebFeedTab = FeedFeatures.isWebFeedUIEnabled();
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
@@ -857,8 +850,7 @@ public class FeedSurfaceMediator
 
     private void setHeaderIndicatorState(boolean suggestionsVisible) {
         boolean isSignedIn = FeedServiceBridge.isSignedIn();
-        boolean isTabMode =
-                isSignedIn && FeedFeatures.isWebFeedUIEnabled(mProfile) && suggestionsVisible;
+        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled() && suggestionsVisible;
         // If we're in tab mode now, make sure webfeed tab is set up.
         if (isTabMode) {
             setUpWebFeedTab();
