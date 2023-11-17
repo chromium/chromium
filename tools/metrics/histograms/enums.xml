@@ -36449,6 +36449,7 @@ from previous Chrome versions.
   <int value="-614223913"
       label="ClickToCallContextMenuForSelectedText:enabled"/>
   <int value="-613596048" label="new-canvas-2d-api"/>
+  <int value="-613072171" label="ElementCapture:enabled"/>
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
   <int value="-612480090" label="FasterLocationReload:enabled"/>
@@ -36855,6 +36856,7 @@ from previous Chrome versions.
   <int value="-418041538" label="HelpAppHomePageAppArticles:disabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
+  <int value="-415762341" label="ElementCapture:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
   <int value="-414477658" label="DefaultBucketUsesRelaxedDurability:disabled"/>

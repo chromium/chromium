@@ -7743,6 +7743,13 @@ const char kElasticOverscrollDescription[] =
     "Enables Elastic Overscrolling on touchscreens and precision touchpads.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kElementCaptureName[] = "Element Capture";
+const char kElementCaptureDescription[] =
+    "Enables Element Capture - an API allowing the mutation of a tab-capture "
+    "media track into a track capturing just a specific DOM element.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) ||                                      \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)

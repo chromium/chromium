@@ -4470,6 +4470,11 @@ extern const char kElasticOverscrollName[];
 extern const char kElasticOverscrollDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kElementCaptureName[];
+extern const char kElementCaptureDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) ||                                      \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)

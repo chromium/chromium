@@ -8267,6 +8267,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kElasticOverscroll)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"element-capture", flag_descriptions::kElementCaptureName,
+     flag_descriptions::kElementCaptureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kElementCapture)},
+#endif
+
     {"device-posture", flag_descriptions::kDevicePostureName,
      flag_descriptions::kDevicePostureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevicePosture)},

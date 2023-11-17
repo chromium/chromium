@@ -1953,6 +1953,15 @@
     "expiry_milestone": 99
   },
   {
+    "name": "element-capture",
+    "owners": [
+      "eladalon@chromium.org",
+      "jophba@chromium.org",
+      "mfoltz@chromium.org"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-accessibility-accelerators-notifications-timeout",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 120
