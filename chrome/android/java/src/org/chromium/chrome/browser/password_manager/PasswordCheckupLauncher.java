@@ -23,14 +23,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 public class PasswordCheckupLauncher {
     @CalledByNative
-    private static void launchCheckupInAccountWithWindowAndroid(
+    private static void launchCheckupOnlineWithWindowAndroid(
             String checkupUrl, WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-        launchCheckupInAccountWithActivity(checkupUrl, windowAndroid.getActivity().get());
+        launchCheckupOnlineWithActivity(checkupUrl, windowAndroid.getActivity().get());
     }
 
     @CalledByNative
-    private static void launchLocalCheckup(
+    private static void launchCheckupOnDevice(
             WindowAndroid windowAndroid, @PasswordCheckReferrer int passwordCheckReferrer) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
@@ -46,7 +46,7 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
-    private static void launchCheckupInAccountWithActivity(String checkupUrl, Activity activity) {
+    private static void launchCheckupOnlineWithActivity(String checkupUrl, Activity activity) {
         if (tryLaunchingNativePasswordCheckup(activity)) return;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(checkupUrl));
         intent.setPackage(activity.getPackageName());

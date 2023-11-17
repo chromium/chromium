@@ -1050,7 +1050,7 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
     PasswordCheckupLauncherHelperImpl checkup_launcher;
-    checkup_launcher.LaunchLocalCheckup(
+    checkup_launcher.LaunchCheckupOnDevice(
         env, web_contents->GetTopLevelNativeWindow(),
         password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog);
 #endif

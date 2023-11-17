@@ -9,30 +9,30 @@
 PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
     default;
 
-void PasswordCheckupLauncherHelperImpl::LaunchCheckupInAccountWithWindowAndroid(
+void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& checkupUrl,
     const base::android::JavaRef<jobject>& windowAndroid) {
-  Java_PasswordCheckupLauncher_launchCheckupInAccountWithWindowAndroid(
+  Java_PasswordCheckupLauncher_launchCheckupOnlineWithWindowAndroid(
       env, checkupUrl, windowAndroid);
 }
 
-void PasswordCheckupLauncherHelperImpl::LaunchLocalCheckup(
+void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     JNIEnv* env,
     ui::WindowAndroid* windowAndroid,
     password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer) {
   if (!windowAndroid) {
     return;
   }
-  Java_PasswordCheckupLauncher_launchLocalCheckup(
+  Java_PasswordCheckupLauncher_launchCheckupOnDevice(
       env, windowAndroid->GetJavaObject(),
       static_cast<int>(passwordCheckReferrer));
 }
 
-void PasswordCheckupLauncherHelperImpl::LaunchCheckupInAccountWithActivity(
+void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithActivity(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& checkupUrl,
     const base::android::JavaRef<jobject>& activity) {
-  Java_PasswordCheckupLauncher_launchCheckupInAccountWithActivity(
-      env, checkupUrl, activity);
+  Java_PasswordCheckupLauncher_launchCheckupOnlineWithActivity(env, checkupUrl,
+                                                               activity);
 }

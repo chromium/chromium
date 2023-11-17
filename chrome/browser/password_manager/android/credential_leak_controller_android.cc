@@ -70,7 +70,7 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       break;
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
-      checkup_launcher_->LaunchLocalCheckup(
+      checkup_launcher_->LaunchCheckupOnDevice(
           env, window_android_, PasswordCheckReferrerAndroid::kLeakDialog);
       break;
   }

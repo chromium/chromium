@@ -134,7 +134,7 @@ TEST(CredentialLeakControllerAndroidTest,
       std::make_unique<MockPasswordCheckupLauncherHelper>();
   EXPECT_CALL(
       *mock_launcher,
-      LaunchLocalCheckup(
+      LaunchCheckupOnDevice(
           _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog));
   MakeController(std::move(mock_launcher), IsSaved(true), IsReused(true),
                  IsSyncing(true))
@@ -165,7 +165,7 @@ TEST(CredentialLeakControllerAndroidTest,
       std::make_unique<MockPasswordCheckupLauncherHelper>();
   EXPECT_CALL(
       *mock_launcher,
-      LaunchLocalCheckup(
+      LaunchCheckupOnDevice(
           _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog))
       .Times(0);
   MakeController(std::move(mock_launcher), IsSaved(true), IsReused(true),

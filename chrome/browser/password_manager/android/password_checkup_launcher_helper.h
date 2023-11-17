@@ -23,21 +23,21 @@ class PasswordCheckupLauncherHelper {
 
   virtual ~PasswordCheckupLauncherHelper() = 0;
 
-  // Launch the bulk password check in the Google Account
-  virtual void LaunchCheckupInAccountWithWindowAndroid(
+  // Launch the bulk password check in passwords.google.com
+  virtual void LaunchCheckupOnlineWithWindowAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& checkupUrl,
       const base::android::JavaRef<jobject>& windowAndroid) = 0;
 
-  // Launch the bulk password check locally
-  virtual void LaunchLocalCheckup(
+  // Launch the bulk password check on device
+  virtual void LaunchCheckupOnDevice(
       JNIEnv* env,
       ui::WindowAndroid* windowAndroid,
       password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer) = 0;
 
-  // Launch the bulk password check in the Google Account using an activity
+  // Launch the bulk password check in passwords.google.com using an activity
   // rather than a WindowAndroid
-  virtual void LaunchCheckupInAccountWithActivity(
+  virtual void LaunchCheckupOnlineWithActivity(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& checkupUrl,
       const base::android::JavaRef<jobject>& activity) = 0;
