@@ -14,11 +14,12 @@ print <<"END";
   <input type="submit" value="Submit">
 </form>
 <div id="result"></div>
+<script src="/resources/prevent-bfcache.js"></script>
 <script>
-onunload = function() {
-  // no page cache
-}
 onload = function() {
+  setTimeout(async function () {
+    await preventBFCache();
+  }, 0);
   alert("stage: " + sessionStorage.stage);
   switch (sessionStorage.stage++) {
   case 1:
