@@ -282,28 +282,4 @@ TEST_F(PinStorageCryptohomeUnitTest, AuthLockedTest) {
   ASSERT_TRUE(IsPinSet());
 }
 
-// Verifies the `unlock_webauthn_secret` parameter is set correctly when
-// TryAuthenticate with different purposes.
-TEST_F(PinStorageCryptohomeUnitTest, UnlockWebAuthnSecret) {
-  ASSERT_TRUE(SetPin(kDummyPin));
-  ASSERT_TRUE(IsPinSet());
-  ASSERT_TRUE(CanAuthenticate());
-
-  // Only calling TryAuthenticate with purpose Purpose::kWebAuthn should set the
-  // `unlock_webauthn_secret` parameter to true.
-
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
-  EXPECT_FALSE(
-      FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
-
-  test_api_->EnablePinByPolicy(Purpose::kWebAuthn);
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kWebAuthn));
-  EXPECT_TRUE(FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
-
-  test_api_->EnablePinByPolicy(Purpose::kUnlock);
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kUnlock));
-  EXPECT_FALSE(
-      FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
-}
-
 }  // namespace ash::quick_unlock

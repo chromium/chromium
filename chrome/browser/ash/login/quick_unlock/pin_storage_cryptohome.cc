@@ -35,23 +35,6 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-template <typename ReplyType>
-void OnCryptohomeCallComplete(std::unique_ptr<UserContext> context,
-                              AuthOperationCallback callback,
-                              absl::optional<ReplyType> reply) {
-  const bool success =
-      reply->error() ==
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-
-  if (!success) {
-    std::move(callback).Run(std::move(context),
-                            AuthenticationError(reply->error()));
-    return;
-  }
-
-  std::move(callback).Run(std::move(context), absl::nullopt);
-}
-
 void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
                               bool require_unlocked,
                               std::unique_ptr<UserContext> user_context,
@@ -283,30 +266,8 @@ void PinStorageCryptohome::TryAuthenticate(
     std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }
-
-  if (purpose == Purpose::kWebAuthn) {
-    // Legacy implementation using CheckKey.
-
-    const std::string secret = PinBackend::ComputeSecret(
-        key.GetSecret(),
-        pin_salt_storage_->GetSalt(user_context->GetAccountId()),
-        key.GetKeyType());
-    ::user_data_auth::CheckKeyRequest request;
-    *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-        cryptohome::Identification(user_context->GetAccountId()));
-    *request.mutable_authorization_request() =
-        cryptohome::CreateAuthorizationRequest(KeyLabel(kCryptohomePinLabel),
-                                               secret);
-    if (purpose == Purpose::kWebAuthn) {
-      request.set_unlock_webauthn_secret(true);
-    }
-
-    UserDataAuthClient::Get()->CheckKey(
-        request, base::BindOnce(
-                     &OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
-                     std::move(user_context), std::move(callback)));
-    return;
-  }
+  CHECK_NE(purpose, Purpose::kWebAuthn)
+      << "Webauth dialog uses direct interaction with cryptohome";
 
   if (!user_context->GetAuthSessionId().empty()) {
     NOTREACHED() << "TryAuthenticate called with existing auth session";
