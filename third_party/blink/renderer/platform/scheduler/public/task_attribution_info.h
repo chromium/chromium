@@ -19,21 +19,28 @@ class TaskAttributionInfo final : public GarbageCollected<TaskAttributionInfo> {
 
  public:
   TaskAttributionInfo(TaskAttributionId task_id, TaskAttributionInfo* parent)
-      : task_id_(task_id), parent_(parent) {}
+      : task_id_(task_id),
+        parent_(parent),
+        chain_length_(parent ? parent->chain_length_ + 1 : 1) {}
 
   ~TaskAttributionInfo() = default;
 
   PLATFORM_EXPORT void Dispose();
   TaskAttributionId Id() const { return task_id_; }
   TaskAttributionInfo* Parent() const { return parent_.Get(); }
+  bool MaxChainLengthReached() const {
+    return chain_length_ >= kMaxChainLength;
+  }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_);
   }
 
  private:
+  static constexpr uint8_t kMaxChainLength = 10;
   const TaskAttributionId task_id_;
   const Member<TaskAttributionInfo> parent_;
+  const uint8_t chain_length_;
 };
 
 }  // namespace blink::scheduler

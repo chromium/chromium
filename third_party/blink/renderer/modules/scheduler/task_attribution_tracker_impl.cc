@@ -126,9 +126,15 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
       GetCurrentTaskContinuationData(script_state);
 
-  next_task_id_ = next_task_id_.NextId();
-  running_task_ =
-      MakeGarbageCollected<TaskAttributionInfo>(next_task_id_, parent_task);
+  // This compresses the task graph when encountering long task chains.
+  // TODO(crbug.com/1501999): Consider compressing the task graph further.
+  if (!parent_task || !parent_task->MaxChainLengthReached()) {
+    next_task_id_ = next_task_id_.NextId();
+    running_task_ =
+        MakeGarbageCollected<TaskAttributionInfo>(next_task_id_, parent_task);
+  } else {
+    running_task_ = parent_task;
+  }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (Observer* observer : observers_) {
@@ -142,10 +148,11 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
                         running_task_.Get(), abort_source, priority_source));
 
   return std::make_unique<TaskScopeImpl>(
-      script_state, this, next_task_id_, running_task_to_be_restored,
+      script_state, this, running_task_->Id(), running_task_to_be_restored,
       continuation_task_state_to_be_restored, type,
-      parent_task ? absl::optional<TaskAttributionId>(parent_task->Id())
-                  : absl::nullopt);
+      running_task_->Parent()
+          ? absl::optional<TaskAttributionId>(running_task_->Parent()->Id())
+          : absl::nullopt);
 }
 
 void TaskAttributionTrackerImpl::TaskScopeCompleted(

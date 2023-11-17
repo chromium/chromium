@@ -106,6 +106,111 @@ promise_test(async () => {
   });
 }, "A task is its own ancestor");
 
+promise_test(async t => {
+  let firstTaskParent;
+  let firstTaskDescendent;
+  let secondTaskParent;
+
+  const initialId = scheduler.taskId;
+
+  const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    firstTaskParent = scheduler.taskId;
+    setTimeout(t.step_func(() => {
+      firstTaskDescendent = scheduler.taskId;
+      assert_not_equals(firstTaskDescendent, firstTaskParent);
+      assert_equals(scheduler.isAncestor(firstTaskParent), "ancestor");
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      resolve();
+    }), 0);
+  }), 15));
+  const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    secondTaskParent = scheduler.taskId;
+    setTimeout(t.step_func(() => {
+      try {
+        assert_not_equals(scheduler.taskId, secondTaskParent);
+        assert_not_equals(scheduler.taskId, firstTaskDescendent);
+        assert_equals(scheduler.isAncestor(secondTaskParent), "ancestor");
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("Initial task not identified as ancestor of second setTimeout");
+      }
+    }), 0);
+  }), 30));
+  await Promise.all([first, second]);
+}, "Two unrelated setTimeout tasks properly track their ancestors");
+
+promise_test(async t => {
+
+  window.initialId = scheduler.taskId;
+
+  const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    window.firstTaskParent = scheduler.taskId;
+    window.resolve1 = resolve;
+    window.reject1 = reject;
+    setTimeout(`
+      try {
+        window.firstTaskDescendent = scheduler.taskId;
+        assert_not_equals(window.firstTaskDescendent, window.firstTaskParent);
+        assert_equals(scheduler.isAncestor(window.firstTaskParent), "ancestor");
+        assert_equals(scheduler.isAncestor(window.initialId), "ancestor");
+        resolve1();
+      } catch {
+        reject1("Initial task not identified as ancestor of first setTimeout");
+      }
+    `, 0);
+  }), 15));
+  const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    window.resolve2 = resolve;
+    window.reject2 = reject;
+    secondTaskParent = scheduler.taskId;
+    setTimeout(`
+      try {
+        assert_not_equals(scheduler.taskId, window.secondTaskParent);
+        assert_not_equals(scheduler.taskId, window.firstTaskDescendent);
+        assert_equals(scheduler.isAncestor(window.secondTaskParent), "ancestor");
+        assert_equals(scheduler.isAncestor(window.initialId), "ancestor");
+        resolve2();
+      } catch {
+        reject2("Initial task not identified as ancestor of second setTimeout");
+      }
+    `, 0);
+  }), 30));
+  await Promise.all([first, second]);
+}, "Two unrelated setTimeout tasks (delivered as strings) properly track their ancestors");
+
+promise_test(async t => {
+
+  window.initialId = scheduler.taskId;
+  let times = 0;
+  const test_times = 15;
+  // This value is 8 because the script execution itself is one parent task,
+  // and then test running is another. That leaves us with 8 timeouts before
+  // exhausting the max dependency chain link.
+  const non_equal_times = 8;
+
+  await new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    const parent = scheduler.taskId;
+    let last_parent_id = parent;
+    const timeout = () => {
+      assert_not_equals(scheduler.taskId, parent);
+      if (times < non_equal_times) {
+        assert_not_equals(scheduler.taskId, last_parent_id);
+      } else {
+        assert_equals(scheduler.taskId, last_parent_id);
+      }
+      assert_equals(scheduler.isAncestor(parent), "ancestor");
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      if (++times < test_times) {
+        last_parent_id = scheduler.taskId;
+        setTimeout(t.step_func(timeout), 0);
+      } else {
+        resolve();
+      }
+    };
+    setTimeout(t.step_func(timeout), 0);
+  }), 0));
+}, "Recursive setTimeout");
 </script>
 </body>
 </html>
