@@ -116,6 +116,7 @@ class PasswordsModelDelegateMock
               (const std::u16string&),
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
+  MOCK_METHOD(void, RelaunchChrome, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

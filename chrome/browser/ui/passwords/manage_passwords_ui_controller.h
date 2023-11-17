@@ -186,6 +186,7 @@ class ManagePasswordsUIController
   void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
       override;
   void MaybeShowIOSPasswordPromo() override;
+  void RelaunchChrome() override;
   // Skips user os level authentication during the life time of the returned
   // object. To be used in tests of flows that require user authentication.
   [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>

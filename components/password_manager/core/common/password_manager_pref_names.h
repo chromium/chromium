@@ -272,6 +272,11 @@ extern const char kPasswordManagerPromoCardsList[];
 // sending and receiving passwords.
 extern const char kPasswordSharingEnabled[];
 
+#if BUILDFLAG(IS_MAC)
+// Integer pref indicating how many times relaunch Chrome bubble was dismissed.
+extern const char kRelaunchChromeBubbleDismissedCounter[];
+#endif
+
 }  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

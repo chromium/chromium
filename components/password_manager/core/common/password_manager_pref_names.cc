@@ -152,5 +152,10 @@ const char kPasswordManagerPromoCardsList[] =
 const char kPasswordSharingEnabled[] =
     "password_manager.password_sharing_enabled";
 
+#if BUILDFLAG(IS_MAC)
+const char kRelaunchChromeBubbleDismissedCounter[] =
+    "password_manager.relaunch_chrome_bubble_dismissed_counter";
+#endif
+
 }  // namespace prefs
 }  // namespace password_manager

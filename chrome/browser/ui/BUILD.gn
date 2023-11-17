@@ -4372,6 +4372,8 @@ static_library("ui") {
       "find_bar/find_bar_platform_helper_mac.mm",
       "fullscreen_util_mac.cc",
       "fullscreen_util_mac.h",
+      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.cc",
+      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.h",
       "views/apps/chrome_app_window_client_views_mac.mm",
       "views/certificate_viewer_mac_views.mm",
       "views/dropdown_bar_host_mac.mm",

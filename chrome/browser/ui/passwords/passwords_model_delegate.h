@@ -195,6 +195,9 @@ class PasswordsModelDelegate {
   // should show the user the Chrome for iOS promo.
   virtual void MaybeShowIOSPasswordPromo() = 0;
 
+  // Called from the Relaunch Chrome bubble to gracefully restart the Chrome.
+  virtual void RelaunchChrome() = 0;
+
  protected:
   virtual ~PasswordsModelDelegate() = default;
 };

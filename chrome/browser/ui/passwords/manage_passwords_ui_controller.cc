@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -878,6 +879,10 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
   }
   browser->window()->VerifyUserEligibilityIOSPasswordPromoBubble();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+void ManagePasswordsUIController::RelaunchChrome() {
+  chrome::AttemptRestart();
 }
 
 void ManagePasswordsUIController::

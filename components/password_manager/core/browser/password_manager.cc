@@ -59,6 +59,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+#include "components/os_crypt/sync/os_crypt.h"
+#endif
+
 using autofill::ACCOUNT_CREATION_PASSWORD;
 using autofill::CalculateFormSignature;
 using autofill::FieldDataManager;
@@ -357,6 +361,10 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kPasswordSharingEnabled, true);
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterIntegerPref(prefs::kRelaunchChromeBubbleDismissedCounter,
+                                0);
+#endif
 }
 
 // static
