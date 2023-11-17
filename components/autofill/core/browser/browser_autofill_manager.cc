@@ -511,6 +511,26 @@ std::string_view ActionPersistenceToString(
   }
 }
 
+bool IsAutofillManuallyTriggered(AutofillSuggestionTriggerSource source) {
+  switch (source) {
+    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+      return true;
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kAndroidWebView:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
+      return false;
+  }
+}
+
 // Returns true if autocomplete=unrecognized (address) fields should receive
 // suggestions. On desktop, suggestion can only be triggered for them through
 // manual fallbacks. On mobile, it depends on
@@ -523,8 +543,7 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
   return base::FeatureList::IsEnabled(
       features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);
 #else
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackAddress;
+  return IsAutofillManuallyTriggered(trigger_source);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
@@ -3490,15 +3509,17 @@ void BrowserAutofillManager::GetAvailableSuggestions(
 
   // Log interactions of forms that are autofillable.
   if (got_autofillable_form) {
-    if (context->focused_field->Type().group() == FieldTypeGroup::kCreditCard) {
-      context->is_filling_credit_card = true;
-    }
     auto* logger = GetEventFormLogger(*context->focused_field);
     if (logger) {
       logger->OnDidInteractWithAutofillableForm(*(context->form_structure),
                                                 signin_state_for_metrics_);
     }
   }
+  context->is_filling_credit_card =
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kManualFallbackPayments ||
+      (got_autofillable_form &&
+       context->focused_field->Type().group() == FieldTypeGroup::kCreditCard);
 
   // If the feature is enabled and this is a mixed content form, we show a
   // warning message and don't offer autofill. The warning is shown even if
@@ -3520,20 +3541,22 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     }
     return;
   }
-
   context->is_context_secure = !IsFormNonSecure(form);
 
-  if (!got_autofillable_form || !IsAutofillEnabled()) {
+  context->is_autofill_available =
+      IsAutofillEnabled() &&
+      (IsAutofillManuallyTriggered(trigger_source) || got_autofillable_form);
+  if (!context->is_autofill_available) {
     return;
   }
 
-  context->is_autofill_available = true;
-
   if (context->is_filling_credit_card) {
-    // Credit cards suggestions don't depend the `trigger_source`.
-    *suggestions = GetCreditCardSuggestions(
-        field, context->focused_field->Type().GetStorableType(),
-        context->should_display_gpay_logo);
+    ServerFieldType trigger_field_type =
+        context->focused_field
+            ? context->focused_field->Type().GetStorableType()
+            : UNKNOWN_TYPE;
+    *suggestions = GetCreditCardSuggestions(field, trigger_field_type,
+                                            context->should_display_gpay_logo);
   } else {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on

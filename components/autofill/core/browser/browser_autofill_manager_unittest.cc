@@ -1598,7 +1598,38 @@ TEST_F(BrowserAutofillManagerTest,
 }
 #else
 TEST_F(BrowserAutofillManagerTest,
-       GetProfileSuggestions_UnrecognizedAttribute_Predictions_Desktop) {
+       AutofillManualFallback_UnclassifiedField_SuggestionsShown) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a form where the first field is unclassifiable.
+  FormData form = CreateTestAddressFormData();
+  form.fields[0].label = u"unclassified";
+  form.fields[0].name = u"unclassified";
+  FormsSeen({form});
+
+  // Expect that no suggestions are returned for the first field.
+  const FormFieldData& first_field = form.fields[0];
+  GetAutofillSuggestions(form, first_field);
+  external_delegate()->CheckSuggestionsNotReturned(first_field.global_id());
+
+  // Expect that no suggestions are returned because the field is unclassified.
+  // TODO(crbug.com/1493361): Revisit when address suggestions are generated for
+  // unclassified fields.
+  GetAutofillSuggestions(
+      form, first_field,
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  external_delegate()->CheckSuggestionsNotReturned(first_field.global_id());
+  // Expect 3 credit card suggestions because the fixture created 3 credit cards
+  // during setup (see `CreateTestCreditCards()`).
+  GetAutofillSuggestions(
+      form, first_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 3);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       AutofillManualFallback_AutocompleteUnrecognized_SuggestionsShown) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillPredictionsForAutocompleteUnrecognized);
 
@@ -1609,23 +1640,87 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Expect that no suggestions are returned for the first field by default.
-  const FormFieldData& field0 = form.fields[0];
-  GetAutofillSuggestions(form, field0);
-  external_delegate()->CheckNoSuggestions(field0.global_id());
+  const FormFieldData& first_field = form.fields[0];
+  GetAutofillSuggestions(form, first_field);
+  external_delegate()->CheckNoSuggestions(first_field.global_id());
 
-  // When triggering suggestions through manual fallbacks, expect that two
-  // suggestions are returned.
-  // Two, because the fixture created three profiles during set up, one of which
-  // is empty and cannot be suggested (see `CreateTestAutofillProfiles()`).
+  // Expect 2 suggestions because the fixture created three profiles during set
+  // up, one of which is empty and cannot be suggested
+  // (see `CreateTestAutofillProfiles()`).
   GetAutofillSuggestions(
-      form, field0, AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  external_delegate()->CheckSuggestionCount(field0.global_id(), 2);
+      form, first_field,
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 2);
+  // Expect 3 credit card suggestions because the fixture created 3 credit cards
+  // during setup (see `CreateTestCreditCards()`).
+  GetAutofillSuggestions(
+      form, first_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 3);
 
   // Expect that two suggestions are returned for all other fields.
   for (size_t i = 1; i < form.fields.size(); i++) {
     GetAutofillSuggestions(form, form.fields[i]);
     external_delegate()->CheckSuggestionCount(form.fields[i].global_id(), 2);
   }
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       AutofillManualFallback_ClassifiedField_AddressForm_ShowSuggestions) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a form where all fields can be classified.
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  for (const auto& field : form.fields) {
+    // Expect 2 suggestions because the fixture created three profiles during
+    // set up, one of which is empty and cannot be suggested
+    // (see `CreateTestAutofillProfiles()`).
+    GetAutofillSuggestions(
+        form, field, AutofillSuggestionTriggerSource::kManualFallbackAddress);
+    external_delegate()->CheckSuggestionCount(field.global_id(), 2);
+    base::ranges::all_of(
+        external_delegate()->suggestions(), [](const Suggestion& suggestion) {
+          return suggestion.popup_item_id == PopupItemId::kAddressEntry;
+        });
+    // Expect 3 credit card suggestions because the fixture created 3 credit
+    // cards during setup (see `CreateTestCreditCards()`).
+    GetAutofillSuggestions(
+        form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
+    external_delegate()->CheckSuggestionCount(field.global_id(), 3);
+    base::ranges::all_of(
+        external_delegate()->suggestions(), [](const Suggestion& suggestion) {
+          return suggestion.popup_item_id == PopupItemId::kEntryNotSelectable;
+        });
+  }
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       AutofillManualFallback_ClassifiedField_PaymentsForm_ShowSuggestions) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a form where all fields can be classified.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // TODO(crbug.com/1493361): add expectation on the address manual fallback
+  // suggestions shown after the address suggestions are generated for
+  // unclassified fields.
+  const FormFieldData& cc_name_field = form.fields[0];
+  // Expect 2 suggestions because manual fallback flow triggered on a classified
+  // credit card field should generate regular suggestions.
+  GetAutofillSuggestions(
+      form, cc_name_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  external_delegate()->CheckSuggestionCount(cc_name_field.global_id(), 2);
+  base::ranges::all_of(
+      external_delegate()->suggestions(), [](const Suggestion& suggestion) {
+        return suggestion.popup_item_id == PopupItemId::kCreditCardEntry;
+      });
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

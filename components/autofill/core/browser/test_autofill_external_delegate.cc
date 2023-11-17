@@ -106,6 +106,13 @@ void TestAutofillExternalDelegate::CheckSuggestions(
   ASSERT_EQ(expected_num_suggestions, suggestions_.size());
 }
 
+void TestAutofillExternalDelegate::CheckSuggestionsNotReturned(
+    FieldGlobalId field_id) {
+  if (on_suggestions_returned_seen_) {
+    EXPECT_NE(field_id, field_id_);
+  }
+}
+
 void TestAutofillExternalDelegate::CheckNoSuggestions(FieldGlobalId field_id) {
   CheckSuggestions(field_id, 0, nullptr);
 }
@@ -118,6 +125,11 @@ void TestAutofillExternalDelegate::CheckSuggestionCount(
 
   EXPECT_EQ(field_id, field_id_);
   ASSERT_EQ(expected_num_suggestions, suggestions_.size());
+}
+
+const std::vector<Suggestion>& TestAutofillExternalDelegate::suggestions()
+    const {
+  return suggestions_;
 }
 
 bool TestAutofillExternalDelegate::on_query_seen() const {
