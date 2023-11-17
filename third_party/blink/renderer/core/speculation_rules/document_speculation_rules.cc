@@ -196,7 +196,19 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
     } else {
       NOTREACHED() << "error with unknown rule source";
     }
+  } else if (rule_set->source()->IsFromBrowserInjected()) {
+    // Don't insert browser-injected rule sets on pages that have other rules.
+    for (const auto& other_rule_set : rule_sets_) {
+      if (!other_rule_set->source()->IsFromBrowserInjected()) {
+        CountSpeculationRulesLoadOutcome(
+            SpeculationRulesLoadOutcome::kAutoSpeculationRulesOptedOut);
+        UseCounter::Count(GetSupplementable(),
+                          WebFeature::kAutoSpeculationRulesOptedOut);
+        return;
+      }
+    }
   }
+
   CountSpeculationRulesLoadOutcome(outcome);
 
   DCHECK(!base::Contains(rule_sets_, rule_set));
