@@ -381,7 +381,8 @@ class DlpContentManagerReportingBrowserTest
     ASSERT_TRUE(report_queue_result.has_value());
 
     auto speculative_report_queue =
-        ::reporting::SpeculativeReportQueueImpl::Create();
+        ::reporting::SpeculativeReportQueueImpl::Create(
+            {.destination = destination_});
     auto attach_queue_cb =
         speculative_report_queue->PrepareToAttachActualQueue();
 

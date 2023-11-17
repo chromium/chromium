@@ -155,7 +155,8 @@ class ReportQueueProvider {
   virtual void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
                               CreateReportQueueCallback cb);
   virtual StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-  CreateNewSpeculativeQueue();
+  CreateNewSpeculativeQueue(
+      const ReportQueue::SpeculativeConfigSettings& config_settings);
 
   // Configures a given report queue config with appropriate DM tokens after its
   // retrieval so it can be used for downstream processing while building a

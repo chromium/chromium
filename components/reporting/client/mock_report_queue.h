@@ -44,6 +44,8 @@ class MockReportQueueStrict : public ReportQueue {
       (),
       (const override));
 
+  MOCK_METHOD(Destination, GetDestination, (), (const override));
+
  private:
   // Helper method that executes |record_producer| and in case of success
   // forwards the result to |AddRecord|. In case of failure passes Status to

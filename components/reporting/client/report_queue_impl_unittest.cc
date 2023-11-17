@@ -5,6 +5,7 @@
 #include "components/reporting/client/report_queue_impl.h"
 
 #include <cstddef>
+#include <memory>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -463,7 +464,8 @@ TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
   test::TestEvent<Status> a;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
@@ -502,7 +504,8 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
   EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(false));
 
   test::TestEvent<Status> a;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
@@ -552,7 +555,8 @@ TEST_F(ReportQueueImplTest,
   report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
@@ -590,7 +594,8 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
   report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
@@ -630,7 +635,8 @@ TEST_F(ReportQueueImplTest,
   report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
@@ -654,7 +660,8 @@ TEST_F(ReportQueueImplTest,
 TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
   static constexpr char kTestString1[] = "record1";
   static constexpr char kTestString2[] = "record2";
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
 
   speculative_report_queue->PrepareToAttachActualQueue().Run(
       std::move(report_queue_));
@@ -682,7 +689,8 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
   test::TestEvent<Status> test_event;
 
   {
-    auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+    auto speculative_report_queue =
+        SpeculativeReportQueueImpl::Create({.destination = destination_});
 
     // Fail to attach queue before calling `Enqueue`.
     speculative_report_queue->PrepareToAttachActualQueue().Run(
@@ -702,7 +710,8 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
 TEST_F(ReportQueueImplTest, SpeculativeQueueEnqueueAndCreationFailed) {
   test::TestEvent<Status> test_event;
 
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
 
   speculative_report_queue->Enqueue(kTestMessage, Priority::IMMEDIATE,
                                     test_event.cb());
@@ -732,7 +741,8 @@ TEST_F(ReportQueueImplTest, FlushSpeculativeReportQueue) {
   test::TestEvent<Status> event;
 
   // Set up speculative report queue
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->PrepareToAttachActualQueue().Run(
       std::move(report_queue_));
   task_environment_.RunUntilIdle();
@@ -751,7 +761,8 @@ TEST_F(ReportQueueImplTest, FlushSpeculativeReportQueue) {
 TEST_F(ReportQueueImplTest, FlushUninitializedSpeculativeReportQueue) {
   test::TestEvent<Status> event;
 
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
   speculative_report_queue->Flush(priority_, event.cb());
 
   const auto result = event.result();
@@ -763,7 +774,8 @@ TEST_F(ReportQueueImplTest, FlushFailedSpeculativeReportQueue) {
   test::TestEvent<Status> event;
 
   {
-    auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+    auto speculative_report_queue =
+        SpeculativeReportQueueImpl::Create({.destination = destination_});
 
     speculative_report_queue->PrepareToAttachActualQueue().Run(
         base::unexpected(Status(error::UNKNOWN, "Failed for Test")));
@@ -812,7 +824,8 @@ TEST_F(ReportQueueImplTest, AsyncProcessingReportQueue) {
 }
 
 TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
 
   test::TestEvent<Status> a_string;
   speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
@@ -841,6 +854,7 @@ TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
                          ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status::StatusOK());
       });
+  EXPECT_CALL(*mock_queue, GetDestination()).WillOnce(Return(destination_));
   speculative_report_queue->PrepareToAttachActualQueue().Run(
       std::move(mock_queue));
 
@@ -850,6 +864,25 @@ TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
   EXPECT_OK(a_proto_result) << a_proto_result;
   const auto a_json_result = a_json.result();
   EXPECT_OK(a_json_result) << a_json_result;
+}
+
+TEST_F(ReportQueueImplTest, GetDestinationForReportQueue) {
+  EXPECT_THAT(report_queue_->GetDestination(), Eq(destination_));
+}
+
+TEST_F(ReportQueueImplTest, GetDestinationForSpeculativeReportQueueBeforeInit) {
+  const auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
+  EXPECT_THAT(speculative_report_queue->GetDestination(), Eq(destination_));
+}
+
+TEST_F(ReportQueueImplTest, GetDestinationForSpeculativeReportQueueAfterInit) {
+  const auto speculative_report_queue =
+      SpeculativeReportQueueImpl::Create({.destination = destination_});
+  speculative_report_queue->PrepareToAttachActualQueue().Run(
+      std::move(report_queue_));
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(speculative_report_queue->GetDestination(), Eq(destination_));
 }
 }  // namespace
 }  // namespace reporting

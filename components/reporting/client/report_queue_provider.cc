@@ -175,8 +175,9 @@ void ReportQueueProvider::CreateNewQueue(
 }
 
 StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-ReportQueueProvider::CreateNewSpeculativeQueue() {
-  return SpeculativeReportQueueImpl::Create();
+ReportQueueProvider::CreateNewSpeculativeQueue(
+    const ReportQueue::SpeculativeConfigSettings& config_settings) {
+  return SpeculativeReportQueueImpl::Create(config_settings);
 }
 
 void ReportQueueProvider::OnInitCompleted() {}
@@ -210,8 +211,10 @@ ReportQueueProvider::CreateSpeculativeQueue(
     return base::unexpected(not_enabled);
   }
   // Instantiate speculative queue, bail out in case of an error.
+  CHECK(config);
   ASSIGN_OR_RETURN(auto speculative_queue,
-                   GetInstance()->CreateNewSpeculativeQueue());
+                   GetInstance()->CreateNewSpeculativeQueue(
+                       {.destination = config->destination()}));
   // Initiate underlying queue creation.
   CreateReportQueueRequest::New(
       std::move(config), speculative_queue->PrepareToAttachActualQueue());
