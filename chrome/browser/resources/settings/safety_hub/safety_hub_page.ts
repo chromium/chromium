@@ -17,7 +17,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -114,6 +114,11 @@ export class SettingsSafetyHubPageElement extends
     // When the user navigates to the Safety Hub page, any active menu
     // notification is dismissed.
     this.browserProxy_.dismissActiveMenuNotification();
+
+    this.metricsBrowserProxy_.recordSafetyHubImpression(
+        SafetyHubSurfaces.SAFETY_HUB_PAGE);
+    this.metricsBrowserProxy_.recordSafetyHubInteraction(
+        SafetyHubSurfaces.SAFETY_HUB_PAGE);
   }
 
   private initializeCards_() {

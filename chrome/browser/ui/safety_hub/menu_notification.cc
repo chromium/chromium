@@ -17,19 +17,19 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
-SafetyHubMenuNotification::SafetyHubMenuNotification()
-    : is_currently_active_(false),
-      impression_count_(0),
-      first_impression_time_(absl::nullopt),
+SafetyHubMenuNotification::SafetyHubMenuNotification(
+    safety_hub::SafetyHubModuleType type)
+    : first_impression_time_(absl::nullopt),
       last_impression_time_(absl::nullopt),
       show_only_after_(absl::nullopt),
-      all_time_notification_count_(0) {}
+      module_type_(type) {}
 
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
     const base::Value::Dict& dict,
-    safety_hub::SafetyHubModuleType type) {
+    safety_hub::SafetyHubModuleType type)
+    : module_type_(type) {
   is_currently_active_ =
       dict.FindBool(safety_hub::kSafetyHubMenuNotificationActiveKey).value();
   impression_count_ =
@@ -218,6 +218,10 @@ SafetyHubMenuNotification::GetResultFromDict(
       return std::make_unique<SafetyHubExtensionsResult>(dict);
     case safety_hub::SafetyHubModuleType::PASSWORDS:
       return std::make_unique<PasswordStatusCheckResult>(dict);
+    // No result class for version.
+    case safety_hub::SafetyHubModuleType::VERSION:
+      NOTREACHED();
+      return nullptr;
   }
 }
 
@@ -227,4 +231,9 @@ void SafetyHubMenuNotification::SetOnlyShowAfter(base::Time time) {
 
 void SafetyHubMenuNotification::ResetAllTimeNotificationCount() {
   all_time_notification_count_ = 0;
+}
+
+safety_hub::SafetyHubModuleType SafetyHubMenuNotification::GetModuleType()
+    const {
+  return module_type_;
 }

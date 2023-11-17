@@ -144,6 +144,7 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
     (*it)->Dismiss();
   }
   notification_to_show->Show();
+
   // The information related to showing the notification needs to be persisted
   // as well.
   SaveNotificationsToPrefs();
@@ -193,7 +194,7 @@ SafetyHubMenuNotificationService::GetNotificationFromDict(
   const base::Value::Dict* notification_dict =
       dict.FindDict(pref_dict_key_map_.find(type)->second);
   if (!notification_dict) {
-    auto new_notification = std::make_unique<SafetyHubMenuNotification>();
+    auto new_notification = std::make_unique<SafetyHubMenuNotification>(type);
     if (type == safety_hub::SafetyHubModuleType::SAFE_BROWSING) {
       new_notification->SetOnlyShowAfter(base::Time::Now() + base::Days(1));
     }
@@ -240,4 +241,14 @@ void SafetyHubMenuNotificationService::DismissPasswordNotification() {
   // if (notification->IsCurrentlyActive()) {
   //   notification->Dismiss();
   // }
+}
+
+absl::optional<safety_hub::SafetyHubModuleType>
+SafetyHubMenuNotificationService::GetModuleOfActiveNotification() const {
+  for (auto const& item : module_info_map_) {
+    if (item.second->notification->IsCurrentlyActive()) {
+      return item.second->notification->GetModuleType();
+    }
+  }
+  return absl::nullopt;
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState} from 'chrome://settings/settings.js';
+import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -26,6 +26,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordPrivacyGuideSettingsStatesHistogram',
       'recordPrivacyGuideStepsEligibleAndReachedHistogram',
       'recordDeleteBrowsingDataAction',
+      'recordSafetyHubImpression',
+      'recordSafetyHubInteraction',
     ]);
   }
 
@@ -114,5 +116,13 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction) {
     this.methodCalled('recordDeleteBrowsingDataAction', action);
+  }
+
+  recordSafetyHubImpression(surface: SafetyHubSurfaces) {
+    this.methodCalled('recordSafetyHubImpression', surface);
+  }
+
+  recordSafetyHubInteraction(surface: SafetyHubSurfaces) {
+    this.methodCalled('recordSafetyHubInteraction', surface);
   }
 }
