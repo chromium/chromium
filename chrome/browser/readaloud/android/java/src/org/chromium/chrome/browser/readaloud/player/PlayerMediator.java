@@ -88,6 +88,11 @@ class PlayerMediator implements InteractionHandler {
             mModel.set(PlayerProperties.TITLE, mPlayback.getMetadata().title());
             mModel.set(PlayerProperties.PUBLISHER, mPlayback.getMetadata().publisher());
             onSpeedChange(ReadAloudPrefs.getSpeed(mDelegate.getPrefService()));
+            mModel.set(
+                    PlayerProperties.HIGHLIGHTING_ENABLED,
+                    ReadAloudPrefs.isHighlightingEnabled(mDelegate.getPrefService()));
+            mModel.set(
+                    PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
         }
     }
 
@@ -149,8 +154,8 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onHighlightingChange(boolean enabled) {
-        // TODO enable or disable highlighting
         ReadAloudPrefs.setHighlightingEnabled(mDelegate.getPrefService(), enabled);
+        mDelegate.getHighlightingEnabledSupplier().set(enabled);
     }
 
     @Override

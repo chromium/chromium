@@ -517,6 +517,12 @@ public class ReadAloudControllerUnitTest {
 
         verify(mHighlighter)
                 .highlightText(eq(mGlobalRenderFrameHostId), eq(mTab), eq(mPhraseTiming));
+
+        // now disable highlighting - we should not trigger highlights anymore
+        mController.getHighlightingEnabledSupplier().set(false);
+        mController.onPhraseChanged(mPhraseTiming);
+        verify(mHighlighter, times(1))
+                .highlightText(eq(mGlobalRenderFrameHostId), eq(mTab), eq(mPhraseTiming));
     }
 
     @Test
@@ -587,6 +593,11 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testSetHighlighterMode() {
+        // highlighter can be null if page doesn't support highlighting,
+        // this just test null checkss
+        mController.setHighlighterMode(2);
+        verify(mHighlighter, never()).handleTabReloaded(mTab);
+
         mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
         mController.playTab(mTab);
         verify(mPlaybackHooks, times(1))
@@ -594,5 +605,12 @@ public class ReadAloudControllerUnitTest {
         mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
         mController.setHighlighterMode(2);
         verify(mHighlighter, times(1)).handleTabReloaded(mTab);
+
+        // only do something if new mode is different
+        mController.setHighlighterMode(2);
+        verify(mHighlighter, times(1)).handleTabReloaded(mTab);
+
+        mController.setHighlighterMode(1);
+        verify(mHighlighter, times(2)).handleTabReloaded(mTab);
     }
 }

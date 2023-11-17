@@ -82,6 +82,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private Tab mCurrentlyPlayingTab;
     @Nullable private GlobalRenderFrameHostId mGlobalRenderFrameId;
 
+    // Whether or not to highlight the page. Change will only have effect if
+    // isHighlightingSupported() returns true.
+    private final ObservableSupplierImpl<Boolean> mHighlightingEnabled;
+
     /**
      * Kicks of readability check on a page load iff: the url is valid, no previous result is
      * available/pending and if a request has to be sent, the necessary conditions are satisfied.
@@ -111,6 +115,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 public void onSuccess(Playback playback) {
                     Log.d(TAG, "Playback created");
                     maybeSetUpHighlighter(playback.getMetadata());
+
+                    mHighlightingEnabled.addObserver(
+                            ReadAloudController.this::onHighlightingEnabledChanged);
+                    mHighlightingEnabled.set(isHighlightingSupported());
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
                     mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
@@ -138,6 +146,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         mBottomSheetController = bottomSheetController;
         mBrowserControlsSizer = browserControlsSizer;
         mLayoutManager = layoutManager;
+        mHighlightingEnabled = new ObservableSupplierImpl<>(false);
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -319,12 +328,12 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         if (mTabObserver != null) {
             mTabObserver.destroy();
         }
-
+        mHighlightingEnabled.removeObserver(ReadAloudController.this::onHighlightingEnabledChanged);
         resetCurrentPlayback();
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
-        if (timepointsSupported(mCurrentlyPlayingTab)) {
+        if (isHighlightingSupported()) {
             if (mHighlighter == null) {
                 mHighlighter = mPlaybackHooks.createHighlighter();
             }
@@ -344,6 +353,17 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         }
     }
 
+    /** Update the page highlighting setting. */
+    private void onHighlightingEnabledChanged(boolean enabled) {
+        if (!isHighlightingSupported()) {
+            return;
+        }
+        if (!enabled) {
+            // clear highlighting
+            maybeClearHighlights();
+        }
+    }
+
     private void maybeClearHighlights() {
         if (mHighlighter != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
             mHighlighter.clearHighlights(mGlobalRenderFrameId, mCurrentlyPlayingTab);
@@ -351,7 +371,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     }
 
     private void maybeHighlightText(PhraseTiming phraseTiming) {
-        if (mHighlighter != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
+        if (mHighlightingEnabled.get()
+                && mHighlighter != null
+                && mGlobalRenderFrameId != null
+                && mCurrentlyPlayingTab != null) {
             mHighlighter.highlightText(mGlobalRenderFrameId, mCurrentlyPlayingTab, phraseTiming);
         }
     }
@@ -416,22 +439,28 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     @Override
     public boolean isHighlightingSupported() {
-        // TODO: implement
-        return false;
+        if (mCurrentlyPlayingTab == null) {
+            return false;
+        }
+        return timepointsSupported(mCurrentlyPlayingTab);
     }
 
     @Override
     public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
-        // TODO: implement
-        return new ObservableSupplierImpl<Boolean>();
+        return mHighlightingEnabled;
     }
 
     @Override
     public void setHighlighterMode(@Highlighter.Mode int mode) {
-        mHighlighterConfig.setMode(mode);
-        mHighlighter.handleTabReloaded(mCurrentlyPlayingTab);
-        mHighlighter.initializeJs(
-                mCurrentlyPlayingTab, mPlayback.getMetadata(), mHighlighterConfig);
+        // Highlighter initialization is expensive, so only do it if necessary
+        if (mHighlighter != null
+                && mHighlighterConfig != null
+                && mode != mHighlighterConfig.getMode()) {
+            mHighlighterConfig.setMode(mode);
+            mHighlighter.handleTabReloaded(mCurrentlyPlayingTab);
+            mHighlighter.initializeJs(
+                    mCurrentlyPlayingTab, mPlayback.getMetadata(), mHighlighterConfig);
+        }
     }
 
     @Override

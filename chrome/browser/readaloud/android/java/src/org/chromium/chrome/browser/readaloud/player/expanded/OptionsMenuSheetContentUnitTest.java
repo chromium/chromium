@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.expanded.OptionsMenuSheetContent.Item;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -37,6 +38,8 @@ public class OptionsMenuSheetContentUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ExpandedPlayerSheetContent mBottomSheetContent;
     @Mock private PropertyModel mModel;
+    @Mock private InteractionHandler mHandler;
+
     private Activity mActivity;
     private Context mContext;
     private Menu mMenu;
@@ -73,5 +76,16 @@ public class OptionsMenuSheetContentUnitTest {
         assertNotNull(mContent.getVoiceMenu());
         verify(mBottomSheetController).hideContent(eq(mContent), eq(false));
         verify(mBottomSheetController).requestShowContent(eq(mContent.getVoiceMenu()), eq(true));
+    }
+
+    @Test
+    public void testToggleChangeUpdatesHighlighting() {
+        mContent.setInteractionHandler(mHandler);
+
+        mMenu.getItem(Item.HIGHLIGHT).setValue(true);
+        verify(mHandler).onHighlightingChange(true);
+
+        mMenu.getItem(Item.HIGHLIGHT).setValue(false);
+        verify(mHandler).onHighlightingChange(false);
     }
 }

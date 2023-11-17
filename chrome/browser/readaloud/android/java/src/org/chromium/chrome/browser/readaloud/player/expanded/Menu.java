@@ -67,7 +67,7 @@ public class Menu extends LinearLayout {
         return item;
     }
 
-    MenuItem getItem(int itemId) {
+    public MenuItem getItem(int itemId) {
         if (!mItemIdToIndex.containsKey(itemId)) {
             return null;
         }

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -26,6 +27,7 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     private final Context mContext;
     private final PropertyModel mModel;
     private VoiceMenuSheetContent mVoiceSheet;
+    private InteractionHandler mHandler;
 
     @IntDef({Item.VOICE, Item.TRANSLATE, Item.HIGHLIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -82,6 +84,23 @@ class OptionsMenuSheetContent extends MenuSheetContent {
                 res.getString(R.string.readaloud_highlight_toggle_name));
 
         mMenu.setItemClickHandler(this::onClick);
+    }
+
+    void setInteractionHandler(InteractionHandler handler) {
+        mHandler = handler;
+        mMenu.getItem(Item.HIGHLIGHT)
+                .setToggleHandler(
+                        (value) -> {
+                            handler.onHighlightingChange(value);
+                        });
+    }
+
+    void setHighlightingSupported(boolean supported) {
+        mMenu.getItem(Item.HIGHLIGHT).setItemEnabled(supported);
+    }
+
+    void setHighlightingEnabled(boolean enabled) {
+        mMenu.getItem(Item.HIGHLIGHT).setValue(enabled);
     }
 
     @Override

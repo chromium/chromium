@@ -39,9 +39,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final PropertyModel mModel;
     private final SeekBar mSeekBar;
     private View mContentView;
+    // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
     private SpeedMenuSheetContent mSpeedMenu;
     private TextView mSpeedButton;
+    private boolean mHighlightingEnabled;
+    private boolean mHighlightingSupported;
 
     private LinearLayout mNormalLayout;
     private LinearLayout mErrorLayout;
@@ -152,6 +155,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         seekBar.setOnSeekBarChangeListener(handler.getSeekBarChangeListener());
         mSpeedMenu.setInteractionHandler(handler);
+        mOptionsMenu.setInteractionHandler(handler);
     }
 
     public void setSpeed(float speed) {
@@ -162,6 +166,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mSpeedButton.setContentDescription(
                 mContext.getResources()
                         .getString(R.string.readaloud_speed_menu_button, speedString));
+    }
+
+    void setHighlightingSupported(boolean supported) {
+        mOptionsMenu.setHighlightingSupported(supported);
+    }
+
+    void setHighlightingEnabled(boolean enabled) {
+        mOptionsMenu.setHighlightingEnabled(enabled);
     }
 
     public void setPlaying(boolean playing) {

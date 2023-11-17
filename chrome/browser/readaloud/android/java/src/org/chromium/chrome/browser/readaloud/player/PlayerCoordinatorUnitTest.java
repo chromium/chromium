@@ -119,6 +119,7 @@ public class PlayerCoordinatorUnitTest {
         doReturn(Mockito.mock(MenuItem.class))
                 .when(mMenu)
                 .addItem(anyInt(), anyInt(), any(), anyInt(), any());
+        doReturn(Mockito.mock(MenuItem.class)).when(mMenu).getItem(anyInt());
         doReturn(Mockito.mock(TextView.class)).when(mMenu).findViewById(anyInt());
         doReturn(mResources).when(mActivity).getResources();
         doReturn("").when(mResources).getString(anyInt(), anyInt());

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud.player;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Keys for Read Aloud player model properties. */
@@ -25,6 +26,10 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<InteractionHandler> INTERACTION_HANDLER =
             new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey HIGHLIGHTING_SUPPORTED =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey HIGHLIGHTING_ENABLED =
+            new WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY, //
         TITLE, //
@@ -34,6 +39,8 @@ public class PlayerProperties {
         SPEED, //
         ELAPSED_NANOS, //
         DURATION_NANOS, //
-        INTERACTION_HANDLER //
+        INTERACTION_HANDLER, //
+        HIGHLIGHTING_SUPPORTED, //
+        HIGHLIGHTING_ENABLED //
     };
 }

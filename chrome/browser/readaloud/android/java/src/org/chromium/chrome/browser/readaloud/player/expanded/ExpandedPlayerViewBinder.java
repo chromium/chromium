@@ -43,6 +43,10 @@ public class ExpandedPlayerViewBinder {
             content.setDuration(model.get(PlayerProperties.DURATION_NANOS));
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             content.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+        } else if (key == PlayerProperties.HIGHLIGHTING_ENABLED) {
+            content.setHighlightingEnabled(model.get(PlayerProperties.HIGHLIGHTING_ENABLED));
+        } else if (key == PlayerProperties.HIGHLIGHTING_SUPPORTED) {
+            content.setHighlightingSupported(model.get(PlayerProperties.HIGHLIGHTING_SUPPORTED));
         }
     }
 }

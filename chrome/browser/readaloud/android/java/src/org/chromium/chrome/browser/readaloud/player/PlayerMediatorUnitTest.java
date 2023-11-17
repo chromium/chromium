@@ -210,6 +210,8 @@ public class PlayerMediatorUnitTest {
         verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
         assertEquals(TITLE, mModel.get(PlayerProperties.TITLE));
         assertEquals(PUBLISHER, mModel.get(PlayerProperties.PUBLISHER));
+        assertEquals(true, mModel.get(PlayerProperties.HIGHLIGHTING_SUPPORTED));
+        assertEquals(true, mModel.get(PlayerProperties.HIGHLIGHTING_ENABLED));
     }
 
     @Test

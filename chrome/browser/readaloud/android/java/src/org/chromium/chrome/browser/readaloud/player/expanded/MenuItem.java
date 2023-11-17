@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,6 +17,9 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.readaloud.player.R;
 
 import java.lang.annotation.Retention;
@@ -47,6 +49,8 @@ public class MenuItem extends FrameLayout {
     private final int mId;
     private final @Action int mActionType;
     private final Menu mMenu;
+    private final LinearLayout mLayout;
+    private Callback<Boolean> mToggleHandler;
 
     /**
      * @param context Context.
@@ -77,7 +81,7 @@ public class MenuItem extends FrameLayout {
                 (view) -> {
                     onClick();
                 });
-
+        mLayout = layout;
         if (iconId != 0) {
             ImageView icon = layout.findViewById(R.id.icon);
             icon.setImageResource(iconId);
@@ -98,7 +102,13 @@ public class MenuItem extends FrameLayout {
                 break;
 
             case Action.TOGGLE:
-                setEndView(layout, inflater.inflate(R.layout.readaloud_toggle_switch, null));
+                MaterialSwitch materialSwitch =
+                        (MaterialSwitch) inflater.inflate(R.layout.readaloud_toggle_switch, null);
+                materialSwitch.setOnCheckedChangeListener(
+                        (view, value) -> {
+                            onToggle(value);
+                        });
+                setEndView(layout, materialSwitch);
                 break;
 
             case Action.RADIO:
@@ -119,6 +129,10 @@ public class MenuItem extends FrameLayout {
         addView(layout);
     }
 
+    void setToggleHandler(Callback<Boolean> handler) {
+        mToggleHandler = handler;
+    }
+
     void addPlayButton() {
         ImageView playButton = (ImageView) findViewById(R.id.play_button);
         playButton.setVisibility(View.VISIBLE);
@@ -127,11 +141,9 @@ public class MenuItem extends FrameLayout {
                     mMenu.onPlayButtonClicked(mId);
                 });
     }
-
-    // If enabled=false, disappear the item.
-    // TODO gray out out and make unclickable instead?
     void setItemEnabled(boolean enabled) {
-        setVisibility(enabled ? View.VISIBLE : View.GONE);
+        mLayout.setClickable(enabled);
+        mLayout.setFocusable(enabled);
     }
 
     void setValue(boolean value) {
@@ -142,21 +154,13 @@ public class MenuItem extends FrameLayout {
         }
     }
 
-    void setChangeListener(CompoundButton.OnCheckedChangeListener onChange) {
-        if (mActionType == Action.TOGGLE) {
-            getToggleSwitch().setOnCheckedChangeListener(onChange);
-        }
-    }
-
     private void setEndView(LinearLayout layout, View view) {
         ((FrameLayout) layout.findViewById(R.id.end_view)).addView(view);
     }
 
+    // On click won't be propagated here if the parent layout is not clickable
     private void onClick() {
-        if (mMenu == null) {
-            return;
-        }
-
+        assert mMenu != null;
         if (mActionType == Action.RADIO) {
             getRadioButton().toggle();
         } else if (mActionType == Action.TOGGLE) {
@@ -166,10 +170,14 @@ public class MenuItem extends FrameLayout {
     }
 
     private void onRadioButtonSelected() {
-        if (mMenu == null) {
-            return;
-        }
+        assert mMenu != null;
         mMenu.onRadioButtonSelected(mId);
+    }
+
+    private void onToggle(boolean newValue) {
+        if (mToggleHandler != null) {
+            mToggleHandler.onResult(newValue);
+        }
     }
 
     private SwitchCompat getToggleSwitch() {
