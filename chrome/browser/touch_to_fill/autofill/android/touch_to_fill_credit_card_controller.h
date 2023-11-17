@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_view_controller.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_keyboard_suppressor.h"
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 
 namespace autofill {

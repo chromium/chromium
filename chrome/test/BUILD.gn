@@ -7447,7 +7447,6 @@ test("unit_tests") {
       "../browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_controller_unittest.cc",
       "../browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_quality_metrics_unittest.cc",
       "../browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl_unittest.cc",
-      "../browser/touch_to_fill/autofill/android/touch_to_fill_keyboard_suppressor_unittest.cc",
       "../browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate_unittest.cc",
       "../browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate_unittest.cc",
       "../browser/translate/android/translate_bridge_unittest.cc",

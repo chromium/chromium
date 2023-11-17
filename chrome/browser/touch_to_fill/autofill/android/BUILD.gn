@@ -5,15 +5,12 @@
 import("//build/config/android/rules.gni")
 
 source_set("public") {
-  deps = [
-    "//base",
-    "//components/autofill/core/browser",
-  ]
-
   sources = [
     "touch_to_fill_credit_card_view.h",
     "touch_to_fill_credit_card_view_controller.h",
   ]
+
+  deps = [ "//base" ]
 }
 
 source_set("android") {

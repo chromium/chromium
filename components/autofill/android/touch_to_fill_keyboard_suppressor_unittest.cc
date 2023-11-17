@@ -1,17 +1,18 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_keyboard_suppressor.h"
+
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,14 +24,14 @@ namespace autofill {
 namespace {
 
 class TouchToFillKeyboardSuppressorTest
-    : public ChromeRenderViewHostTestHarness {
+    : public content::RenderViewHostTestHarness {
  public:
   TouchToFillKeyboardSuppressorTest()
-      : ChromeRenderViewHostTestHarness(
+      : content::RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
         &autofill_client(),
         base::BindRepeating(&TouchToFillKeyboardSuppressorTest::IsShowing,
@@ -55,7 +56,7 @@ class TouchToFillKeyboardSuppressorTest
 
   void TearDown() override {
     suppressor_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   TestContentAutofillClient& autofill_client() {

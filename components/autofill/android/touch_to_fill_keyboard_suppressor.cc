@@ -1,7 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_keyboard_suppressor.h"
+
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 
 #include "base/check_op.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
