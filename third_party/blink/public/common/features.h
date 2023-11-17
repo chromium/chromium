@@ -612,6 +612,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
     kLCPCriticalPathPredictorInfluencerScriptLoadPriority;
 
+// Enables LCPP ElementLocator performance improvements
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements;
+
 // If enabled, script execution is observed to determine script dependencies of
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);

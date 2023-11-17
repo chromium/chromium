@@ -1086,6 +1086,10 @@ const base::FeatureParam<LcppResourceLoadPriority>
         &kLCPCriticalPathPredictor, "lcpp_script_load_priority",
         LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
 
+const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements{
+        &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", false};
+
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);

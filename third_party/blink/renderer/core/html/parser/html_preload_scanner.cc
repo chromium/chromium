@@ -831,7 +831,11 @@ TokenPreloadScanner::TokenPreloadScanner(
       document_parameters_(std::move(document_parameters)),
       media_values_cached_data_(std::move(media_values_cached_data)),
       scanner_type_(scanner_type),
-      lcp_element_matcher_(std::move(locators)) {
+      lcp_element_matcher_(
+          std::move(locators),
+          features::
+              kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
+                  .Get()) {
   CHECK(document_parameters_.get());
   CHECK(media_values_cached_data_.get());
   DCHECK(document_url.IsValid());
