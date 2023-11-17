@@ -139,12 +139,10 @@ void OnGetDlcState(GetPackStateCallback callback,
 void InstallOrRemoveToMatchState(const std::string& feature_id,
                                  const StringsDiff& locale_diff) {
   for (const std::string& locale : locale_diff.remove) {
-    LanguagePackManager::GetInstance()->RemovePack(feature_id, locale,
-                                                   base::DoNothing());
+    LanguagePackManager::RemovePack(feature_id, locale, base::DoNothing());
   }
   for (const std::string& locale : locale_diff.add) {
-    LanguagePackManager::GetInstance()->InstallPack(feature_id, locale,
-                                                    base::DoNothing());
+    LanguagePackManager::InstallPack(feature_id, locale, base::DoNothing());
   }
 }
 
