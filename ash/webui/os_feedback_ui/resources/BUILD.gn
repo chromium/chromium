@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -14,13 +15,19 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
 
-polymer_element_files = [
+css_files = [ "os_feedback_shared.css" ]
+css_wrapper_files = []
+foreach(f, css_files) {
+  file_name = f + ".js"
+  css_wrapper_files += [ file_name ]
+}
+
+web_component_files = [
+  "help_resources_icons.js",
   "confirmation_page.js",
   "feedback_flow.js",
   "file_attachment.js",
   "help_content.js",
-  "help_resources_icons.js",
-  "os_feedback_shared_css.js",
   "search_page.js",
   "share_data_page.js",
 ]
@@ -54,11 +61,14 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":web_components",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
-  in_files = polymer_element_files
+  in_files = css_wrapper_files + web_component_files
 }
 
 preprocess_if_expr("preprocess_mojo") {
@@ -70,7 +80,12 @@ preprocess_if_expr("preprocess_mojo") {
 }
 
 html_to_js("web_components") {
-  js_files = polymer_element_files
+  js_files = web_component_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  use_js = true
+  in_files = css_files
 }
 
 copy("copy_webui_mojo") {

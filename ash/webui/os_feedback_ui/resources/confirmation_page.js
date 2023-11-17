@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './help_resources_icons.js';
-import './os_feedback_shared_css.js';
+import './os_feedback_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './help_resources_icons.js';
-import './os_feedback_shared_css.js';
+import './os_feedback_shared.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
