@@ -8,6 +8,9 @@
 namespace ash::nearby::presence::metrics {
 
 void RecordCredentialStorageInitializationResult(bool success);
+void RecordCredentialStorageSaveLocalPublicCredentialsResult(bool success);
+void RecordCredentialStorageSaveRemotePublicCredentialsResult(bool success);
+void RecordCredentialStorageSavePrivateCredentialsResult(bool success);
 
 }  // namespace ash::nearby::presence::metrics
 

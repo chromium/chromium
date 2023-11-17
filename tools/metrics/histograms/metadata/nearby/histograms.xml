@@ -428,6 +428,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the local public
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the local public credential
+    database completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the private
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the private credential
+    database completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SaveRemotePublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the remote public
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the remote public credential
+    database completes.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
     units="attempts" expires_after="2024-07-10">
   <owner>julietlevesque@google.com</owner>

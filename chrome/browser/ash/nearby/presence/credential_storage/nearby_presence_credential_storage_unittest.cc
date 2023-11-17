@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/nearby/presence/credential_storage/nearby_presence_credential_storage.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -362,6 +363,8 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
       local_public_db_;
   raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>
       remote_public_db_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_Successful) {
@@ -479,6 +482,13 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
 
   ASSERT_EQ(3u, local_public_db_entries_.size());
   ASSERT_EQ(3u, private_db_entries_.size());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result",
+      /*bucket: success=*/true, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_PublicFails) {
@@ -517,6 +527,15 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_PublicFails) {
 
     run_loop.Run();
   }
+
+  // Private credentials should not have an entry, as a save attempt did
+  // not take place.
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result",
+      /*bucket: success=*/false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result",
+      /*count=*/0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -555,6 +574,13 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result",
+      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Remote_Success) {
@@ -589,6 +615,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Remote_Success) {
   }
 
   ASSERT_EQ(1u, remote_public_db_entries_.size());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SaveRemotePublicCredentials.Result",
+      /*bucket: success=*/true, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -618,6 +648,10 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.SaveRemotePublicCredentials.Result",
+      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,

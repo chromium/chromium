@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/nearby/presence/credential_storage/metrics/credential_storage_metrics.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -287,10 +288,12 @@ void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(
     bool success) {
   CHECK(on_credentials_fully_saved_callback);
 
+  metrics::RecordCredentialStorageSaveLocalPublicCredentialsResult(
+      /*success=*/success);
+
   // If local public credentials failed to save, skip saving the
   // private credentials.
   if (!success) {
-    // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to save local public credentials";
     std::move(on_credentials_fully_saved_callback)
         .Run(mojo_base::mojom::AbslStatusCode::kAborted);
@@ -322,11 +325,13 @@ void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(
 void NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved(
     SaveCredentialsCallback on_credentials_fully_saved_callback,
     bool success) {
+  metrics::RecordCredentialStorageSaveRemotePublicCredentialsResult(
+      /*success=*/success);
+
   mojo_base::mojom::AbslStatusCode save_status;
   if (success) {
     save_status = mojo_base::mojom::AbslStatusCode::kOk;
   } else {
-    // TODO(b/287334363): Emit failure metric for remote public credential save.
     LOG(ERROR) << __func__ << ": failed to save remote public credentials";
     save_status = mojo_base::mojom::AbslStatusCode::kAborted;
   }
@@ -338,11 +343,13 @@ void NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved(
 void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
     SaveCredentialsCallback on_credentials_fully_saved_callback,
     bool success) {
+  metrics::RecordCredentialStorageSavePrivateCredentialsResult(
+      /*success=*/success);
+
   mojo_base::mojom::AbslStatusCode save_status;
   if (success) {
     save_status = mojo_base::mojom::AbslStatusCode::kOk;
   } else {
-    // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to save private credentials";
     save_status = mojo_base::mojom::AbslStatusCode::kAborted;
   }
