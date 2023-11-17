@@ -373,9 +373,11 @@ class WPTExpectationsUpdater:
                 # Eg: if a test FAILs everywhere, it should not matter that it
                 # has a pre-existing TIMEOUT expectation on Win7. This code is
                 # not currently capable of updating that existing expectation.
-                SimpleTestResult(expected="",
+                SimpleTestResult(expected='',
                                  actual=' '.join(sorted(statuses)),
-                                 bug=self.UMBRELLA_BUG)
+                                 bug=' '.join(
+                                     sorted(result.bugs
+                                            or {self.UMBRELLA_BUG})))
             }
         return test_dict
 

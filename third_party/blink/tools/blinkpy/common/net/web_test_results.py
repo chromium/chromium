@@ -28,7 +28,7 @@
 
 import collections
 import json
-from typing import Dict, List, Literal, NamedTuple, Optional
+from typing import Dict, List, Literal, NamedTuple, Optional, Set
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.layout_package import json_results_generator
@@ -49,11 +49,13 @@ BaselineSuffix = Literal[tuple(ext[1:] for ext in Port.BASELINE_EXTENSIONS)]
 
 
 class WebTestResult:
-    def __init__(self, test_name, result_dict,
-                 artifacts: Dict[str, List[Artifact]]):
+    def __init__(self,
+                 test_name,
+                 result_dict,
+                 artifacts: Optional[Dict[str, List[Artifact]]] = None):
         self._test_name = test_name
         self._result_dict = result_dict
-        self.artifacts = artifacts
+        self.artifacts = artifacts or {}
 
     def __repr__(self):
         return "WebTestResult(test_name=%s, result_dict=%s)" % \
@@ -74,6 +76,11 @@ class WebTestResult:
 
     def test_name(self):
         return self._test_name
+
+    @property
+    def bugs(self) -> Set[str]:
+        bugs = self._result_dict.get('bugs')
+        return {bug.strip() for bug in bugs.split(',')} if bugs else set()
 
     def did_pass_or_run_as_expected(self):
         return self.did_pass() or self.did_run_as_expected()
