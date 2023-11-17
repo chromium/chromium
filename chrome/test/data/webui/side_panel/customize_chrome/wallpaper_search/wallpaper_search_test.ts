@@ -680,9 +680,12 @@ suite('WallpaperSearchTest', () => {
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
-      const historyElements =
+      const historyTiles =
           wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.result');
-      assertEquals(historyElements.length, 2);
+      const historyEmptyTiles =
+          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.empty');
+      assertEquals(historyTiles.length, 2);
+      assertEquals(historyEmptyTiles.length, 4);
     });
   });
 });

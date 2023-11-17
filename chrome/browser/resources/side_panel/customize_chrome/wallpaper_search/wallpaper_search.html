@@ -393,7 +393,9 @@
           </customize-chrome-check-mark-wrapper>
         </div>
       </template>
-      <template is="dom-repeat" id="emptyRepeat" items="[[emptyContainers_]]">
+      <template is="dom-repeat"
+          id="emptyResultRepeat"
+          items="[[emptyResultContainers_]]">
         <div class="tile empty">
           <div class="image-container"></div>
         </div>
@@ -417,6 +419,13 @@
             <img src="data:image/png;base64,[[item.image]]">
             </img>
           </div>
+        </div>
+      </template>
+      <template is="dom-repeat"
+          id="emptyHistoryRepeat"
+          items="[[emptyHistoryContainers_]]">
+        <div class="tile empty">
+          <div class="image-container"></div>
         </div>
       </template>
     </cr-grid>

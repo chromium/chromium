@@ -91,7 +91,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         type: Object,
         computed: 'computeErrorState_(status_)',
       },
-      emptyContainers_: Object,
+      emptyHistoryContainers_: Object,
+      emptyResultContainers_: Object,
       expandedCategories_: Object,
       loading_: {
         type: Boolean,
@@ -118,7 +119,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
-  private emptyContainers_: number[] = [];
+  private emptyHistoryContainers_: number[] = [];
+  private emptyResultContainers_: number[] = [];
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[category: string]: boolean} = {};
@@ -165,6 +167,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.wallpaperSearchCallbackRouter_.setHistory.addListener(
             (history: WallpaperSearchResult[]) => {
               this.history_ = history;
+              this.emptyHistoryContainers_ = this.calculateEmptyTiles(history);
             });
     this.wallpaperSearchHandler_.updateHistory();
     this.loadingUiResizeObserver_ = new ResizeObserver(() => {
@@ -190,6 +193,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   focusOnBackButton() {
     this.$.heading.getBackButton().focus();
+  }
+
+  private calculateEmptyTiles(filledTiles: WallpaperSearchResult[]): number[] {
+    return Array.from(
+        {length: filledTiles.length > 0 ? 6 - filledTiles.length : 0}, () => 0);
   }
 
   private computeErrorState_() {
@@ -362,7 +370,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorA_ = selectedDescriptorA;
     this.loading_ = true;
     this.results_ = [];
-    this.emptyContainers_ = [];
+    this.emptyResultContainers_ = [];
     const {status, results} =
         await this.wallpaperSearchHandler_.getWallpaperSearchResults(
             this.selectedDescriptorA_, this.selectedDescriptorB_,
@@ -370,8 +378,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.loading_ = false;
     this.results_ = results;
     this.status_ = status;
-    this.emptyContainers_ = Array.from(
-        {length: results.length > 0 ? 6 - results.length : 0}, () => 0);
+    this.emptyResultContainers_ = this.calculateEmptyTiles(results);
   }
 
   private onResultsRender_() {
@@ -385,7 +392,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private shouldShowGrid_(): boolean {
-    return this.results_.length > 0 || this.emptyContainers_.length > 0;
+    return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
   }
 }
 
