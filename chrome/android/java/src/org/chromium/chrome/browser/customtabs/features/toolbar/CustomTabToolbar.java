@@ -518,7 +518,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    protected int getTabStripHeightFromResource() {
+    protected int getTabStripHeight() {
         return 0;
     }
 

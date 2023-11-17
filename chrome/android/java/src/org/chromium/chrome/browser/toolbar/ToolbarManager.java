@@ -305,8 +305,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mTabStripHeightSupplier =
-            new ObservableSupplierImpl<>();
 
     private TabGroupUi mTabGroupUi;
 
@@ -684,6 +682,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 initializeWithIncognitoColors, startSurfaceLogoClickedCallback, mConstraintsProxy);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
+
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
         tabObscuringHandler.addObserver(this);
@@ -1534,7 +1533,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 newTabClickHandler, bookmarkClickHandler, customTabsBackClickHandler,
                 mAppMenuDelegate, layoutManager, mActivityTabProvider, mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
-        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener = new OnAttachStateChangeListener() {
             @Override
@@ -1557,12 +1555,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
-            stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
-            mToolbar.addTabStripHeightObserver(
-                    newHeight -> {
-                        mTabStripHeightSupplier.set(newHeight);
-                        stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
-                    });
         }
 
         if (mMenuStateObserver != null) {
@@ -1899,11 +1891,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mUrlFocusChangedCallback.onResult(hasFocus);
     }
 
-    /** Get the supplier for the current height of the tab strip. */
-    public ObservableSupplier<Integer> getTabStripHeightSupplier() {
-        return mTabStripHeightSupplier;
-    }
-
     /**
      * Updates the primary color used by the model to the given color.
      * @param color The primary color for the current tab.
@@ -1975,12 +1962,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private int getToolbarExtraYOffset() {
         int toolbarHairlineHeight =
                 mControlContainer.findViewById(R.id.toolbar_hairline).getHeight();
-        int extraYOffset =
-                mBrowserControlsSizer.getTopControlsHeight()
-                        - (mControlContainer.getHeight() - toolbarHairlineHeight);
-        // There are cases where extraYOffset can be negative e.g. during tab strip transitioning
-        // from invisible -> visible.
-        return Math.max(0, extraYOffset);
+        return mBrowserControlsSizer.getTopControlsHeight()
+                - (mControlContainer.getHeight() - toolbarHairlineHeight);
     }
 
     /**

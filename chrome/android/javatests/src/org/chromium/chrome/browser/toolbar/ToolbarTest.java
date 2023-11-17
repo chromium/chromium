@@ -48,8 +48,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -76,7 +74,6 @@ public class ToolbarTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
@@ -244,42 +241,6 @@ public class ToolbarTest {
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
                             Matchers.is(true));
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testToggleTabStripVisibility() {
-        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        int tabStripHeightResource =
-                activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
-        checkTabStripHeightOnUiThread(tabStripHeightResource);
-
-        // Set the screen width bucket and trigger an configuration change to force toggle tab strip
-        // visibility. This is an test only strategy, as we don't want to vastly change the
-        // configuration which might result in an activity restart.
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(Integer.MAX_VALUE);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.onConfigurationChanged(new Configuration()));
-        checkTabStripHeightOnUiThread(0);
-
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(599);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.onConfigurationChanged(new Configuration()));
-        checkTabStripHeightOnUiThread(tabStripHeightResource);
-    }
-
-    private void checkTabStripHeightOnUiThread(int tabStripHeight) {
-        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(activity.getToolbarManager(), Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "Tab strip height is different",
-                            activity.getToolbarManager().getTabStripHeightSupplier().get(),
-                            Matchers.equalTo(tabStripHeight));
                 });
     }
 }
