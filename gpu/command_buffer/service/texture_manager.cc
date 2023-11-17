@@ -1624,14 +1624,6 @@ bool Texture::IsLevelPartiallyCleared(GLenum target, GLint level) const {
           info.cleared_rect != gfx::Rect());
 }
 
-void Texture::InitTextureMaxAnisotropyIfNeeded(GLenum target) {
-  if (texture_max_anisotropy_initialized_)
-    return;
-  texture_max_anisotropy_initialized_ = true;
-  GLfloat params[] = { 1.0f };
-  glTexParameterfv(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, params);
-}
-
 bool Texture::ClearLevel(DecoderContext* decoder, GLenum target, GLint level) {
   DCHECK(decoder);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);

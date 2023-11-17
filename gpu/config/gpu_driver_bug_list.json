@@ -214,17 +214,6 @@
       ]
     },
     {
-      "id": 45,
-      "cr_bugs": [307751],
-      "description": "Unfold short circuit on Mac OS X",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "unfold_short_circuit_as_ternary_operation"
-      ]
-    },
-    {
       "id": 48,
       "description": "Force to use discrete GPU on older MacBookPro models",
       "cr_bugs": [113703],
@@ -257,30 +246,6 @@
       ]
     },
     {
-      "id": 55,
-      "cr_bugs": [333885],
-      "description": "Mesa drivers in Linux handle varyings without static use incorrectly",
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "features": [
-        "count_all_in_varyings_packing"
-      ]
-    },
-    {
-      "id": 56,
-      "cr_bugs": [333885],
-      "description": "Mesa drivers in ChromeOS handle varyings without static use incorrectly",
-      "os": {
-        "type": "chromeos"
-      },
-      "driver_vendor": "Mesa",
-      "features": [
-        "count_all_in_varyings_packing"
-      ]
-    },
-    {
       "id": 59,
       "description": "Multisampling is buggy in Intel IvyBridge",
       "cr_bugs": [116370],
@@ -291,18 +256,6 @@
       "device_id": ["0x0152", "0x0156", "0x015a", "0x0162", "0x0166"],
       "features": [
         "disable_chromium_framebuffer_multisample"
-      ]
-    },
-    {
-      "id": 64,
-      "description": "Linux AMD drivers incorrectly return initial value of 1 for TEXTURE_MAX_ANISOTROPY",
-      "cr_bugs": [348237],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "init_texture_max_anisotropy"
       ]
     },
     {
@@ -674,20 +627,6 @@
       ]
     },
     {
-      "id": 123,
-      "cr_bugs": [344330],
-      "description": "NVIDIA drivers before 346 lack features in NV_path_rendering and related extensions to implement driver level path rendering.",
-      "vendor_id": "0x10de",
-      "os": {
-        "type": "linux"
-      },
-      "driver_version": {
-        "op": "<",
-        "value": "346"
-      },
-      "disabled_extensions": ["GL_NV_path_rendering"]
-    },
-    {
       "id": 125,
       "description": "glFinish doesn't clear caches on Android",
       "cr_bugs": [509727],
@@ -865,30 +804,6 @@
       "gl_renderer": "Adreno \\(TM\\) 4.*",
       "comment": "Originally on 418.",
       "disabled_extensions": ["GL_EXT_sRGB"]
-    },
-    {
-      "id": 142,
-      "cr_bugs": [563714],
-      "description": "Pack parameters work incorrectly with pack buffer bound",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "pack_parameters_workaround_with_pack_buffer"
-      ]
-    },
-    {
-      "id": 144,
-      "cr_bugs": [563714],
-      "description": "Pack parameters work incorrectly with pack buffer bound",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "pack_parameters_workaround_with_pack_buffer"
-      ]
     },
     {
       "id": 145,
@@ -1172,41 +1087,6 @@
       },
       "features": [
         "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 197,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Mac",
-      "cr_bugs": [644740],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 198,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux Intel",
-      "cr_bugs": [664740],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 199,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux AMD",
-      "cr_bugs": [664740],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
       ]
     },
     {
@@ -2021,18 +1901,6 @@
       "gl_renderer": "Adreno \\(TM\\) .*",
       "features": [
         "round_down_uniform_bind_buffer_range_size"
-      ]
-    },
-    {
-      "id": 291,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux NVIDIA",
-      "cr_bugs": [830046],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
       ]
     },
     {

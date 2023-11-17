@@ -3899,8 +3899,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   ShCompileOptions driver_bug_workarounds{};
   if (workarounds().init_gl_position_in_vertex_shader)
     driver_bug_workarounds.initGLPosition = true;
-  if (workarounds().unfold_short_circuit_as_ternary_operation)
-    driver_bug_workarounds.unfoldShortCircuit = true;
   if (workarounds().scalarize_vec_and_mat_constructor_args)
     driver_bug_workarounds.scalarizeVecAndMatConstructorArgs = true;
   if (workarounds().add_and_true_to_loop_condition)
@@ -8860,9 +8858,6 @@ void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
 
   LogClientServiceForInfo(program, program_id, "glLinkProgram");
   if (program->Link(shader_manager(),
-                    workarounds().count_all_in_varyings_packing
-                        ? Program::kCountAll
-                        : Program::kCountOnlyStaticallyUsed,
                     client())) {
     if (features().webgl_multi_draw)
       program_manager()->UpdateDrawIDUniformLocation(program);
@@ -11507,11 +11502,6 @@ void GLES2DecoderImpl::GetTexParameterImpl(
   }
   Texture* texture = texture_ref->texture();
   switch (pname) {
-    case GL_TEXTURE_MAX_ANISOTROPY_EXT:
-      if (workarounds().init_texture_max_anisotropy) {
-        texture->InitTextureMaxAnisotropyIfNeeded(target);
-      }
-      break;
     case GL_TEXTURE_IMMUTABLE_LEVELS:
       if (gl_version_info().IsLowerThanGL(4, 2)) {
         GLint levels = texture->GetImmutableLevels();

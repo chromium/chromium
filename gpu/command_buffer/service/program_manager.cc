@@ -1094,7 +1094,6 @@ void Program::ExecuteProgramOutputBindCalls() {
 }
 
 bool Program::Link(ShaderManager* manager,
-                   Program::VaryingsPackingOption varyings_packing_option,
                    DecoderClient* client) {
   ClearLinkStatus();
 
@@ -1185,7 +1184,7 @@ bool Program::Link(ShaderManager* manager,
       set_log_info(ProcessLogInfo(info_log).c_str());
       return false;
     }
-    if (!CheckVaryingsPacking(varyings_packing_option)) {
+    if (!CheckVaryingsPacking()) {
       set_log_info("Varyings over maximum register limit");
       return false;
     }
@@ -1816,8 +1815,7 @@ bool Program::DetectGlobalNameConflicts(std::string* conflicting_name) const {
   return false;
 }
 
-bool Program::CheckVaryingsPacking(
-    Program::VaryingsPackingOption option) const {
+bool Program::CheckVaryingsPacking() const {
   DCHECK(attached_shaders_[0].get() &&
          attached_shaders_[0]->shader_type() == GL_VERTEX_SHADER &&
          attached_shaders_[1].get() &&
@@ -1828,15 +1826,16 @@ bool Program::CheckVaryingsPacking(
   std::map<std::string, const sh::ShaderVariable*> combined_map;
 
   for (const auto& key_value : *fragment_varyings) {
-    if (!key_value.second.staticUse && option == kCountOnlyStaticallyUsed)
+    if (!key_value.second.staticUse) {
       continue;
+    }
     if (!IsBuiltInFragmentVarying(key_value.first)) {
       VaryingMap::const_iterator vertex_iter =
           vertex_varyings->find(key_value.first);
       if (vertex_iter == vertex_varyings->end() ||
-          (!vertex_iter->second.staticUse &&
-           option == kCountOnlyStaticallyUsed))
+          !vertex_iter->second.staticUse) {
         continue;
+      }
     }
 
     combined_map[key_value.first] = &key_value.second;
