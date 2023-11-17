@@ -1289,43 +1289,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Scheduler.TaskDependencyTime" units="microseconds"
-    expires_after="2022-08-07">
-  <owner>berlu@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records the wall time taken spent by each GPU scheduler task waiting on it's
-    dependencies to resolve. The time delta starts when the waiting fence is
-    added and finishes when the last fence is removed. Only recorded for clients
-    with high resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="GPU.Scheduler.TaskSchedulingDelayTime" units="microseconds"
-    expires_after="2022-12-11">
-  <owner>berlu@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records the wall time taken spent by each GPU scheduler task waiting on to
-    be scheduled once all its dependencies have been resolved. The time delta
-    starts when the last waiting fence is passed and stops when the tasks starts
-    running. If the schedulers is working properly, for a high priority task,
-    this metric should be minimal. Only recorded for clients with high
-    resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="GPU.Scheduler.ThreadSuspendedTime" units="microseconds"
-    expires_after="2022-12-11">
-  <owner>berlu@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records the wall time taken between calls to schedule the task run and the
-    actual run of the task. Ideally this should always be as close to 0 as
-    possible. Only recorded for clients with high resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="GPU.setIsAcceleratedCompositingActive"
     enum="GPUsetIsAcceleratedCompositingActive" expires_after="M85">
   <owner>vmiura@chromium.org</owner>
@@ -1799,6 +1762,40 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Cacheable" variants="WebGPUCacheable"/>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram name="GPU.{SchedulerType}.{Stage}" units="microseconds"
+    expires_after="2024-08-07">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time for GPU {SchedulerType} task at various stages.
+    {Stage}. Only recorded for clients with high resolution clocks. Note that
+    the histograms for GPU.Scheduler.* was expired on 2022-08-07 and is
+    re-enabled on 2023-11-17.
+  </summary>
+  <token key="SchedulerType">
+    <variant name="Scheduler"/>
+    <variant name="SchedulerDfs"/>
+  </token>
+  <token key="Stage">
+    <variant name="TaskDependencyTime"
+        summary="Records the wall time taken spent by each GPU scheduler task
+                 waiting on it's dependencies to resolve. The time delta
+                 starts when the waiting fence is added and finishes when the
+                 last fence is removed"/>
+    <variant name="TaskSchedulingDelayTime"
+        summary="Records the wall time taken spent by each GPU scheduler task
+                 waiting on to be scheduled once all its dependencies have
+                 been resolved. The time delta starts when the last waiting
+                 fence is passed and stops when the tasks starts running. If
+                 the schedulers is working properly, for a high priority
+                 task, this metric should be minimal"/>
+    <variant name="ThreadSuspendedTime"
+        summary="Records the wall time taken between calls to schedule the
+                 task run and the actual run of the task. Ideally this should
+                 always be as close to 0 as possible"/>
+  </token>
 </histogram>
 
 <histogram name="Viz.BeginFrameSource.Accuracy.AverageDelta"
