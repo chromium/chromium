@@ -506,6 +506,24 @@ void MaybeRegisterChromeFeaturePromos(
         kToolbarSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
   }
 
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    // kIPHSidePanelGenericMenuFeature:
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForSnoozePromo(
+            feature_engagement::kIPHSidePanelGenericMenuFeature,
+            kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .SetBubbleIcon(kLightbulbOutlineIcon)));
+
+    // kIPHSidePanelGenericPinnableFeature:
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForSnoozePromo(
+            feature_engagement::kIPHSidePanelGenericPinnableFeature,
+            kSidePanelPinButtonElementId, IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .SetBubbleIcon(kLightbulbOutlineIcon)));
+  }
+
   // kIPHSideSearchFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(

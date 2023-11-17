@@ -126,6 +126,12 @@ BASE_FEATURE(kIPHReadingModeSidePanelFeature,
 BASE_FEATURE(kIPHShoppingCollectionFeature,
              "IPH_ShoppingCollectionFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHSidePanelGenericMenuFeature,
+             "IPH_SidePanelGenericMenuFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHSidePanelGenericPinnableFeature,
+             "IPH_SidePanelGenericPinnableFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSideSearchAutoTriggeringFeature,
              "IPH_SideSearchAutoTriggering",
              base::FEATURE_DISABLED_BY_DEFAULT);

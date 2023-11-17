@@ -8478,6 +8478,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP" desc="The tooltip for pinning a side panel toolbar button.">
         Pin to toolbar
       </message>
+      <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the Chrome menu.">
+        You can open most side panel features through the Chrome menu
+      </message>
+      <message name="IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH" desc="The body text of the IPH describing a side panel is pinnable.">
+        You can pin this side panel for easy access
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS_SORT_BY_TYPE" desc="Menu item label for selecting the bookmarks sort type.">

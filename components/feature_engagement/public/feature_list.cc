@@ -182,6 +182,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadingListInSidePanelFeature,
     &kIPHReadingModeSidePanelFeature,
     &kIPHShoppingCollectionFeature,
+    &kIPHSidePanelGenericMenuFeature,
+    &kIPHSidePanelGenericPinnableFeature,
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchFeature,
     &kIPHSideSearchPageActionLabelFeature,
