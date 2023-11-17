@@ -23,6 +23,14 @@ public interface Pane extends BackPressHandler {
     /** Returns the {@link View} containing the contents of the Pane. */
     View getRootView();
 
+    /**
+     * Notifies of a change to the Hub's or the pane's lifecycle. See {@link LoadHint} for possible
+     * values and what the pane could or should do in response to a notification.
+     *
+     * @param loadHint The {@link LoadHint} for the latest change.
+     */
+    void notifyLoadHint(@LoadHint int loadHint);
+
     /** Returns button data for the primary action on the page, such as adding a tab. */
     @Nullable
     ObservableSupplier<FullButtonData> getActionButtonDataSupplier();

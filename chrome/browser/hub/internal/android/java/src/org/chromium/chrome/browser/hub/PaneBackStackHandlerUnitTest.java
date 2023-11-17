@@ -40,6 +40,7 @@ public class PaneBackStackHandlerUnitTest {
     @Mock private PaneManager mMockPaneManager;
     private ObservableSupplierImpl<Pane> mMockPaneManagerPaneSupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
 
     private PaneManager mPaneManager;
     private PaneBackStackHandler mBackStackHandler;
@@ -63,7 +64,7 @@ public class PaneBackStackHandlerUnitTest {
                         .registerPane(
                                 PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mBookmarksPane));
 
-        mPaneManager = new PaneManagerImpl(builder);
+        mPaneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
     }
 
     @After

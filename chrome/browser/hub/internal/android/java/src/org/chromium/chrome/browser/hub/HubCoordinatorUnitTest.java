@@ -56,6 +56,7 @@ public class HubCoordinatorUnitTest {
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
 
+    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherBackPressSupplier =
@@ -90,7 +91,7 @@ public class HubCoordinatorUnitTest {
                         .registerPane(
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
-        mPaneManager = new PaneManagerImpl(builder);
+        mPaneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
 
         assertTrue(mPaneManager.focusPane(PaneId.TAB_SWITCHER));
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());

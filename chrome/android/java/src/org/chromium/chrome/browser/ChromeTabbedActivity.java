@@ -3079,6 +3079,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mExperimentalStartupMetricsTracker = null;
         }
 
+        if (mHubProvider != null) mHubProvider.destroy();
+
         super.onDestroyInternal();
     }
 

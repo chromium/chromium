@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -22,6 +23,8 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPr
  */
 public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull Context mContext;
+    private final @NonNull ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
+            new ObservableSupplierImpl<>();
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull BackPressManager mBackPressManager;
@@ -39,7 +42,7 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
-        mPaneManager = new PaneManagerImpl(paneListBuilder);
+        mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
         mBackPressManager = backPressManager;
         mTabSupplier = tabSupplier;
 
@@ -47,7 +50,11 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubContainerView = new HubContainerView(mContext);
     }
 
-    // HubManager implementation.
+    @Override
+    public void destroy() {
+        mPaneManager.destroy();
+        destroyHubCoordinator();
+    }
 
     @Override
     public @NonNull PaneManager getPaneManager() {
@@ -58,8 +65,6 @@ public class HubManagerImpl implements HubManager, HubController {
     public @NonNull HubController getHubController() {
         return this;
     }
-
-    // HubController implementation.
 
     @Override
     public void setHubLayoutController(@NonNull HubLayoutController hubLayoutController) {
@@ -75,6 +80,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
     @Override
     public void onHubLayoutShow() {
+        mHubVisibilitySupplier.set(true);
         ensureHubCoordinatorIsInitialized();
     }
 
@@ -82,11 +88,8 @@ public class HubManagerImpl implements HubManager, HubController {
     public void onHubLayoutDoneHiding() {
         // TODO(crbug/1487315): Consider deferring this destruction till after a timeout.
         mHubContainerView.removeAllViews();
-        if (mHubCoordinator != null) {
-            mBackPressManager.removeHandler(mHubCoordinator);
-            mHubCoordinator.destroy();
-            mHubCoordinator = null;
-        }
+        destroyHubCoordinator();
+        mHubVisibilitySupplier.set(false);
     }
 
     @Override
@@ -114,6 +117,14 @@ public class HubManagerImpl implements HubManager, HubController {
                 new HubCoordinator(
                         mHubContainerView, mPaneManager, mHubLayoutController, mTabSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
+    }
+
+    private void destroyHubCoordinator() {
+        if (mHubCoordinator != null) {
+            mBackPressManager.removeHandler(mHubCoordinator);
+            mHubCoordinator.destroy();
+            mHubCoordinator = null;
+        }
     }
 
     HubCoordinator getHubCoordinatorForTesting() {

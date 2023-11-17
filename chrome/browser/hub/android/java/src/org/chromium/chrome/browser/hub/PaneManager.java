@@ -19,7 +19,7 @@ public interface PaneManager {
      * will occur. This operation may fail i.e. the Pane does not exist, is not focusable, etc.
      *
      * @param paneId The {@link PaneId} of the {@link Pane} to attempt to focus.
-     * @return whether focusing on the Pane will occur.
+     * @return whether focusing on the Pane will occur. Also true if the pane was already focused.
      */
     boolean focusPane(@PaneId int paneId);
 }

@@ -47,6 +47,11 @@ public class HubProvider {
                         });
     }
 
+    /** Destroys the {@link HubManager} it cannot be used again. */
+    public void destroy() {
+        mHubManagerSupplier.get().destroy();
+    }
+
     /** Returns the lazy supplier for {@link HubManager}. */
     public @NonNull LazyOneshotSupplier<HubManager> getHubManagerSupplier() {
         return mHubManagerSupplier;
