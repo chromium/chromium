@@ -5,7 +5,7 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_CHROME_ML_INSTANCE_H_
 #define SERVICES_ON_DEVICE_MODEL_CHROME_ML_INSTANCE_H_
 
-#include "third_party/ml/public/chrome_ml.h"
+#include "components/optimization_guide/internal/public/chrome_ml.h"
 
 namespace on_device_model {
 

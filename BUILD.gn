@@ -30,6 +30,7 @@ import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
@@ -283,6 +284,11 @@ group("gn_all") {
         "//extensions/browser/api/declarative_net_request/filter_list_converter",
         "//extensions/shell:app_shell_unittests",
       ]
+    }
+
+    if (enable_ml_internal) {
+      deps +=
+          [ "//components/optimization_guide/internal:text_generator_example" ]
     }
 
     if (enable_pdf) {

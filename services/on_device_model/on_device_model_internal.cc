@@ -4,13 +4,13 @@
 
 #include <memory>
 
+#include "components/optimization_guide/internal/public/on_device_model_executor.h"
+#include "components/optimization_guide/internal/public/utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/chrome_ml_instance.h"
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
-#include "third_party/ml/public/on_device_model_executor.h"
-#include "third_party/ml/public/utils.h"
 
 namespace on_device_model {
 

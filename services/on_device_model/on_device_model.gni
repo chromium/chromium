@@ -3,6 +3,6 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # If true //third_party/ml will be enabled.
+  # If true //components/optimization_guide/internal will be enabled.
   enable_ml_internal = false
 }

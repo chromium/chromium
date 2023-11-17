@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "third_party/ml/public/chrome_ml.h"
 
 namespace on_device_model {
 
