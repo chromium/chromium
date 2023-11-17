@@ -10,9 +10,9 @@ static_library("firmware_update_ui") {
   sources = [
     "firmware_update_app_ui.cc",
     "firmware_update_app_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
+
+  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash/constants",
@@ -26,5 +26,14 @@ static_library("firmware_update_ui") {
     "//ui/resources:webui_resources_grd_grit",
     "//ui/web_dialogs:web_dialogs",
     "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }

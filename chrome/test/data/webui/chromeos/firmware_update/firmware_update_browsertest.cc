@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/webui/firmware_update_ui/url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -12,13 +13,11 @@ namespace ash {
 
 namespace {
 
-// TODO(b/309953643): Configure test support for firmware update and update code
-// to use same const as prod.
-constexpr char kFirmwareUpdateHost[] = "accessory-update";
-
 class FirmwareUpdateAppBrowserTest : public WebUIMochaBrowserTest {
  public:
-  FirmwareUpdateAppBrowserTest() { set_test_loader_host(kFirmwareUpdateHost); }
+  FirmwareUpdateAppBrowserTest() {
+    set_test_loader_host(::ash::kChromeUIFirmwareUpdateAppHost);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(FirmwareUpdateAppBrowserTest, FakeUpdateController) {
