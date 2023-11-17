@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 
 #include <utility>
 
@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "password_form.h"
 
 namespace password_manager {
 

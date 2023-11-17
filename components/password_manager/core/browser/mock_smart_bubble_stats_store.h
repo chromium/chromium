@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_MOCK_SMART_BUBBLE_STATS_STORE_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_MOCK_SMART_BUBBLE_STATS_STORE_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_SMART_BUBBLE_STATS_STORE_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_SMART_BUBBLE_STATS_STORE_H_
 
 #include "base/functional/callback.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
@@ -33,4 +33,4 @@ class MockSmartBubbleStatsStore : public SmartBubbleStatsStore {
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_MOCK_SMART_BUBBLE_STATS_STORE_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_SMART_BUBBLE_STATS_STORE_H_
