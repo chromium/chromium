@@ -49,49 +49,27 @@ BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 // For historical reasons, this includes some APIs. Please don't add more.
 
 BASE_DECLARE_FEATURE(kAllowSharedArrayBuffersUnconditionally);
-
 BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
-
 BASE_DECLARE_FEATURE(kAvoidEarlyExtensionScriptContextCreation);
-
 BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
-
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
-
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
-
-BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
-
-BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
-
 BASE_DECLARE_FEATURE(kExtensionsManifestV3Only);
-
 BASE_DECLARE_FEATURE(kExtensionsMenuAccessControl);
-
 BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
-
+BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
+BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
-
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
-
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
-
 BASE_DECLARE_FEATURE(kNewWebstoreDomain);
-
 BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
-
 BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);
-
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
-
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
-
 BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
-
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
-
 BASE_DECLARE_FEATURE(kUsePerBrowserContextWebRequestEventRouter);
-
 BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,15 +78,11 @@ BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 // See the guidance at the top of this file.
 ///////////////////////////////////////////////////////////////////////////////
 
-BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
-
-BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
-
-BASE_DECLARE_FEATURE(kNewWebstoreURL);
-
-BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
-
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
+BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
+BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
+BASE_DECLARE_FEATURE(kNewWebstoreURL);
 
 }  // namespace extensions_features
 
