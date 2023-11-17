@@ -26,8 +26,8 @@ namespace storage {
 // TouchFile to manipulate files for their particular implementation.
 class FileStreamReaderTest : public testing::Test {
  public:
-  static constexpr base::StringPiece kTestFileName = "test.dat";
-  static constexpr base::StringPiece kTestData = "0123456789";
+  static constexpr std::string_view kTestFileName = "test.dat";
+  static constexpr std::string_view kTestData = "0123456789";
 
   virtual std::unique_ptr<FileStreamReader> CreateFileReader(
       const std::string& file_name,

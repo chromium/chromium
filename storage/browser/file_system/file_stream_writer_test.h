@@ -27,7 +27,7 @@ namespace storage {
 // GetFileContent to manipulate files for their particular implementation.
 class FileStreamWriterTest : public testing::Test {
  public:
-  static constexpr base::StringPiece kTestFileName = "file_a";
+  static constexpr std::string_view kTestFileName = "file_a";
 
   virtual bool CreateFileWithContent(const std::string& name,
                                      const std::string& data) = 0;

@@ -817,7 +817,7 @@ TEST_F(FileSystemOperationImplTest, TestCopySuccessSamePath) {
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   base::FilePath src_local_disk_file_path;
   base::CreateTemporaryFile(&src_local_disk_file_path);
-  constexpr base::StringPiece test_data = "foo";
+  constexpr std::string_view test_data = "foo";
   constexpr int data_size = test_data.size();
   base::WriteFile(src_local_disk_file_path, test_data);
 
@@ -847,7 +847,7 @@ TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileFailureByQuota) {
   base::FilePath src_local_disk_file_path;
   base::CreateTemporaryFile(&src_local_disk_file_path);
-  constexpr base::StringPiece test_data = "foo";
+  constexpr std::string_view test_data = "foo";
   base::WriteFile(src_local_disk_file_path, test_data);
 
   FileSystemURL dest_dir(CreateDirectory("dest"));
@@ -1074,7 +1074,7 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   FileSystemURL file(CreateFile("file"));
   base::FilePath platform_path = PlatformPath("file");
 
-  constexpr base::StringPiece test_data = "test data";
+  constexpr std::string_view test_data = "test data";
   constexpr int data_size = test_data.size();
   EXPECT_TRUE(base::WriteFile(platform_path, test_data));
 
