@@ -9471,6 +9471,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTpcdMetadataGrantsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kTpcdMetadataGrants)},
 
+    {"third-party-cookie-deprecation-trial",
+     flag_descriptions::kTpcdSupportSettingsName,
+     flag_descriptions::kTpcdSupportSettingsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kTpcdSupportSettings)},
+
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDIPS)},
