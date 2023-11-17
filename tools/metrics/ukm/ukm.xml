@@ -19309,6 +19309,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.PasswordChangeFlowDuration">
+  <obsolete>
+    Deprecated as of November 2023 (M121).
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
