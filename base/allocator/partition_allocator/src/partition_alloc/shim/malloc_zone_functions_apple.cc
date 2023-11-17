@@ -13,7 +13,8 @@
 namespace allocator_shim {
 
 MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
-static_assert(std::is_pod_v<MallocZoneFunctions>,
+static_assert(std::is_trivial_v<MallocZoneFunctions> &&
+                  std::is_standard_layout_v<MallocZoneFunctions>,
               "MallocZoneFunctions must be POD");
 
 void StoreZoneFunctions(const ChromeMallocZone* zone,
