@@ -543,6 +543,7 @@ ts_test_files = [
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/exif_parser_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/metadata_model_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -615,7 +616,6 @@ unittest_files = [
   # Foreground:
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
-  "file_manager/foreground/js/metadata/metadata_model_unittest.js",
   "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
