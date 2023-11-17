@@ -289,6 +289,7 @@
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -304,6 +305,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/cros_apps/cros_apps_key_event_handler_factory.h"
+#include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
@@ -681,6 +683,21 @@ void ChromeBrowserMainExtraPartsProfiles::
   ChromeSigninClientFactory::GetInstance();
   ClientHintsFactory::GetInstance();
   ClipboardRestrictionServiceFactory::GetInstance();
+// The keyed service must run on the same side (ash / lacros) as the odfs
+// extension.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::features::
+          IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {
+    chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::
+          IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
+      !crosapi::browser_util::IsLacrosEnabled()) {
+    chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
   ClosedTabCacheServiceFactory::GetInstance();
   companion::visual_search::VisualSearchSuggestionsServiceFactory::

@@ -108,7 +108,15 @@ OneDrivePrefObserverFactory::BuildServiceInstanceForBrowserContext(
           IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {
     return nullptr;
   }
-  return OneDrivePrefObserver::Create(Profile::FromBrowserContext(context));
+
+  Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile()) {
+    return nullptr;
+  }
+#endif
+
+  return OneDrivePrefObserver::Create(profile);
 }
 
 bool OneDrivePrefObserverFactory::ServiceIsCreatedWithBrowserContext() const {
