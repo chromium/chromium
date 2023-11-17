@@ -449,8 +449,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
       if (side_panel_service->HasSidePanelContextMenuActionForTab(*extension,
                                                                   tab_id)) {
-        extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
-                                                              extension->id());
+        side_panel_util::ToggleExtensionSidePanel(browser_, extension->id());
       }
       break;
     }

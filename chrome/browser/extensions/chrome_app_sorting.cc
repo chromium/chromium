@@ -103,8 +103,7 @@ void ChromeAppSorting::CreateOrdinalsIfNecessary(size_t minimum_size) {
   }
 }
 
-void ChromeAppSorting::MigrateAppIndex(
-    const extensions::ExtensionIdList& extension_ids) {
+void ChromeAppSorting::MigrateAppIndex(const ExtensionIdList& extension_ids) {
   if (extension_ids.empty())
     return;
 
@@ -594,7 +593,7 @@ syncer::StringOrdinal ChromeAppSorting::GetMinOrMaxAppLaunchOrdinalsOnPage(
 }
 
 void ChromeAppSorting::InitializePageOrdinalMap(
-    const extensions::ExtensionIdList& extension_ids) {
+    const ExtensionIdList& extension_ids) {
   for (auto ext_it = extension_ids.begin(); ext_it != extension_ids.end();
        ++ext_it) {
     AddOrdinalMapping(*ext_it,
@@ -603,17 +602,15 @@ void ChromeAppSorting::InitializePageOrdinalMap(
 
     // Ensure that the web store app still isn't found in this list, since
     // it is added after this loop.
-    DCHECK(*ext_it != extensions::kWebStoreAppId);
+    DCHECK(*ext_it != kWebStoreAppId);
     DCHECK(*ext_it != app_constants::kChromeAppId);
   }
 
   // Include the Web Store App since it is displayed on the NTP.
-  syncer::StringOrdinal web_store_app_page =
-      GetPageOrdinal(extensions::kWebStoreAppId);
+  syncer::StringOrdinal web_store_app_page = GetPageOrdinal(kWebStoreAppId);
   if (web_store_app_page.IsValid()) {
-    AddOrdinalMapping(extensions::kWebStoreAppId,
-                      web_store_app_page,
-                      GetAppLaunchOrdinal(extensions::kWebStoreAppId));
+    AddOrdinalMapping(kWebStoreAppId, web_store_app_page,
+                      GetAppLaunchOrdinal(kWebStoreAppId));
   }
   // Include the Chrome App since it is displayed in the app launcher.
   syncer::StringOrdinal chrome_app_page =
@@ -693,7 +690,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
 #else
   const char* const kDefaultAppOrder[] = {
       app_constants::kChromeAppId,
-      extensions::kWebStoreAppId,
+      kWebStoreAppId,
   };
   const std::vector<const char*> app_ids(
       kDefaultAppOrder, kDefaultAppOrder + std::size(kDefaultAppOrder));

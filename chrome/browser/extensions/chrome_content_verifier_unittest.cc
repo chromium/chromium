@@ -233,7 +233,7 @@ TEST_F(ChromeContentVerifierTest, VerifyFailedOnLoad) {
 // kDisableAppContentVerification flag.
 TEST_F(ChromeContentVerifierTest, CfmChecksHashWithoutForceFlag) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      extensions::switches::kDisableAppContentVerification));
+      switches::kDisableAppContentVerification));
   InitContentVerifier();
   ASSERT_TRUE(InstallExtension(kCaseSensitiveManifestPathsCrx));
   // Ensure that content verifier has checked hashes from |extension|.
@@ -245,7 +245,7 @@ TEST_F(ChromeContentVerifierTest, CfmChecksHashWithoutForceFlag) {
 // kDisableAppContentVerification flag is present.
 TEST_F(ChromeContentVerifierTest, CfmDoesNotCheckHashWithForceFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      extensions::switches::kDisableAppContentVerification);
+      switches::kDisableAppContentVerification);
   InitContentVerifier();
   ASSERT_TRUE(InstallExtension(kCaseSensitiveManifestPathsCrx));
   // Ensure that content verifier has NOT checked hashes from |extension|.
@@ -257,7 +257,7 @@ TEST_F(ChromeContentVerifierTest, CfmDoesNotCheckHashWithForceFlag) {
 // kDisableAppContentVerification flag is present.
 TEST_F(ChromeContentVerifierTest, NonCfmChecksHashEvenWithForceFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      extensions::switches::kDisableAppContentVerification);
+      switches::kDisableAppContentVerification);
   InitContentVerifier();
   ASSERT_TRUE(InstallExtension(kCaseSensitiveManifestPathsCrx));
   // Ensure that content verifier has checked hashes from |extension|.

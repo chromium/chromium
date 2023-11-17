@@ -405,8 +405,8 @@ class ServiceForDownloadTests : public MockService {
     fake_crx_installers_[id] = crx_installer;
   }
 
-  scoped_refptr<extensions::CrxInstaller> CreateUpdateInstaller(
-      const extensions::CRXFileInfo& file,
+  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
+      const CRXFileInfo& file,
       bool file_ownership_passed) override {
     extension_id_ = file.extension_id;
     install_path_ = file.path;

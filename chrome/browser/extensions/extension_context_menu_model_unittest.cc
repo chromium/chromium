@@ -562,7 +562,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
     service()->AddExtension(extension.get());
-    EXPECT_TRUE(extensions::OptionsPageInfo::HasOptionsPage(extension.get()));
+    EXPECT_TRUE(OptionsPageInfo::HasOptionsPage(extension.get()));
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::OPTIONS),
               CommandState::kEnabled);
   }
@@ -1034,7 +1034,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
     // Change extension to run "on click". Since we are revoking permissions, we
     // need to automatically accept the reload page bubble.
     action_runner->accept_bubble_for_testing(true);
-    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    PermissionsManagerWaiter waiter(permissions_manager);
     menu.ExecuteCommand(kOnClick, 0);
     waiter.WaitForExtensionPermissionsUpdate();
     EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1449,7 +1449,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // need to automatically accept the reload page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
+  PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1649,7 +1649,7 @@ TEST_F(ExtensionContextMenuModelTest,
     menu.ExecuteCommand(kOnClick, 0);
     ExtensionActionRunner::GetForWebContents(web_contents)
         ->accept_bubble_for_testing(true);
-    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    PermissionsManagerWaiter waiter(permissions_manager);
     menu.ExecuteCommand(kOnClick, 0);
     waiter.WaitForExtensionPermissionsUpdate();
   }
@@ -1704,7 +1704,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
+  PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
 
@@ -2051,11 +2051,11 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   // when the feature is enabled, even if they are added by the manager.
   // Therefore, the context menu should not take into account user site settings
   // when the feature is disabled.
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
 
   {
     // Add site as a user restricted site.
-    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserRestrictedSite(url::Origin::Create(url));
     manager_waiter.WaitForUserPermissionsSettingsChange();
 
@@ -2365,11 +2365,11 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
   // when the kExtensionsMenuAccessControl feature is enabled, even if they are
   // added by the manager. Therefore, the context menu should not take into
   // account user site settings when the feature is disabled.
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
 
   {
     // Add site as a user permitted site.
-    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserPermittedSite(url::Origin::Create(url));
     manager_waiter.WaitForUserPermissionsSettingsChange();
 

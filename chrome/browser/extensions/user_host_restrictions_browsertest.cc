@@ -57,8 +57,7 @@ class UserHostRestrictionsBrowserTest
   void WithholdExtensionPermissions(const Extension& extension) {
     // Withhold extension host permissions. Wait for the notification to be
     // fired to ensure all renderers and services have been properly updated.
-    extensions::PermissionsManagerWaiter waiter(
-        extensions::PermissionsManager::Get(profile()));
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     ScriptingPermissionsModifier(profile(), &extension)
         .SetWithholdHostPermissions(true);
     waiter.WaitForExtensionPermissionsUpdate();

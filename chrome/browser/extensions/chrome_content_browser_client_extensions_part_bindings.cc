@@ -31,10 +31,9 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
       base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
   associated_registry->AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
-  associated_registry
-      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              host->GetID()));
+  associated_registry->AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          host->GetID()));
 #endif
 }
 
@@ -52,10 +51,9 @@ void ChromeContentBrowserClientExtensionsPart::
   associated_registry.AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
-  associated_registry
-      .AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              service_worker_version_info.process_id));
+  associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          service_worker_version_info.process_id));
   associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, service_worker_version_info.process_id));
 #endif
@@ -68,10 +66,9 @@ void ChromeContentBrowserClientExtensionsPart::
   int render_process_id = frame_host.GetProcess()->GetID();
   associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_id));
-  associated_registry
-      .AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              render_process_id));
+  associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          render_process_id));
   associated_registry.AddInterface<mojom::EventRouter>(
       base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
   associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(

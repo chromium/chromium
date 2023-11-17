@@ -102,8 +102,8 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   }
 
   ActiveTabPermissionGranter* active_tab_permission_granter() {
-    return extensions::TabHelper::FromWebContents(web_contents())->
-        active_tab_permission_granter();
+    return TabHelper::FromWebContents(web_contents())
+        ->active_tab_permission_granter();
   }
 
   bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
@@ -127,8 +127,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
         permissions_data->CanAccessPage(url, tab_id, nullptr) &&
         permissions_data->CanRunContentScriptOnPage(url, tab_id, nullptr);
     bool capture = permissions_data->CanCaptureVisiblePage(
-        url, tab_id, nullptr,
-        extensions::CaptureRequirement::kActiveTabOrAllUrls);
+        url, tab_id, nullptr, CaptureRequirement::kActiveTabOrAllUrls);
     switch (feature) {
       case PERMITTED_SCRIPT_ONLY:
         return script && !capture;
@@ -313,17 +312,17 @@ TEST_F(ActiveTabTest, CapturingPagesWithActiveTab) {
     // By default, there should be no access.
     EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
         url, tab_id(), nullptr /*error*/,
-        extensions::CaptureRequirement::kActiveTabOrAllUrls));
+        CaptureRequirement::kActiveTabOrAllUrls));
     // Granting permission should allow page capture.
     active_tab_permission_granter()->GrantIfRequested(extension.get());
     EXPECT_TRUE(extension->permissions_data()->CanCaptureVisiblePage(
         url, tab_id(), nullptr /*error*/,
-        extensions::CaptureRequirement::kActiveTabOrAllUrls));
+        CaptureRequirement::kActiveTabOrAllUrls));
     // Navigating away should revoke access.
     NavigateAndCommit(kAboutBlank);
     EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
         url, tab_id(), nullptr /*error*/,
-        extensions::CaptureRequirement::kActiveTabOrAllUrls));
+        CaptureRequirement::kActiveTabOrAllUrls));
   }
 }
 
@@ -534,12 +533,12 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
 
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
-      extensions::CaptureRequirement::kActiveTabOrAllUrls));
+      CaptureRequirement::kActiveTabOrAllUrls));
 
   permission_granter->GrantIfRequested(extension.get());
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
-      extensions::CaptureRequirement::kActiveTabOrAllUrls));
+      CaptureRequirement::kActiveTabOrAllUrls));
 
   permission_granter->RevokeForTesting();
   TestExtensionRegistryObserver observer(registry(), id);
@@ -550,11 +549,11 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
 
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
-      extensions::CaptureRequirement::kActiveTabOrAllUrls));
+      CaptureRequirement::kActiveTabOrAllUrls));
   permission_granter->GrantIfRequested(extension.get());
   EXPECT_TRUE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
-      extensions::CaptureRequirement::kActiveTabOrAllUrls));
+      CaptureRequirement::kActiveTabOrAllUrls));
 }
 
 }  // namespace

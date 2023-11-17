@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     // on all sites -> on click (revokes access)
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // on site -> on-click (should remove site access and active tab
     // permissions)
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // Confirm that unintended access isn't just waiting for a reload to allow
     // it to run.
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     ASSERT_TRUE(ReloadPageAndWaitForLoad());
     ASSERT_TRUE(WaitForReloadToFinish());
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     // on all sites -> on click (revokes access)
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // on site -> on-click (should remove site access and active tab
     // permissions)
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // Confirm that unintended access isn't just waiting for a reload to allow
     // it to run.
-    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
         active_action_runner());
     ASSERT_TRUE(ReloadPageAndWaitForLoad());
     ASSERT_TRUE(WaitForReloadToFinish());

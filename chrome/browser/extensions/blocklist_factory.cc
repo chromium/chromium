@@ -35,7 +35,7 @@ BlocklistFactory::BlocklistFactory()
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
+  DependsOn(ExtensionPrefsFactory::GetInstance());
 }
 
 BlocklistFactory::~BlocklistFactory() = default;
