@@ -249,7 +249,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   LanguagePackManager();
   ~LanguagePackManager() override;
 
-  void UpdateFromInputMethodPrefs(
+  static void UpdateFromInputMethodPrefs(
       base::span<const std::string> installed_hwr_locales,
       input_method::InputMethodUtil* input_method_util,
       PrefService* prefs);
