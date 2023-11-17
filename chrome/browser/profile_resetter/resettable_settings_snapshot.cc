@@ -175,8 +175,20 @@ std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
       new reset_report::ChromeResetReport());
 
   if (field_mask & ResettableSettingsSnapshot::STARTUP_MODE) {
-    for (const auto& url : snapshot.startup_urls())
-      report->add_startup_url_path(url.spec());
+    for (const auto& url : snapshot.startup_urls()) {
+      // TODO(crbug.com/1501983) Delete the following if-block once we have
+      // seen some samples.
+      if (!url.is_valid()) {
+        // This is intentionally a DUMP_WILL_BE_NOTREACHED_NORETURN() instead of
+        // a DCHECK() so that it generates crash dumps with debug data. A
+        // similar NOTREACHED() used to be triggered by url.spec() and the
+        // volume is not incredibly high. A DCHECK() would probably not be
+        // sufficient because we had very few cases of url.is_valid() being
+        // false on the pre-stable channels.
+        DUMP_WILL_BE_NOTREACHED_NORETURN() << url.possibly_invalid_spec();
+      }
+      report->add_startup_url_path(url.is_valid() ? url.spec() : std::string());
+    }
     switch (snapshot.startup_type()) {
       case SessionStartupPref::DEFAULT:
         report->set_startup_type(
