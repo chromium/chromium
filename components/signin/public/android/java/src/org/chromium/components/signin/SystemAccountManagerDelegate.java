@@ -85,6 +85,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 context, receiver, gmsPackageReplacedFilter);
     }
 
+    @Deprecated
     @Override
     public Account[] getAccounts() {
         if (hasGetAccountsPermission() && isGooglePlayServicesAvailable()) {
@@ -97,6 +98,25 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         }
         // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
         // so don't report any accounts if Google Play Services are out of date.
+        return new Account[] {};
+    }
+
+    @Override
+    public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
+        if (!isGooglePlayServicesAvailable()) {
+            throw new AccountManagerDelegateException("Can't use Google Play Services");
+        }
+        if (hasGetAccountsPermission()) {
+            long startTime = SystemClock.elapsedRealtime();
+            Account[] accounts =
+                    mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            RecordHistogram.recordTimesHistogram(
+                    "Signin.AndroidGetAccountsTime_AccountManager",
+                    SystemClock.elapsedRealtime() - startTime);
+            return accounts;
+        }
+        // Don't report any accounts if we don't have permission.
+        // TODO(crbug.com/1502123): Throw an exception if permission was denied.
         return new Account[] {};
     }
 

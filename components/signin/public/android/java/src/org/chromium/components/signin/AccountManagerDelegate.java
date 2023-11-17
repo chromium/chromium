@@ -48,11 +48,14 @@ public interface AccountManagerDelegate {
     @MainThread
     void attachAccountsChangeObserver(AccountsChangeObserver observer);
 
-    /**
-     * Get all the accounts on device synchronously.
-     */
+    /** Get all the accounts on device synchronously. */
+    @Deprecated
     @WorkerThread
     Account[] getAccounts();
+
+    /** Get all the accounts on device synchronously. */
+    @WorkerThread
+    Account[] getAccountsSynchronous() throws AccountManagerDelegateException;
 
     /**
      * Get an auth token.

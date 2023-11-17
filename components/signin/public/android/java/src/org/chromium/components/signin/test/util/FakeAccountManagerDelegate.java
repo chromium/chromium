@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
+import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
@@ -29,11 +30,11 @@ import java.util.UUID;
 /**
  * The FakeAccountManagerDelegate is intended for testing components that use AccountManagerFacade.
  *
- * You should provide a set of accounts as a constructor argument, or use the more direct approach
- * and provide an array of AccountHolder objects.
+ * <p>You should provide a set of accounts as a constructor argument, or use the more direct
+ * approach and provide an array of AccountHolder objects.
  *
- * Currently, this implementation supports adding and removing accounts, handling credentials
- * (including confirming them), and handling of dummy auth tokens.
+ * <p>Currently, this implementation supports adding and removing accounts, handling credentials
+ * (including confirming them), and handling of placeholder auth tokens.
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     private final Object mLock = new Object();
@@ -57,8 +58,20 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         mObserver = observer;
     }
 
+    @Deprecated
     @Override
     public Account[] getAccounts() {
+        ArrayList<Account> result = new ArrayList<>();
+        synchronized (mLock) {
+            for (AccountHolder ah : mAccounts) {
+                result.add(ah.getAccount());
+            }
+        }
+        return result.toArray(new Account[0]);
+    }
+
+    @Override
+    public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
         ArrayList<Account> result = new ArrayList<>();
         synchronized (mLock) {
             for (AccountHolder ah : mAccounts) {
