@@ -3465,6 +3465,12 @@ const char kTpcdHeuristicsGrantsDescription[] =
     "https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/"
     "explainer.md for more details.";
 
+const char kTpcdMetadataGrantsName[] =
+    "Third-Party Cookie Deprecation Metadata Grants for Testing";
+const char kTpcdMetadataGrantsDescription[] =
+    "Provides a control for enabling/disabling Third-Party Cookie Deprecation "
+    "Metadata Grants (WRT its default state) for testing.";
+
 const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "

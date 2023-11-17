@@ -9474,6 +9474,10 @@ const FeatureEntry kFeatureEntries[] = {
          kTpcdHeuristicsGrantsVariations,
          "TpcdHeuristicsGrants")},
 
+    {"tpcd-metadata-grants", flag_descriptions::kTpcdMetadataGrantsName,
+     flag_descriptions::kTpcdMetadataGrantsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kTpcdMetadataGrants)},
+
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDIPS)},
