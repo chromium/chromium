@@ -3640,6 +3640,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileTokenQuality.PerProfile" units="Percents"
+    expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    The overall acceptance rate of all stored observations for the profile.
+    Emitted once per profile at Chrome profile start-up.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile"
     units="Observations" expires_after="M125">
@@ -3659,6 +3669,19 @@ chromium-metrics-reviews@google.com.
     Records which observation types are stored. Emitted once per profile and
     storable type at Chrome profile start-up. For additional supported types,
     consulte the metric of the corresponding storable type.
+  </summary>
+  <token key="Type" variants="AutofillProfile.StorableTypes"/>
+</histogram>
+
+<histogram name="Autofill.ProfileTokenQuality.{Type}" units="Percents"
+    expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the acceptance rate of {Type}, based on the available observations
+    for it. Emitted once per profile and storeable type at Chrome profile
+    start-up. For additional supported types, consulte the metric of the
+    corresponding storable type.
   </summary>
   <token key="Type" variants="AutofillProfile.StorableTypes"/>
 </histogram>

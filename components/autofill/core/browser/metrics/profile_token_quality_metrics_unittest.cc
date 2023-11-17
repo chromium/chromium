@@ -62,6 +62,36 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationsPerType) {
       ObservationType::kEditedToSimilarValue, 1);
 }
 
+TEST_F(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
+  AutofillProfile profile = test::GetFullProfile();
+  // NAME_FIRST has a 50% acceptance rate.
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kEditedFallback);
+  // ADDRESS_HOME_STATE only has neutral observations -> no metric emitted.
+  test_api(profile.token_quality())
+      .AddObservation(ADDRESS_HOME_STATE,
+                      ObservationType::kEditedToSimilarValue);
+  // ADDRESS_HOME_STREET_ADDRESS has a 0% acceptance rate.
+  test_api(profile.token_quality())
+      .AddObservation(ADDRESS_HOME_STREET_ADDRESS,
+                      ObservationType::kEditedToDifferentTokenOfSameProfile);
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileTokenQualityMetrics({&profile});
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileTokenQuality.NAME_FIRST",
+                                      50, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.ProfileTokenQuality.ADDRESS_HOME_STATE", 0);
+  // 33% due to the single accepted observation for NAME_FIRST and the two
+  // non-neutral edited observations for NAME_FIRST and
+  // ADDRESS_HOME_STREET_ADDRESS. Even though ADDRESS_HOME_LINE1 shares the
+  // ADDRESS_HOME_STREET_ADDRESS observations, they are not double counted.
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileTokenQuality.PerProfile",
+                                      33, 1);
+}
+
 }  // namespace
 
 }  // namespace autofill::autofill_metrics
