@@ -1348,11 +1348,6 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="kOverlayPopupAd"/>
 </enum>
 
-<enum name="AdUserActivationStatus">
-  <int value="0" label="No activation"/>
-  <int value="1" label="Received activation"/>
-</enum>
-
 <enum name="AggregationServiceObserverReportStatus">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed to assemble"/>
@@ -12609,27 +12604,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="eSpeak"/>
   <int value="3" label="Google local TTS"/>
   <int value="4" label="Google network TTS"/>
-</enum>
-
-<enum name="CrossOriginAdStatus">
-  <int value="0" label="Ad Origin indeterminable"/>
-  <int value="1" label="Main Frame Origin same as Ad"/>
-  <int value="2" label="Main Frame Origin differs from Ad"/>
-</enum>
-
-<enum name="CrossOriginCreativeStatus">
-  <int value="0" label="Ad Creative Origin indeterminable"/>
-  <int value="1" label="Main Frame Origin same as Ad Creative"/>
-  <int value="2" label="Main Frame Origin differs from Ad Creative"/>
-</enum>
-
-<enum name="CrossOriginCreativeStatusWithThrottling">
-  <int value="0" label="Ad Creative Origin Unknown and Ad Not Throttled"/>
-  <int value="1" label="Ad Creative Origin Unknown and Ad Throttled"/>
-  <int value="2"
-      label="Ad Creative Origin Same as Main Frame and Ad Not Throttled"/>
-  <int value="3"
-      label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
 </enum>
 
 <enum name="CrossProcessTimeDelta">
@@ -28146,19 +28120,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="PrintToPDF"/>
 </enum>
 
-<enum name="HeavyAdStatus2">
-  <int value="0" label="Not heavy"/>
-  <int value="1" label="Network">
-    The ad exceeded the network threshold for the Heavy Ad Intervention.
-  </int>
-  <int value="2" label="Total CPU">
-    The ad exceeded the total CPU usage threshold for the Heavy Ad Intervention.
-  </int>
-  <int value="3" label="Peak CPU">
-    The ad exceeded the peak CPU usage threshold for the Heavy Ad Intervention.
-  </int>
-</enum>
-
 <enum name="HelpAppSearchConceptReadStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="File not exist"/>
@@ -30180,36 +30141,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Initial state"/>
 </enum>
 
-<enum name="InternalErrorLoadEvent">
-  <summary>Internal Errors in the page_load_metrics system</summary>
-  <int value="0" label="Invalid timing IPC sent from renderer (deprecated)"/>
-  <int value="1"
-      label="IPC received while not tracking a relevant committed load"/>
-  <int value="2" label="IPC received from a frame we navigated away from"/>
-  <int value="3" label="IPC received from a bad URL scheme"/>
-  <int value="4" label="No IPCs received for this navigation"/>
-  <int value="5" label="Page end reported before navigation start"/>
-  <int value="6"
-      label="Multiple aborted provisional loads at navigation start"/>
-  <int value="7"
-      label="User input received while not tracking a relevant committed load
-             (deprecated)"/>
-  <int value="8" label="Inter process TimeTicks skew"/>
-  <int value="9" label="No commit or failed provisional load received"/>
-  <int value="10" label="No page load end time recorded"/>
-  <int value="11" label="Timing IPC received from subframe (deprecated)"/>
-  <int value="12" label="Invalid timing IPC (invalid timing descendent)"/>
-  <int value="13" label="Invalid timing IPC (invalid behavior descendent)"/>
-  <int value="14" label="Invalid timing IPC (invalid timing)"/>
-  <int value="15"
-      label="Subframe navigation start before main frame navigation start"/>
-  <int value="16"
-      label="IPC received from subframe while not tracking a committed load"/>
-  <int value="17"
-      label="PageLoadFeatures received from browser process while not
-             tracking a relevant committed load"/>
-</enum>
-
 <enum name="InternalSoundcardStatus">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
@@ -31742,16 +31673,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="FoundButNotReported"/>
 </enum>
 
-<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Image is loaded from memory cache"/>
-  <int value="2"
-      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
-  <int value="3"
-      label="Image is loaded from memory and preloaded after receiving a 103
-             (Early Hints) response"/>
-</enum>
-
 <enum name="LargestContentType">
   <summary>
     Whether the LargestContentfulPaint results from image or text. These are the
@@ -32050,24 +31971,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="kNoLcppData"/>
   <int value="2" label="kInvalidLcppStat"/>
   <int value="3" label="kConversionFailure"/>
-</enum>
-
-<enum name="LcppPredictResult">
-  <int value="0" label="Success">Prediction is success.</int>
-  <int value="1" label="Failure: No hit">
-    Prediction failed. No learned locator hit the actual LCP.
-  </int>
-  <int value="2" label="Failure(False positive): Unrecorded LCP">
-    Prediction failed. LCP is predicted but the actual LCP is unrecorded one.
-  </int>
-  <int value="3" label="Failure(False positive): Duplication">
-    Prediction failed. LCP is predicted but the actual LCP is one with the same
-    locator.
-  </int>
-  <int value="4" label="Failure(False positive): Another indexed LCP.">
-    Prediction failed. LCP is predicted but the actual LCP is one with another
-    leaned locator.
-  </int>
 </enum>
 
 <enum name="LensClassifyResultState">
@@ -43878,22 +43781,6 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Wrong value logged"/>
 </enum>
 
-<enum name="MhtmlLoadResult">
-  <int value="0" label="Success">Archive loaded successfully</int>
-  <int value="1" label="Empty file">
-    Failed to load archive because the file was empty
-  </int>
-  <int value="2" label="URL scheme not allowed">
-    Failed to load archive because the url wasn't http(s), file, or content
-  </int>
-  <int value="3" label="Invalid archive">
-    Failed to load archive because it was not valid MHTML
-  </int>
-  <int value="4" label="Missing main resource">
-    Failed to load archive because it had no main resource
-  </int>
-</enum>
-
 <enum name="Microsoft365Availability">
   <int value="0" label="Neither MS365 PWA nor ODFS set up"/>
   <int value="1" label="Only MS365 PWA set up"/>
@@ -47810,47 +47697,6 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Overlays failed min"/>
 </enum>
 
-<enum name="PageActionCTREvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Clicked"/>
-</enum>
-
-<enum name="PageActionIconType">
-  <int value="0" label="Bookmarks Star"/>
-  <int value="1" label="Click to Call"/>
-  <int value="2" label="Cookie Controls"/>
-  <int value="3" label="File System Access"/>
-  <int value="4" label="Find"/>
-  <int value="5" label="High Efficiency"/>
-  <int value="6" label="Intent Picker"/>
-  <int value="7" label="Local Card Migration"/>
-  <int value="8" label="Manage Passwords"/>
-  <int value="9" label="Payments Offer Notification"/>
-  <int value="10" label="Price Tracking"/>
-  <int value="11" label="PWA Install"/>
-  <int value="12" label="QR Code Generator"/>
-  <int value="13" label="Reader Mode"/>
-  <int value="14" label="Save Autofill Address"/>
-  <int value="15" label="Save Card"/>
-  <int value="16" label="Send Tab to Self"/>
-  <int value="17" label="Sharing Hub"/>
-  <int value="18" label="Side Search"/>
-  <int value="19" label="SMS Remote Fetcher"/>
-  <int value="20" label="Translate"/>
-  <int value="21" label="Virtual Card Enroll"/>
-  <int value="22" label="Virtual Card Manual Fallback"/>
-  <int value="23" label="Zoom"/>
-  <int value="24" label="Save IBAN"/>
-  <int value="25" label="Mandatory Reauth"/>
-  <int value="26" label="Price Insights"/>
-</enum>
-
-<enum name="PageActionPageEvent">
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="Action Shown"/>
-  <int value="2" label="Multiple Actions Shown"/>
-</enum>
-
 <enum name="PageEndReason">
   <int value="0" label="END_NONE">
     Page lifetime has not yet ended (page is still active)
@@ -47933,82 +47779,6 @@ Called by update_net_error_codes.py.-->
       label="Click on lock within 20 seconds after confirmation chip collapse"/>
 </enum>
 
-<enum name="PageLoadBackForwardCacheEvent">
-  <int value="0" label="Enter back-forward cache"/>
-  <int value="1" label="Restore from back-forward cache"/>
-</enum>
-
-<enum name="PageLoadPrerenderEvent">
-  <int value="0" label="Prerendered Main Frame Navigation"/>
-  <int value="1" label="Prerender Activation Navigation"/>
-</enum>
-
-<enum name="PageLoadPrerenderForegroundCheckResult">
-  <int value="0" label="Activated in background"/>
-  <int value="1" label="No event time"/>
-  <int value="2" label="Backgrounded before the event"/>
-  <int value="3" label="Passed the check"/>
-</enum>
-
-<enum name="PageLoadPrerenderObserverEvent">
-  <int value="0" label="OnPrerenderStart"/>
-  <int value="1" label="DidActivatePrerenderedPage"/>
-  <int value="2" label="OnFirstPaintInPage"/>
-  <int value="3" label="OnFirstContentfulPaintInPage"/>
-  <int value="4" label="OnFirstInputInPage"/>
-  <int value="5" label="OnComplete"/>
-  <int value="6" label="FlushMetricsOnAppEnterBackground"/>
-  <int value="7" label="RecordSessionEndHistograms"/>
-  <int value="8" label="RecordLayoutShiftScoreMetrics"/>
-  <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
-</enum>
-
-<enum name="PageLoadPrerenderVisibilityAtActivation">
-  <int value="0" label="Hidden"/>
-  <int value="1" label="Occluded"/>
-  <int value="2" label="Visible"/>
-</enum>
-
-<enum name="PageLoadTimingStatus">
-  <summary>Status of PageLoadTimings received from the render process</summary>
-  <int value="0" label="Valid"/>
-  <int value="1" label="Empty timing"/>
-  <int value="2" label="Null navigation start"/>
-  <int value="3" label="Script load longer than parse duration"/>
-  <int value="4" label="Script execution longer than parse duration"/>
-  <int value="5"
-      label="Script load from doc.write longer than total script load"/>
-  <int value="6"
-      label="Script execution from doc.write longer than total script
-             execution"/>
-  <int value="7" label="Invalid order - response start / parse start"/>
-  <int value="8" label="Invalid order - parse start / parse stop"/>
-  <int value="9" label="Invalid order - parse stop / dom content loaded"/>
-  <int value="10" label="Invalid order - dom content loaded / load"/>
-  <int value="11" label="Invalid order - parse start / first layout"/>
-  <int value="12" label="Invalid order - first layout / first paint"/>
-  <int value="13" label="Invalid order - first paint / first text paint"/>
-  <int value="14" label="Invalid order - first paint / first image paint"/>
-  <int value="15" label="Invalid order - first paint / first contentful paint"/>
-  <int value="16" label="Invalid order - first paint / first meaningful paint"/>
-  <int value="17" label="Invalid order - first meaningful paint / interactive"/>
-  <int value="18" label="First input delay without first input timestamp"/>
-  <int value="19" label="First input timestamp without first input delay"/>
-  <int value="20" label="Longest input delay without longest input timestamp"/>
-  <int value="21" label="Longest input timestamp without longest input delay"/>
-  <int value="22"
-      label="Longest input timestamp earlier than first input timestamp"/>
-  <int value="23" label="Longest input delay less than first input delay"/>
-  <int value="24" label="Invalid order - parse start / activation start"/>
-  <int value="25" label="Invalid order - activation start / first paint"/>
-</enum>
-
-<enum name="PageLoadTrackerPageType">
-  <int value="0" label="Primary Page"/>
-  <int value="1" label="Prerender Page"/>
-  <int value="2" label="FencedFrames Page"/>
-</enum>
-
 <enum name="PageMeasurementBackgroundState">
   <summary>
     Whether a page is in the foreground or background during a measurement
@@ -48043,35 +47813,6 @@ Called by update_net_error_codes.py.-->
       label="Aborted: was foregrounded but never reached first contentful
              paint"/>
   <int value="2" label="Was foregrounded and reached first contentful paint"/>
-</enum>
-
-<enum name="PageVisitType">
-  <int value="0"
-      label="Independent Visit; the page is opened from UI or in new tab, and
-             not followed by any link navigation. (obsolete)"/>
-  <int value="1"
-      label="Origin Visit; the page is opened from UI or in new tab, and
-             followed by a link navigation. (obsolete)"/>
-  <int value="2"
-      label="PassingVisit; the page is visited and followed by link
-             navigations."/>
-  <int value="3"
-      label="TerminalVisit; the page is visited by a link navigation, but not
-             followed by any link navigation."/>
-  <int value="4"
-      label="HistoryVisit; the page is visited by a history navigation."/>
-  <int value="5"
-      label="Independent Link Visit; the page is opened in a new tab, and not
-             followed by any link navigation."/>
-  <int value="6"
-      label="Independent UI Visit; the page is opened from UI, and not
-             followed by any link navigation."/>
-  <int value="7"
-      label="Origin Link Visit; the page is opened in a new tab, and followed
-             by a link navigation."/>
-  <int value="8"
-      label="Origin UI Visit; the page is opened from UI, and followed by a
-             link navigation."/>
 </enum>
 
 <enum name="PaintHoldingCommitTrigger2">
@@ -51428,11 +51169,6 @@ Called by update_net_error_codes.py.-->
     presented. Does not include items already counted in the more specific
     bucket (Another QLPreviewController Is Presented).
   </int>
-</enum>
-
-<enum name="PreviewFinalStatus">
-  <int value="0" label="just previewed"/>
-  <int value="1" label="previewed and promoted"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">
@@ -57428,23 +57164,6 @@ would be helpful to identify which type is being sent.
   <int value="0" label="Other"/>
   <int value="1" label="ChromeVox"/>
   <int value="2" label="SelectToSpeak"/>
-</enum>
-
-<enum name="ThirdPartyCookieAllowMechanism">
-  <int value="0" label="No allow mechanism apply (Not recorded)"/>
-  <int value="1"
-      label="Allow by explicit cookie content setting (e.g. Enterprise
-             Policy: CookiesAllowedForUrls, UserBypass)"/>
-  <int value="2"
-      label="Allow by global 3p cookie setting setting (e.g. Enterprise
-             Policy: BlockThirdPartyCookies, UX)"/>
-  <int value="3"
-      label="Allow by 3PCD metadata grants content settings (Global
-             Allowlist)"/>
-  <int value="4" label="Allow by third-party deprecation trial"/>
-  <int value="5" label="Allow by 3PCD heuristics"/>
-  <int value="6" label="Allow by Storage access API"/>
-  <int value="7" label="Allow by top-level Storage access API"/>
 </enum>
 
 <enum name="ThirdPartyCookieBlockState">
