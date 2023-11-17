@@ -1508,9 +1508,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that when the syncTypesListDisabled policy is enabled, a policy warning
 // is displayed with a link to the policy management page.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled, because on sign-in with
+// kReplaceSyncPromosWithSignInPromos, the user is not warned that the browser is managed.
 - (void)testSyncTypesDisabledPolicy {
   // Set policy.
   base::Value::List list;
