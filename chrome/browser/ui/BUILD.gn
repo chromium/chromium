@@ -5936,6 +5936,8 @@ static_library("ui") {
       "views/upgrade_notification_controller.h",
       "views/user_education/browser_feature_promo_controller.cc",
       "views/user_education/browser_feature_promo_controller.h",
+      "views/user_education/browser_help_bubble.cc",
+      "views/user_education/browser_help_bubble.h",
       "views/user_education/browser_user_education_service.cc",
       "views/user_education/browser_user_education_service.h",
       "views/web_apps/file_handler_launch_dialog_view.cc",

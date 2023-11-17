@@ -3,20 +3,17 @@
 // found in the LICENSE file.
 
 #include <algorithm>
-#include <iterator>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -24,9 +21,9 @@
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -47,23 +44,17 @@
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
-#include "components/user_education/webui/floating_webui_help_bubble_factory.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_webui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/vector_icons.h"
-#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
@@ -81,146 +72,6 @@ const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
 const char kPasswordManagerTutorialMetricPrefix[] = "PasswordManager";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
-
-class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
- public:
-  BrowserHelpBubbleDelegate() = default;
-  ~BrowserHelpBubbleDelegate() override = default;
-
-  std::vector<ui::Accelerator> GetPaneNavigationAccelerators(
-      ui::TrackedElement* anchor_element) const override {
-    std::vector<ui::Accelerator> result;
-    if (anchor_element->IsA<views::TrackedElementViews>()) {
-      auto* widget = anchor_element->AsA<views::TrackedElementViews>()
-                         ->view()
-                         ->GetWidget();
-      if (widget) {
-        auto* const client_view =
-            widget->GetPrimaryWindowWidget()->client_view();
-        if (client_view && views::IsViewClass<BrowserView>(client_view)) {
-          auto* const browser_view = static_cast<BrowserView*>(client_view);
-          ui::Accelerator accel;
-          if (browser_view->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accel))
-            result.push_back(accel);
-          if (browser_view->GetAccelerator(IDC_FOCUS_PREVIOUS_PANE, &accel))
-            result.push_back(accel);
-          if (browser_view->GetAccelerator(
-                  IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, &accel)) {
-            result.push_back(accel);
-          }
-        }
-      }
-    }
-    return result;
-  }
-
-  int GetTitleTextContext() const override {
-    return ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE;
-  }
-  int GetBodyTextContext() const override {
-    return ChromeTextContext::CONTEXT_IPH_BUBBLE_BODY;
-  }
-
-  // These methods return color codes that will be handled by the app's theming
-  // system.
-  ui::ColorId GetHelpBubbleBackgroundColorId() const override {
-    return kColorFeaturePromoBubbleBackground;
-  }
-  ui::ColorId GetHelpBubbleForegroundColorId() const override {
-    return kColorFeaturePromoBubbleForeground;
-  }
-  ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const override {
-    return kColorFeaturePromoBubbleDefaultButtonBackground;
-  }
-  ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const override {
-    return kColorFeaturePromoBubbleDefaultButtonForeground;
-  }
-  ui::ColorId GetHelpBubbleButtonBorderColorId() const override {
-    return kColorFeaturePromoBubbleButtonBorder;
-  }
-  ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const override {
-    return kColorFeaturePromoBubbleCloseButtonInkDrop;
-  }
-};
-
-// Help bubble factory that can show an embedded (WebUI-based) help bubble on a
-// tab in the browser. This takes the added step of focusing the contents pane
-// of the browser if the help bubble is in the active tab.
-class TabWebUIHelpBubbleFactoryBrowser
-    : public user_education::HelpBubbleFactoryWebUI {
- public:
-  explicit TabWebUIHelpBubbleFactoryBrowser() = default;
-  ~TabWebUIHelpBubbleFactoryBrowser() override = default;
-
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
-
-  // user_education::HelpBubbleFactoryWebUI:
-  std::unique_ptr<user_education::HelpBubble> CreateBubble(
-      ui::TrackedElement* element,
-      user_education::HelpBubbleParams params) override {
-    const bool has_buttons = !params.buttons.empty();
-    auto result =
-        HelpBubbleFactoryWebUI::CreateBubble(element, std::move(params));
-
-    // Bubbles with action buttons should start focused.
-    if (result && has_buttons) {
-      // Assuming the help bubble is in the active web contents in a browser
-      // window, in order to be consistent with other help bubbles, we should
-      // ensure the contents pane is focused.
-      if (const auto* const contents =
-              result->AsA<user_education::HelpBubbleWebUI>()
-                  ->GetWebContents()) {
-        if (const auto* browser = chrome::FindBrowserWithTab(contents)) {
-          if (browser->tab_strip_model()->GetActiveWebContents() == contents) {
-            BrowserView::GetBrowserViewForBrowser(browser)
-                ->FocusWebContentsPane();
-          }
-        }
-      }
-    }
-
-    return result;
-  }
-};
-
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TabWebUIHelpBubbleFactoryBrowser)
-
-// Help bubble factory that can show a floating (Views-based) help bubble on a
-// WebUI element, but only for non-tab WebUI.
-class FloatingWebUIHelpBubbleFactoryBrowser
-    : public user_education::FloatingWebUIHelpBubbleFactory {
- public:
-  explicit FloatingWebUIHelpBubbleFactoryBrowser(
-      const user_education::HelpBubbleDelegate* delegate)
-      : FloatingWebUIHelpBubbleFactory(delegate) {}
-  ~FloatingWebUIHelpBubbleFactoryBrowser() override = default;
-
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
-
-  // HelpBubbleFactoryWebUIViews:
-  bool CanBuildBubbleForTrackedElement(
-      const ui::TrackedElement* element) const override {
-    if (!element->IsA<user_education::TrackedElementWebUI>()) {
-      return false;
-    }
-
-    // If this is a WebUI in a tab, then don't use this factory.
-    const auto* contents = element->AsA<user_education::TrackedElementWebUI>()
-                               ->handler()
-                               ->GetWebContents();
-    // Note: this checks all tabs for their WebContents.
-    if (chrome::FindBrowserWithTab(contents)) {
-      return false;
-    }
-
-    // Ensure that this WebUI fulfils the requirements for a floating help
-    // bubble.
-    return FloatingWebUIHelpBubbleFactory::CanBuildBubbleForTrackedElement(
-        element);
-  }
-};
-
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)
 
 class IfView : public user_education::TutorialDescription::If {
  public:
