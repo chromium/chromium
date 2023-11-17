@@ -108,7 +108,7 @@ class WebsitePreference extends ChromeImageViewPreference {
     /**
      * @return if a |mCategory| has a sub page to show the |mSite| permissions.
      */
-    public boolean hasSubPage() {
+    private boolean hasSubPage() {
         int type = mCategory.getContentSettingsType();
 
         if (!Website.isEmbeddedPermission(type)) {

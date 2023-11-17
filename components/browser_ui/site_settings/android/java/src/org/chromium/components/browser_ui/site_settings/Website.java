@@ -265,6 +265,11 @@ public final class Website implements WebsiteEntry {
             return;
         }
 
+        if (isEmbeddedPermission(type)) {
+            setAllEmbeddedContentSettings(browserContextHandle, type, value);
+            return;
+        }
+
         ContentSettingException exception = getContentSettingException(type);
         if (type == ContentSettingsType.ADS) {
             // It is possible to set the permission without having an existing exception,
@@ -306,17 +311,26 @@ public final class Website implements WebsiteEntry {
             } else {
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.SiteSettings");
             }
-        } else if (isEmbeddedPermission(type)) {
-            var exceptions = getEmbeddedPermissions().get(type);
-            if (exceptions != null) {
-                assert exceptions.size() == 1;
-                exception = exceptions.get(0);
-            }
         }
+
         // We want to call setContentSetting even after explicitly setting
         // mContentSettingException above because this will trigger the actual change
         // on the PrefServiceBridge.
         if (exception != null) {
+            exception.setContentSetting(browserContextHandle, value);
+        }
+    }
+
+    private void setAllEmbeddedContentSettings(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType int type,
+            @ContentSettingValues int value) {
+        List<ContentSettingException> exceptions = getEmbeddedPermissions().get(type);
+        if (exceptions == null) {
+            return;
+        }
+
+        for (ContentSettingException exception : exceptions) {
             exception.setContentSetting(browserContextHandle, value);
         }
     }

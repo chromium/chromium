@@ -556,11 +556,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
 
-            if (websitePreference.hasSubPage()) {
-                // TODO(http://b/307249155): Deletion for a group of storage access.
-                return false;
-            }
-
             if (websitePreference.getParent().getKey().equals(MANAGED_GROUP)) {
                 websitePreference.setFragment(SingleWebsiteSettings.class.getName());
                 websitePreference.putSiteAddressIntoExtras(

@@ -122,7 +122,6 @@ import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
-import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.Website;
@@ -1564,40 +1563,105 @@ public class SiteSettingsTest {
     @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testExpectedExceptionsStorageAccess() {
         createStorageAccessExceptions();
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.STORAGE_ACCESS);
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
 
         onView(withText("primary.com")).check(matches(isDisplayed()));
         onView(withText("2 sites")).check(matches(isDisplayed()));
         onView(withText("primary2.com")).check(matches(isDisplayed()));
         onView(withText("1 site")).check(matches(isDisplayed()));
 
-        SingleCategorySettings websitePreferences =
-                (SingleCategorySettings) settingsActivity.getMainFragment();
-        ExpandablePreferenceGroup managedGroup =
-                (ExpandablePreferenceGroup)
-                        websitePreferences.findPreference(SingleCategorySettings.ALLOWED_GROUP);
+        getImageViewWidget("primary.com").check(matches(isDisplayed())).perform(click());
 
-        ChromeImageViewPreference websitePreference =
-                (ChromeImageViewPreference) managedGroup.getPreference(0);
+        // Check that the subpage is shown with the correct origins.
+        onView(withText("primary.com")).check(matches(isDisplayed()));
+        onViewWaiting(withText("secondary.com")).check(matches(isDisplayed()));
+        onViewWaiting(withText("secondary3.com")).check(matches(isDisplayed()));
+    }
 
-        Mockito.clearInvocations(mSettingsLauncher);
-        websitePreferences.setSettingsLauncher(mSettingsLauncher);
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testResetExceptionGroupStorageAccess() {
+        createStorageAccessExceptions();
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
+
+        onView(withText("primary.com")).check(matches(isDisplayed()));
+        onView(withText("2 sites")).check(matches(isDisplayed()));
+        onView(withText("primary2.com")).check(matches(isDisplayed()));
+        onView(withText("1 site")).check(matches(isDisplayed()));
+
+        onView(withText("primary.com")).perform(click());
+        onView(withText("Remove")).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Click on the chevron button of the first permission group.
-                    websitePreference.getButton().performClick();
+                    assertEquals(
+                            ContentSettingValues.ASK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary.com")));
+                    assertEquals(
+                            ContentSettingValues.ASK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary3.com")));
+                    assertEquals(
+                            ContentSettingValues.ALLOW,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary2.com"),
+                                    new GURL("https://secondary2.com")));
                 });
 
-        Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(
-                        eq(websitePreferences.getContext()),
-                        eq(StorageAccessSubpageSettings.class),
-                        Mockito.any(Bundle.class));
+        onView(withText("primary.com")).check(doesNotExist());
+    }
 
-        // TODO(http://b/307249155): Test deletion for a group of storage access.
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testBlockExceptionGroupStorageAccess() {
+        createStorageAccessExceptions();
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
+
+        onView(withText("primary.com")).check(matches(isDisplayed()));
+        onView(withText("2 sites")).check(matches(isDisplayed()));
+        onView(withText("primary2.com")).check(matches(isDisplayed()));
+        onView(withText("1 site")).check(matches(isDisplayed()));
+
+        onView(withText("primary.com")).perform(click());
+        onView(withText("Block")).perform(click());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            ContentSettingValues.BLOCK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary.com")));
+                    assertEquals(
+                            ContentSettingValues.BLOCK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary3.com")));
+                    assertEquals(
+                            ContentSettingValues.ALLOW,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary2.com"),
+                                    new GURL("https://secondary2.com")));
+                });
     }
 
     @Test
@@ -1611,9 +1675,6 @@ public class SiteSettingsTest {
 
         onViewWaiting(withText("secondary1.com")).check(matches(isDisplayed()));
         onViewWaiting(withText("secondary3.com")).check(matches(isDisplayed()));
-
-        StorageAccessSubpageSettings embeddedWebsitePreferences =
-                (StorageAccessSubpageSettings) settingsActivity.getMainFragment();
 
         // Reset first permission.
         getImageViewWidget("secondary1.com").check(matches(isDisplayed())).perform(click());
