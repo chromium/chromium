@@ -99,7 +99,8 @@ void EmbeddedPermissionPromptBaseView::ShowWidget() {
 
 void EmbeddedPermissionPromptBaseView::UpdateAnchor(views::Widget* widget) {
   SetAnchorView(widget->GetContentsView());
-  set_parent_window(widget->GetNativeView());
+  set_parent_window(
+      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
 }
 
