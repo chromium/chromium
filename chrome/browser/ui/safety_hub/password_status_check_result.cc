@@ -67,5 +67,5 @@ std::u16string PasswordStatusCheckResult::GetNotificationString() const {
 }
 
 int PasswordStatusCheckResult::GetNotificationCommandId() const {
-  return IDC_SHOW_PASSWORD_MANAGER;
+  return IDC_SHOW_PASSWORD_CHECKUP;
 }
