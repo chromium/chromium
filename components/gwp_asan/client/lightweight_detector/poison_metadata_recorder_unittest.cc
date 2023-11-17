@@ -34,9 +34,10 @@ TEST_F(PoisonMetadataRecorderTest, PoisonAlloc) {
 }
 
 TEST_F(PoisonMetadataRecorderTest, PoisonAllocUnaligned) {
-  // Allocations that aren't 64-bit aligned.
-  uint8_t alloc1[7];
-  uint8_t alloc2[9];
+  // Allocations that aren't 64-bit aligned in size. The addresses themselves
+  // are still expected to be aligned as if they were heap allocations.
+  alignas(4) uint8_t alloc1[7];
+  alignas(8) uint8_t alloc2[9];
 
   recorder_.RecordDeallocation(&alloc1, sizeof(alloc1));
   recorder_.RecordDeallocation(&alloc2, sizeof(alloc2));

@@ -22,7 +22,7 @@ enum class LightweightDetectorMode : bool {
 class LightweightDetectorState {
  public:
   using MetadataId = uint32_t;
-  using PseudoAddresss = uint64_t;
+  using PseudoAddress = uint64_t;
 
   // Maximum number of metadata slots used by Lightweight UAF Detector.
   static constexpr size_t kMaxMetadata = 32768;
@@ -67,13 +67,13 @@ class LightweightDetectorState {
     MetadataId id = std::numeric_limits<MetadataId>::max();
   };
 
-  static PseudoAddresss EncodeMetadataId(MetadataId metadata_id) {
+  static PseudoAddress EncodeMetadataId(MetadataId metadata_id) {
     return kMetadataIdMarker |
-           (static_cast<PseudoAddresss>(metadata_id) << kMetadataIdShift) |
+           (static_cast<PseudoAddress>(metadata_id) << kMetadataIdShift) |
            kMetadataIdOffset;
   }
 
-  static absl::optional<MetadataId> ExtractMetadataId(PseudoAddresss address) {
+  static absl::optional<MetadataId> ExtractMetadataId(PseudoAddress address) {
     if ((address & kMetadataIdMarkerMask) != kMetadataIdMarker) {
       return absl::nullopt;
     }

@@ -79,11 +79,18 @@ void PoisonMetadataRecorder::RecordDeallocation(void* ptr, size_t size) {
   slot_metadata.dealloc.tid = AllocationInfo::GetCurrentTid();
   slot_metadata.dealloc.trace_collected = true;
 
-  LightweightDetectorState::PseudoAddresss encoded_metadata_id =
+  LightweightDetectorState::PseudoAddress encoded_metadata_id =
       LightweightDetectorState::EncodeMetadataId(metadata_id);
   size_t count = size / sizeof(encoded_metadata_id);
-  std::fill_n(static_cast<LightweightDetectorState::PseudoAddresss*>(ptr),
-              count, encoded_metadata_id);
+  if (count > 0) {
+    // This cast is safe (but only assuming -fno-strict-aliasing) because `ptr`
+    // is expected to be the beginning of a heap allocation, and heap
+    // allocations are required to be aligned. However, this only applies if the
+    // allocation was larger than a `PseudoAddress`, so we must guard this with
+    // a length check.
+    std::fill_n(static_cast<LightweightDetectorState::PseudoAddress*>(ptr),
+                count, encoded_metadata_id);
+  }
 
   size_t remainder_offset = count * sizeof(encoded_metadata_id);
   size_t remainder_size = size - remainder_offset;
