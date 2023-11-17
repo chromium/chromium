@@ -965,7 +965,7 @@
       'mac13-arm64-wpt-content-shell-fyi-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot_reclient',
-      'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_x64_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
     },
@@ -1838,6 +1838,10 @@
 
     'gpu_fyi_tests_release_trybot_tsan_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'tsan', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_release_trybot_x64_reclient': [
+      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'x64', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_x86_reclient': [
