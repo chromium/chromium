@@ -297,8 +297,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Expects the sync promo view to be configured
   void ExpectSyncPromoConfiguration() {
-    OCMExpect(
-        [signin_promo_view_ setMode:SigninPromoViewModeSyncWithPrimaryAccount]);
+    OCMExpect([signin_promo_view_
+        setMode:SigninPromoViewModeSignedInWithPrimaryAccount]);
     OCMExpect([signin_promo_view_
         setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
           image_view_profile_image_ = value;

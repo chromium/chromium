@@ -481,7 +481,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     case SigninPromoViewModeSigninWithAccount:
       [self activateSigninWithAccountMode];
       return;
-    case SigninPromoViewModeSyncWithPrimaryAccount:
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
       [self activateSyncWithPrimaryAccountMode];
       return;
   }
@@ -771,7 +771,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
 // Updates promo for sync with account mode.
 - (void)activateSyncWithPrimaryAccountMode {
-  DCHECK_EQ(_mode, SigninPromoViewModeSyncWithPrimaryAccount);
+  DCHECK_EQ(_mode, SigninPromoViewModeSignedInWithPrimaryAccount);
   self.secondaryButton.hidden = YES;
 }
 
@@ -798,7 +798,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       [self.delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
     case SigninPromoViewModeSigninWithAccount:
-    case SigninPromoViewModeSyncWithPrimaryAccount:
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
       [self.delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
       break;
   }

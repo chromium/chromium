@@ -272,7 +272,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 
   switch (mode) {
     case SigninPromoViewModeNoAccounts:
-    case SigninPromoViewModeSyncWithPrimaryAccount:
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
       [[EarlGrey
           selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
                                               grey_sufficientlyVisible(), nil)]

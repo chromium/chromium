@@ -521,9 +521,9 @@ GURL TestPageURL() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSyncWithPrimaryAccount
-                           closeButton:NO];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount
+                                         closeButton:NO];
 
   // Accept the promo.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]

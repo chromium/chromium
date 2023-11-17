@@ -485,7 +485,7 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSyncWithPrimaryAccount];
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
 }
 
 // Tests that no sync promo is shown if the user is signed in only and

@@ -106,8 +106,8 @@ using l10n_util::GetNSStringF;
       DCHECK(!name);
       DCHECK(!self.userImage);
       NSString* signInString =
-          self.primaryButtonTitleNoAccountsModeOverride
-              ? self.primaryButtonTitleNoAccountsModeOverride
+          self.primaryButtonTitleOverride
+              ? self.primaryButtonTitleOverride
               : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       [signinPromoView configurePrimaryButtonWithTitle:signInString];
       break;
@@ -123,7 +123,7 @@ using l10n_util::GetNSStringF;
       [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }
-    case SigninPromoViewModeSyncWithPrimaryAccount: {
+    case SigninPromoViewModeSignedInWithPrimaryAccount: {
       [signinPromoView
           configurePrimaryButtonWithTitle:GetNSString(
                                               IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)];
@@ -152,7 +152,7 @@ using l10n_util::GetNSStringF;
           [self assignNonProfileImageToSigninPromoView:signinPromoView];
           break;
         case SigninPromoViewModeSigninWithAccount:
-        case SigninPromoViewModeSyncWithPrimaryAccount:
+        case SigninPromoViewModeSignedInWithPrimaryAccount:
           [self assignProfileImageToSigninPromoView:signinPromoView];
           break;
       }

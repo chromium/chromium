@@ -709,7 +709,8 @@ id<SystemIdentity> GetDisplayedIdentity(
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);
     return [[SigninPromoViewConfigurator alloc]
-        initWithSigninPromoViewMode:SigninPromoViewModeSyncWithPrimaryAccount
+        initWithSigninPromoViewMode:
+            SigninPromoViewModeSignedInWithPrimaryAccount
                           userEmail:self.displayedIdentity.userEmail
                       userGivenName:self.displayedIdentity.userGivenName
                           userImage:self.displayedIdentityAvatar
@@ -738,7 +739,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       break;
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
-      configurator.primaryButtonTitleNoAccountsModeOverride =
+      configurator.primaryButtonTitleOverride =
           l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
       break;
   }
