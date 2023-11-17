@@ -2064,6 +2064,76 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       /*can_be_served*/ true, 1);
 }
 
+// This is similar to PrefetchFallbackFromError but search prefetch is activated
+// after receiving a response. This is a regression test for
+// https://crbug.com/1501427.
+IN_PROC_BROWSER_TEST_P(
+    SearchPrefetchServiceEnabledBrowserTest,
+    PrefetchFallbackFromError_ReceiveResponseBeforeActivation) {
+  base::HistogramTester histogram_tester;
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferHeader);
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxErrorQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->controller()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+  GURL canonical_search_url = GetCanonicalSearchURL(
+      autocomplete_controller->result().match_at(0).destination_url);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kCanBeServed);
+
+  omnibox->model()->OpenSelection();
+
+  // Dispatch the response which is an invalid one. Fallback caused by this
+  // response should be deferred until search prefetch is activated.
+  DispatchDelayedResponseTask();
+
+  // Then dispatch the response to the fallback request.
+  DispatchDelayedResponseTask();
+  content::WaitForLoadStop(GetWebContents());
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("other_query"), GetWebContents()));
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
+      SearchPrefetchEligibilityReason::kErrorBackoff, 1);
+
+  // It would receives two responses. The first one is for prefetch
+  // navigation, which is not servable, and the other is for the fallback
+  // navigation and it is servable. The first response comes before search
+  // prefetch is activated, so the metric shouldn't be recorded.'
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ReceivedServableResponse2.Initial."
+      "SuggestionPrefetch",
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SearchPrefetch.ReceivedServableResponse2.Fallback."
+      "SuggestionPrefetch",
+      /*can_be_served*/ true, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchSecureSecurityState) {
   set_service_deferral_type(
