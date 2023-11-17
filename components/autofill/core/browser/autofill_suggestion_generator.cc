@@ -85,6 +85,27 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
   return {};
 }
 
+// Returns the formatted phone number to be used in the granular filling
+// suggestions list. `should_use_national_format` is used to define how the
+// phone number should be formatted.
+std::u16string GetFormattedPhoneNumberForGranularFillingSuggestion(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    bool should_use_national_format) {
+  const std::string phone_home_whole_number =
+      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
+  const std::string address_home_country =
+      base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+
+  const std::string formatted_phone_number =
+      should_use_national_format
+          ? i18n::FormatPhoneNationallyForDisplay(phone_home_whole_number,
+                                                  address_home_country)
+          : i18n::FormatPhoneForDisplay(phone_home_whole_number,
+                                        address_home_country);
+  return base::UTF8ToUTF16(formatted_phone_number);
+}
+
 int GetObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, the obfuscation length is 2.
@@ -182,17 +203,22 @@ bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
                                 std::vector<Suggestion>& suggestions) {
   bool any_suggestion_added = false;
   for (auto field_type : field_types) {
-    // This is not how suggestion main text is built in general.
-    // (See AutofillSuggestionGenerator::GetProfileSuggestionMainText)
-    // However, since the only special case is ADDRESS_HOME_STREET_ADDRESS
-    // we can safely replace the function call by the line below, since field
-    // by field suggestions are not generated for that type.
-    CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
-    std::u16string suggestion_main_text =
-        profile.GetInfo(field_type, app_locale);
-    if (!suggestion_main_text.empty()) {
-      suggestions.emplace_back(suggestion_main_text,
-                               PopupItemId::kFieldByFieldFilling);
+    std::u16string main_text;
+    if (field_type == PHONE_HOME_WHOLE_NUMBER) {
+      main_text = GetFormattedPhoneNumberForGranularFillingSuggestion(
+          profile, app_locale,
+          /*should_use_national_format=*/false);
+    } else {
+      // This is not how suggestion main text is built in general.
+      // (See `AutofillSuggestionGenerator::GetProfileSuggestionMainText()`)
+      // However, since the only special case is ADDRESS_HOME_STREET_ADDRESS
+      // we can safely replace the function call by the line below, since field
+      // by field suggestions are not generated for that type.
+      CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
+      main_text = profile.GetInfo(field_type, app_locale);
+    }
+    if (!main_text.empty()) {
+      suggestions.emplace_back(main_text, PopupItemId::kFieldByFieldFilling);
       suggestions.back().field_by_field_filling_type_used =
           std::optional(field_type);
       any_suggestion_added = true;
@@ -326,63 +352,48 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
                                 Suggestion& suggestion) {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfServerFieldType(trigger_field_type);
+
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
-    const bool use_local_phone_number =
-        trigger_field_type_group == FieldTypeGroup::kPhone &&
-        trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
-        trigger_field_type != PHONE_HOME_COUNTRY_CODE;
-    std::string suggestion_main_text;
-    if (use_local_phone_number) {
-      suggestion_main_text = i18n::FormatPhoneNationallyForDisplay(
-          base::UTF16ToUTF8(
-              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
-          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
-    } else {
-      suggestion_main_text = i18n::FormatPhoneForDisplay(
-          base::UTF16ToUTF8(
-              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
-          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
-    }
-    Suggestion phone_number_suggestion(base::UTF8ToUTF16(suggestion_main_text));
     const bool is_phone_field =
         trigger_field_type_group == FieldTypeGroup::kPhone;
-    phone_number_suggestion.popup_item_id =
-        is_phone_field ? PopupItemId::kFillFullPhoneNumber
-                       : PopupItemId::kFieldByFieldFilling;
-    if (phone_number_suggestion.popup_item_id ==
-        PopupItemId::kFieldByFieldFilling) {
-      phone_number_suggestion.field_by_field_filling_type_used =
-          std::optional(PHONE_HOME_WHOLE_NUMBER);
-    } else {
+    if (is_phone_field) {
+      const bool use_national_format_phone_number =
+          trigger_field_type_group == FieldTypeGroup::kPhone &&
+          trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
+          trigger_field_type != PHONE_HOME_COUNTRY_CODE;
+      Suggestion phone_number_suggestion(
+          GetFormattedPhoneNumberForGranularFillingSuggestion(
+              profile, app_locale, use_national_format_phone_number),
+          PopupItemId::kFillFullPhoneNumber);
       // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
       // therefore only set the backend id in the group filling case.
       phone_number_suggestion.payload = Suggestion::Guid(profile.guid());
+      suggestion.children.push_back(std::move(phone_number_suggestion));
+      phone_number_suggestion_added = true;
+    } else {
+      phone_number_suggestion_added = AddFieldByFieldSuggestions(
+          {PHONE_HOME_WHOLE_NUMBER}, profile, app_locale, suggestion.children);
     }
-    suggestion.children.push_back(std::move(phone_number_suggestion));
-    phone_number_suggestion_added = true;
   }
 
   bool email_address_suggestion_added = false;
   if (profile.HasInfo(EMAIL_ADDRESS)) {
-    Suggestion email_address_suggestion(
-        profile.GetInfo(EMAIL_ADDRESS, app_locale));
     const bool is_email_field =
         trigger_field_type_group == FieldTypeGroup::kEmail;
-    email_address_suggestion.popup_item_id =
-        is_email_field ? PopupItemId::kFillFullEmail
-                       : PopupItemId::kFieldByFieldFilling;
-    if (email_address_suggestion.popup_item_id ==
-        PopupItemId::kFieldByFieldFilling) {
-      email_address_suggestion.field_by_field_filling_type_used =
-          std::optional(EMAIL_ADDRESS);
-    } else {
+    if (is_email_field) {
+      Suggestion email_address_suggestion(
+          profile.GetInfo(EMAIL_ADDRESS, app_locale),
+          PopupItemId::kFillFullEmail);
       // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
       // therefore only set the backend id in the group filling case.
       email_address_suggestion.payload = Suggestion::Guid(profile.guid());
+      suggestion.children.push_back(std::move(email_address_suggestion));
+      email_address_suggestion_added = true;
+    } else {
+      email_address_suggestion_added = AddFieldByFieldSuggestions(
+          {EMAIL_ADDRESS}, profile, app_locale, suggestion.children);
     }
-    suggestion.children.push_back(std::move(email_address_suggestion));
-    email_address_suggestion_added = true;
   }
 
   if (email_address_suggestion_added || phone_number_suggestion_added) {
