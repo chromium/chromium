@@ -27,8 +27,7 @@ TransceiverStateSurfacer::TransceiverStateSurfacer(
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner)
     : main_task_runner_(std::move(main_task_runner)),
       signaling_task_runner_(std::move(signaling_task_runner)),
-      is_initialized_(false),
-      states_obtained_(false) {
+      is_initialized_(false) {
   DCHECK(main_task_runner_);
   DCHECK(signaling_task_runner_);
 }
@@ -38,7 +37,6 @@ TransceiverStateSurfacer::TransceiverStateSurfacer(
     : main_task_runner_(other.main_task_runner_),
       signaling_task_runner_(other.signaling_task_runner_),
       is_initialized_(other.is_initialized_),
-      states_obtained_(other.states_obtained_),
       sctp_transport_snapshot_(other.sctp_transport_snapshot_),
       transceiver_states_(std::move(other.transceiver_states_)) {
   // Explicitly null |other|'s task runners for use in destructor.
@@ -50,19 +48,6 @@ TransceiverStateSurfacer::~TransceiverStateSurfacer() {
   // It's OK to not be on the main thread if this object has been moved, in
   // which case |main_task_runner_| is null.
   DCHECK(!main_task_runner_ || main_task_runner_->BelongsToCurrentThread());
-}
-
-TransceiverStateSurfacer& TransceiverStateSurfacer::operator=(
-    TransceiverStateSurfacer&& other) {
-  main_task_runner_ = other.main_task_runner_;
-  signaling_task_runner_ = other.signaling_task_runner_;
-  states_obtained_ = other.states_obtained_;
-  sctp_transport_snapshot_ = other.sctp_transport_snapshot_;
-  transceiver_states_ = std::move(other.transceiver_states_);
-  // Explicitly null |other|'s task runners for use in destructor.
-  other.main_task_runner_ = nullptr;
-  other.signaling_task_runner_ = nullptr;
-  return *this;
 }
 
 void TransceiverStateSurfacer::Initialize(
@@ -150,7 +135,6 @@ TransceiverStateSurfacer::ObtainStates() {
   DCHECK(is_initialized_);
   for (auto& transceiver_state : transceiver_states_)
     transceiver_state.Initialize();
-  states_obtained_ = true;
   return std::move(transceiver_states_);
 }
 
