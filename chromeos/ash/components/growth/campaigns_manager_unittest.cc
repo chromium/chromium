@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -139,7 +140,9 @@ class CampaignsManagerTest : public testing::Test {
         .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
             temp_dir_.GetPath()));
 
-    campaigns_manager_->LoadCampaigns();
+    base::test::TestFuture<void> load_completed_waiter;
+    campaigns_manager_->LoadCampaigns(load_completed_waiter.GetCallback());
+    ASSERT_TRUE(load_completed_waiter.Wait());
     observer.Wait();
 
     ASSERT_TRUE(observer.load_completed());
@@ -585,7 +588,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
           absl::nullopt));
 
-  campaigns_manager_->LoadCampaigns();
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
 
   ASSERT_TRUE(observer.load_completed());
@@ -609,7 +612,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
           temp_dir_.GetPath()));
 
-  campaigns_manager_->LoadCampaigns();
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
 
   ASSERT_TRUE(observer.load_completed());
@@ -624,22 +627,8 @@ TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
 
 TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
   base::HistogramTester histogram_tester;
-  TestCampaignsManagerObserver observer;
-  campaigns_manager_->AddObserver(&observer);
 
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  base::FilePath campaigns_file(temp_dir_.GetPath().Append(kCampaignsFileName));
-
-  base::WriteFile(campaigns_file, "abc");
-
-  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
-      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
-          temp_dir_.GetPath()));
-
-  campaigns_manager_->LoadCampaigns();
-  observer.Wait();
-
-  ASSERT_TRUE(observer.load_completed());
+  LoadComponentAndVerifyLoadComplete("abc");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -650,22 +639,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsEmptyFile) {
-  TestCampaignsManagerObserver observer;
-  campaigns_manager_->AddObserver(&observer);
-
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  base::FilePath campaigns_file(temp_dir_.GetPath().Append(kCampaignsFileName));
-
-  base::WriteFile(campaigns_file, "");
-
-  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
-      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
-          campaigns_file));
-
-  campaigns_manager_->LoadCampaigns();
-  observer.Wait();
-
-  ASSERT_TRUE(observer.load_completed());
+  LoadComponentAndVerifyLoadComplete("");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

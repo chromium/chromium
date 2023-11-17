@@ -75,12 +75,12 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
   matcher_.SetPrefs(prefs);
 }
 
-void CampaignsManager::LoadCampaigns() {
+void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback) {
   // TODO(b/299305911): Add metrics to track campaigns load latency.
   // Load campaigns component via component updater.
   client_->LoadCampaignsComponent(
       base::BindOnce(&CampaignsManager::OnCampaignsComponentLoaded,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(load_callback)));
 }
 
 const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
@@ -90,22 +90,24 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
+    base::OnceClosure load_callback,
     const absl::optional<const base::FilePath>& path) {
   if (!path.has_value()) {
     LOG(ERROR) << "Failed to load campaign component.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kCampaignsComponentLoadFail);
-    OnCampaignsLoaded(/*campaigns=*/absl::nullopt);
+    OnCampaignsLoaded(std::move(load_callback), /*campaigns=*/absl::nullopt);
     return;
   }
   // Read the campaigns file from component mounted path.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadCampaignsFile, *path),
       base::BindOnce(&CampaignsManager::OnCampaignsLoaded,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(load_callback)));
 }
 
 void CampaignsManager::OnCampaignsLoaded(
+    base::OnceClosure load_callback,
     absl::optional<base::Value::Dict> campaigns_dict) {
   // Load campaigns into campaigns store.
   if (campaigns_dict.has_value()) {
@@ -120,6 +122,7 @@ void CampaignsManager::OnCampaignsLoaded(
                         GetReactiveCampaigns(&campaigns_store_));
   campaigns_loaded_ = true;
 
+  std::move(load_callback).Run();
   NotifyCampaignsLoaded();
 }
 
