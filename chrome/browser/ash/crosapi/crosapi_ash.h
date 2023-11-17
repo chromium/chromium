@@ -100,6 +100,7 @@ class NetworkChangeAsh;
 class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
+class PasskeyAuthenticator;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
@@ -310,6 +311,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
+  void BindPasskeyAuthenticator(
+      mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPaymentAppInstance(

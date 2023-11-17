@@ -110,6 +110,8 @@
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
+#include "chrome/browser/ash/passkeys/passkey_authenticator_service_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
@@ -146,6 +148,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
+#include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -782,6 +785,17 @@ void CrosapiAsh::BindNetworkingPrivate(
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindPasskeyAuthenticator(
+    mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) {
+  auto* passkey_authenticator =
+      ash::PasskeyAuthenticatorServiceFactoryAsh::GetForProfile(
+          GetAshProfile());
+  if (!passkey_authenticator) {
+    return;
+  }
+  passkey_authenticator->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPaymentAppInstance(

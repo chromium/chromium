@@ -83,6 +83,7 @@ mojom("mojom") {
     "notification.mojom",
     "nullable_primitives.mojom",
     "parent_access.mojom",
+    "passkeys.mojom",
     "policy_namespace.mojom",
     "policy_service.mojom",
     "power.mojom",

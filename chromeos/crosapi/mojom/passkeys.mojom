@@ -1,0 +1,73 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/account_manager.mojom";
+
+[Stable, Extensible]
+// Represents a WebAuthn UserVerificationRequirement. For semantics, compare
+// https://www.w3.org/TR/webauthn-3/#enum-userVerificationRequirement.
+enum UserVerificationRequirement {
+  kDiscouraged,
+  [Default] kPreferred,
+  kRequired,
+};
+
+[Stable]
+// A request to generate a WebAuthn assertion for a passkey with the given RP
+// ID and credential ID.
+struct PasskeyAssertionRequest {
+  string rp_id;
+  array<uint8> credential_id;
+  array<uint8> challenge;
+  array<uint8> client_data_hash;
+  UserVerificationRequirement user_verification;
+};
+
+[Stable, Extensible]
+// Response status for a `PasskeyAssertionRequest`.
+enum PasskeyAssertionError {
+  // Catch-all for all unexpected error conditions.
+  [Default] kInternalError,
+  // The request originates from a profile whose user is not the signed-in user
+  // for the device.
+  kNonPrimaryAccount,
+  // Another request is in progress.
+  kPendingRequest,
+  // No passkey with the given credential ID exists.
+  kCredentialNotFound,
+  // Retrieving the security domain secret for decrypting passkeys failed.
+  kSecurityDomainSecretUnavailable,
+};
+
+[Stable]
+// The response for a successful PasskeyAssertionRequest. Contains a WebAuthn
+// signature for the chosen credential.
+struct PasskeyAssertionResponse {
+  array<uint8> signature;
+};
+
+[Stable]
+// The result of a PasskeyAssertionRequest.
+union PasskeyAssertionResult {
+  // Set on success.
+  PasskeyAssertionResponse response;
+
+  // Set on error.
+  PasskeyAssertionError error;
+};
+
+[Stable, Uuid="43bd6bb3-ca9e-4625-b05a-6353ab22847a"]
+// Defines an API for accessing passkeys (implemented in ash-chrome).
+//
+// Methods on this service will trigger OS-level UI, for example to verify the
+// user with an authentication prompt. Hence, methods may return an error if
+// another request is already in progress.
+interface PasskeyAuthenticator {
+  // Generates a WebAuthn assertion signature for a given passkey. The returned
+  // `assertion` is non-null iff `status` equals `kOk`.
+  Assert@0(AccountKey account,
+           PasskeyAssertionRequest request) => (PasskeyAssertionResult result);
+};
