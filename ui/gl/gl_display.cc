@@ -253,6 +253,11 @@ EGLDisplay GetPlatformANGLEDisplay(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kANGLEDebugLayer)) {
+    display_attribs.push_back(EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE);
+    display_attribs.push_back(EGL_TRUE);
+  }
+
   display_attribs.push_back(EGL_NONE);
 
   // This is an EGL 1.5 function that we know ANGLE supports. It's used to pass
