@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("image_fetch") {
+  sources = [
+    "image_fetch_java_script_feature.h",
+    "image_fetch_tab_helper.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/web/image_fetch" ]
+}

@@ -113,9 +113,9 @@ source_set("main") {
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tabs:constants",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
-    "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web:tab_helper_delegates",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:tab_helper_delegates",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common/ui/colors",
     "//net",
   ]

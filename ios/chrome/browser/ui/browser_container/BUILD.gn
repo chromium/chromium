@@ -119,7 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/ui/partial_translate",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/partial_translate",
     "//ios/web/public/test",
