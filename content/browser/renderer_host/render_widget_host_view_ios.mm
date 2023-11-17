@@ -475,6 +475,12 @@ const viz::LocalSurfaceId& RenderWidgetHostViewIOS::GetLocalSurfaceId() const {
   return browser_compositor_->GetRendererLocalSurfaceId();
 }
 
+void RenderWidgetHostViewIOS::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  browser_compositor_->GetDelegatedFrameHost()->SetIsFrameSinkIdOwner(
+      is_frame_sink_id_owner());
+}
+
 const viz::FrameSinkId& RenderWidgetHostViewIOS::GetFrameSinkId() const {
   return browser_compositor_->GetDelegatedFrameHost()->frame_sink_id();
 }
