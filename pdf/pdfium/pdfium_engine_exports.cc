@@ -19,6 +19,7 @@
 #include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_structtree.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -450,6 +451,18 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
     return base::Value();
 
   return RecursiveGetStructTree(struct_root_elem);
+}
+
+std::optional<bool> PDFiumEngineExports::PDFDocHasOutline(
+    base::span<const uint8_t> pdf_buffer) {
+  ScopedUnsupportedFeature scoped_unsupported_feature(
+      ScopedUnsupportedFeature::kNoEngine);
+  ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
+  if (!doc) {
+    return std::nullopt;
+  }
+
+  return FPDFBookmark_GetFirstChild(doc.get(), nullptr);
 }
 
 std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(

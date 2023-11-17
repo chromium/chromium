@@ -24,6 +24,9 @@ const char kNoPDFHeaderFooter[] = "no-pdf-header-footer";
 // Do not emit tags when printing PDFs.
 const char kDisablePDFTagging[] = "disable-pdf-tagging";
 
+// Embed the document outline into printed PDFs.
+const char kGeneratePDFDocumentOutline[] = "generate-pdf-document-outline";
+
 // Save a screenshot of the loaded page.
 const char kScreenshot[] = "screenshot";
 

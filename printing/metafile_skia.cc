@@ -203,7 +203,8 @@ bool MetafileSkia::FinishDocument() {
   cc::PlaybackParams::CustomDataRasterCallback custom_callback;
   switch (data_->type) {
     case mojom::SkiaDocumentType::kPDF:
-      doc = MakePdfDocument(printing::GetAgent(), accessibility_tree_, &stream);
+      doc = MakePdfDocument(printing::GetAgent(), accessibility_tree_,
+                            generate_document_outline_, &stream);
       break;
     case mojom::SkiaDocumentType::kMSKP:
       SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,

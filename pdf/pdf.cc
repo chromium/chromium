@@ -111,6 +111,12 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFStructTreeForPage(pdf_buffer, page_index);
 }
 
+std::optional<bool> PDFDocHasOutline(base::span<const uint8_t> pdf_buffer) {
+  ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
+  PDFEngineExports* engine_exports = PDFEngineExports::Get();
+  return engine_exports->PDFDocHasOutline(pdf_buffer);
+}
+
 std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {

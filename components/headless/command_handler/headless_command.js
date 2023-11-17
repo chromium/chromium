@@ -231,10 +231,12 @@ async function dumpDOM(dp) {
 async function printToPDF(dp, params) {
   const displayHeaderFooter = !params.noHeaderFooter;
   const generateTaggedPDF = !params.disablePDFTagging;
+  const generateDocumentOutline = params.generateDocumentOutline;
 
   const printToPDFParams = {
     displayHeaderFooter,
     generateTaggedPDF,
+    generateDocumentOutline,
     printBackground: true,
     preferCSSPageSize: true,
   };

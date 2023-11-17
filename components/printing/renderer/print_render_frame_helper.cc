@@ -2267,6 +2267,10 @@ bool PrintRenderFrameHelper::PrintPagesNative(
         print_params.printed_doc_type == mojom::SkiaDocumentType::kMSKP
             ? &accessibility_tree
             : &metafile.accessibility_tree());
+    metafile.set_generate_document_outline(
+        print_params.generate_document_outline
+            ? GeneratePdfDocumentOutline::kFromHeaders
+            : GeneratePdfDocumentOutline::kNone);
   }
 
   mojom::DidPrintDocumentParamsPtr page_params =

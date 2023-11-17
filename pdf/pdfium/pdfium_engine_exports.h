@@ -53,6 +53,8 @@ class PDFiumEngineExports : public PDFEngineExports {
       base::span<const uint8_t> pdf_buffer) override;
   base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                       int page_index) override;
+  std::optional<bool> PDFDocHasOutline(
+      base::span<const uint8_t> pdf_buffer) override;
   std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
       int page_index) override;

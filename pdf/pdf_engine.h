@@ -548,7 +548,7 @@ class PDFEngineExports {
                              int* page_count,
                              float* max_page_width) = 0;
 
-  // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
+  // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
   // Returns true if it's a tagged (accessible) PDF, false if it's a valid
   // PDF but untagged, and nullopt if the PDF can't be parsed.
   virtual std::optional<bool> IsPDFDocTagged(
@@ -559,6 +559,11 @@ class PDFEngineExports {
   virtual base::Value GetPDFStructTreeForPage(
       base::span<const uint8_t> pdf_buffer,
       int page_index) = 0;
+  // Whether the PDF has a Document Outline (see ISO 32000-1:2008 12.3.3
+  // "Document Outline"). Returns true if the PDF has an outline, false if it's
+  // a valid PDF without an outline, and nullopt if the PDF can't be parsed.
+  virtual std::optional<bool> PDFDocHasOutline(
+      base::span<const uint8_t> pdf_buffer) = 0;
 
   // See the definition of GetPDFPageSizeByIndex in pdf.cc for details.
   virtual std::optional<gfx::SizeF> GetPDFPageSizeByIndex(

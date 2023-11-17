@@ -36,9 +36,16 @@ using PictureSerializationContext = ContentToProxyTokenMap;
 // Stores the set of typeface unique ids used by the picture frame content.
 using TypefaceSerializationContext = ContentProxySet;
 
-sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
-                                  const ui::AXTreeUpdate& accessibility_tree,
-                                  SkWStream* stream);
+enum class GeneratePdfDocumentOutline : bool {
+  kNone = false,
+  kFromHeaders = true,
+};
+
+sk_sp<SkDocument> MakePdfDocument(
+    base::StringPiece creator,
+    const ui::AXTreeUpdate& accessibility_tree,
+    GeneratePdfDocumentOutline generate_document_outline,
+    SkWStream* stream);
 
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
                                  TypefaceSerializationContext* typeface_ctx);

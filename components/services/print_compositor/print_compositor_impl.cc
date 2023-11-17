@@ -193,6 +193,7 @@ void PrintCompositorImpl::CompleteDocumentToPdf(
 
   if (!docinfo_->doc) {
     docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+                                    GeneratePdfDocumentOutline::kNone,
                                     &docinfo_->compositor_stream);
   }
 
@@ -359,7 +360,8 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
   sk_sp<SkDocument> doc = MakePdfDocument(
-      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_, &wstream);
+      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_,
+      GeneratePdfDocumentOutline::kNone, &wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositeToPdf draw page");
@@ -370,6 +372,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
       // Create document PDF if needed.
       if (!docinfo_->doc) {
         docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+                                        GeneratePdfDocumentOutline::kNone,
                                         &docinfo_->compositor_stream);
       }
 

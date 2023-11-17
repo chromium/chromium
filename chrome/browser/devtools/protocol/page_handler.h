@@ -70,6 +70,7 @@ class PageHandler : public protocol::Page::Backend {
                   protocol::Maybe<bool> prefer_css_page_size,
                   protocol::Maybe<protocol::String> transfer_mode,
                   protocol::Maybe<bool> generate_tagged_pdf,
+                  protocol::Maybe<bool> generate_document_outline,
                   std::unique_ptr<PrintToPDFCallback> callback) override;
 
   void GetAppId(std::unique_ptr<GetAppIdCallback> callback) override;

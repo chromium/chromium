@@ -141,6 +141,10 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
       params.Set("disablePDFTagging", true);
     }
 
+    if (command_line->HasSwitch(switches::kGeneratePDFDocumentOutline)) {
+      params.Set("generateDocumentOutline", true);
+    }
+
     commands->Set("printToPDF", std::move(params));
   }
 

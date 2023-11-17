@@ -729,4 +729,32 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessGenerateTaggedPDFBrowserTest,
                          ::testing::Bool());
 
+class HeadlessGenerateDocumentOutlinePDFBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  const char* GetUrl() override { return "/structured_doc.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("generateDocumentOutline", generate_document_outline());
+    return params;
+  }
+
+  bool generate_document_outline() { return GetParam(); }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(1));
+
+    std::optional<bool> has_outline = chrome_pdf::PDFDocHasOutline(pdf_span);
+    EXPECT_THAT(has_outline, testing::Optional(generate_document_outline()));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessGenerateDocumentOutlinePDFBrowserTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessGenerateDocumentOutlinePDFBrowserTest,
+                         ::testing::Bool());
+
 }  // namespace headless

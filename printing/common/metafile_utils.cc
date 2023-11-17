@@ -218,9 +218,11 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
 
 namespace printing {
 
-sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
-                                  const ui::AXTreeUpdate& accessibility_tree,
-                                  SkWStream* stream) {
+sk_sp<SkDocument> MakePdfDocument(
+    base::StringPiece creator,
+    const ui::AXTreeUpdate& accessibility_tree,
+    GeneratePdfDocumentOutline generate_document_outline,
+    SkWStream* stream) {
   SkPDF::Metadata metadata;
   SkPDF::DateTime now = TimeToSkTime(base::Time::Now());
   metadata.fCreation = now;
@@ -235,8 +237,13 @@ sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
   SkPDF::StructureElementNode tag_root = {};
   if (!accessibility_tree.nodes.empty()) {
     ui::AXTree tree(accessibility_tree);
-    if (RecursiveBuildStructureTree(tree.root(), &tag_root))
+    if (RecursiveBuildStructureTree(tree.root(), &tag_root)) {
       metadata.fStructureElementTreeRoot = &tag_root;
+      metadata.fOutline =
+          generate_document_outline == GeneratePdfDocumentOutline::kFromHeaders
+              ? SkPDF::Metadata::Outline::StructureElementHeaders
+              : SkPDF::Metadata::Outline::None;
+    }
   }
 
   return SkPDF::MakeDocument(stream, metadata);
