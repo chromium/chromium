@@ -16,6 +16,8 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/metrics/metrics_service.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
@@ -82,6 +84,30 @@ std::unique_ptr<ClientFilterableState> GetBasicClientFilterableState() {
       GetFieldTrialCreator(&prefs, &client, /*safe_seed_details=*/std::nullopt);
 
   return creator.GetClientFilterableStateForVersion(version_info::GetVersion());
+}
+
+// Largely copied from
+// content/shell/browser/shell_content_browser_client.cc's CreateLocalState.
+std::unique_ptr<PrefService> CreateStateWriter(
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const base::FilePath& local_state_path) {
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+
+  metrics::MetricsService::RegisterPrefs(pref_registry.get());
+  ::variations::VariationsService::RegisterPrefs(pref_registry.get());
+
+  PrefServiceFactory pref_service_factory;
+  auto local_state_pref_store = base::MakeRefCounted<JsonPrefStore>(
+      local_state_path, /*pref_filter=*/nullptr, task_runner);
+  auto error = local_state_pref_store->ReadPrefs();
+  if (error != JsonPrefStore::PREF_READ_ERROR_NONE) {
+    LOG(ERROR) << "failed to read prefs " << error;
+    return nullptr;
+  }
+
+  pref_service_factory.set_user_prefs(local_state_pref_store);
+
+  return pref_service_factory.Create(pref_registry);
 }
 
 }  // namespace
@@ -273,11 +299,11 @@ class VariationsCrosEvaluateSeedMainTest : public ::testing::Test {
     base::FilePath path = local_state_.path();
     ASSERT_TRUE(base::WriteFile(path, "{}"));
 
-    local_state_prefs_ = CreateLocalState(
-        task_environment_.GetMainThreadTaskRunner(), path, /*read_only=*/false);
+    local_state_writer_ =
+        CreateStateWriter(task_environment_.GetMainThreadTaskRunner(), path);
     // By default, write a common seed that doesn't have our special experiments
     // (e.g. CrOSEarlyBootTestFeature) in it.
-    WriteSeedData(local_state_prefs_.get(), ::variations::kTestSeedData,
+    WriteSeedData(local_state_writer_.get(), ::variations::kTestSeedData,
                   kRegularSeedPrefKeys);
     // Ensure that the write persists and the executor finishes executing it.
     task_environment_.RunUntilIdle();
@@ -307,14 +333,13 @@ class VariationsCrosEvaluateSeedMainTest : public ::testing::Test {
   base::ScopedTempFile local_state_;
   base::ScopedTempFile out_file_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<PrefService> local_state_prefs_;
+  std::unique_ptr<PrefService> local_state_writer_;
 };
 
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag) {
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream));
 }
 
 // Verify that EvaluateSeedMain respects kEnableFeatures.
@@ -324,8 +349,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_EnableFeatures) {
 
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream));
 
   // Check that the feature was correctly serialized.
   std::string serialized_proto;
@@ -359,8 +383,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest,
 
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream));
 
   // Check that the feature was correctly serialized.
   std::string serialized_proto;
@@ -382,14 +405,13 @@ TEST_F(VariationsCrosEvaluateSeedMainTest,
 // Test that evaluating a seed normally works (i.e. no safe mode, no override
 // flags, just reading the seed from local state).
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_NormalSeed) {
-  WriteSeedData(local_state_prefs_.get(), kEarlyBootTestData,
+  WriteSeedData(local_state_writer_.get(), kEarlyBootTestData,
                 kRegularSeedPrefKeys);
   task_environment_.RunUntilIdle();
 
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(0, EvaluateSeedMain(nullptr, out_stream,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream));
 
   // Check that the feature was correctly serialized.
   std::string serialized_proto;
@@ -422,8 +444,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
 
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(0, EvaluateSeedMain(in_stream, out_stream,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(in_stream, out_stream));
 
   // Check that the feature was correctly serialized.
   std::string serialized_proto;
@@ -442,12 +463,35 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
   EXPECT_EQ(feature.params(0).value(), "quux");
 }
 
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_BadJson) {
+  ASSERT_TRUE(base::WriteFile(local_state_.path(), "{"));
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(EXIT_FAILURE, EvaluateSeedMain(nullptr, out_stream));
+}
+
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_JsonNotDict) {
+  ASSERT_TRUE(base::WriteFile(local_state_.path(), "[]"));
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(EXIT_FAILURE, EvaluateSeedMain(nullptr, out_stream));
+}
+
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_EmptyLocalState) {
+  ASSERT_TRUE(base::WriteFile(local_state_.path(), "{}"));
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(EXIT_FAILURE, EvaluateSeedMain(nullptr, out_stream));
+}
+
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoStdin) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(1, EvaluateSeedMain(nullptr, nullptr,
-                                task_environment_.GetMainThreadTaskRunner()));
+  EXPECT_EQ(EXIT_FAILURE, EvaluateSeedMain(nullptr, nullptr));
 }
 
 }  // namespace variations::cros_early_boot::evaluate_seed

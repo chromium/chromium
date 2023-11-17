@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/system/sys_info.h"
@@ -18,7 +19,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
-#include "components/prefs/json_pref_store.h"
+#include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -145,30 +146,45 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
 }
 }  // namespace
 
-// Largely copied from
-// content/shell/browser/shell_content_browser_client.cc's CreateLocalState.
+// CreateLocalState creates an instance of a PrefService based on the json
+// contents of |local_state_path|.
 std::unique_ptr<PrefService> CreateLocalState(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    const base::FilePath& local_state_path,
-    bool read_only) {
+    const base::FilePath& local_state_path) {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
 
   metrics::MetricsService::RegisterPrefs(pref_registry.get());
   ::variations::VariationsService::RegisterPrefs(pref_registry.get());
 
-  PrefServiceFactory pref_service_factory;
-  auto local_state_pref_store = base::MakeRefCounted<JsonPrefStore>(
-      local_state_path, /*pref_filter=*/nullptr, task_runner, read_only);
-  auto error = local_state_pref_store->ReadPrefs();
-  if (error != JsonPrefStore::PREF_READ_ERROR_NONE) {
-    LOG(ERROR) << "failed to read prefs " << error;
+  int error_code = 0;
+  std::string error_msg;
+  JSONFileValueDeserializer deserializer(local_state_path);
+  std::unique_ptr<base::Value> all_prefs_val =
+      deserializer.Deserialize(&error_code, &error_msg);
+  if (all_prefs_val == nullptr) {
+    LOG(ERROR) << "Error deserializing local state: (code " << error_code
+               << ") " << error_msg;
     return nullptr;
+  }
+
+  if (!all_prefs_val->is_dict()) {
+    LOG(ERROR) << "Unexpected type: want dict, got " << all_prefs_val->type();
+    return nullptr;
+  }
+  base::Value::Dict prefs_dict = std::move(*all_prefs_val).TakeDict();
+
+  PrefServiceFactory pref_service_factory;
+  auto local_state_pref_store = base::MakeRefCounted<InMemoryPrefStore>();
+
+  for (auto [key, val] : prefs_dict) {
+    local_state_pref_store->SetValue(
+        key, std::move(val), WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   }
 
   pref_service_factory.set_user_prefs(local_state_pref_store);
 
   return pref_service_factory.Create(pref_registry);
 }
+
 base::Version CrosVariationsServiceClient::GetVersionForSimulation() {
   // TODO(mutexlox): Get the version that will be used on restart instead of
   // the current version IF this is necessary. (We may not need simulations for
@@ -250,10 +266,7 @@ CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
   return CrOSVariationsFieldTrialCreator(client, std::move(seed_store));
 }
 
-int EvaluateSeedMain(
-    FILE* in_stream,
-    FILE* out_stream,
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
+int EvaluateSeedMain(FILE* in_stream, FILE* out_stream) {
   std::optional<SafeSeed> safe_seed = GetSafeSeedData(in_stream);
   if (!safe_seed.has_value()) {
     LOG(ERROR) << "Failed to read seed from stdin";
@@ -268,8 +281,7 @@ int EvaluateSeedMain(
     local_state_path = base::FilePath(kDefaultLocalStatePath);
   }
 
-  std::unique_ptr<PrefService> local_state =
-      CreateLocalState(task_runner, local_state_path);
+  std::unique_ptr<PrefService> local_state = CreateLocalState(local_state_path);
   if (!local_state) {
     LOG(ERROR) << "Failed to create local_state";
     return EXIT_FAILURE;

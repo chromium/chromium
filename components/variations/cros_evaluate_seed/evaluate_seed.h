@@ -12,7 +12,6 @@
 #include <stdio.h>
 
 #include "base/command_line.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
@@ -23,15 +22,6 @@ namespace variations::cros_early_boot::evaluate_seed {
 inline constexpr char kSafeSeedSwitch[] = "use-safe-seed";
 inline constexpr char kEnterpriseEnrolledSwitch[] = "enterprise-enrolled";
 inline constexpr char kLocalStatePathSwitch[] = "local-state-path";
-
-// CreateLocalState creates an instance of a PrefService based on the json
-// contents of |local_state_path|.
-// Largely exposed for testing.
-std::unique_ptr<PrefService> CreateLocalState(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    const base::FilePath& local_state_path,
-    // Read-only by default to avoid inadvertent modifications.
-    bool read_only = true);
 
 class CrosVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -87,10 +77,7 @@ CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
 // seed and associated data.
 // Writes a serialized ComputedState proto to |out_stream|.
 // Return values are standard for main methods (EXIT_SUCCESS / EXIT_FAILURE).
-int EvaluateSeedMain(
-    FILE* in_stream,
-    FILE* out_stream,
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+int EvaluateSeedMain(FILE* in_stream, FILE* out_stream);
 
 }  // namespace variations::cros_early_boot::evaluate_seed
 

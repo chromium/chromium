@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include "base/at_exit.h"
-#include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
@@ -16,9 +15,8 @@
 int main(int argc, const char* argv[]) {
   base::PlatformThread::SetName("EvaluateSeedMain");
   base::AtExitManager exit_manager;
-  base::SingleThreadTaskExecutor executor;
 
   base::CommandLine::Init(argc, argv);
-  return variations::cros_early_boot::evaluate_seed::EvaluateSeedMain(
-      stdin, stdout, executor.task_runner());
+  return variations::cros_early_boot::evaluate_seed::EvaluateSeedMain(stdin,
+                                                                      stdout);
 }

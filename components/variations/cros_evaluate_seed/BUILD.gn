@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "//build/config/chromebox_for_meetings:buildflags",
     "//chromeos/ash/components/dbus/featured:proto",
     "//components/metrics",
+    "//components/prefs",
     "//components/prefs:test_support",
     "//components/test:test_support",
     "//components/variations",
