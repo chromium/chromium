@@ -110,7 +110,6 @@ static_js_files = [
 
   # Metadata:
   "file_manager/foreground/js/metadata/dlp_metadata_provider.js",
-  "file_manager/foreground/js/metadata/exif_parser.js",
   "file_manager/foreground/js/metadata/external_metadata_provider.js",
   "file_manager/foreground/js/metadata/function_parallel.js",
   "file_manager/foreground/js/metadata/function_sequence.js",
@@ -366,6 +365,7 @@ ts_files = [
   "file_manager/foreground/js/metadata/byte_reader.ts",
   "file_manager/foreground/js/metadata/content_metadata_provider.ts",
   "file_manager/foreground/js/metadata/exif_constants.ts",
+  "file_manager/foreground/js/metadata/exif_parser.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
   "file_manager/foreground/js/metadata/metadata_model.ts",
@@ -536,6 +536,7 @@ ts_test_files = [
   # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/exif_parser_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
 ]
 
@@ -616,7 +617,6 @@ unittest_files = [
   # Foreground:
   "file_manager/foreground/elements/files_xf_elements_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
-  "file_manager/foreground/js/metadata/exif_parser_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
   "file_manager/foreground/js/metadata/metadata_model_unittest.js",
   "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",

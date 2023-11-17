@@ -4,33 +4,34 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
+import {ExifEntry} from '../../../externs/exif_entry.js';
 import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 
 class ByteWriter {
+  private view_: DataView;
+  private littleEndian_ = false;
+  private pos_ = 0;
+  private forwards_ = {} as Record<ExifTag, {pos: number, width: number}>;
+
   /**
-   * @param {!ArrayBuffer} arrayBuffer Underlying buffer to use.
-   * @param {number} offset Offset at which to start writing.
-   * @param {number=} opt_length Maximum length to use.
+   * @param arrayBuffer Underlying buffer to use.
+   * @param offset Offset at which to start writing.
+   * @param length Maximum length to use.
    */
-  constructor(arrayBuffer, offset, opt_length) {
-    const length = opt_length || (arrayBuffer.byteLength - offset);
-    this.view_ = new DataView(arrayBuffer, offset, length);
-    this.littleEndian_ = false;
-    this.pos_ = 0;
-    this.forwards_ = {};
+  constructor(arrayBuffer: ArrayBuffer, offset: number, length?: number) {
+    const calculatedLength = length || (arrayBuffer.byteLength - offset);
+    this.view_ = new DataView(arrayBuffer, offset, calculatedLength);
   }
 
   /**
    * If key is a number, format it in hex style.
-   * @param {!(string|ExifTag)} key A key.
-   * @return {string} Formatted representation.
+   * @param key A key.
+   * @return Formatted representation.
    */
-  static prettyKeyFormat(key) {
+  static prettyKeyFormat(key: (string|ExifTag)): string {
     if (typeof key === 'number') {
       return '0x' + key.toString(16);
     } else {
@@ -40,25 +41,25 @@ class ByteWriter {
 
   /**
    * Set the byte ordering for future writes.
-   * @param {ByteOrder} order ByteOrder to use
+   * @param order ByteOrder to use
    *     {ByteOrder.LITTLE_ENDIAN} or {ByteOrder.BIG_ENDIAN}.
    */
-  setByteOrder(order) {
+  setByteOrder(order: ByteOrder) {
     this.littleEndian_ = (order === ByteOrder.LITTLE_ENDIAN);
   }
 
   /**
-   * @return {number} the current write position.
+   * @return the current write position.
    */
-  tell() {
+  tell(): number {
     return this.pos_;
   }
 
   /**
    * Skips desired amount of bytes in output stream.
-   * @param {number} count Byte count to skip.
+   * @param count Byte count to skip.
    */
-  skip(count) {
+  skip(count: number) {
     this.validateWrite(count);
     this.pos_ += count;
   }
@@ -66,9 +67,9 @@ class ByteWriter {
   /**
    * Check if the buffer has enough room to read 'width' bytes. Throws an error
    * if it has not.
-   * @param {number} width Amount of bytes to check.
+   * @param width Amount of bytes to check.
    */
-  validateWrite(width) {
+  validateWrite(width: number) {
     if (this.pos_ + width > this.view_.byteLength) {
       throw new Error('Writing past the end of the buffer');
     }
@@ -76,48 +77,50 @@ class ByteWriter {
 
   /**
    * Writes scalar value to output stream.
-   * @param {number} value Value to write.
-   * @param {number} width Desired width of written value.
-   * @param {boolean=} opt_signed True if value represents signed number.
+   * @param value Value to write.
+   * @param width Desired width of written value.
+   * @param signed True if value represents signed number.
    */
-  writeScalar(value, width, opt_signed) {
-    let method;
-    // The below switch is so verbose for two reasons:
-    // 1. V8 is faster on method names which are 'symbols'.
-    // 2. Method names are discoverable by full text search.
+  writeScalar(value: number, width: number, signed?: boolean) {
+    this.validateWrite(width);
+
     switch (width) {
       case 1:
-        method = opt_signed ? 'setInt8' : 'setUint8';
+        if (signed) {
+          this.view_.setInt8(this.pos_, value);
+        } else {
+          this.view_.setUint8(this.pos_, value);
+        }
         break;
 
       case 2:
-        method = opt_signed ? 'setInt16' : 'setUint16';
+        if (signed) {
+          this.view_.setInt16(this.pos_, value, this.littleEndian_);
+        } else {
+          this.view_.setUint16(this.pos_, value, this.littleEndian_);
+        }
         break;
 
       case 4:
-        method = opt_signed ? 'setInt32' : 'setUint32';
-        break;
-
-      case 8:
-        method = opt_signed ? 'setInt64' : 'setUint64';
+        if (signed) {
+          this.view_.setInt32(this.pos_, value, this.littleEndian_);
+        } else {
+          this.view_.setUint32(this.pos_, value, this.littleEndian_);
+        }
         break;
 
       default:
         throw new Error('Invalid width: ' + width);
     }
 
-    this.validateWrite(width);
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type 'DataView'.
-    this.view_[method](this.pos_, value, this.littleEndian_);
     this.pos_ += width;
   }
 
   /**
    * Writes string.
-   * @param {string} str String to write.
+   * @param str String to write.
    */
-  writeString(str) {
+  writeString(str: string) {
     this.validateWrite(str.length);
     for (let i = 0; i != str.length; i++) {
       this.view_.setUint8(this.pos_++, str.charCodeAt(i));
@@ -127,16 +130,14 @@ class ByteWriter {
   /**
    * Allocate the space for 'width' bytes for the value that will be set later.
    * To be followed by a 'resolve' call with the same key.
-   * @param {(string|ExifTag)} key A key to identify the value.
-   * @param {number} width Width of the value in bytes.
+   * @param key A key to identify the value.
+   * @param width Width of the value in bytes.
    */
-  forward(key, width) {
+  forward(key: ExifTag, width: number) {
     if (key in this.forwards_) {
       throw new Error('Duplicate forward key ' + key);
     }
     this.validateWrite(width);
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string | number' can't be used to index type '{}'.
     this.forwards_[key] = {
       pos: this.pos_,
       width: width,
@@ -146,30 +147,26 @@ class ByteWriter {
 
   /**
    * Set the value previously allocated with a 'forward' call.
-   * @param {(string|ExifTag)} key A key to identify the value.
-   * @param {number} value value to write in pre-allocated space.
+   * @param key A key to identify the value.
+   * @param value value to write in pre-allocated space.
    */
-  resolve(key, value) {
+  resolve(key: ExifTag, value: number) {
     if (!(key in this.forwards_)) {
       throw new Error('Undeclared forward key ' + key.toString(16));
     }
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string | number' can't be used to index type '{}'.
     const forward = this.forwards_[key];
     const curPos = this.pos_;
     this.pos_ = forward.pos;
     this.writeScalar(value, forward.width);
     this.pos_ = curPos;
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string | number' can't be used to index type '{}'.
     delete this.forwards_[key];
   }
 
   /**
    * A shortcut to resolve the value to the current write position.
-   * @param {(string|ExifTag)} key A key to identify pre-allocated position.
+   * @param key A key to identify pre-allocated position.
    */
-  resolveOffset(key) {
+  resolveOffset(key: ExifTag) {
     this.resolve(key, this.tell());
   }
 
@@ -187,10 +184,10 @@ class ByteWriter {
 /**
  * Creates a directory with specified tag. This method only supports string
  * format tag, which is longer than 4 characters.
- * @param {!ArrayBufferView} bytes Bytes to be written.
- * @param {!ExifEntry} tag An exif entry which will be written.
+ * @param bytes Bytes to be written.
+ * @param tag An exif entry which will be written.
  */
-function writeDirectory_(bytes, tag) {
+function writeDirectory(bytes: ArrayBufferView, tag: ExifEntry) {
   assertEquals(2, tag.format);
   assertTrue(tag.componentCount > 4);
 
@@ -205,49 +202,44 @@ function writeDirectory_(bytes, tag) {
   byteWriter.writeScalar(0, 4);  // Offset to next IFD.
 
   byteWriter.resolveOffset(tag.id);
-  const string = /** @type {string} */ (tag.value);
+  const string = tag.value;
   byteWriter.writeString(string);
 
   byteWriter.checkResolved();
 }
 
 /**
- * @implements {MetadataParserLogger}
  * @final
  */
-class ConsoleLogger {
+class ConsoleLogger extends MetadataParserLogger{
   constructor() {
+    super();
     this.verbose = true;
   }
 
-  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
-  error(arg) {
-    console.error(arg);
+  override error(...args: unknown[]) {
+    console.error(...args);
   }
 
-  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
-  log(arg) {
-    console.log(arg);
+  override log(...args: unknown[]) {
+    console.log(...args);
   }
 
-  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
-  vlog(arg) {
-    console.log(arg);
+  override vlog(...args: unknown[]) {
+    console.log(...args);
   }
 }
 
 /**
  * Parses exif data bytes (with logging) and returns the parsed tags.
- * @param {!ArrayBufferView} bytes Bytes to be read.
- * @return {!Object<!ExifTag, !ExifEntry>} Tags.
+ * @param bytes Bytes to be read.
+ * @return Tags.
  */
-function parseExifData_(bytes) {
+function parseExifData(bytes: ArrayBufferView): Record<ExifTag, ExifEntry> {
   const exifParser = new ExifParser(new ConsoleLogger());
 
-  const tags = {};
+  const tags = {} as Record<ExifTag, ExifEntry>;
   const byteReader = new ByteReader(bytes.buffer);
-  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-  // parameter of type '{ [x: number]: Object; }'.
   assertEquals(0, exifParser.readDirectory(byteReader, tags));
   return tags;
 }
@@ -258,15 +250,15 @@ function parseExifData_(bytes) {
 export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
-  writeDirectory_(data, /** @type {!ExifEntry} */ ({
+  writeDirectory(data,{
                     id: ExifTag.MAKE,   // Manufacturer Id.
                     format: 2,          // String format.
                     componentCount: 8,  // Length of value 'Manufact'.
                     value: 'Manufact',
-                  }));
+                  });
 
   // Parse the exif data.
-  const tags = parseExifData_(data);
+  const tags = parseExifData(data);
 
   // The parsed value should end in a null character.
   const parsedTag = tags[ExifTag.MAKE];

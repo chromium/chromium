@@ -7,39 +7,50 @@ import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ByteOrder, ByteReader, SeekOrigin} from './byte_reader.js';
 import {ExifAlign, ExifMark, ExifTag} from './exif_constants.js';
+import type {ImageTransformation, ParserMetadata} from './metadata_item.js';
 import {ImageParser} from './metadata_parser.js';
 
 
 /** @final */
 export class ExifParser extends ImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param parent Parent object.
    */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'jpeg', /\.jpe?g$/i);
   }
 
   /**
-   * @param {File} file File object to parse.
-   * @param {!Object} metadata Metadata object for the file.
-   * @param {function(!Object):void} callback Callback to be called on success.
-   * @param {function((Event|string)):void} errorCallback Error callback.
+   * @param file File object to parse.
+   * @param metadata Metadata object for the file.
+   * @param callback Callback to be called on success.
+   * @param errorCallback Error callback.
    */
-  parse(file, metadata, callback, errorCallback) {
+  parse(
+      file: File,
+      metadata: ParserMetadata,
+      callback: (metadata: ParserMetadata) => void,
+      errorCallback: (error: Event | string) => void) {
     this.requestSlice(file, callback, errorCallback, metadata, 0);
   }
 
   /**
-   * @param {File} file File object to parse.
-   * @param {function(!Object):void} callback Callback to be called on success.
-   * @param {function((Event|string)):void} errorCallback Error callback.
-   * @param {!Object} metadata Metadata object.
-   * @param {number} filePos Position to slice at.
-   * @param {number=} opt_length Number of bytes to slice. By default 1 KB.
+   * @param file File object to parse.
+   * @param callback Callback to be called on success.
+   * @param errorCallback Error callback.
+   * @param metadata Metadata object.
+   * @param filePos Position to slice at.
+   * @param length Number of bytes to slice. By default 1 KB.
    */
-  requestSlice(file, callback, errorCallback, metadata, filePos, opt_length) {
+  requestSlice(
+      file: File,
+      callback: (metadata: ParserMetadata) => void,
+      errorCallback: (error: Event | string) => void,
+      metadata: ParserMetadata,
+      filePos: number,
+      length?: number) {
     // Read at least 1Kb so that we do not issue too many read requests.
-    opt_length = Math.max(1024, opt_length || 0);
+    length = Math.max(1024, length || 0);
 
     const self = this;
     const reader = new FileReader();
@@ -47,20 +58,26 @@ export class ExifParser extends ImageParser {
     reader.onload = () => {
       self.parseSlice(
           file, callback, errorCallback, metadata, filePos,
-          /** @type{ArrayBuffer} */ (reader.result));
+          reader.result as ArrayBuffer);
     };
-    reader.readAsArrayBuffer(file.slice(filePos, filePos + opt_length));
+    reader.readAsArrayBuffer(file.slice(filePos, filePos + length));
   }
 
   /**
-   * @param {File} file File object to parse.
-   * @param {function(!Object):void} callback Callback to be called on success.
-   * @param {function((Event|string)):void} errorCallback Error callback.
-   * @param {!Object} metadata Metadata object.
-   * @param {number} filePos Position to slice at.
-   * @param {ArrayBuffer} buf Buffer to be parsed.
+   * @param file File object to parse.
+   * @param callback Callback to be called on success.
+   * @param errorCallback Error callback.
+   * @param metadata Metadata object.
+   * @param filePos Position to slice at.
+   * @param buf Buffer to be parsed.
    */
-  parseSlice(file, callback, errorCallback, metadata, filePos, buf) {
+  parseSlice(
+      file: File,
+      callback: (metadata: ParserMetadata) => void,
+      errorCallback: (error: Event | string) => void,
+      metadata: ParserMetadata,
+      filePos: number,
+      buf: ArrayBuffer) {
     try {
       const br = new ByteReader(buf);
 
@@ -81,13 +98,11 @@ export class ExifParser extends ImageParser {
       const self = this;
 
       /**
-       * @param {number=} opt_offset
-       * @param {number=} opt_bytes
        */
-      const reread = (opt_offset, opt_bytes) => {
+      const reread = (offset?: number, bytes?: number) => {
         self.requestSlice(
             file, callback, errorCallback, metadata,
-            filePos + br.tell() + (opt_offset || 0), opt_bytes);
+            filePos + br.tell() + (offset || 0), bytes);
       };
 
       while (true) {
@@ -117,7 +132,7 @@ export class ExifParser extends ImageParser {
 
         if (mark === ExifMark.EXIF) {
           this.parseExifSection(metadata, buf, br);
-        } else if (ExifParser.isSOF_(mark)) {
+        } else if (ExifParser.isSof_(mark)) {
           // The most reliable size information is encoded in the SOF section.
           br.seek(1, SeekOrigin.SEEK_CUR);  // Skip the precision byte.
           const height = br.readScalar(2);
@@ -130,17 +145,15 @@ export class ExifParser extends ImageParser {
         br.seek(nextSectionStart, SeekOrigin.SEEK_BEG);
       }
     } catch (e) {
-      // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
-      errorCallback(e.toString());
+      errorCallback(e!.toString());
     }
   }
 
   /**
-   * @private
-   * @param {number} mark Mark to be checked.
-   * @return {boolean} True if the mark is SOF.
+   * @param mark Mark to be checked.
+   * @return True if the mark is SOF (Start of Frame).
    */
-  static isSOF_(mark) {
+  private static isSof_(mark: number): boolean {
     // There are 13 variants of SOF fragment format distinguished by the last
     // hex digit of the mark, but the part we want is always the same.
     if ((mark & ~0xF) !== ExifMark.SOF) {
@@ -153,11 +166,11 @@ export class ExifParser extends ImageParser {
   }
 
   /**
-   * @param {Object} metadata Metadata object.
-   * @param {ArrayBuffer} buf Buffer to be parsed.
-   * @param {ByteReader} br Byte reader to be used.
+   * @param metadata Metadata object.
+   * @param buf Buffer to be parsed.
+   * @param br Byte reader to be used.
    */
-  parseExifSection(metadata, buf, br) {
+  parseExifSection(metadata: ParserMetadata, buf: ArrayBuffer, br: ByteReader) {
     const magic = br.readString(6);
     if (magic !== 'Exif\0\0') {
       // Some JPEG files may have sections marked with EXIF_MARK_EXIF
@@ -185,91 +198,55 @@ export class ExifParser extends ImageParser {
       return;
     }
 
-    // @ts-ignore: error TS2339: Property 'littleEndian' does not exist on type
-    // 'Object'.
     metadata.littleEndian = (order === ExifAlign.LITTLE);
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
     metadata.ifd = {
-      image: {},
-      thumbnail: {},
+      image: {} as Record<ExifTag, ExifEntry>,
+      thumbnail: {} as Record<ExifTag, ExifEntry>,
     };
     let directoryOffset = br.readScalar(4);
 
     // Image directory.
     this.vlog('Read image directory');
     br.seek(directoryOffset);
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    directoryOffset = this.readDirectory(br, metadata.ifd.image);
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    metadata.imageTransform = this.parseOrientation(metadata.ifd.image);
+    directoryOffset = this.readDirectory(br, metadata.ifd.image!);
+    metadata.imageTransform = this.parseOrientation(metadata.ifd.image!);
 
     // Thumbnail Directory chained from the end of the image directory.
     if (directoryOffset) {
       this.vlog('Read thumbnail directory');
       br.seek(directoryOffset);
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
-      this.readDirectory(br, metadata.ifd.thumbnail);
+      this.readDirectory(br, metadata.ifd.thumbnail!);
       // If no thumbnail orientation is encoded, assume same orientation as
       // the primary image.
-      // @ts-ignore: error TS2339: Property 'thumbnailTransform' does not exist
-      // on type 'Object'.
       metadata.thumbnailTransform =
-          // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-          // 'Object'.
-          this.parseOrientation(metadata.ifd.thumbnail) ||
-          // @ts-ignore: error TS2339: Property 'imageTransform' does not exist
-          // on type 'Object'.
+          this.parseOrientation(metadata.ifd.thumbnail!) ||
           metadata.imageTransform;
     }
 
     // EXIF Directory may be specified as a tag in the image directory.
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (ExifTag.EXIFDATA in metadata.ifd.image) {
+    if (ExifTag.EXIFDATA in metadata.ifd.image!) {
       this.vlog('Read EXIF directory');
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
       directoryOffset = metadata.ifd.image[ExifTag.EXIFDATA].value;
       br.seek(directoryOffset);
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
-      metadata.ifd.exif = {};
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
+      metadata.ifd.exif = {} as Record<ExifTag, ExifEntry>;
       this.readDirectory(br, metadata.ifd.exif);
     }
 
     // GPS Directory may also be linked from the image directory.
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (ExifTag.GPSDATA in metadata.ifd.image) {
+    if (ExifTag.GPSDATA in metadata.ifd.image!) {
       this.vlog('Read GPS directory');
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
       directoryOffset = metadata.ifd.image[ExifTag.GPSDATA].value;
       br.seek(directoryOffset);
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
-      metadata.ifd.gps = {};
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
+      metadata.ifd.gps = {} as Record<ExifTag, ExifEntry>;
       this.readDirectory(br, metadata.ifd.gps);
     }
 
     // Thumbnail may be linked from the image directory.
-    // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (ExifTag.JPG_THUMB_OFFSET in metadata.ifd.thumbnail &&
-        // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-        // 'Object'.
+    if (ExifTag.JPG_THUMB_OFFSET in metadata.ifd.thumbnail! &&
         ExifTag.JPG_THUMB_LENGTH in metadata.ifd.thumbnail) {
       this.vlog('Read thumbnail image');
-      // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-      // 'Object'.
       br.seek(metadata.ifd.thumbnail[ExifTag.JPG_THUMB_OFFSET].value);
-      // @ts-ignore: error TS2339: Property 'thumbnailURL' does not exist on
-      // type 'Object'.
       metadata.thumbnailURL =
-          // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
-          // 'Object'.
           br.readImage(metadata.ifd.thumbnail[ExifTag.JPG_THUMB_LENGTH].value);
     } else {
       this.vlog('Image has EXIF data, but no JPG thumbnail');
@@ -277,66 +254,50 @@ export class ExifParser extends ImageParser {
   }
 
   /**
-   * @param {Object} metadata Metadata object.
-   * @param {number} width Width in pixels.
-   * @param {number} height Height in pixels.
+   * @param metadata Metadata object.
+   * @param width Width in pixels.
+   * @param height Height in pixels.
    */
-  static setImageSize(metadata, width, height) {
-    // @ts-ignore: error TS2339: Property 'imageTransform' does not exist on
-    // type 'Object'.
+  static setImageSize(metadata: ParserMetadata, width: number, height: number) {
     if (metadata.imageTransform && metadata.imageTransform.rotate90) {
-      // @ts-ignore: error TS2339: Property 'width' does not exist on type
-      // 'Object'.
       metadata.width = height;
-      // @ts-ignore: error TS2339: Property 'height' does not exist on type
-      // 'Object'.
       metadata.height = width;
     } else {
-      // @ts-ignore: error TS2339: Property 'width' does not exist on type
-      // 'Object'.
       metadata.width = width;
-      // @ts-ignore: error TS2339: Property 'height' does not exist on type
-      // 'Object'.
       metadata.height = height;
     }
   }
 
   /**
-   * @param {ByteReader} br Byte reader to be used for reading.
-   * @return {number} Mark value.
+   * @param br Byte reader to be used for reading.
+   * @return Mark value.
    */
-  readMark(br) {
+  readMark(br: ByteReader): number {
     return br.readScalar(2);
   }
 
   /**
-   * @param {ByteReader} br Bye reader to be used for reading.
-   * @return {number} Size of the mark at the current position.
+   * @param br Bye reader to be used for reading.
+   * @return Size of the mark at the current position.
    */
-  readMarkLength(br) {
+  readMarkLength(br: ByteReader): number {
     // Length includes the 2 bytes used to store the length.
     return br.readScalar(2) - 2;
   }
 
   /**
-   * @param {ByteReader} br Byte reader to be used for reading.
-   * @param {Object<number, Object>} tags Map of tags to be written to.
-   * @return {number} Directory offset.
+   * @param br Byte reader to be used for reading.
+   * @param tags Map of tags to be written to.
+   * @return Directory offset.
    */
-  readDirectory(br, tags) {
+  readDirectory(br: ByteReader, tags: Record<ExifTag, ExifEntry>): number {
     const entryCount = br.readScalar(2);
     for (let i = 0; i < entryCount; i++) {
-      // @ts-ignore: error TS2315: Type 'Tag' is not generic.
-      const tagId = /** @type {!ExifTag<number>} */ (br.readScalar(2));
-      const tag = tags[tagId] = {id: tagId};
-      // @ts-ignore: error TS2339: Property 'format' does not exist on type '{
-      // id: any; }'.
+      const tagId = br.readScalar(2) as ExifTag;
+      const tag: ExifEntry = tags[tagId] =
+          {id: tagId, format: 0, componentCount: 0, value: undefined};
       tag.format = br.readScalar(2);
-      // @ts-ignore: error TS2339: Property 'componentCount' does not exist on
-      // type '{ id: any; }'.
       tag.componentCount = br.readScalar(4);
-      // @ts-ignore: error TS2345: Argument of type '{ id: any; }' is not
-      // assignable to parameter of type 'ExifEntry'.
       this.readTagValue(br, tag);
     }
 
@@ -344,45 +305,37 @@ export class ExifParser extends ImageParser {
   }
 
   /**
-   * @param {ByteReader} br Byte reader to be used for reading.
-   * @param {ExifEntry} tag Tag object.
+   * @param br Byte reader to be used for reading.
+   * @param tag Tag object.
    */
-  readTagValue(br, tag) {
+  readTagValue(br: ByteReader, tag: ExifEntry) {
     const self = this;
 
-    /**
-     * @param {number} size
-     * @param {function(number)=} opt_readFunction
-     * @param {boolean=} opt_signed
-     */
-    function safeRead(size, opt_readFunction, opt_signed) {
+    function safeRead(
+        size: (1|2|4|8),
+        readFunction?: () => [number, number],
+        signed?: boolean) {
       try {
-        unsafeRead(size, opt_readFunction, opt_signed);
+        unsafeRead(size, readFunction, signed);
       } catch (ex) {
         self.log(
             'Error reading tag 0x' + tag.id.toString(16) + '/' + tag.format +
             ', size ' + tag.componentCount + '*' + size + ' ' +
-            // @ts-ignore: error TS18046: 'ex' is of type 'unknown'.
-            (ex.stack || '<no stack>') + ': ' + ex);
+            ((ex as {stack: string}).stack || '<no stack>') + ': ' + ex);
         tag.value = null;
       }
     }
 
-    /**
-     * @param {number} size
-     * @param {function(number)=} opt_readFunction
-     * @param {boolean=} opt_signed
-     */
-    function unsafeRead(size, opt_readFunction, opt_signed) {
-      const readFunction = opt_readFunction || (size => {
+    function unsafeRead(
+        size: (1|2|4|8),
+        readFunction?: () => [number, number],
+        signed?: boolean) {
+      const reader = readFunction || ((size: (1|2|4)) => {
                              // Every time this function is called with `size` =
-                             // 8, `opt_readFunction` is also passed, so
+                             // 8, `readFunction` is also passed, so
                              // readScalar is only ever called with `size` = 1,2
                              // or 4.
-                             // @ts-ignore: error TS2345: Argument of type
-                             // 'number' is not assignable to parameter of type
-                             // '2 | 1 | 4'
-                             return br.readScalar(size, opt_signed);
+                             return br.readScalar(size, signed);
                            });
 
       const totalSize = tag.componentCount * size;
@@ -400,12 +353,12 @@ export class ExifParser extends ImageParser {
       }
 
       if (tag.componentCount === 1) {
-        tag.value = readFunction(size);
+        tag.value = reader(size as (1|2|4));
       } else {
         // Read multiple components into an array.
         tag.value = [];
         for (let i = 0; i < tag.componentCount; i++) {
-          tag.value[i] = readFunction(size);
+          tag.value[i] = reader(size as (1|2|4));
         }
       }
 
@@ -430,10 +383,9 @@ export class ExifParser extends ImageParser {
         if (tag.componentCount === 0) {
           tag.value = '';
         } else if (tag.componentCount === 1) {
-          tag.value = String.fromCharCode(/** @type {number} */ (tag.value));
+          tag.value = String.fromCharCode(tag.value);
         } else {
-          tag.value = String.fromCharCode.apply(
-              null, /** @type{Array<number>} */ (tag.value));
+          tag.value = String.fromCharCode.apply(null, tag.value);
         }
         this.validateAndFixStringTag_(tag);
         break;
@@ -477,10 +429,9 @@ export class ExifParser extends ImageParser {
 
   /**
    * Validates string tag value, and fix it if necessary.
-   * @param {!ExifEntry} tag A tag to be validated and fixed.
-   * @private
+   * @param tag A tag to be validated and fixed.
    */
-  validateAndFixStringTag_(tag) {
+  private validateAndFixStringTag_(tag: ExifEntry) {
     if (tag.format === 2) {  // string
       // String should end with null character.
       if (tag.value.charAt(tag.value.length - 1) !== '\0') {
@@ -497,41 +448,34 @@ export class ExifParser extends ImageParser {
    * Transform exif-encoded orientation into a set of parameters compatible with
    * CSS and canvas transforms (scaleX, scaleY, rotation).
    *
-   * @param {Object} ifd Exif property dictionary (image or thumbnail).
-   * @return {Object} Orientation object.
+   * @param ifd Exif property dictionary (image or thumbnail).
+   * @return Orientation object.
    */
-  parseOrientation(ifd) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'number' can't be used to index type 'Object'.
+  parseOrientation(ifd: Record<ExifTag, ExifEntry>)
+      : ImageTransformation|undefined {
     if (ifd[ExifTag.ORIENTATION]) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'number' can't be used to index type 'Object'.
       const index = (ifd[ExifTag.ORIENTATION].value || 1) - 1;
       return {
-        scaleX: ExifParser.SCALEX[index],
-        scaleY: ExifParser.SCALEY[index],
-        rotate90: ExifParser.ROTATE90[index],
+        scaleX: SCALEX[index]!,
+        scaleY: SCALEY[index]!,
+        rotate90: ROTATE90[index]!,
       };
     }
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'Object'.
-    return null;
+    return undefined;
   }
 }
 
 /**
  * Map from the exif orientation value to the horizontal scale value.
- * @const @type {Array<number>}
  */
-ExifParser.SCALEX = [1, -1, -1, 1, 1, 1, -1, -1];
+const SCALEX = [1, -1, -1, 1, 1, 1, -1, -1];
 
 /**
  * Map from the exif orientation value to the vertical scale value.
- * @const @type {Array<number>}
  */
-ExifParser.SCALEY = [1, 1, -1, -1, -1, 1, 1, -1];
+const SCALEY = [1, 1, -1, -1, -1, 1, 1, -1];
 
 /**
- * Map from the exit orientation value to the rotation value.
- * @const @type {Array<number>}
+ * Map from the exif orientation value to the rotation value.
  */
-ExifParser.ROTATE90 = [0, 0, 0, 0, 1, 1, 1, 1];
+const ROTATE90 = [0, 0, 0, 0, 1, 1, 1, 1];

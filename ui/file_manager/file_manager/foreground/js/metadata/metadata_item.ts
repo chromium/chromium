@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface ImageTransformation {
+import type {ExifEntry} from '../../../externs/exif_entry.js';
+
+import type {ExifTag} from './exif_constants.js';
+
+export interface ImageTransformation {
   scaleX: number;
   scaleY: number;
   rotate90: number;
@@ -217,7 +221,12 @@ export class ParserMetadata {
   thumbnailTransform?: ImageTransformation;
   thumbnailURL?: string;
   littleEndian?: boolean;
-  ifd?: object;
+  ifd?: {
+    image?: Record<ExifTag, ExifEntry>,
+    thumbnail?: Record<ExifTag, ExifEntry>,
+    exif?: Record<ExifTag, ExifEntry>,
+    gps?: Record<ExifTag, ExifEntry>,
+  };
   height?: number;
   width?: number;
   mimeType?: string;
