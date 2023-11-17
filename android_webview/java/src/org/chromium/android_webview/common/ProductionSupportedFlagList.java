@@ -790,6 +790,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.BACKGROUND_RESOURCE_FETCH,
                 "Process resource requests in a background thread inside Blink."),
+        Flag.baseFeature(
+                BlinkFeatures.THROTTLE_UNIMPORTANT_FRAME_TIMERS,
+                "Throttles Javascript timer wake ups of unimportant frames."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
