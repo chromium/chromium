@@ -1631,6 +1631,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.PinBubble" enum="Boolean"
+    expires_after="2024-09-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.Session2"
     enum="LiveCaptionSessionEvent" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
