@@ -353,7 +353,8 @@ void BindDateTimeChooserForFrame(
 void BindTextSuggestionHostForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
-  auto* view = static_cast<RenderWidgetHostViewAndroid*>(host->GetView());
+  auto* view =
+      RenderWidgetHostViewAndroid::FromRenderWidgetHostView(host->GetView());
   if (!view || !view->text_suggestion_host())
     return;
 
