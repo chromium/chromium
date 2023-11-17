@@ -166,6 +166,9 @@ class BrowsingDataModel {
     virtual absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
         StorageType storage_type) const = 0;
 
+    // Returns whether cookie deletion for a given `url` is disabled.
+    virtual bool IsCookieDeletionDisabled(const GURL& url) = 0;
+
     virtual ~Delegate() = default;
   };
 

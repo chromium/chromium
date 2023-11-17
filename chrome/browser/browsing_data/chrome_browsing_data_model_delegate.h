@@ -57,6 +57,7 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
       BrowsingDataModel::StorageType storage_type) const override;
   absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       BrowsingDataModel::StorageType storage_type) const override;
+  bool IsCookieDeletionDisabled(const GURL& url) override;
 
  private:
   ChromeBrowsingDataModelDelegate(Profile* profile,

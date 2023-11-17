@@ -381,6 +381,8 @@ class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
     return false;
   }
 
+  bool IsCookieDeletionDisabled(const GURL& url) override { return false; }
+
  private:
   std::string origin_owned_host_;
 };

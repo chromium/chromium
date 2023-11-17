@@ -60,4 +60,8 @@ TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
   }
 }
 
+bool TestBrowsingDataModelDelegate::IsCookieDeletionDisabled(const GURL& url) {
+  return false;
+}
+
 }  // namespace browsing_data

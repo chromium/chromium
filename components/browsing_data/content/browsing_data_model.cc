@@ -338,6 +338,12 @@ template <>
 void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
     const net::CanonicalCookie& cookie) {
   if (types.Has(BrowsingDataModel::StorageType::kCookie)) {
+    if (helper->delegate_ && helper->delegate_->IsCookieDeletionDisabled(
+                                 net::cookie_util::CookieOriginToURL(
+                                     cookie.Domain(), cookie.IsSecure()))) {
+      // TODO(crbug.com/1500256): Expand test coverage for this block.
+      return;
+    }
     helper->storage_partition_->GetCookieManagerForBrowserProcess()
         ->DeleteCanonicalCookie(
             cookie,

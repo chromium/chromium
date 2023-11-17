@@ -24,6 +24,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/common/features.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -67,8 +71,15 @@ class ScopedNaClBrowserDelegate {
 class ChromeBrowsingDataModelDelegateTest : public testing::Test {
  public:
   ChromeBrowsingDataModelDelegateTest() {
-    feature_list_.InitAndEnableFeature(
-        media_device_salt::kMediaDeviceIdPartitioning);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn,
+#endif
+              media_device_salt::kMediaDeviceIdPartitioning
+        },
+        /*disabled_features=*/{});
   }
 
   ChromeBrowsingDataModelDelegateTest(
@@ -245,3 +256,46 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveIsolatedWebAppData) {
             remover->GetLastUsedRemovalMaskForTesting());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/1493504): Re-enable on macOS once flakiness is resolved.
+#if !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterChildUser) {
+  profile_->SetIsSupervisedProfile(true);
+
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://google.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://example.com")));
+  EXPECT_TRUE(delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
+  EXPECT_TRUE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterNormalUser) {
+  profile_->SetIsSupervisedProfile(false);
+
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://google.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://example.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterIncognitoUser) {
+  // Replace the delegate with an incognito profile delegate.
+  delegate_ = ChromeBrowsingDataModelDelegate::CreateForProfile(
+      profile_->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID(),
+                                       /*create_if_needed=*/true));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://google.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://example.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("http://youtube.com")));
+  EXPECT_FALSE(
+      delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
+}
+#endif  // !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
