@@ -55,12 +55,11 @@ class MissiveClientTestObserver
   // call to `GetNextEnqueuedRecord`; That is, this method always returns false
   // immediately after a call to `GetNextEnqueuedRecord`.
   //
-  // To properly test whether new enqueued records have arrived, usually at
-  // least manually running some tasks of the run loop is needed. For example:
+  // To properly test whether new enqueued records have arrived, call
+  // ::content::RunAllTasksUntilIdle() first to ensure the task enqueuing the
+  // record to missive is finished:
   //
-  // base::RunLoop run_loop;
-  // base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-  //    run_loop.QuitClosure());
+  // ::content::RunAllTasksUntilIdle();
   // EXPECT_FALSE(observer.HasNewEnqueuedRecords());
   bool HasNewEnqueuedRecord();
 
