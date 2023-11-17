@@ -137,6 +137,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
@@ -673,7 +674,7 @@ void RenderThreadImpl::Init() {
   AddObserver(variations_observer_.get());
 
   base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce([] { SkFontMgr::RefDefault(); }));
+                             base::BindOnce([] { skia::DefaultFontMgr(); }));
 
   bool should_actively_sample_fonts =
       command_line.HasSwitch(kFirstRendererProcess) &&

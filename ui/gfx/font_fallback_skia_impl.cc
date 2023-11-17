@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -109,7 +110,7 @@ sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
   if (text.empty())
     return nullptr;
 
-  sk_sp<SkFontMgr> font_mgr(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> font_mgr(skia::DefaultFontMgr());
 
   const char* bcp47_locales[] = {locale.c_str()};
   int num_locales = locale.empty() ? 0 : 1;

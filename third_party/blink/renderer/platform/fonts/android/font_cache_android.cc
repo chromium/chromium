@@ -32,6 +32,7 @@
 
 #include "base/feature_list.h"
 
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -69,7 +70,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 static AtomicString DefaultFontFamily() {
   if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
     return DefaultFontFamily(font_manager);
-  return DefaultFontFamily(SkFontMgr::RefDefault());
+  return DefaultFontFamily(skia::DefaultFontMgr());
 }
 
 // static
@@ -97,7 +98,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
   SkFontMgr* font_manager =
-      font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
+      font_manager_ ? font_manager_.get() : skia::DefaultFontMgr().get();
   sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
       locale_family_name, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1,
@@ -131,7 +132,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
-  sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> fm(skia::DefaultFontMgr());
 
   // Pass "serif" to |matchFamilyStyleCharacter| if the `font-family` list
   // contains `serif`, so that it fallbacks to i18n serif fonts that has the
@@ -243,7 +244,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       return generic_family_name_fallback;
   }
 
-  sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
   return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
                                    font_description, nullptr,
                                    FontFallbackPriority::kText);

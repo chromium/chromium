@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -31,7 +32,7 @@ bool IdentifiabilityActiveSampler::IsFontFamilyAvailable(const char* family,
 void IdentifiabilityActiveSampler::ReportAvailableFontFamilies(
     std::vector<std::string> fonts_to_check,
     ukm::UkmRecorder* ukm_recorder) {
-  sk_sp<SkFontMgr> fontManager(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> fontManager(skia::DefaultFontMgr());
   ukm::SourceId ukm_source_id = ukm::NoURLSourceId();
   blink::IdentifiabilityMetricBuilder builder(ukm_source_id);
   for (const std::string& font : fonts_to_check) {

@@ -22,7 +22,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
   SkFontConfigInterface::FontIdentity font_identity;
   font_identity.fID = config_id;
   font_identity.fTTCIndex = ttc_index;
-  return fci->makeTypeface(font_identity, skia::GetFontMgr());
+  return fci->makeTypeface(font_identity, skia::DefaultFontMgr());
 #else
   NOTREACHED();
   return nullptr;
@@ -35,7 +35,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
     int ttc_index) {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && \
     !BUILDFLAG(IS_APPLE)
-  return skia::GetFontMgr()->makeFromFile(filename.c_str(), ttc_index);
+  return skia::DefaultFontMgr()->makeFromFile(filename.c_str(), ttc_index);
 #else
   NOTREACHED();
   return nullptr;

@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -43,7 +44,7 @@ sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
 #if BUILDFLAG(IS_WIN)
   font_manager = FontCache::Get().FontManager();
 #else
-  font_manager = SkFontMgr::RefDefault();
+  font_manager = skia::DefaultFontMgr();
 #endif
   return font_manager->makeFromData(data, 0);
 }

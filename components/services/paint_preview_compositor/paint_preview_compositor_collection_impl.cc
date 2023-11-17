@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/utility/utility_thread.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
@@ -98,7 +99,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
 
   // Init this on the background thread for a startup performance improvement.
   base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce([] { SkFontMgr::RefDefault(); }));
+                             base::BindOnce([] { skia::DefaultFontMgr(); }));
 
   // Sanity check that fonts are working.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -106,9 +107,9 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // This is fine since since the subsetted fonts are provided in the SkPicture.
   // However, we still need to check that the SkFontMgr starts as it is used by
   // Skia when handling the SkPicture.
-  DCHECK(SkFontMgr::RefDefault());
+  DCHECK(skia::DefaultFontMgr());
 #else
-  DCHECK(SkFontMgr::RefDefault()->countFamilies());
+  DCHECK(skia::DefaultFontMgr()->countFamilies());
 #endif
 }
 

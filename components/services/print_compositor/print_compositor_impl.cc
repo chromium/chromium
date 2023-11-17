@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "printing/common/metafile_utils.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_image_generator.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDocument.h"
@@ -87,7 +88,7 @@ PrintCompositorImpl::PrintCompositorImpl(
   // This doesn't do comprehensive tests to make sure fonts can work properly.
   // It is just a quick and simple check to catch things like improper sandbox
   // policy setup.
-  DCHECK(SkFontMgr::RefDefault()->countFamilies());
+  DCHECK(skia::DefaultFontMgr()->countFamilies());
 #endif
 }
 

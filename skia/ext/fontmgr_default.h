@@ -14,8 +14,8 @@ class sk_sp;
 namespace skia {
 
 // Allows to override the default SkFontMgr instance (returned from
-// SkFontMgr::RefDefault()). Must be called before RefDefault() is called for
-// the first time in the process.
+// skia::DefaultFontMgr()). Must be called before skia::DefaultFontMgr() is
+// called for the first time in the process.
 SK_API void OverrideDefaultSkFontMgr(sk_sp<SkFontMgr> fontmgr);
 
 // Create default SkFontMgr implementation for the current platform.

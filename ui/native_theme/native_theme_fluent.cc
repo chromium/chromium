@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -25,7 +26,7 @@ NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
   scrollbar_width_ = kFluentScrollbarThickness;
 
-  const sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  const sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
   typeface_ = sk_sp<SkTypeface>(
       font_manager->matchFamilyStyle(kFluentScrollbarFont, SkFontStyle()));
 }

@@ -11,7 +11,7 @@
 
 namespace skia {
 
-sk_sp<SkFontMgr> GetFontMgr() {
+sk_sp<SkFontMgr> DefaultFontMgr() {
   // TODO(b/305780908) Replace this with a singleton that depends on which
   // platform we are on and which SkFontMgr was compiled in (see
   // //src/skia/BUILD.gn)
@@ -19,7 +19,7 @@ sk_sp<SkFontMgr> GetFontMgr() {
 }
 
 sk_sp<SkTypeface> MakeTypefaceFromName(const char* name, SkFontStyle style) {
-  sk_sp<SkFontMgr> fm = GetFontMgr();
+  sk_sp<SkFontMgr> fm = DefaultFontMgr();
   CHECK(fm);
   sk_sp<SkTypeface> face = fm->legacyMakeTypeface(name, style);
   return face;

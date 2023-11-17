@@ -16,7 +16,7 @@ class SkTypeface;
 namespace skia {
 
 // Returns the platform specific SkFontMgr, which is a singleton.
-SK_API sk_sp<SkFontMgr> GetFontMgr();
+SK_API sk_sp<SkFontMgr> DefaultFontMgr();
 
 // Returns a default SkTypeface returned by a platform-specific SkFontMgr.
 SK_API sk_sp<SkTypeface> DefaultTypeface();
