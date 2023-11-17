@@ -436,8 +436,10 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
       if (LocalDOMWindow* window =
               DynamicTo<LocalDOMWindow>(execution_context)) {
         if (LocalFrame* frame = window->GetFrame()) {
-          if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-            lcpp->OnFontFetched(font->Url());
+          if (frame->IsOutermostMainFrame()) {
+            if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+              lcpp->OnFontFetched(font->Url());
+            }
           }
         }
       }
