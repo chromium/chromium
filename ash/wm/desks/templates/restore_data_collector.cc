@@ -49,8 +49,13 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
-  call.lacros_profile_id =
-      DesksController::Get()->active_desk()->lacros_profile_id();
+  // Lacros profile IDs cannot be transferred between devices and is therefore
+  // only enabled for save & recall (which is not synced between devices).
+  if (template_type == DeskTemplateType::kSaveAndRecall &&
+      chromeos::features::IsDeskProfilesEnabled()) {
+    call.lacros_profile_id =
+        DesksController::Get()->active_desk()->lacros_profile_id();
+  }
   auto* window_manager = MultiUserWindowManagerImpl::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
@@ -173,7 +178,7 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
       base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser,
       call.template_name, base::Time::Now(), call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
-  if (chromeos::features::IsDeskProfilesEnabled()) {
+  if (call.lacros_profile_id) {
     desk_template->set_lacros_profile_id(call.lacros_profile_id);
   }
 
