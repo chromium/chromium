@@ -97,7 +97,6 @@ public class SearchEngineUtilsUnitTest {
     @After
     public void tearDown() {
         UmaRecorderHolder.resetForTesting();
-        SearchEngineUtils.resetForTesting();
     }
 
     @Test
@@ -130,7 +129,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        mResources,
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
         verify(mFaviconHelper)
@@ -158,7 +156,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         null);
 
@@ -172,7 +169,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
         assertEquals(promise.getResult(), expected);
@@ -184,7 +180,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        mResources,
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
         verify(mFaviconHelper)
@@ -195,7 +190,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise2 =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
         assertEquals(promise2.getResult(), expected);
@@ -223,7 +217,6 @@ public class SearchEngineUtilsUnitTest {
         doReturn(null).when(mTemplateUrlService).getUrlForSearchQuery(any());
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
 
@@ -250,7 +243,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
 
@@ -274,7 +266,6 @@ public class SearchEngineUtilsUnitTest {
 
         Promise<StatusIconResource> promise =
                 mSearchEngineUtils.getSearchEngineLogo(
-                        Mockito.mock(Resources.class),
                         BrandedColorScheme.APP_DEFAULT,
                         mTemplateUrlService);
         verify(mFaviconHelper)

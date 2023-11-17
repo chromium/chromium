@@ -583,8 +583,7 @@ public class StatusMediator
         }
 
         return SearchEngineUtils.getForProfile(profile)
-                .getSearchEngineLogo(
-                        mResources, mBrandedColorScheme, mTemplateUrlServiceSupplier.get());
+                .getSearchEngineLogo(mBrandedColorScheme, mTemplateUrlServiceSupplier.get());
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */

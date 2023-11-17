@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-
+import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
@@ -38,18 +38,15 @@ public class SearchEngineUtils implements Destroyable {
     private static final String DUMMY_URL_QUERY = "replace_me";
 
     private static ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils = ProfileKeyedMap.createMapOfDestroyables();
-
     private static SearchEngineUtils sInstanceForTesting;
-    // Cached values to prevent duplicate work.
-    private static Bitmap sCachedComposedImage;
-    private static String sCachedComposedBackgroundLogoUrl;
-    private static int sSearchEngineLogoTargetSizePixels;
-    private static int sSearchEngineLogoComposedSizePixels;
-    private Boolean mNeedToCheckForSearchEnginePromo;
 
-    // Lazy initialization for native-bound dependencies.
-    private final Profile mProfile;
-    private FaviconHelper mFaviconHelper;
+    // Cached values to prevent duplicate work.
+    private final @NonNull Profile mProfile;
+    private final int mSearchEngineLogoTargetSizePixels;
+    private @Nullable FaviconHelper mFaviconHelper;
+    private @Nullable Bitmap mCachedComposedImage;
+    private @Nullable String mCachedComposedBackgroundLogoUrl;
+    private Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesSearchProviderHaveLogo;
 
     /**
@@ -81,6 +78,8 @@ public class SearchEngineUtils implements Destroyable {
     @VisibleForTesting
     SearchEngineUtils(Profile profile) {
         mProfile = profile;
+        mSearchEngineLogoTargetSizePixels = ContextUtils.getApplicationContext()
+                .getResources().getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_favicon_size);
     }
 
     @Override
@@ -135,31 +134,14 @@ public class SearchEngineUtils implements Destroyable {
     }
 
     /**
-     * @param resources Android resources object, used to read the dimension.
-     * @return The size that the logo favicon should be.
-     */
-    private int getSearchEngineLogoSizePixels(@NonNull Resources resources) {
-        if (sSearchEngineLogoTargetSizePixels == 0) {
-            sSearchEngineLogoTargetSizePixels =
-                    resources.getDimensionPixelSize(
-                            R.dimen.omnibox_search_engine_logo_favicon_size);
-        }
-
-        return sSearchEngineLogoTargetSizePixels;
-    }
-
-    /**
      * Get the search engine logo favicon. This can return a null bitmap under certain
      * circumstances, such as: no logo url found, network/cache error, etc.
      *
-     * @param resources Provides access to Android resources.
      * @param brandedColorScheme The {@link BrandedColorScheme}, used to tint icons.
-     * @param profile The current profile. When null, falls back to locally-provided icons.
      * @param templateUrlService The current templateUrlService. When null, falls back to
      *     locally-provided icons.
      */
     public Promise<StatusIconResource> getSearchEngineLogo(
-            @NonNull Resources resources,
             @BrandedColorScheme int brandedColorScheme,
             @Nullable TemplateUrlService templateUrlService) {
         onDefaultSearchEngineChanged(templateUrlService);
@@ -189,18 +171,17 @@ public class SearchEngineUtils implements Destroyable {
         }
 
         // Return a cached copy if it's available.
-        if (sCachedComposedImage != null && sCachedComposedBackgroundLogoUrl.equals(logoUrl)) {
+        if (TextUtils.equals(mCachedComposedBackgroundLogoUrl, logoUrl)) {
             recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
-            return Promise.fulfilled(new StatusIconResource(logoUrl, sCachedComposedImage, 0));
+            return Promise.fulfilled(new StatusIconResource(logoUrl, mCachedComposedImage, 0));
         }
 
         Promise<StatusIconResource> promise = new Promise<>();
-        final int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         boolean willCallbackBeCalled =
                 mFaviconHelper.getLocalFaviconImageForURL(
                         mProfile,
                         new GURL(logoUrl),
-                        logoSizePixels,
+                        mSearchEngineLogoTargetSizePixels,
                         (image, iconUrl) -> {
                             if (image == null) {
                                 promise.fulfill(getSearchLoupeResource(brandedColorScheme));
@@ -208,7 +189,10 @@ public class SearchEngineUtils implements Destroyable {
                                 return;
                             }
 
-                            processReturnedLogo(logoUrl, image, resources, promise);
+                            mCachedComposedImage = image;
+                            mCachedComposedBackgroundLogoUrl = logoUrl;
+                            promise.fulfill(new StatusIconResource(logoUrl, mCachedComposedImage, 0));
+
                             recordEvent(Events.FETCH_SUCCESS);
                         });
         if (!willCallbackBeCalled) {
@@ -258,25 +242,6 @@ public class SearchEngineUtils implements Destroyable {
     }
 
     /**
-     * Process the image returned from a network fetch or cache hit. Reduces the size of the
-     * retrieved favicon to reduce memory footprint.
-     *
-     * @param logoUrl The url for the given logo.
-     * @param image The logo to process.
-     * @param resources Android resources object used to access dimensions.
-     * @param promise The promise encapsulating the processed logo.
-     */
-    private void processReturnedLogo(
-            String logoUrl,
-            Bitmap image,
-            Resources resources,
-            Promise<StatusIconResource> promise) {
-        sCachedComposedImage = image;
-        sCachedComposedBackgroundLogoUrl = logoUrl;
-        promise.fulfill(new StatusIconResource(logoUrl, sCachedComposedImage, 0));
-    }
-
-    /**
      * Records an event to the search engine logo histogram. See {@link Events} and histograms.xml
      * for more details.
      *
@@ -298,13 +263,6 @@ public class SearchEngineUtils implements Destroyable {
     public static void setInstanceForTesting(SearchEngineUtils instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
-    }
-
-    /** Reset the cache values for testing. */
-    static void resetForTesting() {
-        sInstanceForTesting = null;
-        sCachedComposedImage = null;
-        sCachedComposedBackgroundLogoUrl = null;
     }
 
     /*

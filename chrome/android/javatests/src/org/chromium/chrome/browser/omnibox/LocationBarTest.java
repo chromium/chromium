@@ -124,7 +124,7 @@ public class LocationBarTest {
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
                     doReturn(new Promise<>())
                             .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any());
+                            .getSearchEngineLogo(anyInt(), any());
                 });
         UmaRecorderHolder.resetForTesting();
         // Prevents recreating Chrome when the default search engine is changed.
@@ -208,7 +208,7 @@ public class LocationBarTest {
 
                     doReturn(logoPromise)
                             .when(mSearchEngineUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any());
+                            .getSearchEngineLogo(anyInt(), any());
                 });
     }
 
