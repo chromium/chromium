@@ -249,10 +249,10 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   LanguagePackManager();
   ~LanguagePackManager() override;
 
-  static void UpdateFromInputMethodPrefs(
-      base::span<const std::string> installed_hwr_locales,
-      input_method::InputMethodUtil* input_method_util,
-      PrefService* prefs);
+  // Retrieves the list of installed DLCs and updates Packs accordingly.
+  // This function should be called when LPM initializes and then each time
+  // Prefs change.
+  static void CheckAndUpdateDlcsForInputMethods(PrefService* prefs);
 
   // DlcserviceClient::Observer overrides.
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;

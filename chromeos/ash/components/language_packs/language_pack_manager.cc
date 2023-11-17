@@ -146,6 +146,44 @@ void InstallOrRemoveToMatchState(const std::string& feature_id,
   }
 }
 
+// Updates packs for input methods based on the user prefs and the currently
+// installed DLCs.
+// TODO: b/294162606 - Write unit tests for this function if possible.
+void UpdateFromInputMethodPrefs(
+    base::span<const std::string> installed_hwr_locales,
+    input_method::InputMethodUtil* input_method_util,
+    PrefService* prefs) {
+  const std::vector<std::string> input_method_ids =
+      ExtractInputMethodsFromPrefs(prefs);
+  const base::flat_set<std::string> target_hwr_locales = MapThenFilterStrings(
+      input_method_ids, base::BindRepeating(MapInputMethodIdToHandwritingLocale,
+                                            input_method_util));
+
+  const StringsDiff locale_diff = ComputeStringsDiff(
+      {installed_hwr_locales.begin(), installed_hwr_locales.end()},
+      target_hwr_locales);
+
+  InstallOrRemoveToMatchState(kHandwritingFeatureId, locale_diff);
+}
+
+// Callback for dlcservice::GetExistingDlcs().
+// TODO: b/294162606 - Write unit tests for this function if possible.
+void OnGetExistingDlcs(PrefService* prefs,
+                       const std::string& err,
+                       const dlcservice::DlcsWithContent& dlcs_with_content) {
+  if (!err.empty() && err != dlcservice::kErrorNone) {
+    DLOG(ERROR) << "DlcserviceClient::GetExisingDlcs() returned error";
+    // TODO: b/285985206 - Record a UMA histogram.
+    return;
+  }
+
+  const base::flat_set<std::string> hwr_locales =
+      ConvertDlcsWithContentToHandwritingLocales(dlcs_with_content);
+  UpdateFromInputMethodPrefs({hwr_locales.begin(), hwr_locales.end()},
+                             InputMethodManager::Get()->GetInputMethodUtil(),
+                             prefs);
+}
+
 }  // namespace
 
 const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
@@ -413,21 +451,12 @@ void LanguagePackManager::UpdatePacksForOobe(
   }
 }
 
-void LanguagePackManager::UpdateFromInputMethodPrefs(
-    base::span<const std::string> installed_hwr_locales,
-    input_method::InputMethodUtil* input_method_util,
+void LanguagePackManager::CheckAndUpdateDlcsForInputMethods(
     PrefService* prefs) {
-  const std::vector<std::string> input_method_ids =
-      ExtractInputMethodsFromPrefs(prefs);
-  const base::flat_set<std::string> target_hwr_locales = MapThenFilterStrings(
-      input_method_ids, base::BindRepeating(MapInputMethodIdToHandwritingLocale,
-                                            input_method_util));
-
-  const StringsDiff locale_diff = ComputeStringsDiff(
-      {installed_hwr_locales.begin(), installed_hwr_locales.end()},
-      target_hwr_locales);
-
-  InstallOrRemoveToMatchState(kHandwritingFeatureId, locale_diff);
+  // The list of input methods have changed. We need to get the list of current
+  // DLCs installed on device, which is an asynchronous method.
+  DlcserviceClient::Get()->GetExistingDlcs(
+      base::BindOnce(&OnGetExistingDlcs, prefs));
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {
