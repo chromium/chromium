@@ -10582,6 +10582,22 @@
             ]
         }
     ],
+    "NearbySharingFeatureName": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsNameEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbySharingSelfShare": [
         {
             "platforms": [
