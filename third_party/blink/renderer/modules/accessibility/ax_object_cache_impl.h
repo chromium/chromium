@@ -379,10 +379,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkAXObjectDirty(AXObject*);
 
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
-  void MarkAXObjectDirtyWithCleanLayoutAndEvent(
-      AXObject*,
-      ax::mojom::blink::EventFrom event_from,
-      ax::mojom::blink::Action event_from_action);
 
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 

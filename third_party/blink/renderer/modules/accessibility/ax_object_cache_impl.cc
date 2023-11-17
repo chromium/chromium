@@ -4266,14 +4266,6 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
     agent->AXObjectModified(obj, subtree);
 }
 
-void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutAndEvent(
-    AXObject* obj,
-    ax::mojom::blink::EventFrom event_from,
-    ax::mojom::blink::Action event_from_action) {
-  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false, event_from,
-                                         event_from_action);
-}
-
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, false, active_event_from_,
                                          active_event_from_action_);
