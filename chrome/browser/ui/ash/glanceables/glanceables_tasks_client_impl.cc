@@ -169,9 +169,11 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
 }
 
 void TasksClientImpl::AddTask(const std::string& task_list_id,
-                              const std::string& title) {
+                              const std::string& title,
+                              api::TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!title.empty());
+  CHECK(callback);
 
   auto* const request_sender = GetRequestSender();
   // TODO(b/299317602): update `previous_task_id` parameter if new tasks need to
@@ -180,14 +182,14 @@ void TasksClientImpl::AddTask(const std::string& task_list_id,
       request_sender, task_list_id, /*previous_task_id=*/"",
       TaskRequestPayload{.title = title, .status = TaskStatus::kNeedsAction},
       base::BindOnce(&TasksClientImpl::OnTaskAdded, weak_factory_.GetWeakPtr(),
-                     task_list_id)));
+                     task_list_id, std::move(callback))));
 }
 
 void TasksClientImpl::UpdateTask(
     const std::string& task_list_id,
     const std::string& task_id,
     const std::string& title,
-    api::TasksClient::UpdateTaskCallback callback) {
+    api::TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
   CHECK(!title.empty());
@@ -389,53 +391,57 @@ void TasksClientImpl::OnMarkedAsCompleted(
 
 void TasksClientImpl::OnTaskAdded(
     const std::string& task_list_id,
+    api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
   if (!result.has_value()) {
-    // TODO(b/299317602): propagate `result.error()` to the UI layer.
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
   if (iter == tasks_in_task_lists_.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
-  // TODO(b/299317602): update `index` parameter if new tasks need to be added
-  // to the end of the list.
-  iter->second.AddAt(
+  const auto* const task = iter->second.AddAt(
       /*index=*/0,
       std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
                                   /*completed=*/false, /*due=*/absl::nullopt,
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false, /*has_notes=*/false,
                                   result.value()->updated()));
+  std::move(callback).Run(/*task=*/task);
 }
 
 void TasksClientImpl::OnTaskUpdated(
     const std::string& task_list_id,
-    api::TasksClient::UpdateTaskCallback callback,
+    api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
   // TODO(b/301253574): Add metrics.
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
   const auto tasks_iter = tasks_in_task_lists_.find(task_list_id);
-  if (tasks_iter != tasks_in_task_lists_.end()) {
-    const auto task_iter =
-        std::find_if(tasks_iter->second.begin(), tasks_iter->second.end(),
-                     [&result](const auto& task) {
-                       return task->id == result->get()->id();
-                     });
-    if (task_iter != tasks_iter->second.end()) {
-      task_iter->get()->title = result->get()->title();
-      task_iter->get()->updated = result->get()->updated();
-    }
+  if (tasks_iter == tasks_in_task_lists_.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
+    return;
   }
 
-  std::move(callback).Run(/*success=*/true);
+  const auto task_iter = std::find_if(
+      tasks_iter->second.begin(), tasks_iter->second.end(),
+      [&result](const auto& task) { return task->id == result->get()->id(); });
+  if (task_iter == tasks_iter->second.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
+    return;
+  }
+
+  task_iter->get()->title = result->get()->title();
+  task_iter->get()->updated = result->get()->updated();
+  std::move(callback).Run(/*task=*/task_iter->get());
 }
 
 google_apis::RequestSender* TasksClientImpl::GetRequestSender() {

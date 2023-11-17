@@ -62,11 +62,12 @@ class TasksClientImpl : public api::TasksClient {
                        const std::string& task_id,
                        bool completed) override;
   void AddTask(const std::string& task_list_id,
-               const std::string& title) override;
+               const std::string& title,
+               api::TasksClient::OnTaskSavedCallback callback) override;
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
-                  api::TasksClient::UpdateTaskCallback callback) override;
+                  api::TasksClient::OnTaskSavedCallback callback) override;
   void OnGlanceablesBubbleClosed(
       api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
           base::DoNothing()) override;
@@ -177,16 +178,19 @@ class TasksClientImpl : public api::TasksClient {
 
   // Done callback for `AddTask()` request.
   // `task_list_id` - id of the task list used in the request.
+  // `callback`     - done callback passed from `AddTask`.
   // `result`       - newly created task or HTTP error.
   void OnTaskAdded(const std::string& task_list_id,
+                   api::TasksClient::OnTaskSavedCallback callback,
                    base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                   google_apis::ApiErrorCode> result);
 
   // Done callback for `UpdateTask()` request.
   // `task_list_id` - id of the task list used in the request.
+  // `callback`     - done callback passed from `UpdateTask`.
   // `result`       - updated task or HTTP error.
   void OnTaskUpdated(const std::string& task_list_id,
-                     api::TasksClient::UpdateTaskCallback callback,
+                     api::TasksClient::OnTaskSavedCallback callback,
                      base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                     google_apis::ApiErrorCode> result);
 

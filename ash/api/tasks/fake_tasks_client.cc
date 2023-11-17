@@ -66,14 +66,17 @@ void FakeTasksClient::MarkAsCompleted(const std::string& task_list_id,
 }
 
 void FakeTasksClient::AddTask(const std::string& task_list_id,
-                              const std::string& title) {
+                              const std::string& title,
+                              TasksClient::OnTaskSavedCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void FakeTasksClient::UpdateTask(const std::string& task_list_id,
                                  const std::string& task_id,
                                  const std::string& title,
-                                 TasksClient::UpdateTaskCallback callback) {}
+                                 TasksClient::OnTaskSavedCallback callback) {
+  NOTIMPLEMENTED();
+}
 
 void FakeTasksClient::OnGlanceablesBubbleClosed(
     TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {

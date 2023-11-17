@@ -1235,18 +1235,15 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
 
   testing::StrictMock<TestListModelObserver> observer;
   tasks->AddObserver(&observer);
+  EXPECT_CALL(observer, ListItemsAdded(/*start=*/0, /*count=*/1));
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, ListItemsAdded(/*start=*/0, /*count=*/1))
-      .WillOnce([&]() {
-        run_loop.Quit();
+  TestFuture<const api::Task*> add_task_future;
+  client()->AddTask("test-task-list-id", "New task",
+                    add_task_future.GetCallback());
 
-        EXPECT_EQ(tasks->item_count(), 2u);
-        EXPECT_EQ(tasks->GetItemAt(0)->id, "new-task-id");
-        EXPECT_EQ(tasks->GetItemAt(0)->title, "New task");
-      });
-  client()->AddTask("test-task-list-id", "New task");
-  run_loop.Run();
+  ASSERT_TRUE(add_task_future.Wait());
+  EXPECT_EQ(add_task_future.Get()->id, "new-task-id");
+  EXPECT_EQ(add_task_future.Get()->title, "New task");
 }
 
 // ----------------------------------------------------------------------------
@@ -1289,13 +1286,13 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
 
   // Update the task.
-  TestFuture<bool> update_task_future;
+  TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        update_task_future.GetCallback());
   ASSERT_TRUE(update_task_future.Wait());
-  EXPECT_TRUE(update_task_future.Get());
 
   // Make sure `tasks` contains the update.
+  EXPECT_EQ(tasks->GetItemAt(0), update_task_future.Get());
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Updated title");
 }
 
@@ -1305,7 +1302,7 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<bool> update_task_future;
+  TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        update_task_future.GetCallback());
 

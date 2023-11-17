@@ -162,7 +162,7 @@ void ChromeTasksDelegate::AddTask(const std::string& task_list_id,
   CHECK(active_account_id_.is_valid());
   TasksClientImpl* client = GetActiveAccountClient();
   CHECK(client);
-  client->AddTask(task_list_id, title);
+  client->AddTask(task_list_id, title, base::DoNothing());
 }
 
 void ChromeTasksDelegate::UpdateTaskTitle(const std::string& task_list_id,

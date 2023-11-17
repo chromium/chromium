@@ -41,11 +41,12 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
                        const std::string& task_id,
                        bool checked) override;
   void AddTask(const std::string& task_list_id,
-               const std::string& title) override;
+               const std::string& title,
+               TasksClient::OnTaskSavedCallback callback) override;
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
-                  TasksClient::UpdateTaskCallback callback) override;
+                  TasksClient::OnTaskSavedCallback callback) override;
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
 

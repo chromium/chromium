@@ -334,7 +334,7 @@ void GlanceablesTasksView::SaveTask(const std::string& task_list_id,
   // TODO(b/301253574): show/hide `progress_bar_` and/or an error message.
   auto* const client = Shell::Get()->glanceables_controller()->GetTasksClient();
   if (task_id.empty()) {
-    client->AddTask(task_list_id, title);
+    client->AddTask(task_list_id, title, base::DoNothing());
   } else {
     client->UpdateTask(task_list_id, task_id, title, base::DoNothing());
   }
