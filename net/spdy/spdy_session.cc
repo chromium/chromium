@@ -2828,6 +2828,8 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
 
 void SpdySession::OnStreamEnd(spdy::SpdyStreamId stream_id) {
   CHECK(in_io_loop_);
+  // TODO(https://crbug.com/1502838): Log END_STREAM on corresponding frames,
+  // instead of as an extra fictional DATA frame.
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA,
                     [&] { return NetLogSpdyDataParams(stream_id, 0, true); });
 

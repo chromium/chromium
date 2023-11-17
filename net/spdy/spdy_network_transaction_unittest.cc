@@ -3522,6 +3522,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   // DATA frame with END_STREAM is logged as two HTTP2_SESSION_RECV_DATA events:
   //     the first with `fin == false`,
   //     the second with `length = 0` and `fin = true`.
+  // TODO(https://crbug.com/1502838): Log only a single event.
   pos = ExpectLogContainsSomewhere(entries, 0,
                                    NetLogEventType::HTTP2_SESSION_RECV_DATA,
                                    NetLogEventPhase::NONE);
@@ -3580,8 +3581,18 @@ TEST_P(SpdyNetworkTransactionTest, NetLogForResponseWithNoBody) {
   ASSERT_TRUE(fin.has_value());
   EXPECT_TRUE(*fin);
 
-  EXPECT_FALSE(LogContainsEntryWithType(
-      entries, 0, NetLogEventType::HTTP2_SESSION_RECV_DATA));
+  // TODO(https://crbug.com/1502838):
+  // No DATA frame received, this event should not be logged.
+  pos = ExpectLogContainsSomewhereAfter(
+      entries, pos + 1, NetLogEventType::HTTP2_SESSION_RECV_DATA,
+      NetLogEventPhase::NONE);
+  ASSERT_TRUE(entries[pos].HasParams());
+  absl::optional<int> size = entries[pos].params.FindInt("size");
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(0, *size);
+  fin = entries[pos].params.FindBool("fin");
+  ASSERT_TRUE(fin.has_value());
+  EXPECT_TRUE(*fin);
 }
 
 // Since we buffer the IO from the stream to the renderer, this test verifies
