@@ -57,11 +57,6 @@ void IsUVPlatformAuthenticatorAvailable(
 #elif BUILDFLAG(IS_CHROMEOS)
 void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthCrosPlatformAuthenticator)) {
-    std::move(callback).Run(false);
-    return;
-  }
   device::ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
       std::move(callback));
 }

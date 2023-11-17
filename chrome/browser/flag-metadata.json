@@ -3697,11 +3697,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-web-authentication-chromeos-authenticator",
-    "owners": [ "yichengli@chromium.org", "martinkr@chromium.org" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-web-bluetooth",
     "owners": [ "web-bluetooth@google.com" ],
     "expiry_milestone": 120

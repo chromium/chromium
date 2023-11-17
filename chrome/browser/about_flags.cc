@@ -7148,14 +7148,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLegacyTechReportTopLevelUrlDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kLegacyTechReportTopLevelUrl)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-web-authentication-chromeos-authenticator",
-     flag_descriptions::kEnableWebAuthenticationChromeOSAuthenticatorName,
-     flag_descriptions::
-         kEnableWebAuthenticationChromeOSAuthenticatorDescription,
-     kOsCrOS, FEATURE_VALUE_TYPE(device::kWebAuthCrosPlatformAuthenticator)},
-#endif
-
     {
         "zero-copy-tab-capture",
         flag_descriptions::kEnableZeroCopyTabCaptureName,

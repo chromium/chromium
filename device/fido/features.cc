@@ -40,13 +40,6 @@ BASE_FEATURE(kWebAuthCableExtensionAnywhere,
              "WebAuthenticationCableExtensionAnywhere",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enabled in M102. Ready to be removed.
-BASE_FEATURE(kWebAuthCrosPlatformAuthenticator,
-             "WebAuthenticationCrosPlatformAuthenticator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID)
 // Enabled in M116. Remove in or after M119.
 BASE_FEATURE(kWebAuthnAndroidHybridClientUi,

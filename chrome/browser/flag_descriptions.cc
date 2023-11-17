@@ -1516,12 +1516,6 @@ const char kEnableSystemEntropyOnPerformanceNavigationTimingDescription[] =
     "while the user agent was under load. See "
     "https://chromestatus.com/feature/5186950448283648 for more information.";
 
-const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
-    "ChromeOS platform Web Authentication support";
-const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =
-    "Enable the ChromeOS platform authenticator for the Web Authentication "
-    "API.";
-
 const char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
 const char kEnableZeroCopyTabCaptureDescription[] =
     "Enable zero-copy content tab for getDisplayMedia() APIs.";
