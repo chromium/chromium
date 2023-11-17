@@ -1159,9 +1159,8 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // revocation button for HTTP allowlist entries added because HTTPS was
   // enforced by HTTPS-First Mode.
   bool is_https_enforced =
-      delegate->IsHttpsEnforcedForHost(
-          url.host(),
-          web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) ||
+      delegate->IsHttpsEnforcedForUrl(
+          url, web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) ||
       delegate_->IsHttpsFirstModeEnabled();
 
   bool has_warning_bypass_exception =

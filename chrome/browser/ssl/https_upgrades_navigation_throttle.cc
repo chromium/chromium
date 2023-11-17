@@ -87,8 +87,8 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   }
 
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
-                                             storage_partition)) {
+  if (state &&
+      state->IsHttpsEnforcedForUrl(handle->GetURL(), storage_partition)) {
     interstitial_state.enabled_by_engagement_heuristic = true;
   }
 

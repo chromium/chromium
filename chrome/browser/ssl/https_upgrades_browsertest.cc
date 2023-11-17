@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -727,13 +728,41 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
   run_loop.Run();
 }
 
+// Returns a URL loader interceptor that responds to HTTPS URLs with a cert
+// error and to HTTP URLs with a good response.
+std::unique_ptr<content::URLLoaderInterceptor>
+MakeInterceptorForSiteEngagementHeuristic() {
+  return std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.SchemeIs("https")) {
+              // Fail with an SSL error.
+              network::URLLoaderCompletionStatus status;
+              status.error_code = net::ERR_CERT_COMMON_NAME_INVALID;
+              status.ssl_info = net::SSLInfo();
+              status.ssl_info->cert_status =
+                  net::CERT_STATUS_COMMON_NAME_INVALID;
+              // The cert doesn't matter.
+              status.ssl_info->cert = net::ImportCertFromFile(
+                  net::GetTestCertsDirectory(), "ok_cert.pem");
+              status.ssl_info->unverified_cert = status.ssl_info->cert;
+              params->client->OnComplete(status);
+              return true;
+            }
+            content::URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                "<html>Done</html>", params->client.get());
+            return true;
+          }));
+}
+
 // TODO(https://crbug.com/1435222): Fails on the linux-wayland-rel bot.
 #if defined(OZONE_PLATFORM_WAYLAND)
-#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement \
-  DISABLED_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial \
+  DISABLED_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial
 #else
-#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement \
-  UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial \
+  UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial
 #endif
 // Test for Site Engagement Heuristic, a feature that enables HFM on specific
 // sites based on their site engagement scores.
@@ -743,11 +772,16 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
 // Heuristic if the interstitial isn't enabled.
 IN_PROC_BROWSER_TEST_P(
     HttpsUpgradesBrowserTest,
-    MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement) {
+    MAYBE_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial) {
   // HFM+SE is not enabled in Incognito.
   if (IsIncognito()) {
     return;
   }
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
 
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
@@ -764,8 +798,8 @@ IN_PROC_BROWSER_TEST_P(
   // Start the clock at standard system time.
   clock_ptr->SetNow(base::Time::NowFromSystemTime());
 
-  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
-  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+  GURL http_url("http://bad-https.com");
+  GURL https_url("https://bad-https.com");
   SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
   SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
   HttpsFirstModeService* hfm_service =
@@ -956,6 +990,123 @@ IN_PROC_BROWSER_TEST_P(
         kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
     histograms()->ExpectTotalCount(
         kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+  }
+}
+
+// Test that Site Engagement Heuristic doesn't enforce HTTPS on URLs with
+// non-default ports.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldIgnoreUrlsWithNonDefaultPorts) {
+  // HFM+SE is not enabled in Incognito.
+  if (IsIncognito()) {
+    return;
+  }
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
+
+  content::WebContents* contents =
+      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = GetBrowser()->profile();
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+
+  // Set test clock.
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  StatefulSSLHostStateDelegate* chrome_state =
+      static_cast<StatefulSSLHostStateDelegate*>(state);
+  chrome_state->SetClockForTesting(std::move(clock));
+
+  // Start the clock at standard system time.
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  GURL http_url("http://bad-https.com");
+  GURL https_url("https://bad-https.com");
+  GURL navigated_url("http://bad-https.com:8080");
+
+  SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
+  SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
+
+  // This URL should be upgraded by HTTPS-Upgrades, but not have HFM
+  // auto-enabled on it because it has a non-default port.
+  NavigateAndWaitForFallback(contents, navigated_url);
+  EXPECT_EQ(navigated_url, contents->GetLastCommittedURL());
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        "You are seeing this warning because this site does not support "
+        "HTTPS."));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // Verify that navigation event metrics were correctly recorded.
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError,
+                                    1);
+
+    // Engagement heuristic shouldn't handle any navigation events because we
+    // didn't navigate to example.com.
+    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+
+    // Check engagement heuristic metrics. These are only recorded when the
+    // interstitial isn't enabled by the user pref.
+    if (!IsHttpsFirstModePrefEnabled()) {
+      // Check the heuristic state. The heuristic should enable HFM for
+      // example.com
+      histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
+      histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                      SiteEngagementHeuristicState::kDisabled,
+                                      0);
+      histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                      SiteEngagementHeuristicState::kEnabled,
+                                      1);
+      // Check host count.
+      histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
+                                     1);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicHostCountHistogram, 0,
+          /*expected_count=*/0);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicHostCountHistogram, 1,
+          /*expected_count=*/1);
+      // Check accumulated host count.
+      histograms()->ExpectTotalCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0,
+          /*expected_count=*/0);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1,
+          /*expected_count=*/1);
+      // Check enforcement duration. Since the host isn't removed from HFM
+      // enforcement list, no duration should be recorded yet.
+      histograms()->ExpectTotalCount(
+          kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+    } else {
+      histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+    }
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
   }
 }
 
@@ -2422,14 +2573,20 @@ IN_PROC_BROWSER_TEST_P(
   if (!IsSiteEngagementHeuristicEnabled()) {
     return;
   }
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
+
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
   // Without any policy allowlist, navigate to an HTTP URL. It should show the
   // HFM+SE interstitial.
-  auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
-  auto https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+  GURL http_url("http://bad-https.com");
+  GURL https_url("https://bad-https.com");
   SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
   SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
 

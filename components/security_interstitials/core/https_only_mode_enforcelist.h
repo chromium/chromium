@@ -45,9 +45,10 @@ class HttpsOnlyModeEnforcelist {
   // enforced for this host.
   void UnenforceForHost(const std::string& host, bool is_nondefault_storage);
 
-  // Returns true if host is not allowed to be loaded over HTTP.
-  bool IsEnforcedForHost(const std::string& host,
-                         bool is_nondefault_storage) const;
+  // Returns true if URL is not allowed to be loaded over HTTP. This check
+  // ignores the scheme of the URL: calling it with http:// or https:// will
+  // return the same result.
+  bool IsEnforcedForUrl(const GURL& url, bool is_nondefault_storage) const;
 
   // Revokes all HTTPS enforcements for host.
   void RevokeEnforcements(const std::string& host);

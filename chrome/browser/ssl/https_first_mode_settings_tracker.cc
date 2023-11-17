@@ -527,7 +527,7 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
   // TODO(crbug.com/1435222): Sites dropping off from the engaged sites list
   // should no longer have HTTPS enforced.
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (detail.origin.SchemeIsHTTPOrHTTPS()) {
+    if (detail.origin.SchemeIsHTTPOrHTTPS() && detail.origin.port().empty()) {
       MaybeEnableHttpsFirstModeForUrl(detail.origin, engagement_service, state);
     }
   }
@@ -541,8 +541,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     const GURL& url,
     site_engagement::SiteEngagementService* engagement_service,
     StatefulSSLHostStateDelegate* state) {
-  bool enforced = state->IsHttpsEnforcedForHost(
-      url.host(), profile_->GetDefaultStoragePartition());
+  bool enforced =
+      state->IsHttpsEnforcedForUrl(url, profile_->GetDefaultStoragePartition());
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
 

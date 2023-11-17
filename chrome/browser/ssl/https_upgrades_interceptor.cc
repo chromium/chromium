@@ -268,8 +268,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       security_interstitials::https_only_mode::HttpInterstitialState>();
   interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(
-                   tentative_resource_request.url.host(), storage_partition)) {
+  if (state && state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                            storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
 

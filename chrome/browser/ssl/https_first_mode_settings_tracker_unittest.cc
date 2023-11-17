@@ -113,21 +113,72 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   GURL https_url("https://example.com");
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
 
   // Disable HFM. This should clear the enforcelist.
   profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
 
   // Check again. Should remain unenforced.
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
 }
 
-TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
+// Check that high site engagement scores of HTTPS URLs with non-default ports
+// do not auto-enable HTTPS-First Mode.
+TEST_F(
+    HttpsFirstModeSettingsTrackerTest,
+    SiteEngagementHeuristic_ShouldIgnoreEngagementScoreOfUrlWithNonDefaultPort) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  // HFM should initially be disabled on this site by default.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+  // Increase the score. Since the URL has a non-default port, HFM should remain
+  // disabled.
+  engagement_service->ResetBaseScoreForURL(GURL("https://example.com:8443"),
+                                           90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       SiteEngagementHeuristic_ShouldEnforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -155,8 +206,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
 
   // Step 1: HFM should initially be disabled on this site by default.
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
   histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
   histograms.ExpectTotalCount(
@@ -167,8 +218,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // Step 2: Increase the score, should now enable HFM.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -191,15 +242,16 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
       kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
 
   // Subdomains shouldn't be affected.
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "test.example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(
+      state->IsHttpsEnforcedForUrl(GURL("http://test.example.com"),
+                                   profile()->GetDefaultStoragePartition()));
 
   // Step 3: Decrease the score, but only slightly. This shouldn't result in HFM
   // being disabled.
   engagement_service->ResetBaseScoreForURL(https_url, 85);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -226,8 +278,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   clock_ptr->Advance(base::Hours(1));
   engagement_service->ResetBaseScoreForURL(https_url, 25);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 2);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -259,8 +311,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   clock_ptr->Advance(base::Hours(2));
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 3);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -292,8 +344,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // the HTTPS score is still high.
   engagement_service->ResetBaseScoreForURL(http_url, 20);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 4);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -329,8 +381,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   engagement_service->ResetBaseScoreForURL(https_url, 0);
   engagement_service->ResetBaseScoreForURL(http_url, 100);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 4);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -388,8 +440,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   // Increase the HTTPS engagement score to enable HFM on this host.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
 
   // Clear up the engagement scores. This should remove the enforcement.
   HostContentSettingsMap* settings_map =
@@ -402,8 +454,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
 
   // TODO(crbug.com/1435222): Sites that fall outside the site engagement list
   // should no longer have HTTPS enforced.
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
 
   service->Shutdown();
 }

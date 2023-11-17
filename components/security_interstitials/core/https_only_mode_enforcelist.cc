@@ -50,7 +50,7 @@ void HttpsOnlyModeEnforcelist::EnforceForHost(const std::string& host,
     enforce_https_hosts_for_non_default_storage_partitions_.insert(host);
     return;
   }
-  DCHECK(!IsEnforcedForHost(host, is_nondefault_storage));
+  DCHECK(!IsEnforcedForUrl(GURL("http://" + host), is_nondefault_storage));
 
   // We want to count how many HTTPS-enforced hosts accumulate over time, so
   // use a dictionary here.
@@ -75,7 +75,7 @@ void HttpsOnlyModeEnforcelist::UnenforceForHost(const std::string& host,
     enforce_https_hosts_for_non_default_storage_partitions_.erase(host);
     return;
   }
-  DCHECK(IsEnforcedForHost(host, is_nondefault_storage));
+  DCHECK(IsEnforcedForUrl(GURL("http://" + host), is_nondefault_storage));
 
   // We want to count how many HTTPS-enforced hosts accumulate over time, so
   // don't remove the value, just set it to false.
@@ -104,17 +104,21 @@ void HttpsOnlyModeEnforcelist::UnenforceForHost(const std::string& host,
   RecordMetrics(is_nondefault_storage);
 }
 
-bool HttpsOnlyModeEnforcelist::IsEnforcedForHost(
-    const std::string& host,
+bool HttpsOnlyModeEnforcelist::IsEnforcedForUrl(
+    const GURL& url,
     bool is_nondefault_storage) const {
+  // HTTPS-First Mode is never auto-enabled for URLs with non-default ports.
+  if (!url.port().empty()) {
+    return false;
+  }
   if (is_nondefault_storage) {
     return base::Contains(
-        enforce_https_hosts_for_non_default_storage_partitions_, host);
+        enforce_https_hosts_for_non_default_storage_partitions_, url.host());
   }
 
-  GURL url = GetSecureGURLForHost(host);
+  GURL secure_url = GetSecureGURLForHost(url.host());
   const base::Value value = host_content_settings_map_->GetWebsiteSetting(
-      url, url, ContentSettingsType::HTTPS_ENFORCED, nullptr);
+      secure_url, secure_url, ContentSettingsType::HTTPS_ENFORCED, nullptr);
   if (!value.is_dict()) {
     return false;
   }

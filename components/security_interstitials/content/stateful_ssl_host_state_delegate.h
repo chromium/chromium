@@ -92,8 +92,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       const std::string& host,
       bool enforced,
       content::StoragePartition* storage_partition) override;
-  bool IsHttpsEnforcedForHost(
-      const std::string& host,
+  bool IsHttpsEnforcedForUrl(
+      const GURL& url,
       content::StoragePartition* storage_partition) override;
 
   // Clears all entries from the HTTP allowlist.
