@@ -228,20 +228,25 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       const url::Origin& owner,
       std::vector<StorageInterestGroup> interest_groups);
 
-  void OnLoadInterestGroupsForOwnerCacheDisabled(
+  void OnLoadInterestGroupsForOwnerOneCallback(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
       std::vector<StorageInterestGroup> interest_groups);
+
+  void InvalidateCachedInterestGroupsForOwner(const url::Origin& owner);
+  void InvalidateAllCachedInterestGroups();
 
   base::SequenceBound<InterestGroupStorage> interest_group_storage_;
 
   std::map<url::Origin, base::WeakPtr<StorageInterestGroups>>
       cached_interest_groups_;
 
-  std::map<const url::Origin,
+  std::map<url::Origin,
            base::queue<
                base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)>>>
       outstanding_interest_groups_for_owner_callbacks_;
+
+  std::set<url::Origin> outdated_outstanding_interest_group_loads_;
 
   base::WeakPtrFactory<InterestGroupCachingStorage> weak_factory_{this};
 };
