@@ -14417,6 +14417,12 @@ Called by update_debug_scenarios.py.-->
   <int value="109" label="chrome_recorder.replay-recording"/>
   <int value="110" label="chrome_recorder.toggle-code-view"/>
   <int value="111" label="chrome_recorder.copy-recording-or-step"/>
+  <int value="112" label="changes.revert"/>
+  <int value="113" label="changes.copy"/>
+  <int value="114" label="elements.new-style-rule"/>
+  <int value="115" label="elements.refresh-event-listeners"/>
+  <int value="116" label="coverage.clear"/>
+  <int value="117" label="coverage.export"/>
 </enum>
 
 <enum name="DevToolsLanguage">
