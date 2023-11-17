@@ -15,36 +15,26 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/backtrack.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/compile.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/dfa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/builders.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/bytes.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/exec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/expand.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/find_byte.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/freqs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/input.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/literal/imp.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/literal/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pattern.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pikevm.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pool.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/prog.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_bytes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_trait.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_unicode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/sparse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/utf8.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/string.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.6.0"
-  cargo_pkg_authors = "The Rust Project Developers"
+  edition = "2021"
+  cargo_pkg_version = "1.10.2"
+  cargo_pkg_authors =
+      "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "regex"
   cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -52,18 +42,19 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    "//third_party/rust/aho_corasick/v0_7:lib",
+    "//third_party/rust/aho_corasick/v1:lib",
     "//third_party/rust/memchr/v2:lib",
-    "//third_party/rust/regex_syntax/v0_6:lib",
+    "//third_party/rust/regex_automata/v0_4:lib",
+    "//third_party/rust/regex_syntax/v0_8:lib",
   ]
   features = [
-    "aho-corasick",
-    "memchr",
     "perf",
+    "perf-backtrack",
     "perf-cache",
     "perf-dfa",
     "perf-inline",
     "perf-literal",
+    "perf-onepass",
     "std",
     "unicode",
     "unicode-age",
@@ -82,77 +73,5 @@ cargo_crate("lib") {
 }
 group("test_support") {
   public_deps = [ ":lib" ]
-  testonly = true
-}
-cargo_crate("buildrs_support") {
-  crate_name = "regex"
-  epoch = "1"
-  crate_type = "rlib"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs"
-  sources = [
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/backtrack.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/compile.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/dfa.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/exec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/expand.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/find_byte.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/freqs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/input.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/literal/imp.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/literal/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pattern.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pikevm.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pool.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/prog.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_bytes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_trait.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/re_unicode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/sparse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/utf8.rs",
-  ]
-  inputs = []
-
-  build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.6.0"
-  cargo_pkg_authors = "The Rust Project Developers"
-  cargo_pkg_name = "regex"
-  cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [
-    "//third_party/rust/aho_corasick/v0_7:lib",
-    "//third_party/rust/memchr/v2:lib",
-    "//third_party/rust/regex_syntax/v0_6:lib",
-  ]
-  features = [
-    "aho-corasick",
-    "memchr",
-    "perf",
-    "perf-cache",
-    "perf-dfa",
-    "perf-inline",
-    "perf-literal",
-    "std",
-    "unicode",
-    "unicode-age",
-    "unicode-bool",
-    "unicode-case",
-    "unicode-gencat",
-    "unicode-perl",
-    "unicode-script",
-    "unicode-segment",
-  ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   testonly = true
 }

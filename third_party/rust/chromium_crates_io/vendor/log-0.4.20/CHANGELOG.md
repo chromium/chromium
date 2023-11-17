@@ -2,6 +2,35 @@
 
 ## [Unreleased]
 
+## [0.4.20] - 2023-07-11
+
+* Remove rustversion dev-dependency by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/568
+* Remove `local_inner_macros` usage by @EFanZh in https://github.com/rust-lang/log/pull/570
+
+## [0.4.19] - 2023-06-10
+
+* Use target_has_atomic instead of the old atomic_cas cfg by @GuillaumeGomez in https://github.com/rust-lang/log/pull/555
+* Put MSRV into Cargo.toml by @est31 in https://github.com/rust-lang/log/pull/557
+
+## [0.4.18] - 2023-05-28
+
+* fix markdown links (again) by @hellow554 in https://github.com/rust-lang/log/pull/513
+* add cargo doc to workflow by @hellow554 in https://github.com/rust-lang/log/pull/515
+* Apply Clippy lints by @hellow554 in https://github.com/rust-lang/log/pull/516
+* Replace ad-hoc eq_ignore_ascii_case with slice::eq_ignore_ascii_case by @glandium in https://github.com/rust-lang/log/pull/519
+* fix up windows targets by @KodrAus in https://github.com/rust-lang/log/pull/528
+* typo fix by @jiangying000 in https://github.com/rust-lang/log/pull/529
+* Remove dependency on cfg_if by @EriKWDev in https://github.com/rust-lang/log/pull/536
+* GitHub Workflows security hardening by @sashashura in https://github.com/rust-lang/log/pull/538
+* Fix build status badge by @atouchet in https://github.com/rust-lang/log/pull/539
+* Add call_logger to the documentation by @a1ecbr0wn in https://github.com/rust-lang/log/pull/547
+* Use stable internals for key-value API by @KodrAus in https://github.com/rust-lang/log/pull/550
+* Change wording of list of implementations by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/553
+* Add std-logger to list of implementations by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/554
+* Add `set_max_level_racy` and gate `set_max_level` by @djkoloski in https://github.com/rust-lang/log/pull/544
+* [doc] src/lib.rs : prefix an unused variable with an underscore by @OccupyMars2025 in https://github.com/rust-lang/log/pull/561
+* [doc] src/macros.rs :  correct  grammar errors of an example in lib documentation by @OccupyMars2025 in https://github.com/rust-lang/log/pull/562
+
 ## [0.4.17] - 2022-04-29
 
 * Update `kv_unstable` internal dependencies.
@@ -219,7 +248,10 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.17...HEAD
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.18...HEAD
+[0.4.20]: https://github.com/rust-lang-nursery/log/compare/0.4.19...0.4.20
+[0.4.19]: https://github.com/rust-lang-nursery/log/compare/0.4.18...0.4.19
+[0.4.18]: https://github.com/rust-lang-nursery/log/compare/0.4.17...0.4.18
 [0.4.17]: https://github.com/rust-lang-nursery/log/compare/0.4.16...0.4.17
 [0.4.16]: https://github.com/rust-lang-nursery/log/compare/0.4.15...0.4.16
 [0.4.15]: https://github.com/rust-lang-nursery/log/compare/0.4.13...0.4.15

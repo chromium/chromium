@@ -145,6 +145,16 @@ pub type CCRNGStatus = ::CCCryptorStatus;
 
 pub type copyfile_state_t = *mut ::c_void;
 pub type copyfile_flags_t = u32;
+pub type copyfile_callback_t = ::Option<
+    extern "C" fn(
+        ::c_int,
+        ::c_int,
+        copyfile_state_t,
+        *const ::c_char,
+        *const ::c_char,
+        *mut ::c_void,
+    ) -> ::c_int,
+>;
 
 pub type attrgroup_t = u32;
 pub type vol_capabilities_set_t = [u32; 4];
@@ -366,6 +376,25 @@ s! {
         pub fst_offset: ::off_t,
         pub fst_length: ::off_t,
         pub fst_bytesalloc: ::off_t,
+    }
+
+    pub struct fpunchhole_t {
+        pub fp_flags: ::c_uint, /* unused */
+        pub reserved: ::c_uint, /* (to maintain 8-byte alignment) */
+        pub fp_offset: ::off_t, /* IN: start of the region */
+        pub fp_length: ::off_t, /* IN: size of the region */
+    }
+
+    pub struct ftrimactivefile_t {
+        pub fta_offset: ::off_t,
+        pub fta_length: ::off_t,
+    }
+
+    pub struct fspecread_t {
+        pub fsr_flags: ::c_uint,
+        pub reserved: ::c_uint,
+        pub fsr_offset: ::off_t,
+        pub fsr_length: ::off_t,
     }
 
     pub struct radvisory {
@@ -768,7 +797,7 @@ s! {
     pub struct sockaddr_ndrv {
         pub snd_len: ::c_uchar,
         pub snd_family: ::c_uchar,
-        pub snd_name: [::c_uchar; 16]      // IFNAMSIZ from if.h
+        pub snd_name: [::c_uchar; ::IFNAMSIZ],
     }
 
     // sys/socket.h
@@ -1100,6 +1129,15 @@ s! {
         pub validattr: attribute_set_t,
         pub nativeattr: attribute_set_t,
     }
+
+    #[cfg_attr(libc_packedN, repr(packed(4)))]
+    pub struct ifconf {
+        pub ifc_len: ::c_int,
+        #[cfg(libc_union)]
+        pub ifc_ifcu: __c_anonymous_ifc_ifcu,
+        #[cfg(not(libc_union))]
+        pub ifc_ifcu: *mut ifreq,
+    }
 }
 
 s_no_extra_traits! {
@@ -1380,6 +1418,69 @@ s_no_extra_traits! {
 
     pub struct os_unfair_lock_s {
         _os_unfair_lock_opaque: u32,
+    }
+
+   #[cfg_attr(libc_packedN, repr(packed(1)))]
+    pub struct sockaddr_vm {
+        pub svm_len: ::c_uchar,
+        pub svm_family: ::sa_family_t,
+        pub svm_reserved1: ::c_ushort,
+        pub svm_port: ::c_uint,
+        pub svm_cid: ::c_uint,
+    }
+
+    pub struct ifdevmtu {
+        pub ifdm_current: ::c_int,
+        pub ifdm_min: ::c_int,
+        pub ifdm_max: ::c_int,
+    }
+
+    #[cfg(libc_union)]
+    pub union __c_anonymous_ifk_data {
+        pub ifk_ptr: *mut ::c_void,
+        pub ifk_value: ::c_int,
+    }
+
+    #[cfg_attr(libc_packedN, repr(packed(4)))]
+    pub struct ifkpi {
+        pub ifk_module_id: ::c_uint,
+        pub ifk_type: ::c_uint,
+        #[cfg(libc_union)]
+        pub ifk_data: __c_anonymous_ifk_data,
+    }
+
+    #[cfg(libc_union)]
+    pub union __c_anonymous_ifr_ifru {
+        pub ifru_addr: ::sockaddr,
+        pub ifru_dstaddr: ::sockaddr,
+        pub ifru_broadaddr: ::sockaddr,
+        pub ifru_flags: ::c_short,
+        pub ifru_metrics: ::c_int,
+        pub ifru_mtu: ::c_int,
+        pub ifru_phys: ::c_int,
+        pub ifru_media: ::c_int,
+        pub ifru_intval: ::c_int,
+        pub ifru_data: *mut ::c_char,
+        pub ifru_devmtu: ifdevmtu,
+        pub ifru_kpi: ifkpi,
+        pub ifru_wake_flags: u32,
+        pub ifru_route_refcnt: u32,
+        pub ifru_cap: [::c_int; 2],
+        pub ifru_functional_type: u32,
+    }
+
+    pub struct ifreq {
+        pub ifr_name: [::c_char; ::IFNAMSIZ],
+        #[cfg(libc_union)]
+        pub ifr_ifru: __c_anonymous_ifr_ifru,
+        #[cfg(not(libc_union))]
+        pub ifr_ifru: ::sockaddr,
+    }
+
+    #[cfg(libc_union)]
+    pub union __c_anonymous_ifc_ifcu {
+        pub ifcu_buf: *mut ::c_char,
+        pub ifcu_req: *mut ifreq,
     }
 }
 
@@ -2683,6 +2784,268 @@ cfg_if! {
                 self._os_unfair_lock_opaque.hash(state);
             }
         }
+
+        impl PartialEq for sockaddr_vm {
+            fn eq(&self, other: &sockaddr_vm) -> bool {
+                self.svm_len == other.svm_len
+                    && self.svm_family == other.svm_family
+                    && self.svm_reserved1 == other.svm_reserved1
+                    && self.svm_port == other.svm_port
+                    && self.svm_cid == other.svm_cid
+            }
+        }
+
+        impl Eq for sockaddr_vm {}
+
+        impl ::fmt::Debug for sockaddr_vm {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                let svm_len = self.svm_len;
+                let svm_family = self.svm_family;
+                let svm_reserved1 = self.svm_reserved1;
+                let svm_port = self.svm_port;
+                let svm_cid = self.svm_cid;
+
+                f.debug_struct("sockaddr_vm")
+                    .field("svm_len",&svm_len)
+                    .field("svm_family",&svm_family)
+                    .field("svm_reserved1",&svm_reserved1)
+                    .field("svm_port",&svm_port)
+                    .field("svm_cid",&svm_cid)
+                    .finish()
+            }
+        }
+
+        impl ::hash::Hash for sockaddr_vm {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                let svm_len = self.svm_len;
+                let svm_family = self.svm_family;
+                let svm_reserved1 = self.svm_reserved1;
+                let svm_port = self.svm_port;
+                let svm_cid = self.svm_cid;
+
+                svm_len.hash(state);
+                svm_family.hash(state);
+                svm_reserved1.hash(state);
+                svm_port.hash(state);
+                svm_cid.hash(state);
+            }
+        }
+
+        impl PartialEq for ifdevmtu {
+            fn eq(&self, other: &ifdevmtu) -> bool {
+                self.ifdm_current == other.ifdm_current
+                    && self.ifdm_min == other.ifdm_min
+                    && self.ifdm_max == other.ifdm_max
+            }
+        }
+
+        impl Eq for ifdevmtu {}
+
+        impl ::fmt::Debug for ifdevmtu {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("ifdevmtu")
+                    .field("ifdm_current", &self.ifdm_current)
+                    .field("ifdm_min", &self.ifdm_min)
+                    .field("ifdm_max", &self.ifdm_max)
+                    .finish()
+            }
+        }
+
+        impl ::hash::Hash for ifdevmtu {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.ifdm_current.hash(state);
+                self.ifdm_min.hash(state);
+                self.ifdm_max.hash(state);
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl PartialEq for __c_anonymous_ifk_data {
+            fn eq(&self, other: &__c_anonymous_ifk_data) -> bool {
+                unsafe {
+                    self.ifk_ptr == other.ifk_ptr
+                        && self.ifk_value == other.ifk_value
+                }
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl Eq for __c_anonymous_ifk_data {}
+
+        #[cfg(libc_union)]
+        impl ::fmt::Debug for __c_anonymous_ifk_data {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("__c_anonymous_ifk_data")
+                    .field("ifk_ptr", unsafe { &self.ifk_ptr })
+                    .field("ifk_value", unsafe { &self.ifk_value })
+                    .finish()
+            }
+        }
+        #[cfg(libc_union)]
+        impl ::hash::Hash for __c_anonymous_ifk_data {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                unsafe {
+                    self.ifk_ptr.hash(state);
+                    self.ifk_value.hash(state);
+                }
+            }
+        }
+
+        impl PartialEq for ifkpi {
+            fn eq(&self, other: &ifkpi) -> bool {
+                self.ifk_module_id == other.ifk_module_id
+                    && self.ifk_type == other.ifk_type
+            }
+        }
+
+        impl Eq for ifkpi {}
+
+        impl ::fmt::Debug for ifkpi {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("ifkpi")
+                    .field("ifk_module_id", &self.ifk_module_id)
+                    .field("ifk_type", &self.ifk_type)
+                    .finish()
+            }
+        }
+
+        impl ::hash::Hash for ifkpi {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.ifk_module_id.hash(state);
+                self.ifk_type.hash(state);
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl PartialEq for __c_anonymous_ifr_ifru {
+            fn eq(&self, other: &__c_anonymous_ifr_ifru) -> bool {
+                unsafe {
+                    self.ifru_addr == other.ifru_addr
+                        && self.ifru_dstaddr == other.ifru_dstaddr
+                        && self.ifru_broadaddr == other.ifru_broadaddr
+                        && self.ifru_flags == other.ifru_flags
+                        && self.ifru_metrics == other.ifru_metrics
+                        && self.ifru_mtu == other.ifru_mtu
+                        && self.ifru_phys == other.ifru_phys
+                        && self.ifru_media == other.ifru_media
+                        && self.ifru_intval == other.ifru_intval
+                        && self.ifru_data == other.ifru_data
+                        && self.ifru_devmtu == other.ifru_devmtu
+                        && self.ifru_kpi == other.ifru_kpi
+                        && self.ifru_wake_flags == other.ifru_wake_flags
+                        && self.ifru_route_refcnt == other.ifru_route_refcnt
+                        && self.ifru_cap.iter().zip(other.ifru_cap.iter()).all(|(a,b)| a == b)
+                        && self.ifru_functional_type == other.ifru_functional_type
+                }
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl Eq for __c_anonymous_ifr_ifru {}
+
+        #[cfg(libc_union)]
+        impl ::fmt::Debug for __c_anonymous_ifr_ifru {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("__c_anonymous_ifr_ifru")
+                    .field("ifru_addr", unsafe { &self.ifru_addr })
+                    .field("ifru_dstaddr", unsafe { &self.ifru_dstaddr })
+                    .field("ifru_broadaddr", unsafe { &self.ifru_broadaddr })
+                    .field("ifru_flags", unsafe { &self.ifru_flags })
+                    .field("ifru_metrics", unsafe { &self.ifru_metrics })
+                    .field("ifru_mtu", unsafe { &self.ifru_mtu })
+                    .field("ifru_phys", unsafe { &self.ifru_phys })
+                    .field("ifru_media", unsafe { &self.ifru_media })
+                    .field("ifru_intval", unsafe { &self.ifru_intval })
+                    .field("ifru_data", unsafe { &self.ifru_data })
+                    .field("ifru_devmtu", unsafe { &self.ifru_devmtu })
+                    .field("ifru_kpi", unsafe { &self.ifru_kpi })
+                    .field("ifru_wake_flags", unsafe { &self.ifru_wake_flags })
+                    .field("ifru_route_refcnt", unsafe { &self.ifru_route_refcnt })
+                    .field("ifru_cap", unsafe { &self.ifru_cap })
+                    .field("ifru_functional_type", unsafe { &self.ifru_functional_type })
+                    .finish()
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl ::hash::Hash for __c_anonymous_ifr_ifru {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                unsafe {
+                    self.ifru_addr.hash(state);
+                    self.ifru_dstaddr.hash(state);
+                    self.ifru_broadaddr.hash(state);
+                    self.ifru_flags.hash(state);
+                    self.ifru_metrics.hash(state);
+                    self.ifru_mtu.hash(state);
+                    self.ifru_phys.hash(state);
+                    self.ifru_media.hash(state);
+                    self.ifru_intval.hash(state);
+                    self.ifru_data.hash(state);
+                    self.ifru_devmtu.hash(state);
+                    self.ifru_kpi.hash(state);
+                    self.ifru_wake_flags.hash(state);
+                    self.ifru_route_refcnt.hash(state);
+                    self.ifru_cap.hash(state);
+                    self.ifru_functional_type.hash(state);
+                }
+            }
+        }
+
+        impl PartialEq for ifreq {
+            fn eq(&self, other: &ifreq) -> bool {
+                self.ifr_name == other.ifr_name
+                    && self.ifr_ifru == other.ifr_ifru
+            }
+        }
+
+        impl Eq for ifreq {}
+
+        impl ::fmt::Debug for ifreq {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("ifreq")
+                    .field("ifr_name", &self.ifr_name)
+                    .field("ifr_ifru", &self.ifr_ifru)
+                    .finish()
+            }
+        }
+
+        impl ::hash::Hash for ifreq {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.ifr_name.hash(state);
+                self.ifr_ifru.hash(state);
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl Eq for __c_anonymous_ifc_ifcu {}
+
+        #[cfg(libc_union)]
+        impl PartialEq for __c_anonymous_ifc_ifcu {
+            fn eq(&self, other: &__c_anonymous_ifc_ifcu) -> bool {
+                unsafe {
+                    self.ifcu_buf == other.ifcu_buf &&
+                    self.ifcu_req == other.ifcu_req
+                }
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl ::fmt::Debug for __c_anonymous_ifc_ifcu {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("ifc_ifcu")
+                    .field("ifcu_buf", unsafe { &self.ifcu_buf })
+                    .field("ifcu_req", unsafe { &self.ifcu_req })
+                    .finish()
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl ::hash::Hash for __c_anonymous_ifc_ifcu {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                unsafe { self.ifcu_buf.hash(state) };
+                unsafe { self.ifcu_req.hash(state) };
+            }
+        }
     }
 }
 
@@ -3176,6 +3539,9 @@ pub const F_GLOBAL_NOCACHE: ::c_int = 55;
 pub const F_NODIRECT: ::c_int = 62;
 pub const F_LOG2PHYS_EXT: ::c_int = 65;
 pub const F_BARRIERFSYNC: ::c_int = 85;
+pub const F_PUNCHHOLE: ::c_int = 99;
+pub const F_TRIM_ACTIVE_FILE: ::c_int = 100;
+pub const F_SPECULATIVE_READ: ::c_int = 101;
 pub const F_GETPATH_NOFIRMLINK: ::c_int = 102;
 
 pub const F_ALLOCATECONTIG: ::c_uint = 0x02;
@@ -3644,6 +4010,9 @@ pub const AF_SYSTEM: ::c_int = 32;
 pub const AF_NETBIOS: ::c_int = 33;
 pub const AF_PPP: ::c_int = 34;
 pub const pseudo_AF_HDRCMPLT: ::c_int = 35;
+pub const AF_IEEE80211: ::c_int = 37;
+pub const AF_UTUN: ::c_int = 38;
+pub const AF_VSOCK: ::c_int = 40;
 pub const AF_SYS_CONTROL: ::c_int = 2;
 
 pub const SYSPROTO_EVENT: ::c_int = 1;
@@ -3685,6 +4054,7 @@ pub const PF_NATM: ::c_int = AF_NATM;
 pub const PF_SYSTEM: ::c_int = AF_SYSTEM;
 pub const PF_NETBIOS: ::c_int = AF_NETBIOS;
 pub const PF_PPP: ::c_int = AF_PPP;
+pub const PF_VSOCK: ::c_int = AF_VSOCK;
 
 pub const NET_RT_DUMP: ::c_int = 1;
 pub const NET_RT_FLAGS: ::c_int = 2;
@@ -3792,12 +4162,13 @@ pub const MSG_HOLD: ::c_int = 0x800;
 pub const MSG_SEND: ::c_int = 0x1000;
 pub const MSG_HAVEMORE: ::c_int = 0x2000;
 pub const MSG_RCVMORE: ::c_int = 0x4000;
-// pub const MSG_COMPAT: ::c_int = 0x8000;
+pub const MSG_NEEDSA: ::c_int = 0x10000;
+pub const MSG_NOSIGNAL: ::c_int = 0x80000;
 
 pub const SCM_TIMESTAMP: ::c_int = 0x02;
 pub const SCM_CREDS: ::c_int = 0x03;
 
-// https://github.com/aosm/xnu/blob/master/bsd/net/if.h#L140-L156
+// https://github.com/aosm/xnu/blob/HEAD/bsd/net/if.h#L140-L156
 pub const IFF_UP: ::c_int = 0x1; // interface is up
 pub const IFF_BROADCAST: ::c_int = 0x2; // broadcast address valid
 pub const IFF_DEBUG: ::c_int = 0x4; // turn on debugging
@@ -4129,6 +4500,7 @@ pub const RTLD_FIRST: ::c_int = 0x100;
 pub const RTLD_NODELETE: ::c_int = 0x80;
 pub const RTLD_NOLOAD: ::c_int = 0x10;
 pub const RTLD_GLOBAL: ::c_int = 0x8;
+pub const RTLD_MAIN_ONLY: *mut ::c_void = -5isize as *mut ::c_void;
 
 pub const _WSTOPPED: ::c_int = 0o177;
 
@@ -4594,7 +4966,7 @@ pub const DLT_ATM_RFC1483: ::c_uint = 11; // LLC/SNAP encapsulated atm
 pub const DLT_RAW: ::c_uint = 12; // raw IP
 pub const DLT_LOOP: ::c_uint = 108;
 
-// https://github.com/apple/darwin-xnu/blob/master/bsd/net/bpf.h#L100
+// https://github.com/apple/darwin-xnu/blob/HEAD/bsd/net/bpf.h#L100
 // sizeof(i32)
 pub const BPF_ALIGNMENT: ::c_int = 4;
 
@@ -4626,12 +4998,12 @@ pub const MNT_SNAPSHOT: ::c_int = 0x40000000;
 pub const MNT_NOBLOCK: ::c_int = 0x00020000;
 
 // sys/spawn.h:
-pub const POSIX_SPAWN_RESETIDS: ::c_int = 0x01;
-pub const POSIX_SPAWN_SETPGROUP: ::c_int = 0x02;
-pub const POSIX_SPAWN_SETSIGDEF: ::c_int = 0x04;
-pub const POSIX_SPAWN_SETSIGMASK: ::c_int = 0x08;
-pub const POSIX_SPAWN_SETEXEC: ::c_int = 0x40;
-pub const POSIX_SPAWN_START_SUSPENDED: ::c_int = 0x80;
+pub const POSIX_SPAWN_RESETIDS: ::c_int = 0x0001;
+pub const POSIX_SPAWN_SETPGROUP: ::c_int = 0x0002;
+pub const POSIX_SPAWN_SETSIGDEF: ::c_int = 0x0004;
+pub const POSIX_SPAWN_SETSIGMASK: ::c_int = 0x0008;
+pub const POSIX_SPAWN_SETEXEC: ::c_int = 0x0040;
+pub const POSIX_SPAWN_START_SUSPENDED: ::c_int = 0x0080;
 pub const POSIX_SPAWN_CLOEXEC_DEFAULT: ::c_int = 0x4000;
 
 // sys/ipc.h:
@@ -4850,6 +5222,19 @@ pub const COPYFILE_PROGRESS: ::c_int = 4;
 pub const COPYFILE_CONTINUE: ::c_int = 0;
 pub const COPYFILE_SKIP: ::c_int = 1;
 pub const COPYFILE_QUIT: ::c_int = 2;
+pub const COPYFILE_STATE_SRC_FD: ::c_int = 1;
+pub const COPYFILE_STATE_SRC_FILENAME: ::c_int = 2;
+pub const COPYFILE_STATE_DST_FD: ::c_int = 3;
+pub const COPYFILE_STATE_DST_FILENAME: ::c_int = 4;
+pub const COPYFILE_STATE_QUARANTINE: ::c_int = 5;
+pub const COPYFILE_STATE_STATUS_CB: ::c_int = 6;
+pub const COPYFILE_STATE_STATUS_CTX: ::c_int = 7;
+pub const COPYFILE_STATE_COPIED: ::c_int = 8;
+pub const COPYFILE_STATE_XATTRNAME: ::c_int = 9;
+pub const COPYFILE_STATE_WAS_CLONED: ::c_int = 10;
+pub const COPYFILE_STATE_SRC_BSIZE: ::c_int = 11;
+pub const COPYFILE_STATE_DST_BSIZE: ::c_int = 12;
+pub const COPYFILE_STATE_BSIZE: ::c_int = 13;
 
 // <sys/attr.h>
 pub const ATTR_BIT_MAP_COUNT: ::c_ushort = 5;
@@ -5001,6 +5386,13 @@ pub const SSLEEP: u32 = 3;
 pub const SSTOP: u32 = 4;
 /// Awaiting collection by parent.
 pub const SZOMB: u32 = 5;
+
+// sys/vsock.h
+pub const VMADDR_CID_ANY: ::c_uint = 0xFFFFFFFF;
+pub const VMADDR_CID_HYPERVISOR: ::c_uint = 0;
+pub const VMADDR_CID_RESERVED: ::c_uint = 1;
+pub const VMADDR_CID_HOST: ::c_uint = 2;
+pub const VMADDR_PORT_ANY: ::c_uint = 0xFFFFFFFF;
 
 cfg_if! {
     if #[cfg(libc_const_extern_fn)] {
@@ -5666,6 +6058,18 @@ extern "C" {
         subpref: *mut ::cpu_subtype_t,
         ocount: *mut ::size_t,
     ) -> ::c_int;
+    pub fn posix_spawnattr_getbinpref_np(
+        attr: *const posix_spawnattr_t,
+        count: ::size_t,
+        pref: *mut ::cpu_type_t,
+        ocount: *mut ::size_t,
+    ) -> ::c_int;
+    pub fn posix_spawnattr_setbinpref_np(
+        attr: *mut posix_spawnattr_t,
+        count: ::size_t,
+        pref: *mut ::cpu_type_t,
+        ocount: *mut ::size_t,
+    ) -> ::c_int;
     pub fn posix_spawnattr_set_qos_class_np(
         attr: *mut posix_spawnattr_t,
         qos_class: ::qos_class_t,
@@ -5751,6 +6155,10 @@ extern "C" {
         state: copyfile_state_t,
         flags: copyfile_flags_t,
     ) -> ::c_int;
+    pub fn copyfile_state_free(s: copyfile_state_t) -> ::c_int;
+    pub fn copyfile_state_alloc() -> copyfile_state_t;
+    pub fn copyfile_state_get(s: copyfile_state_t, flags: u32, dst: *mut ::c_void) -> ::c_int;
+    pub fn copyfile_state_set(s: copyfile_state_t, flags: u32, src: *const ::c_void) -> ::c_int;
 
     // Added in macOS 10.13
     // ISO/IEC 9899:2011 ("ISO C11") K.3.7.4.1
@@ -5991,6 +6399,20 @@ extern "C" {
 
     pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
     pub fn basename(path: *mut ::c_char) -> *mut ::c_char;
+
+    pub fn mkfifoat(dirfd: ::c_int, pathname: *const ::c_char, mode: ::mode_t) -> ::c_int;
+    pub fn mknodat(
+        dirfd: ::c_int,
+        pathname: *const ::c_char,
+        mode: ::mode_t,
+        dev: dev_t,
+    ) -> ::c_int;
+    pub fn freadlink(fd: ::c_int, buf: *mut ::c_char, size: ::size_t) -> ::c_int;
+    pub fn execvP(
+        file: *const ::c_char,
+        search_path: *const ::c_char,
+        argv: *const *mut ::c_char,
+    ) -> ::c_int;
 }
 
 pub unsafe fn mach_task_self() -> ::mach_port_t {
@@ -6005,7 +6427,7 @@ cfg_if! {
     }
 }
 cfg_if! {
-    if #[cfg(any(target_os = "macos", target_os = "ios"))] {
+    if #[cfg(any(target_os = "macos", target_os = "ios", target_os = "tvos"))] {
         extern "C" {
             pub fn memmem(
                 haystack: *const ::c_void,

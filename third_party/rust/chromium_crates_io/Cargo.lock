@@ -4,7 +4,8 @@ version = 3
 
 [[package]]
 name = "aho-corasick"
-version = "0.7.18"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "memchr",
 ]
@@ -12,26 +13,40 @@ dependencies = [
 [[package]]
 name = "anstyle"
 version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "anyhow"
-version = "1.0.70"
+version = "1.0.75"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "autocfg"
 version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "base64"
 version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "bitflags"
 version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "cc"
+version = "1.0.83"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "cfg-if"
 version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "chromium"
@@ -65,21 +80,23 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
- "syn 2.0.29",
+ "syn 2.0.39",
  "unicode-linebreak",
  "wycheproof",
 ]
 
 [[package]]
 name = "clap"
-version = "4.4.6"
+version = "4.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap_builder",
 ]
 
 [[package]]
 name = "clap_builder"
-version = "4.4.6"
+version = "4.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "anstyle",
  "clap_lex",
@@ -88,11 +105,13 @@ dependencies = [
 
 [[package]]
 name = "clap_lex"
-version = "0.5.1"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "codespan-reporting"
 version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "termcolor",
  "unicode-width",
@@ -101,7 +120,10 @@ dependencies = [
 [[package]]
 name = "cxx"
 version = "1.0.110"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "cc",
+ "cxxbridge-flags",
  "cxxbridge-macro",
  "link-cplusplus",
 ]
@@ -109,30 +131,39 @@ dependencies = [
 [[package]]
 name = "cxxbridge-cmd"
 version = "1.0.110"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap",
  "codespan-reporting",
  "proc-macro2",
  "quote",
- "syn 2.0.29",
+ "syn 2.0.39",
 ]
+
+[[package]]
+name = "cxxbridge-flags"
+version = "1.0.110"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cxxbridge-macro"
 version = "1.0.110"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.29",
+ "syn 2.0.39",
 ]
 
 [[package]]
 name = "font-types"
 version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "getrandom"
-version = "0.2.9"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
  "libc",
@@ -142,41 +173,50 @@ dependencies = [
 [[package]]
 name = "hex"
 version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "hex-literal"
 version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "itoa"
-version = "1.0.1"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "lazy_static"
 version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libc"
-version = "0.2.144"
+version = "0.2.150"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "link-cplusplus"
 version = "1.0.9"
-
-[[package]]
-name = "log"
-version = "0.4.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "cfg-if",
+ "cc",
 ]
 
 [[package]]
+name = "log"
+version = "0.4.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "memchr"
-version = "2.4.1"
+version = "2.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "memoffset"
 version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "autocfg",
 ]
@@ -184,10 +224,12 @@ dependencies = [
 [[package]]
 name = "ppv-lite86"
 version = "0.2.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.66"
+version = "1.0.69"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "unicode-ident",
 ]
@@ -195,10 +237,12 @@ dependencies = [
 [[package]]
 name = "qr_code"
 version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "quote"
 version = "1.0.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
 ]
@@ -206,6 +250,7 @@ dependencies = [
 [[package]]
 name = "rand"
 version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc",
  "rand_chacha",
@@ -215,6 +260,7 @@ dependencies = [
 [[package]]
 name = "rand_chacha"
 version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ppv-lite86",
  "rand_core",
@@ -223,6 +269,7 @@ dependencies = [
 [[package]]
 name = "rand_core"
 version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "getrandom",
 ]
@@ -230,20 +277,34 @@ dependencies = [
 [[package]]
 name = "rand_pcg"
 version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rand_core",
 ]
 
 [[package]]
 name = "read-fonts"
-version = "0.11.0"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",
 ]
 
 [[package]]
 name = "regex"
-version = "1.6.0"
+version = "1.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-automata",
+ "regex-syntax",
+]
+
+[[package]]
+name = "regex-automata"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -252,11 +313,13 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.27"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rstest"
 version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rstest_macros",
  "rustc_version",
@@ -265,32 +328,36 @@ dependencies = [
 [[package]]
 name = "rstest_macros"
 version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn 1.0.99",
+ "syn 1.0.109",
  "unicode-ident",
 ]
 
 [[package]]
 name = "rstest_reuse"
 version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "quote",
  "rand",
  "rustc_version",
- "syn 1.0.99",
+ "syn 1.0.109",
 ]
 
 [[package]]
 name = "rustc-demangle"
 version = "0.1.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rustc-demangle-capi"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rustc-demangle",
 ]
@@ -298,41 +365,48 @@ dependencies = [
 [[package]]
 name = "rustc_version"
 version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "semver",
 ]
 
 [[package]]
 name = "rustversion"
-version = "1.0.6"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ryu"
-version = "1.0.5"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "semver"
-version = "1.0.4"
+version = "1.0.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde"
-version = "1.0.188"
+version = "1.0.192"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.188"
+version = "1.0.192"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.29",
+ "syn 2.0.39",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.78"
+version = "1.0.108"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "itoa",
  "ryu",
@@ -342,6 +416,7 @@ dependencies = [
 [[package]]
 name = "serde_json_lenient"
 version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "itoa",
  "ryu",
@@ -350,7 +425,8 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.10.0"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "read-fonts",
 ]
@@ -358,18 +434,22 @@ dependencies = [
 [[package]]
 name = "small_ctor"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "static_assertions"
 version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "strsim"
 version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "syn"
-version = "1.0.99"
+version = "1.0.109"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -378,7 +458,8 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.29"
+version = "2.0.39"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -387,35 +468,36 @@ dependencies = [
 
 [[package]]
 name = "termcolor"
-version = "1.1.2"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi-util",
 ]
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.8"
+version = "1.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "unicode-linebreak"
-version = "0.1.2"
-dependencies = [
- "regex",
-]
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "unicode-width"
-version = "0.1.9"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "winapi"
 version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi-i686-pc-windows-gnu",
  "winapi-x86_64-pc-windows-gnu",
@@ -425,11 +507,11 @@ dependencies = [
 name = "winapi-i686-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
 
 [[package]]
 name = "winapi-util"
-version = "0.1.5"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi",
 ]
@@ -438,11 +520,11 @@ dependencies = [
 name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
 name = "wycheproof"
 version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "base64",
  "hex",

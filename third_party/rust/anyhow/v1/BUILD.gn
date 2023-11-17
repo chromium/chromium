@@ -31,7 +31,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.70"
+  cargo_pkg_version = "1.0.75"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "anyhow"
   cargo_pkg_description =

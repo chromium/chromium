@@ -128,7 +128,7 @@ macro_rules! custom_keyword {
 macro_rules! impl_parse_for_custom_keyword {
     ($ident:ident) => {
         // For peek.
-        impl $crate::token::CustomToken for $ident {
+        impl $crate::__private::CustomToken for $ident {
             fn peek(cursor: $crate::buffer::Cursor) -> $crate::__private::bool {
                 if let $crate::__private::Some((ident, _rest)) = cursor.ident() {
                     ident == $crate::__private::stringify!($ident)

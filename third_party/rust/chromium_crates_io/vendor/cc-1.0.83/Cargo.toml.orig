@@ -1,0 +1,32 @@
+[package]
+name = "cc"
+version = "1.0.83"
+authors = ["Alex Crichton <alex@alexcrichton.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rust-lang/cc-rs"
+homepage = "https://github.com/rust-lang/cc-rs"
+documentation = "https://docs.rs/cc"
+description = """
+A build-time dependency for Cargo build scripts to assist in invoking the native
+C compiler to compile native C code into a static archive to be linked into Rust
+code.
+"""
+keywords = ["build-dependencies"]
+readme = "README.md"
+categories = ["development-tools::build-utils"]
+exclude = ["/.github"]
+edition = "2018"
+
+[dependencies]
+jobserver = { version = "0.1.16", optional = true }
+
+[target.'cfg(unix)'.dependencies]
+# Don't turn on the feature "std" for this, see https://github.com/rust-lang/cargo/issues/4866
+# which is still an issue with `resolver = "1"`.
+libc = { version = "0.2.62", default-features = false }
+
+[features]
+parallel = ["jobserver"]
+
+[dev-dependencies]
+tempfile = "3"

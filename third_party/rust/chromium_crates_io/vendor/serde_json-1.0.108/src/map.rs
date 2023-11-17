@@ -11,7 +11,7 @@ use alloc::string::String;
 use core::borrow::Borrow;
 use core::fmt::{self, Debug};
 use core::hash::Hash;
-use core::iter::{FromIterator, FusedIterator};
+use core::iter::FusedIterator;
 #[cfg(feature = "preserve_order")]
 use core::mem;
 use core::ops;
@@ -106,7 +106,6 @@ impl Map<String, Value> {
     /// The key may be any borrowed form of the map's key type, but the ordering
     /// on the borrowed form *must* match the ordering on the key type.
     #[inline]
-    #[cfg(any(feature = "preserve_order", not(no_btreemap_get_key_value)))]
     pub fn get_key_value<Q>(&self, key: &Q) -> Option<(&String, &Value)>
     where
         String: Borrow<Q>,
@@ -153,53 +152,15 @@ impl Map<String, Value> {
         String: Borrow<Q>,
         Q: ?Sized + Ord + Eq + Hash,
     {
-        #[cfg(any(feature = "preserve_order", not(no_btreemap_remove_entry)))]
-        return self.map.remove_entry(key);
-        #[cfg(all(
-            not(feature = "preserve_order"),
-            no_btreemap_remove_entry,
-            not(no_btreemap_get_key_value),
-        ))]
-        {
-            let (key, _value) = self.map.get_key_value(key)?;
-            let key = key.clone();
-            let value = self.map.remove::<String>(&key)?;
-            Some((key, value))
-        }
-        #[cfg(all(
-            not(feature = "preserve_order"),
-            no_btreemap_remove_entry,
-            no_btreemap_get_key_value,
-        ))]
-        {
-            use core::ops::{Bound, RangeBounds};
-
-            struct Key<'a, Q: ?Sized>(&'a Q);
-
-            impl<'a, Q: ?Sized> RangeBounds<Q> for Key<'a, Q> {
-                fn start_bound(&self) -> Bound<&Q> {
-                    Bound::Included(self.0)
-                }
-                fn end_bound(&self) -> Bound<&Q> {
-                    Bound::Included(self.0)
-                }
-            }
-
-            let mut range = self.map.range(Key(key));
-            let (key, _value) = range.next()?;
-            let key = key.clone();
-            let value = self.map.remove::<String>(&key)?;
-            Some((key, value))
-        }
+        self.map.remove_entry(key)
     }
 
-    /// Moves all elements from other into Self, leaving other empty.
+    /// Moves all elements from other into self, leaving other empty.
     #[inline]
     pub fn append(&mut self, other: &mut Self) {
         #[cfg(feature = "preserve_order")]
-        for (k, v) in mem::replace(&mut other.map, MapImpl::default()) {
-            self.map.insert(k, v);
-        }
+        self.map
+            .extend(mem::replace(&mut other.map, MapImpl::default()));
         #[cfg(not(feature = "preserve_order"))]
         self.map.append(&mut other.map);
     }
@@ -277,7 +238,6 @@ impl Map<String, Value> {
     ///
     /// In other words, remove all pairs `(k, v)` such that `f(&k, &mut v)`
     /// returns `false`.
-    #[cfg(not(no_btreemap_retain))]
     #[inline]
     pub fn retain<F>(&mut self, f: F)
     where
@@ -304,6 +264,11 @@ impl Clone for Map<String, Value> {
             map: self.map.clone(),
         }
     }
+
+    #[inline]
+    fn clone_from(&mut self, source: &Self) {
+        self.map.clone_from(&source.map);
+    }
 }
 
 impl PartialEq for Map<String, Value> {
@@ -323,10 +288,10 @@ impl Eq for Map<String, Value> {}
 /// #
 /// # let val = &Value::String("".to_owned());
 /// # let _ =
-/// match *val {
-///     Value::String(ref s) => Some(s.as_str()),
-///     Value::Array(ref arr) => arr[0].as_str(),
-///     Value::Object(ref map) => map["type"].as_str(),
+/// match val {
+///     Value::String(s) => Some(s.as_str()),
+///     Value::Array(arr) => arr[0].as_str(),
+///     Value::Object(map) => map["type"].as_str(),
 ///     _ => None,
 /// }
 /// # ;
@@ -530,9 +495,9 @@ impl<'a> Entry<'a> {
     /// assert_eq!(map.entry("serde").key(), &"serde");
     /// ```
     pub fn key(&self) -> &String {
-        match *self {
-            Entry::Vacant(ref e) => e.key(),
-            Entry::Occupied(ref e) => e.key(),
+        match self {
+            Entry::Vacant(e) => e.key(),
+            Entry::Occupied(e) => e.key(),
         }
     }
 

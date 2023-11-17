@@ -3,7 +3,11 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule: [cron: "40 1 * * *"]
+
+permissions:
+  contents: read
 
 env:
   RUSTFLAGS: -Dwarnings
@@ -16,8 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, windows]
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo test
       - run: cargo test --features preserve_order --tests -- --skip ui --exact
@@ -33,47 +38,57 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [beta, stable, 1.53.0, 1.46.0, 1.45.0, 1.40.0, 1.38.0, 1.36.0]
+        rust: [beta, 1.64.0, 1.56.1]
         os: [ubuntu]
         include:
           - rust: stable
+            os: ubuntu
+            target: aarch64-unknown-none
+          - rust: stable
             os: windows
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
-      - run: cargo check
-      - run: cargo check --features float_roundtrip
-      - run: cargo check --features arbitrary_precision
-      - run: cargo check --features raw_value
-      - run: cargo check --features unbounded_depth
+          targets: ${{matrix.target}}
+      - run: cargo check --manifest-path tests/crate/Cargo.toml
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features float_roundtrip
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features arbitrary_precision
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features raw_value
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features unbounded_depth
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,arbitrary_precision
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,raw_value
-      - run: cargo check --features preserve_order
-        if: matrix.rust != '1.45.0' && matrix.rust != '1.40.0' && matrix.rust != '1.38.0' && matrix.rust != '1.36.0'
-      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,preserve_order
-        if: matrix.rust != '1.45.0' && matrix.rust != '1.40.0' && matrix.rust != '1.38.0' && matrix.rust != '1.36.0'
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features serde_json/preserve_order
+        if: matrix.rust != '1.56.1'
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,serde_json/preserve_order
+        if: matrix.rust != '1.56.1'
       - name: Build without std
-        run: |
-          rustup target add aarch64-unknown-none
-          cargo check \
-              --manifest-path tests/crate/Cargo.toml \
-              --target aarch64-unknown-none \
-              --no-default-features \
-              --features alloc
-        if: matrix.rust == 'stable' && matrix.os == 'ubuntu'
+        run: cargo check --manifest-path tests/crate/Cargo.toml --target ${{matrix.target}} --no-default-features --features alloc
+        if: matrix.target
+
+  minimal:
+    name: Minimal versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo generate-lockfile -Z minimal-versions
+      - run: cargo check --locked
 
   miri:
     name: Miri
     runs-on: ubuntu-latest
     env:
-      MIRIFLAGS: "-Zmiri-tag-raw-pointers"
+      MIRIFLAGS: -Zmiri-strict-provenance
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
-      - uses: dtolnay/rust-toolchain@nightly
-        with:
-          components: miri
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@miri
+      - run: cargo miri setup
       - run: cargo miri test
       - run: cargo miri test --features preserve_order,float_roundtrip,arbitrary_precision,raw_value
 
@@ -81,27 +96,42 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@clippy
       - run: cargo clippy --tests -- -Dclippy::all -Dclippy::pedantic
       - run: cargo clippy --all-features --tests -- -Dclippy::all -Dclippy::pedantic
 
-  docs:
+  doc:
     name: Documentation
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTDOCFLAGS: -Dwarnings
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
-      - run: cargo doc --features raw_value,unbounded_depth
-        env:
-          RUSTDOCFLAGS: --cfg docsrs
+      - uses: dtolnay/install@cargo-docs-rs
+      - run: cargo docs-rs
 
   fuzz:
     name: Fuzz
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
-      - run: cargo install cargo-fuzz --debug
-      - run: cargo fuzz build -O
+      - uses: dtolnay/install@cargo-fuzz
+      - run: cargo fuzz check
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated --exit-code 1
+      - run: cargo outdated --manifest-path fuzz/Cargo.toml --exit-code 1

@@ -1737,7 +1737,6 @@ fn deserialize_untagged_enum_after(
                 quote!(__deserializer),
             ))
         });
-    let attempts = first_attempt.into_iter().chain(attempts);
     // TODO this message could be better by saving the errors from the failed
     // attempts. The heuristic used by TOML was to count the number of fields
     // processed before an error, and use the error that happened after the
@@ -1750,9 +1749,22 @@ fn deserialize_untagged_enum_after(
     );
     let fallthrough_msg = cattrs.expecting().unwrap_or(&fallthrough_msg);
 
+    // Ignore any error associated with non-untagged deserialization so that we
+    // can fall through to the untagged variants. This may be infallible so we
+    // need to provide the error type.
+    let first_attempt = first_attempt.map(|expr| {
+        quote! {
+            if let _serde::__private::Result::<_, __D::Error>::Ok(__ok) = (|| #expr)() {
+                return _serde::__private::Ok(__ok);
+            }
+        }
+    });
+
     quote_block! {
         let __content = <_serde::__private::de::Content as _serde::Deserialize>::deserialize(__deserializer)?;
         let __deserializer = _serde::__private::de::ContentRefDeserializer::<__D::Error>::new(&__content);
+
+        #first_attempt
 
         #(
             if let _serde::__private::Ok(__ok) = #attempts {
@@ -1828,7 +1840,7 @@ fn deserialize_internally_tagged_variant(
             let this_value = &params.this_value;
             let type_name = params.type_name();
             let variant_name = variant.ident.to_string();
-            let default = variant.fields.get(0).map(|field| {
+            let default = variant.fields.first().map(|field| {
                 let default = Expr(expr_is_missing(field, cattrs));
                 quote!((#default))
             });
@@ -1873,7 +1885,7 @@ fn deserialize_untagged_variant(
             let this_value = &params.this_value;
             let type_name = params.type_name();
             let variant_name = variant.ident.to_string();
-            let default = variant.fields.get(0).map(|field| {
+            let default = variant.fields.first().map(|field| {
                 let default = Expr(expr_is_missing(field, cattrs));
                 quote!((#default))
             });

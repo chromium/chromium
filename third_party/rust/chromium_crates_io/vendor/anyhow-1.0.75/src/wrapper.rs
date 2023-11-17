@@ -2,7 +2,7 @@ use crate::StdError;
 use core::fmt::{self, Debug, Display};
 
 #[cfg(backtrace)]
-use std::any::Demand;
+use std::error::Request;
 
 #[repr(transparent)]
 pub struct MessageError<M>(pub M);
@@ -75,7 +75,7 @@ impl StdError for BoxedError {
     }
 
     #[cfg(backtrace)]
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        self.0.provide(demand);
+    fn provide<'a>(&'a self, request: &mut Request<'a>) {
+        self.0.provide(request);
     }
 }

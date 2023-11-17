@@ -71,17 +71,29 @@ Default subcommand:
 ```console
 $ git stash -h
 Usage: git[EXE] stash [OPTIONS]
-       git[EXE] stash <COMMAND>
-
-Commands:
-  push   
-  pop    
-  apply  
-  help   Print this message or the help of the given subcommand(s)
+       git[EXE] stash push [OPTIONS]
+       git[EXE] stash pop [STASH]
+       git[EXE] stash apply [STASH]
+       git[EXE] stash help [COMMAND]...
 
 Options:
   -m, --message <MESSAGE>  
   -h, --help               Print help
+
+git[EXE] stash push:
+  -m, --message <MESSAGE>  
+  -h, --help               Print help
+
+git[EXE] stash pop:
+  -h, --help   Print help
+  [STASH]  
+
+git[EXE] stash apply:
+  -h, --help   Print help
+  [STASH]  
+
+git[EXE] stash help:
+  [COMMAND]...  Print help for the subcommand(s)
 
 $ git stash push -h
 Usage: git[EXE] stash push [OPTIONS]

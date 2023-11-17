@@ -214,17 +214,37 @@ pub(crate) mod parsing {
         /// Parses a named (braced struct) field.
         #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
         pub fn parse_named(input: ParseStream) -> Result<Self> {
+            let attrs = input.call(Attribute::parse_outer)?;
+            let vis: Visibility = input.parse()?;
+
+            let unnamed_field = cfg!(feature = "full") && input.peek(Token![_]);
+            let ident = if unnamed_field {
+                input.call(Ident::parse_any)
+            } else {
+                input.parse()
+            }?;
+
+            let colon_token: Token![:] = input.parse()?;
+
+            let ty: Type = if unnamed_field
+                && (input.peek(Token![struct])
+                    || input.peek(Token![union]) && input.peek2(token::Brace))
+            {
+                let begin = input.fork();
+                input.call(Ident::parse_any)?;
+                input.parse::<FieldsNamed>()?;
+                Type::Verbatim(verbatim::between(&begin, input))
+            } else {
+                input.parse()?
+            };
+
             Ok(Field {
-                attrs: input.call(Attribute::parse_outer)?,
-                vis: input.parse()?,
+                attrs,
+                vis,
                 mutability: FieldMutability::None,
-                ident: Some(if input.peek(Token![_]) {
-                    input.call(Ident::parse_any)
-                } else {
-                    input.parse()
-                }?),
-                colon_token: Some(input.parse()?),
-                ty: input.parse()?,
+                ident: Some(ident),
+                colon_token: Some(colon_token),
+                ty,
             })
         }
 

@@ -1,5 +1,6 @@
+#![allow(clippy::trait_duplication_in_bounds)] // https://github.com/rust-lang/rust-clippy/issues/8757
+
 use serde::{Deserialize, Deserializer};
-use std::convert::TryFrom;
 use std::fmt::{self, Display};
 use std::marker::PhantomData;
 use std::str::FromStr;

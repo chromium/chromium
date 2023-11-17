@@ -1,3 +1,10 @@
+#![allow(
+    clippy::eq_op,
+    clippy::needless_pass_by_value,
+    clippy::toplevel_ref_arg,
+    clippy::wildcard_imports
+)]
+
 mod util;
 
 use crate::util::*;
@@ -35,4 +42,10 @@ fn test_eq() {
     assert_ne!(prerelease("a"), prerelease("aaaaaaaaa"));
     assert_ne!(prerelease("aaaaaaaaa"), prerelease("bbbbbbbbb"));
     assert_ne!(build_metadata("1"), build_metadata("001"));
+}
+
+#[test]
+fn test_prerelease() {
+    let err = prerelease_err("1.b\0");
+    assert_to_string(err, "unexpected character in pre-release identifier");
 }

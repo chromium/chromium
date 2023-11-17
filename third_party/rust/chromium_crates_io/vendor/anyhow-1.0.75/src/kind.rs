@@ -52,6 +52,7 @@ use crate::StdError;
 
 pub struct Adhoc;
 
+#[doc(hidden)]
 pub trait AdhocKind: Sized {
     #[inline]
     fn anyhow_kind(&self) -> Adhoc {
@@ -73,6 +74,7 @@ impl Adhoc {
 
 pub struct Trait;
 
+#[doc(hidden)]
 pub trait TraitKind: Sized {
     #[inline]
     fn anyhow_kind(&self) -> Trait {
@@ -96,6 +98,7 @@ impl Trait {
 pub struct Boxed;
 
 #[cfg(feature = "std")]
+#[doc(hidden)]
 pub trait BoxedKind: Sized {
     #[inline]
     fn anyhow_kind(&self) -> Boxed {

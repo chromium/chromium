@@ -1,6 +1,6 @@
 [package]
 name = "winapi-util"
-version = "0.1.5"  #:version
+version = "0.1.6"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 description = "A dumping ground for high level safe wrappers over winapi."
 documentation = "https://docs.rs/winapi-util"
@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["windows", "winapi", "util", "win"]
 license = "Unlicense/MIT"
 categories = ["os::windows-apis", "external-ffi-bindings"]
-edition = "2018"
+edition = "2021"
 
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3"
@@ -21,6 +21,7 @@ features = [
   "fileapi",
   "minwindef",
   "processenv",
+  "sysinfoapi",
   "winbase",
   "wincon",
   "winerror",

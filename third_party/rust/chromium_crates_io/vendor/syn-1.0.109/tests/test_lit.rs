@@ -50,6 +50,10 @@ fn strings() {
         "\"contains\nnewlines\\\nescaped newlines\"",
         "contains\nnewlinesescaped newlines",
     );
+    test_string(
+        "\"escaped newline\\\n \x0C unsupported whitespace\"",
+        "escaped newline\x0C unsupported whitespace",
+    );
     test_string("r\"raw\nstring\\\nhere\"", "raw\nstring\\\nhere");
     test_string("\"...\"q", "...");
     test_string("r\"...\"q", "...");

@@ -1787,14 +1787,14 @@ where
         GenericArgument::Type(_binding_0) => {
             GenericArgument::Type(f.fold_type(_binding_0))
         }
+        GenericArgument::Const(_binding_0) => {
+            GenericArgument::Const(f.fold_expr(_binding_0))
+        }
         GenericArgument::Binding(_binding_0) => {
             GenericArgument::Binding(f.fold_binding(_binding_0))
         }
         GenericArgument::Constraint(_binding_0) => {
             GenericArgument::Constraint(f.fold_constraint(_binding_0))
-        }
-        GenericArgument::Const(_binding_0) => {
-            GenericArgument::Const(f.fold_expr(_binding_0))
         }
     }
 }

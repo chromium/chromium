@@ -918,6 +918,8 @@ pub const IPPROTO_BEETPH: ::c_int = 94;
 pub const IPPROTO_MPLS: ::c_int = 137;
 /// Multipath TCP
 pub const IPPROTO_MPTCP: ::c_int = 262;
+/// Ethernet-within-IPv6 encapsulation.
+pub const IPPROTO_ETHERNET: ::c_int = 143;
 
 pub const MCAST_EXCLUDE: ::c_int = 0;
 pub const MCAST_INCLUDE: ::c_int = 1;
@@ -1694,20 +1696,9 @@ extern "C" {
     pub fn setgroups(ngroups: ::size_t, ptr: *const ::gid_t) -> ::c_int;
     pub fn pipe2(fds: *mut ::c_int, flags: ::c_int) -> ::c_int;
     pub fn statfs(path: *const ::c_char, buf: *mut statfs) -> ::c_int;
-    pub fn statfs64(path: *const ::c_char, buf: *mut statfs64) -> ::c_int;
     pub fn fstatfs(fd: ::c_int, buf: *mut statfs) -> ::c_int;
-    pub fn fstatfs64(fd: ::c_int, buf: *mut statfs64) -> ::c_int;
-    pub fn statvfs64(path: *const ::c_char, buf: *mut statvfs64) -> ::c_int;
-    pub fn fstatvfs64(fd: ::c_int, buf: *mut statvfs64) -> ::c_int;
     pub fn memrchr(cx: *const ::c_void, c: ::c_int, n: ::size_t) -> *mut ::c_void;
-
     pub fn posix_fadvise(fd: ::c_int, offset: ::off_t, len: ::off_t, advise: ::c_int) -> ::c_int;
-    pub fn posix_fadvise64(
-        fd: ::c_int,
-        offset: ::off64_t,
-        len: ::off64_t,
-        advise: ::c_int,
-    ) -> ::c_int;
     pub fn futimens(fd: ::c_int, times: *const ::timespec) -> ::c_int;
     pub fn utimensat(
         dirfd: ::c_int,
@@ -1719,43 +1710,6 @@ extern "C" {
     pub fn freelocale(loc: ::locale_t);
     pub fn newlocale(mask: ::c_int, locale: *const ::c_char, base: ::locale_t) -> ::locale_t;
     pub fn uselocale(loc: ::locale_t) -> ::locale_t;
-    pub fn creat64(path: *const c_char, mode: mode_t) -> ::c_int;
-    pub fn fstat64(fildes: ::c_int, buf: *mut stat64) -> ::c_int;
-    pub fn fstatat64(
-        dirfd: ::c_int,
-        pathname: *const c_char,
-        buf: *mut stat64,
-        flags: ::c_int,
-    ) -> ::c_int;
-    pub fn ftruncate64(fd: ::c_int, length: off64_t) -> ::c_int;
-    pub fn lseek64(fd: ::c_int, offset: off64_t, whence: ::c_int) -> off64_t;
-    pub fn lstat64(path: *const c_char, buf: *mut stat64) -> ::c_int;
-    pub fn mmap64(
-        addr: *mut ::c_void,
-        len: ::size_t,
-        prot: ::c_int,
-        flags: ::c_int,
-        fd: ::c_int,
-        offset: off64_t,
-    ) -> *mut ::c_void;
-    pub fn open64(path: *const c_char, oflag: ::c_int, ...) -> ::c_int;
-    pub fn openat64(fd: ::c_int, path: *const c_char, oflag: ::c_int, ...) -> ::c_int;
-    pub fn pread64(fd: ::c_int, buf: *mut ::c_void, count: ::size_t, offset: off64_t) -> ::ssize_t;
-    pub fn pwrite64(
-        fd: ::c_int,
-        buf: *const ::c_void,
-        count: ::size_t,
-        offset: off64_t,
-    ) -> ::ssize_t;
-    pub fn readdir64(dirp: *mut ::DIR) -> *mut ::dirent64;
-    pub fn readdir64_r(
-        dirp: *mut ::DIR,
-        entry: *mut ::dirent64,
-        result: *mut *mut ::dirent64,
-    ) -> ::c_int;
-    pub fn stat64(path: *const c_char, buf: *mut stat64) -> ::c_int;
-    pub fn truncate64(path: *const c_char, length: off64_t) -> ::c_int;
-
     pub fn mknodat(
         dirfd: ::c_int,
         pathname: *const ::c_char,
@@ -1827,8 +1781,70 @@ extern "C" {
     pub fn strchrnul(s: *const ::c_char, c: ::c_int) -> *mut ::c_char;
 }
 
+// LFS64 extensions
+//
+// * musl and Emscripten has 64-bit versions only so aliases the LFS64 symbols to the standard ones
+// * ulibc doesn't have preadv64/pwritev64
 cfg_if! {
-    if #[cfg(not(target_env = "uclibc"))] {
+    if #[cfg(not(any(target_env = "musl", target_os = "emscripten")))] {
+        extern "C" {
+            pub fn fstatfs64(fd: ::c_int, buf: *mut statfs64) -> ::c_int;
+            pub fn statvfs64(path: *const ::c_char, buf: *mut statvfs64) -> ::c_int;
+            pub fn fstatvfs64(fd: ::c_int, buf: *mut statvfs64) -> ::c_int;
+            pub fn statfs64(path: *const ::c_char, buf: *mut statfs64) -> ::c_int;
+            pub fn creat64(path: *const c_char, mode: mode_t) -> ::c_int;
+            pub fn fstat64(fildes: ::c_int, buf: *mut stat64) -> ::c_int;
+            pub fn fstatat64(
+                dirfd: ::c_int,
+                pathname: *const c_char,
+                buf: *mut stat64,
+                flags: ::c_int,
+            ) -> ::c_int;
+            pub fn ftruncate64(fd: ::c_int, length: off64_t) -> ::c_int;
+            pub fn lseek64(fd: ::c_int, offset: off64_t, whence: ::c_int) -> off64_t;
+            pub fn lstat64(path: *const c_char, buf: *mut stat64) -> ::c_int;
+            pub fn mmap64(
+                addr: *mut ::c_void,
+                len: ::size_t,
+                prot: ::c_int,
+                flags: ::c_int,
+                fd: ::c_int,
+                offset: off64_t,
+            ) -> *mut ::c_void;
+            pub fn open64(path: *const c_char, oflag: ::c_int, ...) -> ::c_int;
+            pub fn openat64(fd: ::c_int, path: *const c_char, oflag: ::c_int, ...) -> ::c_int;
+            pub fn posix_fadvise64(
+                fd: ::c_int,
+                offset: ::off64_t,
+                len: ::off64_t,
+                advise: ::c_int,
+            ) -> ::c_int;
+            pub fn pread64(
+                fd: ::c_int,
+                buf: *mut ::c_void,
+                count: ::size_t,
+                offset: off64_t
+            ) -> ::ssize_t;
+            pub fn pwrite64(
+                fd: ::c_int,
+                buf: *const ::c_void,
+                count: ::size_t,
+                offset: off64_t,
+            ) -> ::ssize_t;
+            pub fn readdir64(dirp: *mut ::DIR) -> *mut ::dirent64;
+            pub fn readdir64_r(
+                dirp: *mut ::DIR,
+                entry: *mut ::dirent64,
+                result: *mut *mut ::dirent64,
+            ) -> ::c_int;
+            pub fn stat64(path: *const c_char, buf: *mut stat64) -> ::c_int;
+            pub fn truncate64(path: *const c_char, length: off64_t) -> ::c_int;
+        }
+    }
+}
+
+cfg_if! {
+    if #[cfg(not(any(target_env = "uclibc", target_env = "musl", target_os = "emscripten")))] {
         extern "C" {
             pub fn preadv64(
                 fd: ::c_int,
@@ -1842,6 +1858,13 @@ cfg_if! {
                 iovcnt: ::c_int,
                 offset: ::off64_t,
             ) -> ::ssize_t;
+        }
+    }
+}
+
+cfg_if! {
+    if #[cfg(not(target_env = "uclibc"))] {
+        extern "C" {
             // uclibc has separate non-const version of this function
             pub fn forkpty(
                 amaster: *mut ::c_int,

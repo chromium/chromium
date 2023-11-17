@@ -19,6 +19,14 @@
 // KIND, either express or implied.
 
 #![allow(dead_code)]
+#![allow(
+    clippy::approx_constant,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::wildcard_imports
+)]
 
 #[path = "../src/common.rs"]
 mod common;

@@ -13,7 +13,7 @@
 //!
 //! [https://serde.rs/derive.html]: https://serde.rs/derive.html
 
-#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.188")]
+#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.192")]
 // Ignored clippy lints
 #![allow(
     // clippy false positive: https://github.com/rust-lang/rust-clippy/issues/7054

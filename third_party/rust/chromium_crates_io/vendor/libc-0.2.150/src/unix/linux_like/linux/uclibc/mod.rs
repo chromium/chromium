@@ -109,6 +109,7 @@ impl siginfo_t {
 
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
+pub const MCL_ONFAULT: ::c_int = 0x0004;
 
 pub const SIGEV_THREAD_ID: ::c_int = 4;
 
@@ -245,9 +246,6 @@ pub const EDEADLOCK: ::c_int = EDEADLK;
 pub const EXTA: ::c_uint = B19200;
 pub const EXTB: ::c_uint = B38400;
 pub const EXTPROC: ::tcflag_t = 0200000;
-pub const FAN_MARK_FILESYSTEM: ::c_int = 0x00000100;
-pub const FAN_MARK_INODE: ::c_int = 0x00000000;
-pub const FAN_MARK_MOUNT: ::c_int = 0x10;
 pub const FOPEN_MAX: ::c_int = 16;
 pub const F_GETOWN: ::c_int = 9;
 pub const F_OFD_GETLK: ::c_int = 36;
@@ -282,7 +280,9 @@ pub const PF_NFC: ::c_int = 39;
 pub const PF_VSOCK: ::c_int = 40;
 pub const POSIX_MADV_DONTNEED: ::c_int = 4;
 pub const PTRACE_EVENT_STOP: ::c_int = 128;
+pub const PTRACE_GETSIGMASK: ::c_uint = 0x420a;
 pub const PTRACE_PEEKSIGINFO: ::c_int = 0x4209;
+pub const PTRACE_SETSIGMASK: ::c_uint = 0x420b;
 pub const RTLD_NOLOAD: ::c_int = 0x00004;
 pub const RUSAGE_THREAD: ::c_int = 1;
 pub const SHM_EXEC: ::c_int = 0100000;

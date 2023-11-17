@@ -138,6 +138,13 @@ pub trait TableProvider<'a> {
         self.expect_table()
     }
 
+    fn sbix(&self) -> Result<tables::sbix::Sbix<'a>, ReadError> {
+        // should we make the user pass this in?
+        let num_glyphs = self.maxp().map(|maxp| maxp.num_glyphs())?;
+        let data = self.expect_data_for_tag(tables::sbix::Sbix::TAG)?;
+        tables::sbix::Sbix::read(data, num_glyphs)
+    }
+
     fn stat(&self) -> Result<tables::stat::Stat<'a>, ReadError> {
         self.expect_table()
     }

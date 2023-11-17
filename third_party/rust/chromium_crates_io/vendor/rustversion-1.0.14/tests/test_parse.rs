@@ -1,4 +1,8 @@
-#![allow(clippy::enum_glob_use, clippy::must_use_candidate)]
+#![allow(
+    clippy::derive_partial_eq_without_eq,
+    clippy::enum_glob_use,
+    clippy::must_use_candidate
+)]
 
 include!("../build/rustc.rs");
 
@@ -89,6 +93,11 @@ fn test_parse() {
     ];
 
     for (string, expected) in cases {
-        assert_eq!(parse(string).unwrap(), *expected);
+        match parse(string) {
+            ParseResult::Success(version) => assert_eq!(version, *expected),
+            ParseResult::OopsClippy | ParseResult::Unrecognized => {
+                panic!("unrecognized: {:?}", string);
+            }
+        }
     }
 }

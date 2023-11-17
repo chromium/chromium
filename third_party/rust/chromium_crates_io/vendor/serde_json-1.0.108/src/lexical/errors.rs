@@ -5,8 +5,7 @@
 //! This estimates the error in a floating-point representation.
 //!
 //! This implementation is loosely based off the Golang implementation,
-//! found here:
-//!     https://golang.org/src/strconv/atof.go
+//! found here: <https://golang.org/src/strconv/atof.go>
 
 use super::float::*;
 use super::num::*;

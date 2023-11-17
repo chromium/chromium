@@ -300,10 +300,14 @@ impl<'s> ParsedArg<'s> {
         self.inner == "--"
     }
 
-    /// Does the argument look like a number
-    pub fn is_number(&self) -> bool {
+    /// Does the argument look like a negative number?
+    ///
+    /// This won't parse the number in full but attempts to see if this looks
+    /// like something along the lines of `-3`, `-0.3`, or `-33.03`
+    pub fn is_negative_number(&self) -> bool {
         self.to_value()
-            .map(|s| s.parse::<f64>().is_ok())
+            .ok()
+            .and_then(|s| Some(is_number(s.strip_prefix('-')?)))
             .unwrap_or_default()
     }
 
@@ -408,8 +412,8 @@ impl<'s> ShortFlags<'s> {
     /// Does the short flag look like a number
     ///
     /// Ideally call this before doing any iterator
-    pub fn is_number(&self) -> bool {
-        self.invalid_suffix.is_none() && self.utf8_prefix.as_str().parse::<f64>().is_ok()
+    pub fn is_negative_number(&self) -> bool {
+        self.invalid_suffix.is_none() && is_number(self.utf8_prefix.as_str())
     }
 
     /// Advance the iterator, returning the next short flag on success
@@ -464,5 +468,37 @@ fn split_nonutf8_once(b: &OsStr) -> (&str, Option<&OsStr>) {
             let valid = valid.try_str().unwrap();
             (valid, Some(after_valid))
         }
+    }
+}
+
+fn is_number(arg: &str) -> bool {
+    // Return true if this looks like an integer or a float where it's all
+    // digits plus an optional single dot after some digits.
+    //
+    // For floats allow forms such as `1.`, `1.2`, `1.2e10`, etc.
+    let mut seen_dot = false;
+    let mut position_of_e = None;
+    for (i, c) in arg.as_bytes().iter().enumerate() {
+        match c {
+            // Digits are always valid
+            b'0'..=b'9' => {}
+
+            // Allow a `.`, but only one, only if it comes before an
+            // optional exponent, and only if it's not the first character.
+            b'.' if !seen_dot && position_of_e.is_none() && i > 0 => seen_dot = true,
+
+            // Allow an exponent `e` but only at most one after the first
+            // character.
+            b'e' if position_of_e.is_none() && i > 0 => position_of_e = Some(i),
+
+            _ => return false,
+        }
+    }
+
+    // Disallow `-1e` which isn't a valid float since it doesn't actually have
+    // an exponent.
+    match position_of_e {
+        Some(i) => i != arg.len() - 1,
+        None => true,
     }
 }

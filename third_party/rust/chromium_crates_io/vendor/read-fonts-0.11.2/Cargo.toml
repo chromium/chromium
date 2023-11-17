@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "read-fonts"
-version = "0.11.0"
+version = "0.11.2"
 description = "Reading OpenType font files."
 readme = "README.md"
 categories = [
@@ -22,10 +22,14 @@ categories = [
 ]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/googlefonts/fontations"
-resolver = "1"
 
 [dependencies.font-types]
 version = "0.4.0"
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+optional = true
 
 [dev-dependencies]
 
@@ -33,5 +37,9 @@ version = "0.4.0"
 codegen_test = []
 default = ["traversal"]
 scaler_test = []
+serde = [
+    "dep:serde",
+    "font-types/serde",
+]
 std = ["font-types/std"]
 traversal = ["std"]

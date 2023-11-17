@@ -1,11 +1,11 @@
-#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::single_element_loop, clippy::uninlined_format_args)]
 
 #[macro_use]
 mod macros;
 
 use proc_macro2::{Delimiter, Group, Ident, Punct, Spacing, Span, TokenStream, TokenTree};
 use quote::quote;
-use syn::{Expr, ExprRange};
+use syn::{Expr, ExprRange, Stmt};
 
 #[test]
 fn test_expr_parse() {
@@ -309,4 +309,33 @@ fn test_ranges() {
     syn::parse_str::<Expr>("...hi").unwrap_err();
     syn::parse_str::<Expr>("lo...").unwrap_err();
     syn::parse_str::<Expr>("lo...hi").unwrap_err();
+}
+
+#[test]
+fn test_ambiguous_label() {
+    for stmt in [
+        quote! {
+            return 'label: loop { break 'label 42; };
+        },
+        quote! {
+            break ('label: loop { break 'label 42; });
+        },
+        quote! {
+            break 1 + 'label: loop { break 'label 42; };
+        },
+        quote! {
+            break 'outer 'inner: loop { break 'inner 42; };
+        },
+    ] {
+        syn::parse2::<Stmt>(stmt).unwrap();
+    }
+
+    for stmt in [
+        // Parentheses required. See https://github.com/rust-lang/rust/pull/87026.
+        quote! {
+            break 'label: loop { break 'label 42; };
+        },
+    ] {
+        syn::parse2::<Stmt>(stmt).unwrap_err();
+    }
 }

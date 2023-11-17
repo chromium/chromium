@@ -957,6 +957,8 @@ pub(crate) fn requires_terminator(expr: &Expr) -> bool {
 #[cfg(feature = "parsing")]
 pub(crate) mod parsing {
     use super::*;
+    #[cfg(feature = "full")]
+    use crate::ext::IdentExt;
     use crate::parse::discouraged::Speculative;
     #[cfg(feature = "full")]
     use crate::parse::ParseBuffer;
@@ -1153,6 +1155,25 @@ pub(crate) mod parsing {
             let other = *other as u8;
             Some(this.cmp(&other))
         }
+    }
+
+    #[cfg(feature = "full")]
+    fn can_begin_expr(input: ParseStream) -> bool {
+        input.peek(Ident::peek_any) // value name or keyword
+            || input.peek(token::Paren) // tuple
+            || input.peek(token::Bracket) // array
+            || input.peek(token::Brace) // block
+            || input.peek(Lit) // literal
+            || input.peek(Token![!]) && !input.peek(Token![!=]) // operator not
+            || input.peek(Token![-]) && !input.peek(Token![-=]) && !input.peek(Token![->]) // unary minus
+            || input.peek(Token![*]) && !input.peek(Token![*=]) // dereference
+            || input.peek(Token![|]) && !input.peek(Token![|=]) // closure
+            || input.peek(Token![&]) && !input.peek(Token![&=]) // reference
+            || input.peek(Token![..]) // range notation
+            || input.peek(Token![<]) && !input.peek(Token![<=]) && !input.peek(Token![<<=]) // associated path
+            || input.peek(Token![::]) // global path
+            || input.peek(Lifetime) // labeled loop
+            || input.peek(Token![#]) // expression attributes
     }
 
     #[cfg(feature = "full")]
@@ -1614,7 +1635,7 @@ pub(crate) mod parsing {
         } else if input.peek(Token![continue]) {
             input.parse().map(Expr::Continue)
         } else if input.peek(Token![return]) {
-            expr_ret(input, allow_struct).map(Expr::Return)
+            expr_return(input, allow_struct).map(Expr::Return)
         } else if input.peek(token::Bracket) {
             array_or_repeat(input)
         } else if input.peek(Token![let]) {
@@ -2223,7 +2244,7 @@ pub(crate) mod parsing {
     impl Parse for ExprReturn {
         fn parse(input: ParseStream) -> Result<Self> {
             let allow_struct = AllowStruct(true);
-            expr_ret(input, allow_struct)
+            expr_return(input, allow_struct)
         }
     }
 
@@ -2247,7 +2268,7 @@ pub(crate) mod parsing {
                 attrs: Vec::new(),
                 yield_token: input.parse()?,
                 expr: {
-                    if !input.is_empty() && !input.peek(Token![,]) && !input.peek(Token![;]) {
+                    if can_begin_expr(input) {
                         Some(input.parse()?)
                     } else {
                         None
@@ -2442,34 +2463,46 @@ pub(crate) mod parsing {
 
     #[cfg(feature = "full")]
     fn expr_break(input: ParseStream, allow_struct: AllowStruct) -> Result<ExprBreak> {
+        let break_token: Token![break] = input.parse()?;
+
+        let ahead = input.fork();
+        let label: Option<Lifetime> = ahead.parse()?;
+        if label.is_some() && ahead.peek(Token![:]) {
+            // Not allowed: `break 'label: loop {...}`
+            // Parentheses are required. `break ('label: loop {...})`
+            let _ = ambiguous_expr(input, allow_struct)?;
+            let start_span = label.unwrap().apostrophe;
+            let end_span = input.cursor().prev_span();
+            return Err(crate::error::new2(
+                start_span,
+                end_span,
+                "parentheses required",
+            ));
+        }
+
+        input.advance_to(&ahead);
+        let expr = if can_begin_expr(input) && (allow_struct.0 || !input.peek(token::Brace)) {
+            let expr = ambiguous_expr(input, allow_struct)?;
+            Some(Box::new(expr))
+        } else {
+            None
+        };
+
         Ok(ExprBreak {
             attrs: Vec::new(),
-            break_token: input.parse()?,
-            label: input.parse()?,
-            expr: {
-                if input.is_empty()
-                    || input.peek(Token![,])
-                    || input.peek(Token![;])
-                    || !allow_struct.0 && input.peek(token::Brace)
-                {
-                    None
-                } else {
-                    let expr = ambiguous_expr(input, allow_struct)?;
-                    Some(Box::new(expr))
-                }
-            },
+            break_token,
+            label,
+            expr,
         })
     }
 
     #[cfg(feature = "full")]
-    fn expr_ret(input: ParseStream, allow_struct: AllowStruct) -> Result<ExprReturn> {
+    fn expr_return(input: ParseStream, allow_struct: AllowStruct) -> Result<ExprReturn> {
         Ok(ExprReturn {
             attrs: Vec::new(),
             return_token: input.parse()?,
             expr: {
-                if input.is_empty() || input.peek(Token![,]) || input.peek(Token![;]) {
-                    None
-                } else {
+                if can_begin_expr(input) {
                     // NOTE: return is greedy and eats blocks after it even when in a
                     // position where structs are not allowed, such as in if statement
                     // conditions. For example:
@@ -2477,6 +2510,8 @@ pub(crate) mod parsing {
                     // if return { println!("A") } {} // Prints "A"
                     let expr = ambiguous_expr(input, allow_struct)?;
                     Some(Box::new(expr))
+                } else {
+                    None
                 }
             },
         })

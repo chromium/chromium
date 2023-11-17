@@ -501,10 +501,7 @@ impl<'cmd> Parser<'cmd> {
                     self.cmd,
                     arg_os.display().to_string(),
                     candidates,
-                    self.cmd
-                        .get_bin_name()
-                        .unwrap_or_else(|| self.cmd.get_name())
-                        .to_owned(),
+                    self.cmd.get_bin_name_fallback().to_owned(),
                     suggested_trailing_arg,
                     Usage::new(self.cmd).create_usage_with_title(&[]),
                 );
@@ -643,7 +640,7 @@ impl<'cmd> Parser<'cmd> {
 
         if self.cmd[current_positional.get_id()].is_allow_hyphen_values_set()
             || (self.cmd[current_positional.get_id()].is_allow_negative_numbers_set()
-                && next.is_number())
+                && next.is_negative_number())
         {
             // If allow hyphen, this isn't a new arg.
             debug!("Parser::is_new_arg: Allow hyphen");
@@ -841,7 +838,7 @@ impl<'cmd> Parser<'cmd> {
 
         #[allow(clippy::blocks_in_if_conditions)]
         if matches!(parse_state, ParseState::Opt(opt) | ParseState::Pos(opt)
-                if self.cmd[opt].is_allow_hyphen_values_set() || (self.cmd[opt].is_allow_negative_numbers_set() && short_arg.is_number()))
+                if self.cmd[opt].is_allow_hyphen_values_set() || (self.cmd[opt].is_allow_negative_numbers_set() && short_arg.is_negative_number()))
         {
             debug!("Parser::parse_short_args: prior arg accepts hyphenated values",);
             return Ok(ParseResult::MaybeHyphenValue);
@@ -851,7 +848,7 @@ impl<'cmd> Parser<'cmd> {
             .get(&pos_counter)
             .map(|arg| arg.is_allow_negative_numbers_set())
             .unwrap_or_default()
-            && short_arg.is_number()
+            && short_arg.is_negative_number()
         {
             debug!("Parser::parse_short_arg: negative number");
             return Ok(ParseResult::MaybeHyphenValue);

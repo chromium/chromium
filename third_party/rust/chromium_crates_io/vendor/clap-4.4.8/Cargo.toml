@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.70.0"
 name = "clap"
-version = "4.4.6"
+version = "4.4.8"
 include = [
     "build.rs",
     "src/**/*",
@@ -367,11 +367,11 @@ path = "examples/derive_ref/flatten_hand_args.rs"
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.4.6"
+version = "=4.4.8"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.4.2"
+version = "=4.4.7"
 optional = true
 
 [dev-dependencies.humantime]
@@ -381,28 +381,22 @@ version = "2.1.0"
 version = "1.0.14"
 
 [dev-dependencies.shlex]
-version = "1.1.0"
+version = "1.2.0"
 
 [dev-dependencies.snapbox]
-version = "0.4.13"
-
-[dev-dependencies.static_assertions]
-version = "1.1.0"
+version = "0.4.14"
 
 [dev-dependencies.trybuild]
-version = "1.0.83"
+version = "1.0.85"
 
 [dev-dependencies.trycmd]
-version = "0.14.18"
+version = "0.14.19"
 features = [
     "color-auto",
     "diff",
     "examples",
 ]
 default-features = false
-
-[dev-dependencies.unic-emoji-char]
-version = "0.9.0"
 
 [features]
 cargo = ["clap_builder/cargo"]

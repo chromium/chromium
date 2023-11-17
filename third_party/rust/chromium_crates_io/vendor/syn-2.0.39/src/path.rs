@@ -82,6 +82,19 @@ impl Path {
             None
         }
     }
+
+    /// An error if this path is not a single ident, as defined in `get_ident`.
+    #[cfg(feature = "parsing")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
+    pub fn require_ident(&self) -> Result<&Ident> {
+        self.get_ident().ok_or_else(|| {
+            crate::error::new2(
+                self.segments.first().unwrap().ident.span(),
+                self.segments.last().unwrap().ident.span(),
+                "expected this path to be an identifier",
+            )
+        })
+    }
 }
 
 ast_struct! {

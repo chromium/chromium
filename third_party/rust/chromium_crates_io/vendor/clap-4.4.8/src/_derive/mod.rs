@@ -203,6 +203,10 @@
 //! - `skip [= <expr>]`: Ignore this field, filling in with `<expr>`
 //!   - Without `<expr>`: fills the field with `Default::default()`
 //!
+//! Note:
+//! - For `struct`s, [`multiple = true`][crate::ArgGroup::multiple] is implied
+//! - `enum` support is tracked at [#2621](https://github.com/clap-rs/clap/issues/2621)
+//!
 //! ### Arg Attributes
 //!
 //! These correspond to a [`Arg`][crate::Arg].

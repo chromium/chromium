@@ -73,17 +73,29 @@ Default subcommand:
 ```console
 $ git-derive stash -h
 Usage: git-derive[EXE] stash [OPTIONS]
-       git-derive[EXE] stash <COMMAND>
-
-Commands:
-  push   
-  pop    
-  apply  
-  help   Print this message or the help of the given subcommand(s)
+       git-derive[EXE] stash push [OPTIONS]
+       git-derive[EXE] stash pop [STASH]
+       git-derive[EXE] stash apply [STASH]
+       git-derive[EXE] stash help [COMMAND]...
 
 Options:
   -m, --message <MESSAGE>  
   -h, --help               Print help
+
+git-derive[EXE] stash push:
+  -m, --message <MESSAGE>  
+  -h, --help               Print help
+
+git-derive[EXE] stash pop:
+  -h, --help   Print help
+  [STASH]  
+
+git-derive[EXE] stash apply:
+  -h, --help   Print help
+  [STASH]  
+
+git-derive[EXE] stash help:
+  [COMMAND]...  Print help for the subcommand(s)
 
 $ git-derive stash push -h
 Usage: git-derive[EXE] stash push [OPTIONS]

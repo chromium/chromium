@@ -1,0 +1,16 @@
+Name: {{this.name}}
+URL: {{this.url}}
+Description: {{this.description}}
+Version: {{this.version}}
+Security Critical: {{this.security_critical}}
+Shipped: {{this.shipped}}
+License: {{this.license}}
+{{#if this.license_file}}
+License File: {{this.license_file}}
+{{/if}}
+{{#if not this.license_file}}
+License File:
+{{/if}}
+{{#if this.revision}}
+Revision: {{this.revision}}
+{{/if}}

@@ -1268,6 +1268,11 @@ impl Debug for GenericArgument {
                 formatter.field(v0);
                 formatter.finish()
             }
+            GenericArgument::Const(v0) => {
+                let mut formatter = formatter.debug_tuple("Const");
+                formatter.field(v0);
+                formatter.finish()
+            }
             GenericArgument::Binding(v0) => {
                 let mut formatter = formatter.debug_tuple("Binding");
                 formatter.field(v0);
@@ -1275,11 +1280,6 @@ impl Debug for GenericArgument {
             }
             GenericArgument::Constraint(v0) => {
                 let mut formatter = formatter.debug_tuple("Constraint");
-                formatter.field(v0);
-                formatter.finish()
-            }
-            GenericArgument::Const(v0) => {
-                let mut formatter = formatter.debug_tuple("Const");
                 formatter.field(v0);
                 formatter.finish()
             }

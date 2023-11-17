@@ -4,7 +4,7 @@ tags
 examples/ss10pusa.csv
 build
 target
-/Cargo.lock
+Cargo.lock
 scratch*
 bench_large/huge
 tmp/

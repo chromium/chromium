@@ -14,7 +14,7 @@ of all the exported APIs match the platform that libc is compiled for.
 More detailed information about the design of this library can be found in its
 [associated RFC][rfc].
 
-[rfc]: https://github.com/rust-lang/rfcs/blob/master/text/1291-promote-libc.md
+[rfc]: https://github.com/rust-lang/rfcs/blob/HEAD/text/1291-promote-libc.md
 
 ## Usage
 
@@ -60,10 +60,10 @@ newer Rust features are only available on newer Rust toolchains:
 
 ## Platform support
 
-[Platform-specific documentation (master branch)][docs.master].
+You can see the platform(target)-specific docs on [docs.rs], select a platform you want to see.
 
 See
-[`ci/build.sh`](https://github.com/rust-lang/libc/blob/master/ci/build.sh)
+[`ci/build.sh`](https://github.com/rust-lang/libc/blob/HEAD/ci/build.sh)
 for the platforms on which `libc` is guaranteed to build for each Rust
 toolchain. The test-matrix at [GitHub Actions] and [Cirrus CI] show the
 platforms in which `libc` tests are run.
@@ -75,10 +75,10 @@ platforms in which `libc` tests are run.
 This project is licensed under either of
 
 * [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-  ([LICENSE-APACHE](https://github.com/rust-lang/libc/blob/master/LICENSE-APACHE))
+  ([LICENSE-APACHE](https://github.com/rust-lang/libc/blob/HEAD/LICENSE-APACHE))
 
 * [MIT License](https://opensource.org/licenses/MIT)
-  ([LICENSE-MIT](https://github.com/rust-lang/libc/blob/master/LICENSE-MIT))
+  ([LICENSE-MIT](https://github.com/rust-lang/libc/blob/HEAD/LICENSE-MIT))
 
 at your option.
 
@@ -87,7 +87,7 @@ at your option.
 We welcome all people who want to contribute. Please see the [contributing
 instructions] for more information.
 
-[contributing instructions]: https://github.com/rust-lang/libc/blob/master/CONTRIBUTING.md
+[contributing instructions]: https://github.com/rust-lang/libc/blob/HEAD/CONTRIBUTING.md
 
 Contributions in any form (issues, pull requests, etc.) to this project
 must adhere to Rust's [Code of Conduct].
@@ -107,4 +107,3 @@ dual licensed as above, without any additional terms or conditions.
 [Documentation]: https://docs.rs/libc/badge.svg
 [docs.rs]: https://docs.rs/libc
 [License]: https://img.shields.io/crates/l/libc.svg
-[docs.master]: https://rust-lang.github.io/libc/#platform-specific-documentation

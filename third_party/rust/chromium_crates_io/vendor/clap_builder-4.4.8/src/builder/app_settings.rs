@@ -57,6 +57,7 @@ pub(crate) enum AppSettings {
     SubcommandsNegateReqs,
     ArgsNegateSubcommands,
     SubcommandPrecedenceOverArg,
+    FlattenHelp,
     ArgRequiredElseHelp,
     NextLineHelp,
     DisableColoredHelp,

@@ -1,0 +1,320 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+use crate::config;
+use crate::crates;
+use crate::paths;
+use crate::readme;
+use crate::util::{create_dirs_if_needed, init_handlebars, run_cargo_metadata};
+use anyhow::{format_err, Context, Result};
+use cargo_metadata::{Node, Package, PackageId};
+use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
+
+pub fn vendor(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+    // Vendoring needs to work with real crates.io, not with our locally vendored
+    // crates.
+    let config_file = paths.third_party_cargo_root.join(".cargo").join("config.toml");
+    let config_contents =
+        std::fs::read_to_string(&config_file).context("reading .cargo/config.toml")?;
+    std::fs::remove_file(&config_file)?;
+
+    let r = vendor_impl(args, paths);
+
+    std::fs::write(config_file, config_contents).context("writing .cargo/config.toml")?;
+    r
+}
+
+fn vendor_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+    let config_file_path = paths.third_party_config_file;
+    let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
+    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+
+    let template_path = paths
+        .third_party_config_file
+        .parent()
+        .unwrap()
+        .join(&config.gn_config.readme_file_template);
+    let handlebars = init_handlebars(&template_path).context("init_handlebars")?;
+
+    println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
+
+    let cargo_extra_options = vec![
+        // Allow the binary dependency on cxxbridge-cmd.
+        "-Zbindeps".to_string(),
+    ];
+
+    let metadata = run_cargo_metadata(
+        paths.third_party_cargo_root.into(),
+        args,
+        cargo_extra_options,
+        HashMap::new(),
+    )
+    .context("run_cargo_metadata")?;
+
+    // Running cargo metadata against actual crates.io will put checksum into
+    // the Cargo.lock file, but we don't generate checksums when we download
+    // the crates. This mismatch causes everything else to fail when cargo is
+    // using our vendor/ directory. So we remove all the checksums from the
+    // lock file.
+    let lock_contents = std::fs::read_to_string(paths.third_party_cargo_root.join("Cargo.lock"))?
+        .split('\n')
+        .filter(|line| !line.starts_with("checksum = "))
+        .map(String::from)
+        .collect::<Vec<_>>();
+    std::fs::write(paths.third_party_cargo_root.join("Cargo.lock"), lock_contents.join("\n"))?;
+
+    // Collect the set of third-party crates.
+    let packages = {
+        let packages: HashMap<_, _> = metadata
+            .packages
+            .iter()
+            .filter(|package| {
+                // Remove the root package (our "chromium" crate).
+                //
+                // We have to keep packages in the `remove_crates` config
+                // because they must be downloaded for `cargo metadata` to work.
+                metadata.root_package().unwrap().id != package.id
+            })
+            // Key off the package id.
+            .map(|p| (p.id.clone(), p))
+            .collect();
+
+        // If there are multiple crates with the same epoch, this is unexpected.
+        // Bail out.
+        {
+            let mut found = HashSet::new();
+            for (_, p) in &packages {
+                let epoch = crates::Epoch::from_version(&p.version);
+                if found.insert((&p.name, epoch)) == false {
+                    return Err(format_err!(
+                        "Two '{}' crates found with the same {} epoch",
+                        p.name,
+                        epoch
+                    ));
+                }
+            }
+        }
+
+        packages
+    };
+    let nodes: HashMap<_, _> = metadata
+        .resolve
+        .as_ref()
+        .unwrap()
+        .nodes
+        .iter()
+        .map(|node| (node.id.clone(), node))
+        .collect();
+
+    {
+        let package_names = packages.values().map(|p| &p.name).collect::<HashSet<_>>();
+        for (name, _) in &config.per_crate_config {
+            if !package_names.contains(name) {
+                return Err(format_err!(
+                    "Config found for crate {name}, but it is not a dependency, in {file}",
+                    name = name,
+                    file = config_file_path.display()
+                ));
+            }
+        }
+    }
+
+    // Download missing dirs, remove the rest.
+    let vendor_dir = paths.third_party_cargo_root.join("vendor");
+    create_dirs_if_needed(&vendor_dir).context("creating vendor dir")?;
+    let mut dirs: HashSet<String> = std::fs::read_dir(&vendor_dir)
+        .context("reading vendor dir")?
+        .filter_map(|dir| {
+            if let Ok(entry) = dir {
+                if entry.metadata().map(|m| m.is_dir()).unwrap_or(false) {
+                    return Some(entry.file_name().to_string_lossy().to_string());
+                }
+            }
+            None
+        })
+        .collect();
+    for (_, p) in &packages {
+        if !dirs.contains(&format!("{}-{}", p.name, p.version)) {
+            println!("Downloading {}-{}", p.name, p.version);
+            download_crate(&p.name, &p.version, paths)?
+        }
+        dirs.remove(&format!("{}-{}", p.name, p.version));
+    }
+    for d in &dirs {
+        println!("Deleting {}", d);
+        std::fs::remove_dir_all(paths.third_party_cargo_root.join("vendor").join(d))
+            .with_context(|| format!("removing {}", d))?
+    }
+
+    let find_group = |id| find_least_privilege_group(id, &packages, &nodes, &config);
+
+    let all_readme_files: HashMap<PathBuf, readme::ReadmeFile> =
+        readme::readme_files_from_packages(
+            packages
+                .values()
+                // Don't generate README files for packages skipped by `remove_crates`.
+                .filter(|p| config.resolve.remove_crates.iter().all(|r| *r != p.name))
+                .copied(),
+            paths,
+            &config,
+            find_group,
+        )?;
+
+    for (dir, _) in &all_readme_files {
+        create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
+    }
+
+    if args.get_flag("dump-template-input") {
+        for (dir, readme_file) in &all_readme_files {
+            serde_json::to_writer_pretty(
+                std::fs::File::create(dir.join("gnrt-template-input.json"))
+                    .context("opening dump file")?,
+                &readme_file,
+            )
+            .context("dumping gn information")?;
+        }
+        return Ok(());
+    }
+
+    for (dir, readme_file) in &all_readme_files {
+        let readme_str = handlebars.render("template", &readme_file)?;
+
+        let file_path = dir.join("README.chromium");
+        let file = std::fs::File::create(&file_path).with_context(|| {
+            format!("Could not create README.chromium output file {}", file_path.to_string_lossy())
+        })?;
+        use std::io::Write;
+        write!(std::io::BufWriter::new(file), "{}", readme_str)
+            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
+    }
+    Ok(())
+}
+
+fn is_ancestor(
+    ancestor_id: &PackageId,
+    id: &PackageId,
+    packages: &HashMap<PackageId, &Package>,
+    nodes: &HashMap<PackageId, &Node>,
+) -> bool {
+    if id == ancestor_id {
+        return true;
+    }
+    for dep in &nodes[ancestor_id].dependencies {
+        if dep == id || is_ancestor(dep, id, packages, nodes) {
+            return true;
+        }
+    }
+    false
+}
+
+fn find_least_privilege_group(
+    id: &PackageId,
+    packages: &HashMap<PackageId, &Package>,
+    nodes: &HashMap<PackageId, &Node>,
+    config: &config::BuildConfig,
+) -> Result<String> {
+    // Find all ancestors that define a group.
+    #[derive(Debug, PartialEq, Eq)]
+    enum Group {
+        Safe,
+        Sandbox,
+        Test,
+    }
+    let mut ancestor_groups = Vec::<Group>::new();
+    for (each_id, _) in packages {
+        if is_ancestor(each_id, id, packages, nodes) {
+            let group = config
+                .per_crate_config
+                .get(&packages[each_id].name)
+                .and_then(|config| config.group.as_ref());
+            match group.map(String::as_ref) {
+                Some("safe") => ancestor_groups.push(Group::Safe),
+                Some("sandbox") => ancestor_groups.push(Group::Sandbox),
+                Some("test") => ancestor_groups.push(Group::Test),
+                Some(x) => {
+                    return Err(format_err!(
+                        "Invalid config: group {} for crate {} should be one of safe|sandbox|text",
+                        x,
+                        packages[id].name,
+                    ));
+                }
+                None => (),
+            };
+        }
+    }
+
+    let least_privilege = ancestor_groups.into_iter().fold(None, |init, g| {
+        let new = if let Some(old) = init {
+            match g {
+                Group::Safe => {
+                    if old == Group::Safe {
+                        Group::Safe
+                    } else {
+                        old
+                    }
+                }
+                Group::Sandbox => {
+                    if old != Group::Test {
+                        Group::Sandbox
+                    } else {
+                        old
+                    }
+                }
+                Group::Test => Group::Test,
+            }
+        } else {
+            g
+        };
+        Some(new)
+    });
+    Ok(match least_privilege {
+        Some(Group::Safe) => String::from("safe"),
+        Some(Group::Sandbox) => String::from("sandbox"),
+        Some(Group::Test) => String::from("test"),
+        None => String::from("safe"), // TODO: Default should be sandbox??
+    })
+}
+
+fn download_crate(
+    name: &str,
+    version: &semver::Version,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
+    let mut response = reqwest::blocking::get(format!(
+        "https://crates.io/api/v1/crates/{name}/{version}/download",
+    ))?;
+    if response.status() != 200 {
+        return Err(format_err!("Failed to download crate {}: {}", name, response.status()));
+    }
+    let num_bytes = {
+        let header = response.headers().get(reqwest::header::CONTENT_LENGTH);
+        if let Some(value) = header { value.to_str()?.parse::<usize>()? } else { 0 }
+    };
+    let mut bytes = Vec::with_capacity(num_bytes);
+    {
+        use std::io::Read;
+        response
+            .read_to_end(&mut bytes)
+            .with_context(|| format!("reading http response for crate {}", name))?;
+    }
+    let unzipped = flate2::read::GzDecoder::new(bytes.as_slice());
+    let mut archive = tar::Archive::new(unzipped);
+
+    let vendor_dir = paths.third_party_cargo_root.join("vendor");
+    let crate_dir = vendor_dir.join(format!("{}-{}", name, version));
+
+    if let Err(e) = archive.unpack(vendor_dir) {
+        std::fs::remove_dir_all(crate_dir)
+            .with_context(|| format!("Deleting failed unpack of crate {}-{}", name, version))?;
+        return Err(e)
+            .with_context(|| format!("Failed to unpack crate {}-{}", name, version))
+            .into();
+    }
+
+    std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
+        .with_context(|| format!("writing .cargo-checksum.json for crate {}", name))?;
+
+    Ok(())
+}

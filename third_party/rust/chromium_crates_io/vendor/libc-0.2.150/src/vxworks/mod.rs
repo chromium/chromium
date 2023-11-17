@@ -1018,6 +1018,21 @@ pub const O_WRONLY: ::c_int = 0x0001;
 pub const O_RDONLY: ::c_int = 0;
 pub const O_NONBLOCK: ::c_int = 0x4000;
 
+// mman.h
+pub const PROT_NONE: ::c_int = 0x0000;
+pub const PROT_READ: ::c_int = 0x0001;
+pub const PROT_WRITE: ::c_int = 0x0002;
+pub const PROT_EXEC: ::c_int = 0x0004;
+
+pub const MAP_SHARED: ::c_int = 0x0001;
+pub const MAP_PRIVATE: ::c_int = 0x0002;
+pub const MAP_ANON: ::c_int = 0x0004;
+pub const MAP_ANONYMOUS: ::c_int = MAP_ANON;
+pub const MAP_FIXED: ::c_int = 0x0010;
+pub const MAP_CONTIG: ::c_int = 0x0020;
+
+pub const MAP_FAILED: *mut ::c_void = !0 as *mut ::c_void;
+
 #[cfg_attr(feature = "extra_traits", derive(Debug))]
 pub enum FILE {}
 impl ::Copy for FILE {}
@@ -1218,6 +1233,8 @@ extern "C" {
     ) -> *mut ::c_void;
     pub fn munmap(addr: *mut ::c_void, len: ::size_t) -> ::c_int;
     pub fn truncate(path: *const c_char, length: off_t) -> ::c_int;
+    pub fn shm_open(name: *const ::c_char, oflag: ::c_int, mode: ::mode_t) -> ::c_int;
+    pub fn shm_unlink(name: *const ::c_char) -> ::c_int;
 
     pub fn gettimeofday(tp: *mut ::timeval, tz: *mut ::c_void) -> ::c_int;
     pub fn pthread_exit(value: *mut ::c_void) -> !;
@@ -1909,19 +1926,19 @@ cfg_if! {
     if #[cfg(target_arch = "aarch64")] {
         mod aarch64;
         pub use self::aarch64::*;
-    } else if #[cfg(any(target_arch = "arm"))] {
+    } else if #[cfg(target_arch = "arm")] {
         mod arm;
         pub use self::arm::*;
-    }  else if #[cfg(any(target_arch = "x86"))] {
+    }  else if #[cfg(target_arch = "x86")] {
         mod x86;
         pub use self::x86::*;
-    } else if #[cfg(any(target_arch = "x86_64"))] {
+    } else if #[cfg(target_arch = "x86_64")] {
         mod x86_64;
         pub use self::x86_64::*;
-    } else if #[cfg(any(target_arch = "powerpc"))] {
+    } else if #[cfg(target_arch = "powerpc")] {
         mod powerpc;
         pub use self::powerpc::*;
-    } else if #[cfg(any(target_arch = "powerpc64"))] {
+    } else if #[cfg(target_arch = "powerpc64")] {
         mod powerpc64;
         pub use self::powerpc64::*;
     } else {

@@ -1,6 +1,6 @@
 [package]
 name = "proc-macro2"
-version = "1.0.66" # remember to update html_root_url
+version = "1.0.69" # remember to update html_root_url
 authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]

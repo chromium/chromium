@@ -166,3 +166,20 @@ macro_rules! check_keyword_matches {
     (enum enum) => {};
     (pub pub) => {};
 }
+
+// Rustdoc bug: does not respect the doc(hidden) on some items.
+#[cfg(all(doc, feature = "parsing"))]
+macro_rules! pub_if_not_doc {
+    ($(#[$m:meta])* pub $($item:tt)*) => {
+        $(#[$m])*
+        pub(crate) $($item)*
+    };
+}
+
+#[cfg(all(not(doc), feature = "parsing"))]
+macro_rules! pub_if_not_doc {
+    ($(#[$m:meta])* pub $($item:tt)*) => {
+        $(#[$m])*
+        pub $($item)*
+    };
+}

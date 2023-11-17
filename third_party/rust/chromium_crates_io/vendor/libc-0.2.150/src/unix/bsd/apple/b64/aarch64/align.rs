@@ -15,7 +15,6 @@ s! {
         pub uc_link: *mut ::ucontext_t,
         pub uc_mcsize: usize,
         pub uc_mcontext: mcontext_t,
-        __mcontext_data: __darwin_mcontext64,
     }
 
     pub struct __darwin_mcontext64 {

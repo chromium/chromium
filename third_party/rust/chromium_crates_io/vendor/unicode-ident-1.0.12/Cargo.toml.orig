@@ -1,8 +1,8 @@
 [package]
 name = "unicode-ident"
-version = "1.0.8"
+version = "1.0.12"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-categories = ["development-tools::procedural-macro-helpers", "no-std"]
+categories = ["development-tools::procedural-macro-helpers", "no-std", "no-std::no-alloc"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-ident"
 edition = "2018"
@@ -12,7 +12,7 @@ repository = "https://github.com/dtolnay/unicode-ident"
 rust-version = "1.31"
 
 [dev-dependencies]
-criterion = { version = "0.4", default-features = false }
+criterion = { version = "0.5", default-features = false }
 fst = "0.4"
 rand = { version = "0.8", features = ["small_rng"] }
 roaring = "0.10"
@@ -31,3 +31,4 @@ doc-scrape-examples = false
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--generate-link-to-definition"]

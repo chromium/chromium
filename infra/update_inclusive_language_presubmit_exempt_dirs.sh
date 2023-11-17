@@ -27,7 +27,7 @@
 # instance, you should run this from the parent of the current directory
 # rather than from this directory.
 
-git grep -c -E '\b((black|white)list|master|slave)\b' | \
+git grep --ignore-case --count -E '\b((black|white)list|master|slave)\b' | \
   awk -F ":" 'NF {cmd=sprintf("dirname %s",$1);cmd | getline dirname; \
   a[dirname] += $2; b[dirname] += 1} END {for (i in a) print i, a[i], b[i]}' \
   | sort

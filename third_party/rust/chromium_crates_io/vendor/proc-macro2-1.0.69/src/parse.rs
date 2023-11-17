@@ -161,6 +161,10 @@ fn word_break(input: Cursor) -> Result<Cursor, Reject> {
     }
 }
 
+// Rustc's representation of a macro expansion error in expression position or
+// type position.
+const ERROR: &str = "(/*ERROR*/)";
+
 pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
     let mut trees = TokenStreamBuilder::new();
     let mut stack = Vec::new();
@@ -192,7 +196,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
         };
 
         if let Some(open_delimiter) = match first {
-            b'(' => Some(Delimiter::Parenthesis),
+            b'(' if !input.starts_with(ERROR) => Some(Delimiter::Parenthesis),
             b'[' => Some(Delimiter::Bracket),
             b'{' => Some(Delimiter::Brace),
             _ => None,
@@ -267,6 +271,10 @@ fn leaf_token(input: Cursor) -> PResult<TokenTree> {
         Ok((input, TokenTree::Punct(p)))
     } else if let Ok((input, i)) = ident(input) {
         Ok((input, TokenTree::Ident(i)))
+    } else if input.starts_with(ERROR) {
+        let rest = input.advance(ERROR.len());
+        let repr = crate::Literal::_new_fallback(Literal::_new(ERROR.to_owned()));
+        Ok((rest, TokenTree::Literal(repr)))
     } else {
         Err(Reject)
     }

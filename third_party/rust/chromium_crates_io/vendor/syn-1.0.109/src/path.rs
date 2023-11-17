@@ -89,9 +89,8 @@ impl PathArguments {
         }
     }
 
-    #[cfg(feature = "parsing")]
-    fn is_none(&self) -> bool {
-        match *self {
+    pub fn is_none(&self) -> bool {
+        match self {
             PathArguments::None => true,
             PathArguments::AngleBracketed(_) | PathArguments::Parenthesized(_) => false,
         }
@@ -109,16 +108,16 @@ ast_enum! {
         Lifetime(Lifetime),
         /// A type argument.
         Type(Type),
-        /// A binding (equality constraint) on an associated type: the `Item =
-        /// u8` in `Iterator<Item = u8>`.
-        Binding(Binding),
-        /// An associated type bound: `Iterator<Item: Display>`.
-        Constraint(Constraint),
         /// A const expression. Must be inside of a block.
         ///
         /// NOTE: Identity expressions are represented as Type arguments, as
         /// they are indistinguishable syntactically.
         Const(Expr),
+        /// A binding (equality constraint) on an associated type: the `Item =
+        /// u8` in `Iterator<Item = u8>`.
+        Binding(Binding),
+        /// An associated type bound: `Iterator<Item: Display>`.
+        Constraint(Constraint),
     }
 }
 
@@ -729,8 +728,6 @@ pub(crate) mod printing {
             match self {
                 GenericArgument::Lifetime(lt) => lt.to_tokens(tokens),
                 GenericArgument::Type(ty) => ty.to_tokens(tokens),
-                GenericArgument::Binding(tb) => tb.to_tokens(tokens),
-                GenericArgument::Constraint(tc) => tc.to_tokens(tokens),
                 GenericArgument::Const(e) => match *e {
                     Expr::Lit(_) => e.to_tokens(tokens),
 
@@ -746,6 +743,8 @@ pub(crate) mod printing {
                         e.to_tokens(tokens);
                     }),
                 },
+                GenericArgument::Binding(tb) => tb.to_tokens(tokens),
+                GenericArgument::Constraint(tc) => tc.to_tokens(tokens),
             }
         }
     }
@@ -756,11 +755,8 @@ pub(crate) mod printing {
             self.colon2_token.to_tokens(tokens);
             self.lt_token.to_tokens(tokens);
 
-            // Print lifetimes before types and consts, all before bindings,
-            // regardless of their order in self.args.
-            //
-            // TODO: ordering rules for const arguments vs type arguments have
-            // not been settled yet. https://github.com/rust-lang/rust/issues/44580
+            // Print lifetimes before types/consts/bindings, regardless of their
+            // order in self.args.
             let mut trailing_or_empty = true;
             for param in self.args.pairs() {
                 match **param.value() {
@@ -769,37 +765,24 @@ pub(crate) mod printing {
                         trailing_or_empty = param.punct().is_some();
                     }
                     GenericArgument::Type(_)
-                    | GenericArgument::Binding(_)
-                    | GenericArgument::Constraint(_)
-                    | GenericArgument::Const(_) => {}
-                }
-            }
-            for param in self.args.pairs() {
-                match **param.value() {
-                    GenericArgument::Type(_) | GenericArgument::Const(_) => {
-                        if !trailing_or_empty {
-                            <Token![,]>::default().to_tokens(tokens);
-                        }
-                        param.to_tokens(tokens);
-                        trailing_or_empty = param.punct().is_some();
-                    }
-                    GenericArgument::Lifetime(_)
+                    | GenericArgument::Const(_)
                     | GenericArgument::Binding(_)
                     | GenericArgument::Constraint(_) => {}
                 }
             }
             for param in self.args.pairs() {
                 match **param.value() {
-                    GenericArgument::Binding(_) | GenericArgument::Constraint(_) => {
+                    GenericArgument::Type(_)
+                    | GenericArgument::Const(_)
+                    | GenericArgument::Binding(_)
+                    | GenericArgument::Constraint(_) => {
                         if !trailing_or_empty {
                             <Token![,]>::default().to_tokens(tokens);
                         }
                         param.to_tokens(tokens);
                         trailing_or_empty = param.punct().is_some();
                     }
-                    GenericArgument::Lifetime(_)
-                    | GenericArgument::Type(_)
-                    | GenericArgument::Const(_) => {}
+                    GenericArgument::Lifetime(_) => {}
                 }
             }
 

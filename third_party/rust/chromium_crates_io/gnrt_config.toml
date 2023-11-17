@@ -16,19 +16,42 @@
 #
 # group: One of 'safe', 'sandbox', or 'test. This indicates where the library
 #   is allowed to be used and where its GN rules will be written.
-#   TODO(danakj): What is the default? It should probably be 'sandbox'?
+#
+#   The group of least privilege is inherited by a crate C from all crates that
+#   depend on C transitively. For crates listed in Cargo.toml, and not depended
+#   on by other crates, the default is 'safe'.
+#   TODO(danakj): The default should probably be 'sandbox'?
 #
 #   'safe': The library satisfies the rule-of-2 and can be used in any process.
 #   'sandbox': The library does not satisfy the rule-of-2 and must be used in
 #              a sandboxed process such as the renderer or a utility process.
 #   'test': The library is only used in tests.
+#
+# license: The name of the license. This should normally be populated from the
+#   crate's Cargo.toml, but it can be specified to override it.
+#
+# license_file: The name of the license file, relative to the crate's root.
+#   This is normally found automatically based on convention, but it can be
+#   specified to override it. A license file is expected for all shipped
+#   libraries.
+#
+# security_critical: A boolean that overrides if the crate is marked security-
+#   critical in the README.chromium. It defaults to true if the crate is not in
+#   the 'test' group/.
+#
+# shipped: A boolean that overrides if the crate is marked shipped in the
+#   README.chromium. It defaults to true if the crate is not in the 'test'
+#   group.
 
 [gn]
 build_file_template = "BUILD.gn.hbs"
+readme_file_template = "README.chromium.hbs"
 
 [resolve]
 root = "chromium"
-remove_crates = ['cc', 'link-cplusplus']
+# These crates are dependencies in some configurations, but we don't use them.
+# TODO(danakj): Can we figure out the wasi and winapi ones automatically?
+remove_crates = ['cc', 'link-cplusplus', 'wasi', 'winapi-i686-pc-windows-gnu', 'winapi-x86_64-pc-windows-gnu']
 
 [crate.anyhow]
 group = 'test'
@@ -47,6 +70,9 @@ remove_deps = ['cc', 'link-cplusplus']
 # This removes the use of cc, and disables the `build_with_cargo` cfg which
 # also removes the use of link-cplusplus.
 remove_build_rs = true
+
+[crate.cxxbridge-cmd]
+group = 'test'
 
 [crate.hex]
 group = 'test'
@@ -79,11 +105,17 @@ group = 'test'
 allow_first_party_usage = false
 build_script_outputs = [ "version.rs" ]
 
+[crate.rustc-demangle-capi]
+shipped = false
+
 [crate.serde_json]
 group = 'test'
 
 [crate.small_ctor]
 group = 'test'
+
+[crate.unicode-ident]
+license_file = 'LICENCE-*'
 
 [crate.unicode-linebreak]
 allow_first_party_usage = false

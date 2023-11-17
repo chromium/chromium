@@ -1,6 +1,11 @@
 // cargo bench
 
 #![feature(test)]
+#![allow(
+    clippy::approx_constant,
+    clippy::excessive_precision,
+    clippy::unreadable_literal
+)]
 
 extern crate test;
 

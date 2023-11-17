@@ -28,7 +28,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.66"
+  cargo_pkg_version = "1.0.69"
   cargo_pkg_authors =
       "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "proc-macro2"

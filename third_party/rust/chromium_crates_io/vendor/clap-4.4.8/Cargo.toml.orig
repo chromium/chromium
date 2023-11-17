@@ -27,7 +27,7 @@ include = [
 
 [package]
 name = "clap"
-version = "4.4.6"
+version = "4.4.8"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 repository = "https://github.com/clap-rs/clap"
 categories = ["command-line-interface"]
@@ -101,19 +101,17 @@ unstable-styles = ["clap_builder/unstable-styles"]
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.4.6", default-features = false }
-clap_derive = { path = "./clap_derive", version = "=4.4.2", optional = true }
+clap_builder = { path = "./clap_builder", version = "=4.4.8", default-features = false }
+clap_derive = { path = "./clap_derive", version = "=4.4.7", optional = true }
 
 [dev-dependencies]
-trybuild = "1.0.83"
+trybuild = "1.0.85"
 rustversion = "1.0.14"
 # Cutting out `filesystem` feature
-trycmd = { version = "0.14.18", default-features = false, features = ["color-auto", "diff", "examples"] }
+trycmd = { version = "0.14.19", default-features = false, features = ["color-auto", "diff", "examples"] }
 humantime = "2.1.0"
-snapbox = "0.4.13"
-shlex = "1.1.0"
-static_assertions = "1.1.0"
-unic-emoji-char = "0.9.0"
+snapbox = "0.4.14"
+shlex = "1.2.0"
 
 [[example]]
 name = "demo"

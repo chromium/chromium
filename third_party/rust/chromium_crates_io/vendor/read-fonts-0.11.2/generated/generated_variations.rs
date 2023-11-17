@@ -424,6 +424,7 @@ impl<'a> SomeTable<'a> for DeltaSetIndexMap<'a> {
 
 /// Entry format for a [DeltaSetIndexMap].
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct EntryFormat {
     bits: u8,
 }

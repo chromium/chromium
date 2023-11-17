@@ -7,6 +7,7 @@ use crate::codegen_prelude::*;
 
 /// Some flags!
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ValueFormat {
     bits: u16,
 }

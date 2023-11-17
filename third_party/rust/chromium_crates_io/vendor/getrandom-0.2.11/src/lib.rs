@@ -25,6 +25,7 @@
 //! | Redox             | `*‑redox`          | `/dev/urandom`
 //! | Haiku             | `*‑haiku`          | `/dev/urandom` (identical to `/dev/random`)
 //! | Hermit            | `*-hermit`         | [`sys_read_entropy`]
+//! | Hurd              | `*-hurd-*`         | [`getrandom`][17]
 //! | SGX               | `x86_64‑*‑sgx`     | [`RDRAND`]
 //! | VxWorks           | `*‑wrs‑vxworks‑*`  | `randABytes` after checking entropy pool initialization with `randSecure`
 //! | ESP-IDF           | `*‑espidf`         | [`esp_fill_random`]
@@ -33,6 +34,7 @@
 //! | Web Browser and Node.js | `wasm*‑*‑unknown` | [`Crypto.getRandomValues`] if available, then [`crypto.randomFillSync`] if on Node.js, see [WebAssembly support]
 //! | SOLID             | `*-kmc-solid_*`    | `SOLID_RNG_SampleRandomBytes`
 //! | Nintendo 3DS      | `armv6k-nintendo-3ds` | [`getrandom`][1]
+//! | PS Vita           | `armv7-sony-vita-newlibeabihf` | [`getentropy`][13]
 //! | QNX Neutrino      | `*‑nto-qnx*`          | [`/dev/urandom`][14] (identical to `/dev/random`)
 //! | AIX               | `*-ibm-aix`        | [`/dev/urandom`][15]
 //!
@@ -165,6 +167,7 @@
 //! [14]: https://www.qnx.com/developers/docs/7.1/index.html#com.qnx.doc.neutrino.utilities/topic/r/random.html
 //! [15]: https://www.ibm.com/docs/en/aix/7.3?topic=files-random-urandom-devices
 //! [16]: https://man.netbsd.org/getrandom.2
+//! [17]: https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-getrandom
 //!
 //! [`BCryptGenRandom`]: https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
 //! [`Crypto.getRandomValues`]: https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
@@ -179,12 +182,12 @@
 //! [`module`]: https://rustwasm.github.io/wasm-bindgen/reference/attributes/on-js-imports/module.html
 //! [CommonJS modules]: https://nodejs.org/api/modules.html
 //! [ES modules]: https://nodejs.org/api/esm.html
-//! [`sys_read_entropy`]: https://hermitcore.github.io/libhermit-rs/hermit/fn.sys_read_entropy.html
+//! [`sys_read_entropy`]: https://github.com/hermit-os/kernel/blob/315f58ff5efc81d9bf0618af85a59963ff55f8b1/src/syscalls/entropy.rs#L47-L55
 
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/getrandom/0.2.9"
+    html_root_url = "https://docs.rs/getrandom/0.2.11"
 )]
 #![no_std]
 #![warn(rust_2018_idioms, unused_lifetimes, missing_docs)]
@@ -262,6 +265,9 @@ cfg_if! {
         // uses Horizon OS (it is aarch64).
         mod util_libc;
         #[path = "3ds.rs"] mod imp;
+    } else if #[cfg(target_os = "vita")] {
+        mod util_libc;
+        #[path = "vita.rs"] mod imp;
     } else if #[cfg(target_os = "emscripten")] {
         mod util_libc;
         #[path = "emscripten.rs"] mod imp;
@@ -274,6 +280,9 @@ cfg_if! {
                         any(target_arch = "wasm32", target_arch = "wasm64"),
                         target_os = "unknown"))] {
         #[path = "js.rs"] mod imp;
+    } else if #[cfg(target_os = "hurd")] {
+        mod util_libc;
+        #[path = "hurd.rs"] mod imp;
     } else if #[cfg(feature = "custom")] {
         use custom as imp;
     } else if #[cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"),

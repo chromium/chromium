@@ -3,16 +3,12 @@ use std::process::Command;
 use std::str;
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+
     let compiler = match rustc_minor_version() {
         Some(compiler) => compiler,
         None => return,
     };
-
-    if compiler < 32 {
-        // u64::from_ne_bytes.
-        // https://doc.rust-lang.org/std/primitive.u64.html#method.from_ne_bytes
-        println!("cargo:rustc-cfg=no_from_ne_bytes");
-    }
 
     if compiler < 33 {
         // Exhaustive integer patterns. On older compilers, a final `_` arm is
@@ -41,7 +37,7 @@ fn main() {
 
     if compiler < 45 {
         // String::strip_prefix.
-        // https://doc.rust-lang.org/std/primitive.str.html#method.repeat
+        // https://doc.rust-lang.org/std/primitive.str.html#method.strip_prefix
         println!("cargo:rustc-cfg=no_str_strip_prefix");
     }
 

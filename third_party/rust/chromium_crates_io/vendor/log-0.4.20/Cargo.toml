@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+rust-version = "1.60.0"
 name = "log"
-version = "0.4.17"
+version = "0.4.20"
 authors = ["The Rust Project Developers"]
-build = "build.rs"
 exclude = ["rfcs/**/*"]
 description = """
 A lightweight logging facade for Rust
@@ -44,26 +44,29 @@ name = "macros"
 path = "tests/macros.rs"
 harness = true
 
-[dependencies.cfg-if]
-version = "1.0"
-
 [dependencies.serde]
 version = "1.0"
 optional = true
 default-features = false
 
 [dependencies.sval]
-version = "=1.0.0-alpha.5"
+version = "2.1"
+optional = true
+default-features = false
+
+[dependencies.sval_ref]
+version = "2.1"
 optional = true
 default-features = false
 
 [dependencies.value-bag]
-version = "=1.0.0-alpha.9"
+version = "1.4"
 optional = true
 default-features = false
 
-[dev-dependencies.rustversion]
-version = "1.0"
+[dev-dependencies.proc-macro2]
+version = "1.0.63"
+default-features = false
 
 [dev-dependencies.serde]
 version = "1.0"
@@ -73,11 +76,13 @@ features = ["derive"]
 version = "1.0"
 
 [dev-dependencies.sval]
-version = "=1.0.0-alpha.5"
-features = ["derive"]
+version = "2.1"
+
+[dev-dependencies.sval_derive]
+version = "2.1"
 
 [dev-dependencies.value-bag]
-version = "=1.0.0-alpha.9"
+version = "1.4"
 features = ["test"]
 
 [features]
@@ -96,6 +101,7 @@ kv_unstable_sval = [
     "kv_unstable",
     "value-bag/sval",
     "sval",
+    "sval_ref",
 ]
 max_level_debug = []
 max_level_error = []

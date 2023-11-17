@@ -24,6 +24,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/data.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/discouraged.rs",
+    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/drops.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/error.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/export.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src/expr.rs",
@@ -71,7 +72,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.99"
+  cargo_pkg_version = "1.0.109"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "syn"
   cargo_pkg_description = "Parser for Rust source code"

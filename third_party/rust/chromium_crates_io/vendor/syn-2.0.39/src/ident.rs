@@ -4,10 +4,12 @@ use crate::lookahead;
 pub use proc_macro2::Ident;
 
 #[cfg(feature = "parsing")]
-#[doc(hidden)]
-#[allow(non_snake_case)]
-pub fn Ident(marker: lookahead::TokenMarker) -> Ident {
-    match marker {}
+pub_if_not_doc! {
+    #[doc(hidden)]
+    #[allow(non_snake_case)]
+    pub fn Ident(marker: lookahead::TokenMarker) -> Ident {
+        match marker {}
+    }
 }
 
 macro_rules! ident_from_token {

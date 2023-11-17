@@ -19,15 +19,35 @@
 // KIND, either express or implied.
 
 #![allow(dead_code)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::checked_conversions,
+    clippy::float_cmp,
+    clippy::manual_range_contains,
+    clippy::similar_names,
+    clippy::too_many_lines,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix,
+    clippy::wildcard_imports
+)]
 
 #[path = "../src/common.rs"]
 mod common;
 
+#[cfg(not(feature = "small"))]
 #[path = "../src/d2s_full_table.rs"]
 mod d2s_full_table;
 
 #[path = "../src/d2s_intrinsics.rs"]
 mod d2s_intrinsics;
+
+#[cfg(feature = "small")]
+#[path = "../src/d2s_small_table.rs"]
+mod d2s_small_table;
 
 #[path = "../src/d2s.rs"]
 mod d2s;
@@ -74,4 +94,17 @@ fn test_min_max() {
 fn test_mantissa_rounding_overflow() {
     assert_eq!(1.0, s2f(b"0.999999999").unwrap());
     assert_eq!(f32::INFINITY, s2f(b"3.4028236e+38").unwrap());
+    assert_eq!(1.1754944e-38, s2f(b"1.17549430e-38").unwrap()); // FLT_MIN
+    assert_eq!(1.1754944e-38, s2f(b"1.17549431e-38").unwrap());
+    assert_eq!(1.1754944e-38, s2f(b"1.17549432e-38").unwrap());
+    assert_eq!(1.1754944e-38, s2f(b"1.17549433e-38").unwrap());
+    assert_eq!(1.1754944e-38, s2f(b"1.17549434e-38").unwrap());
+    assert_eq!(1.1754944e-38, s2f(b"1.17549435e-38").unwrap());
+}
+
+#[test]
+fn test_trailing_zeros() {
+    assert_eq!(26843550.0, s2f(b"26843549.5").unwrap());
+    assert_eq!(50000004.0, s2f(b"50000002.5").unwrap());
+    assert_eq!(99999992.0, s2f(b"99999989.5").unwrap());
 }

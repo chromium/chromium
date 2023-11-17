@@ -174,6 +174,7 @@ pub const O_LARGEFILE: ::c_int = 0x2000;
 
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
+pub const MCL_ONFAULT: ::c_int = 0x0004;
 pub const CBAUD: ::tcflag_t = 0o0010017;
 pub const TAB1: ::c_int = 0x00000800;
 pub const TAB2: ::c_int = 0x00001000;
@@ -249,8 +250,6 @@ pub const O_NONBLOCK: ::c_int = 0o200;
 pub const O_SYNC: ::c_int = 0o40020;
 pub const O_RSYNC: ::c_int = 0o40020;
 pub const O_DSYNC: ::c_int = 0o020;
-
-pub const SOCK_NONBLOCK: ::c_int = 0o200;
 
 pub const MAP_ANON: ::c_int = 0x800;
 pub const MAP_GROWSDOWN: ::c_int = 0x1000;
@@ -351,7 +350,6 @@ pub const ERFKILL: ::c_int = 167;
 
 pub const SOCK_STREAM: ::c_int = 2;
 pub const SOCK_DGRAM: ::c_int = 1;
-pub const SOCK_SEQPACKET: ::c_int = 5;
 
 pub const SA_ONSTACK: ::c_int = 0x08000000;
 pub const SA_SIGINFO: ::c_int = 8;
@@ -388,9 +386,6 @@ pub const F_GETOWN: ::c_int = 23;
 pub const F_SETLK: ::c_int = 34;
 pub const F_SETLKW: ::c_int = 35;
 pub const F_SETOWN: ::c_int = 24;
-pub const F_OFD_GETLK: ::c_int = 36;
-pub const F_OFD_SETLK: ::c_int = 37;
-pub const F_OFD_SETLKW: ::c_int = 38;
 
 pub const VEOF: usize = 16;
 pub const VEOL: usize = 17;

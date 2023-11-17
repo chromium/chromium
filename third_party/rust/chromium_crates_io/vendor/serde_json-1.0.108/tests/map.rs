@@ -35,7 +35,6 @@ fn test_append() {
     assert!(val.is_empty());
 }
 
-#[cfg(not(no_btreemap_retain))]
 #[test]
 fn test_retain() {
     let mut v: Value = from_str(r#"{"b":null,"a":null,"c":null}"#).unwrap();

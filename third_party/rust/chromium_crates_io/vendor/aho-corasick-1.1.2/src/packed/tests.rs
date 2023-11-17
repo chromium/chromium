@@ -1,8 +1,16 @@
 use std::collections::HashMap;
-use std::usize;
 
-use crate::packed::{Config, MatchKind};
-use crate::Match;
+use alloc::{
+    format,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
+
+use crate::{
+    packed::{Config, MatchKind},
+    util::search::Match,
+};
 
 /// A description of a single test against a multi-pattern searcher.
 ///
@@ -32,8 +40,9 @@ struct SearchTestOwned {
 
 impl SearchTest {
     fn variations(&self) -> Vec<SearchTestOwned> {
+        let count = if cfg!(miri) { 1 } else { 261 };
         let mut tests = vec![];
-        for i in 0..=260 {
+        for i in 0..count {
             tests.push(self.offset_prefix(i));
             tests.push(self.offset_suffix(i));
             tests.push(self.offset_both(i));
@@ -83,15 +92,6 @@ impl SearchTest {
             matches: self.matches.to_vec(),
         }
     }
-
-    // fn to_owned(&self) -> SearchTestOwned {
-    // SearchTestOwned {
-    // name: self.name.to_string(),
-    // patterns: self.patterns.iter().map(|s| s.to_string()).collect(),
-    // haystack: self.haystack.to_string(),
-    // matches: self.matches.iter().cloned().collect(),
-    // }
-    // }
 }
 
 /// Short-hand constructor for SearchTest. We use it a lot below.
@@ -144,6 +144,9 @@ const BASICS: &'static [SearchTest] = &[
     t!(basic200, &["abc"], "abc", &[(0, 0, 3)]),
     t!(basic210, &["abc"], "zazabzabcz", &[(0, 6, 9)]),
     t!(basic220, &["abc"], "zazabczabcz", &[(0, 3, 6), (0, 7, 10)]),
+    t!(basic230, &["abcd"], "abcd", &[(0, 0, 4)]),
+    t!(basic240, &["abcd"], "zazabzabcdz", &[(0, 6, 10)]),
+    t!(basic250, &["abcd"], "zazabcdzabcdz", &[(0, 3, 7), (0, 8, 12)]),
     t!(basic300, &["a", "b"], "", &[]),
     t!(basic310, &["a", "b"], "z", &[]),
     t!(basic320, &["a", "b"], "b", &[(1, 0, 1)]),
@@ -381,26 +384,34 @@ macro_rules! testconfig {
             run_search_tests($collection, |test| {
                 let mut config = Config::new();
                 $with(&mut config);
-                config
-                    .builder()
-                    .extend(test.patterns.iter().map(|p| p.as_bytes()))
-                    .build()
-                    .unwrap()
-                    .find_iter(&test.haystack)
-                    .collect()
+                let mut builder = config.builder();
+                builder.extend(test.patterns.iter().map(|p| p.as_bytes()));
+                let searcher = match builder.build() {
+                    Some(searcher) => searcher,
+                    None => {
+                        // For x86-64 and aarch64, not building a searcher is
+                        // probably a bug, so be loud.
+                        if cfg!(any(
+                            target_arch = "x86_64",
+                            target_arch = "aarch64"
+                        )) {
+                            panic!("failed to build packed searcher")
+                        }
+                        return None;
+                    }
+                };
+                Some(searcher.find_iter(&test.haystack).collect())
             });
         }
     };
 }
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_default_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |_: &mut Config| {}
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_default_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
@@ -409,92 +420,90 @@ testconfig!(
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |c: &mut Config| {
-        c.force_teddy(true);
+        c.only_teddy(true);
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
     |c: &mut Config| {
-        c.force_teddy(true).match_kind(MatchKind::LeftmostLongest);
+        c.only_teddy(true).match_kind(MatchKind::LeftmostLongest);
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_ssse3_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |c: &mut Config| {
-        c.force_teddy(true);
-        if is_x86_feature_detected!("ssse3") {
-            c.force_avx(Some(false));
+        c.only_teddy(true);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("ssse3") {
+            c.only_teddy_256bit(Some(false));
         }
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_ssse3_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
     |c: &mut Config| {
-        c.force_teddy(true).match_kind(MatchKind::LeftmostLongest);
-        if is_x86_feature_detected!("ssse3") {
-            c.force_avx(Some(false));
+        c.only_teddy(true).match_kind(MatchKind::LeftmostLongest);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("ssse3") {
+            c.only_teddy_256bit(Some(false));
         }
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_avx2_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |c: &mut Config| {
-        c.force_teddy(true);
-        if is_x86_feature_detected!("avx2") {
-            c.force_avx(Some(true));
+        c.only_teddy(true);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("avx2") {
+            c.only_teddy_256bit(Some(true));
         }
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_avx2_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
     |c: &mut Config| {
-        c.force_teddy(true).match_kind(MatchKind::LeftmostLongest);
-        if is_x86_feature_detected!("avx2") {
-            c.force_avx(Some(true));
+        c.only_teddy(true).match_kind(MatchKind::LeftmostLongest);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("avx2") {
+            c.only_teddy_256bit(Some(true));
         }
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_fat_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |c: &mut Config| {
-        c.force_teddy(true);
-        if is_x86_feature_detected!("avx2") {
-            c.force_teddy_fat(Some(true));
+        c.only_teddy(true);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("avx2") {
+            c.only_teddy_fat(Some(true));
         }
     }
 );
 
-#[cfg(target_arch = "x86_64")]
 testconfig!(
     search_teddy_fat_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
     |c: &mut Config| {
-        c.force_teddy(true).match_kind(MatchKind::LeftmostLongest);
-        if is_x86_feature_detected!("avx2") {
-            c.force_teddy_fat(Some(true));
+        c.only_teddy(true).match_kind(MatchKind::LeftmostLongest);
+        #[cfg(target_arch = "x86_64")]
+        if std::is_x86_feature_detected!("avx2") {
+            c.only_teddy_fat(Some(true));
         }
     }
 );
@@ -503,7 +512,7 @@ testconfig!(
     search_rabinkarp_leftmost_first,
     PACKED_LEFTMOST_FIRST,
     |c: &mut Config| {
-        c.force_rabin_karp(true);
+        c.only_rabin_karp(true);
     }
 );
 
@@ -511,7 +520,7 @@ testconfig!(
     search_rabinkarp_leftmost_longest,
     PACKED_LEFTMOST_LONGEST,
     |c: &mut Config| {
-        c.force_rabin_karp(true).match_kind(MatchKind::LeftmostLongest);
+        c.only_rabin_karp(true).match_kind(MatchKind::LeftmostLongest);
     }
 );
 
@@ -539,7 +548,7 @@ fn search_tests_have_unique_names() {
     assert("TEDDY", TEDDY);
 }
 
-fn run_search_tests<F: FnMut(&SearchTestOwned) -> Vec<Match>>(
+fn run_search_tests<F: FnMut(&SearchTestOwned) -> Option<Vec<Match>>>(
     which: TestCollection,
     mut f: F,
 ) {
@@ -547,18 +556,24 @@ fn run_search_tests<F: FnMut(&SearchTestOwned) -> Vec<Match>>(
         |matches: Vec<Match>| -> Vec<(usize, usize, usize)> {
             matches
                 .into_iter()
-                .map(|m| (m.pattern(), m.start(), m.end()))
+                .map(|m| (m.pattern().as_usize(), m.start(), m.end()))
                 .collect()
         };
     for &tests in which {
         for spec in tests {
             for test in spec.variations() {
+                let results = match f(&test) {
+                    None => continue,
+                    Some(results) => results,
+                };
                 assert_eq!(
                     test.matches,
-                    get_match_triples(f(&test)).as_slice(),
-                    "test: {}, patterns: {:?}, haystack: {:?}, offset: {:?}",
+                    get_match_triples(results).as_slice(),
+                    "test: {}, patterns: {:?}, haystack(len={:?}): {:?}, \
+                     offset: {:?}",
                     test.name,
                     test.patterns,
+                    test.haystack.len(),
                     test.haystack,
                     test.offset,
                 );

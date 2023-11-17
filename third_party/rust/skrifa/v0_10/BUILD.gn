@@ -43,7 +43,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.10.0"
+  cargo_pkg_version = "0.10.1"
   cargo_pkg_name = "skrifa"
   cargo_pkg_description = "Metadata reader and glyph scaler for OpenType fonts."
   library_configs -= [ "//build/config/compiler:chromium_code" ]

@@ -4,7 +4,7 @@ use core::convert::Infallible;
 use core::fmt::{self, Debug, Display, Write};
 
 #[cfg(backtrace)]
-use std::any::{Demand, Provider};
+use std::error::Request;
 
 mod ext {
     use super::*;
@@ -144,8 +144,8 @@ where
     }
 
     #[cfg(backtrace)]
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        StdError::provide(&self.error, demand);
+    fn provide<'a>(&'a self, request: &mut Request<'a>) {
+        StdError::provide(&self.error, request);
     }
 }
 
@@ -158,8 +158,8 @@ where
     }
 
     #[cfg(backtrace)]
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        Provider::provide(&self.error, demand);
+    fn provide<'a>(&'a self, request: &mut Request<'a>) {
+        Error::provide(&self.error, request);
     }
 }
 

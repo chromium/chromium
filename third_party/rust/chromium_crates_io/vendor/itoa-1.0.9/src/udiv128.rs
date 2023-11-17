@@ -1,5 +1,9 @@
+#[cfg(feature = "no-panic")]
+use no_panic::no_panic;
+
 /// Multiply unsigned 128 bit integers, return upper 128 bits of the result
 #[inline]
+#[cfg_attr(feature = "no-panic", no_panic)]
 fn u128_mulhi(x: u128, y: u128) -> u128 {
     let x_lo = x as u64;
     let x_hi = (x >> 64) as u64;
@@ -26,6 +30,7 @@ fn u128_mulhi(x: u128, y: u128) -> u128 {
 ///   Implementation, 1994, pp. 61–72
 ///
 #[inline]
+#[cfg_attr(feature = "no-panic", no_panic)]
 pub fn udivmod_1e19(n: u128) -> (u128, u64) {
     let d = 10_000_000_000_000_000_000_u64; // 10^19
 

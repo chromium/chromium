@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use std::fmt::Write;
+use handlebars::handlebars_helper;
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::process;
+use std::{fmt::Write, path::PathBuf};
 
 use anyhow::{format_err, Context, Result};
 
@@ -47,4 +49,74 @@ pub fn create_dirs_if_needed(path: &Path) -> Result<()> {
 
     fs::create_dir(path)
         .with_context(|| format_err!("Could not create directories for {}", path.to_string_lossy()))
+}
+
+/// Run cargo metadata command, optionally with extra flags and environment.
+pub fn run_cargo_metadata(
+    workspace_path: PathBuf,
+    args: &clap::ArgMatches,
+    extra_options: Vec<String>,
+    extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
+) -> anyhow::Result<cargo_metadata::Metadata> {
+    let mut command = cargo_metadata::MetadataCommand::new();
+    command.current_dir(workspace_path);
+    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
+        command.cargo_path(cargo_path);
+    }
+    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
+        command.env("RUSTC", rustc_path);
+    }
+
+    command.other_options(extra_options);
+    for (k, v) in extra_env.into_iter() {
+        command.env(k, v);
+    }
+
+    log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
+    command.exec().context("running cargo metadata")
+}
+
+pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+    let mut handlebars = handlebars::Handlebars::new();
+
+    // Don't escape output strings; the default is to escape for HTML output. Do
+    // not auto-escape for GN either, so that non-string GN may also be passed.
+    handlebars.register_escape_fn(handlebars::no_escape);
+    handlebars.register_template_file("template", template_path).context("loading gn template")?;
+
+    // Install helper to escape inputs pasted in GN `".."` strings.
+    handlebars_helper!(gn_escape: |x: String| escape_for_handlebars(&x));
+    handlebars.register_helper("gn_escape", Box::new(gn_escape));
+    Ok(handlebars)
+}
+
+fn escape_for_handlebars(x: &str) -> String {
+    let mut out = String::new();
+    for c in x.chars() {
+        match c {
+            // Note: we don't escape '$' here because we sometimes want to use
+            // $var syntax.
+            c @ ('"' | '\\') => write!(out, "\\{c}").unwrap(),
+            // GN strings can encode literal ASCII with "$0x<hex_code>" syntax,
+            // so we could embed newlines with "$0x0A". However, GN seems to
+            // escape these incorrectly in its Ninja output so we just replace
+            // it with a space.
+            '\n' => out.push(' '),
+            c => out.push(c),
+        }
+    }
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn string_excaping() {
+        assert_eq!("foo bar", format!("{}", escape_for_handlebars("foo bar")));
+        assert_eq!("foo bar ", format!("{}", escape_for_handlebars("foo\nbar\n")));
+        assert_eq!(r#"foo \"bar\""#, format!("{}", escape_for_handlebars(r#"foo "bar""#)));
+        assert_eq!("foo 'bar'", format!("{}", escape_for_handlebars("foo 'bar'")));
+    }
 }

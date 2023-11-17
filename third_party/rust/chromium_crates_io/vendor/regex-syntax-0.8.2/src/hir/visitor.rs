@@ -1,3 +1,5 @@
+use alloc::{vec, vec::Vec};
+
 use crate::hir::{self, Hir, HirKind};
 
 /// A trait for visiting the high-level IR (HIR) in depth first order.
@@ -9,7 +11,7 @@ use crate::hir::{self, Hir, HirKind};
 /// important since the size of an HIR may be proportional to end user input.
 ///
 /// Typical usage of this trait involves providing an implementation and then
-/// running it using the [`visit`](fn.visit.html) function.
+/// running it using the [`visit`] function.
 pub trait Visitor {
     /// The result of visiting an HIR.
     type Output;
@@ -39,13 +41,17 @@ pub trait Visitor {
     fn visit_alternation_in(&mut self) -> Result<(), Self::Err> {
         Ok(())
     }
+
+    /// This method is called between child nodes of a concatenation.
+    fn visit_concat_in(&mut self) -> Result<(), Self::Err> {
+        Ok(())
+    }
 }
 
 /// Executes an implementation of `Visitor` in constant stack space.
 ///
 /// This function will visit every node in the given `Hir` while calling
-/// appropriate methods provided by the
-/// [`Visitor`](trait.Visitor.html) trait.
+/// appropriate methods provided by the [`Visitor`] trait.
 ///
 /// The primary use case for this method is when one wants to perform case
 /// analysis over an `Hir` without using a stack size proportional to the depth
@@ -74,9 +80,9 @@ enum Frame<'a> {
     /// A stack frame allocated just before descending into a repetition
     /// operator's child node.
     Repetition(&'a hir::Repetition),
-    /// A stack frame allocated just before descending into a group's child
+    /// A stack frame allocated just before descending into a capture's child
     /// node.
-    Group(&'a hir::Group),
+    Capture(&'a hir::Capture),
     /// The stack frame used while visiting every child node of a concatenation
     /// of expressions.
     Concat {
@@ -130,8 +136,14 @@ impl<'a> HeapVisitor<'a> {
                 // If this is a concat/alternate, then we might have additional
                 // inductive steps to process.
                 if let Some(x) = self.pop(frame) {
-                    if let Frame::Alternation { .. } = x {
-                        visitor.visit_alternation_in()?;
+                    match x {
+                        Frame::Alternation { .. } => {
+                            visitor.visit_alternation_in()?;
+                        }
+                        Frame::Concat { .. } => {
+                            visitor.visit_concat_in()?;
+                        }
+                        _ => {}
                     }
                     hir = x.child();
                     self.stack.push((post_hir, x));
@@ -149,7 +161,7 @@ impl<'a> HeapVisitor<'a> {
     fn induct(&mut self, hir: &'a Hir) -> Option<Frame<'a>> {
         match *hir.kind() {
             HirKind::Repetition(ref x) => Some(Frame::Repetition(x)),
-            HirKind::Group(ref x) => Some(Frame::Group(x)),
+            HirKind::Capture(ref x) => Some(Frame::Capture(x)),
             HirKind::Concat(ref x) if x.is_empty() => None,
             HirKind::Concat(ref x) => {
                 Some(Frame::Concat { head: &x[0], tail: &x[1..] })
@@ -167,7 +179,7 @@ impl<'a> HeapVisitor<'a> {
     fn pop(&self, induct: Frame<'a>) -> Option<Frame<'a>> {
         match induct {
             Frame::Repetition(_) => None,
-            Frame::Group(_) => None,
+            Frame::Capture(_) => None,
             Frame::Concat { tail, .. } => {
                 if tail.is_empty() {
                     None
@@ -194,8 +206,8 @@ impl<'a> Frame<'a> {
     /// child HIR node to visit.
     fn child(&self) -> &'a Hir {
         match *self {
-            Frame::Repetition(rep) => &rep.hir,
-            Frame::Group(group) => &group.hir,
+            Frame::Repetition(rep) => &rep.sub,
+            Frame::Capture(capture) => &capture.sub,
             Frame::Concat { head, .. } => head,
             Frame::Alternation { head, .. } => head,
         }

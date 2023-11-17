@@ -1,11 +1,9 @@
-use std::error;
-use std::fmt;
-use std::result;
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
 
 use crate::hir;
-
-/// A type alias for errors specific to Unicode handling of classes.
-pub type Result<T> = result::Result<T, Error>;
 
 /// An inclusive range of codepoints from a generated file (hence the static
 /// lifetime).
@@ -24,9 +22,6 @@ pub enum Error {
     PerlClassNotFound,
 }
 
-/// A type alias for errors specific to Unicode case folding.
-pub type FoldResult<T> = result::Result<T, CaseFoldError>;
-
 /// An error that occurs when Unicode-aware simple case folding fails.
 ///
 /// This error can occur when the case mapping tables necessary for Unicode
@@ -35,10 +30,11 @@ pub type FoldResult<T> = result::Result<T, CaseFoldError>;
 #[derive(Debug)]
 pub struct CaseFoldError(());
 
-impl error::Error for CaseFoldError {}
+#[cfg(feature = "std")]
+impl std::error::Error for CaseFoldError {}
 
-impl fmt::Display for CaseFoldError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for CaseFoldError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
             "Unicode-aware case folding is not available \
@@ -55,10 +51,11 @@ impl fmt::Display for CaseFoldError {
 #[derive(Debug)]
 pub struct UnicodeWordError(());
 
-impl error::Error for UnicodeWordError {}
+#[cfg(feature = "std")]
+impl std::error::Error for UnicodeWordError {}
 
-impl fmt::Display for UnicodeWordError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for UnicodeWordError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
             "Unicode-aware \\w class is not available \
@@ -67,74 +64,122 @@ impl fmt::Display for UnicodeWordError {
     }
 }
 
-/// Return an iterator over the equivalence class of simple case mappings
-/// for the given codepoint. The equivalence class does not include the
-/// given codepoint.
+/// A state oriented traverser of the simple case folding table.
 ///
-/// If the equivalence class is empty, then this returns the next scalar
-/// value that has a non-empty equivalence class, if it exists. If no such
-/// scalar value exists, then `None` is returned. The point of this behavior
-/// is to permit callers to avoid calling `simple_fold` more than they need
-/// to, since there is some cost to fetching the equivalence class.
+/// A case folder can be constructed via `SimpleCaseFolder::new()`, which will
+/// return an error if the underlying case folding table is unavailable.
 ///
-/// This returns an error if the Unicode case folding tables are not available.
-pub fn simple_fold(
-    c: char,
-) -> FoldResult<result::Result<impl Iterator<Item = char>, Option<char>>> {
-    #[cfg(not(feature = "unicode-case"))]
-    fn imp(
-        _: char,
-    ) -> FoldResult<result::Result<impl Iterator<Item = char>, Option<char>>>
-    {
-        use std::option::IntoIter;
-        Err::<result::Result<IntoIter<char>, _>, _>(CaseFoldError(()))
-    }
-
-    #[cfg(feature = "unicode-case")]
-    fn imp(
-        c: char,
-    ) -> FoldResult<result::Result<impl Iterator<Item = char>, Option<char>>>
-    {
-        use crate::unicode_tables::case_folding_simple::CASE_FOLDING_SIMPLE;
-
-        Ok(CASE_FOLDING_SIMPLE
-            .binary_search_by_key(&c, |&(c1, _)| c1)
-            .map(|i| CASE_FOLDING_SIMPLE[i].1.iter().copied())
-            .map_err(|i| {
-                if i >= CASE_FOLDING_SIMPLE.len() {
-                    None
-                } else {
-                    Some(CASE_FOLDING_SIMPLE[i].0)
-                }
-            }))
-    }
-
-    imp(c)
+/// After construction, it is expected that callers will use
+/// `SimpleCaseFolder::mapping` by calling it with codepoints in strictly
+/// increasing order. For example, calling it on `b` and then on `a` is illegal
+/// and will result in a panic.
+///
+/// The main idea of this type is that it tries hard to make mapping lookups
+/// fast by exploiting the structure of the underlying table, and the ordering
+/// assumption enables this.
+#[derive(Debug)]
+pub struct SimpleCaseFolder {
+    /// The simple case fold table. It's a sorted association list, where the
+    /// keys are Unicode scalar values and the values are the corresponding
+    /// equivalence class (not including the key) of the "simple" case folded
+    /// Unicode scalar values.
+    table: &'static [(char, &'static [char])],
+    /// The last codepoint that was used for a lookup.
+    last: Option<char>,
+    /// The index to the entry in `table` corresponding to the smallest key `k`
+    /// such that `k > k0`, where `k0` is the most recent key lookup. Note that
+    /// in particular, `k0` may not be in the table!
+    next: usize,
 }
 
-/// Returns true if and only if the given (inclusive) range contains at least
-/// one Unicode scalar value that has a non-empty non-trivial simple case
-/// mapping.
-///
-/// This function panics if `end < start`.
-///
-/// This returns an error if the Unicode case folding tables are not available.
-pub fn contains_simple_case_mapping(
-    start: char,
-    end: char,
-) -> FoldResult<bool> {
-    #[cfg(not(feature = "unicode-case"))]
-    fn imp(_: char, _: char) -> FoldResult<bool> {
-        Err(CaseFoldError(()))
+impl SimpleCaseFolder {
+    /// Create a new simple case folder, returning an error if the underlying
+    /// case folding table is unavailable.
+    pub fn new() -> Result<SimpleCaseFolder, CaseFoldError> {
+        #[cfg(not(feature = "unicode-case"))]
+        {
+            Err(CaseFoldError(()))
+        }
+        #[cfg(feature = "unicode-case")]
+        {
+            Ok(SimpleCaseFolder {
+                table: crate::unicode_tables::case_folding_simple::CASE_FOLDING_SIMPLE,
+                last: None,
+                next: 0,
+            })
+        }
     }
 
-    #[cfg(feature = "unicode-case")]
-    fn imp(start: char, end: char) -> FoldResult<bool> {
-        use crate::unicode_tables::case_folding_simple::CASE_FOLDING_SIMPLE;
-        use std::cmp::Ordering;
+    /// Return the equivalence class of case folded codepoints for the given
+    /// codepoint. The equivalence class returned never includes the codepoint
+    /// given. If the given codepoint has no case folded codepoints (i.e.,
+    /// no entry in the underlying case folding table), then this returns an
+    /// empty slice.
+    ///
+    /// # Panics
+    ///
+    /// This panics when called with a `c` that is less than or equal to the
+    /// previous call. In other words, callers need to use this method with
+    /// strictly increasing values of `c`.
+    pub fn mapping(&mut self, c: char) -> &'static [char] {
+        if let Some(last) = self.last {
+            assert!(
+                last < c,
+                "got codepoint U+{:X} which occurs before \
+                 last codepoint U+{:X}",
+                u32::from(c),
+                u32::from(last),
+            );
+        }
+        self.last = Some(c);
+        if self.next >= self.table.len() {
+            return &[];
+        }
+        let (k, v) = self.table[self.next];
+        if k == c {
+            self.next += 1;
+            return v;
+        }
+        match self.get(c) {
+            Err(i) => {
+                self.next = i;
+                &[]
+            }
+            Ok(i) => {
+                // Since we require lookups to proceed
+                // in order, anything we find should be
+                // after whatever we thought might be
+                // next. Otherwise, the caller is either
+                // going out of order or we would have
+                // found our next key at 'self.next'.
+                assert!(i > self.next);
+                self.next = i + 1;
+                self.table[i].1
+            }
+        }
+    }
+
+    /// Returns true if and only if the given range overlaps with any region
+    /// of the underlying case folding table. That is, when true, there exists
+    /// at least one codepoint in the inclusive range `[start, end]` that has
+    /// a non-trivial equivalence class of case folded codepoints. Conversely,
+    /// when this returns false, all codepoints in the range `[start, end]`
+    /// correspond to the trivial equivalence class of case folded codepoints,
+    /// i.e., itself.
+    ///
+    /// This is useful to call before iterating over the codepoints in the
+    /// range and looking up the mapping for each. If you know none of the
+    /// mappings will return anything, then you might be able to skip doing it
+    /// altogether.
+    ///
+    /// # Panics
+    ///
+    /// This panics when `end < start`.
+    pub fn overlaps(&self, start: char, end: char) -> bool {
+        use core::cmp::Ordering;
 
         assert!(start <= end);
-        Ok(CASE_FOLDING_SIMPLE
+        self.table
             .binary_search_by(|&(c, _)| {
                 if start <= c && c <= end {
                     Ordering::Equal
@@ -144,10 +189,15 @@ pub fn contains_simple_case_mapping(
                     Ordering::Less
                 }
             })
-            .is_ok())
+            .is_ok()
     }
 
-    imp(start, end)
+    /// Returns the index at which `c` occurs in the simple case fold table. If
+    /// `c` does not occur, then this returns an `i` such that `table[i-1].0 <
+    /// c` and `table[i].0 > c`.
+    fn get(&self, c: char) -> Result<usize, usize> {
+        self.table.binary_search_by_key(&c, |&(c1, _)| c1)
+    }
 }
 
 /// A query for finding a character class defined by Unicode. This supports
@@ -185,7 +235,7 @@ pub enum ClassQuery<'a> {
 }
 
 impl<'a> ClassQuery<'a> {
-    fn canonicalize(&self) -> Result<CanonicalClassQuery> {
+    fn canonicalize(&self) -> Result<CanonicalClassQuery, Error> {
         match *self {
             ClassQuery::OneLetter(c) => self.canonical_binary(&c.to_string()),
             ClassQuery::Binary(name) => self.canonical_binary(name),
@@ -234,7 +284,10 @@ impl<'a> ClassQuery<'a> {
         }
     }
 
-    fn canonical_binary(&self, name: &str) -> Result<CanonicalClassQuery> {
+    fn canonical_binary(
+        &self,
+        name: &str,
+    ) -> Result<CanonicalClassQuery, Error> {
         let norm = symbolic_name_normalize(name);
 
         // This is a special case where 'cf' refers to the 'Format' general
@@ -243,7 +296,17 @@ impl<'a> ClassQuery<'a> {
         // a general category. (Currently, we don't even support the
         // 'Case_Folding' property. But if we do in the future, users will be
         // required to spell it out.)
-        if norm != "cf" {
+        //
+        // Also 'sc' refers to the 'Currency_Symbol' general category, but is
+        // also the abbreviation for the 'Script' property. So we avoid calling
+        // 'canonical_prop' for it too, which would erroneously normalize it
+        // to 'Script'.
+        //
+        // Another case: 'lc' is an abbreviation for the 'Cased_Letter'
+        // general category, but is also an abbreviation for the 'Lowercase_Mapping'
+        // property. We don't currently support the latter, so as with 'cf'
+        // above, we treat 'lc' as 'Cased_Letter'.
+        if norm != "cf" && norm != "sc" && norm != "lc" {
             if let Some(canon) = canonical_prop(&norm)? {
                 return Ok(CanonicalClassQuery::Binary(canon));
             }
@@ -285,7 +348,7 @@ enum CanonicalClassQuery {
 
 /// Looks up a Unicode class given a query. If one doesn't exist, then
 /// `None` is returned.
-pub fn class(query: ClassQuery<'_>) -> Result<hir::ClassUnicode> {
+pub fn class(query: ClassQuery<'_>) -> Result<hir::ClassUnicode, Error> {
     use self::CanonicalClassQuery::*;
 
     match query.canonicalize()? {
@@ -322,14 +385,14 @@ pub fn class(query: ClassQuery<'_>) -> Result<hir::ClassUnicode> {
 /// Returns a Unicode aware class for \w.
 ///
 /// This returns an error if the data is not available for \w.
-pub fn perl_word() -> Result<hir::ClassUnicode> {
+pub fn perl_word() -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-perl"))]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         Err(Error::PerlClassNotFound)
     }
 
     #[cfg(feature = "unicode-perl")]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::perl_word::PERL_WORD;
         Ok(hir_class(PERL_WORD))
     }
@@ -340,20 +403,20 @@ pub fn perl_word() -> Result<hir::ClassUnicode> {
 /// Returns a Unicode aware class for \s.
 ///
 /// This returns an error if the data is not available for \s.
-pub fn perl_space() -> Result<hir::ClassUnicode> {
+pub fn perl_space() -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(any(feature = "unicode-perl", feature = "unicode-bool")))]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         Err(Error::PerlClassNotFound)
     }
 
     #[cfg(all(feature = "unicode-perl", not(feature = "unicode-bool")))]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::perl_space::WHITE_SPACE;
         Ok(hir_class(WHITE_SPACE))
     }
 
     #[cfg(feature = "unicode-bool")]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::property_bool::WHITE_SPACE;
         Ok(hir_class(WHITE_SPACE))
     }
@@ -364,20 +427,20 @@ pub fn perl_space() -> Result<hir::ClassUnicode> {
 /// Returns a Unicode aware class for \d.
 ///
 /// This returns an error if the data is not available for \d.
-pub fn perl_digit() -> Result<hir::ClassUnicode> {
+pub fn perl_digit() -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(any(feature = "unicode-perl", feature = "unicode-gencat")))]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         Err(Error::PerlClassNotFound)
     }
 
     #[cfg(all(feature = "unicode-perl", not(feature = "unicode-gencat")))]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::perl_decimal::DECIMAL_NUMBER;
         Ok(hir_class(DECIMAL_NUMBER))
     }
 
     #[cfg(feature = "unicode-gencat")]
-    fn imp() -> Result<hir::ClassUnicode> {
+    fn imp() -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::general_category::DECIMAL_NUMBER;
         Ok(hir_class(DECIMAL_NUMBER))
     }
@@ -397,23 +460,23 @@ pub fn hir_class(ranges: &[(char, char)]) -> hir::ClassUnicode {
 /// Returns true only if the given codepoint is in the `\w` character class.
 ///
 /// If the `unicode-perl` feature is not enabled, then this returns an error.
-pub fn is_word_character(c: char) -> result::Result<bool, UnicodeWordError> {
+pub fn is_word_character(c: char) -> Result<bool, UnicodeWordError> {
     #[cfg(not(feature = "unicode-perl"))]
-    fn imp(_: char) -> result::Result<bool, UnicodeWordError> {
+    fn imp(_: char) -> Result<bool, UnicodeWordError> {
         Err(UnicodeWordError(()))
     }
 
     #[cfg(feature = "unicode-perl")]
-    fn imp(c: char) -> result::Result<bool, UnicodeWordError> {
-        use crate::is_word_byte;
-        use crate::unicode_tables::perl_word::PERL_WORD;
-        use std::cmp::Ordering;
+    fn imp(c: char) -> Result<bool, UnicodeWordError> {
+        use crate::{is_word_byte, unicode_tables::perl_word::PERL_WORD};
 
-        if c <= 0x7F as char && is_word_byte(c as u8) {
+        if u8::try_from(c).map_or(false, is_word_byte) {
             return Ok(true);
         }
         Ok(PERL_WORD
             .binary_search_by(|&(start, end)| {
+                use core::cmp::Ordering;
+
                 if start <= c && c <= end {
                     Ordering::Equal
                 } else if start > c {
@@ -435,7 +498,9 @@ pub fn is_word_character(c: char) -> result::Result<bool, UnicodeWordError> {
 /// value.
 type PropertyValues = &'static [(&'static str, &'static str)];
 
-fn canonical_gencat(normalized_value: &str) -> Result<Option<&'static str>> {
+fn canonical_gencat(
+    normalized_value: &str,
+) -> Result<Option<&'static str>, Error> {
     Ok(match normalized_value {
         "any" => Some("Any"),
         "assigned" => Some("Assigned"),
@@ -447,7 +512,9 @@ fn canonical_gencat(normalized_value: &str) -> Result<Option<&'static str>> {
     })
 }
 
-fn canonical_script(normalized_value: &str) -> Result<Option<&'static str>> {
+fn canonical_script(
+    normalized_value: &str,
+) -> Result<Option<&'static str>, Error> {
     let scripts = property_values("Script")?.unwrap();
     Ok(canonical_value(scripts, normalized_value))
 }
@@ -460,7 +527,9 @@ fn canonical_script(normalized_value: &str) -> Result<Option<&'static str>> {
 /// UAX44 LM3, which can be done using `symbolic_name_normalize`.
 ///
 /// If the property names data is not available, then an error is returned.
-fn canonical_prop(normalized_name: &str) -> Result<Option<&'static str>> {
+fn canonical_prop(
+    normalized_name: &str,
+) -> Result<Option<&'static str>, Error> {
     #[cfg(not(any(
         feature = "unicode-age",
         feature = "unicode-bool",
@@ -469,7 +538,7 @@ fn canonical_prop(normalized_name: &str) -> Result<Option<&'static str>> {
         feature = "unicode-script",
         feature = "unicode-segment",
     )))]
-    fn imp(_: &str) -> Result<Option<&'static str>> {
+    fn imp(_: &str) -> Result<Option<&'static str>, Error> {
         Err(Error::PropertyNotFound)
     }
 
@@ -481,7 +550,7 @@ fn canonical_prop(normalized_name: &str) -> Result<Option<&'static str>> {
         feature = "unicode-script",
         feature = "unicode-segment",
     ))]
-    fn imp(name: &str) -> Result<Option<&'static str>> {
+    fn imp(name: &str) -> Result<Option<&'static str>, Error> {
         use crate::unicode_tables::property_names::PROPERTY_NAMES;
 
         Ok(PROPERTY_NAMES
@@ -517,7 +586,7 @@ fn canonical_value(
 /// If the property values data is not available, then an error is returned.
 fn property_values(
     canonical_property_name: &'static str,
-) -> Result<Option<PropertyValues>> {
+) -> Result<Option<PropertyValues>, Error> {
     #[cfg(not(any(
         feature = "unicode-age",
         feature = "unicode-bool",
@@ -526,7 +595,7 @@ fn property_values(
         feature = "unicode-script",
         feature = "unicode-segment",
     )))]
-    fn imp(_: &'static str) -> Result<Option<PropertyValues>> {
+    fn imp(_: &'static str) -> Result<Option<PropertyValues>, Error> {
         Err(Error::PropertyValueNotFound)
     }
 
@@ -538,7 +607,7 @@ fn property_values(
         feature = "unicode-script",
         feature = "unicode-segment",
     ))]
-    fn imp(name: &'static str) -> Result<Option<PropertyValues>> {
+    fn imp(name: &'static str) -> Result<Option<PropertyValues>, Error> {
         use crate::unicode_tables::property_values::PROPERTY_VALUES;
 
         Ok(PROPERTY_VALUES
@@ -569,15 +638,15 @@ fn property_set(
 ///
 /// If the given age value isn't valid or if the data isn't available, then an
 /// error is returned instead.
-fn ages(canonical_age: &str) -> Result<impl Iterator<Item = Range>> {
+fn ages(canonical_age: &str) -> Result<impl Iterator<Item = Range>, Error> {
     #[cfg(not(feature = "unicode-age"))]
-    fn imp(_: &str) -> Result<impl Iterator<Item = Range>> {
-        use std::option::IntoIter;
+    fn imp(_: &str) -> Result<impl Iterator<Item = Range>, Error> {
+        use core::option::IntoIter;
         Err::<IntoIter<Range>, _>(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-age")]
-    fn imp(canonical_age: &str) -> Result<impl Iterator<Item = Range>> {
+    fn imp(canonical_age: &str) -> Result<impl Iterator<Item = Range>, Error> {
         use crate::unicode_tables::age;
 
         const AGES: &[(&str, Range)] = &[
@@ -605,6 +674,7 @@ fn ages(canonical_age: &str) -> Result<impl Iterator<Item = Range>> {
             ("V12_1", age::V12_1),
             ("V13_0", age::V13_0),
             ("V14_0", age::V14_0),
+            ("V15_0", age::V15_0),
         ];
         assert_eq!(AGES.len(), age::BY_NAME.len(), "ages are out of sync");
 
@@ -624,14 +694,14 @@ fn ages(canonical_age: &str) -> Result<impl Iterator<Item = Range>> {
 ///
 /// If the given general category could not be found, or if the general
 /// category data is not available, then an error is returned.
-fn gencat(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn gencat(canonical_name: &'static str) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-gencat"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-gencat")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::general_category::BY_NAME;
         match name {
             "ASCII" => Ok(hir_class(&[('\0', '\x7F')])),
@@ -659,14 +729,14 @@ fn gencat(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
 ///
 /// If the given script could not be found, or if the script data is not
 /// available, then an error is returned.
-fn script(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn script(canonical_name: &'static str) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-script"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-script")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::script::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -684,14 +754,14 @@ fn script(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
 /// not available, then an error is returned.
 fn script_extension(
     canonical_name: &'static str,
-) -> Result<hir::ClassUnicode> {
+) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-script"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-script")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::script_extension::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -708,14 +778,16 @@ fn script_extension(
 ///
 /// If the given boolean property could not be found, or if the boolean
 /// property data is not available, then an error is returned.
-fn bool_property(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn bool_property(
+    canonical_name: &'static str,
+) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-bool"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-bool")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::property_bool::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -736,14 +808,14 @@ fn bool_property(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
 ///
 /// If the given property could not be found, or if the corresponding data is
 /// not available, then an error is returned.
-fn gcb(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn gcb(canonical_name: &'static str) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-segment"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-segment")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::grapheme_cluster_break::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -760,14 +832,14 @@ fn gcb(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
 ///
 /// If the given property could not be found, or if the corresponding data is
 /// not available, then an error is returned.
-fn wb(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn wb(canonical_name: &'static str) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-segment"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-segment")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::word_break::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -784,14 +856,14 @@ fn wb(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
 ///
 /// If the given property could not be found, or if the corresponding data is
 /// not available, then an error is returned.
-fn sb(canonical_name: &'static str) -> Result<hir::ClassUnicode> {
+fn sb(canonical_name: &'static str) -> Result<hir::ClassUnicode, Error> {
     #[cfg(not(feature = "unicode-segment"))]
-    fn imp(_: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(_: &'static str) -> Result<hir::ClassUnicode, Error> {
         Err(Error::PropertyNotFound)
     }
 
     #[cfg(feature = "unicode-segment")]
-    fn imp(name: &'static str) -> Result<hir::ClassUnicode> {
+    fn imp(name: &'static str) -> Result<hir::ClassUnicode, Error> {
         use crate::unicode_tables::sentence_break::BY_NAME;
         property_set(BY_NAME, name)
             .map(hir_class)
@@ -872,72 +944,45 @@ fn symbolic_name_normalize_bytes(slice: &mut [u8]) -> &mut [u8] {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        contains_simple_case_mapping, simple_fold, symbolic_name_normalize,
-        symbolic_name_normalize_bytes,
-    };
+    use super::*;
 
     #[cfg(feature = "unicode-case")]
     fn simple_fold_ok(c: char) -> impl Iterator<Item = char> {
-        simple_fold(c).unwrap().unwrap()
-    }
-
-    #[cfg(feature = "unicode-case")]
-    fn simple_fold_err(c: char) -> Option<char> {
-        match simple_fold(c).unwrap() {
-            Ok(_) => unreachable!("simple_fold returned Ok iterator"),
-            Err(next) => next,
-        }
+        SimpleCaseFolder::new().unwrap().mapping(c).iter().copied()
     }
 
     #[cfg(feature = "unicode-case")]
     fn contains_case_map(start: char, end: char) -> bool {
-        contains_simple_case_mapping(start, end).unwrap()
+        SimpleCaseFolder::new().unwrap().overlaps(start, end)
     }
 
     #[test]
     #[cfg(feature = "unicode-case")]
     fn simple_fold_k() {
         let xs: Vec<char> = simple_fold_ok('k').collect();
-        assert_eq!(xs, vec!['K', 'K']);
+        assert_eq!(xs, alloc::vec!['K', 'K']);
 
         let xs: Vec<char> = simple_fold_ok('K').collect();
-        assert_eq!(xs, vec!['k', 'K']);
+        assert_eq!(xs, alloc::vec!['k', 'K']);
 
         let xs: Vec<char> = simple_fold_ok('K').collect();
-        assert_eq!(xs, vec!['K', 'k']);
+        assert_eq!(xs, alloc::vec!['K', 'k']);
     }
 
     #[test]
     #[cfg(feature = "unicode-case")]
     fn simple_fold_a() {
         let xs: Vec<char> = simple_fold_ok('a').collect();
-        assert_eq!(xs, vec!['A']);
+        assert_eq!(xs, alloc::vec!['A']);
 
         let xs: Vec<char> = simple_fold_ok('A').collect();
-        assert_eq!(xs, vec!['a']);
-    }
-
-    #[test]
-    #[cfg(feature = "unicode-case")]
-    fn simple_fold_empty() {
-        assert_eq!(Some('A'), simple_fold_err('?'));
-        assert_eq!(Some('A'), simple_fold_err('@'));
-        assert_eq!(Some('a'), simple_fold_err('['));
-        assert_eq!(Some('Ⰰ'), simple_fold_err('☃'));
-    }
-
-    #[test]
-    #[cfg(feature = "unicode-case")]
-    fn simple_fold_max() {
-        assert_eq!(None, simple_fold_err('\u{10FFFE}'));
-        assert_eq!(None, simple_fold_err('\u{10FFFF}'));
+        assert_eq!(xs, alloc::vec!['a']);
     }
 
     #[test]
     #[cfg(not(feature = "unicode-case"))]
     fn simple_fold_disabled() {
-        assert!(simple_fold('a').is_err());
+        assert!(SimpleCaseFolder::new().is_err());
     }
 
     #[test]
@@ -954,12 +999,6 @@ mod tests {
         assert!(!contains_case_map('[', '`'));
 
         assert!(!contains_case_map('☃', '☃'));
-    }
-
-    #[test]
-    #[cfg(not(feature = "unicode-case"))]
-    fn range_contains_disabled() {
-        assert!(contains_simple_case_mapping('a', 'a').is_err());
     }
 
     #[test]

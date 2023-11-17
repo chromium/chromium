@@ -1,12 +1,17 @@
 pub type blkcnt_t = i32;
 pub type blksize_t = i32;
+
 pub type clockid_t = ::c_ulong;
 
 cfg_if! {
-    if #[cfg(target_os = "espidf")] {
+    if #[cfg(any(target_os = "espidf"))] {
         pub type dev_t = ::c_short;
         pub type ino_t = ::c_ushort;
         pub type off_t = ::c_long;
+    } else if #[cfg(any(target_os = "vita"))] {
+        pub type dev_t = ::c_short;
+        pub type ino_t = ::c_ushort;
+        pub type off_t = ::c_int;
     } else {
         pub type dev_t = u32;
         pub type ino_t = u32;
@@ -159,12 +164,6 @@ s! {
         pub sa_flags: ::c_int,
     }
 
-    pub struct dirent {
-        pub d_ino: ino_t,
-        pub d_type: ::c_uchar,
-        pub d_name: [::c_char; 256usize],
-    }
-
     pub struct stack_t {
         pub ss_sp: *mut ::c_void,
         pub ss_flags: ::c_int,
@@ -219,12 +218,11 @@ s! {
     }
 
     pub struct pthread_attr_t { // Unverified
-        __size: [u64; 7]
+        __size: [u8; __SIZEOF_PTHREAD_ATTR_T]
     }
 
     pub struct pthread_rwlockattr_t { // Unverified
-        __lockkind: ::c_int,
-        __pshared: ::c_int,
+        __size: [u8; __SIZEOF_PTHREAD_RWLOCKATTR_T]
     }
 }
 
@@ -241,6 +239,7 @@ align_const! {
     };
 }
 pub const NCCS: usize = 32;
+
 cfg_if! {
     if #[cfg(target_os = "espidf")] {
         const __PTHREAD_INITIALIZER_BYTE: u8 = 0xff;
@@ -251,6 +250,17 @@ cfg_if! {
         pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 8;
         pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 4;
         pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 12;
+        pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
+    } else if #[cfg(target_os = "vita")] {
+        const __PTHREAD_INITIALIZER_BYTE: u8 = 0xff;
+        pub const __SIZEOF_PTHREAD_ATTR_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_COND_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 4;
+        pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 4;
     } else {
         const __PTHREAD_INITIALIZER_BYTE: u8 = 0;
         pub const __SIZEOF_PTHREAD_ATTR_T: usize = 56;
@@ -260,9 +270,10 @@ cfg_if! {
         pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
         pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
         pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
+        pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
     }
 }
-pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
+
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 pub const __PTHREAD_MUTEX_HAVE_PREV: usize = 1;
 pub const __PTHREAD_RWLOCK_INT_FLAGS_SHARED: usize = 1;
@@ -273,6 +284,8 @@ pub const PTHREAD_MUTEX_ERRORCHECK: ::c_int = 2;
 cfg_if! {
     if #[cfg(any(target_os = "horizon", target_os = "espidf"))] {
         pub const FD_SETSIZE: usize = 64;
+    } else if #[cfg(target_os = "vita")] {
+        pub const FD_SETSIZE: usize = 256;
     } else {
         pub const FD_SETSIZE: usize = 1024;
     }
@@ -498,8 +511,7 @@ pub const SOCK_CLOEXEC: ::c_int = O_CLOEXEC;
 
 pub const INET_ADDRSTRLEN: ::c_int = 16;
 
-// https://github.
-// com/bminor/newlib/blob/master/newlib/libc/sys/linux/include/net/if.h#L121
+// https://github.com/bminor/newlib/blob/HEAD/newlib/libc/sys/linux/include/net/if.h#L121
 pub const IFF_UP: ::c_int = 0x1; // interface is up
 pub const IFF_BROADCAST: ::c_int = 0x2; // broadcast address valid
 pub const IFF_DEBUG: ::c_int = 0x4; // turn on debugging
@@ -518,8 +530,16 @@ pub const IFF_LINK2: ::c_int = 0x4000; // per link layer defined bit
 pub const IFF_ALTPHYS: ::c_int = IFF_LINK2; // use alternate physical connection
 pub const IFF_MULTICAST: ::c_int = 0x8000; // supports multicast
 
-pub const TCP_NODELAY: ::c_int = 8193;
-pub const TCP_MAXSEG: ::c_int = 8194;
+cfg_if! {
+    if #[cfg(target_os = "vita")] {
+        pub const TCP_NODELAY: ::c_int = 1;
+        pub const TCP_MAXSEG: ::c_int = 2;
+    } else {
+        pub const TCP_NODELAY: ::c_int = 8193;
+        pub const TCP_MAXSEG: ::c_int = 8194;
+    }
+}
+
 pub const TCP_NOPUSH: ::c_int = 4;
 pub const TCP_NOOPT: ::c_int = 8;
 pub const TCP_KEEPIDLE: ::c_int = 256;
@@ -533,13 +553,25 @@ cfg_if! {
         pub const IP_TOS: ::c_int = 3;
     }
 }
-pub const IP_TTL: ::c_int = 8;
+cfg_if! {
+    if #[cfg(target_os = "vita")] {
+        pub const IP_TTL: ::c_int = 4;
+    } else {
+        pub const IP_TTL: ::c_int = 8;
+    }
+}
 pub const IP_MULTICAST_IF: ::c_int = 9;
 pub const IP_MULTICAST_TTL: ::c_int = 10;
 pub const IP_MULTICAST_LOOP: ::c_int = 11;
-pub const IP_ADD_MEMBERSHIP: ::c_int = 11;
-pub const IP_DROP_MEMBERSHIP: ::c_int = 12;
-
+cfg_if! {
+    if #[cfg(target_os = "vita")] {
+        pub const IP_ADD_MEMBERSHIP: ::c_int = 12;
+        pub const IP_DROP_MEMBERSHIP: ::c_int = 13;
+    } else {
+        pub const IP_ADD_MEMBERSHIP: ::c_int = 11;
+        pub const IP_DROP_MEMBERSHIP: ::c_int = 12;
+    }
+}
 pub const IPV6_UNICAST_HOPS: ::c_int = 4;
 pub const IPV6_MULTICAST_IF: ::c_int = 9;
 pub const IPV6_MULTICAST_HOPS: ::c_int = 10;
@@ -570,10 +602,15 @@ pub const NI_NAMEREQD: ::c_int = 4;
 pub const NI_NUMERICSERV: ::c_int = 0;
 pub const NI_DGRAM: ::c_int = 0;
 
-pub const EAI_FAMILY: ::c_int = -303;
-pub const EAI_MEMORY: ::c_int = -304;
-pub const EAI_NONAME: ::c_int = -305;
-pub const EAI_SOCKTYPE: ::c_int = -307;
+cfg_if! {
+    // Defined in vita/mod.rs for "vita"
+    if #[cfg(not(target_os = "vita"))] {
+        pub const EAI_FAMILY: ::c_int = -303;
+        pub const EAI_MEMORY: ::c_int = -304;
+        pub const EAI_NONAME: ::c_int = -305;
+        pub const EAI_SOCKTYPE: ::c_int = -307;
+    }
+}
 
 pub const EXIT_SUCCESS: ::c_int = 0;
 pub const EXIT_FAILURE: ::c_int = 1;

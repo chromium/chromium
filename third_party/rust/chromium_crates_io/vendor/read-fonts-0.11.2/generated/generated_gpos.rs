@@ -220,6 +220,7 @@ impl<'a> SomeTable<'a> for PositionLookup<'a> {
 
 /// See [ValueRecord]
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ValueFormat {
     bits: u16,
 }

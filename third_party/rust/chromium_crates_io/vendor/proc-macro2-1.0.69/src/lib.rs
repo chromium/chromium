@@ -55,7 +55,7 @@
 //! If parsing with [Syn], you'll use [`parse_macro_input!`] instead to
 //! propagate parse errors correctly back to the compiler when parsing fails.
 //!
-//! [`parse_macro_input!`]: https://docs.rs/syn/1.0/syn/macro.parse_macro_input.html
+//! [`parse_macro_input!`]: https://docs.rs/syn/2.0/syn/macro.parse_macro_input.html
 //!
 //! # Unstable features
 //!
@@ -86,7 +86,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.66")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.69")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
@@ -95,9 +95,11 @@
     clippy::cast_possible_truncation,
     clippy::doc_markdown,
     clippy::items_after_statements,
+    clippy::iter_without_into_iter,
     clippy::let_underscore_untyped,
     clippy::manual_assert,
     clippy::manual_range_contains,
+    clippy::missing_safety_doc,
     clippy::must_use_candidate,
     clippy::needless_doctest_main,
     clippy::new_without_default,
@@ -852,7 +854,7 @@ impl Debug for Punct {
 /// Rust keywords. Use `input.call(Ident::parse_any)` when parsing to match the
 /// behaviour of `Ident::new`.
 ///
-/// [`Parse`]: https://docs.rs/syn/1.0/syn/parse/trait.Parse.html
+/// [`Parse`]: https://docs.rs/syn/2.0/syn/parse/trait.Parse.html
 ///
 /// # Examples
 ///
@@ -943,7 +945,7 @@ impl Ident {
     /// Panics if the input string is neither a keyword nor a legal variable
     /// name. If you are not sure whether the string contains an identifier and
     /// need to handle an error case, use
-    /// <a href="https://docs.rs/syn/1.0/syn/fn.parse_str.html"><code
+    /// <a href="https://docs.rs/syn/2.0/syn/fn.parse_str.html"><code
     ///   style="padding-right:0;">syn::parse_str</code></a><code
     ///   style="padding-left:0;">::&lt;Ident&gt;</code>
     /// rather than `Ident::new`.

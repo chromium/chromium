@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "skrifa"
-version = "0.10.0"
+version = "0.10.1"
 description = "Metadata reader and glyph scaler for OpenType fonts."
 readme = "README.md"
 categories = [
@@ -22,13 +22,12 @@ categories = [
 ]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/googlefonts/fontations"
-resolver = "1"
 
 [dependencies.read-fonts]
-version = "0.11.0"
+version = "0.11.2"
 
 [dev-dependencies.read-fonts]
-version = "0.11.0"
+version = "0.11.2"
 features = ["scaler_test"]
 
 [features]

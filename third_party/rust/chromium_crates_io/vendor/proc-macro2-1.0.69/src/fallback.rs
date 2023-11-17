@@ -4,6 +4,8 @@ use crate::parse::{self, Cursor};
 use crate::rcvec::{RcVec, RcVecBuilder, RcVecIntoIter, RcVecMut};
 use crate::{Delimiter, Spacing, TokenTree};
 #[cfg(all(span_locations, not(fuzzing)))]
+use alloc::collections::BTreeMap;
+#[cfg(all(span_locations, not(fuzzing)))]
 use core::cell::RefCell;
 #[cfg(span_locations)]
 use core::cmp;
@@ -305,7 +307,6 @@ impl SourceFile {
     }
 
     pub fn is_real(&self) -> bool {
-        // XXX(nika): Support real files in the future?
         false
     }
 }
@@ -322,12 +323,13 @@ impl Debug for SourceFile {
 #[cfg(all(span_locations, not(fuzzing)))]
 thread_local! {
     static SOURCE_MAP: RefCell<SourceMap> = RefCell::new(SourceMap {
-        // NOTE: We start with a single dummy file which all call_site() and
-        // def_site() spans reference.
+        // Start with a single dummy file which all call_site() and def_site()
+        // spans reference.
         files: vec![FileInfo {
             source_text: String::new(),
             span: Span { lo: 0, hi: 0 },
             lines: vec![0],
+            char_index_to_byte_offset: BTreeMap::new(),
         }],
     });
 }
@@ -337,6 +339,7 @@ struct FileInfo {
     source_text: String,
     span: Span,
     lines: Vec<usize>,
+    char_index_to_byte_offset: BTreeMap<usize, usize>,
 }
 
 #[cfg(all(span_locations, not(fuzzing)))]
@@ -363,10 +366,40 @@ impl FileInfo {
         span.lo >= self.span.lo && span.hi <= self.span.hi
     }
 
-    fn source_text(&self, span: Span) -> String {
-        let lo = (span.lo - self.span.lo) as usize;
-        let hi = (span.hi - self.span.lo) as usize;
-        self.source_text[lo..hi].to_owned()
+    fn source_text(&mut self, span: Span) -> String {
+        let lo_char = (span.lo - self.span.lo) as usize;
+
+        // Look up offset of the largest already-computed char index that is
+        // less than or equal to the current requested one. We resume counting
+        // chars from that point.
+        let (&last_char_index, &last_byte_offset) = self
+            .char_index_to_byte_offset
+            .range(..=lo_char)
+            .next_back()
+            .unwrap_or((&0, &0));
+
+        let lo_byte = if last_char_index == lo_char {
+            last_byte_offset
+        } else {
+            let total_byte_offset = match self.source_text[last_byte_offset..]
+                .char_indices()
+                .nth(lo_char - last_char_index)
+            {
+                Some((additional_offset, _ch)) => last_byte_offset + additional_offset,
+                None => self.source_text.len(),
+            };
+            self.char_index_to_byte_offset
+                .insert(lo_char, total_byte_offset);
+            total_byte_offset
+        };
+
+        let trunc_lo = &self.source_text[lo_byte..];
+        let char_len = (span.hi - span.lo) as usize;
+        let source_text = match trunc_lo.char_indices().nth(char_len) {
+            Some((offset, _ch)) => &trunc_lo[..offset],
+            None => trunc_lo,
+        };
+        source_text.to_owned()
     }
 }
 
@@ -405,7 +438,6 @@ impl SourceMap {
     fn add_file(&mut self, src: &str) -> Span {
         let (len, lines) = lines_offsets(src);
         let lo = self.next_start_pos();
-        // XXX(nika): Should we bother doing a checked cast or checked add here?
         let span = Span {
             lo,
             hi: lo + (len as u32),
@@ -415,6 +447,8 @@ impl SourceMap {
             source_text: src.to_owned(),
             span,
             lines,
+            // Populated lazily by source_text().
+            char_index_to_byte_offset: BTreeMap::new(),
         });
 
         span
@@ -436,6 +470,15 @@ impl SourceMap {
 
     fn fileinfo(&self, span: Span) -> &FileInfo {
         for file in &self.files {
+            if file.span_within(span) {
+                return file;
+            }
+        }
+        unreachable!("Invalid span with no related FileInfo!");
+    }
+
+    fn fileinfo_mut(&mut self, span: Span) -> &mut FileInfo {
+        for file in &mut self.files {
             if file.span_within(span) {
                 return file;
             }
@@ -566,7 +609,7 @@ impl Span {
             if self.is_call_site() {
                 None
             } else {
-                Some(SOURCE_MAP.with(|cm| cm.borrow().fileinfo(*self).source_text(*self)))
+                Some(SOURCE_MAP.with(|cm| cm.borrow_mut().fileinfo_mut(*self).source_text(*self)))
             }
         }
     }

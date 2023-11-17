@@ -6,6 +6,8 @@ extern crate value_bag;
 
 #[cfg(feature = "kv_unstable_sval")]
 extern crate sval;
+#[cfg(feature = "kv_unstable_sval")]
+extern crate sval_ref;
 
 #[cfg(feature = "kv_unstable_serde")]
 extern crate serde;
@@ -71,7 +73,7 @@ macro_rules! as_serde {
     };
 }
 
-/// Get a value from a type implementing `sval::value::Value`.
+/// Get a value from a type implementing `sval::Value`.
 #[cfg(feature = "kv_unstable_sval")]
 #[macro_export]
 macro_rules! as_sval {
@@ -204,14 +206,14 @@ impl<'v> Value<'v> {
         }
     }
 
-    /// Get a value from a type implementing `sval::value::Value`.
+    /// Get a value from a type implementing `sval::Value`.
     #[cfg(feature = "kv_unstable_sval")]
     pub fn capture_sval<T>(value: &'v T) -> Self
     where
-        T: self::sval::value::Value + 'static,
+        T: self::sval::Value + 'static,
     {
         Value {
-            inner: ValueBag::capture_sval1(value),
+            inner: ValueBag::capture_sval2(value),
         }
     }
 
@@ -246,14 +248,14 @@ impl<'v> Value<'v> {
         }
     }
 
-    /// Get a value from a type implementing `sval::value::Value`.
+    /// Get a value from a type implementing `sval::Value`.
     #[cfg(feature = "kv_unstable_sval")]
     pub fn from_sval<T>(value: &'v T) -> Self
     where
-        T: self::sval::value::Value,
+        T: self::sval::Value,
     {
         Value {
-            inner: ValueBag::from_sval1(value),
+            inner: ValueBag::from_sval2(value),
         }
     }
 
@@ -276,14 +278,6 @@ impl<'v> Value<'v> {
     pub fn from_dyn_error(err: &'v (dyn std::error::Error + 'static)) -> Self {
         Value {
             inner: ValueBag::from_dyn_error(err),
-        }
-    }
-
-    /// Get a value from a type implementing `sval::value::Value`.
-    #[cfg(feature = "kv_unstable_sval")]
-    pub fn from_dyn_sval(value: &'v dyn self::sval::value::Value) -> Self {
-        Value {
-            inner: ValueBag::from_dyn_sval1(value),
         }
     }
 
@@ -422,16 +416,19 @@ impl<'v> self::serde::Serialize for Value<'v> {
 }
 
 #[cfg(feature = "kv_unstable_sval")]
-impl<'v> self::sval::value::Value for Value<'v> {
-    fn stream(&self, stream: &mut self::sval::value::Stream) -> self::sval::value::Result {
-        self::sval::value::Value::stream(&self.inner, stream)
+impl<'v> self::sval::Value for Value<'v> {
+    fn stream<'sval, S: self::sval::Stream<'sval> + ?Sized>(
+        &'sval self,
+        stream: &mut S,
+    ) -> self::sval::Result {
+        self::sval::Value::stream(&self.inner, stream)
     }
 }
 
 #[cfg(feature = "kv_unstable_sval")]
-impl ToValue for dyn self::sval::value::Value {
-    fn to_value(&self) -> Value {
-        Value::from_dyn_sval(self)
+impl<'v> self::sval_ref::ValueRef<'v> for Value<'v> {
+    fn stream_ref<S: self::sval::Stream<'v> + ?Sized>(&self, stream: &mut S) -> self::sval::Result {
+        self::sval_ref::ValueRef::stream_ref(&self.inner, stream)
     }
 }
 
@@ -777,11 +774,11 @@ where
 pub(crate) mod tests {
     use super::*;
 
-    pub(crate) use super::value_bag::test::Token;
+    pub(crate) use super::value_bag::test::TestToken as Token;
 
     impl<'v> Value<'v> {
         pub(crate) fn to_token(&self) -> Token {
-            self.inner.to_token()
+            self.inner.to_test_token()
         }
     }
 

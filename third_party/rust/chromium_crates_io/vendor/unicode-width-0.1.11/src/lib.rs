@@ -59,8 +59,6 @@ extern crate test;
 use tables::charwidth as cw;
 pub use tables::UNICODE_VERSION;
 
-use core::ops::Add;
-
 mod tables;
 
 #[cfg(test)]
@@ -121,11 +119,11 @@ pub trait UnicodeWidthStr {
 impl UnicodeWidthStr for str {
     #[inline]
     fn width(&self) -> usize {
-        self.chars().map(|c| cw::width(c, false).unwrap_or(0)).fold(0, Add::add)
+        self.chars().map(|c| cw::width(c, false).unwrap_or(0)).sum()
     }
 
     #[inline]
     fn width_cjk(&self) -> usize {
-        self.chars().map(|c| cw::width(c, true).unwrap_or(0)).fold(0, Add::add)
+        self.chars().map(|c| cw::width(c, true).unwrap_or(0)).sum()
     }
 }

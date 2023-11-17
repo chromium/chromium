@@ -95,6 +95,7 @@ cfg_if! {
     if #[cfg(all(any(target_arch = "x86",
                      target_arch = "x86_64",
                      target_arch = "aarch64",
+                     target_arch = "csky",
                      target_arch = "loongarch64"),
                  not(any(target_env = "musl", target_env = "ohos"))))] {
         pub const SO_TIMESTAMP_NEW: ::c_int = 63;
@@ -115,6 +116,7 @@ cfg_if! {
                  target_arch = "aarch64",
                  target_arch = "riscv64",
                  target_arch = "s390x",
+                 target_arch = "csky",
                  target_arch = "loongarch64"))] {
         pub const FICLONE: ::c_ulong = 0x40049409;
         pub const FICLONERANGE: ::c_ulong = 0x4020940D;
@@ -255,6 +257,8 @@ cfg_if! {
         pub const RLIMIT_NICE: ::__rlimit_resource_t = 13;
         pub const RLIMIT_RTPRIO: ::__rlimit_resource_t = 14;
         pub const RLIMIT_RTTIME: ::__rlimit_resource_t = 15;
+        #[allow(deprecated)]
+        #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIMIT_NLIMITS: ::__rlimit_resource_t = RLIM_NLIMITS;
 
     } else if #[cfg(any(target_env = "musl", target_env = "ohos"))] {
@@ -275,16 +279,21 @@ cfg_if! {
         pub const RLIMIT_NICE: ::c_int = 13;
         pub const RLIMIT_RTPRIO: ::c_int = 14;
         pub const RLIMIT_RTTIME: ::c_int = 15;
+        #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIM_NLIMITS: ::c_int = 15;
+        #[allow(deprecated)]
+        #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIMIT_NLIMITS: ::c_int = RLIM_NLIMITS;
     }
 }
 
 cfg_if! {
     if #[cfg(target_env = "gnu")] {
+        #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIM_NLIMITS: ::__rlimit_resource_t = 16;
     }
     else if #[cfg(target_env = "uclibc")] {
+        #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIM_NLIMITS: ::__rlimit_resource_t = 15;
     }
 }

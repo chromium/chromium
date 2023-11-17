@@ -14,11 +14,11 @@ pub unsafe fn write_exponent3(mut k: isize, mut result: *mut u8) -> usize {
     if k >= 100 {
         *result = b'0' + (k / 100) as u8;
         k %= 100;
-        let d = DIGIT_TABLE.get_unchecked(k as usize * 2);
+        let d = DIGIT_TABLE.as_ptr().offset(k * 2);
         ptr::copy_nonoverlapping(d, result.offset(1), 2);
         sign as usize + 3
     } else if k >= 10 {
-        let d = DIGIT_TABLE.get_unchecked(k as usize * 2);
+        let d = DIGIT_TABLE.as_ptr().offset(k * 2);
         ptr::copy_nonoverlapping(d, result, 2);
         sign as usize + 2
     } else {
@@ -38,7 +38,7 @@ pub unsafe fn write_exponent2(mut k: isize, mut result: *mut u8) -> usize {
 
     debug_assert!(k < 100);
     if k >= 10 {
-        let d = DIGIT_TABLE.get_unchecked(k as usize * 2);
+        let d = DIGIT_TABLE.as_ptr().offset(k * 2);
         ptr::copy_nonoverlapping(d, result, 2);
         sign as usize + 2
     } else {

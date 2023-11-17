@@ -153,13 +153,29 @@ pub fn s2f(buffer: &[u8]) -> Result<f32, Error> {
             .wrapping_add(e10 as u32)
             .wrapping_sub(ceil_log2_pow5(-e10) as u32)
             .wrapping_sub(f2s::FLOAT_MANTISSA_BITS + 1) as i32;
+
+        // We now compute [m10 * 10^e10 / 2^e2] = [m10 / (5^(-e10) 2^(e2-e10))].
         let j = e2
             .wrapping_sub(e10)
             .wrapping_add(ceil_log2_pow5(-e10))
             .wrapping_sub(1)
             .wrapping_add(f2s::FLOAT_POW5_INV_BITCOUNT);
         m2 = mul_pow5_inv_div_pow2(m10, -e10 as u32, j);
-        trailing_zeros = multiple_of_power_of_5_32(m10, -e10 as u32);
+
+        // We also compute if the result is exact, i.e.,
+        //   [m10 / (5^(-e10) 2^(e2-e10))] == m10 / (5^(-e10) 2^(e2-e10))
+        //
+        // If e2-e10 >= 0, we need to check whether (5^(-e10) 2^(e2-e10))
+        // divides m10, which is the case iff pow5(m10) >= -e10 AND pow2(m10) >=
+        // e2-e10.
+        //
+        // If e2-e10 < 0, we have actually computed [m10 * 2^(e10 e2) /
+        // 5^(-e10)] above, and we need to check whether 5^(-e10) divides (m10 *
+        // 2^(e10-e2)), which is the case iff pow5(m10 * 2^(e10-e2)) = pow5(m10)
+        // >= -e10.
+        trailing_zeros = (e2 < e10
+            || (e2 - e10 < 32 && multiple_of_power_of_2_32(m10, (e2 - e10) as u32)))
+            && multiple_of_power_of_5_32(m10, -e10 as u32);
     }
 
     // Compute the final IEEE exponent.
@@ -194,13 +210,17 @@ pub fn s2f(buffer: &[u8]) -> Result<f32, Error> {
     let round_up = last_removed_bit != 0 && (!trailing_zeros || ((m2 >> shift) & 1) != 0);
 
     let mut ieee_m2 = (m2 >> shift).wrapping_add(round_up as u32);
-    if ieee_m2 == (1_u32 << (f2s::FLOAT_MANTISSA_BITS + 1)) {
+    debug_assert!(ieee_m2 <= 1_u32 << (f2s::FLOAT_MANTISSA_BITS + 1));
+    ieee_m2 &= (1_u32 << f2s::FLOAT_MANTISSA_BITS) - 1;
+    if ieee_m2 == 0 && round_up {
+        // Rounding up may overflow the mantissa.
+        // In this case we move a trailing zero of the mantissa into the
+        // exponent.
         // Due to how the IEEE represents +/-Infinity, we don't need to check
         // for overflow here.
         ieee_e2 += 1;
     }
-    ieee_m2 &= (1_u32 << f2s::FLOAT_MANTISSA_BITS) - 1;
-    let ieee = ((((signed_m as u32) << f2s::FLOAT_EXPONENT_BITS) | ieee_e2 as u32)
+    let ieee = ((((signed_m as u32) << f2s::FLOAT_EXPONENT_BITS) | ieee_e2)
         << f2s::FLOAT_MANTISSA_BITS)
         | ieee_m2;
     Ok(f32::from_bits(ieee))

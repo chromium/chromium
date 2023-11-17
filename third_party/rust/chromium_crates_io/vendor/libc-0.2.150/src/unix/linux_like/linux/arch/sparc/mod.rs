@@ -216,7 +216,10 @@ pub const RLIMIT_MSGQUEUE: ::__rlimit_resource_t = 12;
 pub const RLIMIT_NICE: ::__rlimit_resource_t = 13;
 pub const RLIMIT_RTPRIO: ::__rlimit_resource_t = 14;
 pub const RLIMIT_RTTIME: ::__rlimit_resource_t = 15;
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::__rlimit_resource_t = 16;
+#[allow(deprecated)]
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIMIT_NLIMITS: ::__rlimit_resource_t = RLIM_NLIMITS;
 
 cfg_if! {

@@ -57,6 +57,10 @@ pub use crate::token::parsing::{peek_punct, punct as parse_punct};
 #[doc(hidden)]
 pub use crate::token::printing::punct as print_punct;
 
+#[cfg(feature = "parsing")]
+#[doc(hidden)]
+pub use crate::token::private::CustomToken;
+
 #[cfg(feature = "proc-macro")]
 #[doc(hidden)]
 pub type TokenStream = proc_macro::TokenStream;

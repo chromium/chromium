@@ -9,7 +9,7 @@
 //! use unicode_linebreak::{linebreaks, BreakOpportunity::{Mandatory, Allowed}};
 //!
 //! let text = "a b \nc";
-//! assert!(linebreaks(text).eq(vec![
+//! assert!(linebreaks(text).eq([
 //!     (2, Allowed),   // May break after first space
 //!     (5, Mandatory), // Must break after line feed
 //!     (6, Mandatory)  // Must break at end of text, so that there always is at least one LB
@@ -22,14 +22,12 @@
 #![deny(missing_docs, missing_debug_implementations)]
 
 use core::iter::once;
-use core::mem;
 
 /// The [Unicode version](https://www.unicode.org/versions/) conformed to.
-pub const UNICODE_VERSION: (u8, u8, u8) = (13, 0, 0);
+pub const UNICODE_VERSION: (u8, u8, u8) = (15, 0, 0);
 
 include!("shared.rs");
-
-include!(concat!(env!("OUT_DIR"), "/tables.rs"));
+include!("tables.rs");
 
 /// Returns the line break property of the specified code point.
 ///
@@ -39,16 +37,29 @@ include!(concat!(env!("OUT_DIR"), "/tables.rs"));
 /// use unicode_linebreak::{BreakClass, break_property};
 /// assert_eq!(break_property(0x2CF3), BreakClass::Alphabetic);
 /// ```
-#[inline]
+#[inline(always)]
 pub fn break_property(codepoint: u32) -> BreakClass {
-    let codepoint = codepoint as usize;
-    match PAGE_INDICES.get(codepoint >> 8) {
-        Some(&page_idx) if page_idx & UNIFORM_PAGE != 0 => unsafe {
-            mem::transmute((page_idx & !UNIFORM_PAGE) as u8)
-        },
-        Some(&page_idx) => BREAK_PROP_DATA[page_idx][codepoint & 0xFF],
-        None => BreakClass::Unknown,
-    }
+    const BMP_INDEX_LENGTH: u32 = BMP_LIMIT >> BMP_SHIFT;
+    const OMITTED_BMP_INDEX_1_LENGTH: u32 = BMP_LIMIT >> SHIFT_1;
+
+    let data_pos = if codepoint < BMP_LIMIT {
+        let i = codepoint >> BMP_SHIFT;
+        BREAK_PROP_TRIE_INDEX[i as usize] + (codepoint & (BMP_DATA_BLOCK_LENGTH - 1)) as u16
+    } else if codepoint < BREAK_PROP_TRIE_HIGH_START {
+        let i1 = codepoint >> SHIFT_1;
+        let i2 = BREAK_PROP_TRIE_INDEX
+            [(i1 + BMP_INDEX_LENGTH - OMITTED_BMP_INDEX_1_LENGTH) as usize]
+            + ((codepoint >> SHIFT_2) & (INDEX_2_BLOCK_LENGTH - 1)) as u16;
+        let i3_block = BREAK_PROP_TRIE_INDEX[i2 as usize];
+        let i3_pos = ((codepoint >> SHIFT_3) & (INDEX_3_BLOCK_LENGTH - 1)) as u16;
+
+        debug_assert!(i3_block & 0x8000 == 0, "18-bit indices are unexpected");
+        let data_block = BREAK_PROP_TRIE_INDEX[(i3_block + i3_pos) as usize];
+        data_block + (codepoint & (SMALL_DATA_BLOCK_LENGTH - 1)) as u16
+    } else {
+        return XX;
+    };
+    BREAK_PROP_TRIE_DATA[data_pos as usize]
 }
 
 /// Break opportunity type.
@@ -75,7 +86,7 @@ pub enum BreakOpportunity {
 /// use unicode_linebreak::{linebreaks, BreakOpportunity::{Mandatory, Allowed}};
 /// assert!(linebreaks("Hello world!").eq(vec![(6, Allowed), (12, Mandatory)]));
 /// ```
-pub fn linebreaks<'a>(s: &'a str) -> impl Iterator<Item = (usize, BreakOpportunity)> + Clone + 'a {
+pub fn linebreaks(s: &str) -> impl Iterator<Item = (usize, BreakOpportunity)> + Clone + '_ {
     use BreakOpportunity::{Allowed, Mandatory};
 
     s.char_indices()
@@ -143,5 +154,7 @@ mod tests {
     fn it_works() {
         assert_eq!(break_property(0xA), BreakClass::LineFeed);
         assert_eq!(break_property(0xDB80), BreakClass::Surrogate);
+        assert_eq!(break_property(0xe01ef), BreakClass::CombiningMark);
+        assert_eq!(break_property(0x10ffff), BreakClass::Unknown);
     }
 }

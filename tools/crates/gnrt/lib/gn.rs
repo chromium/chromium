@@ -649,24 +649,6 @@ where
     groups
 }
 
-pub fn escape_for_handlebars(x: &str) -> String {
-    let mut out = String::new();
-    for c in x.chars() {
-        match c {
-            // Note: we don't escape '$' here because we sometimes want to use
-            // $var syntax.
-            c @ ('"' | '\\') => write!(out, "\\{c}").unwrap(),
-            // GN strings can encode literal ASCII with "$0x<hex_code>" syntax,
-            // so we could embed newlines with "$0x0A". However, GN seems to
-            // escape these incorrectly in its Ninja output so we just replace
-            // it with a space.
-            '\n' => out.push(' '),
-            c => out.push(c),
-        }
-    }
-    out
-}
-
 /// Describes a condition for some GN declaration.
 #[derive(Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct Condition(pub String);
@@ -840,13 +822,5 @@ mod tests {
             Condition::from_platform_set(platform_set).unwrap().0,
             "(is_android && target_cpu == \"arm\") || (is_win)"
         );
-    }
-
-    #[test]
-    fn string_excaping() {
-        assert_eq!("foo bar", format!("{}", escape_for_handlebars("foo bar")));
-        assert_eq!("foo bar ", format!("{}", escape_for_handlebars("foo\nbar\n")));
-        assert_eq!(r#"foo \"bar\""#, format!("{}", escape_for_handlebars(r#"foo "bar""#)));
-        assert_eq!("foo 'bar'", format!("{}", escape_for_handlebars("foo 'bar'")));
     }
 }

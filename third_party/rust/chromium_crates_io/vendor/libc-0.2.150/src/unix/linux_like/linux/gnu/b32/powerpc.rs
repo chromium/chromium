@@ -293,6 +293,7 @@ pub const SOCK_DGRAM: ::c_int = 2;
 
 pub const MCL_CURRENT: ::c_int = 0x2000;
 pub const MCL_FUTURE: ::c_int = 0x4000;
+pub const MCL_ONFAULT: ::c_int = 0x8000;
 
 pub const POLLWRNORM: ::c_short = 0x100;
 pub const POLLWRBAND: ::c_short = 0x200;

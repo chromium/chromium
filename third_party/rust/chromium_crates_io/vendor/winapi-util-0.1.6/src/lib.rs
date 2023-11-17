@@ -29,4 +29,7 @@ pub mod console;
 #[cfg(windows)]
 pub mod file;
 #[cfg(windows)]
+/// Safe routines for querying various Windows specific properties.
+pub mod sysinfo;
+#[cfg(windows)]
 mod win;

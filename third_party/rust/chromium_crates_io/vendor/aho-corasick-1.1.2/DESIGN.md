@@ -13,19 +13,16 @@ own, Aho-Corasick isn't that complicated. The complex pieces come from the
 different variants of Aho-Corasick implemented in this crate. Specifically,
 they are:
 
-* Aho-Corasick as an NFA, using dense transitions near the root with sparse
-  transitions elsewhere.
-* Aho-Corasick as a DFA. (An NFA is slower to search, but cheaper to construct
-  and uses less memory.)
-  * A DFA with pre-multiplied state identifiers. This saves a multiplication
-    instruction in the core search loop.
-  * A DFA with equivalence classes of bytes as the alphabet, instead of the
-    traditional 256-byte alphabet. This shrinks the size of the DFA in memory,
-    but adds an extra lookup in the core search loop to map the input byte to
-    an equivalent class.
-* The option to choose how state identifiers are represented, via one of
-  u8, u16, u32, u64 or usize. This permits creating compact automatons when
-  matching a small number of patterns.
+* Aho-Corasick as a noncontiguous NFA. States have their transitions
+  represented sparsely, and each state puts its transitions in its own separate
+  allocation. Hence the same "noncontiguous."
+* Aho-Corasick as a contiguous NFA. This NFA uses a single allocation to
+  represent the transitions of all states. That is, transitions are laid out
+  contiguously in memory. Moreover, states near the starting state are
+  represented densely, such that finding the next state ID takes a constant
+  number of instructions.
+* Aho-Corasick as a DFA. In this case, all states are represented densely in
+  a transition table that uses one allocation.
 * Supporting "standard" match semantics, along with its overlapping variant,
   in addition to leftmost-first and leftmost-longest semantics. The "standard"
   semantics are typically what you see in a textbook description of
@@ -45,7 +42,7 @@ they are:
   magnitude faster than just Aho-Corasick, but don't scale as well.
 * Support for searching streams. This can reuse most of the underlying code,
   but does require careful buffering support.
-* Support for anchored searches, which permit efficient `is_prefix` checks for
+* Support for anchored searches, which permit efficient "is prefix" checks for
   a large number of patterns.
 
 When you combine all of this together along with trying to make everything as
@@ -81,7 +78,7 @@ CPU's cache.)
 
 Aho-Corasick can be succinctly described as a trie with state transitions
 between some of the nodes that efficiently instruct the search algorithm to
-try matching alternative keys in the automaton. The trick is that these state
+try matching alternative keys in the trie. The trick is that these state
 transitions are arranged such that each byte of input needs to be inspected
 only once. These state transitions are typically called "failure transitions,"
 because they instruct the searcher (the thing traversing the automaton while
@@ -205,9 +202,10 @@ Other than the complication around traversing failure transitions, this code
 is still roughly "traverse the automaton with bytes from the haystack, and quit
 when a match is seen."
 
-And that concludes our section on the basics. While we didn't go deep into
-how the automaton is built (see `src/nfa.rs`, which has detailed comments about
-that), the basic structure of Aho-Corasick should be reasonably clear.
+And that concludes our section on the basics. While we didn't go deep into how
+the automaton is built (see `src/nfa/noncontiguous.rs`, which has detailed
+comments about that), the basic structure of Aho-Corasick should be reasonably
+clear.
 
 
 # NFAs and DFAs
@@ -226,17 +224,17 @@ By this formulation, the Aho-Corasick automaton described in the previous
 section is an NFA. This is because failure transitions are, effectively,
 epsilon transitions. That is, whenever the automaton is in state `S`, it is
 actually in the set of states that are reachable by recursively following
-failure transitions from `S`. (This means that, for example, the start state
-is always active since the start state is reachable via failure transitions
-from any state in the automaton.)
+failure transitions from `S` until you reach the start state. (This means
+that, for example, the start state is always active since the start state is
+reachable via failure transitions from any state in the automaton.)
 
 NFAs have a lot of nice properties. They tend to be easier to construct, and
 also tend to use less memory. However, their primary downside is that they are
-typically slower to execute. For example, the code above showing how to search
-with an Aho-Corasick automaton needs to potentially iterate through many
-failure transitions for every byte of input. While this is a fairly small
-amount of overhead, this can add up, especially if the automaton has a lot of
-overlapping patterns with a lot of failure transitions.
+typically slower to execute a search with. For example, the code above showing
+how to search with an Aho-Corasick automaton needs to potentially iterate
+through many failure transitions for every byte of input. While this is a
+fairly small amount of overhead, this can add up, especially if the automaton
+has a lot of overlapping patterns with a lot of failure transitions.
 
 A DFA's search code, by contrast, looks like this:
 
@@ -250,8 +248,8 @@ A DFA's search code, by contrast, looks like this:
         // An Aho-Corasick DFA *never* has a missing state that requires
         // failure transitions to be followed. One byte of input advances the
         // automaton by one state. Always.
-        state_id = trie.next_state(state_id, b);
-        if fsm.is_match(state_id) {
+        state_id = dfa.next_state(state_id, b);
+        if dfa.is_match(state_id) {
           return true;
         }
       }
@@ -266,19 +264,20 @@ in the alphabet, and then building a single state transition table. Building
 this DFA can be much more costly than building the NFA, and use much more
 memory, but the better performance can be worth it.
 
-Users of this crate can actually choose between using an NFA or a DFA. By
-default, an NFA is used, because it typically strikes the best balance between
-space usage and search performance. But the DFA option is available for cases
-where a little extra memory and upfront time building the automaton is okay.
-For example, the `AhoCorasick::auto_configure` and
-`AhoCorasickBuilder::auto_configure` methods will enable the DFA setting if
-there are a small number of patterns.
+Users of this crate can actually choose between using one of two possible NFAs
+(noncontiguous or contiguous) or a DFA. By default, a contiguous NFA is used,
+in most circumstances, but if the number of patterns is small enough a DFA will
+be used. A contiguous NFA is chosen because it uses orders of magnitude less
+memory than a DFA, takes only a little longer to build than a noncontiguous
+NFA and usually gets pretty close to the search speed of a DFA. (Callers can
+override this automatic selection via the `AhoCorasickBuilder::start_kind`
+configuration.)
 
 
 # More DFA tricks
 
 As described in the previous section, one of the downsides of using a DFA
-is that is uses more memory and can take longer to build. One small way of
+is that it uses more memory and can take longer to build. One small way of
 mitigating these concerns is to map the alphabet used by the automaton into
 a smaller space. Typically, the alphabet of a DFA has 256 elements in it:
 one element for each possible value that fits into a byte. However, in many
@@ -322,17 +321,18 @@ The same optimization works even when equivalence classes are enabled, as
 described above. The only difference is that the premultiplication is by the
 total number of equivalence classes instead of 256.
 
-There isn't much downside to premultiplying state identifiers, other than the
-fact that you may need to choose a bigger integer representation than you would
-otherwise. For example, if you don't premultiply state identifiers, then an
-automaton that uses `u8` as a state identifier can hold up to 256 states.
-However, if they are premultiplied, then it can only hold up to
-`floor(256 / len(alphabet))` states. Thus premultiplication impacts how compact
-your DFA can be. In practice, it's pretty rare to use `u8` as a state
-identifier, so premultiplication is usually a good thing to do.
+There isn't much downside to premultiplying state identifiers, other than it
+imposes a smaller limit on the total number of states in the DFA. Namely, with
+premultiplied state identifiers, you run out of room in your state identifier
+representation more rapidly than if the identifiers are just state indices.
 
-Both equivalence classes and premultiplication are tuneable parameters via the
-`AhoCorasickBuilder` type, and both are enabled by default.
+Both equivalence classes and premultiplication are always enabled. There is a
+`AhoCorasickBuilder::byte_classes` configuration, but disabling this just makes
+it so there are always 256 equivalence classes, i.e., every class corresponds
+to precisely one byte. When it's disabled, the equivalence class map itself is
+still used. The purpose of disabling it is when one is debugging the underlying
+automaton. It can be easier to comprehend when it uses actual byte values for
+its transitions instead of equivalence classes.
 
 
 # Match semantics
@@ -371,10 +371,11 @@ either leftmost-first (Perl-like) or leftmost-longest (POSIX) match semantics.
 Supporting leftmost semantics requires a couple key changes:
 
 * Constructing the Aho-Corasick automaton changes a bit in both how the trie is
-  constructed and how failure transitions are found. Namely, only a subset of
-  the failure transitions are added. Specifically, only the failure transitions
-  that either do not occur after a match or do occur after a match but preserve
-  that match are kept. (More details on this can be found in `src/nfa.rs`.)
+  constructed and how failure transitions are found. Namely, only a subset
+  of the failure transitions are added. Specifically, only the failure
+  transitions that either do not occur after a match or do occur after a match
+  but preserve that match are kept. (More details on this can be found in
+  `src/nfa/noncontiguous.rs`.)
 * The search algorithm changes slightly. Since we are looking for the leftmost
   match, we cannot quit as soon as a match is detected. Instead, after a match
   is detected, we must keep searching until either the end of the input or
@@ -382,9 +383,9 @@ Supporting leftmost semantics requires a couple key changes:
   semantics. Dead states mean that searching should stop after a match has been
   found.)
 
-Other implementations of Aho-Corasick do support leftmost match semantics, but
-they do it with more overhead at search time, or even worse, with a queue of
-matches and sophisticated hijinks to disambiguate the matches. While our
+Most other implementations of Aho-Corasick do support leftmost match semantics,
+but they do it with more overhead at search time, or even worse, with a queue
+of matches and sophisticated hijinks to disambiguate the matches. While our
 construction algorithm becomes a bit more complicated, the correct match
 semantics fall out from the structure of the automaton itself.
 
@@ -402,10 +403,10 @@ matches at that state, then they are reported before resuming the search.
 Enabling leftmost-first or leftmost-longest match semantics causes the
 automaton to use a subset of all failure transitions, which means that
 overlapping searches cannot be used. Therefore, if leftmost match semantics are
-used, attempting to do an overlapping search will panic. Thus, to get
-overlapping searches, the caller must use the default standard match semantics.
-This behavior was chosen because there are only two alternatives, which were
-deemed worse:
+used, attempting to do an overlapping search will return an error (or panic
+when using the infallible APIs). Thus, to get overlapping searches, the caller
+must use the default standard match semantics. This behavior was chosen because
+there are only two alternatives, which were deemed worse:
 
 * Compile two automatons internally, one for standard semantics and one for
   the semantics requested by the caller (if not standard).
@@ -415,9 +416,7 @@ deemed worse:
 The first is untenable because of the amount of memory used by the automaton.
 The second increases the complexity of the API too much by adding too many
 types that do similar things. It is conceptually much simpler to keep all
-searching isolated to a single type. Callers may query whether the automaton
-supports overlapping searches via the `AhoCorasick::supports_overlapping`
-method.
+searching isolated to a single type.
 
 
 # Stream searching
@@ -425,7 +424,7 @@ method.
 Since Aho-Corasick is an automaton, it is possible to do partial searches on
 partial parts of the haystack, and then resume that search on subsequent pieces
 of the haystack. This is useful when the haystack you're trying to search is
-not stored contiguous in memory, or if one does not want to read the entire
+not stored contiguously in memory, or if one does not want to read the entire
 haystack into memory at once.
 
 Currently, only standard semantics are supported for stream searching. This is
@@ -471,13 +470,12 @@ If all of that fails, then a packed multiple substring algorithm will be
 attempted. Currently, the only algorithm available for this is Teddy, but more
 may be added in the future. Teddy is unlike the above prefilters in that it
 confirms its own matches, so when Teddy is active, it might not be necessary
-for Aho-Corasick to run at all. (See `Automaton::leftmost_find_at_no_state_imp`
-in `src/automaton.rs`.) However, the current Teddy implementation only works
-in `x86_64` and when SSSE3 or AVX2 are available, and moreover, only works
-_well_ when there are a small number of patterns (say, less than 100). Teddy
-also requires the haystack to be of a certain length (more than 16-34 bytes).
-When the haystack is shorter than that, Rabin-Karp is used instead. (See
-`src/packed/rabinkarp.rs`.)
+for Aho-Corasick to run at all. However, the current Teddy implementation
+only works in `x86_64` when SSSE3 or AVX2 are available or in `aarch64`
+(using NEON), and moreover, only works _well_ when there are a small number
+of patterns (say, less than 100). Teddy also requires the haystack to be of a
+certain length (more than 16-34 bytes). When the haystack is shorter than that,
+Rabin-Karp is used instead. (See `src/packed/rabinkarp.rs`.)
 
 There is a more thorough description of Teddy at
 [`src/packed/teddy/README.md`](src/packed/teddy/README.md).

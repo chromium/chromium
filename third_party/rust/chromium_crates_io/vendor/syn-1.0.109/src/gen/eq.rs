@@ -878,13 +878,13 @@ impl PartialEq for GenericArgument {
             (GenericArgument::Type(self0), GenericArgument::Type(other0)) => {
                 self0 == other0
             }
+            (GenericArgument::Const(self0), GenericArgument::Const(other0)) => {
+                self0 == other0
+            }
             (GenericArgument::Binding(self0), GenericArgument::Binding(other0)) => {
                 self0 == other0
             }
             (GenericArgument::Constraint(self0), GenericArgument::Constraint(other0)) => {
-                self0 == other0
-            }
-            (GenericArgument::Const(self0), GenericArgument::Const(other0)) => {
                 self0 == other0
             }
             _ => false,

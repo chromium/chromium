@@ -110,7 +110,7 @@ s! {
     pub struct mfs_args {
         pub fspec: *mut ::c_char,
         pub export_info: export_args,
-        // https://github.com/openbsd/src/blob/master/sys/sys/types.h#L134
+        // https://github.com/openbsd/src/blob/HEAD/sys/sys/types.h#L134
         pub base: *mut ::c_char,
         pub size: ::c_ulong,
     }
@@ -190,7 +190,7 @@ s! {
         pub cr_uid: ::uid_t,
         pub cr_gid: ::gid_t,
         pub cr_ngroups: ::c_short,
-        //https://github.com/openbsd/src/blob/master/sys/sys/syslimits.h#L44
+        //https://github.com/openbsd/src/blob/HEAD/sys/sys/syslimits.h#L44
         pub cr_groups: [::gid_t; 16],
     }
 
@@ -533,6 +533,14 @@ s! {
         pub key: *mut ::c_char,
         pub data: *mut ::c_void,
     }
+
+    pub struct ifreq {
+        pub ifr_name: [::c_char; ::IFNAMSIZ],
+        #[cfg(libc_union)]
+        pub ifr_ifru: __c_anonymous_ifr_ifru,
+        #[cfg(not(libc_union))]
+        pub ifr_ifru: ::sockaddr,
+    }
 }
 
 impl siginfo_t {
@@ -540,12 +548,46 @@ impl siginfo_t {
         self.si_addr
     }
 
+    pub unsafe fn si_code(&self) -> ::c_int {
+        self.si_code
+    }
+
+    pub unsafe fn si_errno(&self) -> ::c_int {
+        self.si_errno
+    }
+
+    pub unsafe fn si_pid(&self) -> ::pid_t {
+        #[repr(C)]
+        struct siginfo_timer {
+            _si_signo: ::c_int,
+            _si_code: ::c_int,
+            _si_errno: ::c_int,
+            _pad: [::c_int; SI_PAD],
+            _pid: ::pid_t,
+        }
+        (*(self as *const siginfo_t as *const siginfo_timer))._pid
+    }
+
+    pub unsafe fn si_uid(&self) -> ::uid_t {
+        #[repr(C)]
+        struct siginfo_timer {
+            _si_signo: ::c_int,
+            _si_code: ::c_int,
+            _si_errno: ::c_int,
+            _pad: [::c_int; SI_PAD],
+            _pid: ::pid_t,
+            _uid: ::uid_t,
+        }
+        (*(self as *const siginfo_t as *const siginfo_timer))._uid
+    }
+
     pub unsafe fn si_value(&self) -> ::sigval {
         #[repr(C)]
         struct siginfo_timer {
             _si_signo: ::c_int,
-            _si_errno: ::c_int,
             _si_code: ::c_int,
+            _si_errno: ::c_int,
+            _pad: [::c_int; SI_PAD],
             _pid: ::pid_t,
             _uid: ::uid_t,
             value: ::sigval,
@@ -608,6 +650,18 @@ s_no_extra_traits! {
         align: [::c_char; 160],
     }
 
+    #[cfg(libc_union)]
+    pub union __c_anonymous_ifr_ifru {
+        pub ifru_addr: ::sockaddr,
+        pub ifru_dstaddr: ::sockaddr,
+        pub ifru_broadaddr: ::sockaddr,
+        pub ifru_flags: ::c_short,
+        pub ifru_metric: ::c_int,
+        pub ifru_vnetid: i64,
+        pub ifru_media: u64,
+        pub ifru_data: *mut ::c_char,
+        pub ifru_index: ::c_uint,
+    }
 }
 
 cfg_if! {
@@ -814,6 +868,60 @@ cfg_if! {
                 unsafe { self.align.hash(state) };
             }
         }
+
+        #[cfg(libc_union)]
+        impl PartialEq for __c_anonymous_ifr_ifru {
+            fn eq(&self, other: &__c_anonymous_ifr_ifru) -> bool {
+                unsafe {
+                    self.ifru_addr == other.ifru_addr
+                        && self.ifru_dstaddr == other.ifru_dstaddr
+                        && self.ifru_broadaddr == other.ifru_broadaddr
+                        && self.ifru_flags == other.ifru_flags
+                        && self.ifru_metric == other.ifru_metric
+                        && self.ifru_vnetid == other.ifru_vnetid
+                        && self.ifru_media == other.ifru_media
+                        && self.ifru_data == other.ifru_data
+                        && self.ifru_index == other.ifru_index
+                }
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl Eq for __c_anonymous_ifr_ifru {}
+
+        #[cfg(libc_union)]
+        impl ::fmt::Debug for __c_anonymous_ifr_ifru {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("__c_anonymous_ifr_ifru")
+                    .field("ifru_addr", unsafe { &self.ifru_addr })
+                    .field("ifru_dstaddr", unsafe { &self.ifru_dstaddr })
+                    .field("ifru_broadaddr", unsafe { &self.ifru_broadaddr })
+                    .field("ifru_flags", unsafe { &self.ifru_flags })
+                    .field("ifru_metric", unsafe { &self.ifru_metric })
+                    .field("ifru_vnetid", unsafe { &self.ifru_vnetid })
+                    .field("ifru_media", unsafe { &self.ifru_media })
+                    .field("ifru_data", unsafe { &self.ifru_data })
+                    .field("ifru_index", unsafe { &self.ifru_index })
+                    .finish()
+            }
+        }
+
+        #[cfg(libc_union)]
+        impl ::hash::Hash for __c_anonymous_ifr_ifru {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                unsafe {
+                    self.ifru_addr.hash(state);
+                    self.ifru_dstaddr.hash(state);
+                    self.ifru_broadaddr.hash(state);
+                    self.ifru_flags.hash(state);
+                    self.ifru_metric.hash(state);
+                    self.ifru_vnetid.hash(state);
+                    self.ifru_media.hash(state);
+                    self.ifru_data.hash(state);
+                    self.ifru_index.hash(state);
+                }
+            }
+        }
     }
 }
 
@@ -999,6 +1107,8 @@ pub const SO_NETPROC: ::c_int = 0x1020;
 pub const SO_RTABLE: ::c_int = 0x1021;
 pub const SO_PEERCRED: ::c_int = 0x1022;
 pub const SO_SPLICE: ::c_int = 0x1023;
+pub const SO_DOMAIN: ::c_int = 0x1024;
+pub const SO_PROTOCOL: ::c_int = 0x1025;
 
 // sys/netinet/in.h
 // Protocols (RFC 1700)
@@ -1515,7 +1625,7 @@ pub const OLCUC: ::tcflag_t = 0x20;
 pub const ONOCR: ::tcflag_t = 0x40;
 pub const ONLRET: ::tcflag_t = 0x80;
 
-//https://github.com/openbsd/src/blob/master/sys/sys/mount.h
+//https://github.com/openbsd/src/blob/HEAD/sys/sys/mount.h
 pub const ISOFSMNT_NORRIP: ::c_int = 0x1; // disable Rock Ridge Ext
 pub const ISOFSMNT_GENS: ::c_int = 0x2; // enable generation numbers
 pub const ISOFSMNT_EXTATT: ::c_int = 0x4; // enable extended attr
@@ -1576,10 +1686,13 @@ pub const NTFS_MFLAG_ALLNAMES: ::c_int = 0x2;
 
 pub const TMPFS_ARGS_VERSION: ::c_int = 1;
 
+const SI_MAXSZ: ::size_t = 128;
+const SI_PAD: ::size_t = (SI_MAXSZ / ::mem::size_of::<::c_int>()) - 3;
+
 pub const MAP_STACK: ::c_int = 0x4000;
 pub const MAP_CONCEAL: ::c_int = 0x8000;
 
-// https://github.com/openbsd/src/blob/master/sys/net/if.h#L187
+// https://github.com/openbsd/src/blob/HEAD/sys/net/if.h#L187
 pub const IFF_UP: ::c_int = 0x1; // interface is up
 pub const IFF_BROADCAST: ::c_int = 0x2; // broadcast address valid
 pub const IFF_DEBUG: ::c_int = 0x4; // turn on debugging
@@ -1654,6 +1767,30 @@ pub const SF_SETTABLE: ::c_uint = 0xffff0000;
 pub const SF_ARCHIVED: ::c_uint = 0x00010000;
 pub const SF_IMMUTABLE: ::c_uint = 0x00020000;
 pub const SF_APPEND: ::c_uint = 0x00040000;
+
+// sys/exec_elf.h - Legal values for p_type (segment type).
+pub const PT_NULL: u32 = 0;
+pub const PT_LOAD: u32 = 1;
+pub const PT_DYNAMIC: u32 = 2;
+pub const PT_INTERP: u32 = 3;
+pub const PT_NOTE: u32 = 4;
+pub const PT_SHLIB: u32 = 5;
+pub const PT_PHDR: u32 = 6;
+pub const PT_TLS: u32 = 7;
+pub const PT_LOOS: u32 = 0x60000000;
+pub const PT_HIOS: u32 = 0x6fffffff;
+pub const PT_LOPROC: u32 = 0x70000000;
+pub const PT_HIPROC: u32 = 0x7fffffff;
+
+pub const PT_GNU_EH_FRAME: u32 = 0x6474e550;
+pub const PT_GNU_RELRO: u32 = 0x6474e552;
+
+// sys/exec_elf.h - Legal values for p_flags (segment flags).
+pub const PF_X: u32 = 0x1;
+pub const PF_W: u32 = 0x2;
+pub const PF_R: u32 = 0x4;
+pub const PF_MASKOS: u32 = 0x0ff00000;
+pub const PF_MASKPROC: u32 = 0xf0000000;
 
 // sys/mount.h
 pub const MNT_NOPERM: ::c_int = 0x00000020;
@@ -1777,11 +1914,6 @@ safe_f! {
 extern "C" {
     pub fn gettimeofday(tp: *mut ::timeval, tz: *mut ::timezone) -> ::c_int;
     pub fn settimeofday(tp: *const ::timeval, tz: *const ::timezone) -> ::c_int;
-    pub fn execvpe(
-        file: *const ::c_char,
-        argv: *const *const ::c_char,
-        envp: *const *const ::c_char,
-    ) -> ::c_int;
     pub fn pledge(promises: *const ::c_char, execpromises: *const ::c_char) -> ::c_int;
     pub fn unveil(path: *const ::c_char, permissions: *const ::c_char) -> ::c_int;
     pub fn strtonum(
@@ -1825,6 +1957,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn pthread_attr_getstack(
         attr: *const ::pthread_attr_t,
         stackaddr: *mut *mut ::c_void,

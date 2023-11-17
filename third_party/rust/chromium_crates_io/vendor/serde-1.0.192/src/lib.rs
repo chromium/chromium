@@ -63,6 +63,7 @@
 //!   and from DynamoDB.
 //! - [Hjson], a syntax extension to JSON designed around human reading and
 //!   editing. *(deserialization only)*
+//! - [CSV], Comma-separated values is a tabular text file format.
 //!
 //! [JSON]: https://github.com/serde-rs/json
 //! [Postcard]: https://github.com/jamesmunns/postcard
@@ -89,13 +90,16 @@
 //! [DynamoDB Items]: https://docs.rs/serde_dynamo
 //! [rusoto_dynamodb]: https://docs.rs/rusoto_dynamodb
 //! [Hjson]: https://github.com/Canop/deser-hjson
+//! [CSV]: https://docs.rs/csv
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.188")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.192")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
+// Show which crate feature enables conditionally compiled APIs in documentation.
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
 // Unstable functionality only if the user asks for it. For tracking and
 // discussion of these features please refer to this issue:
 //
@@ -166,10 +170,13 @@ mod lib {
         pub use std::*;
     }
 
-    pub use self::core::{cmp, iter, mem, num, ptr, slice, str};
     pub use self::core::{f32, f64};
     pub use self::core::{i16, i32, i64, i8, isize};
+    pub use self::core::{iter, num, ptr, str};
     pub use self::core::{u16, u32, u64, u8, usize};
+
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    pub use self::core::{cmp, mem, slice};
 
     pub use self::core::cell::{Cell, RefCell};
     pub use self::core::clone::{self, Clone};
@@ -319,6 +326,7 @@ extern crate serde_derive;
 
 /// Derive macro available if serde is built with `features = ["derive"]`.
 #[cfg(feature = "serde_derive")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "derive")))]
 pub use serde_derive::{Deserialize, Serialize};
 
 #[cfg(all(not(no_serde_derive), any(feature = "std", feature = "alloc")))]

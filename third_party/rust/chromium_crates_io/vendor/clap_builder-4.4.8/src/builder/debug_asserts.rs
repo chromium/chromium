@@ -405,6 +405,12 @@ impl PartialEq for Flag<'_> {
 
 impl PartialOrd for Flag<'_> {
     fn partial_cmp(&self, other: &Flag) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Flag<'_> {
+    fn cmp(&self, other: &Self) -> Ordering {
         use Flag::*;
 
         match (self, other) {
@@ -413,18 +419,12 @@ impl PartialOrd for Flag<'_> {
             | (Command(s1, _), Arg(s2, _))
             | (Arg(s1, _), Command(s2, _)) => {
                 if s1 == s2 {
-                    Some(Ordering::Equal)
+                    Ordering::Equal
                 } else {
-                    s1.partial_cmp(s2)
+                    s1.cmp(s2)
                 }
             }
         }
-    }
-}
-
-impl Ord for Flag<'_> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
     }
 }
 

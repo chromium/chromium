@@ -1184,15 +1184,15 @@ impl Hash for GenericArgument {
                 state.write_u8(1u8);
                 v0.hash(state);
             }
-            GenericArgument::Binding(v0) => {
+            GenericArgument::Const(v0) => {
                 state.write_u8(2u8);
                 v0.hash(state);
             }
-            GenericArgument::Constraint(v0) => {
+            GenericArgument::Binding(v0) => {
                 state.write_u8(3u8);
                 v0.hash(state);
             }
-            GenericArgument::Const(v0) => {
+            GenericArgument::Constraint(v0) => {
                 state.write_u8(4u8);
                 v0.hash(state);
             }

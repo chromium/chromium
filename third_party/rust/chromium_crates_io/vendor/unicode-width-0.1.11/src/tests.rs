@@ -13,7 +13,7 @@ use std::iter;
 #[cfg(feature = "bench")]
 use test::{self, Bencher};
 #[cfg(feature = "bench")]
-use super::UnicodeWidthChar;
+use super::{UnicodeWidthChar, UnicodeWidthStr};
 
 use std::prelude::v1::*;
 
@@ -93,7 +93,23 @@ fn simple_width_match(c: char) -> Option<usize> {
         _ => UnicodeWidthChar::width(c)
     }
 }
-
+#[cfg(all(feature = "bench", not(feature = "no_std")))]
+#[bench]
+fn enwik8(b: &mut Bencher) {
+    // To benchmark, download & unzip `enwik8` from https://data.deepai.org/enwik8.zip
+    let data_path = "bench_data/enwik8";
+    let string = std::fs::read_to_string(data_path).unwrap_or_default();
+    b.iter(|| test::black_box(UnicodeWidthStr::width(string.as_str())));
+}
+#[cfg(all(feature = "bench", not(feature = "no_std")))]
+#[bench]
+fn jawiki(b: &mut Bencher) {
+    // To benchmark, download & extract `jawiki-20220501-pages-articles-multistream-index.txt` from
+    // https://dumps.wikimedia.org/jawiki/20220501/jawiki-20220501-pages-articles-multistream-index.txt.bz2
+    let data_path = "bench_data/jawiki-20220501-pages-articles-multistream-index.txt";
+    let string = std::fs::read_to_string(data_path).unwrap_or_default();
+    b.iter(|| test::black_box(UnicodeWidthStr::width(string.as_str())));
+}
 #[test]
 fn test_str() {
     use super::UnicodeWidthStr;

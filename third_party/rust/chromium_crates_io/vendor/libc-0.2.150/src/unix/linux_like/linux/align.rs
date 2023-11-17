@@ -5,6 +5,7 @@ macro_rules! expand_align {
                            target_arch = "x86_64",
                            target_arch = "powerpc64",
                            target_arch = "mips64",
+                           target_arch = "mips64r6",
                            target_arch = "s390x",
                            target_arch = "sparc64",
                            target_arch = "aarch64",
@@ -16,6 +17,7 @@ macro_rules! expand_align {
                                target_arch = "x86_64",
                                target_arch = "powerpc64",
                                target_arch = "mips64",
+                               target_arch = "mips64r6",
                                target_arch = "s390x",
                                target_arch = "sparc64",
                                target_arch = "aarch64",
@@ -83,9 +85,11 @@ macro_rules! expand_align {
 
             #[cfg_attr(all(target_pointer_width = "32",
                            any(target_arch = "mips",
+                               target_arch = "mips32r6",
                                target_arch = "arm",
                                target_arch = "hexagon",
                                target_arch = "m68k",
+                               target_arch = "csky",
                                target_arch = "powerpc",
                                target_arch = "sparc",
                                target_arch = "x86_64",
@@ -93,9 +97,11 @@ macro_rules! expand_align {
                        repr(align(4)))]
             #[cfg_attr(any(target_pointer_width = "64",
                            not(any(target_arch = "mips",
+                                   target_arch = "mips32r6",
                                    target_arch = "arm",
                                    target_arch = "hexagon",
                                    target_arch = "m68k",
+                                   target_arch = "csky",
                                    target_arch = "powerpc",
                                    target_arch = "sparc",
                                    target_arch = "x86_64",
@@ -108,9 +114,11 @@ macro_rules! expand_align {
 
             #[cfg_attr(all(target_pointer_width = "32",
                            any(target_arch = "mips",
+                               target_arch = "mips32r6",
                                target_arch = "arm",
                                target_arch = "hexagon",
                                target_arch = "m68k",
+                               target_arch = "csky",
                                target_arch = "powerpc",
                                target_arch = "sparc",
                                target_arch = "x86_64",
@@ -118,6 +126,7 @@ macro_rules! expand_align {
                        repr(align(4)))]
             #[cfg_attr(any(target_pointer_width = "64",
                            not(any(target_arch = "mips",
+                                   target_arch = "mips32r6",
                                    target_arch = "arm",
                                    target_arch = "hexagon",
                                    target_arch = "m68k",
@@ -132,9 +141,11 @@ macro_rules! expand_align {
 
             #[cfg_attr(all(target_pointer_width = "32",
                            any(target_arch = "mips",
+                               target_arch = "mips32r6",
                                target_arch = "arm",
                                target_arch = "hexagon",
                                target_arch = "m68k",
+                               target_arch = "csky",
                                target_arch = "powerpc",
                                target_arch = "sparc",
                                target_arch = "x86_64",
@@ -142,9 +153,11 @@ macro_rules! expand_align {
                        repr(align(4)))]
             #[cfg_attr(any(target_pointer_width = "64",
                            not(any(target_arch = "mips",
+                                   target_arch = "mips32r6",
                                    target_arch = "arm",
                                    target_arch = "hexagon",
                                    target_arch = "m68k",
+                                   target_arch = "csky",
                                    target_arch = "powerpc",
                                    target_arch = "sparc",
                                    target_arch = "x86_64",
@@ -175,6 +188,17 @@ macro_rules! expand_align {
                 __res0: u8,
                 __res1: u8,
                 pub data: [u8; CANFD_MAX_DLEN],
+            }
+
+            #[repr(align(8))]
+            #[allow(missing_debug_implementations)]
+            pub struct canxl_frame {
+                pub prio: canid_t,
+                pub flags: u8,
+                pub sdt: u8,
+                pub len: u16,
+                pub af: u32,
+                pub data: [u8; CANXL_MAX_DLEN],
             }
         }
     };

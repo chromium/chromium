@@ -1,4 +1,4 @@
-Teddy is a simd accelerated multiple substring matching algorithm. The name
+Teddy is a SIMD accelerated multiple substring matching algorithm. The name
 and the core ideas in the algorithm were learned from the [Hyperscan][1_u]
 project. The implementation in this repository was mostly motivated for use in
 accelerating regex searches by searching for small sets of required literals
@@ -225,14 +225,14 @@ fingerprints in a haystack's 16 byte block, where `i` is the `ith` byte in that
 block.
 
 Once we have that, we can look for the position of the least significant bit
-in `C`. (Least significant because we only target `x86_64` here, which is
-always little endian. Thus, the least significant bytes correspond to bytes
-in our haystack at a lower address.) That position, modulo `8`, gives us
-the pattern that the fingerprint matches. That position, integer divided by
-`8`, also gives us the byte offset that the fingerprint occurs in inside the
-16 byte haystack block. Using those two pieces of information, we can run a
-verification procedure that tries to match all substrings containing that
-fingerprint at that position in the haystack.
+in `C`. (Least significant because we only target little endian here. Thus,
+the least significant bytes correspond to bytes in our haystack at a lower
+address.) That position, modulo `8`, gives us the pattern that the fingerprint
+matches. That position, integer divided by `8`, also gives us the byte offset
+that the fingerprint occurs in inside the 16 byte haystack block. Using those
+two pieces of information, we can run a verification procedure that tries
+to match all substrings containing that fingerprint at that position in the
+haystack.
 
 
 # Implementation notes
@@ -341,46 +341,46 @@ runs as described, except with 16 buckets instead of 8.
 
 # References
 
-- **[1]** [Hyperscan on GitHub](https://github.com/01org/hyperscan),
-    [webpage](https://01.org/hyperscan)
+- **[1]** [Hyperscan on GitHub](https://github.com/intel/hyperscan),
+    [webpage](https://www.hyperscan.io/)
 - **[2a]** Ben-Kiki, O., Bille, P., Breslauer, D., Gasieniec, L., Grossi, R.,
     & Weimann, O. (2011).
     _Optimal packed string matching_.
     In LIPIcs-Leibniz International Proceedings in Informatics (Vol. 13).
     Schloss Dagstuhl-Leibniz-Zentrum fuer Informatik.
     DOI: 10.4230/LIPIcs.FSTTCS.2011.423.
-    [PDF](http://drops.dagstuhl.de/opus/volltexte/2011/3355/pdf/37.pdf).
+    [PDF](https://drops.dagstuhl.de/opus/volltexte/2011/3355/pdf/37.pdf).
 - **[2b]** Ben-Kiki, O., Bille, P., Breslauer, D., Ga̧sieniec, L., Grossi, R.,
     & Weimann, O. (2014).
     _Towards optimal packed string matching_.
     Theoretical Computer Science, 525, 111-129.
     DOI: 10.1016/j.tcs.2013.06.013.
-    [PDF](http://www.cs.haifa.ac.il/~oren/Publications/bpsm.pdf).
+    [PDF](https://www.cs.haifa.ac.il/~oren/Publications/bpsm.pdf).
 - **[3]** Bille, P. (2011).
     _Fast searching in packed strings_.
     Journal of Discrete Algorithms, 9(1), 49-56.
     DOI: 10.1016/j.jda.2010.09.003.
-    [PDF](http://www.sciencedirect.com/science/article/pii/S1570866710000353).
+    [PDF](https://www.sciencedirect.com/science/article/pii/S1570866710000353).
 - **[4a]** Faro, S., & Külekci, M. O. (2012, October).
     _Fast multiple string matching using streaming SIMD extensions technology_.
     In String Processing and Information Retrieval (pp. 217-228).
     Springer Berlin Heidelberg.
     DOI: 10.1007/978-3-642-34109-0_23.
-    [PDF](http://www.dmi.unict.it/~faro/papers/conference/faro32.pdf).
+    [PDF](https://www.dmi.unict.it/faro/papers/conference/faro32.pdf).
 - **[4b]** Faro, S., & Külekci, M. O. (2013, September).
     _Towards a Very Fast Multiple String Matching Algorithm for Short Patterns_.
     In Stringology (pp. 78-91).
-    [PDF](http://www.dmi.unict.it/~faro/papers/conference/faro36.pdf).
+    [PDF](https://www.dmi.unict.it/faro/papers/conference/faro36.pdf).
 - **[4c]** Faro, S., & Külekci, M. O. (2013, January).
     _Fast packed string matching for short patterns_.
     In Proceedings of the Meeting on Algorithm Engineering & Expermiments
     (pp. 113-121).
     Society for Industrial and Applied Mathematics.
-    [PDF](http://arxiv.org/pdf/1209.6449.pdf).
+    [PDF](https://arxiv.org/pdf/1209.6449.pdf).
 - **[4d]** Faro, S., & Külekci, M. O. (2014).
     _Fast and flexible packed string matching_.
     Journal of Discrete Algorithms, 28, 61-72.
     DOI: 10.1016/j.jda.2014.07.003.
 
-[1_u]: https://github.com/01org/hyperscan
+[1_u]: https://github.com/intel/hyperscan
 [5_u]: https://software.intel.com/sites/landingpage/IntrinsicsGuide

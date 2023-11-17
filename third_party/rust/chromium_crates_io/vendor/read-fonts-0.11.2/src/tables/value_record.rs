@@ -11,6 +11,11 @@ use crate::traversal::{Field, FieldType, RecordResolver, SomeRecord};
 use crate::{ComputeSize, FontData, FontReadWithArgs, ReadArgs, ReadError};
 
 impl ValueFormat {
+    /// A mask with all the device/variation index bits set
+    pub const ANY_DEVICE_OR_VARIDX: Self = ValueFormat {
+        bits: 0x0010 | 0x0020 | 0x0040 | 0x0080,
+    };
+
     /// Return the number of bytes required to store a [`ValueRecord`] in this format.
     #[inline]
     pub fn record_byte_len(self) -> usize {
@@ -208,5 +213,20 @@ impl<'a> SomeRecord<'a> for ValueRecord {
             data,
             get_field: Box::new(move |idx, data| self.get_field(idx, data)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sanity_check_format_const() {
+        let format = ValueFormat::X_ADVANCE_DEVICE
+            | ValueFormat::Y_ADVANCE_DEVICE
+            | ValueFormat::Y_PLACEMENT_DEVICE
+            | ValueFormat::X_PLACEMENT_DEVICE;
+        assert_eq!(format, ValueFormat::ANY_DEVICE_OR_VARIDX);
+        assert_eq!(format.record_byte_len(), 4 * 2);
     }
 }

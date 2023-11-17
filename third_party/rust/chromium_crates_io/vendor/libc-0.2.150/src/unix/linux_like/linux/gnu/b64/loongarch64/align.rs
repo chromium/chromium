@@ -17,10 +17,10 @@ s! {
 
     #[repr(align(16))]
     pub struct mcontext_t {
-        pub sc_pc: ::c_ulonglong,
-        pub sc_regs: [::c_ulonglong; 32],
-        pub sc_flags: ::c_ulong,
-        pub sc_extcontext: [u64; 0],
+        pub __pc: ::c_ulonglong,
+        pub __gregs: [::c_ulonglong; 32],
+        pub __flags: ::c_uint,
+        pub __extcontext: [::c_ulonglong; 0],
     }
 
     #[repr(align(8))]

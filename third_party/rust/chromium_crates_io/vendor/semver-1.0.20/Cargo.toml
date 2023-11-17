@@ -11,17 +11,32 @@
 
 [package]
 edition = "2018"
+rust-version = "1.31"
 name = "semver"
-version = "1.0.4"
+version = "1.0.20"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Parser and evaluator for Cargo's flavor of Semantic Versioning"
 documentation = "https://docs.rs/semver"
 readme = "README.md"
+keywords = ["cargo"]
+categories = [
+    "data-structures",
+    "no-std",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/semver"
+
 [package.metadata.docs.rs]
-rustdoc-args = ["--cfg", "doc_cfg"]
+rustdoc-args = [
+    "--cfg",
+    "doc_cfg",
+    "--generate-link-to-definition",
+]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[lib]
+doc-scrape-examples = false
+
 [dependencies.serde]
 version = "1.0"
 optional = true

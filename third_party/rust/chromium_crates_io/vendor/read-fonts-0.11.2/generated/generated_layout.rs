@@ -3525,6 +3525,7 @@ impl<'a> SomeTable<'a> for ChainedSequenceContext<'a> {
 /// [Device](https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#device-and-variationindex-tables)
 /// delta formats
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(u16)]
 pub enum DeltaFormat {
     /// Signed 2-bit value, 8 values per uint16

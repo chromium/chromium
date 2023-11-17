@@ -4,4 +4,9 @@ error: unexpected end of macro invocation
 4 |     json!({ "a" : });
   |     ^^^^^^^^^^^^^^^^ missing tokens in macro arguments
   |
-  = note: this error originates in the macro `json_internal` (in Nightly builds, run with -Z macro-backtrace for more info)
+note: while trying to match `@`
+ --> src/macros.rs
+  |
+  |     (@array [$($elems:expr,)*]) => {
+  |      ^
+  = note: this error originates in the macro `json_internal` which comes from the expansion of the macro `json` (in Nightly builds, run with -Z macro-backtrace for more info)

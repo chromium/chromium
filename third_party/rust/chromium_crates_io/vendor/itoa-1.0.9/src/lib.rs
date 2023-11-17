@@ -2,7 +2,7 @@
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
-//! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K
+//! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
 //!
 //! <br>
 //!
@@ -30,11 +30,12 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
 
-#![doc(html_root_url = "https://docs.rs/itoa/1.0.1")]
+#![doc(html_root_url = "https://docs.rs/itoa/1.0.9")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
+    clippy::expl_impl_clone_on_copy,
     clippy::must_use_candidate,
     clippy::unreadable_literal
 )]
@@ -43,6 +44,8 @@ mod udiv128;
 
 use core::mem::{self, MaybeUninit};
 use core::{ptr, slice, str};
+#[cfg(feature = "no-panic")]
+use no_panic::no_panic;
 
 /// A correctly sized stack allocation for the formatted integer to be written
 /// into.
@@ -65,8 +68,11 @@ impl Default for Buffer {
     }
 }
 
+impl Copy for Buffer {}
+
 impl Clone for Buffer {
     #[inline]
+    #[allow(clippy::incorrect_clone_impl_on_copy_type)] // false positive https://github.com/rust-lang/rust-clippy/issues/11072
     fn clone(&self) -> Self {
         Buffer::new()
     }
@@ -76,6 +82,7 @@ impl Buffer {
     /// This is a cheap operation; you don't need to worry about reusing buffers
     /// for efficiency.
     #[inline]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn new() -> Buffer {
         let bytes = [MaybeUninit::<u8>::uninit(); I128_MAX_LEN];
         Buffer { bytes }
@@ -83,6 +90,7 @@ impl Buffer {
 
     /// Print an integer into this buffer and return a reference to its string
     /// representation within the buffer.
+    #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn format<I: Integer>(&mut self, i: I) -> &str {
         i.write(unsafe {
             &mut *(&mut self.bytes as *mut [MaybeUninit<u8>; I128_MAX_LEN]
@@ -122,6 +130,7 @@ macro_rules! impl_Integer {
 
             #[allow(unused_comparisons)]
             #[inline]
+            #[cfg_attr(feature = "no-panic", no_panic)]
             fn write(self, buf: &mut [MaybeUninit<u8>; $max_len]) -> &str {
                 let is_nonnegative = self >= 0;
                 let mut n = if is_nonnegative {
@@ -223,6 +232,7 @@ macro_rules! impl_Integer128 {
 
             #[allow(unused_comparisons)]
             #[inline]
+            #[cfg_attr(feature = "no-panic", no_panic)]
             fn write(self, buf: &mut [MaybeUninit<u8>; $max_len]) -> &str {
                 let is_nonnegative = self >= 0;
                 let n = if is_nonnegative {

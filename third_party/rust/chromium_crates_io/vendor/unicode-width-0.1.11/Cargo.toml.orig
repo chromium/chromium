@@ -1,7 +1,7 @@
 [package]
 
 name = "unicode-width"
-version = "0.1.9"
+version = "0.1.11"
 authors = ["kwantam <kwantam@gmail.com>", "Manish Goregaokar <manishsmail@gmail.com>"]
 
 homepage = "https://github.com/unicode-rs/unicode-width"

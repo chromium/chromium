@@ -1975,14 +1975,14 @@ where
         GenericArgument::Type(_binding_0) => {
             v.visit_type_mut(_binding_0);
         }
+        GenericArgument::Const(_binding_0) => {
+            v.visit_expr_mut(_binding_0);
+        }
         GenericArgument::Binding(_binding_0) => {
             v.visit_binding_mut(_binding_0);
         }
         GenericArgument::Constraint(_binding_0) => {
             v.visit_constraint_mut(_binding_0);
-        }
-        GenericArgument::Const(_binding_0) => {
-            v.visit_expr_mut(_binding_0);
         }
     }
 }

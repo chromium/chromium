@@ -12,6 +12,7 @@ pub struct DeltaSetIndex {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TupleIndex(u16);
 
 impl TupleIndex {
@@ -97,6 +98,7 @@ impl types::Scalar for TupleIndex {
 ///
 /// [header]: https://learn.microsoft.com/en-us/typography/opentype/spec/otvarcommonformats#tuple-variation-store-header
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TupleVariationCount(u16);
 
 impl TupleVariationCount {
@@ -360,7 +362,7 @@ impl Iterator for PackedPointNumbersIter<'_> {
         // if our count is zero, we keep incrementing forever
         if self.count == 0 {
             let result = self.last_val;
-            self.last_val += 1;
+            self.last_val = self.last_val.checked_add(1)?;
             return Some(result);
         }
 
@@ -824,5 +826,14 @@ mod tests {
         assert_eq!(points.iter().collect::<Vec<_>>(), &[1, 3]);
         assert_eq!(points.total_len(), 4);
         assert_eq!(data.len(), INPUT.len() - 4);
+    }
+
+    #[test]
+    fn packed_points_dont_panic() {
+        // a single '0' byte means that there are deltas for all points
+        static ALL_POINTS: FontData = FontData::new(&[0]);
+        let (all_points, _) = PackedPointNumbers::split_off_front(ALL_POINTS);
+        // in which case the iterator just keeps incrementing until u16::MAX
+        assert_eq!(all_points.iter().count(), u16::MAX as _);
     }
 }

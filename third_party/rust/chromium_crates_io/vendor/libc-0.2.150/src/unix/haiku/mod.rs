@@ -741,6 +741,7 @@ pub const RLIMIT_AS: ::c_int = 6;
 pub const RLIM_INFINITY: ::rlim_t = 0xffffffff;
 // Haiku specific
 pub const RLIMIT_NOVMON: ::c_int = 7;
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::c_int = 8;
 
 pub const RUSAGE_SELF: ::c_int = 0;
@@ -979,7 +980,7 @@ pub const MADV_WILLNEED: ::c_int = 4;
 pub const MADV_DONTNEED: ::c_int = 5;
 pub const MADV_FREE: ::c_int = 6;
 
-// https://github.com/haiku/haiku/blob/master/headers/posix/net/if.h#L80
+// https://github.com/haiku/haiku/blob/HEAD/headers/posix/net/if.h#L80
 pub const IFF_UP: ::c_int = 0x0001;
 pub const IFF_BROADCAST: ::c_int = 0x0002; // valid broadcast address
 pub const IFF_LOOPBACK: ::c_int = 0x0008;
@@ -1679,6 +1680,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn pthread_attr_getstack(
         attr: *const ::pthread_attr_t,
         stackaddr: *mut *mut ::c_void,
@@ -2063,6 +2065,14 @@ extern "C" {
         search: *const ::c_void,
         searchLength: ::size_t,
     ) -> *mut ::c_void;
+
+    pub fn pthread_getattr_np(thread: ::pthread_t, attr: *mut ::pthread_attr_t) -> ::c_int;
+    pub fn pthread_getname_np(
+        thread: ::pthread_t,
+        buffer: *mut ::c_char,
+        length: ::size_t,
+    ) -> ::c_int;
+    pub fn pthread_setname_np(thread: ::pthread_t, name: *const ::c_char) -> ::c_int;
 }
 
 cfg_if! {

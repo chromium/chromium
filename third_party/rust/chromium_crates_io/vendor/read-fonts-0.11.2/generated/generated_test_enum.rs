@@ -6,6 +6,7 @@
 use crate::codegen_prelude::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(u16)]
 pub enum MyEnum1 {
     /// doc me baby
@@ -49,6 +50,7 @@ impl<'a> From<MyEnum1> for FieldType<'a> {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(u16)]
 pub enum MyEnum2 {
     ItsATwo = 2,

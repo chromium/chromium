@@ -5,3 +5,9 @@ error: no rules expected the token `"2"`
   |                    -^^^ no rules expected this token in macro call
   |                    |
   |                    help: missing comma here
+  |
+note: while trying to match `,`
+ --> src/macros.rs
+  |
+  |     ($e:expr , $($tt:tt)*) => {};
+  |              ^

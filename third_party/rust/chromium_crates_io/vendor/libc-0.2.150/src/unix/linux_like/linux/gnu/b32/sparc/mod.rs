@@ -363,6 +363,7 @@ pub const EREMOTEIO: ::c_int = 121;
 
 pub const MCL_CURRENT: ::c_int = 0x2000;
 pub const MCL_FUTURE: ::c_int = 0x4000;
+pub const MCL_ONFAULT: ::c_int = 0x8000;
 
 pub const SIGSTKSZ: ::size_t = 16384;
 pub const MINSIGSTKSZ: ::size_t = 4096;

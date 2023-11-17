@@ -7,6 +7,7 @@ use crate::codegen_prelude::*;
 
 /// The `macStyle` field for the head table.
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MacStyle {
     bits: u16,
 }

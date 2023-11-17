@@ -60,33 +60,33 @@ s! {
     }
 
     pub struct statfs {
-        pub f_type: ::c_ulong,
-        pub f_bsize: ::c_ulong,
+        pub f_type: ::c_uint,
+        pub f_bsize: ::c_uint,
         pub f_blocks: ::fsblkcnt_t,
         pub f_bfree: ::fsblkcnt_t,
         pub f_bavail: ::fsblkcnt_t,
         pub f_files: ::fsfilcnt_t,
         pub f_ffree: ::fsfilcnt_t,
         pub f_fsid: ::fsid_t,
-        pub f_namelen: ::c_ulong,
-        pub f_frsize: ::c_ulong,
-        pub f_flags: ::c_ulong,
-        pub f_spare: [::c_ulong; 4],
+        pub f_namelen: ::c_uint,
+        pub f_frsize: ::c_uint,
+        pub f_flags: ::c_uint,
+        pub f_spare: [::c_uint; 4],
     }
 
     pub struct statfs64 {
-        pub f_type: ::c_ulong,
-        pub f_bsize: ::c_ulong,
+        pub f_type: ::c_uint,
+        pub f_bsize: ::c_uint,
         pub f_blocks: ::fsblkcnt_t,
         pub f_bfree: ::fsblkcnt_t,
         pub f_bavail: ::fsblkcnt_t,
         pub f_files: ::fsfilcnt_t,
         pub f_ffree: ::fsfilcnt_t,
         pub f_fsid: ::fsid_t,
-        pub f_namelen: ::c_ulong,
-        pub f_frsize: ::c_ulong,
-        pub f_flags: ::c_ulong,
-        pub f_spare: [::c_ulong; 4],
+        pub f_namelen: ::c_uint,
+        pub f_frsize: ::c_uint,
+        pub f_flags: ::c_uint,
+        pub f_spare: [::c_uint; 4],
     }
 }
 
@@ -145,6 +145,7 @@ pub const ETIMEDOUT: ::c_int = 110;
 pub const O_APPEND: ::c_int = 1024;
 pub const O_CREAT: ::c_int = 64;
 pub const O_EXCL: ::c_int = 128;
+pub const O_LARGEFILE: ::c_int = 0x8000;
 pub const O_NONBLOCK: ::c_int = 2048;
 pub const SA_NOCLDWAIT: ::c_int = 2;
 pub const SA_ONSTACK: ::c_int = 0x08000000;
@@ -178,6 +179,9 @@ pub const MAP_NONBLOCK: ::c_int = 0x010000;
 pub const MAP_STACK: ::c_int = 0x020000;
 pub const MAP_HUGETLB: ::c_int = 0x040000;
 pub const MAP_SYNC: ::c_int = 0x080000;
+
+pub const PTRACE_SYSEMU: ::c_int = 31;
+pub const PTRACE_SYSEMU_SINGLESTEP: ::c_int = 32;
 
 pub const EDEADLOCK: ::c_int = 35;
 pub const ENAMETOOLONG: ::c_int = 36;
@@ -286,15 +290,13 @@ pub const EXTPROC: ::tcflag_t = 0x00010000;
 
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
+pub const MCL_ONFAULT: ::c_int = 0x0004;
 
 pub const F_GETLK: ::c_int = 5;
 pub const F_GETOWN: ::c_int = 9;
 pub const F_SETOWN: ::c_int = 8;
 pub const F_SETLK: ::c_int = 6;
 pub const F_SETLKW: ::c_int = 7;
-pub const F_OFD_GETLK: ::c_int = 36;
-pub const F_OFD_SETLK: ::c_int = 37;
-pub const F_OFD_SETLKW: ::c_int = 38;
 
 pub const VTIME: usize = 5;
 pub const VSWTC: usize = 7;

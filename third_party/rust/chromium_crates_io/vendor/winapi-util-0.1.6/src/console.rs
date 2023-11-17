@@ -1,13 +1,16 @@
-use std::io;
-use std::mem;
+use std::{io, mem};
 
-use winapi::shared::minwindef::WORD;
-use winapi::um::consoleapi::{GetConsoleMode, SetConsoleMode};
-use winapi::um::wincon::{
-    self, GetConsoleScreenBufferInfo, SetConsoleTextAttribute,
-    CONSOLE_SCREEN_BUFFER_INFO, FOREGROUND_BLUE as FG_BLUE,
-    FOREGROUND_GREEN as FG_GREEN, FOREGROUND_INTENSITY as FG_INTENSITY,
-    FOREGROUND_RED as FG_RED,
+use winapi::{
+    shared::minwindef::WORD,
+    um::{
+        consoleapi::{GetConsoleMode, SetConsoleMode},
+        wincon::{
+            self, GetConsoleScreenBufferInfo, SetConsoleTextAttribute,
+            CONSOLE_SCREEN_BUFFER_INFO, FOREGROUND_BLUE as FG_BLUE,
+            FOREGROUND_GREEN as FG_GREEN,
+            FOREGROUND_INTENSITY as FG_INTENSITY, FOREGROUND_RED as FG_RED,
+        },
+    },
 };
 
 use crate::{AsHandleRef, HandleRef};
@@ -208,7 +211,7 @@ impl Console {
         let h = kind.handle();
         let info = screen_buffer_info(&h)?;
         let attr = TextAttributes::from_word(info.attributes());
-        Ok(Console { kind: kind, start_attr: attr, cur_attr: attr })
+        Ok(Console { kind, start_attr: attr, cur_attr: attr })
     }
 
     /// Create a new Console to stdout.

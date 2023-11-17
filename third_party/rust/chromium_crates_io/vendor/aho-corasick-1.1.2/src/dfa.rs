@@ -1,713 +1,835 @@
-use std::mem::size_of;
-
-use crate::ahocorasick::MatchKind;
-use crate::automaton::Automaton;
-use crate::classes::ByteClasses;
-use crate::error::Result;
-use crate::nfa::{PatternID, PatternLength, NFA};
-use crate::prefilter::{Prefilter, PrefilterObj, PrefilterState};
-use crate::state_id::{dead_id, fail_id, premultiply_overflow_error, StateID};
-use crate::Match;
-
-#[derive(Clone, Debug)]
-pub enum DFA<S> {
-    Standard(Standard<S>),
-    ByteClass(ByteClass<S>),
-    Premultiplied(Premultiplied<S>),
-    PremultipliedByteClass(PremultipliedByteClass<S>),
-}
-
-impl<S: StateID> DFA<S> {
-    fn repr(&self) -> &Repr<S> {
-        match *self {
-            DFA::Standard(ref dfa) => dfa.repr(),
-            DFA::ByteClass(ref dfa) => dfa.repr(),
-            DFA::Premultiplied(ref dfa) => dfa.repr(),
-            DFA::PremultipliedByteClass(ref dfa) => dfa.repr(),
-        }
-    }
-
-    pub fn match_kind(&self) -> &MatchKind {
-        &self.repr().match_kind
-    }
-
-    pub fn heap_bytes(&self) -> usize {
-        self.repr().heap_bytes
-    }
-
-    pub fn max_pattern_len(&self) -> usize {
-        self.repr().max_pattern_len
-    }
-
-    pub fn pattern_count(&self) -> usize {
-        self.repr().pattern_count
-    }
-
-    pub fn prefilter(&self) -> Option<&dyn Prefilter> {
-        self.repr().prefilter.as_ref().map(|p| p.as_ref())
-    }
-
-    pub fn start_state(&self) -> S {
-        self.repr().start_id
-    }
-
-    #[inline(always)]
-    pub fn overlapping_find_at(
-        &self,
-        prestate: &mut PrefilterState,
-        haystack: &[u8],
-        at: usize,
-        state_id: &mut S,
-        match_index: &mut usize,
-    ) -> Option<Match> {
-        match *self {
-            DFA::Standard(ref dfa) => dfa.overlapping_find_at(
-                prestate,
-                haystack,
-                at,
-                state_id,
-                match_index,
-            ),
-            DFA::ByteClass(ref dfa) => dfa.overlapping_find_at(
-                prestate,
-                haystack,
-                at,
-                state_id,
-                match_index,
-            ),
-            DFA::Premultiplied(ref dfa) => dfa.overlapping_find_at(
-                prestate,
-                haystack,
-                at,
-                state_id,
-                match_index,
-            ),
-            DFA::PremultipliedByteClass(ref dfa) => dfa.overlapping_find_at(
-                prestate,
-                haystack,
-                at,
-                state_id,
-                match_index,
-            ),
-        }
-    }
-
-    #[inline(always)]
-    pub fn earliest_find_at(
-        &self,
-        prestate: &mut PrefilterState,
-        haystack: &[u8],
-        at: usize,
-        state_id: &mut S,
-    ) -> Option<Match> {
-        match *self {
-            DFA::Standard(ref dfa) => {
-                dfa.earliest_find_at(prestate, haystack, at, state_id)
-            }
-            DFA::ByteClass(ref dfa) => {
-                dfa.earliest_find_at(prestate, haystack, at, state_id)
-            }
-            DFA::Premultiplied(ref dfa) => {
-                dfa.earliest_find_at(prestate, haystack, at, state_id)
-            }
-            DFA::PremultipliedByteClass(ref dfa) => {
-                dfa.earliest_find_at(prestate, haystack, at, state_id)
-            }
-        }
-    }
-
-    #[inline(always)]
-    pub fn find_at_no_state(
-        &self,
-        prestate: &mut PrefilterState,
-        haystack: &[u8],
-        at: usize,
-    ) -> Option<Match> {
-        match *self {
-            DFA::Standard(ref dfa) => {
-                dfa.find_at_no_state(prestate, haystack, at)
-            }
-            DFA::ByteClass(ref dfa) => {
-                dfa.find_at_no_state(prestate, haystack, at)
-            }
-            DFA::Premultiplied(ref dfa) => {
-                dfa.find_at_no_state(prestate, haystack, at)
-            }
-            DFA::PremultipliedByteClass(ref dfa) => {
-                dfa.find_at_no_state(prestate, haystack, at)
-            }
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct Standard<S>(Repr<S>);
-
-impl<S: StateID> Standard<S> {
-    fn repr(&self) -> &Repr<S> {
-        &self.0
-    }
-}
-
-impl<S: StateID> Automaton for Standard<S> {
-    type ID = S;
-
-    fn match_kind(&self) -> &MatchKind {
-        &self.repr().match_kind
-    }
-
-    fn anchored(&self) -> bool {
-        self.repr().anchored
-    }
-
-    fn prefilter(&self) -> Option<&dyn Prefilter> {
-        self.repr().prefilter.as_ref().map(|p| p.as_ref())
-    }
-
-    fn start_state(&self) -> S {
-        self.repr().start_id
-    }
-
-    fn is_valid(&self, id: S) -> bool {
-        id.to_usize() < self.repr().state_count
-    }
-
-    fn is_match_state(&self, id: S) -> bool {
-        self.repr().is_match_state(id)
-    }
-
-    fn is_match_or_dead_state(&self, id: S) -> bool {
-        self.repr().is_match_or_dead_state(id)
-    }
-
-    fn get_match(
-        &self,
-        id: S,
-        match_index: usize,
-        end: usize,
-    ) -> Option<Match> {
-        self.repr().get_match(id, match_index, end)
-    }
-
-    fn match_count(&self, id: S) -> usize {
-        self.repr().match_count(id)
-    }
-
-    fn next_state(&self, current: S, input: u8) -> S {
-        let o = current.to_usize() * 256 + input as usize;
-        self.repr().trans[o]
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ByteClass<S>(Repr<S>);
-
-impl<S: StateID> ByteClass<S> {
-    fn repr(&self) -> &Repr<S> {
-        &self.0
-    }
-}
-
-impl<S: StateID> Automaton for ByteClass<S> {
-    type ID = S;
-
-    fn match_kind(&self) -> &MatchKind {
-        &self.repr().match_kind
-    }
-
-    fn anchored(&self) -> bool {
-        self.repr().anchored
-    }
-
-    fn prefilter(&self) -> Option<&dyn Prefilter> {
-        self.repr().prefilter.as_ref().map(|p| p.as_ref())
-    }
-
-    fn start_state(&self) -> S {
-        self.repr().start_id
-    }
-
-    fn is_valid(&self, id: S) -> bool {
-        id.to_usize() < self.repr().state_count
-    }
-
-    fn is_match_state(&self, id: S) -> bool {
-        self.repr().is_match_state(id)
-    }
-
-    fn is_match_or_dead_state(&self, id: S) -> bool {
-        self.repr().is_match_or_dead_state(id)
-    }
-
-    fn get_match(
-        &self,
-        id: S,
-        match_index: usize,
-        end: usize,
-    ) -> Option<Match> {
-        self.repr().get_match(id, match_index, end)
-    }
-
-    fn match_count(&self, id: S) -> usize {
-        self.repr().match_count(id)
-    }
-
-    fn next_state(&self, current: S, input: u8) -> S {
-        let alphabet_len = self.repr().byte_classes.alphabet_len();
-        let input = self.repr().byte_classes.get(input);
-        let o = current.to_usize() * alphabet_len + input as usize;
-        self.repr().trans[o]
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct Premultiplied<S>(Repr<S>);
-
-impl<S: StateID> Premultiplied<S> {
-    fn repr(&self) -> &Repr<S> {
-        &self.0
-    }
-}
-
-impl<S: StateID> Automaton for Premultiplied<S> {
-    type ID = S;
-
-    fn match_kind(&self) -> &MatchKind {
-        &self.repr().match_kind
-    }
-
-    fn anchored(&self) -> bool {
-        self.repr().anchored
-    }
-
-    fn prefilter(&self) -> Option<&dyn Prefilter> {
-        self.repr().prefilter.as_ref().map(|p| p.as_ref())
-    }
-
-    fn start_state(&self) -> S {
-        self.repr().start_id
-    }
-
-    fn is_valid(&self, id: S) -> bool {
-        (id.to_usize() / 256) < self.repr().state_count
-    }
-
-    fn is_match_state(&self, id: S) -> bool {
-        self.repr().is_match_state(id)
-    }
-
-    fn is_match_or_dead_state(&self, id: S) -> bool {
-        self.repr().is_match_or_dead_state(id)
-    }
-
-    fn get_match(
-        &self,
-        id: S,
-        match_index: usize,
-        end: usize,
-    ) -> Option<Match> {
-        if id > self.repr().max_match {
-            return None;
-        }
-        self.repr()
-            .matches
-            .get(id.to_usize() / 256)
-            .and_then(|m| m.get(match_index))
-            .map(|&(id, len)| Match { pattern: id, len, end })
-    }
-
-    fn match_count(&self, id: S) -> usize {
-        let o = id.to_usize() / 256;
-        self.repr().matches[o].len()
-    }
-
-    fn next_state(&self, current: S, input: u8) -> S {
-        let o = current.to_usize() + input as usize;
-        self.repr().trans[o]
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct PremultipliedByteClass<S>(Repr<S>);
-
-impl<S: StateID> PremultipliedByteClass<S> {
-    fn repr(&self) -> &Repr<S> {
-        &self.0
-    }
-}
-
-impl<S: StateID> Automaton for PremultipliedByteClass<S> {
-    type ID = S;
-
-    fn match_kind(&self) -> &MatchKind {
-        &self.repr().match_kind
-    }
-
-    fn anchored(&self) -> bool {
-        self.repr().anchored
-    }
-
-    fn prefilter(&self) -> Option<&dyn Prefilter> {
-        self.repr().prefilter.as_ref().map(|p| p.as_ref())
-    }
-
-    fn start_state(&self) -> S {
-        self.repr().start_id
-    }
-
-    fn is_valid(&self, id: S) -> bool {
-        (id.to_usize() / self.repr().alphabet_len()) < self.repr().state_count
-    }
-
-    fn is_match_state(&self, id: S) -> bool {
-        self.repr().is_match_state(id)
-    }
-
-    fn is_match_or_dead_state(&self, id: S) -> bool {
-        self.repr().is_match_or_dead_state(id)
-    }
-
-    fn get_match(
-        &self,
-        id: S,
-        match_index: usize,
-        end: usize,
-    ) -> Option<Match> {
-        if id > self.repr().max_match {
-            return None;
-        }
-        self.repr()
-            .matches
-            .get(id.to_usize() / self.repr().alphabet_len())
-            .and_then(|m| m.get(match_index))
-            .map(|&(id, len)| Match { pattern: id, len, end })
-    }
-
-    fn match_count(&self, id: S) -> usize {
-        let o = id.to_usize() / self.repr().alphabet_len();
-        self.repr().matches[o].len()
-    }
-
-    fn next_state(&self, current: S, input: u8) -> S {
-        let input = self.repr().byte_classes.get(input);
-        let o = current.to_usize() + input as usize;
-        self.repr().trans[o]
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct Repr<S> {
+/*!
+Provides direct access to a DFA implementation of Aho-Corasick.
+
+This is a low-level API that generally only needs to be used in niche
+circumstances. When possible, prefer using [`AhoCorasick`](crate::AhoCorasick)
+instead of a DFA directly. Using an `DFA` directly is typically only necessary
+when one needs access to the [`Automaton`] trait implementation.
+*/
+
+use alloc::{vec, vec::Vec};
+
+use crate::{
+    automaton::Automaton,
+    nfa::noncontiguous,
+    util::{
+        alphabet::ByteClasses,
+        error::{BuildError, MatchError},
+        int::{Usize, U32},
+        prefilter::Prefilter,
+        primitives::{IteratorIndexExt, PatternID, SmallIndex, StateID},
+        search::{Anchored, MatchKind, StartKind},
+        special::Special,
+    },
+};
+
+/// A DFA implementation of Aho-Corasick.
+///
+/// When possible, prefer using [`AhoCorasick`](crate::AhoCorasick) instead of
+/// this type directly. Using a `DFA` directly is typically only necessary when
+/// one needs access to the [`Automaton`] trait implementation.
+///
+/// This DFA can only be built by first constructing a [`noncontiguous::NFA`].
+/// Both [`DFA::new`] and [`Builder::build`] do this for you automatically, but
+/// [`Builder::build_from_noncontiguous`] permits doing it explicitly.
+///
+/// A DFA provides the best possible search performance (in this crate) via two
+/// mechanisms:
+///
+/// * All states use a dense representation for their transitions.
+/// * All failure transitions are pre-computed such that they are never
+/// explicitly handled at search time.
+///
+/// These two facts combined mean that every state transition is performed
+/// using a constant number of instructions. However, this comes at
+/// great cost. The memory usage of a DFA can be quite exorbitant.
+/// It is potentially multiple orders of magnitude greater than a
+/// [`contiguous::NFA`](crate::nfa::contiguous::NFA) for example. In exchange,
+/// a DFA will typically have better search speed than a `contiguous::NFA`, but
+/// not by orders of magnitude.
+///
+/// Unless you have a small number of patterns or memory usage is not a concern
+/// and search performance is critical, a DFA is usually not the best choice.
+///
+/// Moreover, unlike the NFAs in this crate, it is costly for a DFA to
+/// support for anchored and unanchored search configurations. Namely,
+/// since failure transitions are pre-computed, supporting both anchored
+/// and unanchored searches requires a duplication of the transition table,
+/// making the memory usage of such a DFA ever bigger. (The NFAs in this crate
+/// unconditionally support both anchored and unanchored searches because there
+/// is essentially no added cost for doing so.) It is for this reason that
+/// a DFA's support for anchored and unanchored searches can be configured
+/// via [`Builder::start_kind`]. By default, a DFA only supports unanchored
+/// searches.
+///
+/// # Example
+///
+/// This example shows how to build an `DFA` directly and use it to execute
+/// [`Automaton::try_find`]:
+///
+/// ```
+/// use aho_corasick::{
+///     automaton::Automaton,
+///     dfa::DFA,
+///     Input, Match,
+/// };
+///
+/// let patterns = &["b", "abc", "abcd"];
+/// let haystack = "abcd";
+///
+/// let nfa = DFA::new(patterns).unwrap();
+/// assert_eq!(
+///     Some(Match::must(0, 1..2)),
+///     nfa.try_find(&Input::new(haystack))?,
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+///
+/// It is also possible to implement your own version of `try_find`. See the
+/// [`Automaton`] documentation for an example.
+#[derive(Clone)]
+pub struct DFA {
+    /// The DFA transition table. IDs in this table are pre-multiplied. So
+    /// instead of the IDs being 0, 1, 2, 3, ..., they are 0*stride, 1*stride,
+    /// 2*stride, 3*stride, ...
+    trans: Vec<StateID>,
+    /// The matches for every match state in this DFA. This is first indexed by
+    /// state index (so that's `sid >> stride2`) and then by order in which the
+    /// matches are meant to occur.
+    matches: Vec<Vec<PatternID>>,
+    /// The amount of heap memory used, in bytes, by the inner Vecs of
+    /// 'matches'.
+    matches_memory_usage: usize,
+    /// The length of each pattern. This is used to compute the start offset
+    /// of a match.
+    pattern_lens: Vec<SmallIndex>,
+    /// A prefilter for accelerating searches, if one exists.
+    prefilter: Option<Prefilter>,
+    /// The match semantics built into this DFA.
     match_kind: MatchKind,
-    anchored: bool,
-    premultiplied: bool,
-    start_id: S,
-    /// The length, in bytes, of the longest pattern in this automaton. This
-    /// information is useful for keeping correct buffer sizes when searching
-    /// on streams.
-    max_pattern_len: usize,
-    /// The total number of patterns added to this automaton. This includes
-    /// patterns that may never match.
-    pattern_count: usize,
-    state_count: usize,
-    max_match: S,
-    /// The number of bytes of heap used by this NFA's transition table.
-    heap_bytes: usize,
-    /// A prefilter for quickly detecting candidate matchs, if pertinent.
-    prefilter: Option<PrefilterObj>,
+    /// The total number of states in this DFA.
+    state_len: usize,
+    /// The alphabet size, or total number of equivalence classes, for this
+    /// DFA. Note that the actual number of transitions in each state is
+    /// stride=2^stride2, where stride is the smallest power of 2 greater than
+    /// or equal to alphabet_len. We do things this way so that we can use
+    /// bitshifting to go from a state ID to an index into 'matches'.
+    alphabet_len: usize,
+    /// The exponent with a base 2, such that stride=2^stride2. Given a state
+    /// index 'i', its state identifier is 'i << stride2'. Given a state
+    /// identifier 'sid', its state index is 'sid >> stride2'.
+    stride2: usize,
+    /// The equivalence classes for this DFA. All transitions are defined on
+    /// equivalence classes and not on the 256 distinct byte values.
     byte_classes: ByteClasses,
-    trans: Vec<S>,
-    matches: Vec<Vec<(PatternID, PatternLength)>>,
+    /// The length of the shortest pattern in this automaton.
+    min_pattern_len: usize,
+    /// The length of the longest pattern in this automaton.
+    max_pattern_len: usize,
+    /// The information required to deduce which states are "special" in this
+    /// DFA.
+    special: Special,
 }
 
-impl<S: StateID> Repr<S> {
-    /// Returns the total alphabet size for this DFA.
+impl DFA {
+    /// Create a new Aho-Corasick DFA using the default configuration.
     ///
-    /// If byte classes are enabled, then this corresponds to the number of
-    /// equivalence classes. If they are disabled, then this is always 256.
-    fn alphabet_len(&self) -> usize {
-        self.byte_classes.alphabet_len()
+    /// Use a [`Builder`] if you want to change the configuration.
+    pub fn new<I, P>(patterns: I) -> Result<DFA, BuildError>
+    where
+        I: IntoIterator<Item = P>,
+        P: AsRef<[u8]>,
+    {
+        DFA::builder().build(patterns)
     }
 
-    /// Returns true only if the given state is a match state.
-    fn is_match_state(&self, id: S) -> bool {
-        id <= self.max_match && id > dead_id()
+    /// A convenience method for returning a new Aho-Corasick DFA builder.
+    ///
+    /// This usually permits one to just import the `DFA` type.
+    pub fn builder() -> Builder {
+        Builder::new()
+    }
+}
+
+impl DFA {
+    /// A sentinel state ID indicating that a search should stop once it has
+    /// entered this state. When a search stops, it returns a match if one has
+    /// been found, otherwise no match. A DFA always has an actual dead state
+    /// at this ID.
+    ///
+    /// N.B. DFAs, unlike NFAs, do not have any notion of a FAIL state.
+    /// Namely, the whole point of a DFA is that the FAIL state is completely
+    /// compiled away. That is, DFA construction involves pre-computing the
+    /// failure transitions everywhere, such that failure transitions are no
+    /// longer used at search time. This, combined with its uniformly dense
+    /// representation, are the two most important factors in why it's faster
+    /// than the NFAs in this crate.
+    const DEAD: StateID = StateID::new_unchecked(0);
+
+    /// Adds the given pattern IDs as matches to the given state and also
+    /// records the added memory usage.
+    fn set_matches(
+        &mut self,
+        sid: StateID,
+        pids: impl Iterator<Item = PatternID>,
+    ) {
+        let index = (sid.as_usize() >> self.stride2).checked_sub(2).unwrap();
+        let mut at_least_one = false;
+        for pid in pids {
+            self.matches[index].push(pid);
+            self.matches_memory_usage += PatternID::SIZE;
+            at_least_one = true;
+        }
+        assert!(at_least_one, "match state must have non-empty pids");
+    }
+}
+
+// SAFETY: 'start_state' always returns a valid state ID, 'next_state' always
+// returns a valid state ID given a valid state ID. We otherwise claim that
+// all other methods are correct as well.
+unsafe impl Automaton for DFA {
+    #[inline(always)]
+    fn start_state(&self, anchored: Anchored) -> Result<StateID, MatchError> {
+        // Either of the start state IDs can be DEAD, in which case, support
+        // for that type of search is not provided by this DFA. Which start
+        // state IDs are inactive depends on the 'StartKind' configuration at
+        // DFA construction time.
+        match anchored {
+            Anchored::No => {
+                let start = self.special.start_unanchored_id;
+                if start == DFA::DEAD {
+                    Err(MatchError::invalid_input_unanchored())
+                } else {
+                    Ok(start)
+                }
+            }
+            Anchored::Yes => {
+                let start = self.special.start_anchored_id;
+                if start == DFA::DEAD {
+                    Err(MatchError::invalid_input_anchored())
+                } else {
+                    Ok(start)
+                }
+            }
+        }
     }
 
-    /// Returns true only if the given state is either a dead state or a match
-    /// state.
-    fn is_match_or_dead_state(&self, id: S) -> bool {
-        id <= self.max_match
-    }
-
-    /// Get the ith match for the given state, where the end position of a
-    /// match was found at `end`.
-    ///
-    /// # Panics
-    ///
-    /// The caller must ensure that the given state identifier is valid,
-    /// otherwise this may panic. The `match_index` need not be valid. That is,
-    /// if the given state has no matches then this returns `None`.
-    fn get_match(
+    #[inline(always)]
+    fn next_state(
         &self,
-        id: S,
-        match_index: usize,
-        end: usize,
-    ) -> Option<Match> {
-        if id > self.max_match {
-            return None;
-        }
-        self.matches
-            .get(id.to_usize())
-            .and_then(|m| m.get(match_index))
-            .map(|&(id, len)| Match { pattern: id, len, end })
+        _anchored: Anchored,
+        sid: StateID,
+        byte: u8,
+    ) -> StateID {
+        let class = self.byte_classes.get(byte);
+        self.trans[(sid.as_u32() + u32::from(class)).as_usize()]
     }
 
-    /// Return the total number of matches for the given state.
-    ///
-    /// # Panics
-    ///
-    /// The caller must ensure that the given identifier is valid, or else
-    /// this panics.
-    fn match_count(&self, id: S) -> usize {
-        self.matches[id.to_usize()].len()
+    #[inline(always)]
+    fn is_special(&self, sid: StateID) -> bool {
+        sid <= self.special.max_special_id
     }
 
-    /// Get the next state given `from` as the current state and `byte` as the
-    /// current input byte.
-    fn next_state(&self, from: S, byte: u8) -> S {
-        let alphabet_len = self.alphabet_len();
-        let byte = self.byte_classes.get(byte);
-        self.trans[from.to_usize() * alphabet_len + byte as usize]
+    #[inline(always)]
+    fn is_dead(&self, sid: StateID) -> bool {
+        sid == DFA::DEAD
     }
 
-    /// Set the `byte` transition for the `from` state to point to `to`.
-    fn set_next_state(&mut self, from: S, byte: u8, to: S) {
-        let alphabet_len = self.alphabet_len();
-        let byte = self.byte_classes.get(byte);
-        self.trans[from.to_usize() * alphabet_len + byte as usize] = to;
+    #[inline(always)]
+    fn is_match(&self, sid: StateID) -> bool {
+        !self.is_dead(sid) && sid <= self.special.max_match_id
     }
 
-    /// Swap the given states in place.
-    fn swap_states(&mut self, id1: S, id2: S) {
-        assert!(!self.premultiplied, "can't swap states in premultiplied DFA");
-
-        let o1 = id1.to_usize() * self.alphabet_len();
-        let o2 = id2.to_usize() * self.alphabet_len();
-        for b in 0..self.alphabet_len() {
-            self.trans.swap(o1 + b, o2 + b);
-        }
-        self.matches.swap(id1.to_usize(), id2.to_usize());
+    #[inline(always)]
+    fn is_start(&self, sid: StateID) -> bool {
+        sid == self.special.start_unanchored_id
+            || sid == self.special.start_anchored_id
     }
 
-    /// This routine shuffles all match states in this DFA to the beginning
-    /// of the DFA such that every non-match state appears after every match
-    /// state. (With one exception: the special fail and dead states remain as
-    /// the first two states.)
-    ///
-    /// The purpose of doing this shuffling is to avoid an extra conditional
-    /// in the search loop, and in particular, detecting whether a state is a
-    /// match or not does not need to access any memory.
-    ///
-    /// This updates `self.max_match` to point to the last matching state as
-    /// well as `self.start` if the starting state was moved.
-    fn shuffle_match_states(&mut self) {
-        assert!(
-            !self.premultiplied,
-            "cannot shuffle match states of premultiplied DFA"
-        );
+    #[inline(always)]
+    fn match_kind(&self) -> MatchKind {
+        self.match_kind
+    }
 
-        if self.state_count <= 1 {
-            return;
-        }
+    #[inline(always)]
+    fn patterns_len(&self) -> usize {
+        self.pattern_lens.len()
+    }
 
-        let mut first_non_match = self.start_id.to_usize();
-        while first_non_match < self.state_count
-            && self.matches[first_non_match].len() > 0
-        {
-            first_non_match += 1;
-        }
+    #[inline(always)]
+    fn pattern_len(&self, pid: PatternID) -> usize {
+        self.pattern_lens[pid].as_usize()
+    }
 
-        let mut swaps: Vec<S> = vec![fail_id(); self.state_count];
-        let mut cur = self.state_count - 1;
-        while cur > first_non_match {
-            if self.matches[cur].len() > 0 {
-                self.swap_states(
-                    S::from_usize(cur),
-                    S::from_usize(first_non_match),
-                );
-                swaps[cur] = S::from_usize(first_non_match);
-                swaps[first_non_match] = S::from_usize(cur);
+    #[inline(always)]
+    fn min_pattern_len(&self) -> usize {
+        self.min_pattern_len
+    }
 
-                first_non_match += 1;
-                while first_non_match < cur
-                    && self.matches[first_non_match].len() > 0
-                {
-                    first_non_match += 1;
+    #[inline(always)]
+    fn max_pattern_len(&self) -> usize {
+        self.max_pattern_len
+    }
+
+    #[inline(always)]
+    fn match_len(&self, sid: StateID) -> usize {
+        debug_assert!(self.is_match(sid));
+        let offset = (sid.as_usize() >> self.stride2) - 2;
+        self.matches[offset].len()
+    }
+
+    #[inline(always)]
+    fn match_pattern(&self, sid: StateID, index: usize) -> PatternID {
+        debug_assert!(self.is_match(sid));
+        let offset = (sid.as_usize() >> self.stride2) - 2;
+        self.matches[offset][index]
+    }
+
+    #[inline(always)]
+    fn memory_usage(&self) -> usize {
+        use core::mem::size_of;
+
+        (self.trans.len() * size_of::<u32>())
+            + (self.matches.len() * size_of::<Vec<PatternID>>())
+            + self.matches_memory_usage
+            + (self.pattern_lens.len() * size_of::<SmallIndex>())
+            + self.prefilter.as_ref().map_or(0, |p| p.memory_usage())
+    }
+
+    #[inline(always)]
+    fn prefilter(&self) -> Option<&Prefilter> {
+        self.prefilter.as_ref()
+    }
+}
+
+impl core::fmt::Debug for DFA {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        use crate::{
+            automaton::{fmt_state_indicator, sparse_transitions},
+            util::debug::DebugByte,
+        };
+
+        writeln!(f, "dfa::DFA(")?;
+        for index in 0..self.state_len {
+            let sid = StateID::new_unchecked(index << self.stride2);
+            // While we do currently include the FAIL state in the transition
+            // table (to simplify construction), it is never actually used. It
+            // poses problems with the code below because it gets treated as
+            // a match state incidentally when it is, of course, not. So we
+            // special case it. The fail state is always the first state after
+            // the dead state.
+            //
+            // If the construction is changed to remove the fail state (it
+            // probably should be), then this special case should be updated.
+            if index == 1 {
+                writeln!(f, "F {:06}:", sid.as_usize())?;
+                continue;
+            }
+            fmt_state_indicator(f, self, sid)?;
+            write!(f, "{:06}: ", sid.as_usize())?;
+
+            let it = (0..self.byte_classes.alphabet_len()).map(|class| {
+                (class.as_u8(), self.trans[sid.as_usize() + class])
+            });
+            for (i, (start, end, next)) in sparse_transitions(it).enumerate() {
+                if i > 0 {
+                    write!(f, ", ")?;
+                }
+                if start == end {
+                    write!(
+                        f,
+                        "{:?} => {:?}",
+                        DebugByte(start),
+                        next.as_usize()
+                    )?;
+                } else {
+                    write!(
+                        f,
+                        "{:?}-{:?} => {:?}",
+                        DebugByte(start),
+                        DebugByte(end),
+                        next.as_usize()
+                    )?;
                 }
             }
-            cur -= 1;
-        }
-        for id in (0..self.state_count).map(S::from_usize) {
-            let alphabet_len = self.alphabet_len();
-            let offset = id.to_usize() * alphabet_len;
-            for next in &mut self.trans[offset..offset + alphabet_len] {
-                if swaps[next.to_usize()] != fail_id() {
-                    *next = swaps[next.to_usize()];
+            write!(f, "\n")?;
+            if self.is_match(sid) {
+                write!(f, " matches: ")?;
+                for i in 0..self.match_len(sid) {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    let pid = self.match_pattern(sid, i);
+                    write!(f, "{}", pid.as_usize())?;
                 }
+                write!(f, "\n")?;
             }
         }
-        if swaps[self.start_id.to_usize()] != fail_id() {
-            self.start_id = swaps[self.start_id.to_usize()];
-        }
-        self.max_match = S::from_usize(first_non_match - 1);
-    }
-
-    fn premultiply(&mut self) -> Result<()> {
-        if self.premultiplied || self.state_count <= 1 {
-            return Ok(());
-        }
-
-        let alpha_len = self.alphabet_len();
-        premultiply_overflow_error(
-            S::from_usize(self.state_count - 1),
-            alpha_len,
-        )?;
-
-        for id in (2..self.state_count).map(S::from_usize) {
-            let offset = id.to_usize() * alpha_len;
-            for next in &mut self.trans[offset..offset + alpha_len] {
-                if *next == dead_id() {
-                    continue;
-                }
-                *next = S::from_usize(next.to_usize() * alpha_len);
-            }
-        }
-        self.premultiplied = true;
-        self.start_id = S::from_usize(self.start_id.to_usize() * alpha_len);
-        self.max_match = S::from_usize(self.max_match.to_usize() * alpha_len);
+        writeln!(f, "match kind: {:?}", self.match_kind)?;
+        writeln!(f, "prefilter: {:?}", self.prefilter.is_some())?;
+        writeln!(f, "state length: {:?}", self.state_len)?;
+        writeln!(f, "pattern length: {:?}", self.patterns_len())?;
+        writeln!(f, "shortest pattern length: {:?}", self.min_pattern_len)?;
+        writeln!(f, "longest pattern length: {:?}", self.max_pattern_len)?;
+        writeln!(f, "alphabet length: {:?}", self.alphabet_len)?;
+        writeln!(f, "stride: {:?}", 1 << self.stride2)?;
+        writeln!(f, "byte classes: {:?}", self.byte_classes)?;
+        writeln!(f, "memory usage: {:?}", self.memory_usage())?;
+        writeln!(f, ")")?;
         Ok(())
     }
-
-    /// Computes the total amount of heap used by this NFA in bytes.
-    fn calculate_size(&mut self) {
-        let mut size = (self.trans.len() * size_of::<S>())
-            + (self.matches.len()
-                * size_of::<Vec<(PatternID, PatternLength)>>());
-        for state_matches in &self.matches {
-            size +=
-                state_matches.len() * size_of::<(PatternID, PatternLength)>();
-        }
-        size += self.prefilter.as_ref().map_or(0, |p| p.as_ref().heap_bytes());
-        self.heap_bytes = size;
-    }
 }
 
-/// A builder for configuring the determinization of an NFA into a DFA.
+/// A builder for configuring an Aho-Corasick DFA.
+///
+/// This builder has a subset of the options available to a
+/// [`AhoCorasickBuilder`](crate::AhoCorasickBuilder). Of the shared options,
+/// their behavior is identical.
 #[derive(Clone, Debug)]
 pub struct Builder {
-    premultiply: bool,
+    noncontiguous: noncontiguous::Builder,
+    start_kind: StartKind,
     byte_classes: bool,
 }
 
+impl Default for Builder {
+    fn default() -> Builder {
+        Builder {
+            noncontiguous: noncontiguous::Builder::new(),
+            start_kind: StartKind::Unanchored,
+            byte_classes: true,
+        }
+    }
+}
+
 impl Builder {
-    /// Create a new builder for a DFA.
+    /// Create a new builder for configuring an Aho-Corasick DFA.
     pub fn new() -> Builder {
-        Builder { premultiply: true, byte_classes: true }
+        Builder::default()
     }
 
-    /// Build a DFA from the given NFA.
+    /// Build an Aho-Corasick DFA from the given iterator of patterns.
     ///
-    /// This returns an error if the state identifiers exceed their
-    /// representation size. This can only happen when state ids are
-    /// premultiplied (which is enabled by default).
-    pub fn build<S: StateID>(&self, nfa: &NFA<S>) -> Result<DFA<S>> {
+    /// A builder may be reused to create more DFAs.
+    pub fn build<I, P>(&self, patterns: I) -> Result<DFA, BuildError>
+    where
+        I: IntoIterator<Item = P>,
+        P: AsRef<[u8]>,
+    {
+        let nnfa = self.noncontiguous.build(patterns)?;
+        self.build_from_noncontiguous(&nnfa)
+    }
+
+    /// Build an Aho-Corasick DFA from the given noncontiguous NFA.
+    ///
+    /// Note that when this method is used, only the `start_kind` and
+    /// `byte_classes` settings on this builder are respected. The other
+    /// settings only apply to the initial construction of the Aho-Corasick
+    /// automaton. Since using this method requires that initial construction
+    /// has already completed, all settings impacting only initial construction
+    /// are no longer relevant.
+    pub fn build_from_noncontiguous(
+        &self,
+        nnfa: &noncontiguous::NFA,
+    ) -> Result<DFA, BuildError> {
+        debug!("building DFA");
         let byte_classes = if self.byte_classes {
-            nfa.byte_classes().clone()
+            nnfa.byte_classes().clone()
         } else {
             ByteClasses::singletons()
         };
-        let alphabet_len = byte_classes.alphabet_len();
-        let trans = vec![fail_id(); alphabet_len * nfa.state_len()];
-        let matches = vec![vec![]; nfa.state_len()];
-        let mut repr = Repr {
-            match_kind: nfa.match_kind().clone(),
-            anchored: nfa.anchored(),
-            premultiplied: false,
-            start_id: nfa.start_state(),
-            max_pattern_len: nfa.max_pattern_len(),
-            pattern_count: nfa.pattern_count(),
-            state_count: nfa.state_len(),
-            max_match: fail_id(),
-            heap_bytes: 0,
-            prefilter: nfa.prefilter_obj().map(|p| p.clone()),
-            byte_classes: byte_classes.clone(),
-            trans,
-            matches,
+        let state_len = match self.start_kind {
+            StartKind::Unanchored | StartKind::Anchored => nnfa.states().len(),
+            StartKind::Both => {
+                // These unwraps are OK because we know that the number of
+                // NFA states is < StateID::LIMIT which is in turn less than
+                // i32::MAX. Thus, there is always room to multiply by 2.
+                // Finally, the number of states is always at least 4 in the
+                // NFA (DEAD, FAIL, START-UNANCHORED, START-ANCHORED), so the
+                // subtraction of 4 is okay.
+                //
+                // Note that we subtract 4 because the "anchored" part of
+                // the DFA duplicates the unanchored part (without failure
+                // transitions), but reuses the DEAD, FAIL and START states.
+                nnfa.states()
+                    .len()
+                    .checked_mul(2)
+                    .unwrap()
+                    .checked_sub(4)
+                    .unwrap()
+            }
         };
-        for id in (0..nfa.state_len()).map(S::from_usize) {
-            repr.matches[id.to_usize()].extend_from_slice(nfa.matches(id));
-
-            let fail = nfa.failure_transition(id);
-            nfa.iter_all_transitions(&byte_classes, id, |b, mut next| {
-                if next == fail_id() {
-                    next = nfa_next_state_memoized(nfa, &repr, id, fail, b);
+        let trans_len =
+            match state_len.checked_shl(byte_classes.stride2().as_u32()) {
+                Some(trans_len) => trans_len,
+                None => {
+                    return Err(BuildError::state_id_overflow(
+                        StateID::MAX.as_u64(),
+                        usize::MAX.as_u64(),
+                    ))
                 }
-                repr.set_next_state(id, b, next);
-            });
+            };
+        StateID::new(trans_len.checked_sub(byte_classes.stride()).unwrap())
+            .map_err(|e| {
+                BuildError::state_id_overflow(
+                    StateID::MAX.as_u64(),
+                    e.attempted(),
+                )
+            })?;
+        let num_match_states = match self.start_kind {
+            StartKind::Unanchored | StartKind::Anchored => {
+                nnfa.special().max_match_id.as_usize().checked_sub(1).unwrap()
+            }
+            StartKind::Both => nnfa
+                .special()
+                .max_match_id
+                .as_usize()
+                .checked_sub(1)
+                .unwrap()
+                .checked_mul(2)
+                .unwrap(),
+        };
+        let mut dfa = DFA {
+            trans: vec![DFA::DEAD; trans_len],
+            matches: vec![vec![]; num_match_states],
+            matches_memory_usage: 0,
+            pattern_lens: nnfa.pattern_lens_raw().to_vec(),
+            prefilter: nnfa.prefilter().map(|p| p.clone()),
+            match_kind: nnfa.match_kind(),
+            state_len,
+            alphabet_len: byte_classes.alphabet_len(),
+            stride2: byte_classes.stride2(),
+            byte_classes,
+            min_pattern_len: nnfa.min_pattern_len(),
+            max_pattern_len: nnfa.max_pattern_len(),
+            // The special state IDs are set later.
+            special: Special::zero(),
+        };
+        match self.start_kind {
+            StartKind::Both => {
+                self.finish_build_both_starts(nnfa, &mut dfa);
+            }
+            StartKind::Unanchored => {
+                self.finish_build_one_start(Anchored::No, nnfa, &mut dfa);
+            }
+            StartKind::Anchored => {
+                self.finish_build_one_start(Anchored::Yes, nnfa, &mut dfa)
+            }
         }
-        repr.shuffle_match_states();
-        repr.calculate_size();
-        if self.premultiply {
-            repr.premultiply()?;
-            if byte_classes.is_singleton() {
-                Ok(DFA::Premultiplied(Premultiplied(repr)))
-            } else {
-                Ok(DFA::PremultipliedByteClass(PremultipliedByteClass(repr)))
+        debug!(
+            "DFA built, <states: {:?}, size: {:?}, \
+             alphabet len: {:?}, stride: {:?}>",
+            dfa.state_len,
+            dfa.memory_usage(),
+            dfa.byte_classes.alphabet_len(),
+            dfa.byte_classes.stride(),
+        );
+        // The vectors can grow ~twice as big during construction because a
+        // Vec amortizes growth. But here, let's shrink things back down to
+        // what we actually need since we're never going to add more to it.
+        dfa.trans.shrink_to_fit();
+        dfa.pattern_lens.shrink_to_fit();
+        dfa.matches.shrink_to_fit();
+        // TODO: We might also want to shrink each Vec inside of `dfa.matches`,
+        // or even better, convert it to one contiguous allocation. But I think
+        // I went with nested allocs for good reason (can't remember), so this
+        // may be tricky to do. I decided not to shrink them here because it
+        // might require a fair bit of work to do. It's unclear whether it's
+        // worth it.
+        Ok(dfa)
+    }
+
+    /// Finishes building a DFA for either unanchored or anchored searches,
+    /// but NOT both.
+    fn finish_build_one_start(
+        &self,
+        anchored: Anchored,
+        nnfa: &noncontiguous::NFA,
+        dfa: &mut DFA,
+    ) {
+        // This function always succeeds because we check above that all of the
+        // states in the NFA can be mapped to DFA state IDs.
+        let stride2 = dfa.stride2;
+        let old2new = |oldsid: StateID| {
+            StateID::new_unchecked(oldsid.as_usize() << stride2)
+        };
+        for (oldsid, state) in nnfa.states().iter().with_state_ids() {
+            let newsid = old2new(oldsid);
+            if state.is_match() {
+                dfa.set_matches(newsid, nnfa.iter_matches(oldsid));
             }
+            sparse_iter(
+                nnfa,
+                oldsid,
+                &dfa.byte_classes,
+                |byte, class, mut oldnextsid| {
+                    if oldnextsid == noncontiguous::NFA::FAIL {
+                        if anchored.is_anchored() {
+                            oldnextsid = noncontiguous::NFA::DEAD;
+                        } else if state.fail() == noncontiguous::NFA::DEAD {
+                            // This is a special case that avoids following
+                            // DEAD transitions in a non-contiguous NFA.
+                            // Following these transitions is pretty slow
+                            // because the non-contiguous NFA will always use
+                            // a sparse representation for it (because the
+                            // DEAD state is usually treated as a sentinel).
+                            // The *vast* majority of failure states are DEAD
+                            // states, so this winds up being pretty slow if
+                            // we go through the non-contiguous NFA state
+                            // transition logic. Instead, just do it ourselves.
+                            oldnextsid = noncontiguous::NFA::DEAD;
+                        } else {
+                            oldnextsid = nnfa.next_state(
+                                Anchored::No,
+                                state.fail(),
+                                byte,
+                            );
+                        }
+                    }
+                    dfa.trans[newsid.as_usize() + usize::from(class)] =
+                        old2new(oldnextsid);
+                },
+            );
+        }
+        // Now that we've remapped all the IDs in our states, all that's left
+        // is remapping the special state IDs.
+        let old = nnfa.special();
+        let new = &mut dfa.special;
+        new.max_special_id = old2new(old.max_special_id);
+        new.max_match_id = old2new(old.max_match_id);
+        if anchored.is_anchored() {
+            new.start_unanchored_id = DFA::DEAD;
+            new.start_anchored_id = old2new(old.start_anchored_id);
         } else {
-            if byte_classes.is_singleton() {
-                Ok(DFA::Standard(Standard(repr)))
-            } else {
-                Ok(DFA::ByteClass(ByteClass(repr)))
-            }
+            new.start_unanchored_id = old2new(old.start_unanchored_id);
+            new.start_anchored_id = DFA::DEAD;
         }
     }
 
-    /// Whether to use byte classes or in the DFA.
+    /// Finishes building a DFA that supports BOTH unanchored and anchored
+    /// searches. It works by inter-leaving unanchored states with anchored
+    /// states in the same transition table. This way, we avoid needing to
+    /// re-shuffle states afterward to ensure that our states still look like
+    /// DEAD, MATCH, ..., START-UNANCHORED, START-ANCHORED, NON-MATCH, ...
+    ///
+    /// Honestly this is pretty inscrutable... Simplifications are most
+    /// welcome.
+    fn finish_build_both_starts(
+        &self,
+        nnfa: &noncontiguous::NFA,
+        dfa: &mut DFA,
+    ) {
+        let stride2 = dfa.stride2;
+        let stride = 1 << stride2;
+        let mut remap_unanchored = vec![DFA::DEAD; nnfa.states().len()];
+        let mut remap_anchored = vec![DFA::DEAD; nnfa.states().len()];
+        let mut is_anchored = vec![false; dfa.state_len];
+        let mut newsid = DFA::DEAD;
+        let next_dfa_id =
+            |sid: StateID| StateID::new_unchecked(sid.as_usize() + stride);
+        for (oldsid, state) in nnfa.states().iter().with_state_ids() {
+            if oldsid == noncontiguous::NFA::DEAD
+                || oldsid == noncontiguous::NFA::FAIL
+            {
+                remap_unanchored[oldsid] = newsid;
+                remap_anchored[oldsid] = newsid;
+                newsid = next_dfa_id(newsid);
+            } else if oldsid == nnfa.special().start_unanchored_id
+                || oldsid == nnfa.special().start_anchored_id
+            {
+                if oldsid == nnfa.special().start_unanchored_id {
+                    remap_unanchored[oldsid] = newsid;
+                    remap_anchored[oldsid] = DFA::DEAD;
+                } else {
+                    remap_unanchored[oldsid] = DFA::DEAD;
+                    remap_anchored[oldsid] = newsid;
+                    is_anchored[newsid.as_usize() >> stride2] = true;
+                }
+                if state.is_match() {
+                    dfa.set_matches(newsid, nnfa.iter_matches(oldsid));
+                }
+                sparse_iter(
+                    nnfa,
+                    oldsid,
+                    &dfa.byte_classes,
+                    |_, class, oldnextsid| {
+                        let class = usize::from(class);
+                        if oldnextsid == noncontiguous::NFA::FAIL {
+                            dfa.trans[newsid.as_usize() + class] = DFA::DEAD;
+                        } else {
+                            dfa.trans[newsid.as_usize() + class] = oldnextsid;
+                        }
+                    },
+                );
+                newsid = next_dfa_id(newsid);
+            } else {
+                let unewsid = newsid;
+                newsid = next_dfa_id(newsid);
+                let anewsid = newsid;
+                newsid = next_dfa_id(newsid);
+
+                remap_unanchored[oldsid] = unewsid;
+                remap_anchored[oldsid] = anewsid;
+                is_anchored[anewsid.as_usize() >> stride2] = true;
+                if state.is_match() {
+                    dfa.set_matches(unewsid, nnfa.iter_matches(oldsid));
+                    dfa.set_matches(anewsid, nnfa.iter_matches(oldsid));
+                }
+                sparse_iter(
+                    nnfa,
+                    oldsid,
+                    &dfa.byte_classes,
+                    |byte, class, oldnextsid| {
+                        let class = usize::from(class);
+                        if oldnextsid == noncontiguous::NFA::FAIL {
+                            let oldnextsid =
+                                if state.fail() == noncontiguous::NFA::DEAD {
+                                    noncontiguous::NFA::DEAD
+                                } else {
+                                    nnfa.next_state(
+                                        Anchored::No,
+                                        state.fail(),
+                                        byte,
+                                    )
+                                };
+                            dfa.trans[unewsid.as_usize() + class] = oldnextsid;
+                        } else {
+                            dfa.trans[unewsid.as_usize() + class] = oldnextsid;
+                            dfa.trans[anewsid.as_usize() + class] = oldnextsid;
+                        }
+                    },
+                );
+            }
+        }
+        for i in 0..dfa.state_len {
+            let sid = i << stride2;
+            if is_anchored[i] {
+                for next in dfa.trans[sid..][..stride].iter_mut() {
+                    *next = remap_anchored[*next];
+                }
+            } else {
+                for next in dfa.trans[sid..][..stride].iter_mut() {
+                    *next = remap_unanchored[*next];
+                }
+            }
+        }
+        // Now that we've remapped all the IDs in our states, all that's left
+        // is remapping the special state IDs.
+        let old = nnfa.special();
+        let new = &mut dfa.special;
+        new.max_special_id = remap_anchored[old.max_special_id];
+        new.max_match_id = remap_anchored[old.max_match_id];
+        new.start_unanchored_id = remap_unanchored[old.start_unanchored_id];
+        new.start_anchored_id = remap_anchored[old.start_anchored_id];
+    }
+
+    /// Set the desired match semantics.
+    ///
+    /// This only applies when using [`Builder::build`] and not
+    /// [`Builder::build_from_noncontiguous`].
+    ///
+    /// See
+    /// [`AhoCorasickBuilder::match_kind`](crate::AhoCorasickBuilder::match_kind)
+    /// for more documentation and examples.
+    pub fn match_kind(&mut self, kind: MatchKind) -> &mut Builder {
+        self.noncontiguous.match_kind(kind);
+        self
+    }
+
+    /// Enable ASCII-aware case insensitive matching.
+    ///
+    /// This only applies when using [`Builder::build`] and not
+    /// [`Builder::build_from_noncontiguous`].
+    ///
+    /// See
+    /// [`AhoCorasickBuilder::ascii_case_insensitive`](crate::AhoCorasickBuilder::ascii_case_insensitive)
+    /// for more documentation and examples.
+    pub fn ascii_case_insensitive(&mut self, yes: bool) -> &mut Builder {
+        self.noncontiguous.ascii_case_insensitive(yes);
+        self
+    }
+
+    /// Enable heuristic prefilter optimizations.
+    ///
+    /// This only applies when using [`Builder::build`] and not
+    /// [`Builder::build_from_noncontiguous`].
+    ///
+    /// See
+    /// [`AhoCorasickBuilder::prefilter`](crate::AhoCorasickBuilder::prefilter)
+    /// for more documentation and examples.
+    pub fn prefilter(&mut self, yes: bool) -> &mut Builder {
+        self.noncontiguous.prefilter(yes);
+        self
+    }
+
+    /// Sets the starting state configuration for the automaton.
+    ///
+    /// See
+    /// [`AhoCorasickBuilder::start_kind`](crate::AhoCorasickBuilder::start_kind)
+    /// for more documentation and examples.
+    pub fn start_kind(&mut self, kind: StartKind) -> &mut Builder {
+        self.start_kind = kind;
+        self
+    }
+
+    /// A debug setting for whether to attempt to shrink the size of the
+    /// automaton's alphabet or not.
+    ///
+    /// This should never be enabled unless you're debugging an automaton.
+    /// Namely, disabling byte classes makes transitions easier to reason
+    /// about, since they use the actual bytes instead of equivalence classes.
+    /// Disabling this confers no performance benefit at search time.
+    ///
+    /// See
+    /// [`AhoCorasickBuilder::byte_classes`](crate::AhoCorasickBuilder::byte_classes)
+    /// for more documentation and examples.
     pub fn byte_classes(&mut self, yes: bool) -> &mut Builder {
         self.byte_classes = yes;
         self
     }
-
-    /// Whether to premultiply state identifier in the DFA.
-    pub fn premultiply(&mut self, yes: bool) -> &mut Builder {
-        self.premultiply = yes;
-        self
-    }
 }
 
-/// This returns the next NFA transition (including resolving failure
-/// transitions), except once it sees a state id less than the id of the DFA
-/// state that is currently being populated, then we no longer need to follow
-/// failure transitions and can instead query the pre-computed state id from
-/// the DFA itself.
+/// Iterate over all possible equivalence class transitions in this state.
+/// The closure is called for all transitions with a distinct equivalence
+/// class, even those not explicitly represented in this sparse state. For
+/// any implicitly defined transitions, the given closure is called with
+/// the fail state ID.
 ///
-/// In general, this should only be called when a failure transition is seen.
-fn nfa_next_state_memoized<S: StateID>(
-    nfa: &NFA<S>,
-    dfa: &Repr<S>,
-    populating: S,
-    mut current: S,
-    input: u8,
-) -> S {
-    loop {
-        if current < populating {
-            return dfa.next_state(current, input);
+/// The closure is guaranteed to be called precisely
+/// `byte_classes.alphabet_len()` times, once for every possible class in
+/// ascending order.
+fn sparse_iter<F: FnMut(u8, u8, StateID)>(
+    nnfa: &noncontiguous::NFA,
+    oldsid: StateID,
+    classes: &ByteClasses,
+    mut f: F,
+) {
+    let mut prev_class = None;
+    let mut byte = 0usize;
+    for t in nnfa.iter_trans(oldsid) {
+        while byte < usize::from(t.byte()) {
+            let rep = byte.as_u8();
+            let class = classes.get(rep);
+            byte += 1;
+            if prev_class != Some(class) {
+                f(rep, class, noncontiguous::NFA::FAIL);
+                prev_class = Some(class);
+            }
         }
-        let next = nfa.next_state(current, input);
-        if next != fail_id() {
-            return next;
+        let rep = t.byte();
+        let class = classes.get(rep);
+        byte += 1;
+        if prev_class != Some(class) {
+            f(rep, class, t.next());
+            prev_class = Some(class);
         }
-        current = nfa.failure_transition(current);
+    }
+    for b in byte..=255 {
+        let rep = b.as_u8();
+        let class = classes.get(rep);
+        if prev_class != Some(class) {
+            f(rep, class, noncontiguous::NFA::FAIL);
+            prev_class = Some(class);
+        }
     }
 }

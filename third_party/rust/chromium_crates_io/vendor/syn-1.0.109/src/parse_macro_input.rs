@@ -4,7 +4,7 @@
 /// Refer to the [`parse` module] documentation for more details about parsing
 /// in Syn.
 ///
-/// [`parse` module]: crate::rustdoc_workaround::parse_module
+/// [`parse` module]: mod@crate::parse
 ///
 /// <br>
 ///
@@ -51,7 +51,7 @@
 /// This macro can also be used with the [`Parser` trait] for types that have
 /// multiple ways that they can be parsed.
 ///
-/// [`Parser` trait]: crate::rustdoc_workaround::parse_module::Parser
+/// [`Parser` trait]: crate::parse::Parser
 ///
 /// ```
 /// # extern crate proc_macro;

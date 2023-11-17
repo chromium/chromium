@@ -3,7 +3,7 @@ memchr
 This library provides heavily optimized routines for string search primitives.
 
 [![Build status](https://github.com/BurntSushi/memchr/workflows/ci/badge.svg)](https://github.com/BurntSushi/memchr/actions)
-[![](https://meritbadge.herokuapp.com/memchr)](https://crates.io/crates/memchr)
+[![Crates.io](https://img.shields.io/crates/v/memchr.svg)](https://crates.io/crates/memchr)
 
 Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org/).
 
@@ -35,30 +35,19 @@ memchr links to the standard library by default, but you can disable the
 memchr = { version = "2", default-features = false }
 ```
 
-On x86 platforms, when the `std` feature is disabled, the SSE2 accelerated
-implementations will be used. When `std` is enabled, AVX accelerated
+On `x86_64` platforms, when the `std` feature is disabled, the SSE2 accelerated
+implementations will be used. When `std` is enabled, AVX2 accelerated
 implementations will be used if the CPU is determined to support it at runtime.
 
-### Using libc
+SIMD accelerated routines are also available on the `wasm32` and `aarch64`
+targets. The `std` feature is not required to use them.
 
-`memchr` is a routine that is part of libc, although this crate does not use
-libc by default. Instead, it uses its own routines, which are either vectorized
-or generic fallback routines. In general, these should be competitive with
-what's in libc, although this has not been tested for all architectures. If
-using `memchr` from libc is desirable and a vectorized routine is not otherwise
-available in this crate, then enabling the `libc` feature will use libc's
-version of `memchr`.
-
-The rest of the functions in this crate, e.g., `memchr2` or `memrchr3` and the
-substring search routines, will always use the implementations in this crate.
-One exception to this is `memrchr`, which is an extension in `libc` found on
-Linux. On Linux, `memrchr` is used in precisely the same scenario as `memchr`,
-as described above.
-
+When a SIMD version is not available, then this crate falls back to
+[SWAR](https://en.wikipedia.org/wiki/SWAR) techniques.
 
 ### Minimum Rust version policy
 
-This crate's minimum supported `rustc` version is `1.41.1`.
+This crate's minimum supported `rustc` version is `1.61.0`.
 
 The current policy is that the minimum Rust version required to use this crate
 can be increased in minor version updates. For example, if `crate 1.0` requires

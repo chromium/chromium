@@ -52,7 +52,7 @@ pub fn my_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 If parsing with [Syn], you'll use [`parse_macro_input!`] instead to propagate
 parse errors correctly back to the compiler when parsing fails.
 
-[`parse_macro_input!`]: https://docs.rs/syn/1.0/syn/macro.parse_macro_input.html
+[`parse_macro_input!`]: https://docs.rs/syn/2.0/syn/macro.parse_macro_input.html
 
 ## Unstable features
 

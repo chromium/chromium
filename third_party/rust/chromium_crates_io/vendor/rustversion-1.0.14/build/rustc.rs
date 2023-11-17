@@ -1,6 +1,12 @@
 use self::Channel::*;
 use std::fmt::{self, Debug};
 
+pub enum ParseResult {
+    Success(Version),
+    OopsClippy,
+    Unrecognized,
+}
+
 #[cfg_attr(test, derive(PartialEq))]
 pub struct Version {
     pub minor: u16,
@@ -23,14 +29,20 @@ pub struct Date {
     pub day: u8,
 }
 
-pub fn parse(string: &str) -> Option<Version> {
+pub fn parse(string: &str) -> ParseResult {
     let last_line = string.lines().last().unwrap_or(string);
     let mut words = last_line.trim().split(' ');
 
-    if words.next()? != "rustc" {
-        return None;
+    match words.next() {
+        Some("rustc") => {}
+        Some(word) if word.starts_with("clippy") => return ParseResult::OopsClippy,
+        Some(_) | None => return ParseResult::Unrecognized,
     }
 
+    parse_words(&mut words).map_or(ParseResult::Unrecognized, ParseResult::Success)
+}
+
+fn parse_words(words: &mut dyn Iterator<Item = &str>) -> Option<Version> {
     let mut version_channel = words.next()?.split('-');
     let version = version_channel.next()?;
     let channel = version_channel.next();

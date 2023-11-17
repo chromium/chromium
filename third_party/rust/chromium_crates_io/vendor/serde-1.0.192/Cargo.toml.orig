@@ -1,6 +1,6 @@
 [package]
 name = "serde"
-version = "1.0.188" # remember to update html_root_url and serde_derive dependency
+version = "1.0.192"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 categories = ["encoding", "no-std", "no-std::no-alloc"]
@@ -27,9 +27,9 @@ doc-scrape-examples = false
 features = ["derive", "rc"]
 
 [package.metadata.docs.rs]
-features = ["derive"]
+features = ["derive", "rc", "unstable"]
 targets = ["x86_64-unknown-linux-gnu"]
-rustdoc-args = ["--generate-link-to-definition"]
+rustdoc-args = ["--cfg", "doc_cfg", "--generate-link-to-definition"]
 
 # This cfg cannot be enabled, but it still forces Cargo to keep serde_derive's
 # version in lockstep with serde's, even if someone depends on the two crates
@@ -37,7 +37,7 @@ rustdoc-args = ["--generate-link-to-definition"]
 # is compatible with exactly one serde release because the generated code
 # involves nonpublic APIs which are not bound by semver.
 [target.'cfg(any())'.dependencies]
-serde_derive = { version = "=1.0.188", path = "../serde_derive" }
+serde_derive = { version = "=1.0.192", path = "../serde_derive" }
 
 
 ### FEATURES #################################################################

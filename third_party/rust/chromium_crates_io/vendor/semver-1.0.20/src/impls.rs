@@ -38,13 +38,13 @@ impl Deref for BuildMetadata {
 
 impl PartialOrd for Prerelease {
     fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
-        Some(Ord::cmp(self, rhs))
+        Some(self.cmp(rhs))
     }
 }
 
 impl PartialOrd for BuildMetadata {
     fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
-        Some(Ord::cmp(self, rhs))
+        Some(self.cmp(rhs))
     }
 }
 

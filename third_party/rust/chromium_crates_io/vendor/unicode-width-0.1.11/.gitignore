@@ -1,3 +1,5 @@
 target
 Cargo.lock
 scripts/tmp
+scripts/*.txt
+scripts/*.rs

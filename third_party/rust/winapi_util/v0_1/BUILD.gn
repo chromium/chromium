@@ -17,13 +17,14 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/console.rs",
     "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/file.rs",
     "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/sysinfo.rs",
     "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/win.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "0.1.5"
+  edition = "2021"
+  cargo_pkg_version = "0.1.6"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "winapi-util"
   cargo_pkg_description =

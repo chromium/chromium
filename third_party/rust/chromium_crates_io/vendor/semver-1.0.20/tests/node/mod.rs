@@ -4,7 +4,7 @@ use semver::Version;
 use std::fmt::{self, Display};
 use std::process::Command;
 
-#[derive(Eq, PartialEq, Hash, Debug)]
+#[derive(Default, Eq, PartialEq, Hash, Debug)]
 pub(super) struct VersionReq(semver::VersionReq);
 
 impl VersionReq {

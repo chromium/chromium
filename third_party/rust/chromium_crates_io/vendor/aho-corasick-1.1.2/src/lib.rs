@@ -10,32 +10,24 @@ off. Other features include simple ASCII case insensitive matching, finding
 overlapping matches, replacements, searching streams and even searching and
 replacing text in streams.
 
-Finally, unlike all other (known) Aho-Corasick implementations, this one
-supports enabling
-[leftmost-first](enum.MatchKind.html#variant.LeftmostFirst)
-or
-[leftmost-longest](enum.MatchKind.html#variant.LeftmostFirst)
-match semantics, using a (seemingly) novel alternative construction algorithm.
-For more details on what match semantics means, see the
-[`MatchKind`](enum.MatchKind.html)
-type.
+Finally, unlike most other Aho-Corasick implementations, this one
+supports enabling [leftmost-first](MatchKind::LeftmostFirst) or
+[leftmost-longest](MatchKind::LeftmostLongest) match semantics, using a
+(seemingly) novel alternative construction algorithm. For more details on what
+match semantics means, see the [`MatchKind`] type.
 
 # Overview
 
 This section gives a brief overview of the primary types in this crate:
 
-* [`AhoCorasick`](struct.AhoCorasick.html) is the primary type and represents
-  an Aho-Corasick automaton. This is the type you use to execute searches.
-* [`AhoCorasickBuilder`](struct.AhoCorasickBuilder.html) can be used to build
-  an Aho-Corasick automaton, and supports configuring a number of options.
-* [`Match`](struct.Match.html) represents a single match reported by an
-  Aho-Corasick automaton. Each match has two pieces of information: the pattern
-  that matched and the start and end byte offsets corresponding to the position
-  in the haystack at which it matched.
-
-Additionally, the [`packed`](packed/index.html) sub-module contains a lower
-level API for using fast vectorized routines for finding a small number of
-patterns in a haystack.
+* [`AhoCorasick`] is the primary type and represents an Aho-Corasick automaton.
+This is the type you use to execute searches.
+* [`AhoCorasickBuilder`] can be used to build an Aho-Corasick automaton, and
+supports configuring a number of options.
+* [`Match`] represents a single match reported by an Aho-Corasick automaton.
+Each match has two pieces of information: the pattern that matched and the
+start and end byte offsets corresponding to the position in the haystack at
+which it matched.
 
 # Example: basic searching
 
@@ -44,20 +36,20 @@ simultaneously. Each match includes the pattern that matched along with the
 byte offsets of the match.
 
 ```
-use aho_corasick::AhoCorasick;
+use aho_corasick::{AhoCorasick, PatternID};
 
 let patterns = &["apple", "maple", "Snapple"];
 let haystack = "Nobody likes maple in their apple flavored Snapple.";
 
-let ac = AhoCorasick::new(patterns);
+let ac = AhoCorasick::new(patterns).unwrap();
 let mut matches = vec![];
 for mat in ac.find_iter(haystack) {
     matches.push((mat.pattern(), mat.start(), mat.end()));
 }
 assert_eq!(matches, vec![
-    (1, 13, 18),
-    (0, 28, 33),
-    (2, 43, 50),
+    (PatternID::must(1), 13, 18),
+    (PatternID::must(0), 28, 33),
+    (PatternID::must(2), 43, 50),
 ]);
 ```
 
@@ -67,22 +59,23 @@ This is like the previous example, but matches `Snapple` case insensitively
 using `AhoCorasickBuilder`:
 
 ```
-use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::{AhoCorasick, PatternID};
 
 let patterns = &["apple", "maple", "snapple"];
 let haystack = "Nobody likes maple in their apple flavored Snapple.";
 
-let ac = AhoCorasickBuilder::new()
+let ac = AhoCorasick::builder()
     .ascii_case_insensitive(true)
-    .build(patterns);
+    .build(patterns)
+    .unwrap();
 let mut matches = vec![];
 for mat in ac.find_iter(haystack) {
     matches.push((mat.pattern(), mat.start(), mat.end()));
 }
 assert_eq!(matches, vec![
-    (1, 13, 18),
-    (0, 28, 33),
-    (2, 43, 50),
+    (PatternID::must(1), 13, 18),
+    (PatternID::must(0), 28, 33),
+    (PatternID::must(2), 43, 50),
 ]);
 ```
 
@@ -92,9 +85,10 @@ This example shows how to execute a search and replace on a stream without
 loading the entire stream into memory first.
 
 ```
+# #[cfg(feature = "std")] {
 use aho_corasick::AhoCorasick;
 
-# fn example() -> Result<(), ::std::io::Error> {
+# fn example() -> Result<(), std::io::Error> {
 let patterns = &["fox", "brown", "quick"];
 let replace_with = &["sloth", "grey", "slow"];
 
@@ -103,10 +97,11 @@ let replace_with = &["sloth", "grey", "slow"];
 let rdr = "The quick brown fox.";
 let mut wtr = vec![];
 
-let ac = AhoCorasick::new(patterns);
-ac.stream_replace_all(rdr.as_bytes(), &mut wtr, replace_with)?;
+let ac = AhoCorasick::new(patterns).unwrap();
+ac.try_stream_replace_all(rdr.as_bytes(), &mut wtr, replace_with)?;
 assert_eq!(b"The slow grey sloth.".to_vec(), wtr);
 # Ok(()) }; example().unwrap()
+# }
 ```
 
 # Example: finding the leftmost first match
@@ -134,7 +129,7 @@ use aho_corasick::AhoCorasick;
 let patterns = &["Samwise", "Sam"];
 let haystack = "Samwise";
 
-let ac = AhoCorasick::new(patterns);
+let ac = AhoCorasick::new(patterns).unwrap();
 let mat = ac.find(haystack).expect("should have a match");
 assert_eq!("Sam", &haystack[mat.start()..mat.end()]);
 ```
@@ -143,23 +138,22 @@ And now here's the leftmost-first version, which matches how a Perl-like
 regex will work:
 
 ```
-use aho_corasick::{AhoCorasickBuilder, MatchKind};
+use aho_corasick::{AhoCorasick, MatchKind};
 
 let patterns = &["Samwise", "Sam"];
 let haystack = "Samwise";
 
-let ac = AhoCorasickBuilder::new()
+let ac = AhoCorasick::builder()
     .match_kind(MatchKind::LeftmostFirst)
-    .build(patterns);
+    .build(patterns)
+    .unwrap();
 let mat = ac.find(haystack).expect("should have a match");
 assert_eq!("Samwise", &haystack[mat.start()..mat.end()]);
 ```
 
 In addition to leftmost-first semantics, this library also supports
 leftmost-longest semantics, which match the POSIX behavior of a regular
-expression alternation. See
-[`MatchKind`](enum.MatchKind.html)
-for more details.
+expression alternation. See [`MatchKind`] for more details.
 
 # Prefilters
 
@@ -175,123 +169,158 @@ number of patterns gets too big, prefilters are no longer used.
 While a prefilter is generally good to have on by default since it works
 well in the common case, it can lead to less predictable or even sub-optimal
 performance in some cases. For that reason, prefilters can be explicitly
-disabled via
-[`AhoCorasickBuilder::prefilter`](struct.AhoCorasickBuilder.html#method.prefilter).
+disabled via [`AhoCorasickBuilder::prefilter`].
+
+# Lower level APIs
+
+This crate also provides several sub-modules that collectively expose many of
+the implementation details of the main [`AhoCorasick`] type. Most users of this
+library can completely ignore the submodules and their contents, but if you
+needed finer grained control, some parts of them may be useful to you. Here is
+a brief overview of each and why you might want to use them:
+
+* The [`packed`] sub-module contains a lower level API for using fast
+vectorized routines for finding a small number of patterns in a haystack.
+You might want to use this API when you want to completely side-step using
+Aho-Corasick automata. Otherwise, the fast vectorized routines are used
+automatically as prefilters for `AhoCorasick` searches whenever possible.
+* The [`automaton`] sub-module provides a lower level finite state
+machine interface that the various Aho-Corasick implementations in
+this crate implement. This sub-module's main contribution is the
+[`Automaton`](automaton::Automaton) trait, which permits manually walking the
+state transitions of an Aho-Corasick automaton.
+* The [`dfa`] and [`nfa`] sub-modules provide DFA and NFA implementations of
+the aforementioned `Automaton` trait. The main reason one might want to use
+these sub-modules is to get access to a type that implements the `Automaton`
+trait. (The top-level `AhoCorasick` type does not implement the `Automaton`
+trait.)
+
+As mentioned above, if you aren't sure whether you need these sub-modules,
+you should be able to safely ignore them and just focus on the [`AhoCorasick`]
+type.
+
+# Crate features
+
+This crate exposes a few features for controlling dependency usage and whether
+this crate can be used without the standard library.
+
+* **std** -
+  Enables support for the standard library. This feature is enabled by
+  default. When disabled, only `core` and `alloc` are used. At an API
+  level, enabling `std` enables `std::error::Error` trait impls for the
+  various error types, and higher level stream search routines such as
+  [`AhoCorasick::try_stream_find_iter`]. But the `std` feature is also required
+  to enable vectorized prefilters. Prefilters can greatly accelerate searches,
+  but generally only apply when the number of patterns is small (less than
+  ~100).
+* **perf-literal** -
+  Enables support for literal prefilters that use vectorized routines from
+  external crates. This feature is enabled by default. If you're only using
+  Aho-Corasick for large numbers of patterns or otherwise can abide lower
+  throughput when searching with a small number of patterns, then it is
+  reasonable to disable this feature.
+* **logging** -
+  Enables a dependency on the `log` crate and emits messages to aide in
+  diagnostics. This feature is disabled by default.
 */
 
+#![no_std]
 #![deny(missing_docs)]
+#![deny(rustdoc::broken_intra_doc_links)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
-// We can never be truly no_std, but we could be alloc-only some day, so
-// require the std feature for now.
-#[cfg(not(feature = "std"))]
-compile_error!("`std` feature is currently required to build this crate");
+extern crate alloc;
+#[cfg(any(test, feature = "std"))]
+extern crate std;
 
-// #[cfg(doctest)]
-// #[macro_use]
-// extern crate doc_comment;
+#[cfg(doctest)]
+doc_comment::doctest!("../README.md");
 
-// #[cfg(doctest)]
-// doctest!("../README.md");
-
-pub use crate::ahocorasick::{
-    AhoCorasick, AhoCorasickBuilder, FindIter, FindOverlappingIter, MatchKind,
-    StreamFindIter,
+#[cfg(feature = "std")]
+pub use crate::ahocorasick::StreamFindIter;
+pub use crate::{
+    ahocorasick::{
+        AhoCorasick, AhoCorasickBuilder, AhoCorasickKind, FindIter,
+        FindOverlappingIter,
+    },
+    util::{
+        error::{BuildError, MatchError, MatchErrorKind},
+        primitives::{PatternID, PatternIDError},
+        search::{Anchored, Input, Match, MatchKind, Span, StartKind},
+    },
 };
-pub use crate::error::{Error, ErrorKind};
-pub use crate::state_id::StateID;
+
+#[macro_use]
+mod macros;
 
 mod ahocorasick;
-mod automaton;
-mod buffer;
-mod byte_frequencies;
-mod classes;
-mod dfa;
-mod error;
-mod nfa;
+pub mod automaton;
+pub mod dfa;
+pub mod nfa;
 pub mod packed;
-mod prefilter;
-mod state_id;
 #[cfg(test)]
 mod tests;
+// I wrote out the module for implementing fst::Automaton only to later realize
+// that this would make fst a public dependency and fst is not at 1.0 yet. I
+// decided to just keep the code in tree, but build it only during tests.
+//
+// TODO: I think I've changed my mind again. I'm considering pushing it out
+// into either a separate crate or into 'fst' directly as an optional feature.
+// #[cfg(test)]
+// #[allow(dead_code)]
+// mod transducer;
+pub(crate) mod util;
 
-/// A representation of a match reported by an Aho-Corasick automaton.
-///
-/// A match has two essential pieces of information: the identifier of the
-/// pattern that matched, along with the start and end offsets of the match
-/// in the haystack.
-///
-/// # Examples
-///
-/// Basic usage:
-///
-/// ```
-/// use aho_corasick::AhoCorasick;
-///
-/// let ac = AhoCorasick::new(&[
-///     "foo", "bar", "baz",
-/// ]);
-/// let mat = ac.find("xxx bar xxx").expect("should have a match");
-/// assert_eq!(1, mat.pattern());
-/// assert_eq!(4, mat.start());
-/// assert_eq!(7, mat.end());
-/// ```
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub struct Match {
-    /// The pattern id.
-    pattern: usize,
-    /// The length of this match, such that the starting position of the match
-    /// is `end - len`.
-    ///
-    /// We use length here because, other than the pattern id, the only
-    /// information about each pattern that the automaton stores is its length.
-    /// So using the length here is just a bit more natural. But it isn't
-    /// technically required.
-    len: usize,
-    /// The end offset of the match, exclusive.
-    end: usize,
-}
+#[cfg(test)]
+mod testoibits {
+    use std::panic::{RefUnwindSafe, UnwindSafe};
 
-impl Match {
-    /// Returns the identifier of the pattern that matched.
-    ///
-    /// The identifier of a pattern is derived from the position in which it
-    /// was originally inserted into the corresponding automaton. The first
-    /// pattern has identifier `0`, and each subsequent pattern is `1`, `2`
-    /// and so on.
-    #[inline]
-    pub fn pattern(&self) -> usize {
-        self.pattern
+    use super::*;
+
+    fn assert_all<T: Send + Sync + UnwindSafe + RefUnwindSafe>() {}
+
+    #[test]
+    fn oibits_main() {
+        assert_all::<AhoCorasick>();
+        assert_all::<AhoCorasickBuilder>();
+        assert_all::<AhoCorasickKind>();
+        assert_all::<FindIter>();
+        assert_all::<FindOverlappingIter>();
+
+        assert_all::<BuildError>();
+        assert_all::<MatchError>();
+        assert_all::<MatchErrorKind>();
+
+        assert_all::<Anchored>();
+        assert_all::<Input>();
+        assert_all::<Match>();
+        assert_all::<MatchKind>();
+        assert_all::<Span>();
+        assert_all::<StartKind>();
     }
 
-    /// The starting position of the match.
-    #[inline]
-    pub fn start(&self) -> usize {
-        self.end - self.len
+    #[test]
+    fn oibits_automaton() {
+        use crate::{automaton, dfa::DFA};
+
+        assert_all::<automaton::FindIter<DFA>>();
+        assert_all::<automaton::FindOverlappingIter<DFA>>();
+        #[cfg(feature = "std")]
+        assert_all::<automaton::StreamFindIter<DFA, std::io::Stdin>>();
+        assert_all::<automaton::OverlappingState>();
+
+        assert_all::<automaton::Prefilter>();
+        assert_all::<automaton::Candidate>();
     }
 
-    /// The ending position of the match.
-    #[inline]
-    pub fn end(&self) -> usize {
-        self.end
-    }
+    #[test]
+    fn oibits_packed() {
+        use crate::packed;
 
-    /// Returns true if and only if this match is empty. That is, when
-    /// `start() == end()`.
-    ///
-    /// An empty match can only be returned when the empty string was among
-    /// the patterns used to build the Aho-Corasick automaton.
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.len == 0
-    }
-
-    #[inline]
-    fn increment(&self, by: usize) -> Match {
-        Match { pattern: self.pattern, len: self.len, end: self.end + by }
-    }
-
-    #[inline]
-    fn from_span(id: usize, start: usize, end: usize) -> Match {
-        Match { pattern: id, len: end - start, end }
+        assert_all::<packed::Config>();
+        assert_all::<packed::Builder>();
+        assert_all::<packed::Searcher>();
+        assert_all::<packed::FindIter>();
+        assert_all::<packed::MatchKind>();
     }
 }

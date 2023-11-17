@@ -16,7 +16,7 @@ fn test_exhaustive() {
         let counter = counter.clone();
         let finished = finished.clone();
         workers.push(thread::spawn(move || loop {
-            let batch = counter.fetch_add(1, Ordering::SeqCst) as u32;
+            let batch = counter.fetch_add(1, Ordering::Relaxed) as u32;
             if batch > u32::max_value() / BATCH_SIZE {
                 return;
             }
@@ -41,7 +41,7 @@ fn test_exhaustive() {
             }
 
             let increment = (max - min + 1) as usize;
-            let update = finished.fetch_add(increment, Ordering::SeqCst);
+            let update = finished.fetch_add(increment, Ordering::Relaxed);
             println!("{}", update + increment);
         }));
     }

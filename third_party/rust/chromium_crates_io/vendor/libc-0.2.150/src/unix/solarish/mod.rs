@@ -1825,6 +1825,8 @@ pub const SO_SNDTIMEO: ::c_int = 0x1005;
 pub const SO_RCVTIMEO: ::c_int = 0x1006;
 pub const SO_ERROR: ::c_int = 0x1007;
 pub const SO_TYPE: ::c_int = 0x1008;
+pub const SO_PROTOTYPE: ::c_int = 0x1009;
+pub const SO_DOMAIN: ::c_int = 0x100c;
 pub const SO_TIMESTAMP: ::c_int = 0x1013;
 
 pub const SCM_RIGHTS: ::c_int = 0x1010;

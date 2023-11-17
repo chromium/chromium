@@ -7,7 +7,10 @@ use crate::*;
 use crates::{CrateFiles, Epoch, ThirdPartySource, VendoredCrate};
 use manifest::*;
 
-use crate::util::{check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed};
+use crate::util::{
+    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed, init_handlebars,
+    run_cargo_metadata,
+};
 
 use std::collections::{HashMap, HashSet};
 use std::fs;
@@ -16,7 +19,6 @@ use std::path::{Path, PathBuf};
 use std::process;
 
 use anyhow::{bail, ensure, format_err, Context, Result};
-use handlebars::handlebars_helper;
 
 pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.get_one::<String>("for-std").is_some() {
@@ -227,20 +229,6 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     Ok(())
 }
 
-fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
-    let mut handlebars = handlebars::Handlebars::new();
-
-    // Don't escape output strings; the default is to escape for HTML output. Do
-    // not auto-escape for GN either, so that non-string GN may also be passed.
-    handlebars.register_escape_fn(handlebars::no_escape);
-    handlebars.register_template_file("template", template_path).context("loading gn template")?;
-
-    // Install helper to escape inputs pasted in GN `".."` strings.
-    handlebars_helper!(gn_escape: |x: String| gn::escape_for_handlebars(&x));
-    handlebars.register_helper("gn_escape", Box::new(gn_escape));
-    Ok(handlebars)
-}
-
 fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
@@ -436,31 +424,6 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     Ok(())
 }
 
-/// Run cargo metadata command, optionally with extra flags and environment.
-fn run_cargo_metadata(
-    workspace_path: PathBuf,
-    args: &clap::ArgMatches,
-    extra_options: Vec<String>,
-    extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
-) -> anyhow::Result<cargo_metadata::Metadata> {
-    let mut command = cargo_metadata::MetadataCommand::new();
-    command.current_dir(workspace_path);
-    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
-        command.cargo_path(cargo_path);
-    }
-    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
-        command.env("RUSTC", rustc_path);
-    }
-
-    command.other_options(extra_options);
-    for (k, v) in extra_env.into_iter() {
-        command.env(k, v);
-    }
-
-    log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
-    command.exec().context("running cargo metadata")
-}
-
 fn generate_for_third_party_ng(
     args: &clap::ArgMatches,
     paths: &paths::ChromiumPaths,
@@ -527,44 +490,6 @@ fn generate_for_third_party_ng(
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });
 
-    for dep in &dependencies {
-        // TODO(danakj): Invert this once we're vendoring deps and removed the patches
-        // from Cargo.toml. The error message is already inverted.
-        if !dep.is_local {
-            Err(format_err!(
-                "local dependency {}-{} found for 3p library, {}",
-                dep.package_name,
-                dep.version,
-                "all dependencies should be non-local (everything goes through crates.io)",
-            ))?;
-        }
-    }
-
-    let third_party_deps = dependencies.iter().filter(|dep| !dep.is_local).collect::<Vec<_>>();
-
-    // Check that all resolved third-party deps are available. First, collect
-    // the set of vendored crates.
-    let vendored_crates: HashSet<VendoredCrate> = crates::collect_std_vendored_crates(
-        &paths.third_party_cargo_root.join(paths.rust_src_vendor_subdir),
-    )
-    .unwrap()
-    .into_iter()
-    .collect();
-
-    // Verify that each required dependency is part of the set of vendored
-    // crates.
-    for dep in third_party_deps.iter() {
-        vendored_crates
-            .get(&VendoredCrate { name: dep.package_name.clone(), version: dep.version.clone() })
-            .ok_or_else(|| {
-                format_err!(
-                    "Resolved dependency does not match any vendored crate: {} {}",
-                    dep.package_name,
-                    dep.version
-                )
-            })?;
-    }
-
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
         .map(|p| {
@@ -620,9 +545,12 @@ fn generate_for_third_party_ng(
         map
     };
 
+    for (dir, _) in &all_build_files {
+        create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
+    }
+
     if args.get_flag("dump-template-input") {
         for (dir, build_file) in &all_build_files {
-            create_dirs_if_needed(dir).unwrap();
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))
                     .context("opening dump file")?,
@@ -634,7 +562,6 @@ fn generate_for_third_party_ng(
     }
 
     for (dir, build_file) in &all_build_files {
-        create_dirs_if_needed(dir).unwrap();
         let gn_str = handlebars.render("template", &build_file)?;
         write_build_file(&dir.join("BUILD.gn"), gn_str).unwrap();
     }
@@ -649,10 +576,7 @@ fn build_file_path(crate_id: &VendoredCrate, paths: &paths::ChromiumPaths) -> Pa
     path
 }
 
-fn write_build_file<BuildFile: std::fmt::Display>(
-    path: &Path,
-    build_file: BuildFile,
-) -> Result<()> {
+fn write_build_file(path: &Path, content: String) -> Result<()> {
     let cmd_name = "gn format";
     let output_handle = fs::File::create(path)
         .with_context(|| format!("Could not create GN output file {}", path.to_string_lossy()))?;
@@ -668,7 +592,7 @@ fn write_build_file<BuildFile: std::fmt::Display>(
         cmd_name,
     )?;
 
-    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file)
+    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", content)
         .context("Failed to write to GN format process")?;
     check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
 }

@@ -124,3 +124,40 @@ impl From<DeltaFormat> for i64 {
         value as u16 as _
     }
 }
+
+impl ClassDefFormat1<'_> {
+    /// Get the class for this glyph id
+    pub fn get(&self, gid: GlyphId) -> u16 {
+        if gid < self.start_glyph_id() {
+            return 0;
+        }
+        let idx = gid.to_u16() - self.start_glyph_id().to_u16();
+        self.class_value_array()
+            .get(idx as usize)
+            .map(|x| x.get())
+            .unwrap_or(0)
+    }
+}
+
+impl ClassDefFormat2<'_> {
+    /// Get the class for this glyph id
+    pub fn get(&self, gid: GlyphId) -> u16 {
+        self.class_range_records()
+            .iter()
+            .find_map(|record| {
+                (record.start_glyph_id() >= gid && record.end_glyph_id() <= gid)
+                    .then_some(record.class())
+            })
+            .unwrap_or(0)
+    }
+}
+
+impl ClassDef<'_> {
+    /// Get the class for this glyph id
+    pub fn get(&self, gid: GlyphId) -> u16 {
+        match self {
+            ClassDef::Format1(table) => table.get(gid),
+            ClassDef::Format2(table) => table.get(gid),
+        }
+    }
+}

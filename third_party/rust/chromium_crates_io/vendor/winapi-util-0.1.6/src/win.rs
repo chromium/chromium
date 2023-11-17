@@ -1,10 +1,10 @@
-use std::fs::File;
-use std::io;
-use std::os::windows::io::{
-    AsRawHandle, FromRawHandle, IntoRawHandle, RawHandle,
+use std::{
+    fs::File,
+    io,
+    os::windows::io::{AsRawHandle, FromRawHandle, IntoRawHandle, RawHandle},
+    path::Path,
+    process,
 };
-use std::path::Path;
-use std::process;
 
 /// A handle represents an owned and valid Windows handle to a file-like
 /// object.

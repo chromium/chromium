@@ -18,6 +18,16 @@
 // is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 
+#![allow(
+    clippy::approx_constant,
+    clippy::cast_lossless,
+    clippy::float_cmp,
+    clippy::int_plus_one,
+    clippy::non_ascii_literal,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+
 #[macro_use]
 mod macros;
 

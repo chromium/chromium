@@ -177,6 +177,7 @@ impl<'a> std::fmt::Debug for Gvar<'a> {
 }
 
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct GvarFlags {
     bits: u16,
 }

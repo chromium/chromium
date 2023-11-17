@@ -1,15 +1,15 @@
 termcolor
 =========
 A simple cross platform library for writing colored text to a terminal. This
-library writes colored text either using standard ANSI escape sequences or
-by interacting with the Windows console. Several convenient abstractions
-are provided for use in single-threaded or multi-threaded command line
+library writes colored text either using standard ANSI escape sequences or by
+interacting with the Windows console. Several convenient abstractions are
+provided for use in single-threaded or multi-threaded command line
 applications.
 
 [![Build status](https://github.com/BurntSushi/termcolor/workflows/ci/badge.svg)](https://github.com/BurntSushi/termcolor/actions)
-[![](https://img.shields.io/crates/v/termcolor.svg)](https://crates.io/crates/termcolor)
+[![crates.io](https://img.shields.io/crates/v/termcolor.svg)](https://crates.io/crates/termcolor)
 
-Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
+Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org/).
 
 ### Documentation
 
@@ -17,12 +17,7 @@ Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
 
 ### Usage
 
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-termcolor = "1.1"
-```
+Run `cargo add termcolor` to add this dependency to your `Cargo.toml` file.
 
 ### Organization
 
@@ -47,8 +42,8 @@ analogous type for the Windows console is not provided since it cannot exist.
 ### Example: using `StandardStream`
 
 The `StandardStream` type in this crate works similarly to `std::io::Stdout`,
-except it is augmented with methods for coloring by the `WriteColor` trait.
-For example, to write some green text:
+except it is augmented with methods for coloring by the `WriteColor` trait. For
+example, to write some green text:
 
 ```rust
 use std::io::{self, Write};
@@ -85,7 +80,7 @@ fn write_green() -> io::Result<()> {
 ### Automatic color selection
 
 When building a writer with termcolor, the caller must provide a
-[`ColorChoice`](https://docs.rs/termcolor/1.0.5/termcolor/enum.ColorChoice.html)
+[`ColorChoice`](https://docs.rs/termcolor/1.*/termcolor/enum.ColorChoice.html)
 selection. When the color choice is `Auto`, termcolor will attempt to determine
 whether colors should be enabled by inspecting the environment. Currently,
 termcolor will inspect the `TERM` and `NO_COLOR` environment variables:
@@ -98,8 +93,8 @@ termcolor will inspect the `TERM` and `NO_COLOR` environment variables:
 This decision procedure may change over time.
 
 Currently, `termcolor` does not attempt to detect whether a tty is present or
-not. To achieve that, please use the [`atty`](https://crates.io/crates/atty)
-crate.
+not. To achieve that, please use
+[`std::io::IsTerminal`](https://doc.rust-lang.org/std/io/trait.IsTerminal.html).
 
 ### Minimum Rust version policy
 

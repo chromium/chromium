@@ -12,4 +12,5 @@ pub mod gn;
 pub mod manifest;
 pub mod paths;
 pub mod platforms;
+pub mod readme;
 pub mod util;

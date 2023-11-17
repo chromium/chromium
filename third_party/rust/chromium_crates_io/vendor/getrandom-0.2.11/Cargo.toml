@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "getrandom"
-version = "0.2.9"
+version = "0.2.11"
 authors = ["The Rand Project Developers"]
 exclude = [".*"]
 description = "A small cross-platform library for retrieving random data from system source"
@@ -24,6 +24,16 @@ categories = [
 ]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-random/getrandom"
+
+[package.metadata.cross.target.x86_64-unknown-netbsd]
+pre-build = [
+    "mkdir -p /tmp/netbsd",
+    "curl https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/amd64/binary/sets/base.tar.xz -O",
+    "tar -C /tmp/netbsd -xJf base.tar.xz",
+    "cp /tmp/netbsd/usr/lib/libexecinfo.so /usr/local/x86_64-unknown-netbsd/lib",
+    "rm base.tar.xz",
+    "rm -rf /tmp/netbsd",
+]
 
 [package.metadata.docs.rs]
 features = [
@@ -80,5 +90,5 @@ version = "0.11"
 default-features = false
 
 [target."cfg(unix)".dependencies.libc]
-version = "0.2.139"
+version = "0.2.149"
 default-features = false

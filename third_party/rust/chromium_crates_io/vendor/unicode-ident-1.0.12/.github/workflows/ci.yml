@@ -22,12 +22,12 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - id: ucd-generate
         run: echo "version=$(grep 'ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+' tests/tables/tables.rs --only-matching)" >> $GITHUB_OUTPUT
       - run: cargo install ucd-generate
-      - run: curl -LO https://www.unicode.org/Public/zipped/latest/UCD.zip
+      - run: curl https://www.unicode.org/Public/zipped/latest/UCD.zip --location --remote-name --silent --show-error --fail --retry 2
       - run: unzip UCD.zip -d UCD
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/tables/tables.rs
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
@@ -44,10 +44,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable]
+        rust: [nightly, beta, stable, 1.70.0]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -64,9 +64,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.31.0
-      - run: cargo check
+      - run: cargo check --manifest-path tests/crate/Cargo.toml
 
   clippy:
     name: Clippy
@@ -74,7 +74,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@clippy
       - run: cargo clippy --tests --benches --workspace -- -Dclippy::all -Dclippy::pedantic
 
@@ -84,6 +84,6 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1

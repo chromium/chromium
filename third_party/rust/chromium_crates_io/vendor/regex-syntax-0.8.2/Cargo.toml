@@ -10,19 +10,39 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
+rust-version = "1.65"
 name = "regex-syntax"
-version = "0.6.27"
-authors = ["The Rust Project Developers"]
+version = "0.8.2"
+authors = [
+    "The Rust Project Developers",
+    "Andrew Gallant <jamslam@gmail.com>",
+]
 description = "A regular expression parser."
-homepage = "https://github.com/rust-lang/regex"
 documentation = "https://docs.rs/regex-syntax"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/rust-lang/regex"
+repository = "https://github.com/rust-lang/regex/tree/master/regex-syntax"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = [
+    "--cfg",
+    "docsrs",
+]
+
+[dependencies.arbitrary]
+version = "1.3.0"
+features = ["derive"]
+optional = true
 
 [features]
-default = ["unicode"]
+arbitrary = ["dep:arbitrary"]
+default = [
+    "std",
+    "unicode",
+]
+std = []
 unicode = [
     "unicode-age",
     "unicode-bool",

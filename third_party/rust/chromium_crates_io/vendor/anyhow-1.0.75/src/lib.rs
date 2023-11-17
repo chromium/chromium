@@ -210,8 +210,8 @@
 //! will require an explicit `.map_err(Error::msg)` when working with a
 //! non-Anyhow error type inside a function that returns Anyhow's error type.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.70")]
-#![cfg_attr(backtrace, feature(error_generic_member_access, provide_any))]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.75")]
+#![cfg_attr(backtrace, feature(error_generic_member_access))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(dead_code, unused_imports, unused_mut)]
@@ -266,6 +266,7 @@ trait StdError: Debug + Display {
     }
 }
 
+#[doc(no_inline)]
 pub use anyhow as format_err;
 
 /// The `Error` type, a wrapper around a dynamic error type.
@@ -641,16 +642,22 @@ pub mod __private {
     use alloc::fmt;
     use core::fmt::Arguments;
 
+    #[doc(hidden)]
     pub use crate::ensure::{BothDebug, NotBothDebug};
+    #[doc(hidden)]
     pub use alloc::format;
+    #[doc(hidden)]
     pub use core::result::Result::Err;
+    #[doc(hidden)]
     pub use core::{concat, format_args, stringify};
 
     #[doc(hidden)]
     pub mod kind {
+        #[doc(hidden)]
         pub use crate::kind::{AdhocKind, TraitKind};
 
         #[cfg(feature = "std")]
+        #[doc(hidden)]
         pub use crate::kind::BoxedKind;
     }
 

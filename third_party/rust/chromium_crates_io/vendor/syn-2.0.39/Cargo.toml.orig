@@ -1,6 +1,6 @@
 [package]
 name = "syn"
-version = "2.0.29" # don't forget to update html_root_url and syn.json
+version = "2.0.39" # don't forget to update html_root_url and syn.json
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "parser-implementations"]
 description = "Parser for Rust source code"
@@ -35,7 +35,7 @@ proc-macro = ["proc-macro2/proc-macro", "quote/proc-macro"]
 test = ["syn-test-suite/all-features"]
 
 [dependencies]
-proc-macro2 = { version = "1.0.62", default-features = false }
+proc-macro2 = { version = "1.0.67", default-features = false }
 quote = { version = "1.0.28", optional = true, default-features = false }
 unicode-ident = "1"
 
@@ -85,6 +85,5 @@ members = [
     "examples/lazy-static/lazy-static",
     "examples/trace-var/example",
     "examples/trace-var/trace-var",
-    "tests/crates",
     "tests/features",
 ]

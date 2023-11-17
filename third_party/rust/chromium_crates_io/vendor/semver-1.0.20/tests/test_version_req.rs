@@ -1,3 +1,10 @@
+#![allow(
+    clippy::missing_panics_doc,
+    clippy::shadow_unrelated,
+    clippy::toplevel_ref_arg,
+    clippy::wildcard_imports
+)]
+
 mod node;
 mod util;
 
@@ -27,11 +34,18 @@ fn assert_match_none(req: &VersionReq, versions: &[&str]) {
 }
 
 #[test]
-fn test_default() {
+fn test_basic() {
     let ref r = req("1.0.0");
     assert_to_string(r, "^1.0.0");
     assert_match_all(r, &["1.0.0", "1.1.0", "1.0.1"]);
     assert_match_none(r, &["0.9.9", "0.10.0", "0.1.0", "1.0.0-pre", "1.0.1-pre"]);
+}
+
+#[test]
+#[cfg(not(no_const_vec_new))]
+fn test_default() {
+    let ref r = VersionReq::default();
+    assert_eq!(r, &VersionReq::STAR);
 }
 
 #[test]
@@ -154,6 +168,9 @@ pub fn test_multiple() {
     // https://github.com/steveklabnik/semver/issues/56
     let err = req_err("1.2.3 - 2.3.4");
     assert_to_string(err, "expected comma after patch version number, found '-'");
+
+    let err = req_err(">1, >2, >3, >4, >5, >6, >7, >8, >9, >10, >11, >12, >13, >14, >15, >16, >17, >18, >19, >20, >21, >22, >23, >24, >25, >26, >27, >28, >29, >30, >31, >32, >33");
+    assert_to_string(err, "excessive number of version comparators");
 }
 
 #[test]
@@ -318,11 +335,11 @@ pub fn test_pre() {
 }
 
 #[test]
-pub fn test_parse_errors() {
+pub fn test_parse() {
     let err = req_err("\0");
     assert_to_string(
         err,
-        "unexpected character '\\u{0}' while parsing major version number",
+        "unexpected character '\\0' while parsing major version number",
     );
 
     let err = req_err(">= >= 0.0.2");
@@ -351,6 +368,45 @@ pub fn test_parse_errors() {
         err,
         "unexpected end of input while parsing major version number",
     );
+}
+
+#[test]
+fn test_comparator_parse() {
+    let parsed = comparator("1.2.3-alpha");
+    assert_to_string(parsed, "^1.2.3-alpha");
+
+    let parsed = comparator("2.X");
+    assert_to_string(parsed, "2.*");
+
+    let parsed = comparator("2");
+    assert_to_string(parsed, "^2");
+
+    let parsed = comparator("2.x.x");
+    assert_to_string(parsed, "2.*");
+
+    let err = comparator_err("1.2.3-01");
+    assert_to_string(err, "invalid leading zero in pre-release identifier");
+
+    let err = comparator_err("1.2.3+4.");
+    assert_to_string(err, "empty identifier segment in build metadata");
+
+    let err = comparator_err(">");
+    assert_to_string(
+        err,
+        "unexpected end of input while parsing major version number",
+    );
+
+    let err = comparator_err("1.");
+    assert_to_string(
+        err,
+        "unexpected end of input while parsing minor version number",
+    );
+
+    let err = comparator_err("1.*.");
+    assert_to_string(err, "unexpected character after wildcard in version req");
+
+    let err = comparator_err("1.2.3+4ÿ");
+    assert_to_string(err, "unexpected character 'ÿ' after build metadata");
 }
 
 #[test]
@@ -389,7 +445,7 @@ fn test_eq_hash() {
 }
 
 #[test]
-fn test_parsing_pre_and_build_metadata_see_issue_217() {
+fn test_leading_digit_in_pre_and_build() {
     for op in &["=", ">", ">=", "<", "<=", "~", "^"] {
         // digit then alpha
         req(&format!("{} 1.2.3-1a", op));
@@ -405,4 +461,25 @@ fn test_parsing_pre_and_build_metadata_see_issue_217() {
         req(&format!("{} 1.2.3-1a+1a", op));
         req(&format!("{} 1.2.3-1a-1a+1a-1a-1a", op));
     }
+}
+
+#[test]
+fn test_wildcard_and_another() {
+    let err = req_err("*, 0.20.0-any");
+    assert_to_string(
+        err,
+        "wildcard req (*) must be the only comparator in the version req",
+    );
+
+    let err = req_err("0.20.0-any, *");
+    assert_to_string(
+        err,
+        "wildcard req (*) must be the only comparator in the version req",
+    );
+
+    let err = req_err("0.20.0-any, *, 1.0");
+    assert_to_string(
+        err,
+        "wildcard req (*) must be the only comparator in the version req",
+    );
 }

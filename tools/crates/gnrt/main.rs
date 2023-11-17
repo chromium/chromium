@@ -8,6 +8,7 @@
 mod download;
 mod gen;
 mod util;
+mod vendor;
 
 use anyhow::{anyhow, Context, Result};
 use clap::{arg, Arg};
@@ -68,6 +69,35 @@ fn main() -> Result<()> {
                 ),
         )
         .subcommand(
+            clap::Command::new("vendor")
+                .about("Download all third-party crate dependencies in //third_party/rust")
+                .arg(
+                    Arg::new("cargo-path")
+                        .long("cargo-path")
+                        .value_name("CARGO_PATH")
+                        .value_parser(clap::value_parser!(String))
+                        .num_args(1)
+                        .help("Path to the cargo executable"),
+                )
+                .arg(
+                    Arg::new("rustc-path")
+                        .long("rustc-path")
+                        .value_name("RUSTC_PATH")
+                        .value_parser(clap::value_parser!(String))
+                        .num_args(1)
+                        .help("Path to the rustc executable"),
+                )
+                .arg(
+                    Arg::new("dump-template-input")
+                        .long("dump-template-input")
+                        .action(clap::ArgAction::SetTrue)
+                        .help(
+                            "Exit before writing BUILD.gn files, instead serialize the template \
+                        engine input and write it to a file named `gnrt-template-input.json`.",
+                        ),
+                ),
+        )
+        .subcommand(
             clap::Command::new("download")
                 .about("Download the crate with the given name and version to third_party/rust.")
                 .arg(arg!(<name> "Name of the crate to download"))
@@ -96,6 +126,7 @@ fn main() -> Result<()> {
 
     match args.subcommand() {
         Some(("gen", args)) => gen::generate(args, &paths),
+        Some(("vendor", args)) => vendor::vendor(args, &paths),
         Some(("download", args)) => {
             let security = download::SecurityCritical::from(
                 args.get_one::<String>("security-critical").unwrap() == "yes",

@@ -58,6 +58,18 @@ jobs:
       - run: cargo check
       - run: cargo check --no-default-features
 
+  minimal:
+    name: Minimal versions
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo generate-lockfile -Z minimal-versions
+      - run: cargo check --locked --features backtrace
+
   windows:
     name: Windows
     needs: pre_ci
@@ -92,6 +104,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@miri
+      - run: cargo miri setup
       - run: cargo miri test
         env:
           MIRIFLAGS: -Zmiri-strict-provenance

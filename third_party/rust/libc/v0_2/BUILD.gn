@@ -33,6 +33,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/solid/arm.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/solid/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/switch.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/teeos/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/aix/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/aix/powerpc64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/align.rs",
@@ -73,8 +74,10 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/aarch64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/arm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/mips.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/powerpc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/riscv64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/sparc64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/x86.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/bsd/netbsdlike/netbsd/x86_64.rs",
@@ -93,9 +96,11 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/haiku/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/haiku/native.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/haiku/x86_64.rs",
-    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hermit/aarch64.rs",
-    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hermit/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hermit/x86_64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hurd/align.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hurd/b32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hurd/b64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hurd/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/hurd/no_align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/android/b32/arm.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/android/b32/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/android/b32/x86/align.rs",
@@ -110,6 +115,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/android/b64/x86_64/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/android/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/emscripten/align.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/emscripten/lfs64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/emscripten/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/emscripten/no_align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/align.rs",
@@ -121,6 +127,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/arm/align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/arm/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/csky/align.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/csky/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/m68k/align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/m68k/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/mips/align.rs",
@@ -134,6 +142,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/x86/align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b32/x86/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b64/aarch64/align.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b64/aarch64/fallback.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b64/aarch64/ilp32.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b64/aarch64/int128.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/gnu/b64/aarch64/lp64.rs",
@@ -179,6 +188,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/musl/b64/s390x.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/musl/b64/x86_64/align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/musl/b64/x86_64/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/musl/lfs64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/musl/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/no_align.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-0.2.150/src/unix/linux_like/linux/non_exhaustive.rs",
@@ -241,7 +251,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "0.2.144"
+  cargo_pkg_version = "0.2.150"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."

@@ -21,7 +21,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.1.2"
+  cargo_pkg_version = "1.4.0"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "termcolor"
   cargo_pkg_description =

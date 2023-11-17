@@ -1339,7 +1339,7 @@ pub const CMGROUP_MAX: usize = 16;
 
 pub const EUI64_LEN: usize = 8;
 
-// https://github.com/freebsd/freebsd/blob/master/sys/net/bpf.h
+// https://github.com/freebsd/freebsd/blob/HEAD/sys/net/bpf.h
 pub const BPF_ALIGNMENT: usize = SIZEOF_LONG;
 
 // Values for rtprio struct (prio field) and syscall (function argument)
@@ -1571,6 +1571,7 @@ extern "C" {
         mode: ::mode_t,
         dev: dev_t,
     ) -> ::c_int;
+    pub fn malloc_usable_size(ptr: *const ::c_void) -> ::size_t;
     pub fn mincore(addr: *const ::c_void, len: ::size_t, vec: *mut ::c_char) -> ::c_int;
     pub fn newlocale(mask: ::c_int, locale: *const ::c_char, base: ::locale_t) -> ::locale_t;
     pub fn nl_langinfo_l(item: ::nl_item, locale: ::locale_t) -> *mut ::c_char;
@@ -1589,6 +1590,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn pthread_attr_getstack(
         attr: *const ::pthread_attr_t,
         stackaddr: *mut *mut ::c_void,
@@ -1644,6 +1646,12 @@ extern "C" {
     pub fn pthread_barrier_wait(barrier: *mut pthread_barrier_t) -> ::c_int;
     pub fn pthread_get_name_np(tid: ::pthread_t, name: *mut ::c_char, len: ::size_t);
     pub fn pthread_set_name_np(tid: ::pthread_t, name: *const ::c_char);
+    pub fn pthread_getname_np(
+        thread: ::pthread_t,
+        buffer: *mut ::c_char,
+        length: ::size_t,
+    ) -> ::c_int;
+    pub fn pthread_setname_np(thread: ::pthread_t, name: *const ::c_char) -> ::c_int;
     pub fn pthread_setschedparam(
         native: ::pthread_t,
         policy: ::c_int,
@@ -1770,6 +1778,17 @@ extern "C" {
         len: ::c_int,
     ) -> ::c_int;
     pub fn reboot(howto: ::c_int) -> ::c_int;
+
+    pub fn exect(
+        path: *const ::c_char,
+        argv: *const *mut ::c_char,
+        envp: *const *mut ::c_char,
+    ) -> ::c_int;
+    pub fn execvP(
+        file: *const ::c_char,
+        search_path: *const ::c_char,
+        argv: *const *mut ::c_char,
+    ) -> ::c_int;
 }
 
 #[link(name = "rt")]

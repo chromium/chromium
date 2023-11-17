@@ -514,7 +514,7 @@ impl ArgMatches {
         MatchesError::unwrap(id, self.try_contains_id(id))
     }
 
-    /// Iterate over [`Arg`][crate::Arg] and [`ArgGroup`][crate::ArgGroup] [`Id`][crate::Id]s via [`ArgMatches::ids`].
+    /// Iterate over [`Arg`][crate::Arg] and [`ArgGroup`][crate::ArgGroup] [`Id`]s via [`ArgMatches::ids`].
     ///
     /// # Examples
     ///
@@ -1325,7 +1325,7 @@ pub(crate) struct SubCommand {
     pub(crate) matches: ArgMatches,
 }
 
-/// Iterate over [`Arg`][crate::Arg] and [`ArgGroup`][crate::ArgGroup] [`Id`][crate::Id]s via [`ArgMatches::ids`].
+/// Iterate over [`Arg`][crate::Arg] and [`ArgGroup`][crate::ArgGroup] [`Id`]s via [`ArgMatches::ids`].
 ///
 /// # Examples
 ///

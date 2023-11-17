@@ -27,7 +27,7 @@ jobs:
         rust: [1.56.0, stable, beta]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rust-src
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo generate-lockfile -Z minimal-versions
       - run: cargo check --locked
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
           target: wasm32-unknown-unknown
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rust-src
@@ -118,10 +118,24 @@ jobs:
         working-directory: fuzz
       - uses: dtolnay/install@honggfuzz
       - run: sudo apt-get install binutils-dev libunwind-dev
-        continue-on-error: true # https://github.com/dtolnay/proc-macro2/issues/387
       - run: cargo hfuzz build --no-default-features --features honggfuzz
         working-directory: fuzz
-        continue-on-error: true # https://github.com/dtolnay/proc-macro2/issues/387
+
+  doc:
+    name: Documentation
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTDOCFLAGS: -Dwarnings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src
+      - uses: dtolnay/install@cargo-docs-rs
+      - run: cargo docs-rs
 
   clippy:
     name: Clippy
@@ -129,7 +143,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rust-src
@@ -143,7 +157,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@miri
       - run: cargo miri setup
       - run: cargo miri test
@@ -156,7 +170,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1
       - run: cargo outdated --manifest-path fuzz/Cargo.toml --exit-code 1

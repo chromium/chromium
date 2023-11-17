@@ -184,22 +184,6 @@ s! {
         __pad1: ::c_ulong,
         __pad2: ::c_ulong,
     }
-
-    pub struct flock {
-        pub l_type: ::c_short,
-        pub l_whence: ::c_short,
-        pub l_start: ::off_t,
-        pub l_len: ::off_t,
-        pub l_pid: ::pid_t,
-    }
-
-    pub struct flock64 {
-        pub l_type: ::c_short,
-        pub l_whence: ::c_short,
-        pub l_start: ::off64_t,
-        pub l_len: ::off64_t,
-        pub l_pid: ::pid_t,
-    }
 }
 
 //pub const RLIM_INFINITY: ::rlim_t = !0;
@@ -339,9 +323,11 @@ pub const POLLWRBAND: ::c_short = 512;
 pub const O_ASYNC: ::c_int = 8192;
 pub const O_NDELAY: ::c_int = 2048;
 pub const EFD_NONBLOCK: ::c_int = 2048;
-pub const F_GETLK: ::c_int = 5;
-pub const F_GETOWN: ::c_int = 9;
 pub const F_SETOWN: ::c_int = 8;
+pub const F_GETOWN: ::c_int = 9;
+pub const F_GETLK: ::c_int = 12;
+pub const F_SETLK: ::c_int = 13;
+pub const F_SETLKW: ::c_int = 14;
 pub const SFD_NONBLOCK: ::c_int = 2048;
 pub const TCSANOW: ::c_int = 0;
 pub const TCSADRAIN: ::c_int = 1;
@@ -369,6 +355,7 @@ pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 pub const O_DIRECT: ::c_int = 16384;
 pub const O_DIRECTORY: ::c_int = 65536;
+pub const O_LARGEFILE: ::c_int = 0o0100000;
 pub const O_NOFOLLOW: ::c_int = 131072;
 pub const MAP_HUGETLB: ::c_int = 262144;
 pub const MAP_LOCKED: ::c_int = 8192;
@@ -392,6 +379,7 @@ pub const FIONCLEX: ::c_int = 21584;
 pub const FIONBIO: ::c_int = 21537;
 pub const MCL_CURRENT: ::c_int = 1;
 pub const MCL_FUTURE: ::c_int = 2;
+pub const MCL_ONFAULT: ::c_int = 4;
 pub const SIGSTKSZ: ::size_t = 8192;
 pub const MINSIGSTKSZ: ::size_t = 2048;
 pub const CBAUD: ::tcflag_t = 4111;

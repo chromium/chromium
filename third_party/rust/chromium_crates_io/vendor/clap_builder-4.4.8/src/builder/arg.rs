@@ -875,7 +875,7 @@ impl Arg {
 impl Arg {
     /// Specify how to react to an argument when parsing it.
     ///
-    /// [ArgAction][crate::ArgAction] controls things like
+    /// [ArgAction] controls things like
     /// - Overwriting previous values with new ones
     /// - Appending new values to all previous ones
     /// - Counting how many times a flag occurs
@@ -1260,7 +1260,7 @@ impl Arg {
 
     /// Provide the shell a hint about how to complete this argument.
     ///
-    /// See [`ValueHint`][crate::ValueHint] for more information.
+    /// See [`ValueHint`] for more information.
     ///
     /// **NOTE:** implicitly sets [`Arg::action(ArgAction::Set)`].
     ///
@@ -1617,7 +1617,7 @@ impl Arg {
     /// ```
     ///
     /// Will result in everything after `--` to be considered one raw argument. This behavior
-    /// may not be exactly what you are expecting and using [`crate::Command::trailing_var_arg`]
+    /// may not be exactly what you are expecting and using [`Arg::trailing_var_arg`]
     /// may be more appropriate.
     ///
     /// **NOTE:** Implicitly sets [`Arg::action(ArgAction::Set)`] [`Arg::num_args(1..)`],

@@ -21,8 +21,8 @@ use rustc_ast::ast::{
     WhereClause,
 };
 use rustc_ast::mut_visit::{self, MutVisitor};
-use rustc_error_messages::{DiagnosticMessage, FluentArgs, LazyFallbackBundle};
-use rustc_errors::{Diagnostic, PResult};
+use rustc_error_messages::{DiagnosticMessage, LazyFallbackBundle};
+use rustc_errors::{translation, Diagnostic, PResult};
 use rustc_session::parse::ParseSess;
 use rustc_span::source_map::FilePathMapping;
 use rustc_span::FileName;
@@ -168,10 +168,10 @@ fn translate_message(diagnostic: &Diagnostic) -> String {
     }
 
     let message = &diagnostic.message[0].0;
-    let args = diagnostic.args().iter().cloned().collect::<FluentArgs>();
+    let args = translation::to_fluent_args(diagnostic.args());
 
     let (identifier, attr) = match message {
-        DiagnosticMessage::Str(msg) => return msg.clone(),
+        DiagnosticMessage::Str(msg) | DiagnosticMessage::Eager(msg) => return msg.clone(),
         DiagnosticMessage::FluentIdentifier(identifier, attr) => (identifier, attr),
     };
 

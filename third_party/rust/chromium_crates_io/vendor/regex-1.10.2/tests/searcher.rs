@@ -12,20 +12,18 @@ macro_rules! searcher {
         #[test]
         #[allow(unused_imports)]
         fn $name() {
-            searcher_expr! {{
-                use std::str::pattern::{Pattern, Searcher};
-                use std::str::pattern::SearchStep::{Match, Reject, Done};
-                let re = regex!($re);
-                let mut se = re.into_searcher($haystack);
-                let mut got_steps = vec![];
-                loop {
-                    match se.next() {
-                        Done => break,
-                        step => { got_steps.push(step); }
-                    }
+            use std::str::pattern::{Pattern, Searcher};
+            use std::str::pattern::SearchStep::{Match, Reject, Done};
+            let re = regex::Regex::new($re).unwrap();
+            let mut se = re.into_searcher($haystack);
+            let mut got_steps = vec![];
+            loop {
+                match se.next() {
+                    Done => break,
+                    step => { got_steps.push(step); }
                 }
-                assert_eq!(got_steps, $expect_steps);
-            }}
+            }
+            assert_eq!(got_steps, $expect_steps);
         }
     );
 }

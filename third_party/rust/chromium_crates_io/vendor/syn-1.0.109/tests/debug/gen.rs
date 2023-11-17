@@ -2215,6 +2215,13 @@ impl Debug for Lite<syn::GenericArgument> {
                 formatter.write_str(")")?;
                 Ok(())
             }
+            syn::GenericArgument::Const(_val) => {
+                formatter.write_str("Const")?;
+                formatter.write_str("(")?;
+                Debug::fmt(Lite(_val), formatter)?;
+                formatter.write_str(")")?;
+                Ok(())
+            }
             syn::GenericArgument::Binding(_val) => {
                 formatter.write_str("Binding")?;
                 formatter.write_str("(")?;
@@ -2224,13 +2231,6 @@ impl Debug for Lite<syn::GenericArgument> {
             }
             syn::GenericArgument::Constraint(_val) => {
                 formatter.write_str("Constraint")?;
-                formatter.write_str("(")?;
-                Debug::fmt(Lite(_val), formatter)?;
-                formatter.write_str(")")?;
-                Ok(())
-            }
-            syn::GenericArgument::Const(_val) => {
-                formatter.write_str("Const")?;
                 formatter.write_str("(")?;
                 Debug::fmt(Lite(_val), formatter)?;
                 formatter.write_str(")")?;

@@ -76,6 +76,7 @@ impl std::fmt::Display for ColorWhen {
 
 #[derive(Debug, Args)]
 #[command(args_conflicts_with_subcommands = true)]
+#[command(flatten_help = true)]
 struct StashArgs {
     #[command(subcommand)]
     command: Option<StashCommands>,

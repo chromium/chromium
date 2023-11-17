@@ -189,6 +189,21 @@ s! {
         __unused4: ::c_ulong,
         __unused5: ::c_ulong
     }
+
+    pub struct user_regs_struct {
+        pub regs: [u64; 32],
+        pub orig_a0: u64,
+        pub csr_era: u64,
+        pub csr_badv: u64,
+        pub reserved: [u64; 10],
+
+    }
+
+    pub struct user_fp_struct {
+        pub fpr: [u64; 32],
+        pub fcc: u64,
+        pub fcsr: u32,
+    }
 }
 
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
@@ -248,6 +263,21 @@ align_const! {
             ],
         };
 }
+
+pub const HWCAP_CPUCFG: ::c_ulong = 1 << 0;
+pub const HWCAP_LAM: ::c_ulong = 1 << 1;
+pub const HWCAP_UAL: ::c_ulong = 1 << 2;
+pub const HWCAP_FPU: ::c_ulong = 1 << 3;
+pub const HWCAP_LSX: ::c_ulong = 1 << 4;
+pub const HWCAP_LASX: ::c_ulong = 1 << 5;
+pub const HWCAP_CRC32: ::c_ulong = 1 << 6;
+pub const HWCAP_COMPLEX: ::c_ulong = 1 << 7;
+pub const HWCAP_CRYPTO: ::c_ulong = 1 << 8;
+pub const HWCAP_LVZ: ::c_ulong = 1 << 9;
+pub const HWCAP_LBT_X86: ::c_ulong = 1 << 10;
+pub const HWCAP_LBT_ARM: ::c_ulong = 1 << 11;
+pub const HWCAP_LBT_MIPS: ::c_ulong = 1 << 12;
+pub const HWCAP_PTW: ::c_ulong = 1 << 13;
 
 pub const SYS_io_setup: ::c_long = 0;
 pub const SYS_io_destroy: ::c_long = 1;
@@ -549,7 +579,7 @@ pub const SYS_landlock_add_rule: ::c_long = 445;
 pub const SYS_landlock_restrict_self: ::c_long = 446;
 pub const SYS_process_mrelease: ::c_long = 448;
 pub const SYS_futex_waitv: ::c_long = 449;
-//pub const SYS_set_mempolicy_home_node: ::c_long = 450;
+pub const SYS_set_mempolicy_home_node: ::c_long = 450;
 
 pub const POSIX_FADV_DONTNEED: ::c_int = 4;
 pub const POSIX_FADV_NOREUSE: ::c_int = 5;
@@ -684,6 +714,8 @@ pub const ENOTRECOVERABLE: ::c_int = 131;
 pub const ERFKILL: ::c_int = 132;
 pub const EHWPOISON: ::c_int = 133;
 
+pub const MADV_SOFT_OFFLINE: ::c_int = 101;
+
 pub const MAP_NORESERVE: ::c_int = 0x4000;
 pub const MAP_ANONYMOUS: ::c_int = 0x0020;
 pub const MAP_ANON: ::c_int = 0x0020;
@@ -695,6 +727,7 @@ pub const MAP_POPULATE: ::c_int = 0x8000;
 pub const MAP_NONBLOCK: ::c_int = 0x10000;
 pub const MAP_STACK: ::c_int = 0x20000;
 pub const MAP_HUGETLB: ::c_int = 0x40000;
+pub const MAP_SYNC: ::c_int = 0x080000;
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
 pub const MCL_ONFAULT: ::c_int = 0x0004;
@@ -746,6 +779,8 @@ pub const PTRACE_GETFPXREGS: ::c_uint = 18;
 pub const PTRACE_SETFPXREGS: ::c_uint = 19;
 pub const PTRACE_GETREGS: ::c_uint = 12;
 pub const PTRACE_SETREGS: ::c_uint = 13;
+pub const PTRACE_SYSEMU: ::c_uint = 31;
+pub const PTRACE_SYSEMU_SINGLESTEP: ::c_uint = 32;
 
 pub const RTLD_DEEPBIND: ::c_int = 0x8;
 pub const RTLD_GLOBAL: ::c_int = 0x100;
@@ -846,6 +881,7 @@ pub const ECHOPRT: ::tcflag_t = 0x00000400;
 pub const ECHOCTL: ::tcflag_t = 0x00000200;
 pub const ISIG: ::tcflag_t = 0x00000001;
 pub const ICANON: ::tcflag_t = 0x00000002;
+pub const XCASE: ::tcflag_t = 0x00000004;
 pub const PENDIN: ::tcflag_t = 0x00004000;
 pub const NOFLSH: ::tcflag_t = 0x00000080;
 

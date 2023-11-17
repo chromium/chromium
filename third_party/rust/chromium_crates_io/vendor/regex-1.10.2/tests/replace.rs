@@ -3,39 +3,32 @@ macro_rules! replace(
      $search:expr, $replace:expr, $result:expr) => (
         #[test]
         fn $name() {
-            let re = regex!($re);
-            assert_eq!(re.$which(text!($search), $replace), text!($result));
+            let re = regex::Regex::new($re).unwrap();
+            assert_eq!(re.$which($search, $replace), $result);
         }
     );
 );
 
-replace!(first, replace, r"[0-9]", "age: 26", t!("Z"), "age: Z6");
-replace!(plus, replace, r"[0-9]+", "age: 26", t!("Z"), "age: Z");
-replace!(all, replace_all, r"[0-9]", "age: 26", t!("Z"), "age: ZZ");
-replace!(
-    groups,
-    replace,
-    r"(?-u)(\S+)\s+(\S+)",
-    "w1 w2",
-    t!("$2 $1"),
-    "w2 w1"
-);
+replace!(first, replace, r"[0-9]", "age: 26", "Z", "age: Z6");
+replace!(plus, replace, r"[0-9]+", "age: 26", "Z", "age: Z");
+replace!(all, replace_all, r"[0-9]", "age: 26", "Z", "age: ZZ");
+replace!(groups, replace, r"([^ ]+)[ ]+([^ ]+)", "w1 w2", "$2 $1", "w2 w1");
 replace!(
     double_dollar,
     replace,
-    r"(?-u)(\S+)\s+(\S+)",
+    r"([^ ]+)[ ]+([^ ]+)",
     "w1 w2",
-    t!("$2 $$1"),
+    "$2 $$1",
     "w2 $1"
 );
 // replace!(adjacent_index, replace,
-// r"([^aeiouy])ies$", "skies", t!("$1y"), "sky");
+// r"([^aeiouy])ies$", "skies", "$1y", "sky");
 replace!(
     named,
     replace_all,
-    r"(?-u)(?P<first>\S+)\s+(?P<last>\S+)(?P<space>\s*)",
+    r"(?P<first>[^ ]+)[ ]+(?P<last>[^ ]+)(?P<space>[ ]*)",
     "w1 w2 w3 w4",
-    t!("$last $first$space"),
+    "$last $first$space",
     "w2 w1 w4 w3"
 );
 replace!(
@@ -43,60 +36,57 @@ replace!(
     replace_all,
     "^[ \t]+|[ \t]+$",
     " \t  trim me\t   \t",
-    t!(""),
+    "",
     "trim me"
 );
-replace!(number_hypen, replace, r"(.)(.)", "ab", t!("$1-$2"), "a-b");
-// replace!(number_underscore, replace, r"(.)(.)", "ab", t!("$1_$2"), "a_b");
+replace!(number_hyphen, replace, r"(.)(.)", "ab", "$1-$2", "a-b");
+// replace!(number_underscore, replace, r"(.)(.)", "ab", "$1_$2", "a_b");
 replace!(
     simple_expand,
     replace_all,
-    r"(?-u)(\w) (\w)",
+    r"([a-z]) ([a-z])",
     "a b",
-    t!("$2 $1"),
+    "$2 $1",
     "b a"
 );
 replace!(
     literal_dollar1,
     replace_all,
-    r"(?-u)(\w+) (\w+)",
+    r"([a-z]+) ([a-z]+)",
     "a b",
-    t!("$$1"),
+    "$$1",
     "$1"
 );
 replace!(
     literal_dollar2,
     replace_all,
-    r"(?-u)(\w+) (\w+)",
+    r"([a-z]+) ([a-z]+)",
     "a b",
-    t!("$2 $$c $1"),
+    "$2 $$c $1",
     "b $c a"
 );
 replace!(
     no_expand1,
     replace,
-    r"(?-u)(\S+)\s+(\S+)",
+    r"([^ ]+)[ ]+([^ ]+)",
     "w1 w2",
-    no_expand!("$2 $1"),
+    regex::NoExpand("$2 $1"),
     "$2 $1"
 );
 replace!(
     no_expand2,
     replace,
-    r"(?-u)(\S+)\s+(\S+)",
+    r"([^ ]+)[ ]+([^ ]+)",
     "w1 w2",
-    no_expand!("$$1"),
+    regex::NoExpand("$$1"),
     "$$1"
 );
-use_!(Captures);
 replace!(
     closure_returning_reference,
     replace,
     r"([0-9]+)",
     "age: 26",
-    |captures: &Captures<'_>| {
-        match_text!(captures.get(1).unwrap())[0..1].to_owned()
-    },
+    |captures: &regex::Captures<'_>| { captures[1][0..1].to_owned() },
     "age: 2"
 );
 replace!(
@@ -104,7 +94,7 @@ replace!(
     replace,
     r"[0-9]+",
     "age: 26",
-    |_captures: &Captures<'_>| t!("Z").to_owned(),
+    |_captures: &regex::Captures<'_>| "Z".to_owned(),
     "age: Z"
 );
 
@@ -114,12 +104,12 @@ replace!(
     replace_all,
     r"foo",
     "foobar",
-    t!(""),
+    "",
     "bar"
 );
 
 // See https://github.com/rust-lang/regex/issues/393
-replace!(single_empty_match, replace, r"^", "bar", t!("foo"), "foobar");
+replace!(single_empty_match, replace, r"^", "bar", "foo", "foobar");
 
 // See https://github.com/rust-lang/regex/issues/399
 replace!(
@@ -127,7 +117,7 @@ replace!(
     replace_all,
     r"(.)",
     "b",
-    t!("${1}a $1a"),
+    "${1}a $1a",
     "ba "
 );
 
@@ -136,7 +126,7 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!("Z".to_string()),
+    "Z".to_string(),
     "age: Z6"
 );
 replace!(
@@ -144,7 +134,7 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!(&"Z".to_string()),
+    &"Z".to_string(),
     "age: Z6"
 );
 replace!(
@@ -152,7 +142,7 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!(std::borrow::Cow::<'_, str>::Borrowed("Z")),
+    std::borrow::Cow::<'_, str>::Borrowed("Z"),
     "age: Z6"
 );
 replace!(
@@ -160,7 +150,7 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!(&std::borrow::Cow::<'_, str>::Borrowed("Z")),
+    &std::borrow::Cow::<'_, str>::Borrowed("Z"),
     "age: Z6"
 );
 replace!(
@@ -168,7 +158,7 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!(std::borrow::Cow::<'_, str>::Owned("Z".to_string())),
+    std::borrow::Cow::<'_, str>::Owned("Z".to_string()),
     "age: Z6"
 );
 replace!(
@@ -176,55 +166,18 @@ replace!(
     replace,
     r"[0-9]",
     "age: 26",
-    t!(&std::borrow::Cow::<'_, str>::Owned("Z".to_string())),
+    &std::borrow::Cow::<'_, str>::Owned("Z".to_string()),
     "age: Z6"
 );
 
-replace!(
-    impl_vec_u8,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(vec![b'Z']),
-    "age: Z6"
-);
-replace!(
-    impl_vec_u8_ref,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(&vec![b'Z']),
-    "age: Z6"
-);
-replace!(
-    impl_cow_slice_borrowed,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(std::borrow::Cow::<'_, [u8]>::Borrowed(&[b'Z'])),
-    "age: Z6"
-);
-replace!(
-    impl_cow_slice_borrowed_ref,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(&std::borrow::Cow::<'_, [u8]>::Borrowed(&[b'Z'])),
-    "age: Z6"
-);
-replace!(
-    impl_cow_slice_owned,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(std::borrow::Cow::<'_, [u8]>::Owned(vec![b'Z'])),
-    "age: Z6"
-);
-replace!(
-    impl_cow_slice_owned_ref,
-    replace,
-    r"[0-9]",
-    "age: 26",
-    bytes!(&std::borrow::Cow::<'_, [u8]>::Owned(vec![b'Z'])),
-    "age: Z6"
-);
+#[test]
+fn replacen_no_captures() {
+    let re = regex::Regex::new(r"[0-9]").unwrap();
+    assert_eq!(re.replacen("age: 1234", 2, "Z"), "age: ZZ34");
+}
+
+#[test]
+fn replacen_with_captures() {
+    let re = regex::Regex::new(r"([0-9])").unwrap();
+    assert_eq!(re.replacen("age: 1234", 2, "${1}Z"), "age: 1Z2Z34");
+}

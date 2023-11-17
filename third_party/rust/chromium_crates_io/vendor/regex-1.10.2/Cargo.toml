@@ -10,10 +10,14 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
+rust-version = "1.65"
 name = "regex"
-version = "1.6.0"
-authors = ["The Rust Project Developers"]
+version = "1.10.2"
+authors = [
+    "The Rust Project Developers",
+    "Andrew Gallant <jamslam@gmail.com>",
+]
 exclude = [
     "/scripts/*",
     "/.github/*",
@@ -30,81 +34,77 @@ categories = ["text-processing"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/regex"
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = [
+    "--cfg",
+    "docsrs",
+]
+
 [profile.bench]
-debug = true
+debug = 2
+
+[profile.dev]
+opt-level = 3
+debug = 2
 
 [profile.release]
-debug = true
+debug = 2
 
 [profile.test]
-debug = true
-
-[lib]
-doctest = false
-bench = false
+opt-level = 3
+debug = 2
 
 [[test]]
-name = "default"
-path = "tests/test_default.rs"
-
-[[test]]
-name = "default-bytes"
-path = "tests/test_default_bytes.rs"
-
-[[test]]
-name = "nfa"
-path = "tests/test_nfa.rs"
-
-[[test]]
-name = "nfa-utf8bytes"
-path = "tests/test_nfa_utf8bytes.rs"
-
-[[test]]
-name = "nfa-bytes"
-path = "tests/test_nfa_bytes.rs"
-
-[[test]]
-name = "backtrack"
-path = "tests/test_backtrack.rs"
-
-[[test]]
-name = "backtrack-utf8bytes"
-path = "tests/test_backtrack_utf8bytes.rs"
-
-[[test]]
-name = "backtrack-bytes"
-path = "tests/test_backtrack_bytes.rs"
-
-[[test]]
-name = "crates-regex"
-path = "tests/test_crates_regex.rs"
+name = "integration"
+path = "tests/lib.rs"
 
 [dependencies.aho-corasick]
-version = "0.7.18"
+version = "1.0.0"
 optional = true
 
 [dependencies.memchr]
-version = "2.4.0"
+version = "2.6.0"
 optional = true
 
-[dependencies.regex-syntax]
-version = "0.6.27"
+[dependencies.regex-automata]
+version = "0.4.3"
+features = [
+    "alloc",
+    "syntax",
+    "meta",
+    "nfa-pikevm",
+]
 default-features = false
 
-[dev-dependencies.lazy_static]
-version = "1"
+[dependencies.regex-syntax]
+version = "0.8.2"
+default-features = false
+
+[dev-dependencies.anyhow]
+version = "1.0.69"
+
+[dev-dependencies.doc-comment]
+version = "0.3"
+
+[dev-dependencies.env_logger]
+version = "0.9.3"
+features = [
+    "atty",
+    "humantime",
+    "termcolor",
+]
+default-features = false
+
+[dev-dependencies.once_cell]
+version = "1.17.1"
 
 [dev-dependencies.quickcheck]
 version = "1.0.3"
 default-features = false
 
-[dev-dependencies.rand]
-version = "0.8.3"
-features = [
-    "getrandom",
-    "small_rng",
-]
-default-features = false
+[dev-dependencies.regex-test]
+version = "0.1.0"
 
 [features]
 default = [
@@ -113,21 +113,40 @@ default = [
     "unicode",
     "regex-syntax/default",
 ]
+logging = [
+    "aho-corasick?/logging",
+    "memchr?/logging",
+    "regex-automata/logging",
+]
 pattern = []
 perf = [
     "perf-cache",
     "perf-dfa",
+    "perf-onepass",
+    "perf-backtrack",
     "perf-inline",
     "perf-literal",
 ]
+perf-backtrack = ["regex-automata/nfa-backtrack"]
 perf-cache = []
-perf-dfa = []
-perf-inline = []
-perf-literal = [
-    "aho-corasick",
-    "memchr",
+perf-dfa = ["regex-automata/hybrid"]
+perf-dfa-full = [
+    "regex-automata/dfa-build",
+    "regex-automata/dfa-search",
 ]
-std = []
+perf-inline = ["regex-automata/perf-inline"]
+perf-literal = [
+    "dep:aho-corasick",
+    "dep:memchr",
+    "regex-automata/perf-literal",
+]
+perf-onepass = ["regex-automata/dfa-onepass"]
+std = [
+    "aho-corasick?/std",
+    "memchr?/std",
+    "regex-automata/std",
+    "regex-syntax/std",
+]
 unicode = [
     "unicode-age",
     "unicode-bool",
@@ -136,14 +155,37 @@ unicode = [
     "unicode-perl",
     "unicode-script",
     "unicode-segment",
+    "regex-automata/unicode",
     "regex-syntax/unicode",
 ]
-unicode-age = ["regex-syntax/unicode-age"]
-unicode-bool = ["regex-syntax/unicode-bool"]
-unicode-case = ["regex-syntax/unicode-case"]
-unicode-gencat = ["regex-syntax/unicode-gencat"]
-unicode-perl = ["regex-syntax/unicode-perl"]
-unicode-script = ["regex-syntax/unicode-script"]
-unicode-segment = ["regex-syntax/unicode-segment"]
+unicode-age = [
+    "regex-automata/unicode-age",
+    "regex-syntax/unicode-age",
+]
+unicode-bool = [
+    "regex-automata/unicode-bool",
+    "regex-syntax/unicode-bool",
+]
+unicode-case = [
+    "regex-automata/unicode-case",
+    "regex-syntax/unicode-case",
+]
+unicode-gencat = [
+    "regex-automata/unicode-gencat",
+    "regex-syntax/unicode-gencat",
+]
+unicode-perl = [
+    "regex-automata/unicode-perl",
+    "regex-automata/unicode-word-boundary",
+    "regex-syntax/unicode-perl",
+]
+unicode-script = [
+    "regex-automata/unicode-script",
+    "regex-syntax/unicode-script",
+]
+unicode-segment = [
+    "regex-automata/unicode-segment",
+    "regex-syntax/unicode-segment",
+]
 unstable = ["pattern"]
 use_std = ["std"]

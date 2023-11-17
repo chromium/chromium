@@ -1525,6 +1525,7 @@ pub trait Visitor<'de>: Sized {
     /// `String`.
     #[inline]
     #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
     where
         E: Error,
@@ -1583,6 +1584,7 @@ pub trait Visitor<'de>: Sized {
     /// The default implementation forwards to `visit_bytes` and then drops the
     /// `Vec<u8>`.
     #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     fn visit_byte_buf<E>(self, v: Vec<u8>) -> Result<Self::Value, E>
     where
         E: Error,

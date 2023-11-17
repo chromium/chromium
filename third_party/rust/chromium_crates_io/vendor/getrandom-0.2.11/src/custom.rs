@@ -77,7 +77,7 @@ use core::{mem::MaybeUninit, num::NonZeroU32};
 macro_rules! register_custom_getrandom {
     ($path:path) => {
         // TODO(MSRV 1.37): change to unnamed block
-        const __getrandom_internal: () = {
+        const __GETRANDOM_INTERNAL: () = {
             // We use Rust ABI to be safe against potential panics in the passed function.
             #[no_mangle]
             unsafe fn __getrandom_custom(dest: *mut u8, len: usize) -> u32 {

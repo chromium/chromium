@@ -40,21 +40,37 @@ how to have a library reviewed.
 
 ## Importing a crate from crates.io
 
-The `//third_party/rust/third_party.toml` crate defines the set of crates
+The `//third_party/rust/chromium_crates_io/Cargo.toml` file defines the set of crates
 depended on from first-party code. Any transitive dependencies will be found
-from those listed there. The file is a subset of a
-[standard `Cargo.toml` file](https://doc.rust-lang.org/cargo/reference/manifest.html),
-but only listing the `[dependencies]` section.
+from those listed there. The file is a [standard `Cargo.toml` file](
+https://doc.rust-lang.org/cargo/reference/manifest.html), though the crate
+itself is never built, it is only used to collect dependencies through the
+`[dependencies]` section.
 
-To use a third-party crate "bar" version 3 from first party code, add the
-following to `//third_party/rust/third_party.toml` in `[dependencies]`:
-```toml
-[dependencies]
-bar = "3"
-```
+To use a third-party crate "bar" version 3 from first party code:
+1. Add the crate to `//third_party/rust/chromium_crates_io/Cargo.toml` in
+   `[dependencies]`:
+   ```toml
+   [dependencies]
+   bar = "3"
+   ```
+2. Go to the `//third_party/rust/chromium_crates_io` directory and run:
+   * `vpython3 ./tools/crates/run_gnrt.py vendor` to download the new crate.
+   * Or, directly through cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt vendor`
+3. If a crate in `//third_party/rust/chromium_crates_io/patches` was updated
+   as part of vendoring, then reapply patches to it:
+   * `./apply_patches.sh` (this currently requires linux).
+4. Generate the `BUILD.gn` file for the new crate (see below).
+5. Create a `README.chromium` file next to the `BUILD.gn` file in
+   `//third_party/rust/crate_name/version/`.
+6. Upload the CL, mark any `unsafe` usage with `TODO` code review comments,
+   and include a link to it in the request for third-party and security review.
+
+### Cargo features
 
 To enable a feature "spaceships" in the crate, change the entry in
-`//third_party/rust/third_party.toml` to include the feature:
+`//third_party/rust/chromium_crates_io/Cargo.toml` to include the feature:
 ```toml
 [dependencies]
 bar = { version = "3", features = [ "spaceships" ] }

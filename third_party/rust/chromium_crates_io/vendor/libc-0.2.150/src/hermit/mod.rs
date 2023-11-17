@@ -1,7 +1,4 @@
-// libc port for HermitCore (https://hermitcore.org)
-//
-// Ported by Colin Fink <colin.finck@rwth-aachen.de>
-//       and Stefan Lankes <slankes@eonerc.rwth-aachen.de>
+//! Hermit C types definition
 
 pub type c_schar = i8;
 pub type c_uchar = u8;

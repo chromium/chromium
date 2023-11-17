@@ -108,9 +108,25 @@ use BreakClass::{
     ZeroWidthJoiner as ZWJ, ZeroWidthSpace as ZW,
 };
 
+/// Ceiling for code points in the Basic Multilingual Place (BMP).
+const BMP_LIMIT: u32 = 0x10000;
+
+/// Shift size for getting index-3 table offset.
+const SHIFT_3: u32 = 4;
+/// Shift size for getting index-2 table offset.
+const SHIFT_2: u32 = 5 + SHIFT_3;
+/// Shift size for getting index-1 table offset.
+const SHIFT_1: u32 = 5 + SHIFT_2;
+/// Shift size for getting BMP block start.
+const BMP_SHIFT: u32 = 6;
+
+const INDEX_2_BLOCK_LENGTH: u32 = 1 << (SHIFT_1 - SHIFT_2);
+const INDEX_3_BLOCK_LENGTH: u32 = 1 << (SHIFT_2 - SHIFT_3);
+const SMALL_DATA_BLOCK_LENGTH: u32 = 1 << SHIFT_3;
+const BMP_DATA_BLOCK_LENGTH: u32 = 1 << BMP_SHIFT;
+
 const ALLOWED_BREAK_BIT: u8 = 0x80;
 const MANDATORY_BREAK_BIT: u8 = 0x40;
-const UNIFORM_PAGE: usize = 0x8000;
 
 #[allow(non_upper_case_globals)]
 const eot: u8 = 43;

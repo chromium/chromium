@@ -439,6 +439,7 @@ cargo_crate("lib") {
     "minwindef",
     "processenv",
     "std",
+    "sysinfoapi",
     "winbase",
     "wincon",
     "winerror",

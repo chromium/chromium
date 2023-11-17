@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.39"
 name = "anyhow"
-version = "1.0.70"
+version = "1.0.75"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Flexible concrete Error type built on std::error::Error"
 documentation = "https://docs.rs/anyhow"
@@ -33,6 +33,7 @@ repository = "https://github.com/dtolnay/anyhow"
 rustdoc-args = [
     "--cfg",
     "doc_cfg",
+    "--generate-link-to-definition",
 ]
 targets = ["x86_64-unknown-linux-gnu"]
 
@@ -55,7 +56,7 @@ version = "2.0"
 features = ["full"]
 
 [dev-dependencies.thiserror]
-version = "1.0"
+version = "1.0.45"
 
 [dev-dependencies.trybuild]
 version = "1.0.66"

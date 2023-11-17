@@ -223,7 +223,7 @@ impl Metrics {
 #[derive(Clone)]
 pub struct GlyphMetrics<'a> {
     glyph_count: u16,
-    scale: f32,
+    fixed_scale: FixedScaleFactor,
     h_metrics: &'a [LongMetric],
     default_advance_width: u16,
     lsbs: &'a [BigEndian<i16>],
@@ -249,7 +249,7 @@ impl<'a> GlyphMetrics<'a> {
             .head()
             .map(|head| head.units_per_em())
             .unwrap_or_default();
-        let scale = size.linear_scale(upem);
+        let fixed_scale = FixedScaleFactor(size.fixed_linear_scale(upem));
         let coords = location.into().coords();
         let (h_metrics, default_advance_width, lsbs) = font
             .hmtx()
@@ -269,7 +269,7 @@ impl<'a> GlyphMetrics<'a> {
         };
         Self {
             glyph_count,
-            scale,
+            fixed_scale,
             h_metrics,
             default_advance_width,
             lsbs,
@@ -308,7 +308,7 @@ impl<'a> GlyphMetrics<'a> {
         } else if self.gvar.is_some() {
             advance += self.metric_deltas_from_gvar(glyph_id)[1];
         }
-        Some(advance as f32 * self.scale)
+        Some(self.fixed_scale.apply(advance))
     }
 
     /// Returns the left side bearing for the specified glyph.
@@ -340,7 +340,7 @@ impl<'a> GlyphMetrics<'a> {
         } else if self.gvar.is_some() {
             lsb += self.metric_deltas_from_gvar(glyph_id)[0];
         }
-        Some(lsb as f32 * self.scale)
+        Some(self.fixed_scale.apply(lsb))
     }
 
     /// Returns the bounding box for the specified glyph.
@@ -351,10 +351,10 @@ impl<'a> GlyphMetrics<'a> {
         let (loca, glyf) = self.loca_glyf.as_ref()?;
         Some(match loca.get_glyf(glyph_id, glyf).ok()? {
             Some(glyph) => BoundingBox {
-                x_min: glyph.x_min() as f32 * self.scale,
-                y_min: glyph.y_min() as f32 * self.scale,
-                x_max: glyph.x_max() as f32 * self.scale,
-                y_max: glyph.y_max() as f32 * self.scale,
+                x_min: self.fixed_scale.apply(glyph.x_min() as i32),
+                y_min: self.fixed_scale.apply(glyph.y_min() as i32),
+                x_max: self.fixed_scale.apply(glyph.x_max() as i32),
+                y_max: self.fixed_scale.apply(glyph.y_max() as i32),
             },
             // Empty glyphs have an empty bounding box
             None => BoundingBox::default(),
@@ -367,6 +367,20 @@ impl<'a> GlyphMetrics<'a> {
         GvarMetricDeltas::new(self)
             .and_then(|metric_deltas| metric_deltas.compute_deltas(glyph_id))
             .unwrap_or_default()
+    }
+}
+
+#[derive(Copy, Clone)]
+struct FixedScaleFactor(Fixed);
+
+impl FixedScaleFactor {
+    #[inline(always)]
+    fn apply(self, value: i32) -> f32 {
+        // Match FreeType metric scaling
+        // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/base/ftadvanc.c#L50>
+        self.0
+            .mul_div(Fixed::from_bits(value), Fixed::from_bits(64))
+            .to_f32()
     }
 }
 
@@ -545,6 +559,29 @@ mod tests {
         assert_eq!(expected, &result[..]);
     }
 
+    /// Asserts that the results generated with Size::unscaled() and
+    /// Size::new(upem) are equal.
+    ///
+    /// See <https://github.com/googlefonts/fontations/issues/590#issuecomment-1711595882>
+    #[test]
+    fn glyph_metrics_unscaled_matches_upem_scale() {
+        let font = FontRef::new(VAZIRMATN_VAR).unwrap();
+        let upem = font.head().unwrap().units_per_em() as f32;
+        let unscaled_metrics = font.glyph_metrics(Size::unscaled(), LocationRef::default());
+        let upem_metrics = font.glyph_metrics(Size::new(upem), LocationRef::default());
+        for i in 0..unscaled_metrics.glyph_count() {
+            let gid = GlyphId::new(i);
+            assert_eq!(
+                unscaled_metrics.advance_width(gid),
+                upem_metrics.advance_width(gid)
+            );
+            assert_eq!(
+                unscaled_metrics.left_side_bearing(gid),
+                upem_metrics.left_side_bearing(gid)
+            );
+        }
+    }
+
     #[test]
     fn glyph_metrics_var() {
         let font = FontRef::new(VAZIRMATN_VAR).unwrap();
@@ -591,6 +628,35 @@ mod tests {
                     glyph_metrics_no_hvar.left_side_bearing(gid)
                 );
             }
+        }
+    }
+
+    /// Ensure our fixed point scaling code matches FreeType for advances.
+    ///
+    /// <https://github.com/googlefonts/fontations/issues/590>
+    #[test]
+    fn match_freetype_glyph_metric_scaling() {
+        // fontations:
+        // gid: 36 advance: 15.33600044250488281250 gid: 68 advance: 13.46399974822998046875 gid: 47 advance: 12.57600021362304687500 gid: 79 advance: 6.19199991226196289062
+        // ft:
+        // gid: 36 advance: 15.33595275878906250000 gid: 68 advance: 13.46395874023437500000 gid: 47 advance: 12.57595825195312500000 gid: 79 advance: 6.19198608398437500000
+        // with font.setSize(24);
+        //
+        // Raw advances for gids 36, 68, 47, and 79 in NotoSans-Regular
+        let font_unit_advances = [639, 561, 524, 258];
+        #[allow(clippy::excessive_precision)]
+        let scaled_advances = [
+            15.33595275878906250000,
+            13.46395874023437500000,
+            12.57595825195312500000,
+            6.19198608398437500000,
+        ];
+        let fixed_scale = FixedScaleFactor(Size::new(24.0).fixed_linear_scale(1000));
+        for (font_unit_advance, expected_scaled_advance) in
+            font_unit_advances.iter().zip(scaled_advances)
+        {
+            let scaled_advance = fixed_scale.apply(*font_unit_advance);
+            assert_eq!(scaled_advance, expected_scaled_advance);
         }
     }
 }

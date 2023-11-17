@@ -1,7 +1,7 @@
-// $ cargo bench --features full --bench rust
+// $ cargo bench --features full,test --bench rust
 //
 // Syn only, useful for profiling:
-// $ RUSTFLAGS='--cfg syn_only' cargo build --release --features full --bench rust
+// $ RUSTFLAGS='--cfg syn_only' cargo build --release --features full,test --bench rust
 
 #![cfg_attr(not(syn_only), feature(rustc_private))]
 #![recursion_limit = "1024"]
@@ -46,7 +46,7 @@ mod librustc_parse {
 
     use rustc_data_structures::sync::Lrc;
     use rustc_error_messages::FluentBundle;
-    use rustc_errors::{emitter::Emitter, Diagnostic, Handler};
+    use rustc_errors::{emitter::Emitter, translation::Translate, Diagnostic, Handler};
     use rustc_session::parse::ParseSess;
     use rustc_span::source_map::{FilePathMapping, SourceMap};
     use rustc_span::{edition::Edition, FileName};
@@ -59,6 +59,9 @@ mod librustc_parse {
             fn source_map(&self) -> Option<&Lrc<SourceMap>> {
                 None
             }
+        }
+
+        impl Translate for SilentEmitter {
             fn fluent_bundle(&self) -> Option<&Lrc<FluentBundle>> {
                 None
             }
@@ -88,7 +91,7 @@ mod librustc_parse {
 #[cfg(not(syn_only))]
 mod read_from_disk {
     pub fn bench(content: &str) -> Result<(), ()> {
-        let _ = content;
+        _ = content;
         Ok(())
     }
 }

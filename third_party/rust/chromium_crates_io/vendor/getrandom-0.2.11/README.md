@@ -3,7 +3,7 @@
 [![Build Status]][GitHub Actions] [![Crate]][crates.io] [![Documentation]][docs.rs] [![Dependency Status]][deps.rs] [![Downloads]][crates.io] [![License]][LICENSE-MIT]
 
 [GitHub Actions]: https://github.com/rust-random/getrandom/actions?query=workflow:Tests+branch:master
-[Build Status]: https://github.com/rust-random/getrandom/workflows/Tests/badge.svg?branch=master
+[Build Status]: https://github.com/rust-random/getrandom/actions/workflows/tests.yml/badge.svg?branch=master
 [crates.io]: https://crates.io/crates/getrandom
 [Crate]: https://img.shields.io/crates/v/getrandom
 [docs.rs]: https://docs.rs/getrandom

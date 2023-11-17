@@ -3,9 +3,6 @@ use std::fs;
 use std::path::PathBuf;
 
 fn main() {
-    // Removed for Chromium build. Chromium always uses libc++ and does this
-    // via GN rules.
-    /*
     println!("cargo:rerun-if-changed=build.rs");
 
     let libstdcxx = cfg!(feature = "libstdc++");
@@ -34,5 +31,4 @@ fn main() {
             cc::Build::new().cpp(true).file(&path).compile("link-cplusplus");
         }
     }
-    */
 }

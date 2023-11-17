@@ -3,3 +3,4 @@ tags
 target
 /Cargo.lock
 /wincolor/Cargo.lock
+/.idea

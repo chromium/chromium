@@ -80,6 +80,33 @@ impl ::Clone for timezone {
 }
 
 s! {
+    pub struct dirent_extra {
+        pub d_datalen: u16,
+        pub d_type: u16,
+        pub d_reserved: u32,
+    }
+
+    pub struct stat {
+        pub st_ino: ::ino_t,
+        pub st_size: ::off_t,
+        pub st_dev: ::dev_t,
+        pub st_rdev: ::dev_t,
+        pub st_uid: ::uid_t,
+        pub st_gid: ::gid_t,
+        pub __old_st_mtime: ::_Time32t,
+        pub __old_st_atime: ::_Time32t,
+        pub __old_st_ctime: ::_Time32t,
+        pub st_mode: ::mode_t,
+        pub st_nlink: ::nlink_t,
+        pub st_blocksize: ::blksize_t,
+        pub st_nblocks: i32,
+        pub st_blksize: ::blksize_t,
+        pub st_blocks: ::blkcnt_t,
+        pub st_mtim:    ::timespec,
+        pub st_atim:    ::timespec,
+        pub st_ctim:    ::timespec,
+    }
+
     pub struct ip_mreq {
         pub imr_multiaddr: in_addr,
         pub imr_interface: in_addr,
@@ -641,7 +668,9 @@ s_no_extra_traits! {
 
     pub struct sigevent {
         pub sigev_notify: ::c_int,
-        __sigev_un1: usize, // union
+        pub __padding1: ::c_int,
+        pub sigev_signo: ::c_int, // union
+        pub __padding2: ::c_int,
         pub sigev_value: ::sigval,
         __sigev_un2: usize, // union
 
@@ -652,33 +681,6 @@ s_no_extra_traits! {
         pub d_reclen: ::c_short,
         pub d_namelen: ::c_short,
         pub d_name: [::c_char; 1], // flex array
-    }
-
-    pub struct dirent_extra {
-        pub d_datalen: u16,
-        pub d_type: u16,
-        pub d_reserved: u32,
-    }
-
-    pub struct stat {
-        pub st_ino: ::ino_t,
-        pub st_size: ::off_t,
-        pub st_dev: ::dev_t,
-        pub st_rdev: ::dev_t,
-        pub st_uid: ::uid_t,
-        pub st_gid: ::gid_t,
-        pub __old_st_mtime: ::_Time32t,
-        pub __old_st_atime: ::_Time32t,
-        pub __old_st_ctime: ::_Time32t,
-        pub st_mode: ::mode_t,
-        pub st_nlink: ::nlink_t,
-        pub st_blocksize: ::blksize_t,
-        pub st_nblocks: i32,
-        pub st_blksize: ::blksize_t,
-        pub st_blocks: ::blkcnt_t,
-        pub st_mtim:    ::timespec,
-        pub st_atim:    ::timespec,
-        pub st_ctim:    ::timespec,
     }
 
     pub struct sigset_t {
@@ -756,6 +758,37 @@ s_no_extra_traits! {
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
+        // sigevent
+        impl PartialEq for sigevent {
+            fn eq(&self, other: &sigevent) -> bool {
+                self.sigev_notify == other.sigev_notify
+                    && self.sigev_signo == other.sigev_signo
+                    && self.sigev_value == other.sigev_value
+                    && self.__sigev_un2
+                        == other.__sigev_un2
+            }
+        }
+        impl Eq for sigevent {}
+        impl ::fmt::Debug for sigevent {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("sigevent")
+                    .field("sigev_notify", &self.sigev_notify)
+                    .field("sigev_signo", &self.sigev_signo)
+                    .field("sigev_value", &self.sigev_value)
+                    .field("__sigev_un2",
+                        &self.__sigev_un2)
+                    .finish()
+            }
+        }
+        impl ::hash::Hash for sigevent {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.sigev_notify.hash(state);
+                self.sigev_signo.hash(state);
+                self.sigev_value.hash(state);
+                self.__sigev_un2.hash(state);
+            }
+        }
+
         impl PartialEq for sockaddr_un {
             fn eq(&self, other: &sockaddr_un) -> bool {
                 self.sun_len == other.sun_len
@@ -767,9 +800,7 @@ cfg_if! {
                     .all(|(a,b)| a == b)
             }
         }
-
         impl Eq for sockaddr_un {}
-
         impl ::fmt::Debug for sockaddr_un {
             fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
                 f.debug_struct("sockaddr_un")
@@ -785,6 +816,168 @@ cfg_if! {
                 self.sun_len.hash(state);
                 self.sun_family.hash(state);
                 self.sun_path.hash(state);
+            }
+        }
+
+        // sigset_t
+        impl PartialEq for sigset_t {
+            fn eq(&self, other: &sigset_t) -> bool {
+                self.__val == other.__val
+            }
+        }
+        impl Eq for sigset_t {}
+        impl ::fmt::Debug for sigset_t {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("sigset_t")
+                    .field("__val", &self.__val)
+                    .finish()
+            }
+        }
+        impl ::hash::Hash for sigset_t {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.__val.hash(state);
+            }
+        }
+
+        // msg
+        impl ::fmt::Debug for msg {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("msg")
+                    .field("msg_next", &self.msg_next)
+                    .field("msg_type", &self.msg_type)
+                    .field("msg_ts", &self.msg_ts)
+                    .field("msg_spot", &self.msg_spot)
+                .finish()
+            }
+        }
+
+        // msqid_ds
+        impl ::fmt::Debug for msqid_ds {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("msqid_ds")
+                    .field("msg_perm", &self.msg_perm)
+                    .field("msg_first", &self.msg_first)
+                    .field("msg_cbytes", &self.msg_cbytes)
+                    .field("msg_qnum", &self.msg_qnum)
+                    .field("msg_qbytes", &self.msg_qbytes)
+                    .field("msg_lspid", &self.msg_lspid)
+                    .field("msg_lrpid", &self.msg_lrpid)
+                    .field("msg_stime", &self.msg_stime)
+                    .field("msg_rtime", &self.msg_rtime)
+                    .field("msg_ctime", &self.msg_ctime)
+                    .finish()
+            }
+        }
+
+        // sockaddr_dl
+        impl ::fmt::Debug for sockaddr_dl {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("sockaddr_dl")
+                    .field("sdl_len", &self.sdl_len)
+                    .field("sdl_family", &self.sdl_family)
+                    .field("sdl_index", &self.sdl_index)
+                    .field("sdl_type", &self.sdl_type)
+                    .field("sdl_nlen", &self.sdl_nlen)
+                    .field("sdl_alen", &self.sdl_alen)
+                    .field("sdl_slen", &self.sdl_slen)
+                    .field("sdl_data", &self.sdl_data)
+                    .finish()
+            }
+        }
+        impl PartialEq for sockaddr_dl {
+            fn eq(&self, other: &sockaddr_dl) -> bool {
+                self.sdl_len == other.sdl_len
+                    && self.sdl_family == other.sdl_family
+                    && self.sdl_index == other.sdl_index
+                    && self.sdl_type == other.sdl_type
+                    && self.sdl_nlen == other.sdl_nlen
+                    && self.sdl_alen == other.sdl_alen
+                    && self.sdl_slen == other.sdl_slen
+                    && self
+                    .sdl_data
+                    .iter()
+                    .zip(other.sdl_data.iter())
+                    .all(|(a,b)| a == b)
+            }
+        }
+        impl Eq for sockaddr_dl {}
+        impl ::hash::Hash for sockaddr_dl {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.sdl_len.hash(state);
+                self.sdl_family.hash(state);
+                self.sdl_index.hash(state);
+                self.sdl_type.hash(state);
+                self.sdl_nlen.hash(state);
+                self.sdl_alen.hash(state);
+                self.sdl_slen.hash(state);
+                self.sdl_data.hash(state);
+            }
+        }
+
+        // sync_t
+        impl ::fmt::Debug for sync_t {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("sync_t")
+                    .field("__owner", &self.__owner)
+                    .field("__u", &self.__u)
+                    .finish()
+            }
+        }
+
+        // pthread_barrier_t
+        impl ::fmt::Debug for pthread_barrier_t {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("pthread_barrier_t")
+                    .field("__pad", &self.__pad)
+                    .finish()
+            }
+        }
+
+        // pthread_rwlock_t
+        impl ::fmt::Debug for pthread_rwlock_t {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("pthread_rwlock_t")
+                    .field("__active", &self.__active)
+                    .field("__blockedwriters", &self.__blockedwriters)
+                    .field("__blockedreaders", &self.__blockedreaders)
+                    .field("__heavy", &self.__heavy)
+                    .field("__lock", &self.__lock)
+                    .field("__rcond", &self.__rcond)
+                    .field("__wcond", &self.__wcond)
+                    .field("__owner", &self.__owner)
+                    .field("__spare", &self.__spare)
+                .finish()
+            }
+        }
+
+        // syspage_entry
+        impl ::fmt::Debug for syspage_entry {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("syspage_entry")
+                    .field("size", &self.size)
+                    .field("total_size", &self.total_size)
+                    .field("type_", &self.type_)
+                    .field("num_cpu", &self.num_cpu)
+                    .field("system_private", &self.system_private)
+                    .field("old_asinfo", &self.old_asinfo)
+                    .field("hwinfo", &self.hwinfo)
+                    .field("old_cpuinfo", &self.old_cpuinfo)
+                    .field("old_cacheattr", &self.old_cacheattr)
+                    .field("qtime", &self.qtime)
+                    .field("callout", &self.callout)
+                    .field("callin", &self.callin)
+                    .field("typed_strings", &self.typed_strings)
+                    .field("strings", &self.strings)
+                    .field("old_intrinfo", &self.old_intrinfo)
+                    .field("smp", &self.smp)
+                    .field("pminfo", &self.pminfo)
+                    .field("old_mdriver", &self.old_mdriver)
+                    .field("new_asinfo", &self.new_asinfo)
+                    .field("new_cpuinfo", &self.new_cpuinfo)
+                    .field("new_cacheattr", &self.new_cacheattr)
+                    .field("new_intrinfo", &self.new_intrinfo)
+                    .field("new_mdriver", &self.new_mdriver)
+                    .finish()
             }
         }
 
@@ -866,6 +1059,16 @@ cfg_if! {
                     .field("mq_sendwait", &self.mq_sendwait)
                     .field("mq_recvwait", &self.mq_recvwait)
                     .finish()
+            }
+        }
+        impl ::hash::Hash for mq_attr {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.mq_maxmsg.hash(state);
+                self.mq_msgsize.hash(state);
+                self.mq_flags.hash(state);
+                self.mq_curmsgs.hash(state);
+                self.mq_sendwait.hash(state);
+                self.mq_recvwait.hash(state);
             }
         }
 
@@ -2354,6 +2557,7 @@ pub const RLIMIT_NPROC: ::c_int = 8;
 pub const RLIMIT_RSS: ::c_int = 6;
 pub const RLIMIT_STACK: ::c_int = 3;
 pub const RLIMIT_VMEM: ::c_int = 6;
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::c_int = 14;
 
 pub const SCHED_ADJTOHEAD: ::c_int = 5;
@@ -2606,6 +2810,14 @@ f! {
         };
         ::mem::size_of::<sockcred>() + ::mem::size_of::<::gid_t>() * ngrps
     }
+
+    pub fn major(dev: ::dev_t) -> ::c_uint {
+        ((dev as ::c_uint) >> 10) & 0x3f
+    }
+
+    pub fn minor(dev: ::dev_t) -> ::c_uint {
+        (dev as ::c_uint) & 0x3ff
+    }
 }
 
 safe_f! {
@@ -2644,6 +2856,10 @@ safe_f! {
     pub {const} fn IPTOS_ECN(x: u8) -> u8 {
         x & ::IPTOS_ECN_MASK
     }
+
+    pub {const} fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
+        ((major << 10) | (minor)) as ::dev_t
+    }
 }
 
 // Network related functions are provided by libsocket and regex
@@ -2658,6 +2874,12 @@ extern "C" {
     pub fn getpriority(which: ::c_int, who: ::id_t) -> ::c_int;
     pub fn setpriority(which: ::c_int, who: ::id_t, prio: ::c_int) -> ::c_int;
     pub fn mkfifoat(dirfd: ::c_int, pathname: *const ::c_char, mode: ::mode_t) -> ::c_int;
+    pub fn mknodat(
+        __fd: ::c_int,
+        pathname: *const ::c_char,
+        mode: ::mode_t,
+        dev: ::dev_t,
+    ) -> ::c_int;
 
     pub fn clock_getres(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
     pub fn clock_gettime(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
@@ -2871,6 +3093,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn sethostname(name: *const ::c_char, len: ::size_t) -> ::c_int;
     pub fn sched_get_priority_min(policy: ::c_int) -> ::c_int;
     pub fn pthread_condattr_getpshared(

@@ -2679,7 +2679,87 @@ pub const PT_GNU_STACK: u32 = 0x6474e551;
 pub const PT_GNU_RELRO: u32 = 0x6474e552;
 
 // Ethernet protocol IDs.
+pub const ETH_P_LOOP: ::c_int = 0x0060;
+pub const ETH_P_PUP: ::c_int = 0x0200;
+pub const ETH_P_PUPAT: ::c_int = 0x0201;
 pub const ETH_P_IP: ::c_int = 0x0800;
+pub const ETH_P_X25: ::c_int = 0x0805;
+pub const ETH_P_ARP: ::c_int = 0x0806;
+pub const ETH_P_BPQ: ::c_int = 0x08FF;
+pub const ETH_P_IEEEPUP: ::c_int = 0x0a00;
+pub const ETH_P_IEEEPUPAT: ::c_int = 0x0a01;
+pub const ETH_P_BATMAN: ::c_int = 0x4305;
+pub const ETH_P_DEC: ::c_int = 0x6000;
+pub const ETH_P_DNA_DL: ::c_int = 0x6001;
+pub const ETH_P_DNA_RC: ::c_int = 0x6002;
+pub const ETH_P_DNA_RT: ::c_int = 0x6003;
+pub const ETH_P_LAT: ::c_int = 0x6004;
+pub const ETH_P_DIAG: ::c_int = 0x6005;
+pub const ETH_P_CUST: ::c_int = 0x6006;
+pub const ETH_P_SCA: ::c_int = 0x6007;
+pub const ETH_P_TEB: ::c_int = 0x6558;
+pub const ETH_P_RARP: ::c_int = 0x8035;
+pub const ETH_P_ATALK: ::c_int = 0x809B;
+pub const ETH_P_AARP: ::c_int = 0x80F3;
+pub const ETH_P_8021Q: ::c_int = 0x8100;
+pub const ETH_P_IPX: ::c_int = 0x8137;
+pub const ETH_P_IPV6: ::c_int = 0x86DD;
+pub const ETH_P_PAUSE: ::c_int = 0x8808;
+pub const ETH_P_SLOW: ::c_int = 0x8809;
+pub const ETH_P_WCCP: ::c_int = 0x883E;
+pub const ETH_P_MPLS_UC: ::c_int = 0x8847;
+pub const ETH_P_MPLS_MC: ::c_int = 0x8848;
+pub const ETH_P_ATMMPOA: ::c_int = 0x884c;
+pub const ETH_P_PPP_DISC: ::c_int = 0x8863;
+pub const ETH_P_PPP_SES: ::c_int = 0x8864;
+pub const ETH_P_LINK_CTL: ::c_int = 0x886c;
+pub const ETH_P_ATMFATE: ::c_int = 0x8884;
+pub const ETH_P_PAE: ::c_int = 0x888E;
+pub const ETH_P_AOE: ::c_int = 0x88A2;
+pub const ETH_P_8021AD: ::c_int = 0x88A8;
+pub const ETH_P_802_EX1: ::c_int = 0x88B5;
+pub const ETH_P_TIPC: ::c_int = 0x88CA;
+pub const ETH_P_8021AH: ::c_int = 0x88E7;
+pub const ETH_P_MVRP: ::c_int = 0x88F5;
+pub const ETH_P_1588: ::c_int = 0x88F7;
+pub const ETH_P_PRP: ::c_int = 0x88FB;
+pub const ETH_P_FCOE: ::c_int = 0x8906;
+pub const ETH_P_TDLS: ::c_int = 0x890D;
+pub const ETH_P_FIP: ::c_int = 0x8914;
+pub const ETH_P_80221: ::c_int = 0x8917;
+pub const ETH_P_LOOPBACK: ::c_int = 0x9000;
+pub const ETH_P_QINQ1: ::c_int = 0x9100;
+pub const ETH_P_QINQ2: ::c_int = 0x9200;
+pub const ETH_P_QINQ3: ::c_int = 0x9300;
+pub const ETH_P_EDSA: ::c_int = 0xDADA;
+pub const ETH_P_AF_IUCV: ::c_int = 0xFBFB;
+
+pub const ETH_P_802_3_MIN: ::c_int = 0x0600;
+
+pub const ETH_P_802_3: ::c_int = 0x0001;
+pub const ETH_P_AX25: ::c_int = 0x0002;
+pub const ETH_P_ALL: ::c_int = 0x0003;
+pub const ETH_P_802_2: ::c_int = 0x0004;
+pub const ETH_P_SNAP: ::c_int = 0x0005;
+pub const ETH_P_DDCMP: ::c_int = 0x0006;
+pub const ETH_P_WAN_PPP: ::c_int = 0x0007;
+pub const ETH_P_PPP_MP: ::c_int = 0x0008;
+pub const ETH_P_LOCALTALK: ::c_int = 0x0009;
+pub const ETH_P_CAN: ::c_int = 0x000C;
+pub const ETH_P_CANFD: ::c_int = 0x000D;
+pub const ETH_P_PPPTALK: ::c_int = 0x0010;
+pub const ETH_P_TR_802_2: ::c_int = 0x0011;
+pub const ETH_P_MOBITEX: ::c_int = 0x0015;
+pub const ETH_P_CONTROL: ::c_int = 0x0016;
+pub const ETH_P_IRDA: ::c_int = 0x0017;
+pub const ETH_P_ECONET: ::c_int = 0x0018;
+pub const ETH_P_HDLC: ::c_int = 0x0019;
+pub const ETH_P_ARCNET: ::c_int = 0x001A;
+pub const ETH_P_DSA: ::c_int = 0x001B;
+pub const ETH_P_TRAILER: ::c_int = 0x001C;
+pub const ETH_P_PHONET: ::c_int = 0x00F5;
+pub const ETH_P_IEEE802154: ::c_int = 0x00F6;
+pub const ETH_P_CAIF: ::c_int = 0x00F7;
 
 pub const SFD_CLOEXEC: ::c_int = 0x080000;
 
@@ -2731,7 +2811,10 @@ pub const POSIX_MADV_DONTNEED: ::c_int = 4;
 
 pub const RLIM_INFINITY: ::rlim_t = !0;
 pub const RLIMIT_RTTIME: ::c_int = 15;
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIMIT_NLIMITS: ::c_int = 16;
+#[allow(deprecated)]
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::c_int = RLIMIT_NLIMITS;
 
 pub const MAP_ANONYMOUS: ::c_int = MAP_ANON;
@@ -3687,6 +3770,10 @@ extern "C" {
     pub fn pthread_exit(value: *mut ::c_void) -> !;
     pub fn pthread_attr_init(attr: *mut ::pthread_attr_t) -> ::c_int;
     pub fn pthread_attr_destroy(attr: *mut ::pthread_attr_t) -> ::c_int;
+    pub fn pthread_attr_getstacksize(
+        attr: *const ::pthread_attr_t,
+        stacksize: *mut ::size_t,
+    ) -> ::c_int;
     pub fn pthread_attr_setstacksize(attr: *mut ::pthread_attr_t, stack_size: ::size_t) -> ::c_int;
     pub fn pthread_attr_setdetachstate(attr: *mut ::pthread_attr_t, state: ::c_int) -> ::c_int;
     pub fn pthread_detach(thread: ::pthread_t) -> ::c_int;
@@ -4161,6 +4248,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn sethostname(name: *const ::c_char, len: ::size_t) -> ::c_int;
     pub fn sched_get_priority_min(policy: ::c_int) -> ::c_int;
     pub fn umount2(target: *const ::c_char, flags: ::c_int) -> ::c_int;

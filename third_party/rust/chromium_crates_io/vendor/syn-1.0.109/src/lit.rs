@@ -224,7 +224,7 @@ impl LitStr {
 
         // Parse string literal into a token stream with every span equal to the
         // original literal's span.
-        let mut tokens = crate::parse_str(&self.value())?;
+        let mut tokens = TokenStream::from_str(&self.value())?;
         tokens = respan_token_stream(tokens, self.span());
 
         parser.parse2(tokens)
@@ -1117,11 +1117,10 @@ mod value {
                         b'\'' => '\'',
                         b'"' => '"',
                         b'\r' | b'\n' => loop {
-                            let ch = next_chr(s);
-                            if ch.is_whitespace() {
-                                s = &s[ch.len_utf8()..];
-                            } else {
-                                continue 'outer;
+                            let b = byte(s, 0);
+                            match b {
+                                b' ' | b'\t' | b'\n' | b'\r' => s = &s[1..],
+                                _ => continue 'outer,
                             }
                         },
                         b => panic!("unexpected byte {:?} after \\ character in byte literal", b),

@@ -1133,7 +1133,7 @@ pub const PROC_REAP_STATUS: ::c_int = 0x0003;
 pub const PROC_PDEATHSIG_CTL: ::c_int = 0x0004;
 pub const PROC_PDEATHSIG_STATUS: ::c_int = 0x0005;
 
-// https://github.com/DragonFlyBSD/DragonFlyBSD/blob/master/sys/net/if.h#L101
+// https://github.com/DragonFlyBSD/DragonFlyBSD/blob/HEAD/sys/net/if.h#L101
 pub const IFF_UP: ::c_int = 0x1; // interface is up
 pub const IFF_BROADCAST: ::c_int = 0x2; // broadcast address valid
 pub const IFF_DEBUG: ::c_int = 0x4; // turn on debugging
@@ -1678,6 +1678,12 @@ extern "C" {
 
     pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
     pub fn basename(path: *mut ::c_char) -> *mut ::c_char;
+    pub fn getmntinfo(mntbufp: *mut *mut ::statfs, flags: ::c_int) -> ::c_int;
+    pub fn getmntvinfo(
+        mntbufp: *mut *mut ::statfs,
+        mntvbufp: *mut *mut ::statvfs,
+        flags: ::c_int,
+    ) -> ::c_int;
 }
 
 #[link(name = "rt")]

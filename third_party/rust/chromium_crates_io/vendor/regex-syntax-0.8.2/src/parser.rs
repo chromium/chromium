@@ -1,16 +1,26 @@
-use crate::ast;
-use crate::hir;
+use crate::{ast, hir, Error};
 
-use crate::Result;
+/// A convenience routine for parsing a regex using default options.
+///
+/// This is equivalent to `Parser::new().parse(pattern)`.
+///
+/// If you need to set non-default options, then use a [`ParserBuilder`].
+///
+/// This routine returns an [`Hir`](hir::Hir) value. Namely, it automatically
+/// parses the pattern as an [`Ast`](ast::Ast) and then invokes the translator
+/// to convert the `Ast` into an `Hir`. If you need access to the `Ast`, then
+/// you should use a [`ast::parse::Parser`].
+pub fn parse(pattern: &str) -> Result<hir::Hir, Error> {
+    Parser::new().parse(pattern)
+}
 
 /// A builder for a regular expression parser.
 ///
 /// This builder permits modifying configuration options for the parser.
 ///
-/// This type combines the builder options for both the
-/// [AST `ParserBuilder`](ast/parse/struct.ParserBuilder.html)
-/// and the
-/// [HIR `TranslatorBuilder`](hir/translate/struct.TranslatorBuilder.html).
+/// This type combines the builder options for both the [AST
+/// `ParserBuilder`](ast::parse::ParserBuilder) and the [HIR
+/// `TranslatorBuilder`](hir::translate::TranslatorBuilder).
 #[derive(Clone, Debug, Default)]
 pub struct ParserBuilder {
     ast: ast::parse::ParserBuilder,
@@ -78,19 +88,23 @@ impl ParserBuilder {
         self
     }
 
-    /// When enabled, the parser will permit the construction of a regular
+    /// When disabled, translation will permit the construction of a regular
     /// expression that may match invalid UTF-8.
     ///
-    /// When disabled (the default), the parser is guaranteed to produce
-    /// an expression that will only ever match valid UTF-8 (otherwise, the
-    /// parser will return an error).
+    /// When enabled (the default), the translator is guaranteed to produce an
+    /// expression that, for non-empty matches, will only ever produce spans
+    /// that are entirely valid UTF-8 (otherwise, the translator will return an
+    /// error).
     ///
-    /// Perhaps surprisingly, when invalid UTF-8 isn't allowed, a negated ASCII
-    /// word boundary (uttered as `(?-u:\B)` in the concrete syntax) will cause
-    /// the parser to return an error. Namely, a negated ASCII word boundary
-    /// can result in matching positions that aren't valid UTF-8 boundaries.
-    pub fn allow_invalid_utf8(&mut self, yes: bool) -> &mut ParserBuilder {
-        self.hir.allow_invalid_utf8(yes);
+    /// Perhaps surprisingly, when UTF-8 is enabled, an empty regex or even
+    /// a negated ASCII word boundary (uttered as `(?-u:\B)` in the concrete
+    /// syntax) will be allowed even though they can produce matches that split
+    /// a UTF-8 encoded codepoint. This only applies to zero-width or "empty"
+    /// matches, and it is expected that the regex engine itself must handle
+    /// these cases if necessary (perhaps by suppressing any zero-width matches
+    /// that split a codepoint).
+    pub fn utf8(&mut self, yes: bool) -> &mut ParserBuilder {
+        self.hir.utf8(yes);
         self
     }
 
@@ -134,6 +148,48 @@ impl ParserBuilder {
         self
     }
 
+    /// Enable or disable the CRLF mode flag by default.
+    ///
+    /// By default this is disabled. It may alternatively be selectively
+    /// enabled in the regular expression itself via the `R` flag.
+    ///
+    /// When CRLF mode is enabled, the following happens:
+    ///
+    /// * Unless `dot_matches_new_line` is enabled, `.` will match any character
+    /// except for `\r` and `\n`.
+    /// * When `multi_line` mode is enabled, `^` and `$` will treat `\r\n`,
+    /// `\r` and `\n` as line terminators. And in particular, neither will
+    /// match between a `\r` and a `\n`.
+    pub fn crlf(&mut self, yes: bool) -> &mut ParserBuilder {
+        self.hir.crlf(yes);
+        self
+    }
+
+    /// Sets the line terminator for use with `(?u-s:.)` and `(?-us:.)`.
+    ///
+    /// Namely, instead of `.` (by default) matching everything except for `\n`,
+    /// this will cause `.` to match everything except for the byte given.
+    ///
+    /// If `.` is used in a context where Unicode mode is enabled and this byte
+    /// isn't ASCII, then an error will be returned. When Unicode mode is
+    /// disabled, then any byte is permitted, but will return an error if UTF-8
+    /// mode is enabled and it is a non-ASCII byte.
+    ///
+    /// In short, any ASCII value for a line terminator is always okay. But a
+    /// non-ASCII byte might result in an error depending on whether Unicode
+    /// mode or UTF-8 mode are enabled.
+    ///
+    /// Note that if `R` mode is enabled then it always takes precedence and
+    /// the line terminator will be treated as `\r` and `\n` simultaneously.
+    ///
+    /// Note also that this *doesn't* impact the look-around assertions
+    /// `(?m:^)` and `(?m:$)`. That's usually controlled by additional
+    /// configuration in the regex engine itself.
+    pub fn line_terminator(&mut self, byte: u8) -> &mut ParserBuilder {
+        self.hir.line_terminator(byte);
+        self
+    }
+
     /// Enable or disable the "swap greed" flag by default.
     ///
     /// By default this is disabled. It may alternatively be selectively
@@ -148,9 +204,9 @@ impl ParserBuilder {
     /// By default this is **enabled**. It may alternatively be selectively
     /// disabled in the regular expression itself via the `u` flag.
     ///
-    /// Note that unless `allow_invalid_utf8` is enabled (it's disabled by
-    /// default), a regular expression will fail to parse if Unicode mode is
-    /// disabled and a sub-expression could possibly match invalid UTF-8.
+    /// Note that unless `utf8` is disabled (it's enabled by default), a
+    /// regular expression will fail to parse if Unicode mode is disabled and a
+    /// sub-expression could possibly match invalid UTF-8.
     pub fn unicode(&mut self, yes: bool) -> &mut ParserBuilder {
         self.hir.unicode(yes);
         self
@@ -167,10 +223,9 @@ impl ParserBuilder {
 /// convenience for never having to deal with it at all.
 ///
 /// If callers have more fine grained use cases that need an AST, then please
-/// see the [`ast::parse`](ast/parse/index.html) module.
+/// see the [`ast::parse`] module.
 ///
-/// A `Parser` can be configured in more detail via a
-/// [`ParserBuilder`](struct.ParserBuilder.html).
+/// A `Parser` can be configured in more detail via a [`ParserBuilder`].
 #[derive(Clone, Debug)]
 pub struct Parser {
     ast: ast::parse::Parser,
@@ -184,15 +239,14 @@ impl Parser {
     /// a high level intermediate representation of the given regular
     /// expression.
     ///
-    /// To set configuration options on the parser, use
-    /// [`ParserBuilder`](struct.ParserBuilder.html).
+    /// To set configuration options on the parser, use [`ParserBuilder`].
     pub fn new() -> Parser {
         ParserBuilder::new().build()
     }
 
     /// Parse the regular expression into a high level intermediate
     /// representation.
-    pub fn parse(&mut self, pattern: &str) -> Result<hir::Hir> {
+    pub fn parse(&mut self, pattern: &str) -> Result<hir::Hir, Error> {
         let ast = self.ast.parse(pattern)?;
         let hir = self.hir.translate(pattern, &ast)?;
         Ok(hir)

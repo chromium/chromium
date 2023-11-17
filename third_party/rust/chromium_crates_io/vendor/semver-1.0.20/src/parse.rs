@@ -26,6 +26,10 @@ impl FromStr for Version {
     type Err = Error;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
+        if text.is_empty() {
+            return Err(Error::new(ErrorKind::Empty));
+        }
+
         let mut pos = Position::Major;
         let (major, text) = numeric_identifier(text, pos)?;
         let text = dot(text, pos)?;
@@ -82,14 +86,17 @@ impl FromStr for VersionReq {
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         let text = text.trim_start_matches(' ');
-        if let Some(text) = wildcard(text) {
-            if text.trim_start_matches(' ').is_empty() {
+        if let Some((ch, text)) = wildcard(text) {
+            let rest = text.trim_start_matches(' ');
+            if rest.is_empty() {
                 #[cfg(not(no_const_vec_new))]
                 return Ok(VersionReq::STAR);
                 #[cfg(no_const_vec_new)] // rustc <1.39
                 return Ok(VersionReq {
                     comparators: Vec::new(),
                 });
+            } else if rest.starts_with(',') {
+                return Err(Error::new(ErrorKind::WildcardNotTheOnlyComparator(ch)));
             } else {
                 return Err(Error::new(ErrorKind::UnexpectedAfterWildcard));
             }
@@ -181,13 +188,13 @@ fn numeric_identifier(input: &str, pos: Position) -> Result<(u64, &str), Error> 
     }
 }
 
-fn wildcard(input: &str) -> Option<&str> {
+fn wildcard(input: &str) -> Option<(char, &str)> {
     if let Some(rest) = input.strip_prefix('*') {
-        Some(rest)
+        Some(('*', rest))
     } else if let Some(rest) = input.strip_prefix('x') {
-        Some(rest)
+        Some(('x', rest))
     } else if let Some(rest) = input.strip_prefix('X') {
-        Some(rest)
+        Some(('X', rest))
     } else {
         None
     }
@@ -259,23 +266,23 @@ fn identifier(input: &str, pos: Position) -> Result<(&str, &str), Error> {
 
 fn op(input: &str) -> (Op, &str) {
     let bytes = input.as_bytes();
-    if bytes.get(0) == Some(&b'=') {
+    if bytes.first() == Some(&b'=') {
         (Op::Exact, &input[1..])
-    } else if bytes.get(0) == Some(&b'>') {
+    } else if bytes.first() == Some(&b'>') {
         if bytes.get(1) == Some(&b'=') {
             (Op::GreaterEq, &input[2..])
         } else {
             (Op::Greater, &input[1..])
         }
-    } else if bytes.get(0) == Some(&b'<') {
+    } else if bytes.first() == Some(&b'<') {
         if bytes.get(1) == Some(&b'=') {
             (Op::LessEq, &input[2..])
         } else {
             (Op::Less, &input[1..])
         }
-    } else if bytes.get(0) == Some(&b'~') {
+    } else if bytes.first() == Some(&b'~') {
         (Op::Tilde, &input[1..])
-    } else if bytes.get(0) == Some(&b'^') {
+    } else if bytes.first() == Some(&b'^') {
         (Op::Caret, &input[1..])
     } else {
         (Op::DEFAULT, input)
@@ -293,7 +300,7 @@ fn comparator(input: &str) -> Result<(Comparator, Position, &str), Error> {
 
     let (minor, text) = if let Some(text) = text.strip_prefix('.') {
         pos = Position::Minor;
-        if let Some(text) = wildcard(text) {
+        if let Some((_, text)) = wildcard(text) {
             has_wildcard = true;
             if default_op {
                 op = Op::Wildcard;
@@ -309,7 +316,7 @@ fn comparator(input: &str) -> Result<(Comparator, Position, &str), Error> {
 
     let (patch, text) = if let Some(text) = text.strip_prefix('.') {
         pos = Position::Patch;
-        if let Some(text) = wildcard(text) {
+        if let Some((_, text)) = wildcard(text) {
             if default_op {
                 op = Op::Wildcard;
             }
@@ -362,7 +369,18 @@ fn comparator(input: &str) -> Result<(Comparator, Position, &str), Error> {
 }
 
 fn version_req(input: &str, out: &mut Vec<Comparator>, depth: usize) -> Result<usize, Error> {
-    let (comparator, pos, text) = comparator(input)?;
+    let (comparator, pos, text) = match comparator(input) {
+        Ok(success) => success,
+        Err(mut error) => {
+            if let Some((ch, mut rest)) = wildcard(input) {
+                rest = rest.trim_start_matches(' ');
+                if rest.is_empty() || rest.starts_with(',') {
+                    error.kind = ErrorKind::WildcardNotTheOnlyComparator(ch);
+                }
+            }
+            return Err(error);
+        }
+    };
 
     if text.is_empty() {
         out.reserve_exact(depth + 1);

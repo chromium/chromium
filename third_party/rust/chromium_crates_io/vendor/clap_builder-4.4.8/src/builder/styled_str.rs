@@ -45,10 +45,6 @@ impl StyledStr {
         self.0.push_str(msg);
     }
 
-    pub(crate) fn trim(&mut self) {
-        self.0 = self.0.trim().to_owned()
-    }
-
     pub(crate) fn trim_start_lines(&mut self) {
         if let Some(pos) = self.0.find('\n') {
             let (leading, help) = self.0.split_at(pos + 1);

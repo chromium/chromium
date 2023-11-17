@@ -39,6 +39,7 @@ impl<'de> Deserialize<'de> for () {
 }
 
 #[cfg(feature = "unstable")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "unstable")))]
 impl<'de> Deserialize<'de> for ! {
     fn deserialize<D>(_deserializer: D) -> Result<Self, D::Error>
     where
@@ -175,6 +176,28 @@ macro_rules! num_as_self {
                 Ok(nonzero)
             } else {
                 Err(Error::invalid_value(Unexpected::Unsigned(0), &self))
+            }
+        }
+    };
+}
+
+macro_rules! num_as_copysign_self {
+    ($ty:ident : $visit:ident) => {
+        #[inline]
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            #[cfg(any(no_float_copysign, not(feature = "std")))]
+            {
+                Ok(v as Self::Value)
+            }
+
+            #[cfg(all(not(no_float_copysign), feature = "std"))]
+            {
+                // Preserve sign of NaN. The `as` produces a nondeterministic sign.
+                let sign = if v.is_sign_positive() { 1.0 } else { -1.0 };
+                Ok((v as Self::Value).copysign(sign))
             }
         }
     };
@@ -351,7 +374,7 @@ impl_deserialize_num! {
 impl_deserialize_num! {
     f32, deserialize_f32
     num_self!(f32:visit_f32);
-    num_as_self!(f64:visit_f64);
+    num_as_copysign_self!(f64:visit_f64);
     num_as_self!(i8:visit_i8 i16:visit_i16 i32:visit_i32 i64:visit_i64);
     num_as_self!(u8:visit_u8 u16:visit_u16 u32:visit_u32 u64:visit_u64);
 }
@@ -359,7 +382,7 @@ impl_deserialize_num! {
 impl_deserialize_num! {
     f64, deserialize_f64
     num_self!(f64:visit_f64);
-    num_as_self!(f32:visit_f32);
+    num_as_copysign_self!(f32:visit_f32);
     num_as_self!(i8:visit_i8 i16:visit_i16 i32:visit_i32 i64:visit_i64);
     num_as_self!(u8:visit_u8 u16:visit_u16 u32:visit_u32 u64:visit_u64);
 }
@@ -574,6 +597,7 @@ impl<'a, 'de> Visitor<'de> for StringInPlaceVisitor<'a> {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de> Deserialize<'de> for String {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -717,6 +741,7 @@ impl<'de> Visitor<'de> for CStringVisitor {
 }
 
 #[cfg(any(feature = "std", all(not(no_core_cstr), feature = "alloc")))]
+#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de> Deserialize<'de> for CString {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -728,10 +753,10 @@ impl<'de> Deserialize<'de> for CString {
 
 macro_rules! forwarded_impl {
     (
-        $(#[doc = $doc:tt])*
+        $(#[$attr:meta])*
         ($($id:ident),*), $ty:ty, $func:expr
     ) => {
-        $(#[doc = $doc])*
+        $(#[$attr])*
         impl<'de $(, $id : Deserialize<'de>,)*> Deserialize<'de> for $ty {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
@@ -743,10 +768,15 @@ macro_rules! forwarded_impl {
     }
 }
 
-#[cfg(any(feature = "std", all(not(no_core_cstr), feature = "alloc")))]
-forwarded_impl!((), Box<CStr>, CString::into_boxed_c_str);
+forwarded_impl! {
+    #[cfg(any(feature = "std", all(not(no_core_cstr), feature = "alloc")))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    (), Box<CStr>, CString::into_boxed_c_str
+}
 
-forwarded_impl!((T), Reverse<T>, Reverse);
+forwarded_impl! {
+    (T), Reverse<T>, Reverse
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -852,9 +882,9 @@ impl<'de, T: ?Sized> Deserialize<'de> for PhantomData<T> {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 macro_rules! seq_impl {
     (
+        $(#[$attr:meta])*
         $ty:ident <T $(: $tbound1:ident $(+ $tbound2:ident)*)* $(, $typaram:ident : $bound1:ident $(+ $bound2:ident)*)*>,
         $access:ident,
         $clear:expr,
@@ -862,6 +892,7 @@ macro_rules! seq_impl {
         $reserve:expr,
         $insert:expr
     ) => {
+        $(#[$attr])*
         impl<'de, T $(, $typaram)*> Deserialize<'de> for $ty<T $(, $typaram)*>
         where
             T: Deserialize<'de> $(+ $tbound1 $(+ $tbound2)*)*,
@@ -949,8 +980,9 @@ macro_rules! seq_impl {
 #[cfg(any(feature = "std", feature = "alloc"))]
 fn nop_reserve<T>(_seq: T, _n: usize) {}
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 seq_impl!(
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     BinaryHeap<T: Ord>,
     seq,
     BinaryHeap::clear,
@@ -959,8 +991,9 @@ seq_impl!(
     BinaryHeap::push
 );
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 seq_impl!(
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     BTreeSet<T: Eq + Ord>,
     seq,
     BTreeSet::clear,
@@ -969,8 +1002,9 @@ seq_impl!(
     BTreeSet::insert
 );
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 seq_impl!(
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     LinkedList<T>,
     seq,
     LinkedList::clear,
@@ -979,8 +1013,9 @@ seq_impl!(
     LinkedList::push_back
 );
 
-#[cfg(feature = "std")]
 seq_impl!(
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
     HashSet<T: Eq + Hash, S: BuildHasher + Default>,
     seq,
     HashSet::clear,
@@ -989,8 +1024,9 @@ seq_impl!(
     HashSet::insert
 );
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 seq_impl!(
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
     VecDeque<T>,
     seq,
     VecDeque::clear,
@@ -1002,6 +1038,7 @@ seq_impl!(
 ////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, T> Deserialize<'de> for Vec<T>
 where
     T: Deserialize<'de>,
@@ -1347,13 +1384,14 @@ tuple_impls! {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(any(feature = "std", feature = "alloc"))]
 macro_rules! map_impl {
     (
+        $(#[$attr:meta])*
         $ty:ident <K $(: $kbound1:ident $(+ $kbound2:ident)*)*, V $(, $typaram:ident : $bound1:ident $(+ $bound2:ident)*)*>,
         $access:ident,
-        $with_capacity:expr
+        $with_capacity:expr,
     ) => {
+        $(#[$attr])*
         impl<'de, K, V $(, $typaram)*> Deserialize<'de> for $ty<K, V $(, $typaram)*>
         where
             K: Deserialize<'de> $(+ $kbound1 $(+ $kbound2)*)*,
@@ -1402,21 +1440,30 @@ macro_rules! map_impl {
     }
 }
 
-#[cfg(any(feature = "std", feature = "alloc"))]
-map_impl!(BTreeMap<K: Ord, V>, map, BTreeMap::new());
+map_impl! {
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    BTreeMap<K: Ord, V>,
+    map,
+    BTreeMap::new(),
+}
 
-#[cfg(feature = "std")]
-map_impl!(
+map_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
     HashMap<K: Eq + Hash, V, S: BuildHasher + Default>,
     map,
-    HashMap::with_capacity_and_hasher(size_hint::cautious::<(K, V)>(map.size_hint()), S::default())
-);
+    HashMap::with_capacity_and_hasher(size_hint::cautious::<(K, V)>(map.size_hint()), S::default()),
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(feature = "std")]
 macro_rules! parse_ip_impl {
-    ($expecting:tt $ty:ty; $size:tt) => {
+    (
+        $(#[$attr:meta])*
+        $ty:ty, $expecting:expr, $size:tt
+    ) => {
+        $(#[$attr])*
         impl<'de> Deserialize<'de> for $ty {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
@@ -1545,6 +1592,7 @@ macro_rules! deserialize_enum {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
 impl<'de> Deserialize<'de> for net::IpAddr {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -1563,15 +1611,25 @@ impl<'de> Deserialize<'de> for net::IpAddr {
     }
 }
 
-#[cfg(feature = "std")]
-parse_ip_impl!("IPv4 address" net::Ipv4Addr; 4);
+parse_ip_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    net::Ipv4Addr, "IPv4 address", 4
+}
 
-#[cfg(feature = "std")]
-parse_ip_impl!("IPv6 address" net::Ipv6Addr; 16);
+parse_ip_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    net::Ipv6Addr, "IPv6 address", 16
+}
 
-#[cfg(feature = "std")]
 macro_rules! parse_socket_impl {
-    ($expecting:tt $ty:ty, $new:expr) => {
+    (
+        $(#[$attr:meta])*
+        $ty:ty, $expecting:tt,
+        $new:expr,
+    ) => {
+        $(#[$attr])*
         impl<'de> Deserialize<'de> for $ty {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
@@ -1588,6 +1646,7 @@ macro_rules! parse_socket_impl {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
 impl<'de> Deserialize<'de> for net::SocketAddr {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -1606,11 +1665,19 @@ impl<'de> Deserialize<'de> for net::SocketAddr {
     }
 }
 
-#[cfg(feature = "std")]
-parse_socket_impl!("IPv4 socket address" net::SocketAddrV4, |(ip, port)| net::SocketAddrV4::new(ip, port));
+parse_socket_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    net::SocketAddrV4, "IPv4 socket address",
+    |(ip, port)| net::SocketAddrV4::new(ip, port),
+}
 
-#[cfg(feature = "std")]
-parse_socket_impl!("IPv6 socket address" net::SocketAddrV6, |(ip, port)| net::SocketAddrV6::new(ip, port, 0, 0));
+parse_socket_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    net::SocketAddrV6, "IPv6 socket address",
+    |(ip, port)| net::SocketAddrV6::new(ip, port, 0, 0),
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1643,6 +1710,7 @@ impl<'a> Visitor<'a> for PathVisitor {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
 impl<'de: 'a, 'a> Deserialize<'de> for &'a Path {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -1697,6 +1765,7 @@ impl<'de> Visitor<'de> for PathBufVisitor {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
 impl<'de> Deserialize<'de> for PathBuf {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -1706,8 +1775,11 @@ impl<'de> Deserialize<'de> for PathBuf {
     }
 }
 
-#[cfg(feature = "std")]
-forwarded_impl!((), Box<Path>, PathBuf::into_boxed_path);
+forwarded_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    (), Box<Path>, PathBuf::into_boxed_path
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1767,6 +1839,7 @@ impl<'de> Visitor<'de> for OsStringVisitor {
 }
 
 #[cfg(all(feature = "std", any(unix, windows)))]
+#[cfg_attr(doc_cfg, doc(cfg(all(feature = "std", any(unix, windows)))))]
 impl<'de> Deserialize<'de> for OsString {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -1778,19 +1851,32 @@ impl<'de> Deserialize<'de> for OsString {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(any(feature = "std", feature = "alloc"))]
-forwarded_impl!((T), Box<T>, Box::new);
+forwarded_impl! {
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    (T), Box<T>, Box::new
+}
+
+forwarded_impl! {
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    (T), Box<[T]>, Vec::into_boxed_slice
+}
+
+forwarded_impl! {
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    (), Box<str>, String::into_boxed_str
+}
+
+forwarded_impl! {
+    #[cfg(all(feature = "std", any(unix, windows)))]
+    #[cfg_attr(doc_cfg, doc(cfg(all(feature = "std", any(unix, windows)))))]
+    (), Box<OsStr>, OsString::into_boxed_os_str
+}
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-forwarded_impl!((T), Box<[T]>, Vec::into_boxed_slice);
-
-#[cfg(any(feature = "std", feature = "alloc"))]
-forwarded_impl!((), Box<str>, String::into_boxed_str);
-
-#[cfg(all(feature = "std", any(unix, windows)))]
-forwarded_impl!((), Box<OsStr>, OsString::into_boxed_os_str);
-
-#[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, 'a, T: ?Sized> Deserialize<'de> for Cow<'a, T>
 where
     T: ToOwned,
@@ -1812,6 +1898,10 @@ where
 ///
 /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
 #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
+#[cfg_attr(
+    doc_cfg,
+    doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
+)]
 impl<'de, T: ?Sized> Deserialize<'de> for RcWeak<T>
 where
     T: Deserialize<'de>,
@@ -1830,6 +1920,10 @@ where
 ///
 /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
 #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
+#[cfg_attr(
+    doc_cfg,
+    doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
+)]
 impl<'de, T: ?Sized> Deserialize<'de> for ArcWeak<T>
 where
     T: Deserialize<'de>,
@@ -1845,13 +1939,12 @@ where
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
 macro_rules! box_forwarded_impl {
     (
-        $(#[doc = $doc:tt])*
+        $(#[$attr:meta])*
         $t:ident
     ) => {
-        $(#[doc = $doc])*
+        $(#[$attr])*
         impl<'de, T: ?Sized> Deserialize<'de> for $t<T>
         where
             Box<T>: Deserialize<'de>,
@@ -1866,7 +1959,6 @@ macro_rules! box_forwarded_impl {
     };
 }
 
-#[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
 box_forwarded_impl! {
     /// This impl requires the [`"rc"`] Cargo feature of Serde.
     ///
@@ -1875,10 +1967,11 @@ box_forwarded_impl! {
     /// will end up with a strong count of 1.
     ///
     /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
+    #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
+    #[cfg_attr(doc_cfg, doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))))]
     Rc
 }
 
-#[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
 box_forwarded_impl! {
     /// This impl requires the [`"rc"`] Cargo feature of Serde.
     ///
@@ -1887,6 +1980,8 @@ box_forwarded_impl! {
     /// will end up with a strong count of 1.
     ///
     /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
+    #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
+    #[cfg_attr(doc_cfg, doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))))]
     Arc
 }
 
@@ -1904,13 +1999,21 @@ where
     }
 }
 
-forwarded_impl!((T), RefCell<T>, RefCell::new);
+forwarded_impl! {
+    (T), RefCell<T>, RefCell::new
+}
 
-#[cfg(feature = "std")]
-forwarded_impl!((T), Mutex<T>, Mutex::new);
+forwarded_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    (T), Mutex<T>, Mutex::new
+}
 
-#[cfg(feature = "std")]
-forwarded_impl!((T), RwLock<T>, RwLock::new);
+forwarded_impl! {
+    #[cfg(feature = "std")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    (T), RwLock<T>, RwLock::new
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -2063,6 +2166,7 @@ impl<'de> Deserialize<'de> for Duration {
 ////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(feature = "std")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
 impl<'de> Deserialize<'de> for SystemTime {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -2898,6 +3002,7 @@ macro_rules! atomic_impl {
     ($($ty:ident $size:expr)*) => {
         $(
             #[cfg(any(no_target_has_atomic, target_has_atomic = $size))]
+            #[cfg_attr(doc_cfg, doc(cfg(all(feature = "std", target_has_atomic = $size))))]
             impl<'de> Deserialize<'de> for $ty {
                 fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
                 where

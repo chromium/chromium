@@ -5,14 +5,14 @@ use crate::ptr::Mut;
 use crate::ptr::{Own, Ref};
 use crate::{Error, StdError};
 use alloc::boxed::Box;
-#[cfg(backtrace)]
-use core::any::Demand;
 use core::any::TypeId;
 use core::fmt::{self, Debug, Display};
 use core::mem::ManuallyDrop;
 #[cfg(not(anyhow_no_ptr_addr_of))]
 use core::ptr;
 use core::ptr::NonNull;
+#[cfg(backtrace)]
+use std::error::{self, Request};
 
 #[cfg(feature = "std")]
 use core::ops::{Deref, DerefMut};
@@ -522,17 +522,21 @@ impl Error {
             Some(addr.cast::<E>().deref_mut())
         }
     }
-}
 
-#[cfg(backtrace)]
-impl std::any::Provider for Error {
+    #[cfg(backtrace)]
+    pub(crate) fn provide<'a>(&'a self, request: &mut Request<'a>) {
+        unsafe { ErrorImpl::provide(self.inner.by_ref(), request) }
+    }
+
     // Called by thiserror when you have `#[source] anyhow::Error`. This provide
     // implementation includes the anyhow::Error's Backtrace if any, unlike
     // deref'ing to dyn Error where the provide implementation would include
     // only the original error's Backtrace from before it got wrapped into an
     // anyhow::Error.
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        unsafe { ErrorImpl::provide(self.inner.by_ref(), demand) }
+    #[cfg(backtrace)]
+    #[doc(hidden)]
+    pub fn thiserror_provide<'a>(&'a self, request: &mut Request<'a>) {
+        Self::provide(self, request);
     }
 }
 
@@ -900,7 +904,7 @@ impl ErrorImpl {
             .as_ref()
             .or_else(|| {
                 #[cfg(backtrace)]
-                return Self::error(this).request_ref::<Backtrace>();
+                return error::request_ref::<Backtrace>(Self::error(this));
                 #[cfg(not(backtrace))]
                 return (vtable(this.ptr).object_backtrace)(this);
             })
@@ -908,11 +912,11 @@ impl ErrorImpl {
     }
 
     #[cfg(backtrace)]
-    unsafe fn provide<'a>(this: Ref<'a, Self>, demand: &mut Demand<'a>) {
+    unsafe fn provide<'a>(this: Ref<'a, Self>, request: &mut Request<'a>) {
         if let Some(backtrace) = &this.deref().backtrace {
-            demand.provide_ref(backtrace);
+            request.provide_ref(backtrace);
         }
-        Self::error(this).provide(demand);
+        Self::error(this).provide(request);
     }
 
     #[cold]
@@ -930,8 +934,8 @@ where
     }
 
     #[cfg(backtrace)]
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        unsafe { ErrorImpl::provide(self.erase(), demand) }
+    fn provide<'a>(&'a self, request: &mut Request<'a>) {
+        unsafe { ErrorImpl::provide(self.erase(), request) }
     }
 }
 

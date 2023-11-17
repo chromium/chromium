@@ -920,6 +920,7 @@ impl<'a> SomeRecord<'a> for AxisValueRecord {
 
 /// [Axis value table flags](https://docs.microsoft.com/en-us/typography/opentype/spec/stat#flags).
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AxisValueTableFlags {
     bits: u16,
 }

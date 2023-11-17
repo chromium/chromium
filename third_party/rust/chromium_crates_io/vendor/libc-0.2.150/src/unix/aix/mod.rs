@@ -1,7 +1,6 @@
 pub type c_char = i8;
 pub type caddr_t = *mut ::c_char;
-// FIXME: clockid_t must be c_long, but time.rs accepts only i32
-pub type clockid_t = ::c_int;
+pub type clockid_t = ::c_longlong;
 pub type blkcnt_t = ::c_long;
 pub type clock_t = ::c_int;
 pub type daddr_t = ::c_long;
@@ -1762,6 +1761,7 @@ pub const PRIO_USER: ::c_int = 2;
 pub const RUSAGE_THREAD: ::c_int = 1;
 pub const RLIM_SAVED_MAX: ::c_ulong = RLIM_INFINITY - 1;
 pub const RLIM_SAVED_CUR: ::c_ulong = RLIM_INFINITY - 2;
+#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::c_int = 10;
 
 // sys/sched.h
@@ -2669,6 +2669,7 @@ extern "C" {
         attr: *const ::pthread_attr_t,
         guardsize: *mut ::size_t,
     ) -> ::c_int;
+    pub fn pthread_attr_setguardsize(attr: *mut ::pthread_attr_t, guardsize: ::size_t) -> ::c_int;
     pub fn pthread_attr_getschedparam(
         attr: *const ::pthread_attr_t,
         param: *mut sched_param,
@@ -3273,7 +3274,13 @@ extern "C" {
     pub fn splice(socket1: ::c_int, socket2: ::c_int, flags: ::c_int) -> ::c_int;
     pub fn srand(seed: ::c_uint);
     pub fn srand48(seed: ::c_long);
-    pub fn stat64(path: *const c_char, buf: *mut stat64) -> ::c_int;
+    pub fn stat64(path: *const ::c_char, buf: *mut stat64) -> ::c_int;
+    pub fn stat64at(
+        dirfd: ::c_int,
+        path: *const ::c_char,
+        buf: *mut stat64,
+        flags: ::c_int,
+    ) -> ::c_int;
     pub fn statfs(path: *const ::c_char, buf: *mut statfs) -> ::c_int;
     pub fn statfs64(path: *const ::c_char, buf: *mut statfs64) -> ::c_int;
     pub fn statvfs64(path: *const ::c_char, buf: *mut statvfs64) -> ::c_int;

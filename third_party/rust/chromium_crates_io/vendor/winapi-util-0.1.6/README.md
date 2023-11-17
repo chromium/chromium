@@ -16,12 +16,7 @@ https://docs.rs/winapi-util
 
 ### Usage
 
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-winapi-util = "0.1"
-```
+Run `cargo add winapi-util` to add this dependency to your `Cargo.toml` file.
 
 
 ### Notes
@@ -46,7 +41,7 @@ got things right is most appreciated.
 
 ### Minimum Rust version policy
 
-This crate's minimum supported `rustc` version is `1.34.0`.
+This crate's minimum supported `rustc` version is `1.72.0`.
 
 The current policy is that the minimum Rust version required to use this crate
 can be increased in non-breaking version updates. For example, if `crate 1.0`

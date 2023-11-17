@@ -59,6 +59,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/postscript/index.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/postscript/stack.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/postscript/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/sbix.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/stat.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/value_record.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/tables/variations.rs",
@@ -98,6 +99,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_os2.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_post.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_postscript.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_sbix.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_stat.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_test_enum.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.11.2/src/../generated/generated_test_flags.rs",
@@ -112,7 +114,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.11.0"
+  cargo_pkg_version = "0.11.2"
   cargo_pkg_name = "read-fonts"
   cargo_pkg_description = "Reading OpenType font files."
   library_configs -= [ "//build/config/compiler:chromium_code" ]

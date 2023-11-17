@@ -27,36 +27,38 @@
 ///     data.0, data.1, private_data);
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! log {
-    // log!(target: "my_target", Level::Info; key1 = 42, key2 = true; "a {} event", "log");
+    // log!(target: "my_target", Level::Info, key1 = 42, key2 = true; "a {} event", "log");
     (target: $target:expr, $lvl:expr, $($key:tt = $value:expr),+; $($arg:tt)+) => ({
         let lvl = $lvl;
         if lvl <= $crate::STATIC_MAX_LEVEL && lvl <= $crate::max_level() {
-            $crate::__private_api_log(
-                __log_format_args!($($arg)+),
+            $crate::__private_api::log(
+                $crate::__private_api::format_args!($($arg)+),
                 lvl,
-                &($target, __log_module_path!(), __log_file!(), __log_line!()),
-                $crate::__private_api::Option::Some(&[$((__log_key!($key), &$value)),+])
+                &($target, $crate::__private_api::module_path!(), $crate::__private_api::file!()),
+                $crate::__private_api::line!(),
+                $crate::__private_api::Option::Some(&[$(($crate::__log_key!($key), &$value)),+])
             );
         }
     });
 
-    // log!(target: "my_target", Level::Info; "a {} event", "log");
+    // log!(target: "my_target", Level::Info, "a {} event", "log");
     (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
         let lvl = $lvl;
         if lvl <= $crate::STATIC_MAX_LEVEL && lvl <= $crate::max_level() {
-            $crate::__private_api_log(
-                __log_format_args!($($arg)+),
+            $crate::__private_api::log(
+                $crate::__private_api::format_args!($($arg)+),
                 lvl,
-                &($target, __log_module_path!(), __log_file!(), __log_line!()),
+                &($target, $crate::__private_api::module_path!(), $crate::__private_api::file!()),
+                $crate::__private_api::line!(),
                 $crate::__private_api::Option::None,
             );
         }
     });
 
     // log!(Level::Info, "a log event")
-    ($lvl:expr, $($arg:tt)+) => (log!(target: __log_module_path!(), $lvl, $($arg)+));
+    ($lvl:expr, $($arg:tt)+) => ($crate::log!(target: $crate::__private_api::module_path!(), $lvl, $($arg)+));
 }
 
 /// Logs a message at the error level.
@@ -73,14 +75,14 @@ macro_rules! log {
 /// error!(target: "app_events", "App Error: {}, Port: {}", err_info, 22);
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! error {
     // error!(target: "my_target", key1 = 42, key2 = true; "a {} event", "log")
     // error!(target: "my_target", "a {} event", "log")
-    (target: $target:expr, $($arg:tt)+) => (log!(target: $target, $crate::Level::Error, $($arg)+));
+    (target: $target:expr, $($arg:tt)+) => ($crate::log!(target: $target, $crate::Level::Error, $($arg)+));
 
     // error!("a {} event", "log")
-    ($($arg:tt)+) => (log!($crate::Level::Error, $($arg)+))
+    ($($arg:tt)+) => ($crate::log!($crate::Level::Error, $($arg)+))
 }
 
 /// Logs a message at the warn level.
@@ -97,14 +99,14 @@ macro_rules! error {
 /// warn!(target: "input_events", "App received warning: {}", warn_description);
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! warn {
     // warn!(target: "my_target", key1 = 42, key2 = true; "a {} event", "log")
     // warn!(target: "my_target", "a {} event", "log")
-    (target: $target:expr, $($arg:tt)+) => (log!(target: $target, $crate::Level::Warn, $($arg)+));
+    (target: $target:expr, $($arg:tt)+) => ($crate::log!(target: $target, $crate::Level::Warn, $($arg)+));
 
     // warn!("a {} event", "log")
-    ($($arg:tt)+) => (log!($crate::Level::Warn, $($arg)+))
+    ($($arg:tt)+) => ($crate::log!($crate::Level::Warn, $($arg)+))
 }
 
 /// Logs a message at the info level.
@@ -119,18 +121,18 @@ macro_rules! warn {
 /// let conn_info = Connection { port: 40, speed: 3.20 };
 ///
 /// info!("Connected to port {} at {} Mb/s", conn_info.port, conn_info.speed);
-/// info!(target: "connection_events", "Successfull connection, port: {}, speed: {}",
+/// info!(target: "connection_events", "Successful connection, port: {}, speed: {}",
 ///       conn_info.port, conn_info.speed);
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! info {
     // info!(target: "my_target", key1 = 42, key2 = true; "a {} event", "log")
     // info!(target: "my_target", "a {} event", "log")
-    (target: $target:expr, $($arg:tt)+) => (log!(target: $target, $crate::Level::Info, $($arg)+));
+    (target: $target:expr, $($arg:tt)+) => ($crate::log!(target: $target, $crate::Level::Info, $($arg)+));
 
     // info!("a {} event", "log")
-    ($($arg:tt)+) => (log!($crate::Level::Info, $($arg)+))
+    ($($arg:tt)+) => ($crate::log!($crate::Level::Info, $($arg)+))
 }
 
 /// Logs a message at the debug level.
@@ -148,14 +150,14 @@ macro_rules! info {
 /// debug!(target: "app_events", "New position: x: {}, y: {}", pos.x, pos.y);
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! debug {
     // debug!(target: "my_target", key1 = 42, key2 = true; "a {} event", "log")
     // debug!(target: "my_target", "a {} event", "log")
-    (target: $target:expr, $($arg:tt)+) => (log!(target: $target, $crate::Level::Debug, $($arg)+));
+    (target: $target:expr, $($arg:tt)+) => ($crate::log!(target: $target, $crate::Level::Debug, $($arg)+));
 
     // debug!("a {} event", "log")
-    ($($arg:tt)+) => (log!($crate::Level::Debug, $($arg)+))
+    ($($arg:tt)+) => ($crate::log!($crate::Level::Debug, $($arg)+))
 }
 
 /// Logs a message at the trace level.
@@ -175,14 +177,14 @@ macro_rules! debug {
 ///        if pos.y >= 0.0 { "positive" } else { "negative" });
 /// # }
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! trace {
     // trace!(target: "my_target", key1 = 42, key2 = true; "a {} event", "log")
     // trace!(target: "my_target", "a {} event", "log")
-    (target: $target:expr, $($arg:tt)+) => (log!(target: $target, $crate::Level::Trace, $($arg)+));
+    (target: $target:expr, $($arg:tt)+) => ($crate::log!(target: $target, $crate::Level::Trace, $($arg)+));
 
     // trace!("a {} event", "log")
-    ($($arg:tt)+) => (log!($crate::Level::Trace, $($arg)+))
+    ($($arg:tt)+) => ($crate::log!($crate::Level::Trace, $($arg)+))
 }
 
 /// Determines if a message logged at the specified level in that module will
@@ -211,58 +213,16 @@ macro_rules! trace {
 /// # fn expensive_call() -> Data { Data { x: 0, y: 0 } }
 /// # fn main() {}
 /// ```
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! log_enabled {
     (target: $target:expr, $lvl:expr) => {{
         let lvl = $lvl;
         lvl <= $crate::STATIC_MAX_LEVEL
             && lvl <= $crate::max_level()
-            && $crate::__private_api_enabled(lvl, $target)
+            && $crate::__private_api::enabled(lvl, $target)
     }};
     ($lvl:expr) => {
-        log_enabled!(target: __log_module_path!(), $lvl)
-    };
-}
-
-// The log macro above cannot invoke format_args directly because it uses
-// local_inner_macros. A format_args invocation there would resolve to
-// $crate::format_args which does not exist. Instead invoke format_args here
-// outside of local_inner_macros so that it resolves (probably) to
-// core::format_args or std::format_args. Same for the several macros that
-// follow.
-//
-// This is a workaround until we drop support for pre-1.30 compilers. At that
-// point we can remove use of local_inner_macros, use $crate:: when invoking
-// local macros, and invoke format_args directly.
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __log_format_args {
-    ($($args:tt)*) => {
-        format_args!($($args)*)
-    };
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __log_module_path {
-    () => {
-        module_path!()
-    };
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __log_file {
-    () => {
-        file!()
-    };
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __log_line {
-    () => {
-        line!()
+        $crate::log_enabled!(target: $crate::__private_api::module_path!(), $lvl)
     };
 }
 
@@ -271,7 +231,7 @@ macro_rules! __log_line {
 macro_rules! __log_key {
     // key1 = 42
     ($($args:ident)*) => {
-        stringify!($($args)*)
+        $crate::__private_api::stringify!($($args)*)
     };
     // "key1" = 42
     ($($args:expr)*) => {

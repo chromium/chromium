@@ -2,6 +2,8 @@
 
 #[cfg(feature = "kv_unstable_sval")]
 extern crate sval;
+#[cfg(feature = "kv_unstable_sval")]
+extern crate sval_ref;
 
 #[cfg(feature = "kv_unstable_serde")]
 extern crate serde;
@@ -460,74 +462,94 @@ where
 mod sval_support {
     use super::*;
 
-    use self::sval::value;
-
-    impl<S> value::Value for AsMap<S>
+    impl<S> self::sval::Value for AsMap<S>
     where
         S: Source,
     {
-        fn stream(&self, stream: &mut value::Stream) -> value::Result {
-            struct StreamVisitor<'a, 'b>(&'a mut value::Stream<'b>);
+        fn stream<'sval, SV: self::sval::Stream<'sval> + ?Sized>(
+            &'sval self,
+            stream: &mut SV,
+        ) -> self::sval::Result {
+            struct StreamVisitor<'a, V: ?Sized>(&'a mut V);
 
-            impl<'a, 'b, 'kvs> Visitor<'kvs> for StreamVisitor<'a, 'b> {
+            impl<'a, 'kvs, V: self::sval::Stream<'kvs> + ?Sized> Visitor<'kvs> for StreamVisitor<'a, V> {
                 fn visit_pair(&mut self, key: Key<'kvs>, value: Value<'kvs>) -> Result<(), Error> {
                     self.0
-                        .map_key(key)
+                        .map_key_begin()
+                        .map_err(|_| Error::msg("failed to stream map key"))?;
+                    sval_ref::stream_ref(self.0, key)
                         .map_err(|_| Error::msg("failed to stream map key"))?;
                     self.0
-                        .map_value(value)
+                        .map_key_end()
+                        .map_err(|_| Error::msg("failed to stream map key"))?;
+
+                    self.0
+                        .map_value_begin()
                         .map_err(|_| Error::msg("failed to stream map value"))?;
+                    sval_ref::stream_ref(self.0, value)
+                        .map_err(|_| Error::msg("failed to stream map value"))?;
+                    self.0
+                        .map_value_end()
+                        .map_err(|_| Error::msg("failed to stream map value"))?;
+
                     Ok(())
                 }
             }
 
             stream
                 .map_begin(Some(self.count()))
-                .map_err(|_| self::sval::Error::msg("failed to begin map"))?;
+                .map_err(|_| self::sval::Error::new())?;
 
             self.visit(&mut StreamVisitor(stream))
-                .map_err(|_| self::sval::Error::msg("failed to visit key-values"))?;
+                .map_err(|_| self::sval::Error::new())?;
 
-            stream
-                .map_end()
-                .map_err(|_| self::sval::Error::msg("failed to end map"))
+            stream.map_end().map_err(|_| self::sval::Error::new())
         }
     }
 
-    impl<S> value::Value for AsList<S>
+    impl<S> self::sval::Value for AsList<S>
     where
         S: Source,
     {
-        fn stream(&self, stream: &mut value::Stream) -> value::Result {
-            struct StreamVisitor<'a, 'b>(&'a mut value::Stream<'b>);
+        fn stream<'sval, SV: self::sval::Stream<'sval> + ?Sized>(
+            &'sval self,
+            stream: &mut SV,
+        ) -> self::sval::Result {
+            struct StreamVisitor<'a, V: ?Sized>(&'a mut V);
 
-            impl<'a, 'b, 'kvs> Visitor<'kvs> for StreamVisitor<'a, 'b> {
+            impl<'a, 'kvs, V: self::sval::Stream<'kvs> + ?Sized> Visitor<'kvs> for StreamVisitor<'a, V> {
                 fn visit_pair(&mut self, key: Key<'kvs>, value: Value<'kvs>) -> Result<(), Error> {
                     self.0
-                        .seq_elem((key, value))
-                        .map_err(|_| Error::msg("failed to stream seq entry"))?;
+                        .seq_value_begin()
+                        .map_err(|_| Error::msg("failed to stream seq value"))?;
+                    self::sval_ref::stream_ref(self.0, (key, value))
+                        .map_err(|_| Error::msg("failed to stream seq value"))?;
+                    self.0
+                        .seq_value_end()
+                        .map_err(|_| Error::msg("failed to stream seq value"))?;
+
                     Ok(())
                 }
             }
 
             stream
                 .seq_begin(Some(self.count()))
-                .map_err(|_| self::sval::Error::msg("failed to begin seq"))?;
+                .map_err(|_| self::sval::Error::new())?;
 
             self.visit(&mut StreamVisitor(stream))
-                .map_err(|_| self::sval::Error::msg("failed to visit key-values"))?;
+                .map_err(|_| self::sval::Error::new())?;
 
-            stream
-                .seq_end()
-                .map_err(|_| self::sval::Error::msg("failed to end seq"))
+            stream.seq_end().map_err(|_| self::sval::Error::new())
         }
     }
 
     #[cfg(test)]
     mod tests {
+        extern crate sval_derive;
+
         use super::*;
 
-        use self::sval::Value;
+        use self::sval_derive::Value;
 
         use crate::kv::source;
 

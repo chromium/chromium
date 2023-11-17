@@ -1,6 +1,6 @@
-use std::str::pattern::{Pattern, SearchStep, Searcher};
+use core::str::pattern::{Pattern, SearchStep, Searcher};
 
-use crate::re_unicode::{Matches, Regex};
+use crate::{Matches, Regex};
 
 #[derive(Debug)]
 pub struct RegexSearcher<'r, 't> {

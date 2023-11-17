@@ -1,3 +1,4 @@
+use indoc::indoc;
 use serde_json::{json, Number, Value};
 
 #[test]
@@ -26,6 +27,8 @@ fn value_number() {
     assert_eq!(format!("{:?}", json!(1)), "Number(1)");
     assert_eq!(format!("{:?}", json!(-1)), "Number(-1)");
     assert_eq!(format!("{:?}", json!(1.0)), "Number(1.0)");
+    assert_eq!(Number::from_f64(1.0).unwrap().to_string(), "1.0"); // not just "1"
+    assert_eq!(Number::from_f64(12e40).unwrap().to_string(), "1.2e41");
 }
 
 #[test]
@@ -35,12 +38,12 @@ fn value_string() {
 
 #[test]
 fn value_array() {
-    assert_eq!(format!("{:?}", json!([])), "Array([])");
+    assert_eq!(format!("{:?}", json!([])), "Array []");
 }
 
 #[test]
 fn value_object() {
-    assert_eq!(format!("{:?}", json!({})), "Object({})");
+    assert_eq!(format!("{:?}", json!({})), "Object {}");
 }
 
 #[test]
@@ -50,19 +53,29 @@ fn error() {
     assert_eq!(format!("{:?}", err), expected);
 }
 
-const INDENTED_EXPECTED: &str = r#"Object({
-    "array": Array([
-        Number(
-            0,
-        ),
-        Number(
-            1,
-        ),
-    ]),
-})"#;
-
 #[test]
 fn indented() {
-    let j = json!({ "array": [0, 1] });
-    assert_eq!(format!("{:#?}", j), INDENTED_EXPECTED);
+    let j = json!({
+        "Array": [true],
+        "Bool": true,
+        "EmptyArray": [],
+        "EmptyObject": {},
+        "Null": null,
+        "Number": 1,
+        "String": "...",
+    });
+    let expected = indoc! {r#"
+        Object {
+            "Array": Array [
+                Bool(true),
+            ],
+            "Bool": Bool(true),
+            "EmptyArray": Array [],
+            "EmptyObject": Object {},
+            "Null": Null,
+            "Number": Number(1),
+            "String": String("..."),
+        }"#
+    };
+    assert_eq!(format!("{:#?}", j), expected);
 }

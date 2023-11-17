@@ -20,15 +20,34 @@
 
 #![cfg(not(feature = "small"))]
 #![allow(dead_code)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::excessive_precision,
+    clippy::float_cmp,
+    clippy::manual_range_contains,
+    clippy::similar_names,
+    clippy::too_many_lines,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix,
+    clippy::wildcard_imports
+)]
 
 #[path = "../src/common.rs"]
 mod common;
 
+#[cfg(not(feature = "small"))]
 #[path = "../src/d2s_full_table.rs"]
 mod d2s_full_table;
 
 #[path = "../src/d2s_intrinsics.rs"]
 mod d2s_intrinsics;
+
+#[cfg(feature = "small")]
+#[path = "../src/d2s_small_table.rs"]
+mod d2s_small_table;
 
 #[path = "../src/d2s.rs"]
 mod d2s;
@@ -77,6 +96,7 @@ fn test_basic() {
     assert_eq!(1.0, s2d(b"1e0").unwrap());
     assert_eq!(1.0, s2d(b"1E0").unwrap());
     assert_eq!(1.0, s2d(b"000001.000000").unwrap());
+    assert_eq!(0.2316419, s2d(b"0.2316419").unwrap());
 }
 
 #[test]
@@ -126,5 +146,22 @@ fn test_issue157() {
     assert_eq!(
         1.2999999999999999E+154,
         s2d(b"1.2999999999999999E+154").unwrap(),
+    );
+}
+
+#[test]
+fn test_issue173() {
+    // Denormal boundary
+    assert_eq!(
+        2.2250738585072012e-308,
+        s2d(b"2.2250738585072012e-308").unwrap(),
+    );
+    assert_eq!(
+        2.2250738585072013e-308,
+        s2d(b"2.2250738585072013e-308").unwrap(),
+    );
+    assert_eq!(
+        2.2250738585072014e-308,
+        s2d(b"2.2250738585072014e-308").unwrap(),
     );
 }

@@ -31,6 +31,10 @@ pub struct GnConfig {
     /// Path to a handlebars template for an output GN build file. The path is
     /// relative to the config file.
     pub build_file_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing README.chromium files. The
+    /// path is relative to the config file. Only used for
+    /// //third_party/rust crates.
+    pub readme_file_template: std::path::PathBuf,
 }
 
 /// Influences dependency resolution for a session.
@@ -89,4 +93,12 @@ pub struct CrateConfig {
     pub build_script_outputs: Vec<std::path::PathBuf>,
     #[serde(default)]
     pub group: Option<String>,
+    #[serde(default)]
+    pub security_critical: Option<bool>,
+    #[serde(default)]
+    pub shipped: Option<bool>,
+    #[serde(default)]
+    pub license: Option<String>,
+    #[serde(default)]
+    pub license_file: Option<String>,
 }

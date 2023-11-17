@@ -1,6 +1,6 @@
 [package]
 name = "getrandom"
-version = "0.2.9" # Also update html_root_url in lib.rs when bumping this
+version = "0.2.11" # Also update html_root_url in lib.rs when bumping this
 edition = "2018"
 authors = ["The Rand Project Developers"]
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 
 [target.'cfg(unix)'.dependencies]
-libc = { version = "0.2.139", default-features = false }
+libc = { version = "0.2.149", default-features = false }
 
 [target.'cfg(target_os = "wasi")'.dependencies]
 wasi = { version = "0.11", default-features = false }
@@ -51,3 +51,14 @@ test-in-browser = []
 [package.metadata.docs.rs]
 features = ["std", "custom"]
 rustdoc-args = ["--cfg", "docsrs"]
+
+# workaround for https://github.com/cross-rs/cross/issues/1345
+[package.metadata.cross.target.x86_64-unknown-netbsd]
+pre-build = [
+    "mkdir -p /tmp/netbsd",
+    "curl https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/amd64/binary/sets/base.tar.xz -O",
+    "tar -C /tmp/netbsd -xJf base.tar.xz",
+    "cp /tmp/netbsd/usr/lib/libexecinfo.so /usr/local/x86_64-unknown-netbsd/lib",
+    "rm base.tar.xz",
+    "rm -rf /tmp/netbsd",
+]

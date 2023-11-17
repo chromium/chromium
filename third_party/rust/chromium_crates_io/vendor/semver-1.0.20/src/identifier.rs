@@ -66,51 +66,82 @@
 // repr, leaving it available as a niche for downstream code. For example this
 // allows size_of::<Version>() == size_of::<Option<Version>>().
 
-use crate::alloc::alloc::{alloc, dealloc, Layout};
-#[cfg(no_from_ne_bytes)]
-use crate::backport::FromNeBytes;
+use crate::alloc::alloc::{alloc, dealloc, handle_alloc_error, Layout};
+use core::isize;
 use core::mem;
 use core::num::{NonZeroU64, NonZeroUsize};
-use core::ptr;
+use core::ptr::{self, NonNull};
 use core::slice;
 use core::str;
+use core::usize;
 
-#[repr(transparent)]
+const PTR_BYTES: usize = mem::size_of::<NonNull<u8>>();
+
+// If pointers are already 8 bytes or bigger, then 0. If pointers are smaller
+// than 8 bytes, then Identifier will contain a byte array to raise its size up
+// to 8 bytes total.
+const TAIL_BYTES: usize = 8 * (PTR_BYTES < 8) as usize - PTR_BYTES * (PTR_BYTES < 8) as usize;
+
+#[repr(C, align(8))]
 pub(crate) struct Identifier {
-    repr: NonZeroU64,
+    head: NonNull<u8>,
+    tail: [u8; TAIL_BYTES],
 }
 
 impl Identifier {
-    const EMPTY: NonZeroU64 = unsafe { NonZeroU64::new_unchecked(!0) };
-
     pub(crate) const fn empty() -> Self {
+        // This is a separate constant because unsafe function calls are not
+        // allowed in a const fn body, only in a const, until later rustc than
+        // what we support.
+        const HEAD: NonNull<u8> = unsafe { NonNull::new_unchecked(!0 as *mut u8) };
+
         // `mov rax, -1`
-        Identifier { repr: Self::EMPTY }
+        Identifier {
+            head: HEAD,
+            tail: [!0; TAIL_BYTES],
+        }
     }
 
     // SAFETY: string must be ASCII and not contain \0 bytes.
     pub(crate) unsafe fn new_unchecked(string: &str) -> Self {
         let len = string.len();
-        let repr = match len as u64 {
-            0 => Self::EMPTY,
+        debug_assert!(len <= isize::MAX as usize);
+        match len as u64 {
+            0 => Self::empty(),
             1..=8 => {
-                let mut bytes = [0u8; 8];
+                let mut bytes = [0u8; mem::size_of::<Identifier>()];
                 // SAFETY: string is big enough to read len bytes, bytes is big
                 // enough to write len bytes, and they do not overlap.
                 unsafe { ptr::copy_nonoverlapping(string.as_ptr(), bytes.as_mut_ptr(), len) };
-                // SAFETY: it's nonzero because the input string was at least 1
-                // byte of ASCII and did not contain \0.
-                unsafe { NonZeroU64::new_unchecked(u64::from_ne_bytes(bytes)) }
+                // SAFETY: the head field is nonzero because the input string
+                // was at least 1 byte of ASCII and did not contain \0.
+                unsafe { mem::transmute::<[u8; mem::size_of::<Identifier>()], Identifier>(bytes) }
             }
             9..=0xff_ffff_ffff_ffff => {
                 // SAFETY: len is in a range that does not contain 0.
                 let size = bytes_for_varint(unsafe { NonZeroUsize::new_unchecked(len) }) + len;
                 let align = 2;
+                // On 32-bit and 16-bit architecture, check for size overflowing
+                // isize::MAX. Making an allocation request bigger than this to
+                // the allocator is considered UB. All allocations (including
+                // static ones) are limited to isize::MAX so we're guaranteed
+                // len <= isize::MAX, and we know bytes_for_varint(len) <= 5
+                // because 128**5 > isize::MAX, which means the only problem
+                // that can arise is when isize::MAX - 5 <= len <= isize::MAX.
+                // This is pretty much guaranteed to be malicious input so we
+                // don't need to care about returning a good error message.
+                if mem::size_of::<usize>() < 8 {
+                    let max_alloc = usize::MAX / 2 - align;
+                    assert!(size <= max_alloc);
+                }
                 // SAFETY: align is not zero, align is a power of two, and
-                // rounding size up to align does not overflow usize::MAX.
+                // rounding size up to align does not overflow isize::MAX.
                 let layout = unsafe { Layout::from_size_align_unchecked(size, align) };
                 // SAFETY: layout's size is nonzero.
                 let ptr = unsafe { alloc(layout) };
+                if ptr.is_null() {
+                    handle_alloc_error(layout);
+                }
                 let mut write = ptr;
                 let mut varint_remaining = len;
                 while varint_remaining > 0 {
@@ -124,25 +155,33 @@ impl Identifier {
                 // SAFETY: size is bytes_for_varint(len) bytes + len bytes. This
                 // is writing to the last len bytes.
                 unsafe { ptr::copy_nonoverlapping(string.as_ptr(), write, len) };
-                ptr_to_repr(ptr)
+                Identifier {
+                    head: ptr_to_repr(ptr),
+                    tail: [0; TAIL_BYTES],
+                }
             }
             0x100_0000_0000_0000..=0xffff_ffff_ffff_ffff => {
                 unreachable!("please refrain from storing >64 petabytes of text in semver version");
             }
             #[cfg(no_exhaustive_int_match)] // rustc <1.33
             _ => unreachable!(),
-        };
-        Identifier { repr }
+        }
     }
 
     pub(crate) fn is_empty(&self) -> bool {
         // `cmp rdi, -1` -- basically: `repr as i64 == -1`
-        self.repr == Self::EMPTY
+        let empty = Self::empty();
+        let is_empty = self.head == empty.head && self.tail == empty.tail;
+        // The empty representation does nothing on Drop. We can't let this one
+        // drop normally because `impl Drop for Identifier` calls is_empty; that
+        // would be an infinite recursion.
+        mem::forget(empty);
+        is_empty
     }
 
     fn is_inline(&self) -> bool {
         // `test rdi, rdi` -- basically: `repr as i64 >= 0`
-        self.repr.get() >> 63 == 0
+        self.head.as_ptr() as usize >> (PTR_BYTES * 8 - 1) == 0
     }
 
     fn is_empty_or_inline(&self) -> bool {
@@ -155,38 +194,46 @@ impl Identifier {
             ""
         } else if self.is_inline() {
             // SAFETY: repr is in the inline representation.
-            unsafe { inline_as_str(&self.repr) }
+            unsafe { inline_as_str(self) }
         } else {
             // SAFETY: repr is in the heap allocated representation.
-            unsafe { ptr_as_str(&self.repr) }
+            unsafe { ptr_as_str(&self.head) }
         }
     }
 }
 
 impl Clone for Identifier {
     fn clone(&self) -> Self {
-        let repr = if self.is_empty_or_inline() {
-            self.repr
+        if self.is_empty_or_inline() {
+            Identifier {
+                head: self.head,
+                tail: self.tail,
+            }
         } else {
-            let ptr = repr_to_ptr(self.repr);
+            let ptr = repr_to_ptr(self.head);
             // SAFETY: ptr is one of our own heap allocations.
             let len = unsafe { decode_len(ptr) };
             let size = bytes_for_varint(len) + len.get();
             let align = 2;
             // SAFETY: align is not zero, align is a power of two, and rounding
-            // size up to align does not overflow usize::MAX. This is just
+            // size up to align does not overflow isize::MAX. This is just
             // duplicating a previous allocation where all of these guarantees
             // were already made.
             let layout = unsafe { Layout::from_size_align_unchecked(size, align) };
             // SAFETY: layout's size is nonzero.
             let clone = unsafe { alloc(layout) };
+            if clone.is_null() {
+                handle_alloc_error(layout);
+            }
             // SAFETY: new allocation cannot overlap the previous one (this was
             // not a realloc). The argument ptrs are readable/writeable
             // respectively for size bytes.
             unsafe { ptr::copy_nonoverlapping(ptr, clone, size) }
-            ptr_to_repr(clone)
-        };
-        Identifier { repr }
+            Identifier {
+                head: ptr_to_repr(clone),
+                tail: [0; TAIL_BYTES],
+            }
+        }
     }
 }
 
@@ -195,7 +242,7 @@ impl Drop for Identifier {
         if self.is_empty_or_inline() {
             return;
         }
-        let ptr = repr_to_ptr_mut(self.repr);
+        let ptr = repr_to_ptr_mut(self.head);
         // SAFETY: ptr is one of our own heap allocations.
         let len = unsafe { decode_len(ptr) };
         let size = bytes_for_varint(len) + len.get();
@@ -214,46 +261,65 @@ impl PartialEq for Identifier {
     fn eq(&self, rhs: &Self) -> bool {
         if self.is_empty_or_inline() {
             // Fast path (most common)
-            self.repr == rhs.repr
+            self.head == rhs.head && self.tail == rhs.tail
         } else if rhs.is_empty_or_inline() {
             false
         } else {
             // SAFETY: both reprs are in the heap allocated representation.
-            unsafe { ptr_as_str(&self.repr) == ptr_as_str(&rhs.repr) }
+            unsafe { ptr_as_str(&self.head) == ptr_as_str(&rhs.head) }
         }
     }
 }
+
+unsafe impl Send for Identifier {}
+unsafe impl Sync for Identifier {}
 
 // We use heap pointers that are 2-byte aligned, meaning they have an
 // insignificant 0 in the least significant bit. We take advantage of that
 // unneeded bit to rotate a 1 into the most significant bit to make the repr
 // distinguishable from ASCII bytes.
-fn ptr_to_repr(ptr: *mut u8) -> NonZeroU64 {
+fn ptr_to_repr(original: *mut u8) -> NonNull<u8> {
     // `mov eax, 1`
     // `shld rax, rdi, 63`
-    let repr = (ptr as u64 | 1).rotate_right(1);
+    let modified = (original as usize | 1).rotate_right(1);
+
+    // `original + (modified - original)`, but being mindful of provenance.
+    let diff = modified.wrapping_sub(original as usize);
+    let modified = original.wrapping_add(diff);
 
     // SAFETY: the most significant bit of repr is known to be set, so the value
     // is not zero.
-    unsafe { NonZeroU64::new_unchecked(repr) }
+    unsafe { NonNull::new_unchecked(modified) }
 }
 
 // Shift out the 1 previously placed into the most significant bit of the least
 // significant byte. Shift in a low 0 bit to reconstruct the original 2-byte
 // aligned pointer.
-fn repr_to_ptr(repr: NonZeroU64) -> *const u8 {
+fn repr_to_ptr(modified: NonNull<u8>) -> *const u8 {
     // `lea rax, [rdi + rdi]`
-    (repr.get() << 1) as *const u8
+    let modified = modified.as_ptr();
+    let original = (modified as usize) << 1;
+
+    // `modified + (original - modified)`, but being mindful of provenance.
+    let diff = original.wrapping_sub(modified as usize);
+    modified.wrapping_add(diff)
 }
 
-fn repr_to_ptr_mut(repr: NonZeroU64) -> *mut u8 {
+fn repr_to_ptr_mut(repr: NonNull<u8>) -> *mut u8 {
     repr_to_ptr(repr) as *mut u8
 }
 
 // Compute the length of the inline string, assuming the argument is in short
 // string representation. Short strings are stored as 1 to 8 nonzero ASCII
 // bytes, followed by \0 padding for the remaining bytes.
-fn inline_len(repr: NonZeroU64) -> NonZeroUsize {
+//
+// SAFETY: the identifier must indeed be in the inline representation.
+unsafe fn inline_len(repr: &Identifier) -> NonZeroUsize {
+    // SAFETY: Identifier's layout is align(8) and at least size 8. We're doing
+    // an aligned read of the first 8 bytes from it. The bytes are not all zero
+    // because inline strings are at least 1 byte long and cannot contain \0.
+    let repr = unsafe { ptr::read(repr as *const Identifier as *const NonZeroU64) };
+
     // Rustc >=1.53 has intrinsics for counting zeros on a non-zeroable integer.
     // On many architectures these are more efficient than counting on ordinary
     // zeroable integers (bsf vs cttz). On rustc <1.53 without those intrinsics,
@@ -275,9 +341,9 @@ fn inline_len(repr: NonZeroU64) -> NonZeroUsize {
 
 // SAFETY: repr must be in the inline representation, i.e. at least 1 and at
 // most 8 nonzero ASCII bytes padded on the end with \0 bytes.
-unsafe fn inline_as_str(repr: &NonZeroU64) -> &str {
-    let ptr = repr as *const NonZeroU64 as *const u8;
-    let len = inline_len(*repr).get();
+unsafe fn inline_as_str(repr: &Identifier) -> &str {
+    let ptr = repr as *const Identifier as *const u8;
+    let len = unsafe { inline_len(repr) }.get();
     // SAFETY: we are viewing the nonzero ASCII prefix of the inline repr's
     // contents as a slice of bytes. Input/output lifetimes are correctly
     // associated.
@@ -335,7 +401,7 @@ unsafe fn decode_len(ptr: *const u8) -> NonZeroUsize {
 
 // SAFETY: repr must be in the heap allocated representation, with varint header
 // and string contents already written.
-unsafe fn ptr_as_str(repr: &NonZeroU64) -> &str {
+unsafe fn ptr_as_str(repr: &NonNull<u8>) -> &str {
     let ptr = repr_to_ptr(*repr);
     let len = unsafe { decode_len(ptr) };
     let header = bytes_for_varint(len);

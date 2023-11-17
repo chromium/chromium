@@ -32,6 +32,7 @@ use std::option;
 use std::slice;
 use std::vec;
 
+use crate::drops::{NoDrop, TrivialDrop};
 #[cfg(feature = "parsing")]
 use crate::parse::{Parse, ParseStream, Result};
 #[cfg(feature = "parsing")]
@@ -104,10 +105,10 @@ impl<T, P> Punctuated<T, P> {
     /// Returns an iterator over borrowed syntax tree nodes of type `&T`.
     pub fn iter(&self) -> Iter<T> {
         Iter {
-            inner: Box::new(PrivateIter {
+            inner: Box::new(NoDrop::new(PrivateIter {
                 inner: self.inner.iter(),
                 last: self.last.as_ref().map(Box::as_ref).into_iter(),
-            }),
+            })),
         }
     }
 
@@ -115,10 +116,10 @@ impl<T, P> Punctuated<T, P> {
     /// `&mut T`.
     pub fn iter_mut(&mut self) -> IterMut<T> {
         IterMut {
-            inner: Box::new(PrivateIterMut {
+            inner: Box::new(NoDrop::new(PrivateIterMut {
                 inner: self.inner.iter_mut(),
                 last: self.last.as_mut().map(Box::as_mut).into_iter(),
-            }),
+            })),
         }
     }
 
@@ -721,13 +722,13 @@ pub struct Iter<'a, T: 'a> {
     // The `Item = &'a T` needs to be specified to support rustc 1.31 and older.
     // On modern compilers we would be able to write just IterTrait<'a, T> where
     // Item can be inferred unambiguously from the supertrait.
-    inner: Box<dyn IterTrait<'a, T, Item = &'a T> + 'a>,
+    inner: Box<NoDrop<dyn IterTrait<'a, T, Item = &'a T> + 'a>>,
 }
 
 trait IterTrait<'a, T: 'a>:
     DoubleEndedIterator<Item = &'a T> + ExactSizeIterator<Item = &'a T>
 {
-    fn clone_box(&self) -> Box<dyn IterTrait<'a, T, Item = &'a T> + 'a>;
+    fn clone_box(&self) -> Box<NoDrop<dyn IterTrait<'a, T, Item = &'a T> + 'a>>;
 }
 
 struct PrivateIter<'a, T: 'a, P: 'a> {
@@ -735,10 +736,17 @@ struct PrivateIter<'a, T: 'a, P: 'a> {
     last: option::IntoIter<&'a T>,
 }
 
+impl<'a, T, P> TrivialDrop for PrivateIter<'a, T, P>
+where
+    slice::Iter<'a, (T, P)>: TrivialDrop,
+    option::IntoIter<&'a T>: TrivialDrop,
+{
+}
+
 #[cfg(any(feature = "full", feature = "derive"))]
 pub(crate) fn empty_punctuated_iter<'a, T>() -> Iter<'a, T> {
     Iter {
-        inner: Box::new(iter::empty()),
+        inner: Box::new(NoDrop::new(iter::empty())),
     }
 }
 
@@ -813,10 +821,14 @@ impl<'a, T, P> Clone for PrivateIter<'a, T, P> {
 impl<'a, T, I> IterTrait<'a, T> for I
 where
     T: 'a,
-    I: DoubleEndedIterator<Item = &'a T> + ExactSizeIterator<Item = &'a T> + Clone + 'a,
+    I: DoubleEndedIterator<Item = &'a T>
+        + ExactSizeIterator<Item = &'a T>
+        + Clone
+        + TrivialDrop
+        + 'a,
 {
-    fn clone_box(&self) -> Box<dyn IterTrait<'a, T, Item = &'a T> + 'a> {
-        Box::new(self.clone())
+    fn clone_box(&self) -> Box<NoDrop<dyn IterTrait<'a, T, Item = &'a T> + 'a>> {
+        Box::new(NoDrop::new(self.clone()))
     }
 }
 
@@ -826,7 +838,7 @@ where
 ///
 /// [module documentation]: self
 pub struct IterMut<'a, T: 'a> {
-    inner: Box<dyn IterMutTrait<'a, T, Item = &'a mut T> + 'a>,
+    inner: Box<NoDrop<dyn IterMutTrait<'a, T, Item = &'a mut T> + 'a>>,
 }
 
 trait IterMutTrait<'a, T: 'a>:
@@ -839,10 +851,17 @@ struct PrivateIterMut<'a, T: 'a, P: 'a> {
     last: option::IntoIter<&'a mut T>,
 }
 
+impl<'a, T, P> TrivialDrop for PrivateIterMut<'a, T, P>
+where
+    slice::IterMut<'a, (T, P)>: TrivialDrop,
+    option::IntoIter<&'a mut T>: TrivialDrop,
+{
+}
+
 #[cfg(any(feature = "full", feature = "derive"))]
 pub(crate) fn empty_punctuated_iter_mut<'a, T>() -> IterMut<'a, T> {
     IterMut {
-        inner: Box::new(iter::empty()),
+        inner: Box::new(NoDrop::new(iter::empty())),
     }
 }
 

@@ -412,6 +412,9 @@ pub const SYS_fsmount: ::c_long = 432;
 pub const SYS_fspick: ::c_long = 433;
 pub const SYS_syscalls: ::c_long = 436;
 
+pub const PROT_BTI: ::c_int = 0x10;
+pub const PROT_MTE: ::c_int = 0x20;
+
 cfg_if! {
     if #[cfg(libc_align)] {
         mod align;

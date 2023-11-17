@@ -81,7 +81,7 @@ pub trait Read<'de>: private::Sealed {
     #[doc(hidden)]
     fn ignore_str(&mut self) -> Result<()>;
 
-    /// Assumes the previous byte was a hex escape sequnce ('\u') in a string.
+    /// Assumes the previous byte was a hex escape sequence ('\u') in a string.
     /// Parses next hexadecimal sequence.
     #[doc(hidden)]
     fn decode_hex_escape(&mut self) -> Result<u16>;
@@ -252,7 +252,7 @@ where
             Some(ch) => {
                 #[cfg(feature = "raw_value")]
                 {
-                    if let Some(ref mut buf) = self.raw_buffer {
+                    if let Some(buf) = &mut self.raw_buffer {
                         buf.push(ch);
                     }
                 }
@@ -263,7 +263,7 @@ where
                 Some(Ok(ch)) => {
                     #[cfg(feature = "raw_value")]
                     {
-                        if let Some(ref mut buf) = self.raw_buffer {
+                        if let Some(buf) = &mut self.raw_buffer {
                             buf.push(ch);
                         }
                     }
@@ -298,7 +298,7 @@ where
     #[cfg(feature = "raw_value")]
     fn discard(&mut self) {
         if let Some(ch) = self.ch.take() {
-            if let Some(ref mut buf) = self.raw_buffer {
+            if let Some(buf) = &mut self.raw_buffer {
                 buf.push(ch);
             }
         }
@@ -954,34 +954,15 @@ where
 
     match ch {
         b'"' | b'\\' | b'/' | b'b' | b'f' | b'n' | b'r' | b't' => {}
-        b'u' => match tri!(read.decode_hex_escape()) {
-            0xDC00..=0xDFFF => {
-                return error(read, ErrorCode::LoneLeadingSurrogateInHexEscape);
-            }
+        b'u' => {
+            // At this point we don't care if the codepoint is valid. We just
+            // want to consume it. We don't actually know what is valid or not
+            // at this point, because that depends on if this string will
+            // ultimately be parsed into a string or a byte buffer in the "real"
+            // parse.
 
-            // Non-BMP characters are encoded as a sequence of
-            // two hex escapes, representing UTF-16 surrogates.
-            n1 @ 0xD800..=0xDBFF => {
-                if tri!(next_or_eof(read)) != b'\\' {
-                    return error(read, ErrorCode::UnexpectedEndOfHexEscape);
-                }
-                if tri!(next_or_eof(read)) != b'u' {
-                    return error(read, ErrorCode::UnexpectedEndOfHexEscape);
-                }
-
-                let n2 = tri!(read.decode_hex_escape());
-                if n2 < 0xDC00 || n2 > 0xDFFF {
-                    return error(read, ErrorCode::LoneLeadingSurrogateInHexEscape);
-                }
-
-                let n = (((n1 - 0xD800) as u32) << 10 | (n2 - 0xDC00) as u32) + 0x1_0000;
-                if char::from_u32(n).is_none() {
-                    return error(read, ErrorCode::InvalidUnicodeCodePoint);
-                }
-            }
-
-            _ => {}
-        },
+            tri!(read.decode_hex_escape());
+        }
         _ => {
             return error(read, ErrorCode::InvalidEscape);
         }

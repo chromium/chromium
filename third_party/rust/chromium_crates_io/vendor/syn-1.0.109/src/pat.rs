@@ -400,11 +400,11 @@ pub mod parsing {
         }
 
         if input.peek(token::Brace) {
-            let pat = pat_struct(input, path)?;
+            let pat = pat_struct(begin.fork(), input, path)?;
             if qself.is_some() {
                 Ok(Pat::Verbatim(verbatim::between(begin, input)))
             } else {
-                Ok(Pat::Struct(pat))
+                Ok(pat)
             }
         } else if input.peek(token::Paren) {
             let pat = pat_tuple_struct(input, path)?;
@@ -465,13 +465,23 @@ pub mod parsing {
         })
     }
 
-    fn pat_struct(input: ParseStream, path: Path) -> Result<PatStruct> {
+    fn pat_struct(begin: ParseBuffer, input: ParseStream, path: Path) -> Result<Pat> {
         let content;
         let brace_token = braced!(content in input);
 
         let mut fields = Punctuated::new();
-        while !content.is_empty() && !content.peek(Token![..]) {
-            let value = content.call(field_pat)?;
+        let mut dot2_token = None;
+        while !content.is_empty() {
+            let attrs = content.call(Attribute::parse_outer)?;
+            if content.peek(Token![..]) {
+                dot2_token = Some(content.parse()?);
+                if !attrs.is_empty() {
+                    return Ok(Pat::Verbatim(verbatim::between(begin, input)));
+                }
+                break;
+            }
+            let mut value = content.call(field_pat)?;
+            value.attrs = attrs;
             fields.push_value(value);
             if content.is_empty() {
                 break;
@@ -480,19 +490,13 @@ pub mod parsing {
             fields.push_punct(punct);
         }
 
-        let dot2_token = if fields.empty_or_trailing() && content.peek(Token![..]) {
-            Some(content.parse()?)
-        } else {
-            None
-        };
-
-        Ok(PatStruct {
+        Ok(Pat::Struct(PatStruct {
             attrs: Vec::new(),
             path,
             brace_token,
             fields,
             dot2_token,
-        })
+        }))
     }
 
     impl Member {
@@ -505,7 +509,6 @@ pub mod parsing {
     }
 
     fn field_pat(input: ParseStream) -> Result<FieldPat> {
-        let attrs = input.call(Attribute::parse_outer)?;
         let boxed: Option<Token![box]> = input.parse()?;
         let by_ref: Option<Token![ref]> = input.parse()?;
         let mutability: Option<Token![mut]> = input.parse()?;
@@ -515,7 +518,7 @@ pub mod parsing {
             || member.is_unnamed()
         {
             return Ok(FieldPat {
-                attrs,
+                attrs: Vec::new(),
                 member,
                 colon_token: input.parse()?,
                 pat: Box::new(multi_pat_with_leading_vert(input)?),
@@ -544,7 +547,7 @@ pub mod parsing {
         }
 
         Ok(FieldPat {
-            attrs,
+            attrs: Vec::new(),
             member: Member::Named(ident),
             colon_token: None,
             pat: Box::new(pat),

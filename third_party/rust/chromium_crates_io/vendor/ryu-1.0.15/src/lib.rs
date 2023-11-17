@@ -2,7 +2,7 @@
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
-//! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K
+//! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
 //!
 //! <br>
 //!
@@ -29,7 +29,9 @@
 //! }
 //! ```
 //!
-//! ## Performance
+//! ## Performance (lower is better)
+//!
+//! ![performance](https://raw.githubusercontent.com/dtolnay/ryu/master/performance.png)
 //!
 //! You can run upstream's benchmarks with:
 //!
@@ -62,19 +64,9 @@
 //! $ cargo bench
 //! ```
 //!
-//! The benchmark shows Ryū approximately 4-10x faster than the standard library
+//! The benchmark shows Ryū approximately 2-5x faster than the standard library
 //! across a range of f32 and f64 inputs. Measurements are in nanoseconds per
 //! iteration; smaller is better.
-//!
-//! | type=f32 | 0.0  | 0.1234 | 2.718281828459045 | f32::MAX |
-//! |:--------:|:----:|:------:|:-----------------:|:--------:|
-//! | RYU      | 3ns  | 28ns   | 23ns              | 22ns     |
-//! | STD      | 40ns | 106ns  | 128ns             | 110ns    |
-//!
-//! | type=f64 | 0.0  | 0.1234 | 2.718281828459045 | f64::MAX |
-//! |:--------:|:----:|:------:|:-----------------:|:--------:|
-//! | RYU      | 3ns  | 50ns   | 35ns              | 32ns     |
-//! | STD      | 39ns | 105ns  | 128ns             | 202ns    |
 //!
 //! ## Formatting
 //!
@@ -89,11 +81,25 @@
 //! notation.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/ryu/1.0.5")]
-#![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
-#![cfg_attr(
-    feature = "cargo-clippy",
-    allow(cast_lossless, many_single_char_names, unreadable_literal,)
+#![doc(html_root_url = "https://docs.rs/ryu/1.0.15")]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::checked_conversions,
+    clippy::doc_markdown,
+    clippy::expl_impl_clone_on_copy,
+    clippy::if_not_else,
+    clippy::many_single_char_names,
+    clippy::missing_panics_doc,
+    clippy::module_name_repetitions,
+    clippy::must_use_candidate,
+    clippy::similar_names,
+    clippy::too_many_lines,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix,
+    clippy::wildcard_imports
 )]
 
 mod buffer;

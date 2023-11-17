@@ -91,22 +91,20 @@ version = "1.0.13"
 version = "1.0.81"
 features = ["diff"]
 
-# Removed for Chromium build
-# [build-dependencies.cc]
-# version = "1.0.79"
+[build-dependencies.cc]
+version = "1.0.79"
 
-# Removed for Chromium build
-# [build-dependencies.cxxbridge-flags]
-# version = "=1.0.110"
-# default-features = false
+[build-dependencies.cxxbridge-flags]
+version = "=1.0.110"
+default-features = false
 
 [features]
 alloc = []
-# "c++14" = ["cxxbridge-flags/c++14"]
-# "c++17" = ["cxxbridge-flags/c++17"]
-# "c++20" = ["cxxbridge-flags/c++20"]
+"c++14" = ["cxxbridge-flags/c++14"]
+"c++17" = ["cxxbridge-flags/c++17"]
+"c++20" = ["cxxbridge-flags/c++20"]
 default = [
     "std",
-    # "cxxbridge-flags/default",
+    "cxxbridge-flags/default",
 ]
 std = ["alloc"]

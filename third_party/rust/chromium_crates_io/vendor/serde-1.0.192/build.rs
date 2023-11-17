@@ -27,6 +27,12 @@ fn main() {
         println!("cargo:rustc-cfg=no_relaxed_trait_bounds");
     }
 
+    // f32::copysign and f64::copysign stabilized in Rust 1.35.
+    // https://blog.rust-lang.org/2019/05/23/Rust-1.35.0.html#copy-the-sign-of-a-floating-point-number-onto-another
+    if minor < 35 {
+        println!("cargo:rustc-cfg=no_float_copysign");
+    }
+
     // Current minimum supported version of serde_derive crate is Rust 1.56.
     if minor < 56 {
         println!("cargo:rustc-cfg=no_serde_derive");

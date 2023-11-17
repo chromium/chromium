@@ -5,6 +5,7 @@
 
 /// The [LookupFlag](https://learn.microsoft.com/en-us/typography/opentype/spec/chapter2#lookupFlag) bit enumeration.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct LookupFlag(u16);
 
 impl LookupFlag {

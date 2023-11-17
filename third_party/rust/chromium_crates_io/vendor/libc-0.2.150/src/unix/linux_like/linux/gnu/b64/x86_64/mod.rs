@@ -651,6 +651,7 @@ pub const PR_SPEC_INDIRECT_BRANCH: ::c_int = 1;
 
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
+pub const MCL_ONFAULT: ::c_int = 0x0004;
 
 pub const SIGSTKSZ: ::size_t = 8192;
 pub const MINSIGSTKSZ: ::size_t = 2048;

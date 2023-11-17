@@ -316,7 +316,7 @@ impl PartialEq for Inner {
 
 impl PartialOrd for Inner {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.as_os_str().partial_cmp(other.as_os_str())
+        Some(self.cmp(other))
     }
 }
 

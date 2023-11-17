@@ -36,9 +36,8 @@ repository = "https://github.com/dtolnay/link-cplusplus"
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
-# Removed for Chromium build
-#[build-dependencies.cc]
-#version = "1.0"
+[build-dependencies.cc]
+version = "1.0"
 
 [features]
 default = []

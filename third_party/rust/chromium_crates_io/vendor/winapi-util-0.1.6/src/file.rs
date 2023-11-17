@@ -1,13 +1,16 @@
-use std::io;
-use std::mem;
+use std::{io, mem};
 
-use winapi::shared::minwindef::FILETIME;
-use winapi::shared::winerror::NO_ERROR;
-use winapi::um::errhandlingapi::GetLastError;
-use winapi::um::fileapi::{
-    GetFileInformationByHandle, GetFileType, BY_HANDLE_FILE_INFORMATION,
+use winapi::{
+    shared::{minwindef::FILETIME, winerror::NO_ERROR},
+    um::{
+        errhandlingapi::GetLastError,
+        fileapi::{
+            GetFileInformationByHandle, GetFileType,
+            BY_HANDLE_FILE_INFORMATION,
+        },
+        winnt,
+    },
 };
-use winapi::um::winnt;
 
 use crate::AsHandleRef;
 

@@ -9,7 +9,7 @@ pub enum ErrorKind {
     Other,
 }
 
-// IO errors can never occur in no-std mode. All our no-std IO implementations
+// I/O errors can never occur in no-std mode. All our no-std I/O implementations
 // are infallible.
 pub struct Error;
 

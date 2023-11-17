@@ -47,3 +47,22 @@ fn iter() {
     assert_eq!(p.iter_mut().next_back(), Some(&mut 4));
     assert_eq!(p.into_iter().next_back(), Some(4));
 }
+
+#[test]
+fn may_dangle() {
+    let p: Punctuated<_, Token![,]> = punctuated!(2, 3, 4);
+    for element in &p {
+        if *element == 2 {
+            drop(p);
+            break;
+        }
+    }
+
+    let mut p: Punctuated<_, Token![,]> = punctuated!(2, 3, 4);
+    for element in &mut p {
+        if *element == 2 {
+            drop(p);
+            break;
+        }
+    }
+}

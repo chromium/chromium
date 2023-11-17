@@ -113,9 +113,9 @@ solution presented above, however, its throughput can easily be over an
 order of magnitude faster. This is a good general purpose trade off to make.
 You rarely lose, but often gain big.
 
-**NOTE:** The name `memchr` comes from the corresponding routine in libc. A key
-advantage of using this library is that its performance is not tied to its
-quality of implementation in the libc you happen to be using, which can vary
+**NOTE:** The name `memchr` comes from the corresponding routine in `libc`. A
+key advantage of using this library is that its performance is not tied to its
+quality of implementation in the `libc` you happen to be using, which can vary
 greatly from platform to platform.
 
 But what about substring search? This one is a bit more complicated. The
@@ -131,32 +131,58 @@ implementation in the standard library, even if only for searching on UTF-8?
 The reason is that the implementation details for using SIMD in the standard
 library haven't quite been worked out yet.
 
-**NOTE:** Currently, only `x86_64` targets have highly accelerated
-implementations of substring search. For `memchr`, all targets have
-somewhat-accelerated implementations, while only `x86_64` targets have highly
-accelerated implementations. This limitation is expected to be lifted once the
-standard library exposes a platform independent SIMD API.
+**NOTE:** Currently, only `x86_64`, `wasm32` and `aarch64` targets have vector
+accelerated implementations of `memchr` (and friends) and `memmem`.
 
 # Crate features
 
-* **std** - When enabled (the default), this will permit this crate to use
-  features specific to the standard library. Currently, the only thing used
-  from the standard library is runtime SIMD CPU feature detection. This means
-  that this feature must be enabled to get AVX accelerated routines. When
-  `std` is not enabled, this crate will still attempt to use SSE2 accelerated
-  routines on `x86_64`.
-* **libc** - When enabled (**not** the default), this library will use your
-  platform's libc implementation of `memchr` (and `memrchr` on Linux). This
-  can be useful on non-`x86_64` targets where the fallback implementation in
-  this crate is not as good as the one found in your libc. All other routines
-  (e.g., `memchr[23]` and substring search) unconditionally use the
-  implementation in this crate.
+* **std** - When enabled (the default), this will permit features specific to
+the standard library. Currently, the only thing used from the standard library
+is runtime SIMD CPU feature detection. This means that this feature must be
+enabled to get AVX2 accelerated routines on `x86_64` targets without enabling
+the `avx2` feature at compile time, for example. When `std` is not enabled,
+this crate will still attempt to use SSE2 accelerated routines on `x86_64`. It
+will also use AVX2 accelerated routines when the `avx2` feature is enabled at
+compile time. In general, enable this feature if you can.
+* **alloc** - When enabled (the default), APIs in this crate requiring some
+kind of allocation will become available. For example, the
+[`memmem::Finder::into_ownedd`](crate::memmem::Finder::into_owned) API and the
+[`arch::all::shiftor`](crate::arch::all::shiftor) substring search
+implementation. Otherwise, this crate is designed from the ground up to be
+usable in core-only contexts, so the `alloc` feature doesn't add much
+currently. Notably, disabling `std` but enabling `alloc` will **not** result
+in the use of AVX2 on `x86_64` targets unless the `avx2` feature is enabled
+at compile time. (With `std` enabled, AVX2 can be used even without the `avx2`
+feature enabled at compile time by way of runtime CPU feature detection.)
+* **logging** - When enabled (disabled by default), the `log` crate is used
+to emit log messages about what kinds of `memchr` and `memmem` algorithms
+are used. Namely, both `memchr` and `memmem` have a number of different
+implementation choices depending on the target and CPU, and the log messages
+can help show what specific implementations are being used. Generally, this is
+useful for debugging performance issues.
+* **libc** - **DEPRECATED**. Previously, this enabled the use of the target's
+`memchr` function from whatever `libc` was linked into the program. This
+feature is now a no-op because this crate's implementation of `memchr` should
+now be sufficiently fast on a number of platforms that `libc` should no longer
+be needed. (This feature is somewhat of a holdover from this crate's origins.
+Originally, this crate was literally just a safe wrapper function around the
+`memchr` function from `libc`.)
 */
 
 #![deny(missing_docs)]
-#![cfg_attr(not(feature = "std"), no_std)]
-// It's not worth trying to gate all code on just miri, so turn off relevant
-// dead code warnings.
+#![no_std]
+// It's just not worth trying to squash all dead code warnings. Pretty
+// unfortunate IMO. Not really sure how to fix this other than to either
+// live with it or sprinkle a whole mess of `cfg` annotations everywhere.
+#![cfg_attr(
+    not(any(
+        all(target_arch = "x86_64", target_feature = "sse2"),
+        target_arch = "wasm32",
+        target_arch = "aarch64",
+    )),
+    allow(dead_code)
+)]
+// Same deal for miri.
 #![cfg_attr(miri, allow(dead_code, unused_macros))]
 
 // Supporting 8-bit (or others) would be fine. If you need it, please submit a
@@ -168,14 +194,28 @@ standard library exposes a platform independent SIMD API.
 )))]
 compile_error!("memchr currently not supported on non-{16,32,64}");
 
+#[cfg(any(test, feature = "std"))]
+extern crate std;
+
+#[cfg(any(test, feature = "alloc"))]
+extern crate alloc;
+
 pub use crate::memchr::{
     memchr, memchr2, memchr2_iter, memchr3, memchr3_iter, memchr_iter,
     memrchr, memrchr2, memrchr2_iter, memrchr3, memrchr3_iter, memrchr_iter,
     Memchr, Memchr2, Memchr3,
 };
 
+#[macro_use]
+mod macros;
+
+#[cfg(test)]
+#[macro_use]
+mod tests;
+
+pub mod arch;
 mod cow;
+mod ext;
 mod memchr;
 pub mod memmem;
-#[cfg(test)]
-mod tests;
+mod vector;

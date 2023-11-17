@@ -1,6 +1,6 @@
 [package]
 name = "clap_builder"
-version = "4.4.6"
+version = "4.4.8"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 repository = "https://github.com/clap-rs/clap"
 categories = ["command-line-interface"]
@@ -58,7 +58,7 @@ unstable-styles = ["color"]
 bench = false
 
 [dependencies]
-clap_lex = { path = "../clap_lex", version = "0.5.0" }
+clap_lex = { path = "../clap_lex", version = "0.6.0" }
 unicase = { version = "2.6.0", optional = true }
 strsim = { version = "0.10.0",  optional = true }
 anstream = { version = "0.6.0", optional = true }
@@ -68,13 +68,6 @@ backtrace = { version = "0.3.67", optional = true }
 unicode-width = { version = "0.1.9", optional = true }
 
 [dev-dependencies]
-trybuild = "1.0.83"
-rustversion = "1.0.14"
-# Cutting out `filesystem` feature
-trycmd = { version = "0.14.18", default-features = false, features = ["color-auto", "diff", "examples"] }
-humantime = "2.1.0"
-snapbox = "0.4.13"
-shlex = "1.1.0"
 static_assertions = "1.1.0"
 unic-emoji-char = "0.9.0"
-color-print = "0.3.4"
+color-print = "0.3.5"

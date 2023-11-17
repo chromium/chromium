@@ -24,4 +24,10 @@ s! {
         pub st_blocks: ::blkcnt_t,
         pub st_spare4: [::c_long; 2usize],
     }
+
+    pub struct dirent {
+        pub d_ino: ::ino_t,
+        pub d_type: ::c_uchar,
+        pub d_name: [::c_char; 256usize],
+    }
 }

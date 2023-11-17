@@ -19,10 +19,8 @@
 // KIND, either express or implied.
 
 use crate::common::*;
-#[cfg(not(integer128))]
-use crate::d2s_intrinsics::*;
 
-pub static DOUBLE_POW5_INV_SPLIT2: [(u64, u64); 13] = [
+pub static DOUBLE_POW5_INV_SPLIT2: [(u64, u64); 15] = [
     (1, 2305843009213693952),
     (5955668970331000884, 1784059615882449851),
     (8982663654677661702, 1380349269358112757),
@@ -36,6 +34,8 @@ pub static DOUBLE_POW5_INV_SPLIT2: [(u64, u64); 13] = [
     (12533209867169019542, 1418129833677084982),
     (5577825024675947042, 2194449627517475473),
     (11006974540203867551, 1697873161311732311),
+    (10313493231639821582, 1313665730009899186),
+    (12701016819766672773, 2032799256770390445),
 ];
 
 pub static POW5_INV_OFFSETS: [u32; 19] = [
@@ -96,7 +96,6 @@ pub static DOUBLE_POW5_TABLE: [u64; 26] = [
 ];
 
 // Computes 5^i in the form required by Ryū.
-#[cfg(integer128)]
 #[cfg_attr(feature = "no-panic", inline)]
 pub unsafe fn compute_pow5(i: u32) -> (u64, u64) {
     let base = i / DOUBLE_POW5_TABLE.len() as u32;
@@ -112,7 +111,7 @@ pub unsafe fn compute_pow5(i: u32) -> (u64, u64) {
     let b0 = m as u128 * mul.0 as u128;
     let b2 = m as u128 * mul.1 as u128;
     let delta = pow5bits(i as i32) - pow5bits(base2 as i32);
-    debug_assert!(base < POW5_OFFSETS.len() as u32);
+    debug_assert!(i / 16 < POW5_OFFSETS.len() as u32);
     let shifted_sum = (b0 >> delta)
         + (b2 << (64 - delta))
         + ((*POW5_OFFSETS.get_unchecked((i / 16) as usize) >> ((i % 16) << 1)) & 3) as u128;
@@ -120,7 +119,6 @@ pub unsafe fn compute_pow5(i: u32) -> (u64, u64) {
 }
 
 // Computes 5^-i in the form required by Ryū.
-#[cfg(integer128)]
 #[cfg_attr(feature = "no-panic", inline)]
 pub unsafe fn compute_inv_pow5(i: u32) -> (u64, u64) {
     let base = (i + DOUBLE_POW5_TABLE.len() as u32 - 1) / DOUBLE_POW5_TABLE.len() as u32;
@@ -141,65 +139,4 @@ pub unsafe fn compute_inv_pow5(i: u32) -> (u64, u64) {
         + 1
         + ((*POW5_INV_OFFSETS.get_unchecked((i / 16) as usize) >> ((i % 16) << 1)) & 3) as u128;
     (shifted_sum as u64, (shifted_sum >> 64) as u64)
-}
-
-// Computes 5^i in the form required by Ryū, and stores it in the given pointer.
-#[cfg(not(integer128))]
-#[cfg_attr(feature = "no-panic", inline)]
-pub unsafe fn compute_pow5(i: u32) -> (u64, u64) {
-    let base = i / DOUBLE_POW5_TABLE.len() as u32;
-    let base2 = base * DOUBLE_POW5_TABLE.len() as u32;
-    let offset = i - base2;
-    debug_assert!(base < DOUBLE_POW5_SPLIT2.len() as u32);
-    let mul = *DOUBLE_POW5_SPLIT2.get_unchecked(base as usize);
-    if offset == 0 {
-        return mul;
-    }
-    debug_assert!(offset < DOUBLE_POW5_TABLE.len() as u32);
-    let m = *DOUBLE_POW5_TABLE.get_unchecked(offset as usize);
-    let (low1, mut high1) = umul128(m, mul.1);
-    let (low0, high0) = umul128(m, mul.0);
-    let sum = high0 + low1;
-    if sum < high0 {
-        high1 += 1; // overflow into high1
-    }
-    // high1 | sum | low0
-    let delta = pow5bits(i as i32) - pow5bits(base2 as i32);
-    debug_assert!(base < POW5_OFFSETS.len() as u32);
-    (
-        shiftright128(low0, sum, delta as u32)
-            + ((*POW5_OFFSETS.get_unchecked((i / 16) as usize) >> ((i % 16) << 1)) & 3) as u64,
-        shiftright128(sum, high1, delta as u32),
-    )
-}
-
-// Computes 5^-i in the form required by Ryū, and stores it in the given pointer.
-#[cfg(not(integer128))]
-#[cfg_attr(feature = "no-panic", inline)]
-pub unsafe fn compute_inv_pow5(i: u32) -> (u64, u64) {
-    let base = (i + DOUBLE_POW5_TABLE.len() as u32 - 1) / DOUBLE_POW5_TABLE.len() as u32;
-    let base2 = base * DOUBLE_POW5_TABLE.len() as u32;
-    let offset = base2 - i;
-    debug_assert!(base < DOUBLE_POW5_INV_SPLIT2.len() as u32);
-    let mul = *DOUBLE_POW5_INV_SPLIT2.get_unchecked(base as usize); // 1/5^base2
-    if offset == 0 {
-        return mul;
-    }
-    debug_assert!(offset < DOUBLE_POW5_TABLE.len() as u32);
-    let m = *DOUBLE_POW5_TABLE.get_unchecked(offset as usize);
-    let (low1, mut high1) = umul128(m, mul.1);
-    let (low0, high0) = umul128(m, mul.0 - 1);
-    let sum = high0 + low1;
-    if sum < high0 {
-        high1 += 1; // overflow into high1
-    }
-    // high1 | sum | low0
-    let delta = pow5bits(base2 as i32) - pow5bits(i as i32);
-    debug_assert!(base < POW5_INV_OFFSETS.len() as u32);
-    (
-        shiftright128(low0, sum, delta as u32)
-            + 1
-            + ((*POW5_INV_OFFSETS.get_unchecked((i / 16) as usize) >> ((i % 16) << 1)) & 3) as u64,
-        shiftright128(sum, high1, delta as u32),
-    )
 }

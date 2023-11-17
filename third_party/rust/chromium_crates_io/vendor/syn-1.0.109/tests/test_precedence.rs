@@ -24,6 +24,7 @@
 extern crate rustc_ast;
 extern crate rustc_data_structures;
 extern crate rustc_span;
+extern crate thin_vec;
 
 use crate::common::eq::SpanlessEq;
 use crate::common::parse;
@@ -207,10 +208,10 @@ fn librustc_brackets(mut librustc_expr: P<ast::Expr>) -> Option<P<ast::Expr>> {
     };
     use rustc_ast::mut_visit::{noop_visit_generic_arg, noop_visit_local, MutVisitor};
     use rustc_data_structures::map_in_place::MapInPlace;
-    use rustc_data_structures::thin_vec::ThinVec;
     use rustc_span::DUMMY_SP;
     use std::mem;
     use std::ops::DerefMut;
+    use thin_vec::ThinVec;
 
     struct BracketsVisitor {
         failed: bool,
@@ -243,7 +244,7 @@ fn librustc_brackets(mut librustc_expr: P<ast::Expr>) -> Option<P<ast::Expr>> {
     }
 
     fn noop_visit_expr<T: MutVisitor>(e: &mut Expr, vis: &mut T) {
-        use rustc_ast::mut_visit::{noop_visit_expr, visit_thin_attrs};
+        use rustc_ast::mut_visit::{noop_visit_expr, visit_attrs};
         match &mut e.kind {
             ExprKind::AddrOf(BorrowKind::Raw, ..) => {}
             ExprKind::Struct(expr) => {
@@ -261,7 +262,7 @@ fn librustc_brackets(mut librustc_expr: P<ast::Expr>) -> Option<P<ast::Expr>> {
                 }
                 vis.visit_id(&mut e.id);
                 vis.visit_span(&mut e.span);
-                visit_thin_attrs(&mut e.attrs, vis);
+                visit_attrs(&mut e.attrs, vis);
             }
             _ => noop_visit_expr(e, vis),
         }
@@ -322,15 +323,15 @@ fn librustc_brackets(mut librustc_expr: P<ast::Expr>) -> Option<P<ast::Expr>> {
         // types yet. We'll look into comparing those in the future. For now
         // focus on expressions appearing in other places.
         fn visit_pat(&mut self, pat: &mut P<Pat>) {
-            let _ = pat;
+            _ = pat;
         }
 
         fn visit_ty(&mut self, ty: &mut P<Ty>) {
-            let _ = ty;
+            _ = ty;
         }
 
         fn visit_attribute(&mut self, attr: &mut Attribute) {
-            let _ = attr;
+            _ = attr;
         }
     }
 
@@ -426,7 +427,7 @@ fn syn_brackets(syn_expr: syn::Expr) -> syn::Expr {
 fn collect_exprs(file: syn::File) -> Vec<syn::Expr> {
     use syn::fold::Fold;
     use syn::punctuated::Punctuated;
-    use syn::{token, Expr, ExprTuple, Path};
+    use syn::{token, ConstParam, Expr, ExprTuple, Path};
 
     struct CollectExprs(Vec<Expr>);
     impl Fold for CollectExprs {
@@ -446,6 +447,10 @@ fn collect_exprs(file: syn::File) -> Vec<syn::Expr> {
         fn fold_path(&mut self, path: Path) -> Path {
             // Skip traversing into const generic path arguments
             path
+        }
+
+        fn fold_const_param(&mut self, const_param: ConstParam) -> ConstParam {
+            const_param
         }
     }
 

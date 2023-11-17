@@ -1,5 +1,3 @@
-#!/bin/sh
-
 set -ex
 
 # Install Miri.

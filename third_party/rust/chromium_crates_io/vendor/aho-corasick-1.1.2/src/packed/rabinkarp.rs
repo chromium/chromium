@@ -1,7 +1,6 @@
-use std::mem;
+use alloc::{sync::Arc, vec, vec::Vec};
 
-use crate::packed::pattern::{PatternID, Patterns};
-use crate::Match;
+use crate::{packed::pattern::Patterns, util::search::Match, PatternID};
 
 /// The type of the rolling hash used in the Rabin-Karp algorithm.
 type Hash = usize;
@@ -32,9 +31,11 @@ const NUM_BUCKETS: usize = 64;
 /// https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
 ///
 /// But ESMAJ provides something a bit more concrete:
-/// http://www-igm.univ-mlv.fr/~lecroq/string/node5.html
+/// https://www-igm.univ-mlv.fr/~lecroq/string/node5.html
 #[derive(Clone, Debug)]
-pub struct RabinKarp {
+pub(crate) struct RabinKarp {
+    /// The patterns we're searching for.
+    patterns: Arc<Patterns>,
     /// The order of patterns in each bucket is significant. Namely, they are
     /// arranged such that the first one to match is the correct match. This
     /// may not necessarily correspond to the order provided by the caller.
@@ -49,16 +50,6 @@ pub struct RabinKarp {
     /// The factor to subtract out of a hash before updating it with a new
     /// byte.
     hash_2pow: usize,
-    /// The maximum identifier of a pattern. This is used as a sanity check
-    /// to ensure that the patterns provided by the caller are the same as
-    /// the patterns that were used to compile the matcher. This sanity check
-    /// possibly permits safely eliminating bounds checks regardless of what
-    /// patterns are provided by the caller.
-    ///
-    /// (Currently, we don't use this to elide bounds checks since it doesn't
-    /// result in a measurable performance improvement, but we do use it for
-    /// better failure modes.)
-    max_pattern_id: PatternID,
 }
 
 impl RabinKarp {
@@ -66,7 +57,7 @@ impl RabinKarp {
     ///
     /// This panics if any of the patterns in the collection are empty, or if
     /// the collection is itself empty.
-    pub fn new(patterns: &Patterns) -> RabinKarp {
+    pub(crate) fn new(patterns: &Arc<Patterns>) -> RabinKarp {
         assert!(patterns.len() >= 1);
         let hash_len = patterns.minimum_len();
         assert!(hash_len >= 1);
@@ -77,10 +68,10 @@ impl RabinKarp {
         }
 
         let mut rk = RabinKarp {
+            patterns: Arc::clone(patterns),
             buckets: vec![vec![]; NUM_BUCKETS],
             hash_len,
             hash_2pow,
-            max_pattern_id: patterns.max_pattern_id(),
         };
         for (id, pat) in patterns.iter() {
             let hash = rk.hash(&pat.bytes()[..rk.hash_len]);
@@ -92,18 +83,12 @@ impl RabinKarp {
 
     /// Return the first matching pattern in the given haystack, begining the
     /// search at `at`.
-    pub fn find_at(
+    pub(crate) fn find_at(
         &self,
-        patterns: &Patterns,
         haystack: &[u8],
         mut at: usize,
     ) -> Option<Match> {
         assert_eq!(NUM_BUCKETS, self.buckets.len());
-        assert_eq!(
-            self.max_pattern_id,
-            patterns.max_pattern_id(),
-            "Rabin-Karp must be called with same patterns it was built with",
-        );
 
         if at + self.hash_len > haystack.len() {
             return None;
@@ -113,7 +98,7 @@ impl RabinKarp {
             let bucket = &self.buckets[hash % NUM_BUCKETS];
             for &(phash, pid) in bucket {
                 if phash == hash {
-                    if let Some(c) = self.verify(patterns, pid, haystack, at) {
+                    if let Some(c) = self.verify(pid, haystack, at) {
                         return Some(c);
                     }
                 }
@@ -132,10 +117,9 @@ impl RabinKarp {
 
     /// Returns the approximate total amount of heap used by this searcher, in
     /// units of bytes.
-    pub fn heap_bytes(&self) -> usize {
-        let num_patterns = self.max_pattern_id as usize + 1;
-        self.buckets.len() * mem::size_of::<Vec<(Hash, PatternID)>>()
-            + num_patterns * mem::size_of::<(Hash, PatternID)>()
+    pub(crate) fn memory_usage(&self) -> usize {
+        self.buckets.len() * core::mem::size_of::<Vec<(Hash, PatternID)>>()
+            + self.patterns.len() * core::mem::size_of::<(Hash, PatternID)>()
     }
 
     /// Verify whether the pattern with the given id matches at
@@ -150,14 +134,13 @@ impl RabinKarp {
     #[cold]
     fn verify(
         &self,
-        patterns: &Patterns,
         id: PatternID,
         haystack: &[u8],
         at: usize,
     ) -> Option<Match> {
-        let pat = patterns.get(id);
+        let pat = self.patterns.get(id);
         if pat.is_prefix(&haystack[at..]) {
-            Some(Match::from_span(id as usize, at, at + pat.len()))
+            Some(Match::new(id, at..at + pat.len()))
         } else {
             None
         }

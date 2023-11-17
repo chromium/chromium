@@ -8,7 +8,8 @@ Full support for Level 1 ("Basic Unicode Support") is provided with two
 exceptions:
 
 1. Line boundaries are not Unicode aware. Namely, only the `\n`
-   (`END OF LINE`) character is recognized as a line boundary.
+   (`END OF LINE`) character is recognized as a line boundary by default.
+   One can opt into `\r\n|\r|\n` being a line boundary via CRLF mode.
 2. The compatibility properties specified by
    [RL1.2a](https://unicode.org/reports/tr18/#RL1.2a)
    are ASCII-only definitions.
@@ -229,12 +230,10 @@ then all characters classes are case folded as well.
 [UTS#18 RL1.6](https://unicode.org/reports/tr18/#Line_Boundaries)
 
 The regex crate only provides support for recognizing the `\n` (`END OF LINE`)
-character as a line boundary. This choice was made mostly for implementation
-convenience, and to avoid performance cliffs that Unicode word boundaries are
-subject to.
-
-Ideally, it would be nice to at least support `\r\n` as a line boundary as
-well, and in theory, this could be done efficiently.
+character as a line boundary by default. One can also opt into treating
+`\r\n|\r|\n` as a line boundary via CRLF mode. This choice was made mostly for
+implementation convenience, and to avoid performance cliffs that Unicode word
+boundaries are subject to.
 
 
 ## RL1.7 Code Points

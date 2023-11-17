@@ -910,9 +910,9 @@ impl Clone for GenericArgument {
         match self {
             GenericArgument::Lifetime(v0) => GenericArgument::Lifetime(v0.clone()),
             GenericArgument::Type(v0) => GenericArgument::Type(v0.clone()),
+            GenericArgument::Const(v0) => GenericArgument::Const(v0.clone()),
             GenericArgument::Binding(v0) => GenericArgument::Binding(v0.clone()),
             GenericArgument::Constraint(v0) => GenericArgument::Constraint(v0.clone()),
-            GenericArgument::Const(v0) => GenericArgument::Const(v0.clone()),
         }
     }
 }
