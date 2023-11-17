@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.34...chromium-bidi-v0.5.0) (2023-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* `BidiServer.createAndStart` signature changed. New optional parameter `options` is added. Breaking change for Puppeteer, while ChromeDriver is not affected, as it uses the Mapper Tab.
+
+### Features
+
+* `acceptInsecureCerts` ([#1553](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1553)) ([8a13940](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8a139400403f9970d0ad35ee4bfac8c9cfce48b5))
+* implement dedicated workers ([#1565](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1565)) ([8312aff](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8312aff6d66354ea6d5a5671dc8ab56d19aadf3a))
+
+
+### Bug Fixes
+
+* do not wait during browsingContext.traverseHistory ([#1557](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1557)) ([aaf45a2](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aaf45a20ee0cefb3cd11d2a2190b1361d47d5bba))
+
 ## [0.4.34](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.33...chromium-bidi-v0.4.34) (2023-11-15)
 
 
