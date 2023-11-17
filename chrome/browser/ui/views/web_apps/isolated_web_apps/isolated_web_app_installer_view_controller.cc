@@ -88,7 +88,7 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
 
   void operator()(InstallabilityChecker::BundleInstallable installable) {
     model_->SetSignedWebBundleMetadata(installable.metadata);
-    model_->SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
     controller_->OnModelChanged();
   }
 
@@ -171,11 +171,11 @@ bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
 // Returns true if the dialog should be closed.
 bool IsolatedWebAppInstallerViewController::OnAccept() {
   switch (model_->step()) {
-    case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
+    case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
       IsolatedWebAppInstallerModel::LinkInfo learn_more_link = {
           IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
           base::BindRepeating(&IsolatedWebAppInstallerViewController::
-                                  OnConfirmInstallLearnMoreClicked,
+                                  OnShowMetadataLearnMoreClicked,
                               base::Unretained(this))};
       model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
           /*is_error=*/false, IDS_IWA_INSTALLER_CONFIRM_TITLE,
@@ -241,7 +241,7 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
   OnModelChanged();
 }
 
-void IsolatedWebAppInstallerViewController::OnConfirmInstallLearnMoreClicked() {
+void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
   // TODO(crbug.com/1479140): Implement
 }
 
@@ -275,7 +275,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
 
 void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   switch (model_->step()) {
-    case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
+    case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
       model_->SetDialogContent(absl::nullopt);
       OnModelChanged();
@@ -323,7 +323,7 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       view_->ShowGetMetadataScreen();
       break;
 
-    case IsolatedWebAppInstallerModel::Step::kConfirmInstall:
+    case IsolatedWebAppInstallerModel::Step::kShowMetadata:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CANCEL, IDS_INSTALL);
       view_->ShowMetadataScreen(model_->bundle_metadata());

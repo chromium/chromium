@@ -71,7 +71,7 @@ class IsolatedWebAppInstallerViewController
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 
-  void OnConfirmInstallLearnMoreClicked();
+  void OnShowMetadataLearnMoreClicked();
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;

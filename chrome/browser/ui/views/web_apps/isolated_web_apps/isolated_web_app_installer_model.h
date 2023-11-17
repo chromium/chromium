@@ -19,7 +19,7 @@ class IsolatedWebAppInstallerModel {
   enum class Step {
     kDisabled,
     kGetMetadata,
-    kConfirmInstall,
+    kShowMetadata,
     kInstall,
     kInstallSuccess,
   };

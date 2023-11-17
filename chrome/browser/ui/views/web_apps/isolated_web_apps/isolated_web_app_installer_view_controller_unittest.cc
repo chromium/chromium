@@ -267,7 +267,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.Start();
 
   EXPECT_TRUE(callback.Wait());
-  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kShowMetadata);
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
@@ -311,7 +311,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
-  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, ShowMetadataScreen(metadata));
@@ -335,7 +335,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
-  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
   model.SetDialogContent(CreateDummyDialog());
 
   base::test::TestFuture<void> callback;
@@ -363,7 +363,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
-  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
   model.SetDialogContent(CreateDummyDialog());
 
   base::test::TestFuture<void> callback;
@@ -393,7 +393,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
       url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
-  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
   model.SetDialogContent(CreateDummyDialog());
 
   EXPECT_CALL(view, ShowInstallScreen(metadata));
@@ -427,7 +427,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       url_info, InstalledBundle(bundle_path), u"app name", base::Version("2.0"),
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
-  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
   model.SetDialogContent(CreateDummyDialog());
 
   base::test::TestFuture<void> callback;

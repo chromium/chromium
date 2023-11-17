@@ -59,7 +59,7 @@ SignedWebBundleMetadata CreateTestMetadata() {
 const TestParam kTestParam[] = {
     {.test_suffix = "Disabled", .step = Step::kDisabled},
     {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
-    {.test_suffix = "ConfirmInstall", .step = Step::kConfirmInstall},
+    {.test_suffix = "ShowMetadata", .step = Step::kShowMetadata},
     {.test_suffix = "Install", .step = Step::kInstall},
     {.test_suffix = "Success", .step = Step::kInstallSuccess},
 };
