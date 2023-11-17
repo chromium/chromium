@@ -100,7 +100,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   pending_interaction_timestamp_ = base::TimeTicks();
 }
 
-void SoftNavigationHeuristics::UserInitiatedInteraction(
+void SoftNavigationHeuristics::InteractionCallbackCalled(
     ScriptState* script_state,
     EventScopeType type,
     bool is_new_interaction) {
@@ -113,10 +113,6 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
     return;
   }
 
-  // Ensure that paints would be reset, so that paint recording would continue
-  // despite the user interaction.
-  did_reset_paints_ = false;
-
   CHECK(script_state);
   scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
   if (!task) {
@@ -124,33 +120,29 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
     // their regular flow.
     return;
   }
-  if (type == EventScopeType::Keyboard) {
-    // TODO(https://crbug.com/1479052): It seems like the callback invocation is
-    // creating a task scope for the click event handler, but not for the key
-    // handlers. The reason for that is that the key handlers are running inside
-    // of an existing task. It's unclear if this situation is only due to our
-    // testing infrastructure limitations, or if key events can actually run
-    // inside of existing JS tasks in production.
-      potential_soft_navigation_task_ids_.insert(task->Id().value());
-  }
-  if (is_new_interaction) {
+
+  if (is_new_interaction || !last_interaction_task_id_) {
     CHECK(!pending_interaction_timestamp_.is_null());
     PerInteractionData data;
     data.user_interaction_timestamp = pending_interaction_timestamp_;
     interaction_task_id_to_interaction_data_.insert(task->Id().value(), data);
     last_interaction_task_id_ = task->Id().value();
   } else {
-    if (last_interaction_task_id_) {
-      task_id_to_interaction_task_id_.insert(task->Id().value(),
-                                             last_interaction_task_id_);
-    }
+    task_id_to_interaction_task_id_.insert(task->Id().value(),
+                                           last_interaction_task_id_);
   }
 
   tracker->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   TRACE_EVENT_INSTANT("scheduler",
                       "SoftNavigationHeuristics::UserInitiatedInteraction");
+}
 
+void SoftNavigationHeuristics::UserInitiatedInteraction(
+    ScriptState* script_state) {
+  // Ensure that paints would be reset, so that paint recording would continue
+  // despite the user interaction.
+  did_reset_paints_ = false;
   ResetPaintsIfNeeded(script_state);
 }
 
@@ -318,6 +310,17 @@ void SoftNavigationHeuristics::RecordPaint(
   }
 }
 
+void SoftNavigationHeuristics::SetCurrentEventParameters(
+    EventScopeType type,
+    bool is_new_interaction) {
+  is_current_event_new_interaction_ = is_new_interaction;
+  current_event_type_ = type;
+  pending_interaction_timestamp_ =
+      (is_new_interaction || !last_interaction_task_id_)
+          ? base::TimeTicks::Now()
+          : base::TimeTicks();
+}
+
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     LocalFrame* frame) const {
   auto* loader = frame->Loader().GetDocumentLoader();
@@ -426,8 +429,8 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   soft_navigation_descendant_cache_.clear();
 
   // Create a user initiated interaction
-  UserInitiatedInteraction(script_state, current_event_type_,
-                           is_current_event_new_interaction_);
+  InteractionCallbackCalled(script_state, current_event_type_,
+                            is_current_event_new_interaction_);
   if (current_event_type_ ==
       SoftNavigationHeuristics::EventScopeType::Navigate) {
     SameDocumentNavigationStarted(script_state);
@@ -468,12 +471,8 @@ SoftNavigationEventScope::SoftNavigationEventScope(
   }
   heuristics_->SetCurrentEventParameters(type, is_new_interaction);
   tracker->RegisterObserver(heuristics_);
-  if (type == SoftNavigationHeuristics::EventScopeType::Keyboard) {
-    // We need to call this explicitly here for keyboard, as they may not get a
-    // task created at callback time
-    heuristics->UserInitiatedInteraction(script_state, type,
-                                         is_new_interaction);
-  }
+
+  heuristics->UserInitiatedInteraction(script_state);
 }
 SoftNavigationEventScope::~SoftNavigationEventScope() {
   ThreadScheduler* scheduler = ThreadScheduler::Current();

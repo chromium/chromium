@@ -7,7 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/soft-navigation-helper.js"></script>
+<script src="/soft-navigation-heuristics/resources/soft-navigation-helper.js"></script>
 </head>
 <!-- Not including a body element to ensure the keyup heuristic works on
      malformed HTML -->
@@ -22,7 +22,7 @@
         addTextToDivOnMain();
       },
       link: document.body,
-      interactionType: "keyup",
+      interactionFunc: () => { window.eventSender.keyDownAsync('j'); },
       eventType: "keyup",
       test: "Keyup on body triggers SoftNavigationHeuristics"});
   </script>

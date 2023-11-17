@@ -34,9 +34,10 @@ class SoftNavigationHeuristics
   void Trace(Visitor*) const override;
 
   // The class's API.
-  void UserInitiatedInteraction(ScriptState*,
-                                EventScopeType,
-                                bool is_new_interaction);
+  void InteractionCallbackCalled(ScriptState*,
+                                 EventScopeType,
+                                 bool is_new_interaction);
+  void UserInitiatedInteraction(ScriptState*);
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
   bool ModifiedDOM(ScriptState*);
@@ -52,12 +53,7 @@ class SoftNavigationHeuristics
                    uint64_t painted_area,
                    bool is_modified_by_soft_navigation);
 
-  void SetCurrentEventParameters(EventScopeType type, bool is_new_interaction) {
-    is_current_event_new_interaction_ = is_new_interaction;
-    current_event_type_ = type;
-    pending_interaction_timestamp_ =
-        is_new_interaction ? base::TimeTicks::Now() : base::TimeTicks();
-  }
+  void SetCurrentEventParameters(EventScopeType type, bool is_new_interaction);
 
  private:
   enum FlagType : uint8_t {
