@@ -649,6 +649,21 @@ TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPrivateToPublicSlot) {
                   Bucket(OwnerKeyUmaEvent::kMigrationToPublicSlotStarted, 1)));
 }
 
+// Test that OwnerKeyLoader silently exits if it was started after the shutdown
+// had started.
+TEST_F(RegularOwnerKeyLoaderTest, ExitOnShutdown) {
+  // In real code DeviceSettingsService must call this for the first user.
+  device_settings_service_.MarkWillEstablishConsumerOwnership();
+  // Do not prepare any keys, so key_loader_ has to generate a new one.
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+
+  key_loader_->Run();
+
+  EXPECT_FALSE(result_observer_.Get<PublicKeyRefPtr>());
+  EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kOwnerKeyHistogramName), 0);
+}
+
 class ChildOwnerKeyLoaderTest : public OwnerKeyLoaderTestBase {
  public:
   ChildOwnerKeyLoaderTest()
