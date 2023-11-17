@@ -101,8 +101,6 @@ if (HEADLESS === 'true') {
 const wptRunArgs = [
   '--binary',
   BROWSER_BIN,
-  '--webdriver-binary',
-  'tools/run-bidi-server.mjs',
   `--webdriver-arg=--headless=${HEADLESS}`,
   '--log-wptreport',
   WPT_REPORT,
@@ -140,6 +138,7 @@ if (CHROMEDRIVER === 'true') {
     '--yes'
   );
 } else {
+  wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   log('Using pure mapper...');
 }
 
