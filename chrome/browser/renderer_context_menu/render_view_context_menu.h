@@ -398,8 +398,7 @@ class RenderViewContextMenu
   void ExecRunLayoutExtraction();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-  void MediaPlayerActionAt(const gfx::Point& location,
-                           const blink::mojom::MediaPlayerAction& action);
+  void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
   void SearchForVideoFrame(const gfx::ImageSkia& image);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);

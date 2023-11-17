@@ -4170,35 +4170,30 @@ void RenderViewContextMenu::ExecLoadImage() {
 
 void RenderViewContextMenu::ExecLoop() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_Loop"));
-  MediaPlayerActionAt(gfx::Point(params_.x, params_.y),
-                      blink::mojom::MediaPlayerAction(
-                          blink::mojom::MediaPlayerActionType::kLoop,
-                          !IsCommandIdChecked(IDC_CONTENT_CONTEXT_LOOP)));
+  MediaPlayerAction(blink::mojom::MediaPlayerAction(
+      blink::mojom::MediaPlayerActionType::kLoop,
+      !IsCommandIdChecked(IDC_CONTENT_CONTEXT_LOOP)));
 }
 
 void RenderViewContextMenu::ExecControls() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_Controls"));
-  MediaPlayerActionAt(gfx::Point(params_.x, params_.y),
-                      blink::mojom::MediaPlayerAction(
-                          blink::mojom::MediaPlayerActionType::kControls,
-                          !IsCommandIdChecked(IDC_CONTENT_CONTEXT_CONTROLS)));
+  MediaPlayerAction(blink::mojom::MediaPlayerAction(
+      blink::mojom::MediaPlayerActionType::kControls,
+      !IsCommandIdChecked(IDC_CONTENT_CONTEXT_CONTROLS)));
 }
 
 void RenderViewContextMenu::ExecSaveVideoFrameAs() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_SaveVideoFrameAs"));
-  MediaPlayerActionAt(
-      gfx::Point(params_.x, params_.y),
-      blink::mojom::MediaPlayerAction(
-          blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs,
-          /*enable=*/true));
+  MediaPlayerAction(blink::mojom::MediaPlayerAction(
+      blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs,
+      /*enable=*/true));
 }
 
 void RenderViewContextMenu::ExecCopyVideoFrame() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_CopyVideoFrame"));
-  MediaPlayerActionAt(gfx::Point(params_.x, params_.y),
-                      blink::mojom::MediaPlayerAction(
-                          blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
-                          /*enable=*/true));
+  MediaPlayerAction(blink::mojom::MediaPlayerAction(
+      blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
+      /*enable=*/true));
 }
 
 void RenderViewContextMenu::ExecSearchForVideoFrame() {
@@ -4351,19 +4346,17 @@ void RenderViewContextMenu::ExecPictureInPicture() {
         UserMetricsAction("MediaContextMenu_EnterPictureInPicture"));
   }
 
-  MediaPlayerActionAt(
-      gfx::Point(params_.x, params_.y),
-      blink::mojom::MediaPlayerAction(
-          blink::mojom::MediaPlayerActionType::kPictureInPicture,
-          !picture_in_picture_active));
+  MediaPlayerAction(blink::mojom::MediaPlayerAction(
+      blink::mojom::MediaPlayerActionType::kPictureInPicture,
+      !picture_in_picture_active));
 }
 
-void RenderViewContextMenu::MediaPlayerActionAt(
-    const gfx::Point& location,
+void RenderViewContextMenu::MediaPlayerAction(
     const blink::mojom::MediaPlayerAction& action) {
-  RenderFrameHost* frame_host = GetRenderFrameHost();
-  if (frame_host)
-    frame_host->ExecuteMediaPlayerActionAtLocation(location, action);
+  if (auto* frame_host = GetRenderFrameHost(); frame_host) {
+    frame_host->ExecuteMediaPlayerActionAtLocation(
+        gfx::Point(params_.x, params_.y), action);
+  }
 }
 
 void RenderViewContextMenu::SearchForVideoFrame(const gfx::ImageSkia& image) {
