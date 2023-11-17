@@ -180,7 +180,8 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
   CFDictionarySetValue(
       decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      kCFBooleanFalse);
+      !session_metadata.allow_software_decoding ? kCFBooleanTrue
+                                                : kCFBooleanFalse);
 #endif
 
   // Build destination image buffer attributes.

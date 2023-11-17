@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/sys_byteorder.h"
+#include "build/build_config.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -209,7 +210,13 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   }
 
   VideoToolboxDecompressionSessionMetadata session_metadata = {
+#if defined(ARCH_CPU_X86_FAMILY)
+      // Allow software decoding on Intel hardware where the cutoff is around
+      // 480p and breaks tests.
+      /*allow_software_decoding=*/true,
+#else
       /*allow_software_decoding=*/false,
+#endif  // defined(ARCH_CPU_X86_FAMILY)
       /*is_hbd=*/false,
       /*has_alpha=*/false,
       /*visible_rect=*/pic->visible_rect()};
