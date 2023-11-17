@@ -940,5 +940,26 @@ base::TimeDelta GetOnDeviceModelIdleTimeout() {
   return kOnDeviceModelServiceIdleTimeout.Get();
 }
 
+int GetOnDeviceModelMinTokensForContext() {
+  static const base::FeatureParam<int> kOnDeviceModelMinTokensForContext{
+      &kOptimizationGuideOnDeviceModel,
+      "on_device_model_min_tokens_for_context", 1024};
+  return kOnDeviceModelMinTokensForContext.Get();
+}
+
+int GetOnDeviceModelMaxTokensForContext() {
+  static const base::FeatureParam<int> kOnDeviceModelMaxTokensForContext{
+      &kOptimizationGuideOnDeviceModel,
+      "on_device_model_max_tokens_for_context", 4096};
+  return kOnDeviceModelMaxTokensForContext.Get();
+}
+
+int GetOnDeviceModelContextTokenChunkSize() {
+  static const base::FeatureParam<int> kOnDeviceModelContextTokenChunkSize{
+      &kOptimizationGuideOnDeviceModel,
+      "on_device_model_context_token_chunk_size", 512};
+  return kOnDeviceModelContextTokenChunkSize.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

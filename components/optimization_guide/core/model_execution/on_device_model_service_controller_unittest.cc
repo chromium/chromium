@@ -17,21 +17,36 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace optimization_guide {
+
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
-namespace optimization_guide {
+std::vector<std::string> ConcatResponses(
+    const std::vector<std::string>& responses) {
+  std::vector<std::string> concat_responses;
+  std::string current_response;
+  for (const std::string& response : responses) {
+    current_response += response;
+    concat_responses.push_back(current_response);
+  }
+  return concat_responses;
+}
 
 constexpr proto::ModelExecutionFeature kFeature =
     proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
 
-class FakeOnDeviceSession : public on_device_model::mojom::Session {
+class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
+                            public on_device_model::mojom::Session {
  public:
   // on_device_model::mojom::Session:
   void AddContext(on_device_model::mojom::InputOptionsPtr input,
                   mojo::PendingRemote<on_device_model::mojom::ContextClient>
                       client) override {
-    context_.push_back(input->text);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeOnDeviceSession::AddContextInternal, AsWeakPtr(),
+                       std::move(input), std::move(client)));
   }
 
   void Execute(on_device_model::mojom::InputOptionsPtr input,
@@ -47,6 +62,33 @@ class FakeOnDeviceSession : public on_device_model::mojom::Session {
   }
 
  private:
+  void AddContextInternal(
+      on_device_model::mojom::InputOptionsPtr input,
+      mojo::PendingRemote<on_device_model::mojom::ContextClient> client) {
+    std::string suffix;
+    std::string context = input->text;
+    if (input->token_offset) {
+      context.erase(context.begin(), context.begin() + *input->token_offset);
+      suffix += " off:" + base::NumberToString(*input->token_offset);
+    }
+    if (input->max_tokens) {
+      if (input->max_tokens < context.size()) {
+        context.resize(*input->max_tokens);
+      }
+      suffix += " max:" + base::NumberToString(*input->max_tokens);
+    }
+    context_.push_back(context + suffix);
+    uint32_t max_tokens = input->max_tokens.value_or(input->text.size());
+    uint32_t token_offset = input->token_offset.value_or(0);
+    if (client) {
+      mojo::Remote<on_device_model::mojom::ContextClient> remote(
+          std::move(client));
+      remote->OnComplete(
+          std::min(static_cast<uint32_t>(input->text.size()) - token_offset,
+                   max_tokens));
+    }
+  }
+
   std::vector<std::string> context_;
 };
 
@@ -107,6 +149,11 @@ class FakeOnDeviceModelServiceController
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_min_tokens_for_context", "10"},
+         {"on_device_model_max_tokens_for_context", "22"},
+         {"on_device_model_context_token_chunk_size", "4"}});
     proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_feature(kFeature);
     auto& input_config = *config.mutable_input_config();
@@ -124,7 +171,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     // Context call prefixes with context:.
     auto& context_substitution =
         *input_config.add_input_context_substitutions();
-    context_substitution.set_string_template("context:%s");
+    context_substitution.set_string_template("ctx:%s");
     context_substitution.add_substitutions()
         ->add_candidates()
         ->mutable_proto_field()
@@ -184,8 +231,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   std::optional<std::string> response_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kOptimizationGuideOnDeviceModel};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
@@ -203,21 +249,110 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   auto session = test_controller_.StartSession(kFeature);
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
+  task_environment_.RunUntilIdle();
+
   AddContext(*session, "bar");
   ExecuteModel(*session, "baz");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
-  const std::vector<std::string> expected_responses = {
-      "Context: context:bar\n",
-      "Context: context:bar\nInput: execute:baz\n",
-  };
-  EXPECT_EQ(*response_received_, expected_responses[1]);
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx:bar off:0 max:10\n",
+      "Input: execute:baz\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelExecutionLoadsSingleContextChunk) {
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "context");
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx:contex off:0 max:10\n",
+      "Context: t off:10 max:4\n",
+      "Input: execute:foo\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelExecutionLoadsLongContextInChunks) {
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "this is long context");
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx:this i off:0 max:10\n",
+      "Context: s lo off:10 max:4\n",
+      "Context: ng c off:14 max:4\n",
+      "Context: onte off:18 max:4\n",
+      "Input: execute:foo\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelExecutionCancelsOptionalContext) {
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "this is long context");
+  // ExecuteModel() directly after AddContext() should only load first chunk.
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx:this i off:0 max:10\n",
+      "Input: execute:foo\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   EXPECT_FALSE(test_controller_.StartSession(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_min_tokens_for_context", "0"},
+       {"on_device_model_max_tokens_for_context", "22"},
+       {"on_device_model_context_token_chunk_size", "4"}});
+
+  auto session = test_controller_.StartSession(kFeature);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "context");
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx: off:0 max:4\n",
+      "Context: cont off:4 max:4\n",
+      "Context: ext off:8 max:4\n",
+      "Input: execute:foo\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionDisconnectCalled) {
