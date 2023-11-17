@@ -300,7 +300,7 @@ class CORE_EXPORT SVGElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  bool SupportsFocus() const override { return false; }
+  bool SupportsFocus(UpdateBehavior) const override { return false; }
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();

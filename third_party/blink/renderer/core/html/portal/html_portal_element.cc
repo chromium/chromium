@@ -458,7 +458,7 @@ LayoutObject* HTMLPortalElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
-bool HTMLPortalElement::SupportsFocus() const {
+bool HTMLPortalElement::SupportsFocus(UpdateBehavior) const {
   return true;
 }
 

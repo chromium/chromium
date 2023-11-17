@@ -306,8 +306,9 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
   return input_type_view_->HasCustomFocusLogic();
 }
 
-bool HTMLInputElement::IsKeyboardFocusable() const {
-  return input_type_->IsKeyboardFocusable();
+bool HTMLInputElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  return input_type_->IsKeyboardFocusable(update_behavior);
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {

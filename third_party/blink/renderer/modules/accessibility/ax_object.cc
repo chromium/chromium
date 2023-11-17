@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -4128,7 +4129,8 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   }
 
   // NOT focusable: hidden elements.
-  if (!IsA<HTMLAreaElement>(elem) && !elem->IsFocusableStyle()) {
+  if (!IsA<HTMLAreaElement>(elem) &&
+      !elem->IsFocusableStyle(Element::UpdateBehavior::kNoneForAccessibility)) {
     return false;
   }
 
@@ -4138,7 +4140,7 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
       << "\n* LayoutObject: " << GetLayoutObject();
 
   // Focusable: element supports focus.
-  return elem->SupportsFocus();
+  return elem->SupportsFocus(Element::UpdateBehavior::kNoneForAccessibility);
 }
 
 bool AXObject::IsKeyboardFocusable() const {
@@ -4150,11 +4152,11 @@ bool AXObject::IsKeyboardFocusable() const {
   CHECK(!element.NeedsStyleRecalc())
       << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
       << "\n* LayoutObject: " << GetLayoutObject();
-  if (!element.IsFocusable(
-          /*disallow_layout_updates_for_accessibility_only*/ true)) {
+  if (!element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
     return false;
   }
-  return element.IsKeyboardFocusable();
+  return element.IsKeyboardFocusable(
+      Element::UpdateBehavior::kNoneForAccessibility);
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -5073,7 +5075,8 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   if (ui::IsPresentational(role)) {
     if (IsFrame(GetNode()))
       return ax::mojom::blink::Role::kIframePresentational;
-    if ((GetElement() && GetElement()->SupportsFocus()) ||
+    if ((GetElement() && GetElement()->SupportsFocus(
+                             Element::UpdateBehavior::kNoneForAccessibility)) ||
         HasAriaAttribute(true /* does_undo_role_presentation */)) {
       // Must be exposed with a role if focusable or has a global ARIA property
       // that is allowed in this context. See
@@ -5097,10 +5100,13 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // ax::mojom::blink::Role::kComboBoxMenuButton:
   //   <div tabindex=0 role="combobox">Select</div>
   if (role == ax::mojom::blink::Role::kComboBoxGrouping) {
-    if (IsAtomicTextField())
+    if (IsAtomicTextField()) {
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
-    else if (GetElement() && GetElement()->SupportsFocus())
+    } else if (GetElement() &&
+               GetElement()->SupportsFocus(
+                   Element::UpdateBehavior::kNoneForAccessibility)) {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
+    }
   }
 
   return role;

@@ -817,27 +817,28 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                       const FocusOptions*);
   virtual void blur();
 
+  enum class UpdateBehavior {
+    kStyleAndLayout,
+    kNoneForAccessibility,
+  };
   // IsFocusable is true if the element SupportsFocus(), and is currently
   // focusable (using the mouse). This method can be called when layout is not
   // clean, but the method might trigger a lifecycle update in that case. This
   // method will not trigger a lifecycle update if layout is already clean.
-  // If the |disallow_layout_updates_for_accessibility_only| argument is true,
-  // which should only be used by a11y code, layout updates will never be
-  // performed.
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
   virtual bool IsFocusable(
-      bool disallow_layout_updates_for_accessibility_only = false) const;
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
   // IsKeyboardFocusable is true for the subset of mouse focusable elements (for
   // which IsFocusable() is true) that are in the tab cycle. This method
   // can be called when layout is not clean, but the method might trigger a
   // lifecycle update in that case. This method will not trigger a lifecycle
   // update if layout is already clean.
-  virtual bool IsKeyboardFocusable() const;
-
-  // This checks whether the element is a scrollable container that should be
-  // made keyboard focusable. Note that this is slow, because it must do a tree
-  // walk to look for descendant focusable nodes.
-  bool IsScrollableContainerThatShouldBeKeyboardFocusable() const;
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
+  virtual bool IsKeyboardFocusable(
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
   bool IsFocusedElementInDocument() const;
   Element* AdjustedFocusedElementInTreeScope() const;
@@ -1317,10 +1318,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // while not *being focusable*, for example if the element is disconnected
   // from the document. This method can be called when layout is not clean,
   // but in some cases it might run a style/layout lifecycle update on the
-  // document. This method should stay protected - it is only for use by the
-  // Element class hierarchy. Outside callers should use `IsFocusable()` and/or
+  // document.
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
+  // This method should stay protected - it is only for use by the Element class
+  // hierarchy. Outside callers should use `IsFocusable()` and/or
   // `IsKeyboardFocusable()`.
-  virtual bool SupportsFocus() const;
+  virtual bool SupportsFocus(
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
   bool SupportsSpatialNavigationFocus() const;
 
@@ -1329,18 +1334,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns false if the style prevents focus. Returning true doesn't imply
   // focusability, there may be other conditions like SupportsFocus().
   // Subclasses may override this method to affect focusability. This method
-  // must be called on an up-to-date ComputedStyle, so it may use existence of
-  // layoutObject and the LayoutObject::style() to reason about focusability.
+  // might update layout/style, as it may use existence of layoutObject and the
+  // LayoutObject::style() to reason about focusability.
   // However, it must not retrieve layout information like position and size.
   // This method cannot be moved to LayoutObject because some focusable nodes
   // don't have layoutObjects. e.g., HTMLOptionElement.
-  virtual bool IsFocusableStyle() const;
-  // Similar to IsFocusableStyle, except that it will ensure that any deferred
-  // work to create layout objects is completed (e.g. in display-locked trees).
-  bool IsFocusableStyleAfterUpdate() const;
-  // Similar to IsFocusableStyle, except that it will *never* trigger a style
-  // update. Only call this method if the lifecycle does not need to be updated.
-  bool IsFocusableStyleNoLifecycleUpdate() const;
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
+  virtual bool IsFocusableStyle(
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
   // Is the node descendant of this in something clickable/activatable, such
   // that we shouldn't handle events targeting it?
   bool IsClickableControl(Node*);
@@ -1685,6 +1687,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   HighlightRecalc CalculateHighlightRecalc(const ComputedStyle* old_style,
                                            const ComputedStyle& new_style,
                                            const ComputedStyle* parent_style);
+
+  // This checks that the feature KeyboardFocusableScrollers is enabled and
+  // element is a scroller. This will call IsScrollableNode, which might update
+  // layout.
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
+  bool CanBeKeyboardFocusableScroller(
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
+  // This checks whether the element is a scrollable container that should be
+  // made keyboard focusable. Note that this is slow, because it must do a tree
+  // walk to look for descendant focusable nodes.
+  // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
+  // only be used by a11y code, layout updates will never be performed.
+  bool IsKeyboardFocusableScroller(
+      UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
   Member<ElementData> element_data_;
 };

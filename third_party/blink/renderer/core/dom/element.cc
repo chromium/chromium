@@ -593,13 +593,42 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
-bool Element::IsFocusableStyle() const {
+bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // TODO(vmpstr): Note that this may be called by accessibility during layout
   // tree attachment, at which point we might not have cleared all of the dirty
   // bits to ensure that the layout tree doesn't need an update. This should be
   // fixable by deferring AX tree updates as a separate phase after layout tree
   // attachment has happened. At that point `InStyleRecalc()` portion of the
   // following DCHECK can be removed.
+
+  // In order to check focusable style, we use the existence of LayoutObjects
+  // as a proxy for determining whether the element would have a display mode
+  // that restricts visibility (such as display: none). However, with
+  // display-locking, it is possible that we deferred such LayoutObject
+  // creation. We need to ensure to update style and layout tree to have
+  // up-to-date information.
+  //
+  // Note also that there may be situations where focus / keyboard navigation
+  // causes us to have dirty style, so we update StyleAndLayoutTreeForNode here.
+  // If the style and layout tree are clean, then this should be a quick
+  // operation. See crbug.com/1079385 for details.
+  //
+  // Also note that if this node is ignored due to a display lock for focus
+  // activation reason, we simply return false to avoid updating style & layout
+  // tree for this node.
+  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
+  if (UNLIKELY(update_behavior == UpdateBehavior::kNoneForAccessibility)) {
+    DCHECK(!NeedsStyleRecalc()) << this;
+    disallow_scope.emplace(GetDocument().Lifecycle());
+  } else {
+    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+            *this, DisplayLockActivationReason::kUserFocus)) {
+      return false;
+    }
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                  DocumentUpdateReason::kFocus);
+  }
+
   DCHECK(
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this))
@@ -6045,33 +6074,24 @@ bool Element::SupportsSpatialNavigationFocus() const {
           HasEventListeners(event_type_names::kFocusout));
 }
 
-bool Element::IsFocusableStyleAfterUpdate() const {
-  // In order to check focusable style, we use the existence of LayoutObjects
-  // as a proxy for determining whether the element would have a display mode
-  // that restricts visibility (such as display: none). However, with
-  // display-locking, it is possible that we deferred such LayoutObject
-  // creation. We need to ensure to update style and layout tree to have
-  // up-to-date information.
-  //
-  // Note also that there may be situations where focus / keyboard navigation
-  // causes us to have dirty style, so we update StyleAndLayoutTreeForNode here.
-  // If the style and layout tree are clean, then this should be a quick
-  // operation. See crbug.com/1079385 for details.
-  //
-  // Note that this isn't a part of `IsFocusableStyle()` because there are
-  // callers of that function which cannot do a layout tree update (e.g.
-  // accessibility).
-  //
-  // Also note that if this node is ignored due to a display lock for focus
-  // activation reason, we simply return false to avoid updating style & layout
-  // tree for this node.
-  if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-          *this, DisplayLockActivationReason::kUserFocus)) {
+bool Element::CanBeKeyboardFocusableScroller(
+    UpdateBehavior update_behavior) const {
+  if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled()) {
     return false;
   }
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                DocumentUpdateReason::kFocus);
-  return IsFocusableStyle();
+  // A node is scrollable depending on its layout size. As such, it is important
+  // to have up to date style and layout before calling IsScrollableNode.
+  // However, for a11y code, layout updates should not be performed here.
+  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
+  if (UNLIKELY(update_behavior == UpdateBehavior::kNoneForAccessibility)) {
+    disallow_scope.emplace(GetDocument().Lifecycle());
+  } else {
+    auto* box = GetLayoutObject();
+    if (box && box->NeedsLayout()) {
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+    }
+  }
+  return IsScrollableNode(this);
 }
 
 // This can be slow, because it can require a tree walk. It might be
@@ -6079,9 +6099,9 @@ bool Element::IsFocusableStyleAfterUpdate() const {
 // recompute it. That would require marking that bit dirty whenever
 // a node in the subtree was mutated, or when styles for the subtree
 // were recomputed.
-bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
-  if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() ||
-      !IsScrollableNode(this)) {
+bool Element::IsKeyboardFocusableScroller(
+    UpdateBehavior update_behavior) const {
+  if (!CanBeKeyboardFocusableScroller(update_behavior)) {
     return false;
   }
   // This condition is to avoid clearing the focus in the middle of a
@@ -6094,7 +6114,7 @@ bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
   for (Node* node = FlatTreeTraversal::FirstChild(*this); node;
        node = FlatTreeTraversal::Next(*node, this)) {
     if (Element* element = DynamicTo<Element>(node)) {
-      if (element->IsKeyboardFocusable()) {
+      if (element->IsKeyboardFocusable(update_behavior)) {
         return false;
       }
     }
@@ -6102,33 +6122,23 @@ bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
   return true;
 }
 
-bool Element::IsKeyboardFocusable() const {
-  if (!Element::IsFocusable()) {
+bool Element::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
+  if (!Element::IsFocusable(update_behavior)) {
     return false;
   }
-  // Note that IsScrollableContainerThatShouldBeKeyboardFocusable() will get
+  // Note that IsKeyboardFocusableScroller() will get
   // called twice, once in IsFocusable (via SupportsFocus) and the other
-  // here. Note that IsScrollableContainerThatShouldBeKeyboardFocusable is slow.
+  // here. Note that IsKeyboardFocusableScroller is slow.
   return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
-         IsScrollableContainerThatShouldBeKeyboardFocusable();
+         IsKeyboardFocusableScroller(update_behavior);
 }
 
-bool Element::IsFocusableStyleNoLifecycleUpdate() const {
-  DCHECK(!NeedsStyleRecalc()) << this;
-  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
-  return IsFocusableStyle();
+bool Element::IsFocusable(UpdateBehavior update_behavior) const {
+  return isConnected() && IsFocusableStyle(update_behavior) &&
+         SupportsFocus(update_behavior);
 }
 
-bool Element::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
-  if (UNLIKELY(disallow_layout_updates_for_accessibility_only)) {
-    return isConnected() && IsFocusableStyleNoLifecycleUpdate() &&
-           SupportsFocus();
-  }
-  return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
-}
-
-bool Element::SupportsFocus() const {
+bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
   // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
@@ -6138,7 +6148,7 @@ bool Element::SupportsFocus() const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         IsScrollableContainerThatShouldBeKeyboardFocusable() ||
+         IsKeyboardFocusableScroller(update_behavior) ||
          SupportsSpatialNavigationFocus();
 }
 

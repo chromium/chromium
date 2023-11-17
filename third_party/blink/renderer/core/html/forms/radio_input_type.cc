@@ -187,9 +187,11 @@ void RadioInputType::HandleKeyupEvent(KeyboardEvent& event) {
   }
 }
 
-bool RadioInputType::IsKeyboardFocusable() const {
-  if (!InputType::IsKeyboardFocusable())
+bool RadioInputType::IsKeyboardFocusable(
+    Element::UpdateBehavior update_behavior) const {
+  if (!InputType::IsKeyboardFocusable(update_behavior)) {
     return false;
+  }
 
   // When using Spatial Navigation, every radio button should be focusable.
   if (IsSpatialNavigationEnabled(GetElement().GetDocument().GetFrame()))

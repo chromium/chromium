@@ -311,7 +311,8 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
 
  protected:
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
 
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };

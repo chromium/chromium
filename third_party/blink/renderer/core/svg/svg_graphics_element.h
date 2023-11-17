@@ -60,8 +60,9 @@ class CORE_EXPORT SVGGraphicsElement : public SVGTransformableElement,
                      Document&,
                      ConstructionType = kCreateSVGElement);
 
-  bool SupportsFocus() const override {
-    return Element::SupportsFocus() || HasFocusEventListeners();
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override {
+    return Element::SupportsFocus(update_behavior) || HasFocusEventListeners();
   }
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;

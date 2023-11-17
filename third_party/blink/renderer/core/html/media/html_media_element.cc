@@ -692,29 +692,28 @@ void HTMLMediaElement::ResetMojoState() {
           this, GetExecutionContext());
 }
 
-bool HTMLMediaElement::SupportsFocus() const {
+bool HTMLMediaElement::SupportsFocus(UpdateBehavior update_behavior) const {
   // TODO(https://crbug.com/911882): Depending on result of discussion, remove.
   if (ownerDocument()->IsMediaDocument())
     return false;
 
   // If no controls specified, we should still be able to focus the element if
   // it has tabIndex.
-  return ShouldShowControls() || HTMLElement::SupportsFocus();
+  return ShouldShowControls() || HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLMediaElement::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
+bool HTMLMediaElement::IsFocusable(UpdateBehavior update_behavior) const {
   if (!SupportsFocus()) {
     return false;
   }
-  return !IsFullscreen() || HTMLElement::IsFocusable(
-                                disallow_layout_updates_for_accessibility_only);
+  return !IsFullscreen() || HTMLElement::IsFocusable(update_behavior);
 }
 
-bool HTMLMediaElement::IsKeyboardFocusable() const {
+bool HTMLMediaElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
   // Media elements are keyboard focusable if they are focusable at all,
   // and don't have a negative tabindex set.
-  return IsFocusable() && tabIndex() >= 0;
+  return IsFocusable(update_behavior) && tabIndex() >= 0;
 }
 
 int HTMLMediaElement::DefaultTabIndex() const {

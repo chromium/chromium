@@ -295,17 +295,19 @@ String HTMLFormControlElement::ResultForDialogSubmit() {
   return FastGetAttribute(html_names::kValueAttr);
 }
 
-bool HTMLFormControlElement::SupportsFocus() const {
+bool HTMLFormControlElement::SupportsFocus(UpdateBehavior) const {
   return !IsDisabledFormControl();
 }
 
-bool HTMLFormControlElement::IsKeyboardFocusable() const {
-  if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
-    return HTMLElement::IsKeyboardFocusable();
+bool HTMLFormControlElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
+    return HTMLElement::IsKeyboardFocusable(update_behavior);
+  }
 
   // Form control elements are always keyboard focusable if they are focusable
   // at all, and don't have a negative tabindex set.
-  return IsFocusable() && tabIndex() >= 0;
+  return IsFocusable(update_behavior) && tabIndex() >= 0;
 }
 
 bool HTMLFormControlElement::MayTriggerVirtualKeyboard() const {

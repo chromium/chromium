@@ -131,7 +131,8 @@ class CORE_EXPORT HTMLPortalElement : public HTMLFrameOwnerElement {
   bool IsURLAttribute(const Attribute&) const override;
   void ParseAttribute(const AttributeModificationParams&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
 
   // HTMLFrameOwnerElement overrides
   void DisconnectContentFrame() override;

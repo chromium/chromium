@@ -150,7 +150,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool LoadOrRedirectSubframe(const KURL&,
                               const AtomicString& frame_name,
                               bool replace_current_item);
-  bool IsKeyboardFocusable() const override;
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
+                               UpdateBehavior::kStyleAndLayout) const override;
   void FrameOwnerPropertiesChanged() override;
 
   void DisposePluginSoon(WebPluginContainerImpl*);

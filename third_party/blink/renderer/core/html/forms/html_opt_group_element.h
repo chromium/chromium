@@ -52,7 +52,8 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
   void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;
   void ParseAttribute(const AttributeModificationParams&) override;

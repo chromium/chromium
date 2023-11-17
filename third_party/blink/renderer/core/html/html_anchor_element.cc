@@ -128,11 +128,11 @@ HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
 
 HTMLAnchorElement::~HTMLAnchorElement() = default;
 
-bool HTMLAnchorElement::SupportsFocus() const {
+bool HTMLAnchorElement::SupportsFocus(UpdateBehavior update_behavior) const {
   if (IsLink() && !IsEditable(*this)) {
     return true;
   }
-  return HTMLElement::SupportsFocus();
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
@@ -141,36 +141,30 @@ bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
          HTMLElement::SupportsFocus();
 }
 
-bool HTMLAnchorElement::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
-  if (disallow_layout_updates_for_accessibility_only) {
-    if (!IsFocusableStyleNoLifecycleUpdate()) {
-      return false;
-    }
-  } else {
-    if (!IsFocusableStyleAfterUpdate()) {
-      return false;
-    }
+bool HTMLAnchorElement::IsFocusable(UpdateBehavior update_behavior) const {
+  if (!IsFocusableStyle(update_behavior)) {
+    return false;
   }
   if (IsLink()) {
-    return SupportsFocus();
+    return SupportsFocus(update_behavior);
   }
-  return HTMLElement::IsFocusable(
-      disallow_layout_updates_for_accessibility_only);
+  return HTMLElement::IsFocusable(update_behavior);
 }
 
-bool HTMLAnchorElement::IsKeyboardFocusable() const {
-  if (!IsFocusableStyleAfterUpdate())
+bool HTMLAnchorElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  if (!IsFocusableStyle(update_behavior)) {
     return false;
+  }
 
   // Anchor is focusable if the base element supports focus and is focusable.
-  if (Element::SupportsFocus() && IsFocusable()) {
-    return HTMLElement::IsKeyboardFocusable();
+  if (Element::SupportsFocus(update_behavior) && IsFocusable(update_behavior)) {
+    return HTMLElement::IsKeyboardFocusable(update_behavior);
   }
 
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
     return false;
-  return HTMLElement::IsKeyboardFocusable();
+  return HTMLElement::IsKeyboardFocusable(update_behavior);
 }
 
 static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {

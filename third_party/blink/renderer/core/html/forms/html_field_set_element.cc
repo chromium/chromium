@@ -148,8 +148,9 @@ void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
     focused_element->blur();
 }
 
-bool HTMLFieldSetElement::SupportsFocus() const {
-  return HTMLElement::SupportsFocus() && !IsDisabledFormControl();
+bool HTMLFieldSetElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  return HTMLElement::SupportsFocus(update_behavior) &&
+         !IsDisabledFormControl();
 }
 
 FormControlType HTMLFieldSetElement::FormControlType() const {

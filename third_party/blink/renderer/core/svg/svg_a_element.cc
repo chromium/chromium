@@ -177,12 +177,13 @@ int SVGAElement::DefaultTabIndex() const {
   return 0;
 }
 
-bool SVGAElement::SupportsFocus() const {
-  if (IsEditable(*this))
-    return SVGGraphicsElement::SupportsFocus();
+bool SVGAElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  if (IsEditable(*this)) {
+    return SVGGraphicsElement::SupportsFocus(update_behavior);
+  }
   // If not a link we should still be able to focus the element if it has
   // tabIndex.
-  return IsLink() || SVGGraphicsElement::SupportsFocus();
+  return IsLink() || SVGGraphicsElement::SupportsFocus(update_behavior);
 }
 
 bool SVGAElement::ShouldHaveFocusAppearance() const {
@@ -195,11 +196,11 @@ bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {
          SVGGraphicsElement::IsURLAttribute(attribute);
 }
 
-bool SVGAElement::IsKeyboardFocusable() const {
+bool SVGAElement::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks()) {
     return false;
   }
-  return SVGElement::IsKeyboardFocusable();
+  return SVGElement::IsKeyboardFocusable(update_behavior);
 }
 
 bool SVGAElement::CanStartSelection() const {

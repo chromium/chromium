@@ -3280,8 +3280,8 @@ bool HTMLElement::IsFormAssociatedCustomElement() const {
          GetCustomElementDefinition()->IsFormAssociated();
 }
 
-bool HTMLElement::SupportsFocus() const {
-  return Element::SupportsFocus() && !IsDisabledFormControl();
+bool HTMLElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  return Element::SupportsFocus(update_behavior) && !IsDisabledFormControl();
 }
 
 bool HTMLElement::IsDisabledFormControl() const {

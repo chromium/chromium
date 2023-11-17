@@ -60,10 +60,12 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElement {
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool IsKeyboardFocusable() const override;
-  bool IsFocusable(bool disallow_layout_updates_for_accessibility_only =
-                       false) const override;
-  bool IsFocusableStyle() const override;
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
+                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsFocusable(UpdateBehavior update_behavior =
+                       UpdateBehavior::kStyleAndLayout) const override;
+  bool IsFocusableStyle(UpdateBehavior update_behavior =
+                            UpdateBehavior::kStyleAndLayout) const override;
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
                               const FocusOptions*) override;
   void SetFocused(bool, mojom::blink::FocusType) override;
