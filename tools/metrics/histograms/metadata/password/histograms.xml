@@ -653,6 +653,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AffiliationDatabase.DatabaseSize" units="KB"
+    expires_after="2024-04-28">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The size of the AffiliationDatabase database file. Recorded when
+    AffiliationDatabase is constructed successfully.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AffiliationDatabase.Error"
     enum="SqliteLoggedResultCode" expires_after="2024-03-17">
   <owner>vsemeniuk@google.com</owner>

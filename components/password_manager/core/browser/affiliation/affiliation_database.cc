@@ -13,9 +13,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/parameter_pack.h"
 #include "build/build_config.h"
@@ -177,6 +179,12 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
     if (!metatable.SetVersionNumber(kVersion)) {
       return false;
     }
+  }
+
+  int64_t db_size;
+  if (base::GetFileSize(path, &db_size)) {
+    base::UmaHistogramMemoryKB(
+        "PasswordManager.AffiliationDatabase.DatabaseSize", db_size / 1024);
   }
 
   return true;
