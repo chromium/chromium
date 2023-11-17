@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -28,6 +29,7 @@
 
 class Browser;
 class MetricsReporter;
+class TabOrganizationService;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -48,7 +50,8 @@ enum class TabSearchRecentlyClosedToggleAction {
 class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                              public TabStripModelObserver,
                              public BrowserTabStripTrackerDelegate,
-                             public TabOrganizationSession::Observer {
+                             public TabOrganizationSession::Observer,
+                             public TabOrganizationObserver {
  public:
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -112,6 +115,10 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       const TabOrganizationSession* session) override;
   void OnTabOrganizationSessionDestroyed(
       TabOrganizationSession::ID session_id) override;
+
+  // TabOrganizationObserver
+  void OnSessionCreated(const Browser* browser,
+                        TabOrganizationSession* session) override;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -185,6 +192,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
+  raw_ptr<TabOrganizationService> organization_service_;
 
   // Tracks how many times |CloseTab()| has been evoked for the currently open
   // instance of Tab Search for logging in UMA.

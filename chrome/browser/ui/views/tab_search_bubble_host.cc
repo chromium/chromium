@@ -122,7 +122,7 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
   pressed_lock_.reset();
 }
 
-void TabSearchBubbleHost::OnStartRequest(const Browser* browser) {
+void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
     profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex, 1);
     ShowTabSearchBubble(false);

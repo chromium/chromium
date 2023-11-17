@@ -37,9 +37,6 @@ class TabOrganizationService : public KeyedService {
   // the browser, if a session does not already exist.
   void OnTriggerOccured(const Browser* browser);
 
-  // Notifies observers when a session from this service starts a request.
-  void OnStartRequest(const TabOrganizationSession::ID session_id) const;
-
   const BrowserSessionMap& browser_session_map() const {
     return browser_session_map_;
   }

@@ -171,7 +171,7 @@ TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
     AddValidTabToBrowser(browser1, 0);
   }
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1, service());
+      TabOrganizationSession::CreateSessionForBrowser(browser1);
   EXPECT_EQ(session->request()->tab_datas().size(), 4u);
 
   session->StartRequest();
@@ -200,7 +200,7 @@ TEST_F(TabOrganizationServiceTest,
       ->NavigateAndCommit(GURL(kInvalidURL));
 
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1, service());
+      TabOrganizationSession::CreateSessionForBrowser(browser1);
   EXPECT_EQ(static_cast<int>(session->request()->tab_datas().size()),
             valid_tab_count);
 

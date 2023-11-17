@@ -117,7 +117,7 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
       provider.GetColor(kColorTabSearchBackground));
 }
 
-TabOrganization* GetTabOrganization(Profile* profile,
+TabOrganization* GetTabOrganization(TabOrganizationService* service,
                                     int32_t session_id,
                                     int32_t organization_id) {
   Browser* browser = chrome::FindLastActive();
@@ -125,8 +125,6 @@ TabOrganization* GetTabOrganization(Profile* profile,
     return nullptr;
   }
 
-  TabOrganizationService* service =
-      TabOrganizationServiceFactory::GetForProfile(profile);
   if (!service) {
     return nullptr;
   }
@@ -184,6 +182,13 @@ TabSearchPageHandler::TabSearchPageHandler(
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
   browser_tab_strip_tracker_.Init();
+  if (features::IsTabOrganization()) {
+    organization_service_ = TabOrganizationServiceFactory::GetForProfile(
+        Profile::FromWebUI(web_ui_));
+    if (organization_service_) {
+      organization_service_->AddObserver(this);
+    }
+  }
 }
 
 TabSearchPageHandler::~TabSearchPageHandler() {
@@ -193,6 +198,12 @@ TabSearchPageHandler::~TabSearchPageHandler() {
                                 called_switch_to_tab_
                                     ? TabSearchCloseAction::kTabSwitch
                                     : TabSearchCloseAction::kNoAction);
+  if (organization_service_) {
+    organization_service_->RemoveObserver(this);
+  }
+  for (TabOrganizationSession* session : listened_sessions_) {
+    session->RemoveObserver(this);
+  }
 }
 
 void TabSearchPageHandler::CloseTab(int32_t tab_id) {
@@ -232,15 +243,12 @@ void TabSearchPageHandler::AcceptTabOrganization(
 
   profile->GetPrefs()->SetBoolean(tab_search_prefs::kTabOrganizationShowFRE,
                                   false);
-
-  TabOrganizationService* service =
-      TabOrganizationServiceFactory::GetForProfile(profile);
-  if (!service) {
+  if (!organization_service_) {
     return;
   }
 
   TabOrganization* organization =
-      GetTabOrganization(profile, session_id, organization_id);
+      GetTabOrganization(organization_service_, session_id, organization_id);
   if (!organization) {
     return;
   }
@@ -267,7 +275,8 @@ void TabSearchPageHandler::AcceptTabOrganization(
     organization->SetCurrentName(name);
   }
 
-  service->AcceptTabOrganization(browser, session_id, organization_id);
+  organization_service_->AcceptTabOrganization(browser, session_id,
+                                               organization_id);
 
   auto embedder = webui_controller_->embedder();
   if (embedder) {
@@ -277,8 +286,8 @@ void TabSearchPageHandler::AcceptTabOrganization(
 
 void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,
                                                  int32_t organization_id) {
-  TabOrganization* organization = GetTabOrganization(
-      Profile::FromWebUI(web_ui_), session_id, organization_id);
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
   if (!organization) {
     return;
   }
@@ -317,17 +326,18 @@ void TabSearchPageHandler::GetTabOrganizationSession(
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
     std::move(callback).Run(CreateFailedMojoSession());
+    return;
   }
 
-  TabOrganizationService* service =
-      TabOrganizationServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  if (!service) {
+  if (!organization_service_) {
     std::move(callback).Run(CreateFailedMojoSession());
+    return;
   }
 
-  TabOrganizationSession* session = service->GetSessionForBrowser(browser);
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
   if (!session) {
-    session = service->CreateSessionForBrowser(browser);
+    session = organization_service_->CreateSessionForBrowser(browser);
   }
 
   if (!base::Contains(listened_sessions_, session)) {
@@ -406,17 +416,16 @@ void TabSearchPageHandler::RequestTabOrganization() {
     return;
   }
 
-  TabOrganizationService* service =
-      TabOrganizationServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  if (!service) {
+  if (!organization_service_) {
     return;
   }
 
-  TabOrganizationSession* session = service->GetSessionForBrowser(browser);
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
   if (!session) {
-    session = service->CreateSessionForBrowser(browser);
+    session = organization_service_->CreateSessionForBrowser(browser);
   } else if (session->IsComplete()) {
-    session = service->ResetSessionForBrowser(browser);
+    session = organization_service_->ResetSessionForBrowser(browser);
   }
 
   if (!base::Contains(listened_sessions_, session)) {
@@ -979,11 +988,23 @@ void TabSearchPageHandler::OnTabOrganizationSessionDestroyed(
        session_iter != listened_sessions_.end(); session_iter++) {
     if (session_id == (*session_iter)->session_id()) {
       listened_sessions_.erase(session_iter);
-      break;
+      page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
+      return;
     }
   }
+}
 
-  page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
+void TabSearchPageHandler::OnSessionCreated(const Browser* browser,
+                                            TabOrganizationSession* session) {
+  Profile* const profile = Profile::FromWebUI(web_ui_);
+  if (!browser || browser->profile() != profile) {
+    return;
+  }
+
+  session->AddObserver(this);
+  listened_sessions_.emplace_back(session);
+
+  OnTabOrganizationSessionUpdated(session);
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {

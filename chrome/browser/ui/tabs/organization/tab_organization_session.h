@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
-class TabOrganizationService;
 
 class TabOrganizationSession : public TabOrganization::Observer {
  public:
@@ -35,7 +34,6 @@ class TabOrganizationSession : public TabOrganization::Observer {
 
   TabOrganizationSession();
   explicit TabOrganizationSession(
-      const TabOrganizationService* service,
       std::unique_ptr<TabOrganizationRequest> request);
   ~TabOrganizationSession() override;
 
@@ -46,8 +44,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   ID session_id() const { return session_id_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
-      const Browser* browser,
-      const TabOrganizationService* service);
+      const Browser* browser);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
@@ -85,7 +82,6 @@ class TabOrganizationSession : public TabOrganization::Observer {
   // completes.
   void PopulateOrganizations(const TabOrganizationResponse* response);
 
-  raw_ptr<const TabOrganizationService> service_;
   std::unique_ptr<TabOrganizationRequest> request_;
   TabOrganizations tab_organizations_;
   ID session_id_;

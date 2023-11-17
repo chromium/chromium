@@ -13,22 +13,17 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 
 namespace {
 int kNextSessionID = 1;
 }  // anonymous namespace
 
 TabOrganizationSession::TabOrganizationSession()
-    : TabOrganizationSession(nullptr,
-                             std::make_unique<TabOrganizationRequest>()) {}
+    : TabOrganizationSession(std::make_unique<TabOrganizationRequest>()) {}
 
 TabOrganizationSession::TabOrganizationSession(
-    const TabOrganizationService* service,
     std::unique_ptr<TabOrganizationRequest> request)
-    : service_(service),
-      request_(std::move(request)),
-      session_id_(kNextSessionID) {
+    : request_(std::move(request)), session_id_(kNextSessionID) {
   kNextSessionID++;
 }
 
@@ -43,9 +38,7 @@ TabOrganizationSession::~TabOrganizationSession() {
 
 // static
 std::unique_ptr<TabOrganizationSession>
-TabOrganizationSession::CreateSessionForBrowser(
-    const Browser* browser,
-    const TabOrganizationService* service) {
+TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
           ->CreateRequest(browser->profile());
@@ -63,7 +56,7 @@ TabOrganizationSession::CreateSessionForBrowser(
     request->AddTabData(std::move(tab_data));
   }
 
-  return std::make_unique<TabOrganizationSession>(service, std::move(request));
+  return std::make_unique<TabOrganizationSession>(std::move(request));
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
@@ -124,9 +117,6 @@ void TabOrganizationSession::StartRequest() {
       &TabOrganizationSession::OnRequestResponse, base::Unretained(this)));
   request_->StartRequest();
   NotifyObserversOfUpdate();
-  if (service_) {
-    service_->OnStartRequest(session_id_);
-  }
 }
 
 void TabOrganizationSession::NotifyObserversOfUpdate() {
