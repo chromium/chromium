@@ -973,6 +973,12 @@ constexpr char kWebRTCAllowLegacyTLSProtocols[] =
 constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
 #endif
 
+// Deprecated 11/2023.
+constexpr char kPasswordChangeSuccessTrackerFlows[] =
+    "password_manager.password_change_success_tracker.flows";
+constexpr char kPasswordChangeSuccessTrackerVersion[] =
+    "password_manager.password_change_success_tracker.version";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1380,6 +1386,10 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kUserGeolocationAllowed, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 11/2023.
+  registry->RegisterListPref(kPasswordChangeSuccessTrackerFlows);
+  registry->RegisterIntegerPref(kPasswordChangeSuccessTrackerVersion, 0);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2579,6 +2589,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   // Added 11/2023
   profile_prefs->ClearPref(kUserGeolocationAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 11/2023.
+  profile_prefs->ClearPref(kPasswordChangeSuccessTrackerFlows);
+  profile_prefs->ClearPref(kPasswordChangeSuccessTrackerVersion);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

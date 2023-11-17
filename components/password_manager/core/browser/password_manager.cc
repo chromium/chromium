@@ -340,9 +340,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
-  // Preferences for |PasswordChangeSuccessTracker|.
-  registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);
-  registry->RegisterListPref(prefs::kPasswordChangeSuccessTrackerFlows);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(
