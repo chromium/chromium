@@ -507,9 +507,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           content_settings::features::kSafetyCheckUnusedSitePermissions));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   html_source->AddBoolean(
       "safetyCheckExtensionsReviewEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+#endif
 
   html_source->AddBoolean("enableSafetyHub",
                           base::FeatureList::IsEnabled(features::kSafetyHub));

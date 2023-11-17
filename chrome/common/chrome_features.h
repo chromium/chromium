@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
@@ -657,10 +658,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kRemoveSupervisedUsersOnStartup);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckExtensions);
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckNotificationPermissions);
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -1068,6 +1068,7 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, MAYBE_NonExistentRoute) {
   RunTest("settings/route_test.js", "runMochaSuite('NonExistentRoute')");
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
  protected:
   SettingsSafetyCheckPermissionsTest() {
@@ -1087,6 +1088,7 @@ class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
   RunTest("settings/safety_check_permissions_test.js", "mocha.run()");
 }
+#endif
 
 class SettingsSafetyHubTest : public SettingsBrowserTest {
  private:
