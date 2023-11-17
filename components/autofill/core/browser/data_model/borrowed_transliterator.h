@@ -34,8 +34,8 @@ class BorrowedTransliterator {
 };
 
 // Apply the transliteration to a full string to convert it to lower case and to
-// remove the diacritics. This function also converts a other Latin characters
-// to ascii (ł -> l, ß -> ss). It does not perform German transliteration (ö
+// remove the diacritics. This function also converts other Latin characters to
+// ascii (ł -> l, ß -> ss). It does not perform German transliteration (ö
 // becomes o, not oe).
 std::u16string RemoveDiacriticsAndConvertToLowerCase(base::StringPiece16 value);
 

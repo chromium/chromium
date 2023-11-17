@@ -281,19 +281,18 @@ bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
     return true;
   }
 
-  NormalizingIterator normalizing_iter1{text1, whitespace_spec};
-  NormalizingIterator normalizing_iter2{text2, whitespace_spec};
+  // We transliterate the entire text as it's non-trivial to go character
+  // by character (eg. a "ß" is transliterated to "ss").
+  std::u16string normalized_text1 =
+      RemoveDiacriticsAndConvertToLowerCase(text1);
+  std::u16string normalized_text2 =
+      RemoveDiacriticsAndConvertToLowerCase(text2);
 
-  BorrowedTransliterator transliterator;
+  NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};
+  NormalizingIterator normalizing_iter2{normalized_text2, whitespace_spec};
+
   while (!normalizing_iter1.End() && !normalizing_iter2.End()) {
-    icu::UnicodeString char1 =
-        icu::UnicodeString(normalizing_iter1.GetNextChar());
-    icu::UnicodeString char2 =
-        icu::UnicodeString(normalizing_iter2.GetNextChar());
-
-    transliterator.Transliterate(&char1);
-    transliterator.Transliterate(&char2);
-    if (char1 != char2) {
+    if (normalizing_iter1.GetNextChar() != normalizing_iter2.GetNextChar()) {
       return false;
     }
     normalizing_iter1.Advance();

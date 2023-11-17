@@ -398,7 +398,9 @@ TEST_F(AutofillProfileComparatorTest, Compare) {
 
   // Checks that characters such as 'œ' respect the status quo established by
   // NormalizeForComparison.
-  EXPECT_FALSE(comparator_.Compare(u"œil", u"oeil"));
+  EXPECT_TRUE(comparator_.Compare(u"œil", u"oeil"));
+  EXPECT_TRUE(comparator_.Compare(
+      u"Straße", u"Strasse", AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that a substring of the string is not considered equal.
   EXPECT_FALSE(comparator_.Compare(u"A", u"Anna"));
