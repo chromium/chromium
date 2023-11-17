@@ -414,6 +414,39 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
   return updated_headers;
 }
 
+const char* GetDestinationTypePartString(
+    network::mojom::RequestDestination destination) {
+  if (destination == network::mojom::RequestDestination::kDocument) {
+    return "MainFrame";
+  } else if (destination == network::mojom::RequestDestination::kFrame ||
+             destination == network::mojom::RequestDestination::kIframe) {
+    return "SubFrame";
+  }
+  return "Subresource";
+}
+
+const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
+  if (!ssl_info.cert.get()) {
+    return "NoCert";
+  }
+  return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
+}
+
+void MaybeRecordSharedDictionaryUsedResponseMetrics(
+    int error_code,
+    network::mojom::RequestDestination destination,
+    const net::HttpResponseInfo& response_info) {
+  if (!response_info.did_use_shared_dictionary) {
+    return;
+  }
+
+  base::UmaHistogramSparse(
+      base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes.",
+                    GetDestinationTypePartString(destination), ".",
+                    GetCertStatePartString(response_info.ssl_info)}),
+      -error_code);
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -2170,6 +2203,10 @@ void URLLoader::NotifyCompleted(int error_code) {
   if (total_sent > 0) {
     UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
   }
+
+  MaybeRecordSharedDictionaryUsedResponseMetrics(
+      error_code, request_destination_, url_request_->response_info());
+
   if ((total_received > 0 || total_sent > 0)) {
     if (url_loader_network_observer_ && provide_data_use_updates_) {
       url_loader_network_observer_->OnDataUseUpdate(
