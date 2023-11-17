@@ -29,6 +29,11 @@ class BookmarkManagerPrivateApiBrowsertest : public InProcessBrowserTest {
     model_ = WaitForBookmarkModel();
   }
 
+  void TearDownOnMainThread() override {
+    model_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   BookmarkModel* model() { return model_; }
 
  private:
@@ -39,7 +44,7 @@ class BookmarkManagerPrivateApiBrowsertest : public InProcessBrowserTest {
     return model;
   }
 
-  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
+  raw_ptr<BookmarkModel> model_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
