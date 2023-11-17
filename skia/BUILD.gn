@@ -242,27 +242,6 @@ source_set("skia_core_public_headers") {
   public = skia_core_public
 }
 
-source_set("skcms") {
-  cflags = []
-  if (!is_win || is_clang) {
-    cflags += [
-      "-w",
-      "-std=c11",
-    ]
-  }
-
-  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
-  # builds by default, while GCC itself does not. We need it to enable support
-  # for half-precision floating point data types used by SKCMS on ARM.
-  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
-    cflags += [ "-mfp16-format=ieee" ]
-  }
-
-  public = [ "//third_party/skia/modules/skcms/skcms.h" ]
-  include_dirs = [ "//third_party/skia/modules/skcms" ]
-  sources = rebase_path(skcms_sources, ".", "//third_party/skia/modules/skcms")
-}
-
 component("skia") {
   deps = []
   public = [
@@ -747,8 +726,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
         "-mf16c",
         "-mfma",
       ]
-    }
-    if (is_win) {
+    } else {
       cflags = [ "/arch:AVX2" ]
     }
     visibility = [ ":skia_opts" ]
@@ -797,6 +775,77 @@ skia_source_set("skia_opts") {
   }
 
   visibility = [ ":skia" ]
+}
+
+if (current_cpu == "x64") {
+  skia_source_set("skcms_TransformHsw") {
+    sources = skcms_TransformHsw
+    if (!is_win) {
+      cflags = [
+        "-w",
+        "-march=haswell",
+        "-std=c11",
+      ]
+    } else {
+      cflags = [ "/arch:AVX2" ]
+    }
+    visibility = [ ":skcms" ]
+  }
+  skia_source_set("skcms_TransformSkx") {
+    sources = skcms_TransformSkx
+    if (!is_win) {
+      cflags = [
+        "-w",
+        "-march=skylake-avx512",
+        "-std=c11",
+      ]
+    } else {
+      cflags = [ "/arch:AVX512" ]
+    }
+    visibility = [ ":skcms" ]
+  }
+} else {
+  skia_source_set("skcms_TransformHsw") {
+    sources = []
+    visibility = [ ":skcms" ]
+  }
+  skia_source_set("skcms_TransformSkx") {
+    sources = []
+    visibility = [ ":skcms" ]
+  }
+}
+
+source_set("skcms_TransformBaseline_and_public") {
+  if (!is_win || is_clang) {
+    cflags = [
+      "-w",
+      "-std=c11",
+    ]
+  } else {
+    cflags = []
+  }
+
+  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
+  # builds by default, while GCC itself does not. We need it to enable support
+  # for half-precision floating point data types used by SKCMS on ARM.
+  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
+    cflags += [ "-mfp16-format=ieee" ]
+  }
+
+  sources = rebase_path(skcms_TransformBaseline + skcms_public,
+                        ".",
+                        "//third_party/skia/modules/skcms")
+}
+
+source_set("skcms") {
+  deps = [
+    ":skcms_TransformBaseline_and_public",
+    ":skcms_TransformHsw",
+    ":skcms_TransformSkx",
+  ]
+  public =
+      rebase_path(skcms_public_headers, ".", "//third_party/skia/modules/skcms")
+  include_dirs = [ "//third_party/skia/modules/skcms" ]
 }
 
 # Split out Graphite sources because of conflicting file names with Ganesh.
