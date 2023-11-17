@@ -110,13 +110,14 @@ def _run_fuzzer_target(args):
       if count > 1000:
         print("Skipping remaining test cases - >1000 tried")
         break
-      # And if we've got 200 valid coverage files, assume this is a
+      # And if we've got 10 valid coverage files, assume this is a
       # reasonable approximation of the total coverage. This is partly
-      # to ensure the profdata command line isn't too huge and partly
-      # to reduce processing time to something reasonable.
-      if len(valid_profraws) > 200:
+      # to ensure the profdata command line isn't too huge, partly
+      # to reduce processing time to something reasonable, and partly
+      # because profraw files are huge and can fill up bot disk space.
+      if len(valid_profraws) > 10:
         print(
-            "Skipping remaining individual test cases, >200 valid profiles recorded."
+            "Skipping remaining individual test cases, >10 valid profiles recorded."
         )
         break
   if len(valid_profraws) == 0:
