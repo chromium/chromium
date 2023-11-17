@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {FilesAppEntry} from '../files_app_entry_interfaces.js';
@@ -184,6 +185,16 @@ export let FileTask;
  */
 // @ts-ignore: error TS7005: Variable 'FileTasks' implicitly has an 'any' type.
 export let FileTasks;
+
+/**
+ * Launch parameters for the file manager.
+ * @typedef {{
+ *   dialogType: (DialogType|undefined),
+ * }}
+ */
+// @ts-ignore: error TS7005: Variable 'LaunchParams' implicitly has an 'any'
+// type.
+export let LaunchParams;
 
 /**
  * This represents the entries currently selected, out of the entries displayed
@@ -450,6 +461,7 @@ export let AndroidApp;
  *   currentDirectory: (CurrentDirectory|undefined),
  *   device: Device,
  *   drive: Drive,
+ *   launchParams: !LaunchParams,
  *   search: (SearchData|undefined),
  *   navigation: NavigationTree,
  *   volumes: Record<VolumeId, Volume>,

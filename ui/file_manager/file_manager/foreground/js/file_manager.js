@@ -46,6 +46,7 @@ import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';
 import {updateDriveConnectionStatus} from '../../state/ducks/drive.js';
+import {setLaunchParameters} from '../../state/ducks/launch_params.js';
 import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
@@ -1104,6 +1105,8 @@ export class FileManager extends EventTarget {
       // parameter of type 'FilesAppState'.
       this.launchParams_ = new LaunchParam(json);
     }
+    this.store_.dispatch(
+        setLaunchParameters({dialogType: this.launchParams_.type}));
 
     // Initialize the member variables that depend this.launchParams_.
     this.dialogType = this.launchParams_.type;

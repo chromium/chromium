@@ -339,6 +339,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksDrive) {
   RunTestURL("state/ducks/drive_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksLaunchParams) {
+  RunTestURL("state/ducks/launch_params_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksFolderShortcuts) {
   RunTestURL("state/ducks/folder_shortcuts_unittest.js");
 }

@@ -7,10 +7,11 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
+import {isModal} from '../../common/js/dialog_type.js';
 import {convertURLsToEntries, entriesToURLs, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
-import {recordMediumCount} from '../../common/js/metrics.js';
+import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -272,6 +273,11 @@ export class DirectoryModel extends EventTarget {
         // @ts-ignore: error TS2339: Property 'options' does not exist on type
         // '{}'.
         lastSearch.options !== search.options) {
+      const dialogType = state.launchParams.dialogType;
+      if (dialogType) {
+        recordUserAction(
+            `Search.${isModal(dialogType) ? 'Picker' : 'Standalone'}.Open`);
+      }
       this.search_(
           search.query || '', search.options || getDefaultSearchOptions());
     }
