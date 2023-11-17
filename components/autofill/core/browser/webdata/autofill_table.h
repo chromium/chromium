@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database_table.h"
@@ -55,6 +56,31 @@ struct ServerCvc {
   const std::u16string cvc;
   // The timestamp of the most recent update to the data entry.
   const base::Time last_updated_timestamp;
+};
+
+// Temporary struct used to store the data retrieved from the
+// `payment_instrument` and `payment_instrument_supported_rails` tables.
+struct PaymentInstrumentFields {
+ public:
+  PaymentInstrumentFields();
+  ~PaymentInstrumentFields();
+
+  // The server generated id for the payment instrument.
+  int64_t instrument_id = 0;
+
+  // The nickname set by the user for the payment instrument.
+  std::u16string nickname;
+
+  // The type of payment instrument. This is used to determine which table to
+  // fetch the remaining instrument details from.
+  PaymentInstrument::InstrumentType instrument_type =
+      PaymentInstrument::InstrumentType::kUnknown;
+
+  // The URL for the display icon that can be used in the UI.
+  GURL display_icon_url;
+
+  // The payment rails that are supported for this payment instrument.
+  std::set<PaymentInstrument::PaymentRail> payment_rails;
 };
 
 // This class manages the various Autofill tables within the SQLite database
@@ -702,13 +728,25 @@ class AutofillTable : public WebDatabaseTable,
       AutofillProfile::Source profile_source,
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
 
+  // Fetches a PaymentInstrument from the autofill db. This will query the below
+  // 3 tables to generate a PaymentInstrument object.
+  //  `payment_instruments`
+  //  `payment_instrument_supported_rails`
+  //  instrument type specific table
+  // Note: The actual object will be one of the derived class of
+  // PaymentInstrument and can be determined
+  // by calling the `GetInstrumentType` method on it.
+  std::unique_ptr<PaymentInstrument> GetPaymentInstrument(
+      int64_t instrument_id,
+      PaymentInstrument::InstrumentType instrument_type);
+
   // Records a single BankAccount in the bank accounts table. Returns true if
   // the BankAccount was successfully added to the database.
   bool AddBankAccount(const BankAccount& bank_account);
   // Returns true if the BankAccount was successfully updated in the database.
   bool UpdateBankAccount(const BankAccount& bank_account);
   // Delete the bank account from the database.
-  bool RemoveBankAccount(int64_t instrument_id);
+  bool RemoveBankAccount(const BankAccount& bank_account);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);
@@ -1027,6 +1065,33 @@ class AutofillTable : public WebDatabaseTable,
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
+
+  // Retrieve the data from the `bank_accounts` table and return a BankAccount
+  // object. The `payment_instrument_fields` contain the fields retrieved from
+  // the `payment_instruments` and `payment_instrument_supported_rails` tables
+  // which are required to generate the BankAccount object.
+  std::unique_ptr<BankAccount> GetBankAccount(
+      const PaymentInstrumentFields& payment_instrument_fields);
+
+  // Adds a single PaymentInstrument to the autofill db. This will add at least
+  // one row to the `payment_instruments` and
+  // `payment_instrument_supported_rails` tables and depending on the type of
+  // PaymentInstrument, an entry will be added to the corresponding instrument
+  // type specific table. Returns true only if all of the updates to
+  // `payment_instruments`,`payment_instrument_supported_rails` and the
+  // instrument type specific tables are successfully updated. This method
+  // should be called from within an sql transaction.
+  bool AddPaymentInstrument(const PaymentInstrument& payment_instrument);
+  // Updates the `payment_instrument`, `payment_instrument_supported_rails` and
+  // the instrument type specific tables. Returns true only if the updates to
+  // all three tables are successful.This method should be called from within an
+  // sql transaction.
+  bool UpdatePaymentInstrument(const PaymentInstrument& payment_instrument);
+  // Deletes the payment instrument from the `payment_instrument`,
+  // `payment_instrument_supported_rails` and the instrument type specific
+  // tables. Returns true only if the updates to all the three tables are
+  // successful.This method should be called from within an sql transaction.
+  bool RemovePaymentInstrument(const PaymentInstrument& payment_instrument);
 
   bool InitMainTable();
   bool InitCreditCardsTable();

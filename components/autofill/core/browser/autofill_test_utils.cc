@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -995,6 +996,14 @@ Suggestion CreateAutofillSuggestion(PopupItemId popup_item_id,
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
   return suggestion;
+}
+
+BankAccount CreatePixBankAccount(int64_t instrument_id) {
+  BankAccount bank_account(
+      instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
+      u"account_number", BankAccount::AccountType::kChecking);
+  bank_account.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
+  return bank_account;
 }
 
 }  // namespace test

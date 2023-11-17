@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -709,6 +710,36 @@ void BindServerCvcToStatement(const ServerCvc& server_cvc,
   s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
 }
 
+void BindPaymentInstrumentToStatement(
+    sql::Statement* s,
+    const PaymentInstrument& payment_instrument) {
+  int index = 0;
+  s->BindInt64(index++, payment_instrument.instrument_id());
+  s->BindInt(index++, static_cast<int>(payment_instrument.GetInstrumentType()));
+  s->BindString16(index++, payment_instrument.nickname());
+  s->BindString(index++, payment_instrument.display_icon_url().spec());
+}
+
+void BindPaymentInstrumentSupportedRailsToStatement(
+    sql::Statement* s,
+    int64_t instrument_id,
+    PaymentInstrument::InstrumentType instrument_type,
+    PaymentInstrument::PaymentRail payment_rail) {
+  int index = 0;
+  s->BindInt64(index++, instrument_id);
+  s->BindInt(index++, static_cast<int>(instrument_type));
+  s->BindInt(index++, static_cast<int>(payment_rail));
+}
+
+void BindBankAccountToStatement(sql::Statement* s,
+                                const BankAccount& bank_account) {
+  int index = 0;
+  s->BindInt64(index++, bank_account.instrument_id());
+  s->BindString16(index++, bank_account.bank_name());
+  s->BindString16(index++, bank_account.account_number_suffix());
+  s->BindInt(index++, static_cast<int>(bank_account.account_type()));
+}
+
 void BindIbanToStatement(const Iban& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
@@ -1128,6 +1159,10 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
 }
 
 }  // namespace
+
+PaymentInstrumentFields::PaymentInstrumentFields() = default;
+
+PaymentInstrumentFields::~PaymentInstrumentFields() = default;
 
 // static
 const size_t AutofillTable::kMaxDataLength = 1024;
@@ -1824,19 +1859,261 @@ bool AutofillTable::GetAutofillProfilesFromLegacyTable(
   return s.Succeeded();
 }
 
+std::unique_ptr<BankAccount> AutofillTable::GetBankAccount(
+    const PaymentInstrumentFields& payment_instrument_fields) {
+  sql::Statement s;
+  SelectBuilder(db_, s, kBankAccountsTable,
+                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType},
+                "WHERE instrument_id = ?");
+  s.BindInt64(0, payment_instrument_fields.instrument_id);
+
+  if (!s.Step()) {
+    return nullptr;
+  }
+  int index = 0;
+  auto instrument_id = s.ColumnInt64(index++);
+  auto bank_name = s.ColumnString16(index++);
+  auto account_number_suffix = s.ColumnString16(index++);
+  int account_type = s.ColumnInt(index++);
+  if (account_type >
+          static_cast<int>(BankAccount::AccountType::kTransactingAccount) ||
+      account_type < static_cast<int>(BankAccount::AccountType::kUnknown)) {
+    return nullptr;
+  }
+  auto bank_account = std::make_unique<BankAccount>(
+      instrument_id, payment_instrument_fields.nickname,
+      payment_instrument_fields.display_icon_url, bank_name,
+      account_number_suffix,
+      static_cast<BankAccount::AccountType>(account_type));
+  for (PaymentInstrument::PaymentRail payment_rail :
+       payment_instrument_fields.payment_rails) {
+    bank_account->AddPaymentRail(payment_rail);
+  }
+  return bank_account;
+}
+
+bool AutofillTable::AddPaymentInstrument(
+    const PaymentInstrument& payment_instrument) {
+  sql::Statement payment_instruments_insert;
+  InsertBuilder(db_, payment_instruments_insert, kPaymentInstrumentsTable,
+                {kInstrumentId, kInstrumentType, kNickname, kDisplayIconUrl});
+  BindPaymentInstrumentToStatement(&payment_instruments_insert,
+                                   payment_instrument);
+  if (!payment_instruments_insert.Run()) {
+    return false;
+  }
+
+  for (PaymentInstrument::PaymentRail payment_rail :
+       payment_instrument.supported_rails()) {
+    sql::Statement payment_instrument_supported_rails_insert;
+    InsertBuilder(db_, payment_instrument_supported_rails_insert,
+                  kPaymentInstrumentSupportedRailsTable,
+                  {kInstrumentId, kInstrumentType, kPaymentRail});
+    BindPaymentInstrumentSupportedRailsToStatement(
+        &payment_instrument_supported_rails_insert,
+        payment_instrument.instrument_id(),
+        payment_instrument.GetInstrumentType(), payment_rail);
+    if (!payment_instrument_supported_rails_insert.Run()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool AutofillTable::UpdatePaymentInstrument(
+    const PaymentInstrument& payment_instrument) {
+  sql::Statement payment_instruments_update;
+  UpdateBuilder(
+      db_, payment_instruments_update, kPaymentInstrumentsTable,
+      {kInstrumentId, kInstrumentType, kNickname, kDisplayIconUrl},
+      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
+  BindPaymentInstrumentToStatement(&payment_instruments_update,
+                                   payment_instrument);
+  if (!payment_instruments_update.Run()) {
+    return false;
+  }
+
+  // Delete all rails for the given instrument_id and instrument_type and then
+  // insert them back.
+  sql::Statement payment_instrument_supported_rails_delete;
+  DeleteBuilder(
+      db_, payment_instrument_supported_rails_delete,
+      kPaymentInstrumentSupportedRailsTable,
+      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
+  payment_instrument_supported_rails_delete.BindInt64(
+      0, payment_instrument.instrument_id());
+  payment_instrument_supported_rails_delete.BindInt64(
+      1, static_cast<int>(payment_instrument.GetInstrumentType()));
+  if (!payment_instrument_supported_rails_delete.Run()) {
+    return false;
+  }
+  for (PaymentInstrument::PaymentRail payment_rail :
+       payment_instrument.supported_rails()) {
+    sql::Statement payment_instrument_supported_rails_insert;
+    InsertBuilder(db_, payment_instrument_supported_rails_insert,
+                  kPaymentInstrumentSupportedRailsTable,
+                  {kInstrumentId, kInstrumentType, kPaymentRail});
+    BindPaymentInstrumentSupportedRailsToStatement(
+        &payment_instrument_supported_rails_insert,
+        payment_instrument.instrument_id(),
+        payment_instrument.GetInstrumentType(), payment_rail);
+    if (!payment_instrument_supported_rails_insert.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::RemovePaymentInstrument(
+    const PaymentInstrument& payment_instrument) {
+  sql::Statement payment_instruments_delete;
+  DeleteBuilder(
+      db_, payment_instruments_delete, kPaymentInstrumentsTable,
+      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
+  payment_instruments_delete.BindInt64(0, payment_instrument.instrument_id());
+  payment_instruments_delete.BindInt64(
+      1, static_cast<int>(payment_instrument.GetInstrumentType()));
+  if (!payment_instruments_delete.Run()) {
+    return false;
+  }
+
+  sql::Statement payment_instrument_supported_rails_delete;
+  DeleteBuilder(
+      db_, payment_instrument_supported_rails_delete,
+      kPaymentInstrumentSupportedRailsTable,
+      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
+  payment_instrument_supported_rails_delete.BindInt64(
+      0, payment_instrument.instrument_id());
+  payment_instrument_supported_rails_delete.BindInt64(
+      1, static_cast<int>(payment_instrument.GetInstrumentType()));
+  if (!payment_instrument_supported_rails_delete.Run()) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<PaymentInstrument> AutofillTable::GetPaymentInstrument(
+    int64_t instrument_id,
+    PaymentInstrument::InstrumentType instrument_type) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return nullptr;
+  }
+  sql::Statement select_payment_instrument_details;
+  SelectBuilder(db_, select_payment_instrument_details,
+                kPaymentInstrumentsTable,
+                {kInstrumentId, kNickname, kDisplayIconUrl},
+                base::StrCat({"WHERE ", kInstrumentId, " = ? AND ",
+                              kInstrumentType, " = ?"}));
+  select_payment_instrument_details.BindInt64(0, instrument_id);
+  select_payment_instrument_details.BindInt(1,
+                                            static_cast<int>(instrument_type));
+  if (!select_payment_instrument_details.Step()) {
+    return nullptr;
+  }
+  auto payment_instrument_fields = std::make_unique<PaymentInstrumentFields>();
+  int index = 0;
+  payment_instrument_fields->instrument_id =
+      select_payment_instrument_details.ColumnInt64(index++);
+  payment_instrument_fields->instrument_type = instrument_type;
+  payment_instrument_fields->nickname =
+      select_payment_instrument_details.ColumnString16(index++);
+  payment_instrument_fields->display_icon_url =
+      GURL(select_payment_instrument_details.ColumnString(index++));
+
+  sql::Statement select_payment_rails;
+  SelectBuilder(db_, select_payment_rails,
+                kPaymentInstrumentSupportedRailsTable, {kPaymentRail},
+                base::StrCat({"WHERE ", kInstrumentId, " = ? AND ",
+                              kInstrumentType, " = ?"}));
+  select_payment_rails.BindInt64(0, instrument_id);
+  select_payment_rails.BindInt(1, static_cast<int>(instrument_type));
+  constexpr int index_for_payment_rail = 0;
+  while (select_payment_rails.Step()) {
+    int payment_rail = select_payment_rails.ColumnInt(index_for_payment_rail);
+    if (payment_rail > static_cast<int>(PaymentInstrument::PaymentRail::kPix) ||
+        payment_rail <
+            static_cast<int>(PaymentInstrument::PaymentRail::kUnknown)) {
+      return nullptr;
+    }
+    payment_instrument_fields->payment_rails.insert(
+        static_cast<PaymentInstrument::PaymentRail>(payment_rail));
+  }
+  // Fetch the details from instrument type specific tables.
+  switch (instrument_type) {
+    case PaymentInstrument::InstrumentType::kBankAccount: {
+      return GetBankAccount(*payment_instrument_fields);
+    }
+    case PaymentInstrument::InstrumentType::kUnknown:
+      NOTREACHED();
+      break;
+  }
+  return nullptr;
+}
+
 bool AutofillTable::AddBankAccount(const BankAccount& bank_account) {
-  // TODO(crbug.com/1475426): Add implementation.
-  return false;
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (!AddPaymentInstrument(bank_account)) {
+    return false;
+  }
+
+  // Add bank account.
+  sql::Statement insert;
+  InsertBuilder(db_, insert, kBankAccountsTable,
+                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType});
+  BindBankAccountToStatement(&insert, bank_account);
+  if (!insert.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
 bool AutofillTable::UpdateBankAccount(const BankAccount& bank_account) {
-  // TODO(crbug.com/1475426): Add implementation.
-  return false;
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!UpdatePaymentInstrument(bank_account)) {
+    return false;
+  }
+  // Update bank account.
+  sql::Statement update;
+  UpdateBuilder(db_, update, kBankAccountsTable,
+                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType},
+                base::StrCat({kInstrumentId, "=?1"}));
+  BindBankAccountToStatement(&update, bank_account);
+  if (!update.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
-bool AutofillTable::RemoveBankAccount(int64_t instrument_id) {
-  // TODO(crbug.com/1475426): Add implementation.
-  return false;
+bool AutofillTable::RemoveBankAccount(const BankAccount& bank_account) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!RemovePaymentInstrument(bank_account)) {
+    return false;
+  }
+
+  sql::Statement bank_accounts_delete;
+  DeleteBuilder(db_, bank_accounts_delete, kBankAccountsTable,
+                base::StrCat({kInstrumentId, "=?"}));
+  bank_accounts_delete.BindInt64(0, bank_account.instrument_id());
+  if (!bank_accounts_delete.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
 bool AutofillTable::AddLocalIban(const Iban& iban) {

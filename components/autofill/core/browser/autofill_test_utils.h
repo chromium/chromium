@@ -37,6 +37,7 @@ namespace autofill {
 class AutofillExternalDelegate;
 class AutofillProfile;
 class AutofillTable;
+class BankAccount;
 struct FormData;
 struct FormFieldData;
 struct FormDataPredictions;
@@ -389,6 +390,9 @@ Suggestion CreateAutofillSuggestion(
     PopupItemId popup_item_id,
     const std::u16string& main_text_value = std::u16string(),
     const Suggestion::Payload& payload = Suggestion::Payload());
+
+// Returns a bank account enabled for Pix with fake data.
+BankAccount CreatePixBankAccount(int64_t instrument_id);
 
 }  // namespace test
 }  // namespace autofill
