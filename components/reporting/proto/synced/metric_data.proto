@@ -407,12 +407,6 @@ message DisplayStatus {
   optional bool is_internal = 5;
 }
 
-// deliberately left empty as there is no payload for Heartbeat messages.
-// It just implicitly indicates that the sender is still alive.
-message KioskHeartbeatTelemetry {
-  // No payload
-}
-
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 // IMPORTANT: Do not add additional non-message fields (bool, int, string,
@@ -444,8 +438,6 @@ message TelemetryData {
   optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
   // Website telemetry data.
   optional WebsiteTelemetry website_telemetry = 11;
-  // Kiosk Heartbeats as telemetry data
-  optional KioskHeartbeatTelemetry heartbeat_telemetry = 12;
 }
 
 enum MetricEventType {
@@ -464,7 +456,6 @@ enum MetricEventType {
   CRASH_FATALLY = 17;
   URL_OPENED = 18;
   URL_CLOSED = 19;
-  KIOSK_HEARTBEAT = 20;
 
   reserved 2, 3, 10, 11, 12;
 }
