@@ -90,8 +90,11 @@ void OnDeviceSession::SetDisconnectHandler(base::OnceClosure on_disconnect) {
 
 void OnDeviceSession::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
+  context_.reset(request_metadata.New());
+  context_->CheckTypeAndMergeFrom(request_metadata);
+
   auto input = config_interpreter_->ConstructInputString(
-      feature_, request_metadata, /*want_input_context=*/true);
+      feature_, *context_, /*want_input_context=*/true);
   if (!input) {
     // TODO(b/302402576): Add error handling.
     LOG(ERROR) << "Error constructing input string.";
@@ -111,8 +114,9 @@ void OnDeviceSession::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
+  auto request = MergeContext(request_metadata);
   auto input = config_interpreter_->ConstructInputString(
-      feature_, request_metadata, /*want_input_context=*/false);
+      feature_, *request, /*want_input_context=*/false);
   if (!input) {
     // TODO(b/302402576): Add error handling.
     LOG(ERROR) << "Error constructing input string.";

@@ -49,10 +49,14 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
 // Interface for model execution.
 class OptimizationGuideModelExecutor {
  public:
+  OptimizationGuideModelExecutor();
+  virtual ~OptimizationGuideModelExecutor();
+
   // A model session that will save context for future ExecuteModel() calls.
   class Session {
    public:
-    virtual ~Session() = default;
+    Session();
+    virtual ~Session();
 
     // Listens for session disconnect. Disconnects may happen if the backing
     // model service crashes. Clients should add back context in this case.
@@ -75,6 +79,14 @@ class OptimizationGuideModelExecutor {
     virtual void ExecuteModel(
         const google::protobuf::MessageLite& request_metadata,
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
+
+   protected:
+    // Returns a new message created by merging `request` into `context_`. This
+    // is a bit tricky since we don't know the type of MessageLite.
+    std::unique_ptr<google::protobuf::MessageLite> MergeContext(
+        const google::protobuf::MessageLite& request);
+
+    std::unique_ptr<google::protobuf::MessageLite> context_;
   };
 
   // Starts a session which allows streaming input and output from the model.

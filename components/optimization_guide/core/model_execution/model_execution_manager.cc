@@ -104,22 +104,6 @@ class PassthroughSession : public OptimizationGuideModelExecutor::Session {
   }
 
  private:
-  // Returns a new message created by merging `request` into `context_`. This is
-  // a bit tricky since we don't know the type of MessageLite.
-  std::unique_ptr<google::protobuf::MessageLite> MergeContext(
-      const google::protobuf::MessageLite& request) {
-    // Create a message of the correct type.
-    auto message = base::WrapUnique(request.New());
-    // First merge in the current context.
-    if (context_) {
-      message->CheckTypeAndMergeFrom(*context_);
-    }
-    // Then merge in the request.
-    message->CheckTypeAndMergeFrom(request);
-    return message;
-  }
-
-  std::unique_ptr<google::protobuf::MessageLite> context_;
   proto::ModelExecutionFeature feature_;
   raw_ref<ModelExecutionManager> execution_manager_;
 };

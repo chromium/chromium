@@ -161,12 +161,17 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
     // Execute call prefixes with execute:.
     auto& substitution = *input_config.add_execute_substitutions();
-    substitution.set_string_template("execute:%s");
+    substitution.set_string_template("execute:%s%s");
     substitution.add_substitutions()
         ->add_candidates()
         ->mutable_proto_field()
         ->add_proto_descriptors()
         ->set_tag_number(2);
+    auto* proto_field = substitution.add_substitutions()
+                            ->add_candidates()
+                            ->mutable_proto_field();
+    proto_field->add_proto_descriptors()->set_tag_number(3);
+    proto_field->add_proto_descriptors()->set_tag_number(1);
 
     // Context call prefixes with context:.
     auto& context_substitution =
@@ -202,7 +207,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void ExecuteModel(OptimizationGuideModelExecutor::Session& session,
                     std::string_view input) {
     proto::ComposeRequest request;
-    request.set_user_input(std::string(input));
+    request.mutable_page_metadata()->set_page_url(std::string(input));
     session.ExecuteModel(
         request,
         base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
@@ -257,7 +262,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   EXPECT_TRUE(response_received_);
   const std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:bar off:0 max:10\n",
-      "Input: execute:baz\n",
+      "Input: execute:barbaz\n",
   });
   EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
@@ -277,7 +282,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:contex off:0 max:10\n",
       "Context: t off:10 max:4\n",
-      "Input: execute:foo\n",
+      "Input: execute:contextfoo\n",
   });
   EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
@@ -299,7 +304,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "Context: s lo off:10 max:4\n",
       "Context: ng c off:14 max:4\n",
       "Context: onte off:18 max:4\n",
-      "Input: execute:foo\n",
+      "Input: execute:this is long contextfoo\n",
   });
   EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
@@ -317,7 +322,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(response_received_);
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:this i off:0 max:10\n",
-      "Input: execute:foo\n",
+      "Input: execute:this is long contextfoo\n",
   });
   EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
@@ -349,7 +354,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
       "Context: ctx: off:0 max:4\n",
       "Context: cont off:4 max:4\n",
       "Context: ext off:8 max:4\n",
-      "Input: execute:foo\n",
+      "Input: execute:contextfoo\n",
   });
   EXPECT_EQ(*response_received_, expected_responses.back());
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
