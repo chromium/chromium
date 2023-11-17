@@ -280,7 +280,7 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
   base::File input_write_file_;
   base::File output_read_file_;
 
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<base::RunLoop> test_run_loop_;
 
   std::unique_ptr<base::Thread> host_thread_;
@@ -304,8 +304,7 @@ void Me2MeNativeMessagingHostTest::SetUp() {
   ASSERT_TRUE(MakePipe(&input_read_file, &input_write_file_));
   ASSERT_TRUE(MakePipe(&output_read_file_, &output_write_file));
 
-  task_environment_ =
-      std::make_unique<base::test::SingleThreadTaskEnvironment>();
+  task_environment_ = std::make_unique<base::test::TaskEnvironment>();
   test_run_loop_ = std::make_unique<base::RunLoop>();
 
   // Run the host on a dedicated thread.
