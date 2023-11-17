@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
