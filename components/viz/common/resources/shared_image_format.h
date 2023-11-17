@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <string>
 
 #include "base/check.h"
@@ -32,7 +33,7 @@ class MultiplanarFormatDataView;
 // images (eg. RGBA) or multiplanar images (eg. NV12). This format can be
 // either SingleplanarFormat or MultiplanarFormat (PlaneConfig + Subsampling +
 // ChannelFormat).
-class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
  public:
   // Specifies how YUV (and optionally A) are divided among planes. Planes are
   // separated by underscores in the enum value names. Within each plane the
@@ -170,8 +171,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   int BitsPerPixel() const;
 
   bool operator==(const SharedImageFormat& o) const;
-  bool operator!=(const SharedImageFormat& o) const;
-  bool operator<(const SharedImageFormat& o) const;
+  std::weak_ordering operator<=>(const SharedImageFormat& o) const;
 
  private:
   enum class PlaneType : uint8_t {
@@ -197,8 +197,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
 #endif
 
       bool operator==(const MultiplanarFormat& o) const;
-      bool operator!=(const MultiplanarFormat& o) const;
-      bool operator<(const MultiplanarFormat& o) const;
+      std::weak_ordering operator<=>(const MultiplanarFormat& o) const;
     };
 
     SharedImageFormatUnion() {}

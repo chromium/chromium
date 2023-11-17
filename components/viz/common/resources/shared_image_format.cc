@@ -4,6 +4,7 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 
+#include <compare>
 #include <type_traits>
 
 #include "base/check_op.h"
@@ -481,22 +482,19 @@ bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
   }
 }
 
-bool SharedImageFormat::operator!=(const SharedImageFormat& o) const {
-  return !operator==(o);
-}
-
-bool SharedImageFormat::operator<(const SharedImageFormat& o) const {
+std::weak_ordering SharedImageFormat::operator<=>(
+    const SharedImageFormat& o) const {
   if (plane_type_ != o.plane_type()) {
-    return plane_type_ < o.plane_type();
+    return plane_type_ <=> o.plane_type();
   }
 
   switch (plane_type_) {
     case PlaneType::kUnknown:
-      return false;
+      return std::weak_ordering::equivalent;
     case PlaneType::kSinglePlane:
-      return singleplanar_format() < o.singleplanar_format();
+      return singleplanar_format() <=> o.singleplanar_format();
     case PlaneType::kMultiPlane:
-      return multiplanar_format() < o.multiplanar_format();
+      return multiplanar_format() <=> o.multiplanar_format();
   }
 }
 
@@ -505,13 +503,11 @@ bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator==(
   return plane_config == o.plane_config && subsampling == o.subsampling &&
          channel_format == o.channel_format;
 }
-bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator!=(
+
+std::weak_ordering
+SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<=>(
     const MultiplanarFormat& o) const {
-  return !operator==(o);
-}
-bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<(
-    const MultiplanarFormat& o) const {
-  return std::tie(plane_config, subsampling, channel_format) <
+  return std::tie(plane_config, subsampling, channel_format) <=>
          std::tie(o.plane_config, o.subsampling, o.channel_format);
 }
 
