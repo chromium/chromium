@@ -99,10 +99,7 @@ template <typename _KeyType,
           typename _ValueTraits,
           bool = WTF::IsWeak<_ValueType>::value>
 struct EphemeronKeyValuePair {
-  // Should be STACK_ALLOCATED but the fields below are detected as Member
-  // fields which are not allowed in a stack-allocated class. Using
-  // DISALLOW_NEW() prevents a plugin ignore annotation.
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   using KeyType = _KeyType;
