@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
