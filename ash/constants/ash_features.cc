@@ -2762,6 +2762,10 @@ BASE_FEATURE(kVcBackgroundReplace,
              "VCBackgroundReplace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the DLC downloading UI for video conferencing tiles is
+// enabled.
+BASE_FEATURE(kVcDlcUi, "VcDlcUi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This is only used as a way to disable portrait relighting.
 BASE_FEATURE(kVcPortraitRelight,
              "VcPortraitRelight",
@@ -4345,6 +4349,10 @@ bool IsStopAllScreenShareEnabled() {
 bool IsVcBackgroundReplaceEnabled() {
   return base::FeatureList::IsEnabled(kVcBackgroundReplace) &&
          IsVideoConferenceEnabled();
+}
+
+bool IsVcDlcUiEnabled() {
+  return base::FeatureList::IsEnabled(kVcDlcUi) && IsVideoConferenceEnabled();
 }
 
 bool IsVcPortraitRelightEnabled() {
