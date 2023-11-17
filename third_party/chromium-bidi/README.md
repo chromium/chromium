@@ -271,6 +271,14 @@ Use the `PORT` environment variable to connect to another port:
 PORT=8081 npm run e2e
 ```
 
+#### Updating snapshots
+
+```sh
+npm run e2e -- --snapshot-update
+```
+
+See https://github.com/tophat/syrupy for more information.
+
 ### Local http server
 
 E2E tests use local http
