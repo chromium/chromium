@@ -69,11 +69,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowWebFeedMenuItem() {
-        if (!FeedFeatures.isWebFeedUIEnabled()) {
-            return false;
-        }
         Tab tab = mActivityTabProvider.get();
         if (tab == null || tab.isIncognito() || OfflinePageUtils.isOfflinePage(tab)) {
+            return false;
+        }
+        if (!FeedFeatures.isWebFeedUIEnabled(tab.getProfile())) {
             return false;
         }
         String url = tab.getOriginalUrl().getSpec();

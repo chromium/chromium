@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -40,17 +42,23 @@ public final class FeedFeatures {
     }
 
     /**
-     * @return Whether the WebFeed UI should be enabled. Checks for the WEB_FEED flag, if
-     *         the user is signed in and confirms it's not a child profile.
+     * @param profile the profile of the current user.
+     * @return Whether the WebFeed UI should be enabled. Checks for the WEB_FEED flag, if the user
+     *     is signed in and confirms it's not a child profile.
      */
-    public static boolean isWebFeedUIEnabled() {
+    public static boolean isWebFeedUIEnabled(@NonNull Profile profile) {
         // TODO(b/197354832, b/188188861): change consent check to SIGNIN.
+        boolean isPrimaryAccountSignedIn = false;
+        if (IdentityServicesProvider.get().getSigninManager(profile) != null) {
+            isPrimaryAccountSignedIn =
+                    IdentityServicesProvider.get()
+                            .getSigninManager(profile)
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        }
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .getIdentityManager()
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)
-                && !Profile.getLastUsedRegularProfile().isChild()
+                && isPrimaryAccountSignedIn
+                && !profile.isChild()
                 && isFeedEnabledByDSE();
     }
 
