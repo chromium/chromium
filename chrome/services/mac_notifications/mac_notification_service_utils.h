@@ -27,7 +27,6 @@ std::string DeriveMacNotificationId(
 extern NSString* const kNotificationButtonOne;
 extern NSString* const kNotificationButtonTwo;
 extern NSString* const kNotificationCloseButtonTag;
-extern NSString* const kNotificationCreatorPid;
 extern NSString* const kNotificationHasSettingsButton;
 extern NSString* const kNotificationId;
 extern NSString* const kNotificationIncognito;
@@ -35,6 +34,7 @@ extern NSString* const kNotificationOrigin;
 extern NSString* const kNotificationProfileId;
 extern NSString* const kNotificationSettingsButtonTag;
 extern NSString* const kNotificationType;
+extern NSString* const kNotificationUserDataDir;
 
 }  // namespace mac_notifications
 
