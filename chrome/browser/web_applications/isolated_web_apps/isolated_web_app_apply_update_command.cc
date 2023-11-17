@@ -11,13 +11,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -27,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
@@ -41,15 +39,11 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "url/gurl.h"
 
 namespace web_app {
 
@@ -171,6 +165,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     return;
   }
 
+  update_location_ = update_info.location;
   std::move(next_step_callback).Run();
 }
 
@@ -296,9 +291,8 @@ void IsolatedWebAppApplyUpdateCommand::ReportFailure(base::StringPiece message,
   // things.
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedCallbacks(
-      base::BindOnce(
-          &IsolatedWebAppApplyUpdateCommand::CleanupUpdateInfoOnFailure,
-          weak_ptr),
+      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::CleanupOnFailure,
+                     weak_ptr),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::SignalCompletionAndSelfDestruct,
           weak_ptr, CommandResult::kFailure,
@@ -308,15 +302,22 @@ void IsolatedWebAppApplyUpdateCommand::ReportFailure(base::StringPiece message,
   );
 }
 
-void IsolatedWebAppApplyUpdateCommand::CleanupUpdateInfoOnFailure(
+void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
     base::OnceClosure next_step_callback) {
+  base::OnceClosure update_callback =
+      update_location_.has_value()
+          ? base::BindOnce(CleanupLocationIfOwned, profile().GetPath(),
+                           update_location_.value(),
+                           std::move(next_step_callback))
+          : std::move(next_step_callback);
+
   ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(
       // We don't really care whether committing the update succeeds or fails.
       // However, we want to wait for the write of the database to disk, so that
       // a potential crash during that write happens before the
       // to-be-implemented cleanup system for no longer referenced Web Bundles
       // kicks in.
-      base::IgnoreArgs<bool>(std::move(next_step_callback)));
+      base::IgnoreArgs<bool>(std::move(update_callback)));
 
   WebApp* web_app = update->UpdateApp(url_info_.app_id());
 

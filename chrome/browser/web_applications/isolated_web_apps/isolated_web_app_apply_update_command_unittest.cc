@@ -6,15 +6,16 @@
 
 #include <memory>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -39,6 +40,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
 
@@ -54,6 +56,19 @@ using ::testing::IsTrue;
 using ::testing::Return;
 
 constexpr base::StringPiece kIconPath = "/icon.png";
+
+void CheckIwaDir(const base::FilePath& iwa_base_dir,
+                 const base::FilePath& installed_app_dir) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FileEnumerator iwa_dir_content(
+      iwa_base_dir, false, base::FileEnumerator::FileType::DIRECTORIES);
+  // Check that only allowed path is in the IWA directory.
+  // The pending updates dir should be removed.
+  for (auto path = iwa_dir_content.Next(); !path.empty();
+       path = iwa_dir_content.Next()) {
+    ASSERT_EQ(path, installed_app_dir);
+  }
+}
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
                                                 const base::Version version) {
@@ -149,7 +164,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
         InstalledBundle({.path = update_bundle_path_}), update_version_);
   }
 
-  void ExpectAppNotUpdatedAndPendingUpdateInfoCleared() {
+  void ExpectAppNotUpdatedAndDataCleared() {
     const WebApp* web_app =
         fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
     EXPECT_THAT(
@@ -159,6 +174,20 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
                         installed_location_, installed_version_,
                         /*controlled_frame_partitions=*/{"some-partition"},
                         /*pending_update_info=*/absl::nullopt)));
+
+    const IsolatedWebAppLocation installed_app_location =
+        web_app->isolation_data()->location;
+    const base::FilePath iwa_base_dir =
+        profile()->GetPath().Append(kIwaDirName);
+    absl::visit(base::Overloaded{
+                    [&iwa_base_dir](const InstalledBundle& bundle) {
+                      // Only installed app can be located in the IWA directory.
+                      CheckIwaDir(iwa_base_dir, bundle.path.BaseName());
+                    },
+                    [](const DevModeBundle& bundle) {},
+                    [](const DevModeProxy& proxy) {},
+                },
+                installed_app_location);
   }
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -255,7 +284,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
               HasSubstr("does not have a pending update"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,
@@ -270,7 +299,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
               HasSubstr("Installed app is already on version"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
@@ -284,7 +313,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
               HasSubstr("The public key(s) are not trusted"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
@@ -297,7 +326,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
   auto result = ApplyPendingUpdate();
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message, HasSubstr("FailedErrorPageLoaded"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
@@ -314,7 +343,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
   EXPECT_THAT(
       result.error().message,
       HasSubstr("Manifest does not contain a 'name' or 'short_name' field"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
@@ -328,7 +357,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
               HasSubstr("Scope should resolve to the origin"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
@@ -341,7 +370,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
               HasSubstr("Error during icon downloading"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
@@ -375,7 +404,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
   auto result = ApplyPendingUpdate();
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message, HasSubstr("Error during finalization"));
-  ExpectAppNotUpdatedAndPendingUpdateInfoCleared();
+  ExpectAppNotUpdatedAndDataCleared();
 }
 
 }  // namespace
