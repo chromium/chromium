@@ -161,7 +161,9 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   HeapVector<Member<ScriptTimingInfo>> scripts;
 
   bool did_pause = false;
+  bool did_see_ui_events = false;
   std::swap(did_pause, did_pause_);
+  std::swap(did_see_ui_events, did_see_ui_events_);
 
   base::TimeDelta task_duration = end_time - start_time;
   if (pending_script_info_ && ((pending_script_info_->type ==
@@ -176,7 +178,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
-  if (frame) {
+  if (frame || did_see_ui_events) {
     if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
         task_duration >= kLongTaskDuration) {
       client_.ReportLongTaskTiming(start_time, end_time, frame->DomWindow());
@@ -208,7 +210,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
     state_ = State::kPendingFrame;
-    if (frame) {
+    if (frame || did_see_ui_events) {
       ApplyTaskDuration(task_duration);
     }
     return;
@@ -607,6 +609,7 @@ void AnimationFrameTimingMonitor::Did(
   if (probe_data.event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
     first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
   }
+  did_see_ui_events_ = true;
 
   ScriptTimingInfo* info = PopScriptEntryPoint(probe_data);
   if (!info) {

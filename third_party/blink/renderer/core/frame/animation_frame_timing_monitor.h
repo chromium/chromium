@@ -162,6 +162,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   base::TimeDelta total_blocking_time_excluding_longest_task_;
   base::TimeDelta longest_task_duration_;
   bool did_pause_ = false;
+  bool did_see_ui_events_ = false;
 
   unsigned entry_point_depth_ = 0;
 
