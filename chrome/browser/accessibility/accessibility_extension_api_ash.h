@@ -86,6 +86,17 @@ class AccessibilityPrivateGetDlcContentsFunction : public ExtensionFunction {
                               absl::optional<std::string> error);
 };
 
+// API function that retrieves TTS DLC file contents.
+class AccessibilityPrivateGetTtsDlcContentsFunction : public ExtensionFunction {
+  ~AccessibilityPrivateGetTtsDlcContentsFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.getTtsDlcContents",
+                             ACCESSIBILITY_PRIVATE_GETTTSDLCCONTENTS)
+ private:
+  void OnTtsDlcContentsRetrieved(const std::vector<uint8_t>& contents,
+                                 absl::optional<std::string> error);
+};
+
 // API function that gets the localized DOM key string for a given key code.
 class AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction
     : public ExtensionFunction {

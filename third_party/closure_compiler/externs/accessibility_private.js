@@ -387,6 +387,14 @@ chrome.accessibilityPrivate.DlcType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.TtsVariant = {
+  LITE: 'lite',
+  STANDARD: 'standard',
+};
+
+/**
  * @typedef {{
  *   js_pumpkin_tagger_bin_js: ArrayBuffer,
  *   tagger_wasm_main_js: ArrayBuffer,
@@ -671,6 +679,16 @@ chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
  *     contents are returned.
  */
 chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
+
+/**
+ * Returns the contents of a TTS DLC.
+ * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
+ * @param {!chrome.accessibilityPrivate.TtsVariant} variant The TTS voice
+ *     variant.
+ * @param {function(ArrayBuffer): void} callback A callback that is run when the
+ *     contents are returned.
+ */
+chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback) {};
 
 /**
  * Gets whether new browser windows and tabs should be in Lacros browser.

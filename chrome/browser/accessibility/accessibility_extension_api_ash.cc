@@ -185,6 +185,9 @@ AccessibilityPrivateGetBatteryDescriptionFunction::Run() {
       ash::AccessibilityController::Get()->GetBatteryDescription()));
 }
 
+// TODO(b/286296201): AccessibilityPrivateGetDlcContentsFunction is deprecated
+// (use AccessibilityPrivateGetTtsDlcContentsFunction instead). Delete
+// GetDlcContents after uprreving Google TTS to use GetTtsDlcContents.
 ExtensionFunction::ResponseAction
 AccessibilityPrivateGetDlcContentsFunction::Run() {
   absl::optional<accessibility_private::GetDlcContents::Params> params(
@@ -192,8 +195,8 @@ AccessibilityPrivateGetDlcContentsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::DlcType dlc = params->dlc;
 
-  AccessibilityManager::Get()->GetDlcContents(
-      dlc,
+  AccessibilityManager::Get()->GetTtsDlcContents(
+      dlc, accessibility_private::TtsVariant::kLite,
       base::BindOnce(
           &AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved,
           this));
@@ -201,6 +204,33 @@ AccessibilityPrivateGetDlcContentsFunction::Run() {
 }
 
 void AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved(
+    const std::vector<uint8_t>& contents,
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
+    Respond(Error(error.value()));
+    return;
+  }
+
+  Respond(WithArguments(base::Value(contents)));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetTtsDlcContentsFunction::Run() {
+  absl::optional<accessibility_private::GetTtsDlcContents::Params> params(
+      accessibility_private::GetTtsDlcContents::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DlcType dlc = params->dlc;
+  accessibility_private::TtsVariant variant = params->variant;
+
+  AccessibilityManager::Get()->GetTtsDlcContents(
+      dlc, variant,
+      base::BindOnce(&AccessibilityPrivateGetTtsDlcContentsFunction::
+                         OnTtsDlcContentsRetrieved,
+                     this));
+  return RespondLater();
+}
+
+void AccessibilityPrivateGetTtsDlcContentsFunction::OnTtsDlcContentsRetrieved(
     const std::vector<uint8_t>& contents,
     absl::optional<std::string> error) {
   if (error.has_value()) {

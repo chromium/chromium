@@ -123,6 +123,7 @@ namespace {
 
 using ::extensions::api::accessibility_private::DlcType;
 using ::extensions::api::accessibility_private::PumpkinData;
+using ::extensions::api::accessibility_private::TtsVariant;
 using ::extensions::api::braille_display_private::BrailleController;
 using ::extensions::api::braille_display_private::DisplayState;
 using ::extensions::api::braille_display_private::KeyEvent;
@@ -146,6 +147,12 @@ constexpr char kBrlttyUpstartJobName[] = "brltty";
 
 // The path to the pumpkin DLC directory.
 constexpr char kPumpkinDlcRootPath[] = "/run/imageloader/pumpkin/package/root/";
+
+// The file name of a lite TTS voice.
+const char kTtsLiteFileName[] = "voice.zvoice";
+
+// The file name of a standard TTS voice.
+const char kTtsStandardFileName[] = "voice-standard.zvoice";
 
 static AccessibilityManager* g_accessibility_manager = nullptr;
 
@@ -282,7 +289,7 @@ ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
 }
 
 // Runs when `ReadDlcFile` returns the contents of a file.
-void OnReadDlcFile(GetDlcContentsCallback callback,
+void OnReadDlcFile(GetTtsDlcContentsCallback callback,
                    ReadDlcFileResponse response) {
   std::move(callback).Run(response.contents, response.error);
 }
@@ -2721,10 +2728,10 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
   UpdateDictationNotification();
 }
 
-void AccessibilityManager::GetDlcContents(DlcType dlc,
-                                          GetDlcContentsCallback callback) {
-  // Convert enum to locale. Note that this API currently only supports TTS
-  // DLCs.
+void AccessibilityManager::GetTtsDlcContents(
+    DlcType dlc,
+    TtsVariant variant,
+    GetTtsDlcContentsCallback callback) {
   static constexpr auto kTtsDlcTypeToLocale =
       base::MakeFixedFlatMap<DlcType, const char*>(
           {{DlcType::kTtsBnBd, "bn-bd"},  {DlcType::kTtsCsCz, "cs-cz"},
@@ -2749,19 +2756,33 @@ void AccessibilityManager::GetDlcContents(DlcType dlc,
   std::string locale = kTtsDlcTypeToLocale.find(dlc)->second;
   language_packs::LanguagePackManager::GetPackState(
       language_packs::kTtsFeatureId, locale,
-      base::BindOnce(&AccessibilityManager::GetDlcContentsOnPackState,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&AccessibilityManager::GetTtsDlcContentsOnPackState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(variant),
+                     std::move(callback)));
 }
 
-void AccessibilityManager::GetDlcContentsOnPackState(
-    GetDlcContentsCallback callback,
+void AccessibilityManager::GetTtsDlcContentsOnPackState(
+    TtsVariant variant,
+    GetTtsDlcContentsCallback callback,
     const language_packs::PackResult& pack_result) {
+  std::string file_name;
+  switch (variant) {
+    case TtsVariant::kLite:
+      file_name = kTtsLiteFileName;
+      break;
+    case TtsVariant::kStandard:
+      file_name = kTtsStandardFileName;
+      break;
+    case TtsVariant::kNone:
+      NOTREACHED();
+  }
+
   base::FilePath path;
   if (!dlc_path_for_test_.empty()) {
     // This path will only be set for tests. We need to skip the below install
     // check during tests because there is currently no way to set a DLC as
     // installed from a browsertest.
-    path = dlc_path_for_test_.Append("voice.zvoice");
+    path = dlc_path_for_test_.Append(file_name);
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadDlcFile, path),
         base::BindOnce(&OnReadDlcFile, std::move(callback)));
@@ -2779,7 +2800,7 @@ void AccessibilityManager::GetDlcContentsOnPackState(
   }
 
   // Extract the path and read the file.
-  path = base::FilePath(pack_result.path).Append("voice.zvoice");
+  path = base::FilePath(pack_result.path).Append(file_name);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadDlcFile, path),
       base::BindOnce(&OnReadDlcFile, std::move(callback)));

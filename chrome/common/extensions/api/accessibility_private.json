@@ -341,6 +341,15 @@
         "description": "Types of accessibility-specific DLCs."
       },
       {
+        "id": "TtsVariant",
+        "type": "string",
+        "enum": [
+          "lite",
+          "standard"
+        ],
+        "description": "Variants of TTS voices."
+      },
+      {
         "id": "PumpkinData",
         "type": "object",
         "properties": {
@@ -895,6 +904,34 @@
             "name": "dlc",
             "$ref": "DlcType",
             "description": "The DLC of interest."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the contents are returned.",
+          "parameters": [
+            {
+              "name": "contents",
+              "type": "binary",
+              "description": "The contents of the DLC as a Uint8Array."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getTtsDlcContents",
+        "type": "function",
+        "description": "Returns the contents of a TTS DLC.",
+        "parameters": [
+          {
+            "name": "dlc",
+            "$ref": "DlcType",
+            "description": "The DLC of interest."
+          },
+          {
+            "name": "variant",
+            "$ref": "TtsVariant",
+            "description": "The TTS voice variant."
           }
         ],
         "returns_async": {

@@ -354,6 +354,48 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDlcContentsSuccess) {
   ASSERT_TRUE(RunSubtest("testGetDlcContentsSuccess")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetTtsDlcContentsDlcNotOnDevice) {
+  ASSERT_TRUE(RunSubtest("testGetTtsDlcContentsDlcNotOnDevice")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetTtsDlcContentsSuccess) {
+  // Create a fake DLC file. We need to put this in a ScopedTempDir because this
+  // test doesn't have write access to the actual DLC directory
+  // (/run/imageloader/).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir dlc_dir;
+  ASSERT_TRUE(dlc_dir.CreateUniqueTempDir());
+  AccessibilityManager::Get()->SetDlcPathForTest(dlc_dir.GetPath());
+  std::string content = "Fake DLC file content";
+  ASSERT_TRUE(
+      base::WriteFile(dlc_dir.GetPath().Append("voice.zvoice"), content));
+
+  ASSERT_TRUE(RunSubtest("testGetTtsDlcContentsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetVariantTtsDlcContentsDlcNotOnDevice) {
+  ASSERT_TRUE(RunSubtest("testGetVariantTtsDlcContentsDlcNotOnDevice"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetVariantTtsDlcContentsSuccess) {
+  // Create a fake DLC file. We need to put this in a ScopedTempDir because this
+  // test doesn't have write access to the actual DLC directory
+  // (/run/imageloader/).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir dlc_dir;
+  ASSERT_TRUE(dlc_dir.CreateUniqueTempDir());
+  AccessibilityManager::Get()->SetDlcPathForTest(dlc_dir.GetPath());
+  std::string content = "Fake DLC file content";
+  ASSERT_TRUE(base::WriteFile(dlc_dir.GetPath().Append("voice-standard.zvoice"),
+                              content));
+
+  ASSERT_TRUE(RunSubtest("testGetVariantTtsDlcContentsSuccess")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SetCursorPosition) {
   const std::string kTestCases[] = {"800x600", "1000x800*2.0",
                                     "801+0-400x300,1+0-400x300"};
