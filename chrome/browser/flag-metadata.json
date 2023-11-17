@@ -3661,6 +3661,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-user-policy-notif",
+    "owners": [ "vincb@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 125

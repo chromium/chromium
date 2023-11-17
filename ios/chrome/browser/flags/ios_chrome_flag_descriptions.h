@@ -825,6 +825,11 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kShowInactiveTabsCountName[];
 extern const char kShowInactiveTabsCountDescription[];
 
+// Title and description for the flag to show the User Policy notification at
+// startup if needed.
+extern const char  kShowUserPolicyNotificationAtStartupIfNeededName[];
+extern const char  kShowUserPolicyNotificationAtStartupIfNeededDescription[];
+
 // Title and description for the flag to enable ignoring undecryptable passwords
 // in the password storage.
 extern const char kSkipUndecryptablePasswordsName[];

@@ -1627,6 +1627,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordSignInUffName,
      flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordSignInUff)},
+    {"enable-user-policy-notif",
+     flag_descriptions::kShowUserPolicyNotificationAtStartupIfNeededName,
+     flag_descriptions::kShowUserPolicyNotificationAtStartupIfNeededDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(policy::kShowUserPolicyNotificationAtStartupIfNeeded)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

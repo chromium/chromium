@@ -935,6 +935,12 @@ const char kShowInactiveTabsCountDescription[] =
     "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
     "button that appears in the Tab Grid.";
 
+extern const char  kShowUserPolicyNotificationAtStartupIfNeededName[] =
+    "Show User Policy notif at startup if needed";
+extern const char  kShowUserPolicyNotificationAtStartupIfNeededDescription[] =
+    "When enabled, evaluate if the User Policy notification should be shown "
+    "during startup.";
+
 const char kSkipUndecryptablePasswordsName[] =
     "Enable silent ignoring of undecryptable passwords";
 const char kSkipUndecryptablePasswordsDescription[] =
