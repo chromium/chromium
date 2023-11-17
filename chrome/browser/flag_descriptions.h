@@ -2557,6 +2557,9 @@ extern const char kRecoverFromNeverSaveAndroidDescription[];
 extern const char kReengagementNotificationName[];
 extern const char kReengagementNotificationDescription[];
 
+extern const char kRelatedSearchesAllLanguageName[];
+extern const char kRelatedSearchesAllLanguageDescription[];
+
 extern const char kRelatedSearchesName[];
 extern const char kRelatedSearchesDescription[];
 

@@ -39,6 +39,7 @@ public class RelatedSearchesStampTest {
     private static final String CONFIG_STAMP_BOTH = "1Rb";
     private static final String EXPECTED_DEFAULT_STAMP = "1Rs";
     private static final String EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED = "1Rsl";
+    private static final String EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE = "1Rsa";
 
     /** The stamp CGI parameter. */
     private static final String RELATED_SEARCHES_STAMP_PARAM = "ctxsl_rs";
@@ -112,11 +113,8 @@ public class RelatedSearchesStampTest {
      * Searches.
      */
     private void setSupportAllLanguage(boolean support) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial
-                        .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME,
-                "" + support);
+        mFeatureListValues.addFeatureFlagOverride(
+                ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
     }
 
     /**
@@ -377,17 +375,17 @@ public class RelatedSearchesStampTest {
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for English!",
                 mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
         assertThat(
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for Spanish!",
                 mStamp.getRelatedSearchesStamp(SPANISH),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
         assertThat(
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for German!",
                 mStamp.getRelatedSearchesStamp(GERMAN),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
     }
 
     @Test

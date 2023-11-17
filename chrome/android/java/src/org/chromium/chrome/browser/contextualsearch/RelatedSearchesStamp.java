@@ -223,9 +223,7 @@ class RelatedSearchesStamp {
      *         languages are allowed.
      */
     private String getAllowedLanguages() {
-        if (ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(
-                    ContextualSearchFieldTrial
-                            .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)) {
             return "";
         }
         String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(

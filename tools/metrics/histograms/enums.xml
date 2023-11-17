@@ -40253,6 +40253,7 @@ from previous Chrome versions.
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
   <int value="1216074694" label="NtpRealboxWidthBehavior:enabled"/>
+  <int value="1216118047" label="RelatedSearchesAllLanguage:enabled"/>
   <int value="1216286283" label="tint-composited-content"/>
   <int value="1216363133" label="LauncherHideContinueSection:disabled"/>
   <int value="1216452475" label="SyncUSSAutofillProfile:disabled"/>
@@ -40715,6 +40716,7 @@ from previous Chrome versions.
   <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>
   <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
   <int value="1440881073" label="DesktopPWAsAppIconShortcutsMenuUI:enabled"/>
+  <int value="1441764258" label="RelatedSearchesAllLanguage:disabled"/>
   <int value="1441897340" label="AndroidSpellCheckerNonLowEnd:enabled"/>
   <int value="1441978318" label="WifiSyncAndroid:disabled"/>
   <int value="1442129147"

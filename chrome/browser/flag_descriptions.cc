@@ -4334,6 +4334,11 @@ const char kReengagementNotificationDescription[] =
     "Enables Chrome to use the in-product help system to decide when "
     "to show re-engagement notifications.";
 
+const char kRelatedSearchesAllLanguageName[] =
+    "Enables all the languages for Related Searches on Android";
+const char kRelatedSearchesAllLanguageDescription[] =
+    "Enables requesting related searches suggestions for all the languages.";
+
 const char kRelatedSearchesName[] =
     "Enables an experiment for Related Searches on Android";
 const char kRelatedSearchesDescription[] =
