@@ -369,19 +369,6 @@ enum class CookiesAllowedForUrlsUsage {
   kMaxValue = kAllPresent,
 };
 
-// Enum for measuring the mechanism for re-enabling third-party cookies when
-// applying 3PCD experiment.
-enum class ThirdPartyCookieAllowMechanism {
-  kAllowByExplicitSetting = 0,
-  kAllowByGlobalSetting = 1,
-  kAllowByTPCDMetadata = 2,
-  kAllowBy3PCD = 3,
-  kAllowByTPCDHeuristics = 4,
-  kAllowByStorageAccess = 5,
-  kAllowByTopLevelStorageAccess = 6,
-  kMaxValue = kAllowByTopLevelStorageAccess,
-};
-
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_
