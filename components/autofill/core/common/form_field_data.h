@@ -243,11 +243,6 @@ struct FormFieldData {
   bool HadFocus() const;
   bool WasPasswordAutofilled() const;
 
-  // Returns the currently selected text. Returns the empty string if
-  // `selection_start` and/or `selection_end` are out of bounds.
-  std::u16string GetSelection() const;
-  std::u16string_view GetSelectionAsStringView() const;
-
   // NOTE: Update `SameFieldAs()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.
 
@@ -276,14 +271,6 @@ struct FormFieldData {
   // TODO(crbug.com/1501362): Extract on iOS.
   std::u16string selected_text;
 
-  // The range within `value` that is selected. `selection_start` points at the
-  // first selected character, `selection_end` points after the last selected
-  // character. That is, if nothing is selected, `selection_start` and
-  // `selection_end` are identical and represent the cursor position.
-  // Use GetSelection() or GetSelectionAsStringView() to safely get the selected
-  // substring of `value`.
-  uint32_t selection_start = 0;
-  uint32_t selection_end = 0;
   FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;

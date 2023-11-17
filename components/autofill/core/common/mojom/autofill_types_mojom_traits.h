@@ -213,14 +213,6 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.selected_text;
   }
 
-  static uint32_t selection_start(const autofill::FormFieldData& r) {
-    return r.selection_start;
-  }
-
-  static uint32_t selection_end(const autofill::FormFieldData& r) {
-    return r.selection_end;
-  }
-
   static autofill::mojom::FormControlType form_control_type(
       const autofill::FormFieldData& r) {
     return r.form_control_type;

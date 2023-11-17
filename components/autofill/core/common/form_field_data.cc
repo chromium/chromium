@@ -394,16 +394,6 @@ bool FormFieldData::WasPasswordAutofilled() const {
   return properties_mask & kAutofilled;
 }
 
-std::u16string FormFieldData::GetSelection() const {
-  return std::u16string(GetSelectionAsStringView());
-}
-
-std::u16string_view FormFieldData::GetSelectionAsStringView() const {
-  size_t offset = std::min(static_cast<size_t>(selection_start), value.size());
-  size_t length = selection_end - selection_start;
-  return std::u16string_view(value).substr(offset, length);
-}
-
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
   return a.unique_renderer_id == b.unique_renderer_id &&

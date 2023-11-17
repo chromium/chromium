@@ -449,31 +449,4 @@ TEST(FormFieldDataTest, IsTextInputElement) {
   }
 }
 
-class FormFieldDataGetSelectionTest
-    : public ::testing::TestWithParam<
-          std::tuple<size_t, size_t, const char16_t*>> {
- public:
-  size_t selection_start() const { return std::get<0>(GetParam()); }
-  size_t selection_end() const { return std::get<1>(GetParam()); }
-  std::u16string expectation() const { return std::get<2>(GetParam()); }
-};
-
-INSTANTIATE_TEST_SUITE_P(FormFieldDataTest,
-                         FormFieldDataGetSelectionTest,
-                         ::testing::Values(std::make_tuple(0u, 0u, u""),
-                                           std::make_tuple(0u, 3u, u"foo"),
-                                           std::make_tuple(3u, 6u, u"bar"),
-                                           std::make_tuple(6u, 6u, u""),
-                                           std::make_tuple(0u, 100, u"foobar"),
-                                           std::make_tuple(100u, 1000u, u"")));
-
-TEST_P(FormFieldDataGetSelectionTest, GetSelection) {
-  FormFieldData field;
-  field.value = u"foobar";
-  field.selection_start = selection_start();
-  field.selection_end = selection_end();
-  EXPECT_EQ(expectation(), field.GetSelection());
-  EXPECT_EQ(expectation(), field.GetSelectionAsStringView());
-}
-
 }  // namespace autofill

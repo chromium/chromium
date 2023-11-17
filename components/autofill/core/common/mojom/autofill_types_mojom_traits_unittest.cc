@@ -182,8 +182,6 @@ void ExpectFormFieldData(const FormFieldData& expected,
   EXPECT_TRUE(FormFieldData::DeepEqual(test::WithoutUnserializedData(expected),
                                        passed));
   EXPECT_EQ(expected.value, passed.value);
-  EXPECT_EQ(expected.selection_start, passed.selection_start);
-  EXPECT_EQ(expected.selection_end, passed.selection_end);
   EXPECT_EQ(expected.user_input, passed.user_input);
   std::move(closure).Run();
 }
@@ -298,8 +296,6 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.value = u"value";
-  input.selection_start = 1;
-  input.selection_end = 2;
   input.form_control_type = FormControlType::kInputText;
   input.autocomplete_attribute = "on";
   input.parsed_autocomplete =

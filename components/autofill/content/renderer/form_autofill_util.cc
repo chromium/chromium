@@ -2104,8 +2104,6 @@ void WebFormControlElementToFormField(
   field->value = std::move(value).substr(0, kMaxStringLength);
   field->selected_text =
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
-  field->selection_start = std::min(element.SelectionStart(), kMaxStringLength);
-  field->selection_end = std::min(element.SelectionEnd(), kMaxStringLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
