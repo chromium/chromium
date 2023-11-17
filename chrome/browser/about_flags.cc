@@ -403,7 +403,6 @@ const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
      blink::switches::kTouchTextSelectionStrategy,
      blink::switches::kTouchTextSelectionStrategy_Direction}};
 
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
     {"Default", "", ""},
     {"Bootstraping Only", switches::kEnableFeatures,
@@ -413,7 +412,6 @@ const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
      "PasswordManagerEnableSenderService,"
      "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
 };
-#endif
 
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kMediaFoundationClearStrategyUseFrameServer[] =
@@ -5246,11 +5244,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOsIntegrationSubManagersConfigVariations,
                                     "OsIntegrationSubManagers")},
 
-    {"password-sharing", flag_descriptions::kEnablePasswordSharingName,
-     flag_descriptions::kEnablePasswordSharingDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
-
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"password-sharing", flag_descriptions::kEnablePasswordSharingName,
+     flag_descriptions::kEnablePasswordSharingDescription, kOsAll,
+     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
 
 #if BUILDFLAG(IS_MAC)
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
