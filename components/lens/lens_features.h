@@ -137,14 +137,9 @@ extern bool GetEnableLatencyLogging();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
 
-// Returns the max pixel width/height for the image to be sent to Lens via
-// region search. The images are sent at 1x as PNGs.
+// Returns the max area for the image to be sent to Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxPixelsForRegionSearch();
-
-// Returns the max area for the image to be sent to Lens via region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxAreaForRegionSearch();
+extern int GetMaxAreaForImageSearch();
 
 // Returns the max pixel width/height for the image to be sent to Lens.
 COMPONENT_EXPORT(LENS_FEATURES)

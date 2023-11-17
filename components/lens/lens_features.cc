@@ -89,11 +89,8 @@ constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
 constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
     &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
 
-constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
-    &kLensImageCompression, "region-search-dimensions-max-pixels", 1000};
-
-constexpr base::FeatureParam<int> kMaxAreaForRegionSearch{
-    &kLensImageCompression, "region-search-dimensions-max-area", 1000000};
+constexpr base::FeatureParam<int> kMaxAreaForImageSearch{
+    &kLensImageCompression, "dimensions-max-area", 1000000};
 
 constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
     &kLensImageCompression, "dimensions-max-pixels", 1000};
@@ -125,12 +122,8 @@ bool GetEnableLatencyLogging() {
          base::FeatureList::IsEnabled(kLensStandalone);
 }
 
-int GetMaxPixelsForRegionSearch() {
-  return kMaxPixelsForRegionSearch.Get();
-}
-
-int GetMaxAreaForRegionSearch() {
-  return kMaxAreaForRegionSearch.Get();
+int GetMaxAreaForImageSearch() {
+  return kMaxAreaForImageSearch.Get();
 }
 
 int GetMaxPixelsForImageSearch() {

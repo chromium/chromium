@@ -4370,13 +4370,12 @@ void RenderViewContextMenu::SearchForVideoFrame(const gfx::ImageSkia& image) {
     return;
   }
 
-  // TODO(crbug.com/1453681): Add an entry point for VideoFrame search.
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    core_tab_helper->SearchWithLens(
-        gfx::Image(image), image.size(), {},
-        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM);
+    // TODO(crbug.com/1453681): Add an entry point for VideoFrame search.
+    core_tab_helper->SearchWithLens(gfx::Image(image),
+                                    lens::EntryPoint::UNKNOWN);
   } else {
-    core_tab_helper->SearchByImage(gfx::Image(image), image.size());
+    core_tab_helper->SearchByImage(gfx::Image(image));
   }
 }
 

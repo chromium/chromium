@@ -57,6 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
+#include "ui/gfx/image/image_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -84,6 +85,21 @@ constexpr int kImageSearchThumbnailMinSize = 300 * 300;
 constexpr int kImageSearchThumbnailMaxWidth = 600;
 constexpr int kImageSearchThumbnailMaxHeight = 600;
 constexpr char kUnifiedSidePanelVersion[] = "1";
+
+bool NeedsDownscale(gfx::Image image) {
+  return (image.Height() * image.Width() >
+          lens::features::GetMaxAreaForImageSearch()) &&
+         (image.Width() > lens::features::GetMaxPixelsForImageSearch() ||
+          image.Height() > lens::features::GetMaxPixelsForImageSearch());
+}
+
+gfx::Image DownscaleImage(const gfx::Image& image) {
+  return gfx::ResizedImageForMaxDimensions(
+      image, lens::features::GetMaxPixelsForImageSearch(),
+      lens::features::GetMaxPixelsForImageSearch(),
+      lens::features::GetMaxAreaForImageSearch());
+}
+
 }  // namespace
 
 CoreTabHelper::CoreTabHelper(WebContents* web_contents)
@@ -92,6 +108,7 @@ CoreTabHelper::CoreTabHelper(WebContents* web_contents)
 
 CoreTabHelper::~CoreTabHelper() {}
 
+// static
 std::u16string CoreTabHelper::GetDefaultTitle() {
   return l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
 }
@@ -145,6 +162,7 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
   return data;
 }
 
+// static
 void CoreTabHelper::DownscaleAndEncodeBitmap(
     const SkBitmap& bitmap,
     int thumbnail_min_area,
@@ -220,6 +238,7 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
                                  downscaled_size, std::move(log_data));
 }
 
+// static
 lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
     const gfx::Image& image,
     TemplateURLRef::SearchTermsArgs& search_args) {
@@ -264,21 +283,8 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                     use_side_panel, is_image_translate);
 }
 
-TemplateURLService* CoreTabHelper::GetTemplateURLService() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  DCHECK(profile);
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(template_url_service);
-  return template_url_service;
-}
-
-void CoreTabHelper::SearchWithLens(
-    gfx::Image image,
-    const gfx::Size& image_original_size,
-    std::vector<lens::mojom::LatencyLogPtr> log_data,
-    lens::EntryPoint entry_point) {
+void CoreTabHelper::SearchWithLens(const gfx::Image& image,
+                                   lens::EntryPoint entry_point) {
   // TODO(crbug/1431377): After validating the efficacy of the Lens Ping, move
   // the search Ping to an earlier point in lens_region_search_controller.
   TriggerLensPingIfEnabled();
@@ -295,8 +301,8 @@ void CoreTabHelper::SearchWithLens(
   auto lens_query_params = lens::GetQueryParametersForLensRequest(
       lens_entry_point, use_side_panel, is_full_screen_request,
       is_companion_enabled);
-  SearchByImageImpl(image, image_original_size, lens_query_params,
-                    use_side_panel, std::move(log_data));
+
+  SearchByImageImpl(image, lens_query_params, use_side_panel);
 }
 
 void CoreTabHelper::SearchByImage(content::RenderFrameHost* render_frame_host,
@@ -314,20 +320,35 @@ void CoreTabHelper::SearchByImage(content::RenderFrameHost* render_frame_host,
                     is_image_translate);
 }
 
-void CoreTabHelper::SearchByImage(const gfx::Image& image,
-                                  const gfx::Size& image_original_size) {
-  SearchByImageImpl(image, image_original_size,
+void CoreTabHelper::SearchByImage(const gfx::Image& image) {
+  SearchByImageImpl(image,
                     /*additional_query_params=*/std::string(),
-                    lens::IsSidePanelEnabledFor3PDse(web_contents()),
-                    std::vector<lens::mojom::LatencyLogPtr>());
+                    lens::IsSidePanelEnabledFor3PDse(web_contents()));
 }
 
 void CoreTabHelper::SearchByImageImpl(
-    const gfx::Image& image,
-    const gfx::Size& image_original_size,
+    const gfx::Image& original_image,
     const std::string& additional_query_params,
-    bool use_side_panel,
-    std::vector<lens::mojom::LatencyLogPtr> log_data) {
+    bool use_side_panel) {
+  std::vector<lens::mojom::LatencyLogPtr> log_data;
+  log_data.push_back(lens::mojom::LatencyLog::New(
+      lens::mojom::Phase::OVERALL_START, gfx::Size(), gfx::Size(),
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+
+  // Downscale the `original_image` if needed.
+  gfx::Image image = original_image;
+  if (NeedsDownscale(original_image)) {
+    log_data.push_back(lens::mojom::LatencyLog::New(
+        lens::mojom::Phase::DOWNSCALE_START, original_image.Size(), gfx::Size(),
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+
+    image = DownscaleImage(original_image);
+
+    log_data.push_back(lens::mojom::LatencyLog::New(
+        lens::mojom::Phase::DOWNSCALE_END, original_image.Size(), image.Size(),
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+  }
+
   TemplateURLService* template_url_service = GetTemplateURLService();
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
@@ -338,7 +359,7 @@ void CoreTabHelper::SearchByImageImpl(
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
   log_data.push_back(lens::mojom::LatencyLog::New(
-      lens::mojom::Phase::ENCODE_START, image_original_size, gfx::Size(),
+      lens::mojom::Phase::ENCODE_START, original_image.Size(), gfx::Size(),
       lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
 
   std::string content_type;
@@ -352,7 +373,7 @@ void CoreTabHelper::SearchByImageImpl(
     image_format = EncodeImageIntoSearchArgs(image, search_args);
   }
   log_data.push_back(lens::mojom::LatencyLog::New(
-      lens::mojom::Phase::ENCODE_END, image_original_size, gfx::Size(),
+      lens::mojom::Phase::ENCODE_END, original_image.Size(), gfx::Size(),
       image_format, base::Time::Now()));
 
   std::string additional_query_params_modified = additional_query_params;
@@ -370,7 +391,7 @@ void CoreTabHelper::SearchByImageImpl(
     companion_helper->ShowCompanionSidePanelForImage(
         /*src_url=*/GURL(), /*is_image_translate=*/false,
         additional_query_params_modified, encoded_image_bytes,
-        image_original_size, image.Size(), content_type);
+        original_image.Size(), image.Size(), content_type);
     return;
   }
 #endif
@@ -381,7 +402,7 @@ void CoreTabHelper::SearchByImageImpl(
         base::NumberToString(image.Size().height());
   }
 
-  search_args.image_original_size = image_original_size;
+  search_args.image_original_size = original_image.Size();
   search_args.additional_query_params = additional_query_params_modified;
   TemplateURLRef::PostContent post_content;
   GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
@@ -684,6 +705,16 @@ void CoreTabHelper::DoSearchByImage(
   }
 
   PostContentToURL(post_content, search_url, use_side_panel);
+}
+
+TemplateURLService* CoreTabHelper::GetTemplateURLService() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  DCHECK(profile);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  DCHECK(template_url_service);
+  return template_url_service;
 }
 
 bool CoreTabHelper::IsImageSearchSupportedForCompanion() {
