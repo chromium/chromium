@@ -1438,14 +1438,7 @@ TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
 
 // Tests that switching CRTC matrix support on while Night Light is enabled
 // doesn't result in the matrix being applied twice.
-// TODO(https://crbug.com/1503141): enable the flaky test.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_TestNoDoubleNightLightEffect DISABLED_TestNoDoubleNightLightEffect
-#else
-#define MAYBE_TestNoDoubleNightLightEffect TestNoDoubleNightLightEffect
-#endif
-TEST_F(NightLightCrtcTest, MAYBE_TestNoDoubleNightLightEffect) {
+TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   std::vector<display::DisplaySnapshot*> outputs =
       BuildAndGetDisplaySnapshots({{false, false}, {false, false}});
   UpdateDisplays(outputs);
