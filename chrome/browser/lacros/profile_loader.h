@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_PROFILE_LOADER_H_
 #define CHROME_BROWSER_LACROS_PROFILE_LOADER_H_
 
+#include <cstdint>
+
 #include "base/functional/callback_forward.h"
 
 class Profile;
@@ -21,5 +23,13 @@ class Profile;
 // triggered but exits unsuccessfully.
 void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
                      bool can_trigger_fre);
+
+// Similarly to `LoadMainProfile`, this asynchronously loads the profile that
+// matches `profile_id`. When `profile_id` is zero(unset), it loads the primary
+// profile. When the matching profile is not found, it shows the profile picker
+// UI.
+void LoadProfileWithId(base::OnceCallback<void(Profile*)> callback,
+                       bool can_trigger_fre,
+                       uint64_t profile_id);
 
 #endif  // CHROME_BROWSER_LACROS_PROFILE_LOADER_H_

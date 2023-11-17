@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -24,9 +25,9 @@ void MaybeProceedWithProfile(base::OnceCallback<void(Profile*)> callback,
 }
 
 // Helper function to handle profile initialization.
-void OnMainProfileInitialized(base::OnceCallback<void(Profile*)> callback,
-                              bool can_trigger_fre,
-                              Profile* profile) {
+void OnProfileInitialized(base::OnceCallback<void(Profile*)> callback,
+                          bool can_trigger_fre,
+                          Profile* profile) {
   DCHECK(callback);
   if (!profile) {
     LOG(ERROR) << "Profile creation failed.";
@@ -56,6 +57,30 @@ void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
                      bool can_trigger_fre) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetPrimaryUserProfilePath(),
-      base::BindOnce(&OnMainProfileInitialized, std::move(callback),
+      base::BindOnce(&OnProfileInitialized, std::move(callback),
                      can_trigger_fre));
+}
+
+void LoadProfileWithId(base::OnceCallback<void(Profile*)> callback,
+                       bool can_trigger_fre,
+                       uint64_t profile_id) {
+  if (profile_id) {
+    if (auto* entry = GetProfileAttributesWithProfileId(profile_id)) {
+      // With non-empty profile ID, and a matching profile found, load the
+      // profile.
+      g_browser_process->profile_manager()->CreateProfileAsync(
+          entry->GetPath(),
+          base::BindOnce(&OnProfileInitialized, std::move(callback),
+                         can_trigger_fre));
+    } else {
+      // With non-empty profile ID, but no matching profile found, show the
+      // profile picker instead.
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+      std::move(callback).Run(nullptr);
+    }
+  } else {
+    // With empty profile ID, load the main profile.
+    LoadMainProfile(std::move(callback), can_trigger_fre);
+  }
 }
