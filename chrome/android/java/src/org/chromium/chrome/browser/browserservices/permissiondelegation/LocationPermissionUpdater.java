@@ -82,7 +82,6 @@ public class LocationPermissionUpdater {
             @ContentSettingValues int settingValue) {
         boolean enabled = settingValue == ContentSettingValues.ALLOW;
         mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
-        mUmaRecorder.recordLocationPermissionRequestResult(enabled);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);

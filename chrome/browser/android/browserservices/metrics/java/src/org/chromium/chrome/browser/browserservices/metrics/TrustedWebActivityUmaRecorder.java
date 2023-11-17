@@ -205,32 +205,6 @@ public class TrustedWebActivityUmaRecorder {
         }
     }
 
-    public void recordLocationPermissionChanged(Boolean last, boolean enabled) {
-        @Nullable
-        @PermissionChanged
-        Integer change = null;
-        if (last == null) {
-            if (enabled) {
-                change = PermissionChanged.NULL_TO_TRUE;
-            } else {
-                change = PermissionChanged.NULL_TO_FALSE;
-            }
-        } else {
-            if (last && !enabled) change = PermissionChanged.TRUE_TO_FALSE;
-            if (!last && enabled) change = PermissionChanged.FALSE_TO_TRUE;
-        }
-        if (change != null) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "TrustedWebActivity.LocationPermissionChanged", change,
-                    PermissionChanged.NUM_ENTRIES);
-        }
-    }
-
-    public void recordLocationPermissionRequestResult(boolean enabled) {
-        RecordHistogram.recordBooleanHistogram(
-                "TrustedWebActivity.LocationPermissionRequestIsGranted", enabled);
-    }
-
     public void recordExtraCommandSuccess(String command, boolean success) {
         RecordHistogram.recordBooleanHistogram(
                 "TrustedWebActivity.ExtraCommandSuccess." + command, success);

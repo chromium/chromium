@@ -129,19 +129,6 @@ public class InstalledWebappPermissionManager {
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
 
-        if (type == ContentSettingsType.GEOLOCATION) {
-            boolean enabled = settingValue == ContentSettingValues.ALLOW;
-            @ContentSettingValues
-            Integer lastPermissionSetting = mStore.getPermission(type, origin);
-            Boolean lastPermissionBoolean;
-            if (lastPermissionSetting == null) {
-                lastPermissionBoolean = null;
-            } else {
-                lastPermissionBoolean = lastPermissionSetting == ContentSettingValues.ALLOW;
-            }
-            mUmaRecorder.recordLocationPermissionChanged(lastPermissionBoolean, enabled);
-        }
-
         // It's important that we set the state before we destroy the notification channel. If we
         // did it the other way around there'd be a small moment in time where the website's
         // notification permission could flicker from SET -> UNSET -> SET. This way we transition
