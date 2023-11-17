@@ -978,6 +978,10 @@ crbug.com/722287 crbug.com/886585 external/wpt/css/css-flexbox/abspos/flex-abspo
 crbug.com/1253732 external/wpt/css/css-ui/input-security-none-sensitive-text-input.html [ Failure ]
 # Layout team disagrees with the spec for this particular test.
 crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure Pass ]
+# outline-color:auto and accent-color
+crbug.com/1445990 external/wpt/css/css-ui/outline-color-002.html [ Failure ]
+crbug.com/1445990 external/wpt/css/css-ui/outline-color-003.html [ Failure ]
+crbug.com/1445990 external/wpt/css/css-ui/outline-color-004.html [ Failure ]
 # Various issues related to the 'appearance' property:
 crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-attachment-001.html [ Failure ]
 crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-clip-001.html [ Failure ]

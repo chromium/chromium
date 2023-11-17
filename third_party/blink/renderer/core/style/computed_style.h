@@ -912,12 +912,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // An empty optional means the accent-color is 'auto'
   absl::optional<blink::Color> AccentColorResolved() const;
 
-  // outline-color
-  // An empty optional means the outline-color is 'auto'
-  absl::optional<blink::Color> OutlineColorResolved() const;
-
-  blink::Color OutlineColorForAutoStyle() const;
-
   // scrollbar-color
   // An empty optional means the scrollbar-color is 'auto'
   absl::optional<blink::Color> ScrollbarThumbColorResolved() const;
