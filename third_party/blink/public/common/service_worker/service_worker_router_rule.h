@@ -24,6 +24,8 @@ class ServiceWorkerRouterCondition;
 
 // TODO(crbug.com/1490445): set this value by discussing in spec proposal.
 static constexpr int kServiceWorkerRouterConditionMaxRecursionDepth = 10;
+// TODO(crbug.com/1503017): set this value by discussing in spec proposal.
+static constexpr size_t kServiceWorkerMaxRouterSize = 256;
 
 struct ServiceWorkerRouterRequestCondition {
   // https://fetch.spec.whatwg.org/#concept-request-method

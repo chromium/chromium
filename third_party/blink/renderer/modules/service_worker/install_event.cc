@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/install_event.h"
 
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom-blink.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -162,6 +163,11 @@ void InstallEvent::ConvertServiceWorkerRouterRules(
     rules.rules.emplace_back(*r);
   } else {
     CHECK(v8_rules->IsRouterRuleSequence());
+    if (v8_rules->GetAsRouterRuleSequence().size() >=
+        kServiceWorkerMaxRouterSize) {
+      exception_state.ThrowTypeError("Too many router rules.");
+      return;
+    }
     for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
       auto r = ConvertV8RouterRuleToBlink(rule, base_url, exception_state);
       if (!r) {

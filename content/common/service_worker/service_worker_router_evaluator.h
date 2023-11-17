@@ -31,7 +31,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
     Result(const Result& other) = delete;
     Result& operator=(const Result&) = delete;
 
-    std::string id;
+    std::uint32_t id = 0;
     std::vector<blink::ServiceWorkerRouterSource> sources;
   };
 

@@ -40,7 +40,8 @@ enum class ServiceWorkerRouterEvaluatorErrorEnums {
   kInvalidSource = 6,
   kInvalidCondition = 7,
   kExceedMaxConditionDepth = 8,
-  kMaxValue = kExceedMaxConditionDepth,
+  kExceedMaxRouterSize = 9,
+  kMaxValue = kExceedMaxRouterSize,
 };
 
 void RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums e) {
@@ -536,8 +537,7 @@ namespace content {
 
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
-  bool SetRule(const blink::ServiceWorkerRouterRule& rule,
-               const std::string& id) {
+  bool SetRule(const blink::ServiceWorkerRouterRule& rule, std::uint32_t id) {
     if (ExceedsMaxConditionDepth(rule.condition)) {
       // Too many recursion in the condition.
       RecordSetupError(
@@ -557,7 +557,7 @@ class ServiceWorkerRouterEvaluator::RouterRule {
   // Rule ID is allocated when the router is set. ID is unique within one
   // service worker registration, but may overlap among other routers of other
   // registrations.
-  const std::string& id() const { return id_; }
+  std::uint32_t id() const { return id_; }
   bool need_running_status() const { return condition_.need_running_status(); }
 
  private:
@@ -573,7 +573,7 @@ class ServiceWorkerRouterEvaluator::RouterRule {
 
   ConditionObject condition_;
   std::vector<blink::ServiceWorkerRouterSource> sources_;
-  std::string id_;
+  std::uint32_t id_;
 };
 
 ServiceWorkerRouterEvaluator::Result::Result() = default;
@@ -588,11 +588,16 @@ ServiceWorkerRouterEvaluator::ServiceWorkerRouterEvaluator(
 ServiceWorkerRouterEvaluator::~ServiceWorkerRouterEvaluator() = default;
 
 void ServiceWorkerRouterEvaluator::Compile() {
+  if (rules_.rules.size() >= blink::kServiceWorkerMaxRouterSize) {
+    RecordSetupError(
+        ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxRouterSize);
+    return;
+  }
   for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
     const auto& r = rules_.rules[idx];
     std::unique_ptr<RouterRule> rule = std::make_unique<RouterRule>();
     // For now, use index as rule ID (1-indexed)
-    const std::string id = base::NumberToString(idx + 1);
+    std::uint32_t id = idx + 1;
     if (!rule->SetRule(r, id)) {
       return;
     }
