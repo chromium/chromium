@@ -115,14 +115,20 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
           return;
         }
         std::vector<std::vector<std::string>> proxy_list;
-        for (const auto& proxy_chain : response->proxy_chain()) {
-          std::vector<std::string> proxies = {proxy_chain.proxy_a()};
-          // TODO(crbug.com/1491092): Remove check once proxy_b is populated by
-          // Phosphor.
-          if (!proxy_chain.proxy_b().empty()) {
-            proxies.emplace_back(proxy_chain.proxy_b());
+        if (net::features::kIpPrivacyUseProxyChains.Get()) {
+          for (const auto& proxy_chain : response->proxy_chain()) {
+            std::vector<std::string> proxies = {proxy_chain.proxy_a()};
+            // TODO(crbug.com/1491092): Remove check once proxy_b is populated
+            // by Phosphor.
+            if (!proxy_chain.proxy_b().empty()) {
+              proxies.emplace_back(proxy_chain.proxy_b());
+            }
+            proxy_list.push_back(std::move(proxies));
           }
-          proxy_list.push_back(std::move(proxies));
+        } else {
+          for (const auto& hostname : response->first_hop_hostnames()) {
+            proxy_list.push_back({hostname});
+          }
         }
         VLOG(2) << "IPATP::GetProxyList got proxy list of length "
                 << proxy_list.size();
