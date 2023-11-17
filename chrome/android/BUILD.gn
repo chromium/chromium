@@ -449,6 +449,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/user_education:java",
       "//chrome/browser/util:java",
       "//chrome/browser/version:java",
+      "//chrome/browser/wallet/android:java",
       "//chrome/browser/webapps/android:java",
       "//chrome/browser/webauthn/android:java",
       "//chrome/browser/xsurface:java",

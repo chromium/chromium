@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.wallet.BoardingPassController;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinatorDelegate;
@@ -333,6 +334,7 @@ public class RootUiCoordinator
     private FoldTransitionController mFoldTransitionController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
     private @Nullable EdgeToEdgeController mE2eController;
+    private @Nullable BoardingPassController mBoardingPassController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -705,6 +707,11 @@ public class RootUiCoordinator
             mE2eController = null;
         }
 
+        if (mBoardingPassController != null) {
+            mBoardingPassController.destroy();
+            mBoardingPassController = null;
+        }
+
         mActivity = null;
     }
 
@@ -837,6 +844,7 @@ public class RootUiCoordinator
         initMerchantTrustSignals();
         initScrollCapture();
         initializeEdgeToEdgeController(mActivity, mActivityTabProvider);
+        initBoardingPassDetector();
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
 
@@ -1755,6 +1763,12 @@ public class RootUiCoordinator
         mRestoreTabsFeatureHelper.maybeShowPromo(mActivity, mProfileSupplier.get(),
                 mTabCreatorManagerSupplier.get(), getBottomSheetController(),
                 gtsTabListModelSizeSupplier, scrollGTSToRestoredTabsCallback);
+    }
+
+    private void initBoardingPassDetector() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOARDING_PASS_DETECTOR)) {
+            mBoardingPassController = new BoardingPassController(mActivityTabProvider);
+        }
     }
 
     // Testing methods
