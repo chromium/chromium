@@ -343,7 +343,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="243878895369688216">Eile avatud</translation>
 <translation id="2440978926514840421">GIF-i salvestis on tehtud</translation>
 <translation id="2441427462554639370">Salvestamine lõppes liiga vähese salvestusruumi tõttu</translation>
-<translation id="2448312741937722512">Tüüp</translation>
 <translation id="2449089818483227734">Akutase on madal</translation>
 <translation id="2450205753526923158">Ekraanipildirežiim</translation>
 <translation id="2455994958736234930">Lühendite www. ja .com lisamine aadressiribale ja veebisaidi avamine</translation>
@@ -1016,7 +1015,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5121628974188116412">Lehe lõppu liikumine</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
-<translation id="5145331109270917438">Muutmise kuupäev</translation>
 <translation id="5147567197700016471">Avatud</translation>
 <translation id="5150070631291639005">Privaatsusseaded</translation>
 <translation id="5155897006997040331">Lugemiskiirus</translation>
@@ -1144,7 +1142,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5620979661744857819">Sisselülitamisel antakse juurdepääsuluba rakendusele <ph name="APP_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Teie parooli ei õnnestunud kinnitada. Proovige uuesti.</translation>
-<translation id="5646376287012673985">Asukoht</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
 <translation id="5662075790140998213">Töölaud 10</translation>
@@ -1720,7 +1717,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8001755249288974029">Teksti valimine kursorist rea alguseni</translation>
 <translation id="8004512796067398576">Juurdekasv</translation>
 <translation id="8026334261755873520">Sirvimisandmete kustutamine</translation>
-<translation id="8028993641010258682">Suurus</translation>
 <translation id="8029247720646289474">Kuumkohaga ühendamine ebaõnnestus</translation>
 <translation id="8029629653277878342">Turvalisuse suurendamiseks on vaja PIN-koodi või parooli</translation>
 <translation id="8030169304546394654">Ühendus katkestatud</translation>
@@ -1822,7 +1818,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8487699605742506766">Kuumkoht</translation>
 <translation id="8491237443345908933">Lingi avamine uuel vahelehel</translation>
 <translation id="8492573885090281069">Seade <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
-<translation id="8496402167048257517">Läheduses jagamise seadete kuvamine</translation>
 <translation id="8507563469658346379">Kõik, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Uue töölaua loomine</translation>
 <translation id="85123341071060231">Teie Chromebooki Bluetooth on välja lülitatud. Chromebooki avamiseks sisestage parool.</translation>

@@ -343,7 +343,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="243878895369688216">Mở hôm qua</translation>
 <translation id="2440978926514840421">Đã ghi ảnh GIF</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
-<translation id="2448312741937722512">Loại</translation>
 <translation id="2449089818483227734">Pin yếu</translation>
 <translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
 <translation id="2455994958736234930">Thêm www. và .com vào thanh địa chỉ rồi mở trang web</translation>
@@ -1015,7 +1014,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5121628974188116412">Chuyển tới cuối trang</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
-<translation id="5145331109270917438">Ngày sửa đổi</translation>
 <translation id="5147567197700016471">Đã mở khóa</translation>
 <translation id="5150070631291639005">Cài đặt quyền riêng tư</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
@@ -1143,7 +1141,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5620979661744857819">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Chưa xác minh được mật khẩu của bạn. Hãy thử lại.</translation>
-<translation id="5646376287012673985">Vị trí</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5652575806481723716">Có thông báo từ <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Không gian làm việc 10</translation>
@@ -1719,7 +1716,6 @@ Mới cài đặt</translation>
 <translation id="8001755249288974029">Chọn văn bản từ vị trí con trỏ đến đầu dòng</translation>
 <translation id="8004512796067398576">Tăng dần</translation>
 <translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
-<translation id="8028993641010258682">Kích thước</translation>
 <translation id="8029247720646289474">Không kết nối được điểm phát sóng</translation>
 <translation id="8029629653277878342">Bạn cần nhập mã PIN hoặc mật khẩu để tăng cường bảo mật</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>
@@ -1821,7 +1817,6 @@ Mới cài đặt</translation>
 <translation id="8487699605742506766">Điểm phát sóng</translation>
 <translation id="8491237443345908933">Mở đường liên kết trong thẻ mới</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
-<translation id="8496402167048257517">Hiện chế độ cài đặt Chia sẻ lân cận</translation>
 <translation id="8507563469658346379">Mọi người, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Tạo không gian làm việc mới</translation>
 <translation id="85123341071060231">Bluetooth trên Chromebook đang tắt. Hãy nhập mật khẩu để mở khoá Chromebook của bạn.</translation>

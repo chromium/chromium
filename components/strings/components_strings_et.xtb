@@ -3052,6 +3052,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavendlililla</translation>
 <translation id="7156870133441232244">Server tuleb üle viia TLS 1.2-le või uuemale.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Selle faili saatmiseks funktsiooniga <ph name="FEATURE_NAME" /> vabastage oma seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}other{Nende failide saatmiseks funktsiooniga <ph name="FEATURE_NAME" /> vabastage oma seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Salvestage pooleliolevad tööd ja alustage värskendamist, kui olete valmis.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Kas soovite konfidentsiaalse faili kopeerida?}other{Kas soovite konfidentsiaalsed failid kopeerida?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
@@ -3846,6 +3847,7 @@ Lisateave:
 <translation id="8687429322371626002">Teie seadet ja kontot haldab <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Saadaval</translation>
 <translation id="868922510921656628">Lehekülgi komplekti kohta</translation>
+<translation id="8693639060656817812">Lisateave jälgimiskaitse saadavuse kohta</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699041776323235191">HID-seade</translation>
 <translation id="8699985386408839112">Ümbrik Kaku 1</translation>

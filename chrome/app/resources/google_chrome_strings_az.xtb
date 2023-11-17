@@ -353,6 +353,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6943584222992551122">Bu şəxsin axtarış datası bu cihazdan silinəcək. Datanı bərpa etmək üçün <ph name="USER_EMAIL" /> olaraq Chrome'a daxil olun.</translation>
 <translation id="6967962315388095737">mDNS nəqliyyatına icazə vermək üçün daxil olan Google Chrome Beta ümumi qaydası.</translation>
 <translation id="6989339256997917931">Google Chrome güncəlləşdi, ən azı son 30 gündə onu istifadə etməmisiniz.</translation>
+<translation id="7011190694940573312">Əməliyyat sisteminin bu versiyası dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="7024536598735240744">Paketin açılması xətası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Quraşdırma Dayandırılıb.</translation>
 <translation id="7025800014283535195">Burada Chrome profilləri arasında keçid edə bilərsiniz</translation>
@@ -422,6 +423,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="8019103195866286235">Bu artırmanın yayımı tərtibatçı tərəfindən ləğv edildi və təhlükəli ola bilər. Onu Chrome-dan silin ki, daxil olduğunuz saytlardakı dataya, o cümlədən şəxsi məlumatlara baxa və onları dəyişə bilməsin.</translation>
 <translation id="80471789339884597">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl bütün brauzerlərinizi yenidən başlatmalısınız.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">Kompüteriniz minimum avadanlıq tələblərinə cavab vermədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="8129812357326543296">Google Chrome haqqında</translation>
 <translation id="813913629614996137">Başladılır...</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı və mikrofonunuzu işlədir.</translation>

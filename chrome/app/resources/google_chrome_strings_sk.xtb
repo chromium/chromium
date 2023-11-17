@@ -232,6 +232,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4633000520311261472">Z dôvodu vyššej bezpečnosti prehliadača Chrome sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>
 <translation id="4680828127924988555">Zrušiť inštaláciu</translation>
 <translation id="469553575393225953">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba z Internetového obchodu Chrome.</translation>
+<translation id="4724676981607797757">Nepodarilo sa nainštalovať pre chybu nepodporovaného protokolu.</translation>
 <translation id="4728575227883772061">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Google Chrome momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4747730611090640388">Chrome môže odhadnúť vaše záujmy.  Neskôr môže web, ktorý navštívite, o ne Chrome požiadať, aby mohol prispôsobiť zobrazované reklamy.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -317,6 +318,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6157638032135951407">Ak sa údaje Chromu nebudú používať <ph name="TIMEOUT_DURATION" />, vaša organizácia ich odstráni. Môže to zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
 <translation id="6235018212288296708">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="624230925347970731">Chrome sa čoskoro zavrie</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
@@ -493,6 +495,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="940313311831216333">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="943390475793766444">Chrome odporúča skontrolovať tento súbor, pretože môže byť nebezpečný.</translation>
 <translation id="963650557422347554">Keď je táto možnosť zapnutá, Chrome šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa.</translation>
+<translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
 <translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
 <translation id="989816563149873169">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily Chromu</translation>
 </translationbundle>

@@ -343,7 +343,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="243878895369688216">Hapur dje</translation>
 <translation id="2440978926514840421">Regjistrimi i imazhit GIF u krye</translation>
 <translation id="2441427462554639370">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës ruajtëse</translation>
-<translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2449089818483227734">Bateria në nivel të ulët</translation>
 <translation id="2450205753526923158">Modaliteti i pamjes së ekranit</translation>
 <translation id="2455994958736234930">Shto www. dhe .com në shiritin e adresës dhe më pas hap sajtin e uebit</translation>
@@ -1015,7 +1014,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5117590920725113268">Trego muajin e ardhshëm</translation>
 <translation id="5121628974188116412">Shko në fund të faqes</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
-<translation id="5145331109270917438">Data u modifikua</translation>
 <translation id="5147567197700016471">Shkyçur</translation>
 <translation id="5150070631291639005">Cilësimet e privatësisë</translation>
 <translation id="5155897006997040331">Shpejtësia e leximit</translation>
@@ -1143,7 +1141,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5620979661744857819">Kjo lejon qasjen për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Fjalëkalimi yt nuk mund të verifikohej. Provo përsëri.</translation>
-<translation id="5646376287012673985">Vendndodhja</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kërkon vëmendjen tënde.</translation>
 <translation id="5662075790140998213">Tavolina e punës 10</translation>
@@ -1719,7 +1716,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8001755249288974029">Zgjidh tekstin nga kursori deri në fillim të rreshtit</translation>
 <translation id="8004512796067398576">Rritje</translation>
 <translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
-<translation id="8028993641010258682">Madhësia</translation>
 <translation id="8029247720646289474">Lidhja me zonën e qasjes për internet dështoi</translation>
 <translation id="8029629653277878342">Kërkohet kodi PIN ose fjalëkalimi për më shumë siguri</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
@@ -1821,7 +1817,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8487699605742506766">Zona e qasjes për internet</translation>
 <translation id="8491237443345908933">Hape lidhjen në një skedë të re</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Shfaq cilësimet e "Ndarjes në afërsi"</translation>
 <translation id="8507563469658346379">Të gjithë, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Krijo një tavolinë të re pune</translation>
 <translation id="85123341071060231">Bluetooth-i i Chromebook-ut është joaktiv. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>

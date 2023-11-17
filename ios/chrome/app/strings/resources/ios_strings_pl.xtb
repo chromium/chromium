@@ -733,6 +733,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4856841893565072365">Pasek menu inteligentnego sortowania</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4881695831933465202">Otwórz</translation>
+<translation id="4883824756452868502">Wykryj jednostki</translation>
 <translation id="488785315393301722">Pokaż szczegóły</translation>
 <translation id="4894963374040315706">Umożliwia wyszukiwanie głosowe</translation>
 <translation id="489903206070130262">Ostatnio otwarta karta</translation>
@@ -856,8 +857,10 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5551897871312988470">Proponuj tłumaczenie</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="555749644339804659">Sprawdzam hasła…</translation>
+<translation id="5559567453458728487">Przelicz jednostki miary znalezione w internecie</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5572684875078967866">Przechowywanie informacji</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Śledź tę przesyłkę}few{Śledź wszystkie przesyłki}many{Śledź wszystkie przesyłki}other{Śledź wszystkie przesyłki}}</translation>
 <translation id="5597915316964418992">Otwieranie siatki kart</translation>
 <translation id="560322036295180549">Wyłączone przez organizację</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
@@ -1120,6 +1123,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6781260999953472352">Włączyć synchronizację?</translation>
 <translation id="6781405765516175232">Aby uzyskać informacje o trasie, kliknij „Wyznacz trasę”.</translation>
 <translation id="6785453220513215166">Wysyłam raport o awarii...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Wyłącz śledzenie tej przesyłki}few{Wyłącz śledzenie wszystkich przesyłek}many{Wyłącz śledzenie wszystkich przesyłek}other{Wyłącz śledzenie wszystkich przesyłek}}</translation>
 <translation id="6790502149545262384">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Wyszukiwanie głosowe</translation>
 <translation id="6800349425672670802">Wszystkie otwarte karty możesz wyświetlić za pomocą przełącznika kart.</translation>

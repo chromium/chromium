@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">Para tornar o Google Chrome mais seguro, desativamos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e podem ser sido adicionadas sem seu conhecimento.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
 <translation id="469553575393225953">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chrome recomenda os instalar apenas pela Chrome Web Store</translation>
+<translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo sem suporte.</translation>
 <translation id="4728575227883772061">Houve uma falha na instalação devido a um erro não-especificado. Se o Google Chrome estiver em execução no momento, feche-o e tente novamente.</translation>
 <translation id="4747730611090640388">O Chrome faz uma estimativa dos seus interesses.  Sites que você visitar vão poder pedir ao Chrome para ver seus interesses e personalizar os anúncios mostrados a você.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">Sua organização vai excluir os dados do Chrome se eles não forem usados por <ph name="TIMEOUT_DURATION" />. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
+<translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6235018212288296708">Regra interna do Google Chrome que permite o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome será fechado em breve</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
@@ -350,6 +352,7 @@
 <translation id="6943584222992551122">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra interna do Google Chrome Beta que permite o tráfego mDNS.</translation>
 <translation id="6989339256997917931">O Google Chrome foi atualizado, mas ele não é utilizado há pelo menos trinta dias.</translation>
+<translation id="7011190694940573312">A instalação falhou porque não há suporte para esta versão do sistema operacional.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>
 <translation id="7025800014283535195">Aqui, você pode alternar entre os perfis do Chrome</translation>
@@ -419,6 +422,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8019103195866286235">A publicação desta extensão foi cancelada pelo desenvolvedor, e ela pode não ser segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">A instalação falhou porque o computador não atende aos requisitos mínimos de hardware.</translation>
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8255190535488645436">O Google Chrome está usando sua câmera e seu microfone.</translation>
@@ -485,6 +489,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="940313311831216333">Para ter acesso aos recursos do Chrome em todos os seus dispositivos, faça login e ative a sincronização.</translation>
 <translation id="943390475793766444">O Chrome recomenda verificar esse arquivo, porque ele pode ser perigoso.</translation>
 <translation id="963650557422347554">Quando essa opção está ativada, o Chrome economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos.</translation>
+<translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
 <translation id="989369509083708165">O Google Chrome é seu navegador padrão</translation>
 <translation id="989816563149873169">O atalho <ph name="SHORTCUT" /> permite alternar entre os perfis do Chrome</translation>
 </translationbundle>

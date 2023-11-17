@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}one{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}other{<ph name="FEATURE_NAME" /> का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}}</translation>
 <translation id="7160999678034985039">कृपया अपने काम को सेव करें और जब आप तैयार हों, तो अपडेट करना शुरू करें.</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोपनीय फ़ाइल कॉपी करनी है?}one{गोपनीय फ़ाइल कॉपी करनी है?}other{गोपनीय फ़ाइलें कॉपी करनी हैं?}}</translation>
 <translation id="717330890047184534">Gaia आईडी:</translation>
@@ -3847,6 +3848,7 @@
 <translation id="8687429322371626002">आपके डिवाइस और खाते को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">हर सेट पर मौजूद पेजों की संख्या</translation>
+<translation id="8693639060656817812">ट्रैकिंग सुरक्षा की उपलब्धता के बारे में ज़्यादा जानें</translation>
 <translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>
 <translation id="8699985386408839112">काकू 1 साइज़ का लिफ़ाफ़ा</translation>

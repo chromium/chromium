@@ -342,6 +342,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6981396265751285733">Ja šis iestatījums ir ieslēgts, pārlūkā Chromium neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chromium darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat.</translation>
 <translation id="6985329841647292029">Chromium OS noteikumi</translation>
 <translation id="6990124437352146030">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu mikrofonam šajā vietnē.</translation>
+<translation id="7011190694940573312">Instalēšana neizdevās, jo šī operētājsistēmas versija netiek atbalstīta.</translation>
 <translation id="7024536598735240744">Atpakošanas kļūda: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalēšana apturēta.</translation>
 <translation id="705851970750939768">Atjaunināt Chromium</translation>
@@ -392,6 +393,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7997934263947464652">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chromium komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Tiklīdz pārlūkam Chromium tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
 <translation id="80471789339884597">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē visas pārlūkprogrammas.</translation>
+<translation id="8086881907087796310">Instalēšana neizdevās, jo jūsu dators neatbilst minimālajām aparatūras prasībām.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> — Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Pārlūkam Chromium ir nepieciešama atrašanās vietas atļauja šai vietnei.</translation>
 <translation id="8133124826068723441">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu domēnā nav pieejama sinhronizācija.</translation>

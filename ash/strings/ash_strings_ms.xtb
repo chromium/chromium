@@ -343,7 +343,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="243878895369688216">Dibuka semalam</translation>
 <translation id="2440978926514840421">Rakaman GIF diambil</translation>
 <translation id="2441427462554639370">Rakaman ditamatkan kerana ruang storan hampir habis</translation>
-<translation id="2448312741937722512">Jenis</translation>
 <translation id="2449089818483227734">Bateri Lemah</translation>
 <translation id="2450205753526923158">Mod tangkapan skrin</translation>
 <translation id="2455994958736234930">Tambahkan www. dan .com kepada bar alamat dan buka laman web</translation>
@@ -1015,7 +1014,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5117590920725113268">Tunjukkan bulan seterusnya</translation>
 <translation id="5121628974188116412">Pergi ke bahagian bawah halaman</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
-<translation id="5145331109270917438">Tarikh diubah suai</translation>
 <translation id="5147567197700016471">Tidak berkunci</translation>
 <translation id="5150070631291639005">Tetapan privasi</translation>
 <translation id="5155897006997040331">Kelajuan membaca</translation>
@@ -1143,7 +1141,6 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5620979661744857819">Tindakan ini akan membenarkan akses kepada <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Identiti anda tidak dapat disahkan. Cuba lagi.</translation>
-<translation id="5646376287012673985">Lokasi</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> meminta perhatian anda.</translation>
 <translation id="5662075790140998213">Meja 10</translation>
@@ -1719,7 +1716,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8001755249288974029">Pilih teks daripada kursor di permulaan baris</translation>
 <translation id="8004512796067398576">Kenaikan</translation>
 <translation id="8026334261755873520">Kosongkan data semakan imbas</translation>
-<translation id="8028993641010258682">Saiz</translation>
 <translation id="8029247720646289474">Penyambungan tempat liputan gagal</translation>
 <translation id="8029629653277878342">PIN atau kata laluan diperlukan untuk meningkatkan keselamatan</translation>
 <translation id="8030169304546394654">Diputuskan sambungan</translation>
@@ -1821,7 +1817,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8487699605742506766">Tempat liputan</translation>
 <translation id="8491237443345908933">Buka pautan dalam tab baharu</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />. Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Paparkan tetapan Kongsi Berdekatan</translation>
 <translation id="8507563469658346379">Semua orang, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Buat meja baharu</translation>
 <translation id="85123341071060231">Bluetooth Chromebook anda dimatikan. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>

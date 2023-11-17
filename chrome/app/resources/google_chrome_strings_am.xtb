@@ -233,6 +233,7 @@
 <translation id="4633000520311261472">Chrome ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተጠቀሱ እና እርስዎ ሳያውቋቸው የታከሉ ሊሆኑ የሚችሉ የተወሰኑ ዝርዝሮችን አሰናክለናል።</translation>
 <translation id="4680828127924988555">መጫኑን ሰርዝ</translation>
 <translation id="469553575393225953">ካልታወቁ ምንጮች የመጡ ቅጥያዎች፣ መተግበሪያዎች እና ገጽታዎች መሣሪያዎን ሊጎዱ ይችላሉ። Chrome እነሱን ከChrome የድር መደብር ብቻ መጫንን ይመክራል</translation>
+<translation id="4724676981607797757">በማይደገፍ የፕሮቶኮል ስህተት ምክንያት መጫኑ አልተሳካም።</translation>
 <translation id="4728575227883772061">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። Google Chrome አሁን እያሄደ ከሆነ ፣ እባክዎ ይዝጉትና እንደገና ይሞክሩ።</translation>
 <translation id="4747730611090640388">Chrome የእርስዎን ዝንባሌዎች ሊገምት ይችላል።  በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chrome ዝንባሌዎችዎን እንዲያይ ሊጠይቅ ይችላል።</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -318,6 +319,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6157638032135951407">ድርጅትዎ የChrome ውሂብን ለ<ph name="TIMEOUT_DURATION" /> ያህል ሥራ ላይ ሳይውል ይሰርዘዋል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ቅድመ-ይሁንታ</translation>
+<translation id="6182736845697986886">በዝማኔ አገልጋይ የውስጥ ስህተት ምክንያት መጫኑ አልተሳካም።</translation>
 <translation id="6235018212288296708">Google Chrome ለmDNS ትራፊክ ለመፍቀድ የውስጥ ደንብ።</translation>
 <translation id="624230925347970731">Chrome በቅርቡ ይዘጋል</translation>
 <translation id="6247557882553405851">Google የይለፍ ቃል አስተዳዳሪ</translation>
@@ -357,6 +359,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6943584222992551122">የእዚህ ሰው የአሰሳ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ውሂቡን መልሰው ለማግኘት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="6967962315388095737">የmDNS ትራፊክን ለመፍቀድ የGoogle Chrome ቅድመ-ይሁንታ የውስጥ ደንብ።</translation>
 <translation id="6989339256997917931">Google Chrome ተዘምኗል፣ ግን ቢያንስ ለ30 ቀኖች አልተጠቀሙበትም።</translation>
+<translation id="7011190694940573312">ይህ የስርዓተ ክወናው ስሪት ስለማይደገፍ መጫኑ አልተሳካም።</translation>
 <translation id="7024536598735240744">ተጠናቆ ያለማቅረብ ስህተት፦ <ph name="UNPACK_ERROR" />።</translation>
 <translation id="7025789849649390912">መጫኑ ቆሟል።</translation>
 <translation id="7025800014283535195">እዚህ በChrome መገለጫዎች መካከል መቀያየር ይችላሉ</translation>
@@ -426,6 +429,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8019103195866286235">ይህ ቅጥያ በገንቢው ከህትመት ወጥቷል እና ደህንነቱ የተጠበቀ ላይሆን ይችላል። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለውን ውሂብዎን ማየት እና መለወጥ እንዳይችል ከChrome ያስወግዱት።</translation>
 <translation id="80471789339884597">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ሁሉንም አሳሾችዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8129812357326543296">ስለ &amp;Google Chrome</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8255190535488645436">Google Chrome ካሜራዎን እና ማይክሮፎንዎን እየተጠቀመ ነው።</translation>
@@ -492,6 +496,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="940313311831216333">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን Chrome ነገሮች ለመድረስ ይግቡ፣ ከዚያ ስምረትን ያብሩ።</translation>
 <translation id="943390475793766444">Chrome ይህ ፋይል አደገኛ ሊሆን ስለሚችል እንዲቃኙት ይመክራል።</translation>
 <translation id="963650557422347554">ሲበራ Chrome የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ የክፈፍ ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል።</translation>
+<translation id="983803489796659991">የዝማኔ አገልጋዩ ለመተግበሪያው ምንም ሃሽ ውሂብ ስለሌለው መጫኑ አልተሳካም።</translation>
 <translation id="989369509083708165">Google Chrome ነባሪ አሳሽዎ ነው</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> በChrome መገለጫዎች መካከል መቀያየር ይችላል</translation>
 </translationbundle>

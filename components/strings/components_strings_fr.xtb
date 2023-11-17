@@ -3052,6 +3052,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre}one{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre}other{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres}}</translation>
 <translation id="7153618581592392745">Lavande</translation>
 <translation id="7156870133441232244">Le serveur doit passer à TLS 1.2 ou version ultérieure.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Pour envoyer ce fichier avec <ph name="FEATURE_NAME" />, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier avec <ph name="FEATURE_NAME" />, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers avec <ph name="FEATURE_NAME" />, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="7160999678034985039">Veuillez enregistrer votre travail et lancer la mise à jour lorsque vous êtes prêt.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copier le fichier confidentiel ?}one{Copier le fichier confidentiel ?}other{Copier les fichiers confidentiels ?}}</translation>
 <translation id="717330890047184534">Identifiant GAIA : </translation>
@@ -3847,6 +3848,7 @@ Informations supplémentaires :
 <translation id="8687429322371626002">Votre appareil et votre compte sont gérés par <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
+<translation id="8693639060656817812">En savoir plus sur la disponibilité de la Protection contre le suivi</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8699985386408839112">Enveloppe Kaku 1</translation>

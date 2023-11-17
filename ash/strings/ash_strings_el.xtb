@@ -343,7 +343,6 @@
 <translation id="243878895369688216">Ανοίχτηκαν χθες</translation>
 <translation id="2440978926514840421">Λήψη εγγραφής GIF</translation>
 <translation id="2441427462554639370">Η εγγραφή ολοκληρώθηκε λόγω του εξαιρετικά περιορισμένου αποθηκευτικού χώρου.</translation>
-<translation id="2448312741937722512">Τύπος</translation>
 <translation id="2449089818483227734">Χαμηλή ισχύς μπαταρίας</translation>
 <translation id="2450205753526923158">Λειτουργία στιγμιότυπου οθόνης</translation>
 <translation id="2455994958736234930">Προσθέστε το www. και το .com στη γραμμή διευθύνσεων και έπειτα ανοίξτε τον ιστότοπο</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">Εμφάνιση επόμενου μήνα</translation>
 <translation id="5121628974188116412">Μετάβαση στο κάτω μέρος της σελίδας</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
-<translation id="5145331109270917438">Ημερομηνία τροποποίησης</translation>
 <translation id="5147567197700016471">Ξεκλειδώθηκε</translation>
 <translation id="5150070631291639005">Ρυθμίσεις απορρήτου</translation>
 <translation id="5155897006997040331">Ταχύτητα ανάγνωσης</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">Αυτό επιτρέπει την πρόσβαση για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και ιστοτόπους με άδειες κάμερας και μικροφώνου. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Δεν ήταν δυνατή η επαλήθευση του κωδικού πρόσβασής σας. Δοκιμάστε ξανά.</translation>
-<translation id="5646376287012673985">Τοποθεσία</translation>
 <translation id="5648021990716966815">Υποδοχή μικροφώνου</translation>
 <translation id="5652575806481723716">Η εφαρμογή <ph name="FOCUSED_APP_NAME" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="5662075790140998213">Γραφείο 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">Επιλογή κειμένου από τον δείκτη έως την αρχή της γραμμής</translation>
 <translation id="8004512796067398576">Αύξηση</translation>
 <translation id="8026334261755873520">Διαγραφή δεδομένων περιήγησης</translation>
-<translation id="8028993641010258682">Μέγεθος</translation>
 <translation id="8029247720646289474">Αποτυχία σύνδεσης σημείου πρόσβασης Wi-Fi</translation>
 <translation id="8029629653277878342">Απαιτείται PIN ή κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
 <translation id="8030169304546394654">Σε αποσύνδεση</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">Σημείο πρόσβασης Wi-Fi</translation>
 <translation id="8491237443345908933">Άνοιγμα συνδέσμου σε νέα καρτέλα</translation>
 <translation id="8492573885090281069">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" />. Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Εμφάνιση ρυθμίσεων της λειτουργίας Κοινοποίηση κοντά</translation>
 <translation id="8507563469658346379">Όλοι, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Δημιουργία νέου γραφείου</translation>
 <translation id="85123341071060231">Το Bluetooth του Chromebook είναι ανενεργό. Ξεκλειδώστε το Chromebook με τον κωδικό πρόσβασης</translation>

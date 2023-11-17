@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Лавандовий</translation>
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Щоб надіслати цей файл за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}one{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}few{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}many{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}other{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Збережіть дані й почніть оновлення, коли будете готові.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Скопіювати конфіденційний файл?}one{Скопіювати конфіденційні файли?}few{Скопіювати конфіденційні файли?}many{Скопіювати конфіденційні файли?}other{Скопіювати конфіденційні файли?}}</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
@@ -3847,6 +3848,7 @@
 <translation id="8687429322371626002">Вашим пристроєм і обліковим записом керує <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Кількість сторінок у наборі</translation>
+<translation id="8693639060656817812">Докладніше про доступність функції "Захист від відстеження"</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699041776323235191">Пристрій HID</translation>
 <translation id="8699985386408839112">Конверт Kaku 1</translation>

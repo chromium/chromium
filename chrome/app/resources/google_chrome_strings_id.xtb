@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">Agar Chrome lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum pada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="4680828127924988555">Batalkan Penginstalan</translation>
 <translation id="469553575393225953">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari Chrome Web Store</translation>
+<translation id="4724676981607797757">Penginstalan gagal karena error protokol yang tidak didukung.</translation>
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>
 <translation id="4747730611090640388">Chrome dapat memperkirakan minat Anda.  Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">Organisasi Anda akan menghapus data Chrome jika tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
@@ -487,6 +489,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="940313311831216333">Untuk mengakses aktivitas Chrome di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="943390475793766444">Chrome merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="963650557422347554">Jika diaktifkan, Chrome akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video.</translation>
+<translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
 <translation id="989369509083708165">Google Chrome adalah browser default Anda</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>
 </translationbundle>

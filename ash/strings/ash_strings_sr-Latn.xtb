@@ -343,7 +343,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="243878895369688216">Otvarano juče</translation>
 <translation id="2440978926514840421">GIF je snimljen</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog izuzetno malo prostora</translation>
-<translation id="2448312741937722512">Tip</translation>
 <translation id="2449089818483227734">Nizak nivo baterije</translation>
 <translation id="2450205753526923158">Režim snimka ekrana</translation>
 <translation id="2455994958736234930">Dodaj www. i .com na traku za adresu, pa otvori veb-sajt</translation>
@@ -1016,7 +1015,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5117590920725113268">Prikaži sledeći mesec</translation>
 <translation id="5121628974188116412">Idite na dno stranice</translation>
 <translation id="5136175204352732067">Neka druga tastatura je povezana</translation>
-<translation id="5145331109270917438">Datum izmene</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Podešavanja privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
@@ -1144,7 +1142,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5620979661744857819">Ovo omogućava pristup aplikaciji <ph name="APP_NAME" /> i svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Verifikacija lozinke nije uspela. Probajte ponovo.</translation>
-<translation id="5646376287012673985">Lokacija</translation>
 <translation id="5648021990716966815">Utikač za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> zahteva vašu pažnju.</translation>
 <translation id="5662075790140998213">Radna površina 10</translation>
@@ -1721,7 +1718,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8001755249288974029">Izaberi tekst od kursora do početka reda</translation>
 <translation id="8004512796067398576">Povećanje</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
-<translation id="8028993641010258682">Veličina</translation>
 <translation id="8029247720646289474">Povezivanje sa hotspotom nije uspelo</translation>
 <translation id="8029629653277878342">Treba da unesete PIN ili lozinku radi dodatne bezbednosti</translation>
 <translation id="8030169304546394654">Veza je prekinuta</translation>
@@ -1823,7 +1819,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otvori link na novoj kartici</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Prikažite podešavanja Deljenja u blizini</translation>
 <translation id="8507563469658346379">Svi, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Napravi novu radnu površinu</translation>
 <translation id="85123341071060231">Bluetooth na Chromebook-u je isključen. Da biste otključali Chromebook, unesite lozinku.</translation>

@@ -209,6 +209,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4677944499843243528">Het profiel lijkt te worden gebruikt door een ander proces in Chromium (<ph name="PROCESS_ID" />) op een andere computer (<ph name="HOST_NAME" />). Het profiel is vergrendeld zodat het niet wordt beschadigd. Als je zeker weet dat dit profiel niet door andere processen wordt gebruikt, kun je het profiel ontgrendelen en Chromium opnieuw starten.</translation>
 <translation id="4680828127924988555">Installatie annuleren</translation>
 <translation id="4708774505295300557">Iemand heeft eerder bij Chromium op deze computer ingelogd als <ph name="ACCOUNT_EMAIL_LAST" />. Maak een nieuwe Chromium-gebruiker om je informatie gescheiden te houden.</translation>
+<translation id="4724676981607797757">De installatie is mislukt vanwege een fout met een niet-ondersteund protocol.</translation>
 <translation id="4746050847053251315">Chromium toch sluiten?</translation>
 <translation id="4748217263233248895">Er is zojuist een speciale beveiligingsupdate voor Chromium toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
 <translation id="4765210420921718862">Je kunt dit altijd wijzigen via de Chromium-instellingen. De proeven worden uitgevoerd in combinatie met de huidige manier waarop advertenties worden weergegeven, dus je ziet de wijzigingen niet meteen.</translation>
@@ -279,6 +280,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6145820983052037069">Je kunt hier schakelen tussen verschillende Chromium-profielen</translation>
 <translation id="615103374448673771">Als je cookies toestaat, kan Chromium deze gebruiken voor vooraf laden.</translation>
 <translation id="6175304430031192654">Afhankelijk van je instellingen kan Chromium ook cookies en je huidige URL sturen</translation>
+<translation id="6182736845697986886">De installatie is mislukt vanwege een interne fout met de updateserver.</translation>
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
@@ -463,5 +465,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="942598560705308788">Certificaten beheerd door Chromium</translation>
 <translation id="965162752251293939">Wie gebruikt Chromium?</translation>
 <translation id="967427899662692980">Gebruik het hoogste beveiligingsniveau van Chromium</translation>
+<translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
 <translation id="985602178874221306">De auteurs van Chromium</translation>
 </translationbundle>

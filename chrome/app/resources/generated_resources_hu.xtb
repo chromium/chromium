@@ -1547,7 +1547,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="216169395504480358">Wi-Fi hozzáadása...</translation>
 <translation id="2162155940152307086">A szinkronizálás akkor kezdődik el, amikor Ön kilép a szinkronizálási beállításokból.</translation>
 <translation id="2162705204091149050">A böngészővel, az operációs rendszerrel, az eszközzel, a telepített szoftverekkel és a fájlokkal kapcsolatos információk olvasása</translation>
-<translation id="2162926944953615670">Nincsenek rendelkezésre álló eSIM-profilok</translation>
 <translation id="2163470535490402084">Csatlakozzon az internethez, hogy be tudjon jelentkezni <ph name="DEVICE_TYPE" /> eszközére.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> és 1 további kapcsoló</translation>
 <translation id="2165102982098084499">Összekapcsolta ezeket az eszközöket QR-kód beolvasásával.</translation>
@@ -3798,6 +3797,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3922823422695198027">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> és <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Adathasználat</translation>
 <translation id="3923221004758245114">Eltávolítja a következőt a(z) <ph name="DEVICE_TYPE" /> eszközről: <ph name="VM_NAME" />? Ezzel minden alkalmazást és adatot töröl a virtuális gépről.</translation>
+<translation id="3923494859158167397">Nincs beállítva mobilhálózat</translation>
 <translation id="3923676227229836009">Ez az oldal megtekinthet fájlokat</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Megjelenítési és szövegméret: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4436,7 +4436,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4427365070557649936">Megerősítő kód ellenőrzése…</translation>
 <translation id="4429163740524851942">Fizikai billentyűzetkiosztás</translation>
 <translation id="4430019312045809116">Hangerő</translation>
-<translation id="4430204941092622397">Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
 <translation id="443031431654216610">Csak számjegyeket használjon</translation>
 <translation id="4430369329743628066">Könyvjelző hozzáadva</translation>
 <translation id="4430422687972614133">Virtuális kártya bekapcsolása</translation>
@@ -6317,7 +6316,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5955721306465922729">Egy webhely meg akarja nyitni ezt az alkalmazást.</translation>
 <translation id="5955809630138889698">Lehet, hogy az eszköz csak az online demó mód használatára jogosult. További részletekért forduljon az ügyfélszolgálati képviselőjéhez.</translation>
 <translation id="5956585768868398362">Erre a keresési oldalra számított?</translation>
-<translation id="5957918771633727933">Nincsenek rendelkezésre álló eSIM-profilok. Töltsön le új <ph name="BEGIN_LINK" />profilt.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Koppintson a profilképe melletti Felolvasás ikonra, majd válassza ki, hogy mit szeretne hallani.</translation>
 <translation id="5959471481388474538">A hálózat nem érhető el</translation>
 <translation id="5963413905009737549">Szakasz</translation>
@@ -10355,6 +10353,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9115932142612197835">Ez a beállítás nincs hatással a Google Fordító és a Lens hozzáférhetőségére</translation>
 <translation id="9116799625073598554">Jegyzetkészítő alkalmazás</translation>
 <translation id="9117030152748022724">Az alkalmazások kezelése</translation>
+<translation id="9120362425083889527">A telepítést nem sikerült befejezni. Próbálja újra, vagy zárja be ezt az ablakot.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />A legjobb élmény érdekében telepítse a következő rendszert: <ph name="DEVICE_OS" />. Később is telepítheti a bejelentkezési képernyőről.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ha még nem áll készen a telepítésre, USB-ről futtatva is kipróbálhatja. Így megmaradnak a jelenlegi adatai és operációs rendszere, de korlátozott lehet a rendelkezésre álló tárhely és teljesítmény.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Megnyitás rögzített lapként</translation>

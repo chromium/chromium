@@ -209,6 +209,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4677944499843243528">The profile appears to be in use by another Chromium process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chromium has locked the profile so that it doesn't get corrupted. If you are sure that no other processes are using this profile, you can unlock the profile and relaunch Chromium.</translation>
 <translation id="4680828127924988555">Cancel installation</translation>
 <translation id="4708774505295300557">Someone previously signed in to Chromium on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chromium user to keep your information separate.</translation>
+<translation id="4724676981607797757">Installation failed because of an unsupported protocol error.</translation>
 <translation id="4746050847053251315">Quit Chromium anyway?</translation>
 <translation id="4748217263233248895">A special security update for Chromium was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="4765210420921718862">You can change your mind at any time in Chromium settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
@@ -279,6 +280,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6145820983052037069">You can switch between Chromium profiles here</translation>
 <translation id="615103374448673771">If you allow cookies, Chrome may use them when preloading.</translation>
 <translation id="6175304430031192654">Depending on your settings, Chromium may also send cookies and your current URL</translation>
+<translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
@@ -463,5 +465,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="942598560705308788">Certificates managed by Chromium</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>
+<translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -3049,6 +3049,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}one{<ph name="PAYMENT_METHOD_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}other{<ph name="PAYMENT_METHOD_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}}</translation>
 <translation id="7153618581592392745">Ilavenda</translation>
 <translation id="7156870133441232244">Iseva kufanele ithuthukele ku-TLS 1.2 noma yakamuva.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Ukuze uthumele leli fayela usebenzisa i-<ph name="FEATURE_NAME" />, vula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}one{Ukuze uthumele lawa mafayela usebenzisa i-<ph name="FEATURE_NAME" />, vula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}other{Ukuze uthumele lawa mafayela usebenzisa i-<ph name="FEATURE_NAME" />, vula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}}</translation>
 <translation id="7160999678034985039">Sicela ulondoloze umsebenzi wakho futhi uqale isibuyekezo uma ulungile.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Kopisha ifayela lokuyimfihlo?}one{Kopisha amafayela wokuyimfihlo?}other{Kopisha amafayela wokuyimfihlo?}}</translation>
 <translation id="717330890047184534">I-Gaia ID:</translation>
@@ -3843,6 +3844,7 @@ Imininingwane engeziwe:
 <translation id="8687429322371626002">Idivayisi yakho ne-akhawunti ziphethwe i-<ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Kuyatholakala</translation>
 <translation id="868922510921656628">Amakhasi ngesethi ngayinye</translation>
+<translation id="8693639060656817812">Funda kabanzi mayelana nokutholakala Kwesivikelo Sokulandelela</translation>
 <translation id="869891660844655955">Idethi yokuphelelwa yisikhathi</translation>
 <translation id="8699041776323235191">Idivayisi ye-HID</translation>
 <translation id="8699985386408839112">Imvilophu ye-Kaku 1</translation>

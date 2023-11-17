@@ -1542,7 +1542,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="216169395504480358">Legg til wifi</translation>
 <translation id="2162155940152307086">Synkroniseringen starter når du går ut av synkroniseringsinnstillingene</translation>
 <translation id="2162705204091149050">lese informasjon om nettleseren, OS-et, enheten, installert programvare og filer</translation>
-<translation id="2162926944953615670">Ingen tilgjengelige eSIM-kortprofiler</translation>
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
 <translation id="2165102982098084499">Du tilknyttet disse enhetene ved å skanne en QR-kode.</translation>
@@ -3794,6 +3793,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3922823422695198027">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="APP_NAME_4" /> ikke kan åpne støttede linker.</translation>
 <translation id="3923184630988645767">Databruk</translation>
 <translation id="3923221004758245114">Vil du fjerne <ph name="VM_NAME" /> fra <ph name="DEVICE_TYPE" />? Dette medfører at alle apper og data på den virtuelle maskinen blir slettet.</translation>
+<translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
 <translation id="3923676227229836009">Denne siden har lov til å se filer</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Visnings- og tekststørrelse: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4431,7 +4431,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
 <translation id="4430019312045809116">Volum</translation>
-<translation id="4430204941092622397">Dette kan føre til at mobilnettverket ditt kobles fra i noen minutter.</translation>
 <translation id="443031431654216610">Bruk bare numeriske sifre</translation>
 <translation id="4430369329743628066">Bokmerke lagt til</translation>
 <translation id="4430422687972614133">Slå på virtuelt kort</translation>
@@ -6308,7 +6307,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5955721306465922729">Et nettsted vil åpne denne appen.</translation>
 <translation id="5955809630138889698">Denne enheten er kanskje bare kvalifisert for én demomodus på nettet. Kontakt brukerstøtterepresentanten din for å få mer informasjon.</translation>
 <translation id="5956585768868398362">Er dette søkesiden du forventet?</translation>
-<translation id="5957918771633727933">Ingen tilgjengelige eSIM-kortprofiler. Last ned en ny <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Trykk på tekstopplesing-ikonet ved profilbildet ditt, og velg hva du vil høre.</translation>
 <translation id="5959471481388474538">Nettverket er utilgjengelig</translation>
 <translation id="5963413905009737549">Del</translation>

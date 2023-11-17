@@ -343,7 +343,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="243878895369688216">Abriuse onte</translation>
 <translation id="2440978926514840421">Gravouse o GIF</translation>
 <translation id="2441427462554639370">A gravación finalizou porque queda pouquísimo espazo de almacenamento</translation>
-<translation id="2448312741937722512">Tipo</translation>
 <translation id="2449089818483227734">Pouca batería</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
 <translation id="2455994958736234930">Engadir www. e .com á barra de enderezos e abrir sitio web</translation>
@@ -1016,7 +1015,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
-<translation id="5145331109270917438">Data de modificación</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
@@ -1144,7 +1142,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5620979661744857819">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
-<translation id="5646376287012673985">Localización</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -1720,7 +1717,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8001755249288974029">Selecciona texto desde cursor ata o comezo da liña</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
-<translation id="8028993641010258682">Tamaño</translation>
 <translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
 <translation id="8030169304546394654">Desconectado</translation>
@@ -1822,7 +1818,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8487699605742506766">Zona wifi</translation>
 <translation id="8491237443345908933">Abre a ligazón nunha pestana nova</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Mostrar a configuración da función Compartir por Nearby</translation>
 <translation id="8507563469658346379">Todos (<ph name="REMAINING_TIME" />)</translation>
 <translation id="8511123073331775246">Crear escritorio novo</translation>
 <translation id="85123341071060231">O Bluethooth do teu Chromebook está desactivado. Para desbloquealo, escribe o contrasinal.</translation>

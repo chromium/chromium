@@ -1536,7 +1536,6 @@
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
 <translation id="2162705204091149050">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง และไฟล์</translation>
-<translation id="2162926944953615670">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้</translation>
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
 <translation id="2165102982098084499">คุณลิงก์อุปกรณ์เหล่านี้ด้วยการสแกนคิวอาร์โค้ด</translation>
@@ -2677,6 +2676,7 @@
 <translation id="3021065318976393105">ขณะใช้แบตเตอรี่</translation>
 <translation id="3021066826692793094">ผีเสื้อ</translation>
 <translation id="3021678814754966447">&amp;ดูแหล่งที่มาของเฟรม</translation>
+<translation id="3021902017511220299">การสแกนไม่สำเร็จ ผู้ดูแลระบบของคุณบล็อกการดำเนินการนี้</translation>
 <translation id="3022361196600037287">ระบบจะนำ <ph name="DEVICE" /> ออกจาก Chromebook เครื่องนี้และจะไม่บันทึกไปยัง <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="3022978424994383087">ฟังไม่เข้าใจ</translation>
 <translation id="3023464535986383522">เลือกเพื่อให้อ่าน</translation>
@@ -3785,6 +3785,7 @@
 <translation id="3922823422695198027">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> และ <ph name="APP_NAME_4" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
 <translation id="3923221004758245114">นำ <ph name="VM_NAME" /> ออกจาก <ph name="DEVICE_TYPE" /> ใช่ไหม การดําเนินการนี้จะลบแอปและข้อมูลทั้งหมดในเครื่องเสมือน</translation>
+<translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3923676227229836009">หน้านี้ได้รับอนุญาตให้ดูไฟล์</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ขนาดการแสดงผลและข้อความ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4424,7 +4425,6 @@
 <translation id="4427365070557649936">กำลังตรวจสอบรหัสยืนยัน...</translation>
 <translation id="4429163740524851942">รูปแบบแป้นพิมพ์จริง</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
-<translation id="4430204941092622397">ซึ่งอาจทำให้เครือข่ายมือถือของคุณยกเลิกการเชื่อมต่อเป็นเวลาสั้นๆ</translation>
 <translation id="443031431654216610">ใส่เฉพาะตัวเลขเท่านั้น</translation>
 <translation id="4430369329743628066">เพิ่มบุ๊กมาร์กแล้ว</translation>
 <translation id="4430422687972614133">เปิดใช้บัตรเสมือน</translation>
@@ -6299,7 +6299,6 @@
 <translation id="5955721306465922729">เว็บไซต์หนึ่งต้องการเปิดแอปพลิเคชันนี้</translation>
 <translation id="5955809630138889698">อุปกรณ์นี้อาจมีสิทธิ์ใช้งานในโหมดสาธิตออนไลน์เท่านั้น โปรดติดต่อตัวแทนฝ่ายสนับสนุนเพื่อขอรายละเอียดเพิ่มเติม</translation>
 <translation id="5956585768868398362">นี่คือหน้าค้นหาที่คุณต้องการใช่ไหม</translation>
-<translation id="5957918771633727933">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้ ดาวน์โหลด<ph name="BEGIN_LINK" />โปรไฟล์<ph name="END_LINK" />ใหม่</translation>
 <translation id="5957987129450536192">แตะไอคอน "เลือกเพื่อให้อ่าน" ใกล้ๆ รูปโปรไฟล์ จากนั้นเลือกสิ่งที่ต้องการฟัง</translation>
 <translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="5963413905009737549">ส่วน</translation>
@@ -9045,6 +9044,7 @@
 <translation id="811994229154425014">เคาะวรรค 2 ครั้งเพื่อพิมพ์จุด</translation>
 <translation id="8120505434908124087">ติดตั้งโปรไฟล์ eSIM</translation>
 <translation id="8121750884985440809">กำลังแคสต์หน้าจออยู่ในขณะนี้</translation>
+<translation id="8122898034710982882">ฮับโทรศัพท์ <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ดอกไม้สีเหลืองแซมขาว</translation>
 <translation id="8123975449645947908">เลื่อนไปข้างหลัง</translation>
 <translation id="8124313775439841391">ONC ที่มีการจัดการ</translation>
@@ -9080,6 +9080,7 @@
 <translation id="8148760431881541277">จำกัดการลงชื่อเข้าใช้</translation>
 <translation id="8149564499626272569">ยืนยันผ่านโทรศัพท์ด้วยสาย USB</translation>
 <translation id="8149870652370242480">หากต้องการใช้รหัสผ่านที่บันทึกไว้ในโทรศัพท์ ให้ดาวน์โหลด Chrome สำหรับ iOS และลงชื่อเข้าใช้บัญชี Google</translation>
+<translation id="8151057139207656239">คัดลอกรายละเอียดบิลด์แล้ว</translation>
 <translation id="815114315010033526">ใช้คิวอาร์โค้ดแทน</translation>
 <translation id="8151638057146502721">กำหนดค่า</translation>
 <translation id="8154790740888707867">ไม่มีไฟล์</translation>

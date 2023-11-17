@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">Трака менија паметног сортирања</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4883824756452868502">Откриј јединице</translation>
 <translation id="488785315393301722">Прикажи детаље</translation>
 <translation id="4894963374040315706">Ово вам омогућава да претражујете помоћу гласа</translation>
 <translation id="489903206070130262">Последња отворена картица</translation>
@@ -856,8 +857,10 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5551897871312988470">Понуди превод</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="555749644339804659">Проверавају се лозинке…</translation>
+<translation id="5559567453458728487">Конвертуј мерне јединице које се налазе на вебу</translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5572684875078967866">Меморијски простор за податке</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Прати овај пакет}one{Прати све пакете}few{Прати све пакете}other{Прати све пакете}}</translation>
 <translation id="5597915316964418992">Отворите мрежу за картице</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
@@ -1120,6 +1123,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6781260999953472352">Желите да укључите синхронизацију?</translation>
 <translation id="6781405765516175232">За опције руте додирните Прикажи путању.</translation>
 <translation id="6785453220513215166">Слање извештаја о отказивању...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Опозови праћење овог пакета}one{Опозови праћење свих пакета}few{Опозови праћење свих пакета}other{Опозови праћење свих пакета}}</translation>
 <translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="6797885426782475225">Гласовна претрага</translation>
 <translation id="6800349425672670802">Свим отвореним картицама можете да приступате из Пребацивача картица.</translation>

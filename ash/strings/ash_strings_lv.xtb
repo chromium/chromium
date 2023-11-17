@@ -343,7 +343,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="243878895369688216">Atvērts vakar</translation>
 <translation id="2440978926514840421">Tika ierakstīts GIF attēls</translation>
 <translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
-<translation id="2448312741937722512">Tips</translation>
 <translation id="2449089818483227734">Zems akumulatora uzlādes līmenis</translation>
 <translation id="2450205753526923158">Ekrānuzņēmumu režīms</translation>
 <translation id="2455994958736234930">Adreses joslā ievadīt elementus www. un .com un atvērt vietni</translation>
@@ -1015,7 +1014,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5121628974188116412">Pāriet uz lapas beigām</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
-<translation id="5145331109270917438">Modificēšanas datums</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
 <translation id="5150070631291639005">Konfidencialitātes iestatījumi</translation>
 <translation id="5155897006997040331">Lasīšanas ātrums</translation>
@@ -1143,7 +1141,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5620979661744857819">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nevarēja verificēt jūsu paroli. Mēģiniet vēlreiz.</translation>
-<translation id="5646376287012673985">Atrašanās vieta</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5652575806481723716">Lietotne <ph name="FOCUSED_APP_NAME" /> aicina pievērst tai uzmanību.</translation>
 <translation id="5662075790140998213">10. darbvieta</translation>
@@ -1719,7 +1716,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8001755249288974029">Atlasīt tekstu no kursora līdz rindas sākumam</translation>
 <translation id="8004512796067398576">Palielināt</translation>
 <translation id="8026334261755873520">Notīrīt pārlūkošanas datus</translation>
-<translation id="8028993641010258682">Izmērs</translation>
 <translation id="8029247720646289474">Neizdevās izveidot savienojumu ar tīklāju.</translation>
 <translation id="8029629653277878342">Papildu drošībai ir nepieciešams PIN vai parole.</translation>
 <translation id="8030169304546394654">atvienots</translation>
@@ -1821,7 +1817,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8487699605742506766">Tīklājs</translation>
 <translation id="8491237443345908933">Atvērt saiti jaunā cilnē</translation>
 <translation id="8492573885090281069">Displejā <ph name="DISPLAY_NAME" /> netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" />. Izšķirtspēja tika nomainīta uz: <ph name="FALLBACK_RESOLUTION" />. Lai saglabātu izmaiņas, noklikšķiniet uz Apstiprināt. Iepriekšējie iestatījumi tiks atjaunoti pēc: <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Rādīt funkcijas “Kopīgošana tuvumā” iestatījumus</translation>
 <translation id="8507563469658346379">Visiem, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Izveidot jaunu darbvietu</translation>
 <translation id="85123341071060231">Jūsu Chromebook datorā ir izslēgts Bluetooth savienojums. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>

@@ -1549,7 +1549,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="216169395504480358">Bæta við Wi-Fi...</translation>
 <translation id="2162155940152307086">Samstilling hefst þegar þú lokar samstillingarkostum</translation>
 <translation id="2162705204091149050">Lestu upplýsingar um vafrann, stýrikerfið, tækið, uppsettan hugbúnað og skýrslur</translation>
-<translation id="2162926944953615670">Engir eSIM-prófílar í boði</translation>
 <translation id="2163470535490402084">Tengstu netinu til að skrá þig inn á <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 rofi í viðbót</translation>
 <translation id="2165102982098084499">Þú tengdir þessi tæki með því að skanna QR-kóða.</translation>
@@ -3800,6 +3799,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3922823422695198027">Önnur forrit eru stillt á að opna sömu tengla og <ph name="APP_NAME" />. Þetta slekkur á því að <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="APP_NAME_4" /> opni studda tengla.</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="3923221004758245114">Fjarlægja <ph name="VM_NAME" /> úr <ph name="DEVICE_TYPE" />? Þetta fjarlægir öll forrit og gögn úr sýndarvélinni!</translation>
+<translation id="3923494859158167397">Ekkert farsímakerfi er uppsett</translation>
 <translation id="3923676227229836009">Þessi síða hefur heimild til að skoða skrár</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Stærð skjás og texta <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4439,7 +4439,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4427365070557649936">Staðfestir staðfestingarkóða...</translation>
 <translation id="4429163740524851942">Uppsetning vélbúnaðarlyklaborðs</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
-<translation id="4430204941092622397">Þetta gæti valdið því að samband við farsímakerfið rofni í nokkrar mínútur.</translation>
 <translation id="443031431654216610">Notaðu aðeins tölustafi</translation>
 <translation id="4430369329743628066">Bókamerki bætt við</translation>
 <translation id="4430422687972614133">Kveikja á sýndarkorti</translation>
@@ -6318,7 +6317,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5955721306465922729">Vefsvæði vill opna þetta forrit.</translation>
 <translation id="5955809630138889698">Þetta tæki er hugsanlega aðeins gjaldgengt fyrir prufustillingu á netinu. Hafðu samband við þjónustufulltrúa til að fá frekari upplýsingar.</translation>
 <translation id="5956585768868398362">Er þetta leitarsíðan sem þú bjóst við?</translation>
-<translation id="5957918771633727933">Engir eSIM-prófílar í boði. Sækja nýjan <ph name="BEGIN_LINK" />prófíl.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Ýttu á táknið fyrir textaupplestur rétt hjá prófílmyndinni þinni og veldu svo það sem þú vilt heyra.</translation>
 <translation id="5959471481388474538">Netið er ekki tiltækt</translation>
 <translation id="5963413905009737549">Hluti</translation>

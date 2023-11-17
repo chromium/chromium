@@ -343,7 +343,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="243878895369688216">Åbnet i går</translation>
 <translation id="2440978926514840421">Optagelsen af gif er udført</translation>
 <translation id="2441427462554639370">Optagelsen blev afsluttet på grund af kritisk mangel på ledig lagerplads</translation>
-<translation id="2448312741937722512">Type</translation>
 <translation id="2449089818483227734">Lavt batteriniveau</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
 <translation id="2455994958736234930">Føj www. og .com til adresselinjen, og åbn derefter websitet</translation>
@@ -1015,7 +1014,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5117590920725113268">Vis næste måned</translation>
 <translation id="5121628974188116412">Gå til bunden af siden</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
-<translation id="5145331109270917438">Dato for ændring</translation>
 <translation id="5147567197700016471">Låst op</translation>
 <translation id="5150070631291639005">Privatlivsindstillinger</translation>
 <translation id="5155897006997040331">Læsehastighed</translation>
@@ -1143,7 +1141,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5620979661744857819">Dette giver <ph name="APP_NAME" /> og alle apps og websites, der har kamera- og mikrofontilladelserne, adgang. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Din adgangskode kunne ikke verificeres. Prøv igen.</translation>
-<translation id="5646376287012673985">Placering</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kræver din opmærksomhed.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
@@ -1719,7 +1716,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8001755249288974029">Markér tekst fra markør til begyndelsen af linjen</translation>
 <translation id="8004512796067398576">Forøg</translation>
 <translation id="8026334261755873520">Ryd browserdata</translation>
-<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8029247720646289474">Der kunne ikke oprettes forbindelse til hotspot</translation>
 <translation id="8029629653277878342">Der kræves en pinkode eller adgangskode som ekstra sikkerhed</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
@@ -1821,7 +1817,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Åbn link på ny fane</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" />. Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Vis indstillinger for Deling tæt på</translation>
 <translation id="8507563469658346379">Alle, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Opret et nyt skrivebord</translation>
 <translation id="85123341071060231">Bluetooth er deaktiveret på din Chromebook. Angiv din adgangskode for at låse din Chromebook op.</translation>

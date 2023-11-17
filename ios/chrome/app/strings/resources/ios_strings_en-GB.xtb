@@ -733,6 +733,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4856841893565072365">Smart Sort Menu Bar</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="4883824756452868502">Detect units</translation>
 <translation id="488785315393301722">Show details</translation>
 <translation id="4894963374040315706">This lets you search using your voice</translation>
 <translation id="489903206070130262">Your last open tab</translation>
@@ -856,8 +857,10 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555749644339804659">Checking passwords…</translation>
+<translation id="5559567453458728487">Convert measurement units found on the web</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5572684875078967866">Information storage</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
 <translation id="5597915316964418992">Open the Tab grid</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -1120,6 +1123,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6781260999953472352">Turn on sync?</translation>
 <translation id="6781405765516175232">For route options, tap 'Get directions'</translation>
 <translation id="6785453220513215166">Sending crash report...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Untrack this package}other{Untrack all packages}}</translation>
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6797885426782475225">Voice Search</translation>
 <translation id="6800349425672670802">You can access all your open tabs from the Tab Switcher.</translation>

@@ -1549,7 +1549,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162155940152307086">Magsisimula ang pag-sync sa sandaling umalis ka sa mga setting ng pag-sync</translation>
 <translation id="2162705204091149050">Basahin ang impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file</translation>
-<translation id="2162926944953615670">Walang available na profile ng eSIM</translation>
 <translation id="2163470535490402084">Mangyaring kumonekta sa Internet upang mag-sign in sa iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at 1 pang switch</translation>
 <translation id="2165102982098084499">Ni-link mo ang mga device na ito sa pamamagitan ng pag-scan ng QR code.</translation>
@@ -3800,6 +3799,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3922823422695198027">May iba pang app na nakatakdang buksan ang mga link na kapareho ng sa <ph name="APP_NAME" />. Idi-disable nito ang kakayahan ng <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at <ph name="APP_NAME_4" /> na buksan ang mga sinusuportahang link.</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
 <translation id="3923221004758245114">Alisin ang <ph name="VM_NAME" /> sa iyong <ph name="DEVICE_TYPE" />? Ide-delete nito ang lahat ng app at data sa virtual machine!</translation>
+<translation id="3923494859158167397">Walang naka-set up na mobile network</translation>
 <translation id="3923676227229836009">Pinapayagan ang page na ito na tingnan ang mga file</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Laki ng display at text na <ph name="DISPLAY_ZOOM" /></translation>
@@ -4439,7 +4439,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4427365070557649936">Vine-verify ang code sa pagkumpirma...</translation>
 <translation id="4429163740524851942">Layout ng pisikal na keyboard</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Posibleng magdiskonekta ang iyong mobile network nang ilang minuto dahil dito.</translation>
 <translation id="443031431654216610">Mga numerical na digit lang ang gamitin</translation>
 <translation id="4430369329743628066">Naidagdag na ang bookmark</translation>
 <translation id="4430422687972614133">I-on ang virtual card</translation>
@@ -6318,7 +6317,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5955721306465922729">Gustong buksan ng isang website ang application na ito.</translation>
 <translation id="5955809630138889698">Maaaring kwalipikado lang ang device na ito para sa online na demo mode. Makipag-ugnayan sa iyong kinatawan ng suporta para sa higit pang detalye.</translation>
 <translation id="5956585768868398362">Ito ba ang inaasahan mong pahina sa paghahanap?</translation>
-<translation id="5957918771633727933">Walang available na profile ng eSIM. Mag-download ng bagong <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">I-tap ang icon ng Select to Speak malapit sa iyong larawan sa profile, pagkatapos ay piliin ang gusto mong marinig.</translation>
 <translation id="5959471481388474538">Hindi available ang network</translation>
 <translation id="5963413905009737549">Seksyon</translation>
@@ -10362,6 +10360,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9115932142612197835">Hindi binabago ng setting na ito ang availability ng Google Translate o Lens</translation>
 <translation id="9116799625073598554">App sa pagsusulat ng tala</translation>
 <translation id="9117030152748022724">Pamahalaan ang iyong mga app</translation>
+<translation id="9120362425083889527">Hindi makumpleto ang pag-install. Pakisubukan ulit o isara ang window na ito</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para sa pinakamagandang karanasan, i-install ang <ph name="DEVICE_OS" /> sa iyong internal na disk. Puwede mo rin itong i-install sa ibang pagkakataon mula sa screen sa pag-log in.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kung hindi ka pa handang mag-install, puwede kang magpatakbo mula sa USB para masubukan ito. Papanatilihin nito ang iyong kasalukuyang OS at data, pero puwedeng makakita ka ng mga limitasyon sa storage at performance.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Binuksan bilang na-pin na tab</translation>

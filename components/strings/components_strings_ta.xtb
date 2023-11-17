@@ -3047,6 +3047,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைலை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}other{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைல்களை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}}</translation>
 <translation id="7160999678034985039">உங்கள் பணியைச் சேமித்து, தயாரானதும் புதுப்பிப்பைத் தொடங்குங்கள்.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
@@ -3841,6 +3842,7 @@
 <translation id="8687429322371626002">உங்கள் சாதனத்தையும் கணக்கையும் <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="8688672835843460752">மீதமுள்ளது:</translation>
 <translation id="868922510921656628">ஒரு செட்டிற்கான பக்கங்கள்</translation>
+<translation id="8693639060656817812">'கண்காணிப்புத் தடுப்பு' கிடைக்கும் நிலையைப் பற்றி மேலும் தெரிந்துகொள்ளலாம்</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8699041776323235191">HID சாதனம்</translation>
 <translation id="8699985386408839112">என்வெலப் காகு 1</translation>

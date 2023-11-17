@@ -207,6 +207,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4677944499843243528">Profilul pare să fie utilizat de alt proces Chromium (<ph name="PROCESS_ID" />), pe alt computer (<ph name="HOST_NAME" />). Chromium a blocat profilul pentru a nu se deteriora. Dacă aveți certitudinea că profilul nu este utilizat de alte procese, puteți să îl deblocați și să relansați Chromium.</translation>
 <translation id="4680828127924988555">Anulează instalarea</translation>
 <translation id="4708774505295300557">Un alt utilizator s-a conectat anterior la Chromium pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chromium pentru a-ți păstra separat datele.</translation>
+<translation id="4724676981607797757">Nu s-a instalat, din cauza unei erori de protocol neacceptat.</translation>
 <translation id="4746050847053251315">Ieși din Chromium oricum?</translation>
 <translation id="4748217263233248895">Tocmai a fost aplicată o actualizare de securitate specială pentru Chromium. Repornește acum, iar filele vor fi restabilite.</translation>
 <translation id="4765210420921718862">Poți să te răzgândești oricând în setările Chromium. Versiunile de încercare respectă modul actual de difuzare a anunțurilor, prin urmare nu vei vedea modificările imediat.</translation>
@@ -277,6 +278,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6145820983052037069">Aici poți comuta între profilurile Chromium</translation>
 <translation id="615103374448673771">Dacă permiți cookie-uri, Chromium le poate folosi pentru preîncărcare</translation>
 <translation id="6175304430031192654">În funcție de setări, Chromium poate și să trimită cookie-uri și adresa URL actuală</translation>
+<translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
@@ -461,5 +463,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="942598560705308788">Certificate gestionate de Chromium</translation>
 <translation id="965162752251293939">Cine folosește Chromium?</translation>
 <translation id="967427899662692980">Beneficiază de cel mai înalt nivel de securitate de la Chromium</translation>
+<translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

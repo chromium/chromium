@@ -353,6 +353,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6943584222992551122">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chrome kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ienākošo savienojumu kārtula pārlūkam Google Chrome Beta, lai atļautu mDNS datplūsmu.</translation>
 <translation id="6989339256997917931">Pārlūkprogramma Google Chrome ir atjaunināta, bet jūs neesat to izmantojis vismaz 30 dienas.</translation>
+<translation id="7011190694940573312">Instalēšana neizdevās, jo šī operētājsistēmas versija netiek atbalstīta.</translation>
 <translation id="7024536598735240744">Atpakošanas kļūda: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalēšana apturēta.</translation>
 <translation id="7025800014283535195">Šeit varat pārslēgties starp Chrome profiliem.</translation>
@@ -422,6 +423,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8019103195866286235">Šī paplašinājuma publicēšanu atcēla izstrādātājs, un paplašinājums, iespējams, nav drošs. Noņemiet to no pārlūka Chrome, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="80471789339884597">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē visas pārlūkprogrammas.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8086881907087796310">Instalēšana neizdevās, jo jūsu dators neatbilst minimālajām aparatūras prasībām.</translation>
 <translation id="8129812357326543296">Par &amp;Google Chrome</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8255190535488645436">Pārlūkā Google Chrome tiek izmantota kamera un mikrofons.</translation>

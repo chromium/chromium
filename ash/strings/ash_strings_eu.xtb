@@ -343,7 +343,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="243878895369688216">Atzo ireki zen</translation>
 <translation id="2440978926514840421">Grabatu da GIFa</translation>
 <translation id="2441427462554639370">Utzi egin zaio grabatzeari biltegiratzeko oso toki gutxi dagoelako</translation>
-<translation id="2448312741937722512">Mota</translation>
 <translation id="2449089818483227734">Bateria gutxi</translation>
 <translation id="2450205753526923158">Pantaila-argazkiak ateratzeko modua</translation>
 <translation id="2455994958736234930">Gehitu www. eta .com helbide-barran eta, gero, ireki webgunea</translation>
@@ -1016,7 +1015,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5121628974188116412">Joan orriaren behealdera</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
-<translation id="5145331109270917438">Data aldatu da</translation>
 <translation id="5147567197700016471">Desblokeatuta</translation>
 <translation id="5150070631291639005">Pribatutasun-ezarpenak</translation>
 <translation id="5155897006997040331">Irakurketa-abiadura</translation>
@@ -1144,7 +1142,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5620979661744857819"><ph name="APP_NAME" /> aplikazioak eta kamera/mikrofonoa erabiltzeko baimena duten beste aplikazio eta webgune guztiek atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ezin izan da egiaztatu pasahitza. Saiatu berriro.</translation>
-<translation id="5646376287012673985">Kokapena</translation>
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
 <translation id="5652575806481723716">Zure arreta behar du <ph name="FOCUSED_APP_NAME" /> aplikazioak.</translation>
 <translation id="5662075790140998213">Lan-eremua 10</translation>
@@ -1720,7 +1717,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8001755249288974029">Hautatu kurtsoretik lerroaren hasiera arteko testua</translation>
 <translation id="8004512796067398576">Gehikuntza</translation>
 <translation id="8026334261755873520">Garbitu arakatze-datuak</translation>
-<translation id="8028993641010258682">Tamaina</translation>
 <translation id="8029247720646289474">Ezin izan da konektatu wifi-gunera</translation>
 <translation id="8029629653277878342">PINa edo pasahitza behar da gailua babestuago edukitzeko</translation>
 <translation id="8030169304546394654">Deskonektatuta</translation>
@@ -1822,7 +1818,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8487699605742506766">Wifi-gunea</translation>
 <translation id="8491237443345908933">Ireki esteka beste fitxa batean</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena. <ph name="FALLBACK_RESOLUTION" /> ezarri da pantailaren bereizmen gisa. Sakatu "Berretsi" aldaketak gordetzeko. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
-<translation id="8496402167048257517">Erakutsi Nearby Share-ren ezarpenak</translation>
 <translation id="8507563469658346379">Denekin, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Sortu lan-eremu bat</translation>
 <translation id="85123341071060231">Chromebook-aren Bluetootha desaktibatuta dago. Chromebook-a desblokeatzeko, idatzi pasahitza.</translation>

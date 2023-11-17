@@ -343,7 +343,6 @@
 <translation id="243878895369688216">Отварано јуче</translation>
 <translation id="2440978926514840421">GIF је снимљен</translation>
 <translation id="2441427462554639370">Снимање је прекинуто због изузетно мало простора</translation>
-<translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Низак ниво батерије</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
 <translation id="2455994958736234930">Додај www. и .com на траку за адресу, па отвори веб-сајт</translation>
@@ -1016,7 +1015,6 @@
 <translation id="5117590920725113268">Прикажи следећи месец</translation>
 <translation id="5121628974188116412">Идите на дно странице</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
-<translation id="5145331109270917438">Датум измене</translation>
 <translation id="5147567197700016471">Откључано</translation>
 <translation id="5150070631291639005">Подешавања приватности</translation>
 <translation id="5155897006997040331">Брзина читања</translation>
@@ -1144,7 +1142,6 @@
 <translation id="5620979661744857819">Ово омогућава приступ апликацији <ph name="APP_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Верификација лозинке није успела. Пробајте поново.</translation>
-<translation id="5646376287012673985">Локација</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> захтева вашу пажњу.</translation>
 <translation id="5662075790140998213">Радна површина 10</translation>
@@ -1721,7 +1718,6 @@
 <translation id="8001755249288974029">Изабери текст од курсора до почетка реда</translation>
 <translation id="8004512796067398576">Повећање</translation>
 <translation id="8026334261755873520">Обришите податке прегледања</translation>
-<translation id="8028993641010258682">Величина</translation>
 <translation id="8029247720646289474">Повезивање са хотспотом није успело</translation>
 <translation id="8029629653277878342">Треба да унесете PIN или лозинку ради додатне безбедности</translation>
 <translation id="8030169304546394654">Веза је прекинута</translation>
@@ -1823,7 +1819,6 @@
 <translation id="8487699605742506766">Хотспот</translation>
 <translation id="8491237443345908933">Отвори линк на новој картици</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Прикажите подешавања Дељења у близини</translation>
 <translation id="8507563469658346379">Сви, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Направи нову радну површину</translation>
 <translation id="85123341071060231">Bluetooth на Chromebook-у је искључен. Да бисте откључали Chromebook, унесите лозинку.</translation>

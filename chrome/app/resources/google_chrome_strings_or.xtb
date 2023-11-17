@@ -234,6 +234,7 @@
 <translation id="4633000520311261472">Chromeକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ, ଆମେ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନଥିବା ଏବଂ ଆପଣଙ୍କର ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥିବା କିଛି ଏକ୍ସ‌ଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିଦେଇଛୁ।</translation>
 <translation id="4680828127924988555">ଇନଷ୍ଟଲେସନ ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="469553575393225953">ଅଜଣା ସୋର୍ସରୁ ଏକ୍ସଟେନସନ, ଆପ ଏବଂ ଥିମଗୁଡ଼ିକ ଆପଣଙ୍କ ଡିଭାଇସକୁ କ୍ଷତି ପହଞ୍ଚାଇପାରିବ। କେବଳ Chrome Web Storeରୁ ସେଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିବା ପାଇଁ Chrome ସୁପାରିଶ କରେ</translation>
+<translation id="4724676981607797757">ଏକ ଅସମର୍ଥିତ ପ୍ରୋଟୋକଲ ତ୍ରୁଟି ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4728575227883772061">ଅଣନିର୍ଦ୍ଧିଷ୍ଟିତ ତ୍ରୁଟି ଯୋଗୁଁ ସଂସ୍ଥାପନ ବିଫଳ ହେଲା । ଯଦି Google Chrome ବର୍ତ୍ତମାନ ଚାଲୁଛି, ଦୟାକରି ଏହାକୁ ବନ୍ଦ କରନ୍ତୁ ଏବଂ ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ ।</translation>
 <translation id="4747730611090640388">Chrome ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଆକଳନ କରିପାରିବ।  ପରେ, ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ, ଆପଣ ଦେଖୁଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ Chromeକୁ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ କହିପାରିବ।</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -319,6 +320,7 @@
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> ପାଇଁ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ଡିଲିଟ କରିଥାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ବିଟା</translation>
+<translation id="6182736845697986886">ଅପଡେଟ ସର୍ଭରରେ ଏକ ଇଣ୍ଟର୍ନଲ ତ୍ରୁଟି ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="6235018212288296708">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chromeରେ ଥିବା ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="624230925347970731">Chrome ଶୀଘ୍ର ବନ୍ଦ ହେବ</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -495,6 +497,7 @@
 <translation id="940313311831216333">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର Chrome ଷ୍ଟଫଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ସାଇନ୍ ଇନ୍ କରି ତାପରେ ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="943390475793766444">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chrome ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="963650557422347554">ଚାଲୁ ଥିବା ବେଳେ, Chrome ସ୍ମୁଥ ସ୍କ୍ରୋଲିଂ ଏବଂ ଭିଡିଓ ଫ୍ରେମ ରେଟ ପରି ପୃଷ୍ଠପଟର କାର୍ଯ୍ୟକଳାପ ଏବଂ ଭିଜୁଆଲ ଇଫେକ୍ଟଗୁଡ଼ିକୁ ସୀମିତ କରି ବେଟେରୀ ପାୱାରକୁ ସଂରକ୍ଷିତ କରିଥାଏ।</translation>
+<translation id="983803489796659991">ଅପଡେଟ ସର୍ଭରରେ ଆପ୍ଲିକେସନ ପାଇଁ କୌଣସି ହାସ ଡାଟା ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="989369509083708165">Google Chrome ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଅଟେ</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ବ୍ୟବହାର କରି Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରାଯାଇପାରିବ</translation>
 </translationbundle>

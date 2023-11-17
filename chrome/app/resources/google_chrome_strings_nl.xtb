@@ -233,6 +233,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4633000520311261472">Om Chrome veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
 <translation id="4680828127924988555">Installatie annuleren</translation>
 <translation id="469553575393225953">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chrome raadt je aan ze alleen te installeren vanuit de Chrome Web Store.</translation>
+<translation id="4724676981607797757">De installatie is mislukt vanwege een fout met een niet-ondersteund protocol.</translation>
 <translation id="4728575227883772061">De installatie is mislukt wegens een onbekende fout. Als Google Chrome momenteel actief is, sluit je het programma af en probeer je het opnieuw.</translation>
 <translation id="4747730611090640388">Chrome kan een schatting van je interesses maken.  Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -316,6 +317,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6157638032135951407">Je organisatie verwijdert Chrome-gegevens als deze <ph name="TIMEOUT_DURATION" /> niet worden gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Bèta</translation>
+<translation id="6182736845697986886">De installatie is mislukt vanwege een interne fout met de updateserver.</translation>
 <translation id="6235018212288296708">Inkomende regel zodat Google Chrome mDNS-verkeer toestaat.</translation>
 <translation id="624230925347970731">Chrome wordt zo meteen gesloten</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
@@ -492,6 +494,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="940313311831216333">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten.</translation>
 <translation id="943390475793766444">Chrome raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>
 <translation id="963650557422347554">Als deze instelling aanstaat, spaart Chrome de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden.</translation>
+<translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
 <translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan schakelen tussen Chrome-profielen</translation>
 </translationbundle>

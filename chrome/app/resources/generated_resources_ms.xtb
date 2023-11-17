@@ -1548,7 +1548,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="216169395504480358">Tambah Wi-Fi...</translation>
 <translation id="2162155940152307086">Penyegerakan akan bermula selepas anda meninggalkan tetapan penyegerakan</translation>
 <translation id="2162705204091149050">Baca maklumat tentang penyemak imbas, OS, peranti, perisian dan fail yang dipasang</translation>
-<translation id="2162926944953615670">Tiada profil eSIM tersedia</translation>
 <translation id="2163470535490402084">Sila sambung ke Internet untuk melog masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
 <translation id="2165102982098084499">Anda telah memautkan peranti ini dengan mengimbas kod QR.</translation>
@@ -3800,6 +3799,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3922823422695198027">Apl lain ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> dan <ph name="APP_NAME_4" /> daripada membuka pautan yang disokong.</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3923221004758245114">Alih keluar <ph name="VM_NAME" /> daripada <ph name="DEVICE_TYPE" /> anda? Tindakan ini akan memadamkan semua apl dan data dalam mesin maya!</translation>
+<translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3923676227229836009">Halaman ini dibenarkan melihat fail</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Saiz paparan dan teks <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4439,7 +4439,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4427365070557649936">Mengesahkan kod pengesahan...</translation>
 <translation id="4429163740524851942">Reka letak papan kekunci fizikal</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
-<translation id="4430204941092622397">Tindakan ini boleh menyebabkan rangkaian mudah alih anda terputus sambungan selama beberapa minit.</translation>
 <translation id="443031431654216610">Gunakan digit berangka sahaja</translation>
 <translation id="4430369329743628066">Penanda halaman ditambahkan</translation>
 <translation id="4430422687972614133">Hidupkan kad maya</translation>
@@ -6318,7 +6317,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5955721306465922729">Satu laman web ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Peranti ini mungkin layak untuk mod tunjuk cara dalam talian sahaja. Sila hubungi wakil sokongan anda untuk mendapatkan butiran lanjut.</translation>
 <translation id="5956585768868398362">Adakah ini halaman carian yang anda jangkakan?</translation>
-<translation id="5957918771633727933">Tiada profil eSIM tersedia. Muat turun <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> baharu.</translation>
 <translation id="5957987129450536192">Ketik ikon Pilih untuk Cakap berdekatan imej profil anda, kemudian pilih apa yang hendak anda dengar.</translation>
 <translation id="5959471481388474538">Rangkaian tak tersedia</translation>
 <translation id="5963413905009737549">Bahagian</translation>

@@ -3050,6 +3050,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">हल्का बैजनी</translation>
 <translation id="7156870133441232244">सर्भरको स्तरोन्नति गरेर TLS १.२ वा त्यसपछिको संस्करण पार्नु पर्छ।</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> प्रयोग गरी यो फाइल पठाउन आफ्नो डिभाइसमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}other{<ph name="FEATURE_NAME" /> प्रयोग गरी यी फाइलहरू पठाउन आफ्नो डिभाइसमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}}</translation>
 <translation id="7160999678034985039">कृपया आफ्नो कार्य सेभ गर्नुहोस् र आफू तयार भएपछि अपडेट गर्न थाल्नुहोस्</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोप्य फाइल कपी गर्ने हो?}other{गोप्य फाइलहरू कपी गर्ने हो?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
@@ -3844,6 +3845,7 @@
 <translation id="8687429322371626002"><ph name="MANAGER" /> ले तपाईंको यन्त्र र खाता व्यवस्थापन गर्छ।</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति समूह पृष्ठको सङ्ख्या</translation>
+<translation id="8693639060656817812">ट्र्याकिङबाट सुरक्षित राख्ने सुविधाको उपलब्धताका बारेमा थप जान्नुहोस्</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699041776323235191">HID यन्त्र</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>

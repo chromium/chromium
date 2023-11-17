@@ -3051,6 +3051,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tjetër}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> të tjera}}</translation>
 <translation id="7153618581592392745">Vjollcë e çelur</translation>
 <translation id="7156870133441232244">Serveri duhet të përmirësohet në versionin TLS 1.2 ose një version të mëvonshëm.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për t'i dërguar këta skedarë duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="7160999678034985039">Ruaj punën dhe fillo përditësimin kur të jesh gati.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Të kopjohet skedari konfidencial?}other{Të kopjohen skedarët konfidencialë?}}</translation>
 <translation id="717330890047184534">ID-ja e Gaia:</translation>
@@ -3845,6 +3846,7 @@ Detaje shtesë:
 <translation id="8687429322371626002">Pajisja dhe llogaria jote menaxhohen nga <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="868922510921656628">Faqe për grup</translation>
+<translation id="8693639060656817812">Mëso më shumë rreth disponueshmërisë së "Mbrojtjes nga gjurmimi"</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>

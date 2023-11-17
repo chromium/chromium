@@ -1540,7 +1540,6 @@
 <translation id="216169395504480358">‏إضافة Wi-Fi...</translation>
 <translation id="2162155940152307086">ستبدأ المزامنة بعد مغادرتك إعدادات المزامنة</translation>
 <translation id="2162705204091149050">الاطّلاع على معلومات عن المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة والملفات</translation>
-<translation id="2162926944953615670">‏ما مِن ملفات شخصية متوفِّرة لشريحة eSIM.</translation>
 <translation id="2163470535490402084">يُرجى الاتصال بالإنترنت لتسجيل الدخول إلى <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> ومفتاح تبديل آخر</translation>
 <translation id="2165102982098084499">تم ربط هذه الأجهزة من خلال المسح الضوئي لرمز الاستجابة السريعة.</translation>
@@ -1849,6 +1848,7 @@
 <translation id="2402226831639195063">النبرات</translation>
 <translation id="2405887402346713222">الأرقام التسلسلية للأجهزة وقطعها</translation>
 <translation id="2406153734066939945">هل تريد حذف هذا الملف الشخصي وكل بياناته؟</translation>
+<translation id="2407671304279211586">اختيار مزوِّد نظام أسماء النطاقات</translation>
 <translation id="2408018932941436077">جارٍ حفظ البطاقة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2409268599591722235">بدء الاستخدام</translation>
@@ -3789,6 +3789,7 @@
 <translation id="3922823422695198027">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> و<ph name="APP_NAME_4" /> من فتح الروابط المتوافقة.</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
 <translation id="3923221004758245114">هل تريد إزالة "<ph name="VM_NAME" />" من <ph name="DEVICE_TYPE" />؟ سيؤدي هذا الإجراء إلى حذف جميع التطبيقات والبيانات في الجهاز الافتراضي.</translation>
+<translation id="3923494859158167397">ما مِن شبكات جوّال تم إعدادها.</translation>
 <translation id="3923676227229836009">يتم السماح لهذه الصفحة بعرض الملفات.</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">حجم العرض والنص<ph name="DISPLAY_ZOOM" />%</translation>
@@ -4425,7 +4426,6 @@
 <translation id="4427365070557649936">جارٍ التحقّق من رمز تأكيد البيانات...</translation>
 <translation id="4429163740524851942">تنسيق لوحة المفاتيح الفعلية</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
-<translation id="4430204941092622397">قد يؤدي هذا الإجراء إلى انقطاع الاتصال بشبكة الجوّال لبضع دقائق.</translation>
 <translation id="443031431654216610">أدخِل أرقامًا فقط.</translation>
 <translation id="4430369329743628066">تمت إضافة إشارة</translation>
 <translation id="4430422687972614133">تفعيل البطاقة الافتراضية</translation>
@@ -6303,7 +6303,6 @@
 <translation id="5955721306465922729">يريد موقع إلكتروني فتح هذا التطبيق.</translation>
 <translation id="5955809630138889698">قد لا يكون هذا الجهاز مؤهلاً إلا للوضع التجريبي على الإنترنت، يُرجى التواصل مع ممثِّل الدعم لمعرفة مزيد من التفاصيل.</translation>
 <translation id="5956585768868398362">هل هذه هي صفحة البحث التي كنت تتوقع ظهورها؟</translation>
-<translation id="5957918771633727933">‏ما مِن ملفات شخصية متوفِّرة لشريحة eSIM. وعليك تنزيل <ph name="BEGIN_LINK" />ملف شخصي<ph name="END_LINK" /> جديد.</translation>
 <translation id="5957987129450536192">يمكنك النقر على رمز"الاختيار والاستماع" بالقرب من الملف الشخصي، ثم اختيار ما ترغب بسماعه.</translation>
 <translation id="5959471481388474538">الشبكة غير متاحة</translation>
 <translation id="5963413905009737549">قسم</translation>

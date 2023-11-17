@@ -733,6 +733,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4856841893565072365">Barra de menú d'ordenació intel·ligent</translation>
 <translation id="4860895144060829044">Truca</translation>
 <translation id="4881695831933465202">Obre</translation>
+<translation id="4883824756452868502">Detecta les unitats</translation>
 <translation id="488785315393301722">Mostra els detalls</translation>
 <translation id="4894963374040315706">Això et permet fer cerques amb la veu</translation>
 <translation id="489903206070130262">La teva última pestanya oberta</translation>
@@ -856,8 +857,10 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5551897871312988470">Proposa traduir aquest idioma</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="555749644339804659">Comprovant contrasenyes…</translation>
+<translation id="5559567453458728487">Converteix les unitats de mesura que es trobin al web</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5572684875078967866">Emmagatzematge d'informació</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
 <translation id="5597915316964418992">Obre la quadrícula de pestanyes</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
@@ -1120,6 +1123,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6781260999953472352">Vols activar la sincronització?</translation>
 <translation id="6781405765516175232">Per veure les opcions de ruta, toca Obtén indicacions.</translation>
 <translation id="6785453220513215166">S'està enviant l'informe d'error...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Deixa de fer el seguiment d'aquest paquet}other{Deixa de fer el seguiment de tots els paquets}}</translation>
 <translation id="6790502149545262384">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Cerca per veu</translation>
 <translation id="6800349425672670802">Pots accedir a totes les pestanyes obertes des del selector de pestanyes.</translation>

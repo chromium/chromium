@@ -1551,7 +1551,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="216169395504480358">Pridėti „Wi-Fi“...</translation>
 <translation id="2162155940152307086">Sinchronizavimas bus pradėtas, kai išeisite iš sinchronizavimo nustatymų</translation>
 <translation id="2162705204091149050">Skaityti informaciją apie jūsų naršyklę, OS, įrenginį, įdiegtą programinę įrangą ir failus</translation>
-<translation id="2162926944953615670">Nėra pasiekiamų „eSIM“ kortelės profilių</translation>
 <translation id="2163470535490402084">Prisijunkite prie interneto, kad galėtumėte prisijungti prie „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ir dar vienas jungiklis</translation>
 <translation id="2165102982098084499">Susiejote šiuos įrenginius nuskaitę QR kodą.</translation>
@@ -3802,6 +3801,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="3922823422695198027">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atlikus „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“ ir „<ph name="APP_NAME_4" />“ negalės atidaryti palaikomų nuorodų.</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
 <translation id="3923221004758245114">Pašalinti „<ph name="VM_NAME" />“ iš <ph name="DEVICE_TYPE" />? Bus ištrintos visos programos ir duomenys virtualiajame įrenginyje!</translation>
+<translation id="3923494859158167397">Nenustatyta jokių mobiliojo ryšio tinklų</translation>
 <translation id="3923676227229836009">Šiam puslapiui leidžiama peržiūrėti failus</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Pateikties ir teksto dydis <ph name="DISPLAY_ZOOM" /> proc.</translation>
@@ -4441,7 +4441,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4427365070557649936">Patvirtinamas patvirtinimo kodas...</translation>
 <translation id="4429163740524851942">Fizinės klaviatūros išdėstymas</translation>
 <translation id="4430019312045809116">Apimtis</translation>
-<translation id="4430204941092622397">Dėl to mobiliojo ryšio tinklas gali būti atjungtas kelias minutes.</translation>
 <translation id="443031431654216610">Naudokite tik skaitmenis</translation>
 <translation id="4430369329743628066">Žymė pridėta</translation>
 <translation id="4430422687972614133">Įjungti virtualią kortelę</translation>
@@ -6321,7 +6320,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5955721306465922729">Svetainė nori atidaryti šią programą.</translation>
 <translation id="5955809630138889698">Gali būti, kad šį įrenginį galima naudoti tik prisijungus pasiekiamu demonstraciniu režimu. Jei reikia daugiau informacijos, susisiekite su palaikymo komandos atstovu.</translation>
 <translation id="5956585768868398362">Ar tai paieškos puslapis, kurį tikėjotės išvysti?</translation>
-<translation id="5957918771633727933">Nėra pasiekiamų „eSIM“ kortelės profilių. Atsisiųskite naują <ph name="BEGIN_LINK" />profilį<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Palieskite piktogramą „Teksto ištarimas“ netoli profilio vaizdo, tada pasirinkite, ką norite išgirsti.</translation>
 <translation id="5959471481388474538">Tinklas negalimas</translation>
 <translation id="5963413905009737549">Skiltis</translation>

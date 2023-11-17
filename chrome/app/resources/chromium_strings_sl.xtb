@@ -209,6 +209,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
 <translation id="4708774505295300557">Nekdo se je prijavil v Chromium v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chromium, če želite, da bodo vaši podatki ločeni.</translation>
+<translation id="4724676981607797757">Namestitev ni uspela zaradi napake protokola, ki ni podprta.</translation>
 <translation id="4746050847053251315">Želite vseeno zapreti Chromium?</translation>
 <translation id="4748217263233248895">Pravkar je bila nameščena posebna varnostna posodobitev za Chromium. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
 <translation id="4765210420921718862">Kadar koli si lahko premislite v nastavitvah za Chromium. Preizkusi potekajo skupaj s trenutnim načinom prikazovanja oglasov, zato spremembe ne bodo takoj vidne.</translation>
@@ -279,6 +280,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6145820983052037069">Med profili v Chromiumu lahko preklapljate tukaj</translation>
 <translation id="615103374448673771">Če omogočite piškotke, jih bo Chromium morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="6175304430031192654">Chromium lahko glede na nastavitve pošlje tudi piškotke in vaš trenutni URL</translation>
+<translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6183079672144801177">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chromium, nato poskusite znova poslati.</translation>
 <translation id="6212496753309875659">Ta računalnik že ima novejšo različico Chromiuma. Če programska oprema ne deluje, odstranite Chromium in poskusite znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se bo zdaj znova zagnal}=1{Chromium se bo znova zagnal čez eno sekundo}one{Chromium se bo znova zagnal čez # sekundo}two{Chromium se bo znova zagnal čez # sekundi}few{Chromium se bo znova zagnal čez # sekunde}other{Chromium se bo znova zagnal čez # sekund}}</translation>
@@ -464,5 +466,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="942598560705308788">Potrdila, ki jih upravlja Chromium</translation>
 <translation id="965162752251293939">Kdo uporablja Chromium?</translation>
 <translation id="967427899662692980">Prejmite Chromiumovo najmočnejšo varnost</translation>
+<translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
 </translationbundle>

@@ -1546,7 +1546,6 @@
 <translation id="216169395504480358">ເພີ່ມ Wi​-Fi...</translation>
 <translation id="2162155940152307086">ການຊິ້ງຂໍ້ມູນຈະເລີ່ມເມື່ອທ່ານອອກຈາກການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="2162705204091149050">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
-<translation id="2162926944953615670">ບໍ່ມີໂປຣໄຟລ໌ eSIM ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="2163470535490402084">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ ເພື່ອ​ລົງຊື່ເຂົ້າໃຊ້​ຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
 <translation id="2165102982098084499">ທ່ານລິ້ງອຸປະກອນເຫຼົ່ານີ້ແລ້ວໂດຍການສະແກນລະຫັດ QR.</translation>
@@ -1859,6 +1858,7 @@
 <translation id="2402226831639195063">ໂທນສຽງ</translation>
 <translation id="2405887402346713222">ໝາຍເລກຊີຣຽວອຸປະກອນ ແລະ ສ່ວນປະກອບ</translation>
 <translation id="2406153734066939945">ລຶບໂປຣໄຟລ໌ນີ້ ແລະ ຂໍ້ມູນຂອງມັນບໍ?</translation>
+<translation id="2407671304279211586">ເລືອກຜູ້ໃຫ້ບໍລິການ DNS</translation>
 <translation id="2408018932941436077">ກຳລັງບັນທຶກບັດ</translation>
 <translation id="2408955596600435184">​ປ້ອນ​ລະ​ຫັດ PIN ຂອງ​ທ່ານ</translation>
 <translation id="2409268599591722235">ເລີ່ມ​ກັນ​ເລີຍ</translation>
@@ -3798,6 +3798,7 @@
 <translation id="3922823422695198027">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ແລະ <ph name="APP_NAME_4" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="3923184630988645767">ການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3923221004758245114">ລຶບ <ph name="VM_NAME" /> ອອກຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານບໍ? ການດຳເນີນການນີ້ຈະລຶບແອັບ ແລະ ຂໍ້ມູນທັງໝົດໃນເຄື່ອງສະເໝືອນ!</translation>
+<translation id="3923494859158167397">ບໍ່ໄດ້ຕັ້ງຄ່າເຄືອຂ່າຍມືຖື</translation>
 <translation id="3923676227229836009">ໜ້ານີ້ໄດ້ຮັບອະນຸຍາດໃຫ້ເບິ່ງໄຟລ໌ໄດ້</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ການສະແດງຜົນ ແລະ ຂະໜາດຂໍ້ຄວາມ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4437,7 +4438,6 @@
 <translation id="4427365070557649936">ກຳລັງຢັ້ງຢືນລະຫັດຢືນຢັນຢູ່...</translation>
 <translation id="4429163740524851942">ໂຄງຮ່າງແປ້ນພິມພາຍນອກ</translation>
 <translation id="4430019312045809116">ລະດັບສຽງ</translation>
-<translation id="4430204941092622397">ນີ້ອາດເຮັດໃຫ້ເຄືອຂ່າຍມືຖືຂອງທ່ານຕັດການເຊື່ອມຕໍ່ເປັນເວລາສອງສາມນາທີ.</translation>
 <translation id="443031431654216610">ໃຊ້ສະເພາະຕົວເລກເທົ່ານັ້ນ</translation>
 <translation id="4430369329743628066">ເພີ່ມບຸກມາກແລ້ວ</translation>
 <translation id="4430422687972614133">ເປີດໃຊ້ບັດສະເໝືອນ</translation>
@@ -6315,7 +6315,6 @@
 <translation id="5955721306465922729">ເວັບໄຊຕ້ອງການເປີດແອັບພລິເຄຊັນນີ້.</translation>
 <translation id="5955809630138889698">ອຸປະກອນນີ້ອາດຈະມີສິດສຳລັບໂໝດສາທິດອອນລາຍເທົ່ານັ້ນ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ຕາງໜ້າຝ່າຍຊ່ວຍເຫຼືອຂອງທ່ານສຳລັບລາຍລະອຽດເພີ່ມເຕີມ.</translation>
 <translation id="5956585768868398362">ນີ້ແມ່ນໜ້າຄົ້ນຫາທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
-<translation id="5957918771633727933">ບໍ່ມີໂປຣໄຟລ໌ eSIM ທີ່ສາມາດໃຊ້ໄດ້. ດາວໂຫຼດ <ph name="BEGIN_LINK" />ໂປຣໄຟລ໌<ph name="END_LINK" /> ໃໝ່.</translation>
 <translation id="5957987129450536192">ແຕະໄອຄອນເລືອກເພື່ອເວົ້າທີ່ຢູ່ໃກ້ຮູບໂປຣໄຟລ໌ຂອງທ່ານ, ແລ້ວເລືອກສິ່ງທີ່ທ່ານຕ້ອງການຮັບຟັງ.</translation>
 <translation id="5959471481388474538">ບໍ່​ມີເຄືອ​ຂ່າຍ​ຢູ່</translation>
 <translation id="5963413905009737549">ຕອນ</translation>
@@ -10350,6 +10349,7 @@
 <translation id="9115932142612197835">ການຕັ້ງຄ່ານີ້ຈະບໍ່ປ່ຽນແປງຄວາມພ້ອມນຳໃຊ້ຂອງ Google ແປພາສາ ຫຼື Lens</translation>
 <translation id="9116799625073598554">ແອັບຈົດບັນທຶກ</translation>
 <translation id="9117030152748022724">ຈັດການແອັບຂອງທ່ານ</translation>
+<translation id="9120362425083889527">ບໍ່ສາມາດສຳເລັດການຕິດຕັ້ງໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ປິດໜ້າຈໍນີ້</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ສຳລັບປະສົບການທີ່ດີທີ່ສຸດ, ກະລຸນາຕິດຕັ້ງ <ph name="DEVICE_OS" /> ໃສ່ດິສກ໌ພາຍໃນຂອງທ່ານ. ນອກຈາກນັ້ນ, ທ່ານສາມາດຕິດຕັ້ງມັນໃນພາຍຫຼັງຈາກໜ້າຈໍການເຂົ້າສູ່ລະບົບໄດ້ນຳ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ຫາກທ່ານບໍ່ພ້ອມຕິດຕັ້ງເທື່ອ, ທ່ານສາມາດເອີ້ນໃຊ້ຈາກ USB ເພື່ອລອງໃຊ້ມັນເບິ່ງກ່ອນໄດ້. ນີ້ຈະເກັບຂໍ້ມູນ ແລະ ລະບົບປະຕິບັດການທີ່ມີຢູ່ກ່ອນແລ້ວຂອງທ່ານໄວ້, ແຕ່ທ່ານອາດເຫັນຂໍ້ຈຳກັດບ່ອນຈັດເກັບຂໍ້ມູນ ແລະ ປະສິດທິພາບ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">ເປີດ​ເປັນ​ແຖບປັກໝຸດແລ້ວ</translation>

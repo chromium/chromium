@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">A Chrome biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
 <translation id="4680828127924988555">Telepítés megszakítása</translation>
 <translation id="469553575393225953">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chrome azt javasolja, hogy csak a Chrome Webáruházból telepítse őket.</translation>
+<translation id="4724676981607797757">A telepítés nem támogatott protokoll hiba miatt nem sikerült.</translation>
 <translation id="4728575227883772061">A telepítés váratlan hiba miatt nem sikerült. Ha a Google Chrome jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4747730611090640388">A Chrome megbecsülheti az Ön érdeklődési köreit.  Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chrome-tól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">Szervezete törli a Chrome-adatokat, ha nem használja a böngészőt ennyi ideig: <ph name="TIMEOUT_DURATION" />. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltött tartalom is.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
+<translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
 <translation id="6235018212288296708">Bejövő szabály a Google Chrome-hoz az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="624230925347970731">A Chrome hamarosan bezáródik</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
@@ -487,6 +489,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="940313311831216333">Ha szeretne minden eszközén hozzáférni Chrome-anyagához, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="943390475793766444">A Chrome a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="963650557422347554">Ha be van kapcsolva, a Chrome kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a fionomgörgetést és a videók képkockasebességét.</translation>
+<translation id="983803489796659991">A telepítés nem sikerült, mert a frissítési szerver nem rendelkezik hash-adatokkal az alkalmazáshoz.</translation>
 <translation id="989369509083708165">A Google Chrome az alapértelmezett böngésző</translation>
 <translation id="989816563149873169">A(z) <ph name="SHORTCUT" /> billentyűkombinációval válthat a Chrome-profilok között</translation>
 </translationbundle>

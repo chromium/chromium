@@ -1548,7 +1548,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="216169395504480358">Add Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sync will start once you leave sync settings</translation>
 <translation id="2162705204091149050">Read information about your browser, OS, device, installed software and files</translation>
-<translation id="2162926944953615670">No available eSIM profiles</translation>
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
 <translation id="2165102982098084499">You linked these devices by scanning a QR code.</translation>
@@ -1860,6 +1859,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2402226831639195063">Tones</translation>
 <translation id="2405887402346713222">Device and Component Serial Numbers</translation>
 <translation id="2406153734066939945">Delete this profile and its data?</translation>
+<translation id="2407671304279211586">Select DNS provider</translation>
 <translation id="2408018932941436077">Saving card</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2409268599591722235">Let's go</translation>
@@ -3799,6 +3799,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3922823422695198027">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and <ph name="APP_NAME_4" /> from opening supported links.</translation>
 <translation id="3923184630988645767">Data usage</translation>
 <translation id="3923221004758245114">Remove <ph name="VM_NAME" /> from your <ph name="DEVICE_TYPE" />? This will delete all apps and data in the virtual machine!</translation>
+<translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3923676227229836009">This page is allowed to view files</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Display and text size <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4438,7 +4439,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
 <translation id="4430019312045809116">volume</translation>
-<translation id="4430204941092622397">This may cause your mobile network to disconnect for a few minutes.</translation>
 <translation id="443031431654216610">Use numerical digits only</translation>
 <translation id="4430369329743628066">Bookmark added</translation>
 <translation id="4430422687972614133">Turn on virtual card</translation>
@@ -6317,7 +6317,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5955721306465922729">A website wants to open this application.</translation>
 <translation id="5955809630138889698">This device might be only eligible for online demo mode. Please contact your support representative for more details.</translation>
 <translation id="5956585768868398362">Is this the search page that you were expecting?</translation>
-<translation id="5957918771633727933">No available eSIM profiles. Download a new <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Tap the Select-to-Speak icon near your profile image, then select what you want to hear.</translation>
 <translation id="5959471481388474538">Network not available</translation>
 <translation id="5963413905009737549">Section</translation>
@@ -10356,6 +10355,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9115932142612197835">This setting doesn't change the availability of Google Translate or Lens</translation>
 <translation id="9116799625073598554">Note-taking app</translation>
 <translation id="9117030152748022724">Manage your apps</translation>
+<translation id="9120362425083889527">The installation could not be completed. Please try again or close this window</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />For the best experience, install <ph name="DEVICE_OS" /> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Open as pinned tab</translation>

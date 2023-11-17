@@ -899,17 +899,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
-<translation id="1808693723592254925">Als je dit beleid aanzet, staat anonieme rapportage over gebruiks- en crashgegevens van Chrome aan Google standaard aan. Gebruikers kunnen deze instelling wijzigen in de Chrome-instellingen.
-
-Als je dit beleid uitzet, staat anonieme rapportage uit en worden er geen gebruiks- of crashgegevens naar Google gestuurd. Gebruikers kunnen deze instelling niet wijzigen.
-
-Als dit beleid niet is ingesteld, kunnen gebruikers het gedrag voor anonieme rapportage kiezen tijdens de installatie of de eerste uitvoering. Ze kunnen de instelling later wijzigen in de Chrome-instellingen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-(Voor <ph name="PRODUCT_OS_NAME" /> raadpleeg je DeviceMetricsReportingEnabled.)</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
 <translation id="1813638828646876133">Automatisch versturen van pincode op het vergrendel- en inlogscherm aanzetten</translation>

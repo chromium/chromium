@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
 <translation id="7153618581592392745">फिकट जांभळा</translation>
 <translation id="7156870133441232244">सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर अपग्रेड करणे आवश्यक आहे.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील जागा (<ph name="DISK_SPACE_SIZE" />) मोकळी करा}other{<ph name="FEATURE_NAME" /> वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील जागा (<ph name="DISK_SPACE_SIZE" />) मोकळी करा}}</translation>
 <translation id="7160999678034985039">कृपया तुमचे काम सेव्ह करा आणि तुम्ही तयार असाल, तेव्हा अपडेट सुरू करा.</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोपनीय फाइल कॉपी करायची आहे का?}other{गोपनीय फाइल कॉपी करायच्या आहेत का?}}</translation>
 <translation id="717330890047184534">Gaia आयडी:</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002">तुमचे डिव्हाइस आणि खाते <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति संच पेज</translation>
+<translation id="8693639060656817812">ट्रॅकिंगपासून संरक्षण उपलब्धतेबद्दल अधिक जाणून घ्या</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699041776323235191">HID डिव्हाइस</translation>
 <translation id="8699985386408839112">एन्व्हलप काकू १</translation>

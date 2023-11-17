@@ -343,7 +343,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="243878895369688216">Deschis ieri</translation>
 <translation id="2440978926514840421">S-a înregistrat GIF-ul</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
-<translation id="2448312741937722512">Tipul</translation>
 <translation id="2449089818483227734">Nivel scăzut al bateriei</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
 <translation id="2455994958736234930">Adaugă www. și .com în bara de adrese, apoi deschide site-ul</translation>
@@ -1015,7 +1014,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5117590920725113268">Afișează luna următoare</translation>
 <translation id="5121628974188116412">Navighează la sfârșitul paginii</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
-<translation id="5145331109270917438">Data modificării</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5150070631291639005">Setări de confidențialitate</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
@@ -1143,7 +1141,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5620979661744857819">Astfel, se permite accesul pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiuni pentru camera foto și microfon Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Parola ta nu a putut fi confirmată. Încearcă din nou.</translation>
-<translation id="5646376287012673985">Locație</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> are nevoie de atenție.</translation>
 <translation id="5662075790140998213">Biroul 10</translation>
@@ -1719,7 +1716,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8001755249288974029">Selectează textul începând de la cursor până la începutul rândului</translation>
 <translation id="8004512796067398576">Incrementează</translation>
 <translation id="8026334261755873520">Șterge datele de navigare</translation>
-<translation id="8028993641010258682">Dimensiune</translation>
 <translation id="8029247720646289474">Conectarea la hotspot nu a reușit</translation>
 <translation id="8029629653277878342">Este necesar codul PIN sau parola pentru mai multă siguranță</translation>
 <translation id="8030169304546394654">Deconectat</translation>
@@ -1821,7 +1817,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Deschide linkul într-o filă nouă</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Afișează setările Trimiterii în apropiere</translation>
 <translation id="8507563469658346379">Toți, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Creează un nou desktop</translation>
 <translation id="85123341071060231">Bluetooth-ul Chromebook-ului este dezactivat. Pentru a-ți debloca Chromebookul, introdu parola.</translation>

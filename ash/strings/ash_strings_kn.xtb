@@ -343,7 +343,6 @@
 <translation id="243878895369688216">ನಿನ್ನೆ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2440978926514840421">GIF ರೆಕಾರ್ಡಿಂಗ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2441427462554639370">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ತೀರಾ ಕಡಿಮೆ ಇರುವ ಕಾರಣ ರೆಕಾರ್ಡಿಂಗ್ ಕೊನೆಗೊಂಡಿದೆ</translation>
-<translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2449089818483227734">ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="2450205753526923158">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್</translation>
 <translation id="2455994958736234930">www. ಮತ್ತು .com ಅನ್ನು ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ, ನಂತರ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">ಮುಂದಿನ ತಿಂಗಳು ತೋರಿಸಿ</translation>
 <translation id="5121628974188116412">ಪುಟದ ಕೆಳಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
-<translation id="5145331109270917438">ದಿನಾಂಕ ಮಾರ್ಪಡಿಸಿದೆ</translation>
 <translation id="5147567197700016471">ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="5150070631291639005">ಗೌಪ್ಯತಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5155897006997040331">ರೀಡಿಂಗ್ ಸ್ಪೀಡ್</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="5646376287012673985">ಸ್ಥಳ</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5662075790140998213">ಡೆಸ್ಕ್ 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">ಕರ್ಸರ್‌ನಿಂದ ಸಾಲಿನ ಆರಂಭಕ್ಕೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
 <translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
-<translation id="8028993641010258682">ಗಾತ್ರ</translation>
 <translation id="8029247720646289474">ಹಾಟ್‌ಸ್ಪಾಟ್ ಕನೆಕ್ಷನ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8029629653277878342">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8030169304546394654">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="8491237443345908933">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಇನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="8496402167048257517">Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8507563469658346379">ಪ್ರತಿಯೊಬ್ಬರು, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ಹೊಸ ಡೆಸ್ಕ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="85123341071060231">Chromebookನ ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿದೆ. Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.</translation>

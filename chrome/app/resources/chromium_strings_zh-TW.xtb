@@ -344,6 +344,7 @@
 <translation id="6981396265751285733">這項設定開啟時，Chromium 會釋出閒置分頁占用的記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，保持 Chromium 快速運作。當你切回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。</translation>
 <translation id="6985329841647292029">Chromium OS 條款</translation>
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
+<translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
@@ -397,6 +398,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7997934263947464652">來源不明的擴充功能、應用程式和主題可能會損害你的裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="8086881907087796310">安裝失敗，因為電腦不符合最低硬體需求。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="8133124826068723441">你的網域無法使用同步功能，因此 Chromium OS 無法同步處理你的資料。</translation>

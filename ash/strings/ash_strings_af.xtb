@@ -343,7 +343,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="243878895369688216">Gister oopgemaak</translation>
 <translation id="2440978926514840421">GIF-opname is geneem</translation>
 <translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
-<translation id="2448312741937722512">Soort</translation>
 <translation id="2449089818483227734">Battery is byna pap</translation>
 <translation id="2450205753526923158">Skermkiekiemodus</translation>
 <translation id="2455994958736234930">Voeg www. en .com by die adresbalk en maak dan die bladsy oop</translation>
@@ -1016,7 +1015,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5117590920725113268">Wys volgende maand</translation>
 <translation id="5121628974188116412">Gaan na onderkant van bladsy</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
-<translation id="5145331109270917438">Datum gewysig</translation>
 <translation id="5147567197700016471">Ontsluit</translation>
 <translation id="5150070631291639005">Privaatheidinstellings</translation>
 <translation id="5155897006997040331">Leesspoed</translation>
@@ -1144,7 +1142,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5620979661744857819">Dit gee toegang vir <ph name="APP_NAME" /> en alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Jou wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
-<translation id="5646376287012673985">Ligging</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vereis jou aandag.</translation>
 <translation id="5662075790140998213">Lessenaar 10</translation>
@@ -1720,7 +1717,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8001755249288974029">Kies teks van skermpyltjie af tot by begin van reël</translation>
 <translation id="8004512796067398576">Inkrement</translation>
 <translation id="8026334261755873520">Vee blaaidata uit</translation>
-<translation id="8028993641010258682">Grootte</translation>
 <translation id="8029247720646289474">Kon nie aan warmkol koppel nie</translation>
 <translation id="8029629653277878342">PIN of wagwoord word vereis vir meer sekuriteit</translation>
 <translation id="8030169304546394654">Ontkoppel</translation>
@@ -1822,7 +1818,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8487699605742506766">Warmkol</translation>
 <translation id="8491237443345908933">Maak skakel in nuwe oortjie oop</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> werk nie met <ph name="SPECIFIED_RESOLUTION" /> nie. Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" />. Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
-<translation id="8496402167048257517">Wys Nabydeling-instellings</translation>
 <translation id="8507563469658346379">Almal, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Skep nuwe lessenaar</translation>
 <translation id="85123341071060231">Jou Chromebook se Bluetooth is af. Voer wagwoord in om jou Chromebook te ontsluit.</translation>

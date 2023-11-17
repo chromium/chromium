@@ -343,6 +343,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6981396265751285733">Kun tämä on päällä, Chromium vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chromium pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin.</translation>
 <translation id="6985329841647292029">Chromium-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="6990124437352146030">Chromium tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
+<translation id="7011190694940573312">Asennus epäonnistui, koska tätä käyttöjärjestelmän versiota ei tueta.</translation>
 <translation id="7024536598735240744">Purkamisvirhe: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Asennus keskeytyi.</translation>
 <translation id="705851970750939768">Päivitä Chromium</translation>
@@ -395,6 +396,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="8133124826068723441">Chromium-käyttöjärjestelmä ei voi synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>

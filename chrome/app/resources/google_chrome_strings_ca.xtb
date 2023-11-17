@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">Perquè Chrome sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="4680828127924988555">Cancel·la la instal·lació</translation>
 <translation id="469553575393225953">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de Chrome Web Store.</translation>
+<translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4728575227883772061">S'ha produït un error no especificat durant la instal·lació. Si Google Chrome s'està executant en aquests moments, tanca'l i torna-ho a provar.</translation>
 <translation id="4747730611090640388">Chrome pot estimar els teus interessos.  Després, un lloc web que visitis pot demanar els teus interessos a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">La teva organització suprimeix les dades de Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6235018212288296708">Regla d'entrada de Google Chrome per permetre el trànsit de mDNS.</translation>
 <translation id="624230925347970731">Chrome es tancarà aviat</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
@@ -350,6 +352,7 @@
 <translation id="6943584222992551122">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla d'entrada de Google Chrome Beta per permetre el trànsit d'mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome està actualitzat, però no l'heu utilitzat durant un mínim de 30 dies.</translation>
+<translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">La instal·lació s'ha aturat.</translation>
 <translation id="7025800014283535195">Pots canviar entre perfils de Chrome aquí</translation>
@@ -419,6 +422,7 @@
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
@@ -485,6 +489,7 @@
 <translation id="940313311831216333">Per accedir a les teves coses de Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització.</translation>
 <translation id="943390475793766444">Chrome recomana que s'analitzi aquest fitxer perquè pot ser perillós.</translation>
 <translation id="963650557422347554">Quan aquesta opció està activada, Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos.</translation>
+<translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de cap valor de resum de dades per a l'aplicació.</translation>
 <translation id="989369509083708165">Google Chrome és el navegador predeterminat</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>
 </translationbundle>

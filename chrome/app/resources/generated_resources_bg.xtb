@@ -1544,7 +1544,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="216169395504480358">Добавяне на Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизирането ще започне, след като излезете от страницата с настройките му</translation>
 <translation id="2162705204091149050">Четене на информация за вашите браузър, операционна система, устройство, инсталиран софтуер и файлове</translation>
-<translation id="2162926944953615670">Няма налични потребителски профили за електронни SIM карти</translation>
 <translation id="2163470535490402084">Моля, свържете се с интернет, за да влезте в устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и още 1 превключвател</translation>
 <translation id="2165102982098084499">Свързахте тези устройства, като сканирахте QR код.</translation>
@@ -3797,6 +3796,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3922823422695198027">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
 <translation id="3923221004758245114">Искате ли да премахнете <ph name="VM_NAME" /> от <ph name="DEVICE_TYPE" />? Всички приложения и данни във виртуалната машина ще бъдат изтрити.</translation>
+<translation id="3923494859158167397">Няма настроени мобилни мрежи</translation>
 <translation id="3923676227229836009">Тази страница има разрешение да преглежда файлове</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Размер на текста и елементите на екрана: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4436,7 +4436,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4427365070557649936">Кодът за потвърждение се проверява...</translation>
 <translation id="4429163740524851942">Подредба на физическата клавиатура</translation>
 <translation id="4430019312045809116">Звук</translation>
-<translation id="4430204941092622397">Това може да доведе до прекъсване на връзката с мобилната ви мрежа за няколко минути.</translation>
 <translation id="443031431654216610">Използвайте само цифри</translation>
 <translation id="4430369329743628066">Отметката бе добавена</translation>
 <translation id="4430422687972614133">Включване на виртуалната карта</translation>
@@ -6316,7 +6315,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5955721306465922729">Уебсайт иска да отвори това приложение.</translation>
 <translation id="5955809630138889698">Възможно е това устройство да отговаря на условията само за онлайн демонстрационен режим. За повече подробности, моля, свържете се с представител на екипа за поддръжка.</translation>
 <translation id="5956585768868398362">Това ли е очакваната от вас страница за търсене?</translation>
-<translation id="5957918771633727933">Няма профили за електронни SIM карти. Изтеглете нов <ph name="BEGIN_LINK" />профил<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Докоснете иконата на Прочитане на глас до изображението на потребителския си профил и изберете текста, който искате да чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е налице</translation>
 <translation id="5963413905009737549">Секция</translation>
@@ -10355,6 +10353,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9115932142612197835">Тази настройка не променя наличността на Google Преводач и Обектив</translation>
 <translation id="9116799625073598554">Приложение за водене на бележки</translation>
 <translation id="9117030152748022724">Управление на приложенията ви</translation>
+<translation id="9120362425083889527">Инсталирането не завърши. Моля, опитайте отново или затворете този прозорец</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />За най-добра практическа работа инсталирайте <ph name="DEVICE_OS" /> на вътрешния си диск. Можете да направите това и по-късно от екрана за вход.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако нямате готовност да инсталирате операционната система, можете да я изпробвате, като я стартирате от USB. По този начин ще запазите съществуващите си операционна система и данни, но може да забележите ограничения по отношение на хранилището и производителността.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Отваряне като фиксиран раздел</translation>

@@ -3051,6 +3051,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Ақшыл көк</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Бұл файлды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="7160999678034985039">Жұмысыңызды сақтаңыз және дайын болған кезде жаңартуды бастаңыз.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Құпия файл көшірілсін бе?}other{Құпия файлдар көшірілсін бе?}}</translation>
 <translation id="717330890047184534">GAIA идентификаторы:</translation>
@@ -3845,6 +3846,7 @@
 <translation id="8687429322371626002">Құрылғы мен аккаунтты <ph name="MANAGER" /> басқарады.</translation>
 <translation id="8688672835843460752">Қолжетімді</translation>
 <translation id="868922510921656628">Әр жиынтықтағы беттер саны</translation>
+<translation id="8693639060656817812">Бақылаудан қорғау функциясының қолжетімділігі туралы толық ақпарат</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699041776323235191">HID құрылғысы</translation>
 <translation id="8699985386408839112">Kaku 1 хатқалтасы</translation>

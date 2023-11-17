@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1178581264944972037">مکث</translation>
+<translation id="1921351128855867012">‫<ph name="NUMBER_OF_SECONDS" /> ثانیه سریع به‌جلو بردن</translation>
+<translation id="3807208219231826020">جلو و عقب بردن</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="4431240646217225907">برجسته کردن نوشتار و پیمایش خودکار</translation>
 <translation id="4654641641922242357">پخش‌کننده «خواندن این صفحه».</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> ثانیه عقب رفتن</translation>
 <translation id="5234971936051226002">پخش‌کننده «خواندن این صفحه» کوچک شد.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="6315170314923504164">صدا</translation>
@@ -14,5 +17,7 @@
 <translation id="6846298663435243399">درحال بارگیری…</translation>
 <translation id="7587250070160020374">‏Chrome اکنون درحال پخش است</translation>
 <translation id="8136852699834914183">بازپخش در این صفحه دردسترس نیست.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />× افزایش/کاهش سرعت.</translation>
+<translation id="8407011429883244666">بستن پخش‌کننده.</translation>
 <translation id="8953618380150219653">پخش‌کننده «خواندن این صفحه» به‌صورت کامل باز شد.</translation>
 </translationbundle>

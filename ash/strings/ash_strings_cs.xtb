@@ -343,7 +343,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="243878895369688216">Otevřeno včera</translation>
 <translation id="2440978926514840421">GIF byl zaznamenán</translation>
 <translation id="2441427462554639370">Nahrávání bylo ukončeno z důvodu kriticky nízkého místa v úložišti</translation>
-<translation id="2448312741937722512">Typ</translation>
 <translation id="2449089818483227734">Slabá baterie</translation>
 <translation id="2450205753526923158">Režim snímku obrazovky</translation>
 <translation id="2455994958736234930">Přidat do adresního řádku předponu www. a příponu .com a poté otevřít web</translation>
@@ -1015,7 +1014,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5117590920725113268">Zobrazit další měsíc</translation>
 <translation id="5121628974188116412">Přejít na konec stránky</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
-<translation id="5145331109270917438">Datum úpravy</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5150070631291639005">Nastavení soukromí</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
@@ -1143,7 +1141,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5620979661744857819">Tímto povolíte přístup aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
-<translation id="5646376287012673985">Poloha</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5662075790140998213">Plocha 10</translation>
@@ -1718,7 +1715,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8001755249288974029">Vybrat text od kurzoru do začátku řádku</translation>
 <translation id="8004512796067398576">Zvýšit</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>
-<translation id="8028993641010258682">Velikost</translation>
 <translation id="8029247720646289474">Připojení k hotspotu se nezdařilo</translation>
 <translation id="8029629653277878342">Kvůli zabezpečení je potřeba zadat PIN nebo heslo</translation>
 <translation id="8030169304546394654">Odpojeno</translation>
@@ -1820,7 +1816,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otevřít odkaz na nové kartě</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Zobrazit nastavení sdílení nablízko</translation>
 <translation id="8507563469658346379">Všichni, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Vytvořit novou plochu</translation>
 <translation id="85123341071060231">Bluetooth v Chromebooku je vypnuté. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>

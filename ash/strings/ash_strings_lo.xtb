@@ -343,7 +343,6 @@
 <translation id="243878895369688216">ເປີດມື້ວານນີ້</translation>
 <translation id="2440978926514840421">ເຮັດການບັນທຶກ GIF ແລ້ວ</translation>
 <translation id="2441427462554639370">ການບັນທຶກສິ້ນສຸດລົງເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍສຸດຂີດ</translation>
-<translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2449089818483227734">ແບັດເຕີຣີເຫຼືອໜ້ອຍ</translation>
 <translation id="2450205753526923158">ໂໝດຮູບໜ້າຈໍ</translation>
 <translation id="2455994958736234930">ເພີ່ມ www. ແລະ .com ໃສ່ແຖບທີ່ຢູ່, ຈາກນັ້ນເປີດເວັບໄຊ</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">ສະ​ແດງ​ເດືອນ​ຕໍ່​ໄປ</translation>
 <translation id="5121628974188116412">ໄປຫາສ່ວນລຸ່ມຂອງໜ້າ</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
-<translation id="5145331109270917438">ວັນ​ທີ​ດັດ​ແປງ</translation>
 <translation id="5147567197700016471">ປົດລັອກແລ້ວ</translation>
 <translation id="5150070631291639005">ການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5155897006997040331">ຄວາມໄວການອ່ານ</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">ການດຳເນີນການນີ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ຮວມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດສາມາດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນໄດ້. ທ່ານອາດຕ້ອງໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່ ຫຼື ຣີສະຕາດແອັບ.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ບໍ່ສາມາດຢັ້ງຢືນລະຫັດຜ່ານຂອງທ່ານໄດ້ ກະລຸນາລອງໃໝ່.</translation>
-<translation id="5646376287012673985">ສະ​ຖານ​ທີ່</translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ຂໍໃຫ້ທ່ານດຳເນີນການ.</translation>
 <translation id="5662075790140998213">ໂຕະ 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">ເລືອກຂໍ້ຄວາມຈາກເຄີເຊີໄປຈົນຮອດຕົ້ນແຖວ</translation>
 <translation id="8004512796067398576">ການເພີ່ມ</translation>
 <translation id="8026334261755873520">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
-<translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="8029247720646289474">ເຊື່ອມຕໍ່ຮັອດສະປອດບໍ່ສຳເລັດ</translation>
 <translation id="8029629653277878342">ຈຳເປັນຕ້ອງມີ PIN ຫຼື ລະຫັດຜ່ານເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="8030169304546394654">ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">ຮັອດສະປອດ</translation>
 <translation id="8491237443345908933">ເປີດລິ້ງໃນແຖບໃໝ່</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" />. ຄວາມລະອຽດໄດ້ປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="8507563469658346379">ທຸກຄົນ, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ສ້າງໂຕະໃໝ່</translation>
 <translation id="85123341071060231">Bluetooth ຂອງ Chromebook ທ່ານປິດຢູ່. ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃສ່ລະຫັດຜ່ານກ່ອນ.</translation>

@@ -3051,6 +3051,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Бледна-ліловы</translation>
 <translation id="7156870133441232244">Сервер патрабуе абнаўлення пратакола TLS да версіі 1.2 або навейшай.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}one{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}few{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}many{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}other{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}}</translation>
 <translation id="7160999678034985039">Захавайце працу і пачніце абнаўленне, калі будзеце гатовыя.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Капіраваць канфідэнцыяльны файл?}one{Капіраваць канфідэнцыяльныя файлы?}few{Капіраваць канфідэнцыяльныя файлы?}many{Капіраваць канфідэнцыяльныя файлы?}other{Капіраваць канфідэнцыяльныя файлы?}}</translation>
 <translation id="717330890047184534">Ідэнтыфікатар GAIA:</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002">Вашай прыладай і ўліковым запісам кіруе <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Даступна</translation>
 <translation id="868922510921656628">Старонак у наборы</translation>
+<translation id="8693639060656817812">Даведацца больш пра даступнасць абароны ад адсочвання</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699041776323235191">Прылада HID</translation>
 <translation id="8699985386408839112">Канверт Kaku 1</translation>

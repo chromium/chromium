@@ -343,7 +343,6 @@
 <translation id="243878895369688216">ગઈકાલે ખોલેલી</translation>
 <translation id="2440978926514840421">GIFનું રેકોર્ડિંગ લેવામાં આવ્યું છે</translation>
 <translation id="2441427462554639370">સ્ટોરેજ સ્પેસ અત્યંત ઓછી હોવાથી રેકોર્ડિંગ સમાપ્ત થયું</translation>
-<translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2449089818483227734">ઓછી બૅટરી</translation>
 <translation id="2450205753526923158">સ્ક્રીનશૉટ મોડ</translation>
 <translation id="2455994958736234930">ઍડ્રેસ બારમાં www. અને .com ઉમેરો, પછી વેબસાઇટ ખોલો</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">આગલો મહિનો દર્શાવો</translation>
 <translation id="5121628974188116412">પેજના તળિયે જાઓ</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
-<translation id="5145331109270917438">સંશોધિત કર્યાની તારીખ</translation>
 <translation id="5147567197700016471">અનલૉક કર્યું</translation>
 <translation id="5150070631291639005">પ્રાઇવસી સેટિંગ</translation>
 <translation id="5155897006997040331">વાંચનની ઝડપ</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી <ph name="APP_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">તમારો પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
-<translation id="5646376287012673985">સ્થાન</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">કર્સરથી લાઇનની શરૂઆત સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="8004512796067398576">વૃદ્ધિ</translation>
 <translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
-<translation id="8028993641010258682">કદ</translation>
 <translation id="8029247720646289474">હૉટસ્પૉટ કનેક્શન નિષ્ફળ થયું</translation>
 <translation id="8029629653277878342">વધુ સુરક્ષા માટે પિન અથવા પાસવર્ડ જરૂરી છે</translation>
 <translation id="8030169304546394654">ડિસ્કનેક્ટેડ</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">હૉટસ્પૉટ</translation>
 <translation id="8491237443345908933">નવા ટૅબમાં લિંક ખોલો</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
-<translation id="8496402167048257517">નજીકના શેર સુવિધાના સેટિંગ બતાવો</translation>
 <translation id="8507563469658346379">પ્રત્યેક, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">નવું ડેસ્ક બનાવો</translation>
 <translation id="85123341071060231">તમારી Chromebookનું બ્લૂટૂથ બંધ છે. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>

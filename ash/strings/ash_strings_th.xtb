@@ -343,7 +343,6 @@
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
 <translation id="2440978926514840421">บันทึก GIF แล้ว</translation>
 <translation id="2441427462554639370">การบันทึกสิ้นสุดเนื่องจากพื้นที่เก็บข้อมูลใกล้เต็มแล้ว</translation>
-<translation id="2448312741937722512">ประเภท</translation>
 <translation id="2449089818483227734">แบตเตอรี่เหลือน้อย</translation>
 <translation id="2450205753526923158">โหมดภาพหน้าจอ</translation>
 <translation id="2455994958736234930">เพิ่ม www. และ .com ในแถบที่อยู่ จากนั้นเปิดเว็บไซต์</translation>
@@ -1010,7 +1009,6 @@
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
-<translation id="5145331109270917438">วันที่แก้ไข</translation>
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
 <translation id="5150070631291639005">การตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="5155897006997040331">ความเร็วในการอ่าน</translation>
@@ -1138,7 +1136,6 @@
 <translation id="5620979661744857819">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
-<translation id="5646376287012673985">ตำแหน่ง</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ส่งคำขอให้คุณดำเนินการ</translation>
 <translation id="5662075790140998213">เดสก์ที่ 10</translation>
@@ -1681,6 +1678,13 @@
 <translation id="7893503627044934815">ไม่ต้องการให้แสดงไฟล์นี้</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">คุณกดแป้นพิมพ์ลัดสำหรับการหมุนหน้าจอ จะหมุนหน้าจอไหม</translation>
+<translation id="7897626842031123113">ถาดสถานะ เวลา <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">สลับหน้าต่าง</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
@@ -1714,7 +1718,6 @@
 <translation id="8001755249288974029">เลือกข้อความจากเคอร์เซอร์ไปจนถึงต้นบรรทัด</translation>
 <translation id="8004512796067398576">การเพิ่ม</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
-<translation id="8028993641010258682">ขนาด</translation>
 <translation id="8029247720646289474">เชื่อมต่อฮอตสปอตไม่สำเร็จ</translation>
 <translation id="8029629653277878342">ต้องป้อน PIN หรือรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
@@ -1816,7 +1819,6 @@
 <translation id="8487699605742506766">ฮอตสปอต</translation>
 <translation id="8491237443345908933">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /> คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="8496402167048257517">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="8507563469658346379">ทุกคน <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">สร้างเดสก์ใหม่</translation>
 <translation id="85123341071060231">บลูทูธของ Chromebook ปิดอยู่ หากต้องการปลดล็อก Chromebook ให้ป้อนรหัสผ่าน</translation>

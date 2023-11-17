@@ -1537,7 +1537,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera dès que vous quitterez les paramètres de synchronisation</translation>
 <translation id="2162705204091149050">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés et des fichiers</translation>
-<translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour accéder à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
 <translation id="2165102982098084499">Vous avez lié ces appareils en numérisant un code QR.</translation>
@@ -3785,6 +3784,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3922823422695198027">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et<ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
 <translation id="3923221004758245114">Retirer <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" />? Toutes les applications et les données de la machine virtuelle seront ainsi supprimées!</translation>
+<translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
 <translation id="3923676227229836009">Cette page possède l'autorisation pour afficher des fichiers</translation>
 <translation id="3924145049010392604">Méta</translation>
 <translation id="3924259174674732591">Affichage et taille du texte : <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4424,7 +4424,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4427365070557649936">Vérification du code de confirmation en cours…</translation>
 <translation id="4429163740524851942">Disposition du clavier physique</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Il se peut que votre réseau cellulaire soit déconnecté pendant quelques minutes.</translation>
 <translation id="443031431654216610">Utiliser uniquement des caractères numériques</translation>
 <translation id="4430369329743628066">Favori ajouté</translation>
 <translation id="4430422687972614133">Activer la carte virtuelle</translation>
@@ -6302,7 +6301,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Cet appareil peut uniquement être admissible au mode démo en ligne. Veuillez communiquer avec votre représentant de l'assistance pour obtenir plus de détails.</translation>
 <translation id="5956585768868398362">Est-ce bien la page de recherche à laquelle vous vous attendiez?</translation>
-<translation id="5957918771633727933">Aucun profil eSIM n'est proposé. Téléchargez un nouveau <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour énoncer à côté de votre image de profil, puis sélectionnez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Le réseau n'est pas accessible</translation>
 <translation id="5963413905009737549">Section</translation>

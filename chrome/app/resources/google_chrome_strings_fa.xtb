@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">‏برای ایمن‌تر کردن Chrome، برخی از افزونه‌هایی را که در<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>
 <translation id="4680828127924988555">لغو نصب</translation>
 <translation id="469553575393225953">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chrome توصیه می‌کند آن‌ها را فقط از «نت‌بازار Chrome» نصب کنید</translation>
+<translation id="4724676981607797757">نصب به‌دلیل خطای پروتکل پشتیبانی‌نشده انجام نشد.</translation>
 <translation id="4728575227883772061">‏به دلیل خطای نامشخص نصب ناموفق بود. اگر Google Chrome در حال اجرا است، لطفاً آن را ببندید و دوباره سعی کنید.</translation>
 <translation id="4747730611090640388">‏Chrome می‌تواند علایقتان را برآورد کند.  بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chrome بخواهد علایق شما را ببیند.</translation>
 <translation id="4754614261631455953">‏Google Chrome Canary (ورودی mDNS)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
 <translation id="6235018212288296708">‏قانون ورودی برای Google Chrome به منظور اجازه به ترافیک mDNS.</translation>
 <translation id="624230925347970731">‏Chrome به‌زودی بسته می‌شود</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
@@ -487,6 +489,7 @@
 <translation id="940313311831216333">‏برای دسترسی به چیزهای Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="943390475793766444">‏Chrome توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="963650557422347554">‏وقتی روشن باشد، Chrome با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری، مثل پیمایش روان و نرخ فریم ویدیو، در مصرف باتری صرفه‌جویی می‌کند.</translation>
+<translation id="983803489796659991">نصب انجام نشد چون سرور به‌روزرسانی هیچ‌گونه داده درهمی برای برنامه ندارد.</translation>
 <translation id="989369509083708165">‏Google Chrome مرورگر پیش‌فرضتان است</translation>
 <translation id="989816563149873169">‏با <ph name="SHORTCUT" /> می‌توانید بین نمایه‌های Chrome جابه‌جا شوید</translation>
 </translationbundle>

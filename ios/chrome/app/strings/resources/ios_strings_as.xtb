@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">ক্ৰম অনুসৰি সজোৱা স্মাৰ্ট মেনু বাৰ</translation>
 <translation id="4860895144060829044">কল কৰক</translation>
 <translation id="4881695831933465202">খোলক</translation>
+<translation id="4883824756452868502">একক চিনাক্ত কৰক</translation>
 <translation id="488785315393301722">সবিশেষ দেখুৱাওক</translation>
 <translation id="4894963374040315706">এইটোৱে আপোনাক নিজৰ কণ্ঠস্বৰ ব্যৱহাৰ কৰি ক্ষিপ্ৰভাৱে সন্ধান কৰিবলৈ দিয়ে</translation>
 <translation id="489903206070130262">আপোনাৰ শেহতীয়া খোলা টেব</translation>
@@ -856,8 +857,10 @@
 <translation id="5551897871312988470">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
 <translation id="555749644339804659">পাছৱৰ্ড পৰীক্ষা কৰি আছে…</translation>
+<translation id="5559567453458728487">ৱেবত পোৱা জোখ-মাখ একক ৰূপান্তৰ কৰক</translation>
 <translation id="556042886152191864">বুটাম</translation>
 <translation id="5572684875078967866">তথ্যৰ ষ্ট’ৰেজ</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰক}one{আটাইবোৰ পেকেজটো ট্ৰেক কৰক}other{আটাইবোৰ পেকেজটো ট্ৰেক কৰক}}</translation>
 <translation id="5597915316964418992">টেব গ্ৰীডটো খোলক</translation>
 <translation id="560322036295180549">আপোনাৰ প্ৰতিষ্ঠানে অফ কৰিছে</translation>
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
@@ -1120,6 +1123,7 @@
 <translation id="6781260999953472352">ছিংক অন কৰিবনে?</translation>
 <translation id="6781405765516175232">পথৰ বিকল্পসমূহৰ বাবে, “দিক্-নিৰ্দেশনা পাওক”ত টিপক।</translation>
 <translation id="6785453220513215166">ক্ৰেশ্ব প্ৰতিবেদন পঠিয়াই থকা হৈছে…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰাটো বন্ধ কৰক}one{আটাইবোৰ পেকেজ ট্ৰেক কৰাটো বন্ধ কৰক}other{আটাইবোৰ পেকেজ ট্ৰেক কৰাটো বন্ধ কৰক}}</translation>
 <translation id="6790502149545262384">শীঘ্ৰেই, আপুনি এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="6797885426782475225">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6800349425672670802">আপুনি টেব সলনি কৰোঁতাৰ পৰা আপোনাৰ আটাইবোৰ খোলা টেব এক্সেছ কৰিব পাৰে।</translation>

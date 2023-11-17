@@ -733,6 +733,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4856841893565072365">Menüleiste mit intelligenter Sortierung</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="4883824756452868502">Einheiten erkennen</translation>
 <translation id="488785315393301722">Details ansehen</translation>
 <translation id="4894963374040315706">Dadurch kannst du per Spracheingabe suchen</translation>
 <translation id="489903206070130262">Zuletzt geöffneter Tab</translation>
@@ -856,8 +857,10 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5551897871312988470">Übersetzung anbieten</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="555749644339804659">Passwörter werden geprüft…</translation>
+<translation id="5559567453458728487">Im Web gefundene Maßeinheiten umrechnen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5572684875078967866">Datenspeicherung</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Dieses Paket verfolgen}other{Alle Pakete verfolgen}}</translation>
 <translation id="5597915316964418992">Tab-Raster öffnen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
@@ -1120,6 +1123,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6781260999953472352">Synchronisierung aktivieren?</translation>
 <translation id="6781405765516175232">Tippe für Routenoptionen auf „Route berechnen“.</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Paket nicht mehr verfolgen}other{Keine Pakete mehr verfolgen}}</translation>
 <translation id="6790502149545262384">Bald wirst du beim Öffnen eines neuen Tabs „<ph name="CHANNEL_NAME" />“-Artikel sehen.</translation>
 <translation id="6797885426782475225">Sprachsuche</translation>
 <translation id="6800349425672670802">Über den Tab-Wechsler kannst du auf alle geöffneten Tabs zugreifen.</translation>

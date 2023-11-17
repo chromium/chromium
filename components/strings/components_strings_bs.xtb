@@ -3052,7 +3052,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Svijetloljubičasta</translation>
 <translation id="7156870133441232244">Server se treba nagodgraditi na verziju TLS 1.2 ili noviju.</translation>
-<translation id="715996170234243096">{NUM_FILES,plural, =1{Da biste poslali tu datoteku putem značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Da pošaljete ovaj fajl putem funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da pošaljete ove fajlove putem funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da pošaljete ove fajlove putem funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da pošaljete ove fajlove putem funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="7160999678034985039">Sačuvajte rad i pokrenite ažuriranje kada budete spremni.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Kopirati povjerljiv fajl?}one{Kopirati povjerljive fajlove?}few{Kopirati povjerljive fajlove?}other{Kopirati povjerljive fajlove?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
@@ -3847,6 +3847,7 @@ Dodatni detalji:
 <translation id="8687429322371626002">Vašim uređajem i računom upravlja <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostupno</translation>
 <translation id="868922510921656628">Broj stranica po skupu</translation>
+<translation id="8693639060656817812">Više informacija o dostupnosti Zaštite od praćenja</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699041776323235191">uređaj HID</translation>
 <translation id="8699985386408839112">Koverta Kaku 1</translation>

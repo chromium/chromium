@@ -343,7 +343,6 @@
 <translation id="243878895369688216">昨天開啟過</translation>
 <translation id="2440978926514840421">已錄製 GIF</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄製</translation>
-<translation id="2448312741937722512">類型</translation>
 <translation id="2449089818483227734">電量不足</translation>
 <translation id="2450205753526923158">螢幕截圖模式</translation>
 <translation id="2455994958736234930">在網址列加入 www. 和 .com，然後開啟網站</translation>
@@ -1012,7 +1011,6 @@
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
-<translation id="5145331109270917438">修改日期</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">隱私權設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
@@ -1140,7 +1138,6 @@
 <translation id="5620979661744857819">這將允許「<ph name="APP_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">系統無法驗證密碼，請再試一次。</translation>
-<translation id="5646376287012673985">位置</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有通知需要查看。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1715,7 +1712,6 @@
 <translation id="8001755249288974029">選取從游標到該行開頭之間的文字</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8026334261755873520">清除瀏覽資料</translation>
-<translation id="8028993641010258682">大小</translation>
 <translation id="8029247720646289474">無線基地台連線失敗</translation>
 <translation id="8029629653277878342">基於安全考量，請輸入 PIN 碼或密碼</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
@@ -1817,7 +1813,6 @@
 <translation id="8487699605742506766">無線基地台</translation>
 <translation id="8491237443345908933">在新分頁中開啟連結</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
-<translation id="8496402167048257517">顯示鄰近分享設定</translation>
 <translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">建立新桌面</translation>
 <translation id="85123341071060231">Chromebook 的藍牙功能已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>

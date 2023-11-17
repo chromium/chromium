@@ -209,6 +209,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="4677944499843243528">Wasifu unaonekana kuwa unatumika na mchakato mwingine wa Chromium (<ph name="PROCESS_ID" />) kwenye kompyuta nyingine (<ph name="HOST_NAME" />). Chromium imefunga wasifu huu ili usifisidiwe. Kama una uhakika hakuna michakato mingine inatumia wasifu huu, unaweza kufungua wasifu na uzindue tena Chromium.</translation>
 <translation id="4680828127924988555">Ghairi Usakinishaji</translation>
 <translation id="4708774505295300557">Kuna mtu aliingia katika Chromium kwenye kompyuta hii akitumia <ph name="ACCOUNT_EMAIL_LAST" />. Tafadhali ongeza wasifu mpya wa Chromium ili utenganishe maelezo yako.</translation>
+<translation id="4724676981607797757">Imeshindwa kusakinisha kwa sababu ya hitilafu ya itifaki isiyotumika.</translation>
 <translation id="4746050847053251315">Ungependa kufunga Chromium?</translation>
 <translation id="4748217263233248895">Sasisho maalum la usalama wa Chromium limewekwa sasa hivi. Ifunge kisha uifungue na tutarejesha vichupo vyako.</translation>
 <translation id="4765210420921718862">Unaweza kubadilisha mawazo yako wakati wowote kwenye mipangilio ya Chromium. Vipindi vya kujaribu vinatekelezwa pamoja na jinsi matangazo yanavyoonyeshwa kwa sasa, hivyo hutaona mabadiliko papo hapo.</translation>
@@ -279,6 +280,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6145820983052037069">Unaweza kubadilisha kati ya wasifu mmoja wa Chromium na mwingine hapa</translation>
 <translation id="615103374448673771">Ukiruhusu vidakuzi, huenda Chromium ikavitumia wakati wa kupakia mapema</translation>
 <translation id="6175304430031192654">Kulingana na mipangilio yako, huenda Chromium pia ikatuma vidakuzi na URL yako ya sasa</translation>
+<translation id="6182736845697986886">Imeshindwa kusakinisha kwa sababu ya hitilafu ya ndani ya seva ya usasishaji.</translation>
 <translation id="6183079672144801177">Hakikisha kwamba umeingia katika akaunti kwenye Chromium kwa kutumia <ph name="TARGET_DEVICE_NAME" /> yako kisha ujaribu kutuma tena.</translation>
 <translation id="6212496753309875659">Kompyuta hii tayari ina toleo la hivi punde la Chromium. Ikiwa programu haifanyikazi, tafadhali ondoa Chromium kisha ujaribu tena.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium itafunguka upya hivi sasa}=1{Chromium itafunguka upya ndani ya sekunde 1}other{Chromium itafunguka upya ndani ya sekunde #}}</translation>
@@ -345,6 +347,7 @@ Baadhi ya vipengele huenda visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="6981396265751285733">Kiokoa hifadhi kinapowashwa, Chromium hurejesha hifadhi iliyopo kwenye vichupo ambavyo havitumiki. Hatua hii hufanya vichupo vinavyotumika na programu nyinginezo ziwe na nyenzo zaidi za kompyuta na hufanya Chromium iwe na kasi ya utendaji. Vichupo ambavyo hutumii vinaanza kutumika tena kiotomatiki unaporudi kwenye vichupo hivyo.</translation>
 <translation id="6985329841647292029">Sheria na masharti ya Mfumo wa Uendeshaji wa Chromium</translation>
 <translation id="6990124437352146030">Chromium inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
+<translation id="7011190694940573312">Imeshindwa kusakinisha kwa sababu toleo hili la mfumo wa uendeshaji halitumiki.</translation>
 <translation id="7024536598735240744">Hitilafu ya kutekeleza kiendelezi cha ndani: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Usakinishaji Umesimamishwa.</translation>
 <translation id="705851970750939768">Sasisha Chromium</translation>
@@ -397,6 +400,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7997934263947464652">Viendelezi, programu na mandhari kutoka kwenye vyanzo visivyojulikana vinaweza kuathiri kifaa chako. Chromium inapendekeza usakinishaji kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> tu</translation>
 <translation id="8013436988911883588">Chromium itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.</translation>
 <translation id="80471789339884597">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena vivinjari vyako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">Imeshindwa kusakinisha kwa sababu kompyuta yako haitimizi masharti ya chini yanayohitajika ya maunzi.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome ya Kujaribia</translation>
 <translation id="8105840573057009683">Chromium inahitaji ruhusa ya kufikia maelezo ya mahali kwa ajili ya tovuti hii</translation>
 <translation id="8133124826068723441">Mfumo wa Uendeshaji wa Chromium haukusawazisha data yako kwa sababu Usawazishaji haupatikani kwa kikoa chako.</translation>
@@ -462,5 +466,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="942598560705308788">Vyeti vinavyodhibitiwa na Chromium</translation>
 <translation id="965162752251293939">Ni nani anayetumia Chromium?</translation>
 <translation id="967427899662692980">Pata usalama thabiti zaidi kutoka Chromium</translation>
+<translation id="983803489796659991">Imeshindwa kusakinisha kwa sababu seva ya usasishaji haina data ya kupunguza urefu ya programu.</translation>
 <translation id="985602178874221306">Waandishi wa Chromium</translation>
 </translationbundle>

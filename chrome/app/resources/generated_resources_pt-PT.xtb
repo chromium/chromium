@@ -1536,7 +1536,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162155940152307086">A sincronização é iniciada depois de sair das definições de sincronização.</translation>
 <translation id="2162705204091149050">Ler informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
-<translation id="2162926944953615670">Não existem perfis do eSIM disponíveis</translation>
 <translation id="2163470535490402084">Ligue-se à Internet para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
 <translation id="2165102982098084499">Associou estes dispositivos através da leitura de um código QR.</translation>
@@ -3785,6 +3784,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3922823422695198027">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e <ph name="APP_NAME_4" /> abram links suportados.</translation>
 <translation id="3923184630988645767">Utilização de dados</translation>
 <translation id="3923221004758245114">Remover <ph name="VM_NAME" /> do dispositivo <ph name="DEVICE_TYPE" />? Esta ação elimina todas as apps e dados na máquina virtual!</translation>
+<translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3923676227229836009">Esta página tem autorização para ver ficheiros</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho do texto e visualização: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4424,7 +4424,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4427365070557649936">A validar o código de validação…</translation>
 <translation id="4429163740524851942">Esquema de teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Isto pode fazer com que a sua rede móvel se desligue por alguns minutos.</translation>
 <translation id="443031431654216610">Use apenas dígitos numéricos</translation>
 <translation id="4430369329743628066">Marcador adicionado</translation>
 <translation id="4430422687972614133">Ativar cartão virtual</translation>
@@ -6303,7 +6302,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5955721306465922729">Um Website quer abrir esta aplicação.</translation>
 <translation id="5955809630138889698">Este dispositivo pode ser apenas elegível para o modo de demonstração online. Contacte o representante do apoio técnico para obter mais detalhes.</translation>
 <translation id="5956585768868398362">É esta a página de pesquisa de que estava à espera?</translation>
-<translation id="5957918771633727933">Não existem perfis eSIM disponíveis. Transfira um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Toque no ícone Selecionar para falar junto à sua imagem do perfil e, em seguida, selecione o que quer ouvir.</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
 <translation id="5963413905009737549">Secção</translation>

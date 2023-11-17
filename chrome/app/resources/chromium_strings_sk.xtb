@@ -209,6 +209,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4677944499843243528">Zdá sa, že profil používa ďalší proces prehliadača Chromium (<ph name="PROCESS_ID" />) na inom počítači (<ph name="HOST_NAME" />). Prehliadač Chromium daný profil uzamkol, aby sa nepoškodil. Ak s istotou viete, že tento profil nepoužívajú žiadne iné procesy, môžete ho odomknúť a prehliadač Chromium znova spustiť.</translation>
 <translation id="4680828127924988555">Zrušiť inštaláciu</translation>
 <translation id="4708774505295300557">Do prehliadača Chromium sa už na tomto počítači niekto prihlásil pomocou účtu <ph name="ACCOUNT_EMAIL_LAST" />. Ak chcete ponechať svoje informácie oddelené, vytvorte v prehliadači Chromium nového používateľa.</translation>
+<translation id="4724676981607797757">Nepodarilo sa nainštalovať pre chybu nepodporovaného protokolu.</translation>
 <translation id="4746050847053251315">Chcete Chromium napriek tomu ukončiť?</translation>
 <translation id="4748217263233248895">Práve bola použitá mimoriadna bezpečnostná aktualizácia pre prehliadač Chromium. Zmeny sa prejavia až po jeho reštartovaní (vaše karty sa automaticky obnovia).</translation>
 <translation id="4765210420921718862">Svoje rozhodnutie môžete kedykoľvek zmeniť v nastaveniach prehliadača Chromium. Skúšobné obdobia prebiehajú popri aktuálnemu spôsobu zobrazovania reklám, takže zmeny hneď neuvidíte.</translation>
@@ -279,6 +280,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6145820983052037069">Tu môžete prepínať profily prehliadača Chromium</translation>
 <translation id="615103374448673771">Keď povolíte súbory cookie, Chromium ich môže použiť pri prednačítavaní</translation>
 <translation id="6175304430031192654">V závislosti od vašich nastavení môže Chromium odosielať aj súbory cookie a vašu aktuálnu webovú adresu</translation>
+<translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
 <translation id="6183079672144801177">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do prehliadača Chromium, a potom to skúste odoslať znova.</translation>
 <translation id="6212496753309875659">Tento počítač už obsahuje novšiu verziu prehliadača Chromium. Ak softvér nefunguje, odinštalujte prehliadač Chromium a skúste to znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sa teraz reštartuje}=1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartuje o # sekundy}many{Chromium sa reštartuje o # sekundy}other{Chromium sa reštartuje o # sekúnd}}</translation>
@@ -464,5 +466,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="942598560705308788">Certifikáty, ktoré spravuje Chromium</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>
 <translation id="967427899662692980">Získajte najsilnejšie zabezpečenie prehliadača Chromium</translation>
+<translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

@@ -731,6 +731,7 @@
 <translation id="4856841893565072365">智能排序菜单栏</translation>
 <translation id="4860895144060829044">拨打</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4883824756452868502">检测单位</translation>
 <translation id="488785315393301722">显示详细信息</translation>
 <translation id="4894963374040315706">这样您就可以使用语音进行搜索</translation>
 <translation id="489903206070130262">您上次打开的标签页</translation>
@@ -854,8 +855,10 @@
 <translation id="5551897871312988470">询问是否翻译</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555749644339804659">正在检查密码…</translation>
+<translation id="5559567453458728487">转换在网上找到的计量单位</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5572684875078967866">信息存储空间</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{跟踪此包裹}other{跟踪所有包裹}}</translation>
 <translation id="5597915316964418992">打开标签页网格</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -1116,6 +1119,7 @@
 <translation id="6781260999953472352">开启同步功能？</translation>
 <translation id="6781405765516175232">如果您想查看路线选项，请点按“查询路线”。</translation>
 <translation id="6785453220513215166">正在发送崩溃报告…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{取消跟踪此包裹}other{取消跟踪所有包裹}}</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6797885426782475225">语音搜索</translation>
 <translation id="6800349425672670802">您可在标签页切换器中访问您所有已打开的标签页。</translation>

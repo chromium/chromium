@@ -1533,7 +1533,6 @@
 <translation id="216169395504480358">વાઇ-ફાઇ ઉમેરો...</translation>
 <translation id="2162155940152307086">એકવાર તમે સિંકના સેટિંગમાંથી બહાર નીકળશો એટલે સિંક શરૂ થઈ જશે</translation>
 <translation id="2162705204091149050">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી વાંચો</translation>
-<translation id="2162926944953615670">કોઈ ઇ-સિમ પ્રોફાઇલ ઉપલબ્ધ નથી</translation>
 <translation id="2163470535490402084">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> માં સાઇન ઇન કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
 <translation id="2165102982098084499">તમે QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કર્યા છે.</translation>
@@ -3782,6 +3781,7 @@
 <translation id="3922823422695198027"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને <ph name="APP_NAME_4" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="3923184630988645767">ડેટા વપરાશ</translation>
 <translation id="3923221004758245114">તમારા <ph name="DEVICE_TYPE" />માંથી <ph name="VM_NAME" /> કાઢી નાખીએ? આમ કરવાથી, વર્ચ્યુઅલ મશીનમાંથી તમામ ઍપ અને ડેટા ડિલીટ થઈ જશે!</translation>
+<translation id="3923494859158167397">કોઈ મોબાઇલ નેટવર્ક સેટઅપ કરેલા નથી</translation>
 <translation id="3923676227229836009">આ પેજ ફાઇલોમાં જોવાની મંજૂરી ધરાવે છે</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ડિસ્પ્લે અને ટેક્સ્ટનું કદ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4421,7 +4421,6 @@
 <translation id="4427365070557649936">કન્ફર્મેશન કોડ ચકાસી રહ્યાં છીએ...</translation>
 <translation id="4429163740524851942">વાસ્તવિક કીબોર્ડનું લેઆઉટ</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
-<translation id="4430204941092622397">આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
 <translation id="443031431654216610">માત્ર સંખ્યાવાચક અંકનો ઉપયોગ કરો</translation>
 <translation id="4430369329743628066">બુકમાર્ક ઉમેરાયો</translation>
 <translation id="4430422687972614133">વર્ચ્યુઅલ કાર્ડની સુવિધા ચાલુ કરો</translation>
@@ -6301,7 +6300,6 @@ USB ડિવાઇસ</translation>
 <translation id="5955721306465922729">કોઈ વેબસાઇટ આ ઍપ્લિકેશન ખોલવા માગે છે.</translation>
 <translation id="5955809630138889698">આ ડિવાઇસ ઑનલાઇન ડેમો મોડ માટે જ પાત્ર હોઈ શકે છે. વધુ વિગતો માટે કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="5956585768868398362">શું આ તમારી અપેક્ષા મુજબનું શોધ પેજ છે?</translation>
-<translation id="5957918771633727933">કોઈ ઇ-સિમ પ્રોફાઇલ ઉપલબ્ધ નથી. નવી <ph name="BEGIN_LINK" />પ્રોફાઇલ<ph name="END_LINK" /> ડાઉનલોડ કરો.</translation>
 <translation id="5957987129450536192">તમારી પ્રોફાઇલ છબીની પાસેના બોલવા માટે પસંદ કરો આઇકનને દબાવો, પછી જે ભાગને સાંભળવો હોય તેને પસંદ કરો.</translation>
 <translation id="5959471481388474538">નેટવર્ક ઉપલબ્ધ નથી</translation>
 <translation id="5963413905009737549">સેક્શન</translation>

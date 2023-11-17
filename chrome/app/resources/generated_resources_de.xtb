@@ -1533,7 +1533,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="216169395504480358">WLAN hinzufügen...</translation>
 <translation id="2162155940152307086">Die Synchronisierung wird gestartet, sobald du die Synchronisierungseinstellungen verlässt</translation>
 <translation id="2162705204091149050">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien abrufen</translation>
-<translation id="2162926944953615670">Keine verfügbaren eSIM-Profile</translation>
 <translation id="2163470535490402084">Stelle eine Internetverbindung her, um dich auf deinem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
@@ -1842,6 +1841,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2402226831639195063">Töne</translation>
 <translation id="2405887402346713222">Seriennummern von Geräten und Komponenten</translation>
 <translation id="2406153734066939945">Dieses Profil und die zugehörigen Daten löschen?</translation>
+<translation id="2407671304279211586">DNS-Anbieter auswählen</translation>
 <translation id="2408018932941436077">Karte wird gespeichert</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2409268599591722235">Los geht's!</translation>
@@ -3781,6 +3781,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3922823422695198027">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> und <ph name="APP_NAME_4" /> unterstützte Links geöffnet werden.</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
 <translation id="3923221004758245114"><ph name="VM_NAME" /> von deinem <ph name="DEVICE_TYPE" /> entfernen? Dadurch werden alle Apps und Daten der virtuellen Maschine gelöscht.</translation>
+<translation id="3923494859158167397">Es sind keine Mobilfunknetze eingerichtet</translation>
 <translation id="3923676227229836009">Diese Website ist berechtigt, Dateien zu lesen</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Anzeige- und Textgröße <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4420,7 +4421,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
-<translation id="4430204941092622397">Das kann dazu führen, dass deine Mobilfunkverbindung für einige Minuten getrennt wird.</translation>
 <translation id="443031431654216610">Darf nur aus Ziffern bestehen</translation>
 <translation id="4430369329743628066">Lesezeichen hinzugefügt</translation>
 <translation id="4430422687972614133">Virtuelle Karte aktivieren</translation>
@@ -6295,7 +6295,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5955721306465922729">Eine Website möchte diese Anwendung öffnen.</translation>
 <translation id="5955809630138889698">Dieses Gerät kann möglicherweise nur für den Onlinedemomodus verwendet werden. Weitere Informationen erhältst du bei deinem Support-Mitarbeiter.</translation>
 <translation id="5956585768868398362">Ist das deine erwartete Seite für die Suche?</translation>
-<translation id="5957918771633727933">Keine verfügbaren eSIM-Profile. Lade ein neues <ph name="BEGIN_LINK" />Profil<ph name="END_LINK" /> herunter.</translation>
 <translation id="5957987129450536192">Tippe auf das Symbol "Vorlesen" in der Nähe deines Profilbilds und wähle aus, was vorgelesen werden soll.</translation>
 <translation id="5959471481388474538">Netzwerk nicht verfügbar</translation>
 <translation id="5963413905009737549">Section-Element</translation>
@@ -10334,6 +10333,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9115932142612197835">Diese Einstellung wirkt sich nicht auf die Verfügbarkeit von Google Übersetzer oder Lens aus</translation>
 <translation id="9116799625073598554">Notizen-App</translation>
 <translation id="9117030152748022724">Apps verwalten</translation>
+<translation id="9120362425083889527">Die Installation konnte nicht abgeschlossen werden. Bitte versuche es noch einmal oder schließe dieses Fenster.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Für optimale Leistung solltest du <ph name="DEVICE_OS" /> auf dem internen Laufwerk installieren. Eine Installation ist aber auch später über den Anmeldebildschirm möglich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zum Ausprobieren kannst du es erst einmal über den USB-Stick ausführen. So behältst du dein vorhandenes Betriebssystem und deine Daten. Speicherplatz und Leistung sind jedoch möglicherweise begrenzt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>

@@ -1546,7 +1546,6 @@
 <translation id="216169395504480358">ৱাই-ফাই যোগ কৰক…</translation>
 <translation id="2162155940152307086">আপুনি ছিংকৰ ছেটিংসমূহৰ পৰা আঁতৰি যোৱাৰ লগে লগে ছিংক আৰম্ভ হ‘ব</translation>
 <translation id="2162705204091149050">আপোনাৰ ব্ৰাউজাৰ, OS, ডিভাইচ, ইনষ্টল কৰি থোৱা ছফ্টৱেৰ আৰু ফাইলৰ বিষয়ে তথ্য পঢ়ক</translation>
-<translation id="2162926944953615670">কোনো ই-ছিমৰ প্ৰ’ফাইল উপলব্ধ নহয়</translation>
 <translation id="2163470535490402084">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰিবলৈ ইণ্টাৰনেট সংযোগ কৰক।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
 <translation id="2165102982098084499">আপুনি এটা কিউআৰ ক’ড স্কেন কৰি এই ডিভাইচসমূহ লিংক কৰিছে।</translation>
@@ -1858,6 +1857,7 @@
 <translation id="2402226831639195063">ট’ন</translation>
 <translation id="2405887402346713222">ডিভাইচ আৰু উপাদানৰ ক্ৰমিক নম্বৰসমূহ</translation>
 <translation id="2406153734066939945">এই প্ৰ’ফাইলটো আৰু ইয়াৰ ডেটা মচিবনে?</translation>
+<translation id="2407671304279211586">DNS প্ৰদানকাৰী বাছনি কৰক</translation>
 <translation id="2408018932941436077">কাৰ্ডখন ছেভ কৰি থকা হৈছে</translation>
 <translation id="2408955596600435184">আপোনাৰ পিন দিয়ক</translation>
 <translation id="2409268599591722235">আৰম্ভ কৰোঁ আহক</translation>
@@ -3797,6 +3797,7 @@
 <translation id="3922823422695198027">অন্য এপ্‌সমূহ <ph name="APP_NAME" />ৰ দৰে একেই লিংকসমূহ খুলিবলৈ সাজু আছে। এইটোৱে <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> আৰু <ph name="APP_NAME_4" />ক সমৰ্থিত লিংকসমূহ খুলিবলৈ নিদিয়ে।</translation>
 <translation id="3923184630988645767">ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="3923221004758245114">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা <ph name="VM_NAME" /> আঁতৰাবনে? ইয়াৰ ফলত ভাৰ্ছুৱেল মেচিনত আটাইবোৰ এপ্‌ আৰু ডেটা মচি পেলাব!</translation>
+<translation id="3923494859158167397">কোনো ম'বাইলৰ নেটৱৰ্ক ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="3923676227229836009">ফাইলসমূহ চাবলৈ এই পৃষ্ঠাটোক অনুমতি দিয়া হৈছে</translation>
 <translation id="3924145049010392604">মেটা</translation>
 <translation id="3924259174674732591">ডিছপ্লে’ আৰু পাঠৰ আকাৰ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4435,7 +4436,6 @@
 <translation id="4427365070557649936">নিশ্চিতকৰণৰ ক'ড সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="4429163740524851942">কায়িক কীব’ৰ্ডৰ লে’আউট</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
-<translation id="4430204941092622397">এইটোৱে কেইমিনিটমানৰ বাবে আপোনাৰ ম’বাইলৰ নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰিব পাৰে।</translation>
 <translation id="443031431654216610">কেৱল সংখ্যা ব্যৱহাৰ কৰক</translation>
 <translation id="4430369329743628066">বুকমাৰ্ক যোগ কৰা হ’ল</translation>
 <translation id="4430422687972614133">ভাৰ্চুৱেল কাৰ্ড অন কৰক</translation>
@@ -6314,7 +6314,6 @@
 <translation id="5955721306465922729">এটা ৱেবছাইটে এই এপ্লিকেশ্বনটো খুলিবলৈ বিচাৰে।</translation>
 <translation id="5955809630138889698">এই ডিভাইচটো কেৱল অনলাইন ডেম' ম'ডৰ বাবে যোগ্য হ'ব পাৰে। অধিক সবিশেষৰ বাবে অনুগ্ৰহ কৰি আপোনাৰ সহায়তা প্ৰতিনিধিৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5956585768868398362">আপুনি বিচৰা সন্ধানৰ পৃষ্ঠা এইটোৱেইনে?</translation>
-<translation id="5957918771633727933">কোনো ই-ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। এটা নতুন <ph name="BEGIN_LINK" />প্ৰ'ফাইল<ph name="END_LINK" /> ডাউনল'ড কৰক।</translation>
 <translation id="5957987129450536192">আপোনাৰ প্ৰ’ফাইল প্ৰতিচ্ছবিৰ কাষৰ ’কথা ক’বলৈ বাছনি কৰক’ আইকনত টিপক, তাৰ পাছত আপুনি কি শুনিব বিচাৰে সেয়া বাছনি কৰক।</translation>
 <translation id="5959471481388474538">নেটৱৰ্ক উপলব্ধ নহয়</translation>
 <translation id="5963413905009737549">শাখা</translation>
@@ -10354,6 +10353,7 @@
 <translation id="9115932142612197835">এই ছেটিংটোৱে Google Translate বা Lensৰ উপলব্ধতা সলনি নকৰে</translation>
 <translation id="9116799625073598554">টোকা লোৱা এপ্‌</translation>
 <translation id="9117030152748022724">আপোনাৰ এপ্‌সমূহ পৰিচালনা কৰক</translation>
+<translation id="9120362425083889527">ইনষ্টলেশ্বন সম্পূৰ্ণ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা এই ৱিণ্ড’খন বন্ধ কৰক</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />শ্ৰেষ্ঠ অভিজ্ঞতা লাভ কৰিবলৈ আপোনাৰ অভ্যন্তৰীণ ডিস্কত <ph name="DEVICE_OS" /> ইনষ্টল কৰক। আপুনি লগ ইনৰ স্ক্ৰীনখনৰ পৰাও পাছত এইটো ইনষ্টল কৰিব পাৰে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />যদি আপুনি ইনষ্টল কৰিবলৈ সাজু নহয়, তেন্তে আপুনি এইটো ব্যৱহাৰ কৰি চাবলৈ ইয়াক ইউএছবিৰ পৰা চলাব পাৰে। এইটোৱে আপোনাৰ আগৰে পৰা থকা OS আৰু ডেটা ৰাখিব, কিন্তু আপোনাৰ ষ্ট’ৰেজ আৰু কাৰ্যক্ষমতাৰ ক্ষেত্ৰত সীমাবদ্ধতা আহিব পাৰে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">পিন কৰি থোৱা টেব হিচাপে খোলক</translation>

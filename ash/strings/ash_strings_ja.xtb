@@ -343,7 +343,6 @@
 <translation id="243878895369688216">昨日開いたファイル</translation>
 <translation id="2440978926514840421">GIF の録画が完了しました</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
-<translation id="2448312741937722512">種類</translation>
 <translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">次の月を表示</translation>
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
-<translation id="5145331109270917438">更新日</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">カメラとマイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">パスワードを確認できませんでした。もう一度お試しください。</translation>
-<translation id="5646376287012673985">保存先</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> から通知が届いています。</translation>
 <translation id="5662075790140998213">デスク 10</translation>
@@ -1720,7 +1717,6 @@
 <translation id="8001755249288974029">カーソル位置から行頭までのテキストを選択する</translation>
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
-<translation id="8028993641010258682">サイズ</translation>
 <translation id="8029247720646289474">アクセス ポイント接続エラー</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
 <translation id="8030169304546394654">切断済み</translation>
@@ -1822,7 +1818,6 @@
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8491237443345908933">新しいタブでリンクを開く</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
-<translation id="8496402167048257517">ニアバイシェア設定を表示します</translation>
 <translation id="8507563469658346379">全ユーザー対象（<ph name="REMAINING_TIME" />）</translation>
 <translation id="8511123073331775246">新しいデスクを作成する</translation>
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>

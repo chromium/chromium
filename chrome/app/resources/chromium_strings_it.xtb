@@ -342,6 +342,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6981396265751285733">Se attivi l'opzione, Chromium libera spazio dalle schede non attive. In questo modo le schede attive e altre app hanno più risorse per il computer e mantengono Chromium veloce. Le schede inattive si riattivano automaticamente quando ci torni.</translation>
 <translation id="6985329841647292029">Termini di Chromium OS</translation>
 <translation id="6990124437352146030">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere al microfono</translation>
+<translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installazione interrotta.</translation>
 <translation id="705851970750939768">Aggiorna Chromium</translation>
@@ -394,6 +395,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">Installazione non riuscita perché il computer non soddisfa i requisiti hardware minimi.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
 <translation id="8133124826068723441">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>

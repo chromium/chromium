@@ -1534,7 +1534,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="216169395504480358">Dodaj WiFi...</translation>
 <translation id="2162155940152307086">Sinhronizacija će početi kada izađete iz podešavanja sinhronizacije</translation>
 <translation id="2162705204091149050">Čitanje informacija o pregledaču, OS-u, uređaju, instaliranom softveru i fajlovima</translation>
-<translation id="2162926944953615670">Nema dostupnih eSIM profila</translation>
 <translation id="2163470535490402084">Povežite se na internet da biste se prijavili na <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još 1 prekidač</translation>
 <translation id="2165102982098084499">Povezali ste ove uređaje skeniranjem QR koda.</translation>
@@ -1843,6 +1842,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2402226831639195063">Zvuci</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponenti</translation>
 <translation id="2406153734066939945">Želite li da izbrišete ovaj profil i podatke na njemu?</translation>
+<translation id="2407671304279211586">Izaberite DNS dobavljača</translation>
 <translation id="2408018932941436077">Kartica se čuva</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2409268599591722235">Idemo</translation>
@@ -3782,6 +3782,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3922823422695198027">Druge aplikacije su podešene da otvaraju iste linkove kao aplikacija <ph name="APP_NAME" />. Ovim se aplikacije <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="APP_NAME_4" /> onemogućavaju da otvaraju podržane linkove.</translation>
 <translation id="3923184630988645767">Potrošnja podataka</translation>
 <translation id="3923221004758245114">Želite da uklonite virtuelnu mašinu <ph name="VM_NAME" /> sa uređaja <ph name="DEVICE_TYPE" />? Time ćete izbrisati sve aplikacije i podatke na virtuelnoj mašini.</translation>
+<translation id="3923494859158167397">Nije podešena nijedna mobilna mreža</translation>
 <translation id="3923676227229836009">Ova stranica može da pregleda datoteke</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Veličina prikaza i teksta <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4421,7 +4422,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4427365070557649936">Verifikuje se kôd za potvrdu…</translation>
 <translation id="4429163740524851942">Raspored tastera na fizičkoj tastaturi</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
-<translation id="4430204941092622397">Zbog toga će se možda prekinuti veza sa mobilnom mrežom na nekoliko minuta.</translation>
 <translation id="443031431654216610">Koristite samo cifre</translation>
 <translation id="4430369329743628066">Obeleživač je dodat</translation>
 <translation id="4430422687972614133">Uključi virtuelnu karticu</translation>
@@ -6299,7 +6299,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5955721306465922729">Veb-sajt želi da otvori ovu aplikaciju.</translation>
 <translation id="5955809630138889698">Ovaj uređaj možda ispunjava uslove samo za onlajn režim demonstracije. Više detalja potražite od predstavnika podrške.</translation>
 <translation id="5956585768868398362">Je li ovo stranica pretrage koju ste očekivali?</translation>
-<translation id="5957918771633727933">Nema dostupnih eSIM profila. Preuzmite novi <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Dodirnite ikonu Izaberite za govor pored slike profila, pa izaberite ono što želite da čujete.</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="5963413905009737549">Odeljak</translation>

@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7153618581592392745">ল্যাভেণ্ডার</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}one{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}other{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}}</translation>
 <translation id="7160999678034985039">আপনার কাজ সেভ করুন এবং সেভ করা হয়ে গেলে আপডেট শুরু করুন।</translation>
 <translation id="7163295244162773898">{0,plural, =1{গোপনীয় ফাইল কপি করবেন?}one{গোপনীয় ফাইল কপি করবেন?}other{গোপনীয় ফাইল কপি করবেন?}}</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002">আপনার ডিভাইস ও অ্যাকাউন্ট <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়।</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="868922510921656628">সেট প্রতি পৃষ্ঠা</translation>
+<translation id="8693639060656817812">সুরক্ষা ট্র্যাক করার সুবিধা উপলভ্য থাকা সম্পর্কে আরও জানুন</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8699041776323235191">HID ডিভাইস</translation>
 <translation id="8699985386408839112">এনভেলপ কাকু ১</translation>

@@ -344,6 +344,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6981396265751285733">Lorsque cette option est activée, Chromium libère de la mémoire dans les onglets inactifs. Ainsi, les onglets actifs et d'autres applis peuvent utiliser davantage de ressources, et Chromium reste rapide. Vos onglets inactifs redeviennent actifs lorsque vous les consultez.</translation>
 <translation id="6985329841647292029">Conditions d'utilisation de Chromium OS</translation>
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
+<translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas compatible.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation interrompue.</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
@@ -396,6 +397,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chromium recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Une fois l'accès à une ressource accordé à Chromium, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium a besoin de l'autorisation d'accéder à votre position pour ce site</translation>
 <translation id="8133124826068723441">Impossible de synchroniser vos données dans Chromium OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>

@@ -905,17 +905,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 
       Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
-<translation id="1808693723592254925">Bu politika etkinleştirildiğinde Chrome ile ilgili kullanım ve kilitlenme verilerinin anonim olarak Google'a raporlanması varsayılan olarak etkinleştirilir. Kullanıcılar Chrome ayarlarında bu ayarı değiştirebilir.
-
-Bu politika devre dışı bırakıldığında anonim raporlama devre dışı kalır ve Google'a hiçbir kullanım veya kilitlenme verisi gönderilmez. Kullanıcılar bu ayarı değiştiremez.
-
-Bu politika ayarlanmadığında kullanıcılar, anonim raporlama davranışını yükleme veya ilk çalıştırma esnasında seçebilir ve daha sonra Chrome ayarlarında bu ayarı değiştirebilirler.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-(<ph name="PRODUCT_OS_NAME" /> için, DeviceMetricsReportingEnabled politikasını inceleyin.)</translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Hızlı Tethering'in kullanılmasına izin ver.</translation>
 <translation id="1813638828646876133">Kilit ve giriş ekranlarında otomatik PIN gönderme özelliğini etkinleştir</translation>

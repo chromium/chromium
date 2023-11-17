@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">סרגל תפריטים למיון חכם</translation>
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4881695831933465202">פתיחה</translation>
+<translation id="4883824756452868502">זיהוי יחידות</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="4894963374040315706">כך תהיה לך אפשרות לבצע חיפוש באמצעות הקול</translation>
 <translation id="489903206070130262">הכרטיסייה הפתוחה האחרונה</translation>
@@ -856,8 +857,10 @@
 <translation id="5551897871312988470">הצעה לתרגום</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="555749644339804659">הסיסמאות נבדקות…</translation>
+<translation id="5559567453458728487">המרה של יחידות מידה שנמצאו באינטרנט</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5572684875078967866">אחסון מידע</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{מעקב אחר החבילה הזו}one{מעקב אחר כל החבילות}two{מעקב אחר כל החבילות}other{מעקב אחר כל החבילות}}</translation>
 <translation id="5597915316964418992">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
@@ -1120,6 +1123,7 @@
 <translation id="6781260999953472352">להפעיל את הסנכרון?</translation>
 <translation id="6781405765516175232">לאפשרויות מסלול, מקישים על 'קבלת מסלול'.</translation>
 <translation id="6785453220513215166">שליחת דוח קריסה מתבצעת...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{ביטול המעקב אחר החבילה הזו}one{ביטול המעקב אחר כל החבילות}two{ביטול המעקב אחר כל החבילות}other{ביטול המעקב אחר כל החבילות}}</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
 <translation id="6797885426782475225">חיפוש קולי</translation>
 <translation id="6800349425672670802">אפשר לגשת לכל הכרטיסיות הפתוחות דרך 'כלי למעבר בין כרטיסיות'.</translation>

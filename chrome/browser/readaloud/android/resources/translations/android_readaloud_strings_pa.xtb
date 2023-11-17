@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
+<translation id="1921351128855867012">ਤੇਜ਼ੀ ਨਾਲ <ph name="NUMBER_OF_SECONDS" /> ਸਕਿੰਟ ਅੱਗੇ ਕਰੋ</translation>
+<translation id="3807208219231826020">ਪਲੇਬੈਕ ਨੂੰ ਅੱਗੇ-ਪਿੱਛੇ ਕਰੋ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="4431240646217225907">ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ ਅਤੇ ਸਵੈਚਲਿਤ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="4654641641922242357">“ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ” ਪਲੇਅਰ।</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> ਸਕਿੰਟ ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="5234971936051226002">“ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ” ਪਲੇਅਰ ਨੂੰ ਛੋਟਾ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5596627076506792578">ਹੋਰ ਚੋਣਾਂ</translation>
 <translation id="6315170314923504164">ਅਵਾਜ਼</translation>
@@ -14,5 +17,7 @@
 <translation id="6846298663435243399">ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7587250070160020374">Chrome ਹੁਣ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="8136852699834914183">ਇਸ ਪੰਨੇ ਲਈ ਪਲੇਬੈਕ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
+<translation id="8264989794233974275">ਪਲੇਅਰ ਦੀ ਗਤੀ ਨੂੰ <ph name="PLAYBACK_SPEED" />ਗੁਣਾ ਵਧਾਓ/ਘਟਾਓ।</translation>
+<translation id="8407011429883244666">ਪਲੇਅਰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="8953618380150219653">“ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ” ਪਲੇਅਰ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਾਂ ਹੈ।</translation>
 </translationbundle>

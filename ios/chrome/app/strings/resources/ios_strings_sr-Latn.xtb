@@ -733,6 +733,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4856841893565072365">Traka menija pametnog sortiranja</translation>
 <translation id="4860895144060829044">Pozovite</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4883824756452868502">Otkrij jedinice</translation>
 <translation id="488785315393301722">Prikaži detalje</translation>
 <translation id="4894963374040315706">Ovo vam omogućava da pretražujete pomoću glasa</translation>
 <translation id="489903206070130262">Poslednja otvorena kartica</translation>
@@ -856,8 +857,10 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5551897871312988470">Ponudi prevod</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555749644339804659">Proveravaju se lozinke…</translation>
+<translation id="5559567453458728487">Konvertuj merne jedinice koje se nalaze na vebu</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5572684875078967866">Memorijski prostor za podatke</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Prati ovaj paket}one{Prati sve pakete}few{Prati sve pakete}other{Prati sve pakete}}</translation>
 <translation id="5597915316964418992">Otvorite mrežu za kartice</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
@@ -1120,6 +1123,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6781260999953472352">Želite da uključite sinhronizaciju?</translation>
 <translation id="6781405765516175232">Za opcije rute dodirnite Prikaži putanju.</translation>
 <translation id="6785453220513215166">Slanje izveštaja o otkazivanju...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Opozovi praćenje ovog paketa}one{Opozovi praćenje svih paketa}few{Opozovi praćenje svih paketa}other{Opozovi praćenje svih paketa}}</translation>
 <translation id="6790502149545262384">Uskoro ćete videti priče sa <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="6797885426782475225">Glasovna pretraga</translation>
 <translation id="6800349425672670802">Svim otvorenim karticama možete da pristupate iz Prebacivača kartica.</translation>

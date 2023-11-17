@@ -343,7 +343,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="243878895369688216">Atidaryta vakar</translation>
 <translation id="2440978926514840421">GIF įrašas įrašytas</translation>
 <translation id="2441427462554639370">Įrašymas baigtas, nes yra labai mažai saugyklos vietos</translation>
-<translation id="2448312741937722512">Tipas</translation>
 <translation id="2449089818483227734">Senka akumuliatorius</translation>
 <translation id="2450205753526923158">Ekrano kopijos režimas</translation>
 <translation id="2455994958736234930">Pridėti www. ir .com adreso juostoje, tada atidaryti svetainę</translation>
@@ -1015,7 +1014,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="5117590920725113268">Rodyti kitą mėnesį</translation>
 <translation id="5121628974188116412">Eiti į puslapio apačią</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
-<translation id="5145331109270917438">Pakeitimo data</translation>
 <translation id="5147567197700016471">Atrakinta</translation>
 <translation id="5150070631291639005">Privatumo nustatymai</translation>
 <translation id="5155897006997040331">Skaitymo sparta</translation>
@@ -1143,7 +1141,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5620979661744857819">Suteikiama prieiga „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms fotoaparato ir mikrofono leidimus Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nepavyko patvirtinti tapatybės. Bandykite dar kartą.</translation>
-<translation id="5646376287012673985">Vietovė</translation>
 <translation id="5648021990716966815">Mikrofono jungtis</translation>
 <translation id="5652575806481723716">Reikia atkreipti dėmesį į „<ph name="FOCUSED_APP_NAME" />“.</translation>
 <translation id="5662075790140998213">10 darbalaukis</translation>
@@ -1719,7 +1716,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8001755249288974029">Pasirinkti tekstą nuo žymeklio iki eilutės pradžios</translation>
 <translation id="8004512796067398576">Padidinti</translation>
 <translation id="8026334261755873520">Išvalyti naršymo duomenis</translation>
-<translation id="8028993641010258682">Dydis</translation>
 <translation id="8029247720646289474">Nepavyko prisijungti prie viešosios interneto prieigos taško</translation>
 <translation id="8029629653277878342">Norint užtikrinti patikimesnę apsaugą reikalingas PIN kodas arba slaptažodis</translation>
 <translation id="8030169304546394654">Atjungta</translation>
@@ -1821,7 +1817,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8487699605742506766">Viešosios interneto prieigos taškas</translation>
 <translation id="8491237443345908933">Atidaryti nuorodą naujame skirtuke</translation>
 <translation id="8492573885090281069">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" />. Skyra buvo pakeista į <ph name="FALLBACK_RESOLUTION" />. Spustelėkite „Patvirtinti“ ir išsaugokite pakeitimus. Ankstesni nustatymai bus atkurti už <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Rodyti bendrinimo netoliese nustatymus</translation>
 <translation id="8507563469658346379">Visi, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Sukurti naują darbalaukį</translation>
 <translation id="85123341071060231">Jūsų „Chromebook“ išjungtas „Bluetooth“ ryšys. Jei norite atrakinti „Chromebook“, įveskite slaptažodį.</translation>

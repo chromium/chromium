@@ -347,7 +347,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="6981396265751285733">Kada je postavka uključena, Chromium oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chromiuma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
 <translation id="6985329841647292029">Uslovi korištenja ChromiumOS-a</translation>
 <translation id="6990124437352146030">Chromiumu treba odobrenje za pristup mikrofonu za ovu web lokaciju.</translation>
-<translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sustava nije podržana.</translation>
+<translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sistema nije podržana.</translation>
 <translation id="7024536598735240744">Greška prilikom otpakivanja: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
@@ -400,7 +400,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7997934263947464652">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, web lokacije će vam moći zatražiti pristup.</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8086881907087796310">Instalacija nije uspjela jer vaše računalo ne zadovoljava minimalne zahtjeve za hardver.</translation>
+<translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromiumu je za ovu web lokaciju potrebno odobrenje za lokaciju</translation>
 <translation id="8133124826068723441">ChromiumOS nije mogao sinhronizirati podatke zato što sinhronizacija nije dostupna za vašu domenu.</translation>

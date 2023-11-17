@@ -1549,7 +1549,6 @@
 <translation id="216169395504480358">ਵਾਈ-ਫਾਈ ਸ਼ਾਮਿਲ ਕਰੋ...</translation>
 <translation id="2162155940152307086">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਿੰਕ ਸੈਟਿੰਗਾਂ ਤੋਂ ਬਾਹਰ ਜਾਣ ਤੋਂ ਬਾਅਦ ਸਿੰਕ ਸ਼ੁਰੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="2162705204091149050">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ, OS, ਡੀਵਾਈਸ, ਸਥਾਪਤ ਕੀਤੇ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਫ਼ਾਈਲਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪੜ੍ਹਨਾ</translation>
-<translation id="2162926944953615670">ਕੋਈ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="2163470535490402084">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ਅਤੇ 1 ਹੋਰ ਸਵਿੱਚ</translation>
 <translation id="2165102982098084499">ਤੁਸੀਂ QR ਕੋਡ ਸਕੈਨ ਕਰ ਕੇ ਇਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ ਨੂੰ ਲਿੰਕ ਕੀਤਾ ਹੈ।</translation>
@@ -3799,6 +3798,7 @@
 <translation id="3922823422695198027">ਹੋਰ ਐਪਾਂ <ph name="APP_NAME" /> ਵਾਂਗ ਉਹੀ ਲਿੰਕ ਖੋਲ੍ਹਣ ਲਈ ਤਿਆਰ ਹਨ। ਇਹ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, ਅਤੇ <ph name="APP_NAME_4" /> ਨੂੰ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਖੋਲ੍ਹਣ ਤੋਂ ਰੋਕ ਦੇਵੇਗਾ।</translation>
 <translation id="3923184630988645767">ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="3923221004758245114">ਕੀ <ph name="VM_NAME" /> ਨੂੰ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਹਟਾਉਣਾ ਹੈ? ਇਸ ਨਾਲ ਆਭਾਸੀ ਮਸ਼ੀਨ ਵਿੱਚ ਮੌਜੂਦ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ!</translation>
+<translation id="3923494859158167397">ਕਿਸੇ ਵੀ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3923676227229836009">ਇਸ ਪੰਨੇ ਕੋਲ ਫ਼ਾਈਲਾਂ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="3924145049010392604">ਮੈਟਾ</translation>
 <translation id="3924259174674732591">ਡਿਸਪਲੇ ਅਤੇ ਲਿਖਤ ਦਾ ਆਕਾਰ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4438,7 +4438,6 @@
 <translation id="4427365070557649936">ਤਸਦੀਕੀ ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4429163740524851942">ਭੌਤਿਕ ਕੀ-ਬੋਰਡ ਖਾਕਾ</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>
-<translation id="4430204941092622397">ਇਸ ਨਾਲ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਡਿਸਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="443031431654216610">ਸਿਰਫ਼ ਸੰਖਿਆਤਮਿਕ ਅੰਕ ਵਰਤੋ</translation>
 <translation id="4430369329743628066">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4430422687972614133">ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਕਰੋ</translation>
@@ -6317,7 +6316,6 @@
 <translation id="5955721306465922729">ਕੋਈ ਵੈੱਬਸਾਈਟ ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਖੋਲ੍ਹਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5955809630138889698">ਸ਼ਾਇਦ ਇਹ ਡੀਵਾਈਸ ਸਿਰਫ਼ ਆਨਲਾਈਨ ਡੈਮੋ ਮੋਡ ਲਈ ਯੋਗ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਸਹਾਇਕ ਪ੍ਰਤੀਨਿਧੀ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5956585768868398362">ਕੀ ਇਹ ਉਹੀ ਪੰਨਾ ਹੈ ਜਿਸਦੀ ਤੁਸੀਂ ਆਸ ਕਰ ਰਹੇ ਸੀ?</translation>
-<translation id="5957918771633727933">ਕੋਈ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇੱਕ ਨਵਾਂ <ph name="BEGIN_LINK" />ਪ੍ਰੋਫਾਈਲ<ph name="END_LINK" /> ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="5957987129450536192">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਚਿੱਤਰ ਦੇ ਨੇੜੇ 'ਸੁਣੋ ਅਤੇ ਚੁਣੋ' ਪ੍ਰਤੀਕ ਟੈਪ ਕਰੋ, ਫਿਰ ਜੋ ਤੁਸੀਂ ਸੁਣਨਾ ਚਾਹੁੰਦੇ ਹੋ ਉਸਨੂੰ ਚੁਣੋ।</translation>
 <translation id="5959471481388474538">ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="5963413905009737549">ਭਾਗ</translation>
@@ -10357,6 +10355,7 @@
 <translation id="9115932142612197835">ਇਸ ਸੈਟਿੰਗ ਨਾਲ Google Translate ਜਾਂ Lens ਦੀ ਉਪਲਬਧਤਾ ਨਹੀਂ ਬਦਲਦੀ</translation>
 <translation id="9116799625073598554">ਨੋਟ-ਕਥਨ ਲੈਣ ਵਾਲੀ ਐਪ</translation>
 <translation id="9117030152748022724">ਆਪਣੀਆਂ ਐਪਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="9120362425083889527">ਸਥਾਪਨਾ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ਬਿਹਤਰੀਨ ਅਨੁਭਵ ਲਈ, ਆਪਣੀ ਅੰਦਰੂਨੀ ਡਿਸਕ 'ਤੇ <ph name="DEVICE_OS" /> ਸਥਾਪਤ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ ਤੋਂ ਵੀ ਸਥਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਜੇ ਤੁਸੀਂ ਸਥਾਪਤ ਕਰਨ ਲਈ ਤਿਆਰ ਨਹੀਂ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਨੂੰ ਅਜ਼ਮਾਉਣ ਲਈ USB ਤੋਂ ਚਲਾ ਸਕਦੇ ਹੋ। ਇਹ ਤੁਹਾਡੇ ਮੌਜੂਦਾ OS ਅਤੇ ਡਾਟੇ ਨੂੰ ਨਹੀਂ ਵਰਤੇਗਾ, ਪਰ ਤੁਸੀਂ ਸਟੋਰੇਜ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਦੀਆਂ ਸੀਮਾਵਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>

@@ -3051,6 +3051,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="7153618581592392745">Бледно-лиловый</translation>
 <translation id="7156870133441232244">На сервере нужно обновить протокол TLS до версии 1.2 или более поздней.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Чтобы отправить этот файл с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}one{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}few{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}many{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}other{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}}</translation>
 <translation id="7160999678034985039">Сохраните результаты работы и запустите обновление.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Скопировать конфиденциальный файл?}one{Скопировать конфиденциальные файлы?}few{Скопировать конфиденциальные файлы?}many{Скопировать конфиденциальные файлы?}other{Скопировать конфиденциальные файлы?}}</translation>
 <translation id="717330890047184534">Идентификатор GAIA:</translation>
@@ -3845,6 +3846,7 @@
 <translation id="8687429322371626002">Вашим устройством и аккаунтом управляет <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Свободно</translation>
 <translation id="868922510921656628">Число страниц в наборе</translation>
+<translation id="8693639060656817812">Узнать больше о доступности Защиты от слежения</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699041776323235191">HID-устройство</translation>
 <translation id="8699985386408839112">Конверт Kaku 1</translation>

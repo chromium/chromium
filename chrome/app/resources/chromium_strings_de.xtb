@@ -207,6 +207,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chromium neu starten.</translation>
 <translation id="4680828127924988555">Installation abbrechen</translation>
 <translation id="4708774505295300557">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chromium angemeldet. Erstelle einen neuen Chromium-Nutzer, um deine Daten getrennt zu verwenden.</translation>
+<translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4746050847053251315">Chromium trotzdem beenden?</translation>
 <translation id="4748217263233248895">Da soeben ein kritisches Sicherheitsupdate für Chromium installiert wurde, solltest du jetzt einen Neustart durchführen. Deine Tabs werden dann automatisch wiederhergestellt.</translation>
 <translation id="4765210420921718862">Du kannst deine Meinung jederzeit ändern und deine Chrome-Einstellungen entsprechend anpassen. Die Tests laufen parallel zur aktuellen Auslieferungsart für Werbung, Änderungen werden also nicht sofort sichtbar.</translation>
@@ -277,6 +278,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6145820983052037069">Hier kannst du zwischen Chromium-Profilen wechseln</translation>
 <translation id="615103374448673771">Wenn du Cookies erlaubst, kann Chromium diese beim Vorabladen verwenden</translation>
 <translation id="6175304430031192654">Abhängig von deinen Einstellungen kann Chromium auch Cookies und deine aktuelle URL versenden</translation>
+<translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
 <translation id="6183079672144801177">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chromium angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="6212496753309875659">Auf diesem Computer befindet sich bereits eine neuere Version von Chromium. Falls die Software nicht funktioniert, deinstalliere Chromium bitte und versuche es erneut.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wird jetzt neu gestartet}=1{Chromium wird in einer Sekunde neu gestartet}other{Chromium wird in # Sekunden neu gestartet}}</translation>
@@ -461,5 +463,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="942598560705308788">Von Chromium verwaltete Zertifikate</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
 <translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>
+<translation id="983803489796659991">Die Installation ist fehlgeschlagen, weil der Update-Server keine Hash-Daten für die Anwendung hat.</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>

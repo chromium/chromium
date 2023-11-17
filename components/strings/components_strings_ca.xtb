@@ -3052,6 +3052,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor s'ha d'actualitzar a TLS 1.2 o una versió posterior.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Per enviar aquest fitxer amb <ph name="FEATURE_NAME" />, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}other{Per enviar aquests fitxers amb <ph name="FEATURE_NAME" />, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}}</translation>
 <translation id="7160999678034985039">Desa la feina i inicia l'actualització quan estiguis a punt.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vols copiar el fitxer confidencial?}other{Vols copiar els fitxers confidencials?}}</translation>
 <translation id="717330890047184534">Identificador de Gaia:</translation>
@@ -3846,6 +3847,7 @@ Detalls addicionals:
 <translation id="8687429322371626002">El dispositiu i el compte estan gestionats per <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pàgines per conjunt</translation>
+<translation id="8693639060656817812">Més informació sobre la disponibilitat de Protecció antiseguiment</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>
 <translation id="8699985386408839112">Sobre Kaku 1</translation>

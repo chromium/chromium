@@ -313,6 +313,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="1236009322878349843">修改手机详情</translation>
 <translation id="1239594683407221485">在“文件”应用中浏览此设备上的内容。</translation>
+<translation id="1239841552505950173">启动应用</translation>
 <translation id="1240903469550363138">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1241066500170667906">为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态</translation>
 <translation id="124116460088058876">更多语言</translation>
@@ -461,6 +462,7 @@
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
 <translation id="136378536198524553">节能模式已开启</translation>
+<translation id="136522805455656552">为了确保设备的安全，您应该仅运行和安装来自可信来源和开发者的软件。<ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">查看和修改您上次访问此网站时的文件：</translation>
 <translation id="1372841398847029212">同步到您的账号中</translation>
@@ -727,6 +729,7 @@
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
 <translation id="1573127087832371028">请描述问题</translation>
+<translation id="1575036763505533001">自定义 Chrome 侧边栏</translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1576729678809834061">举报此搜索结果</translation>
@@ -1526,7 +1529,6 @@
 <translation id="216169395504480358">添加 Wi-Fi...</translation>
 <translation id="2162155940152307086">一旦您离开同步设置页面，同步功能就会启动</translation>
 <translation id="2162705204091149050">读取您的浏览器、操作系统、设备、已安装软件和文件的相关信息</translation>
-<translation id="2162926944953615670">无可用的 eSIM 卡配置文件</translation>
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
 <translation id="2165102982098084499">您已通过扫描二维码关联这些设备。</translation>
@@ -1835,6 +1837,7 @@
 <translation id="2402226831639195063">提示音</translation>
 <translation id="2405887402346713222">设备和组件序列号</translation>
 <translation id="2406153734066939945">删除这份个人资料及其数据？</translation>
+<translation id="2407671304279211586">选择 DNS 提供商</translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2409268599591722235">开始使用</translation>
@@ -3149,6 +3152,7 @@
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
 <translation id="344630545793878684">读取您在一些网站上的数据</translation>
+<translation id="3446548199318150462">启用全新桌面版设计。此外，还必须启用“自定义 Chrome 侧边栏”。</translation>
 <translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
 <translation id="3447797901512053632">正在将“<ph name="TAB_NAME" />”投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3448492834076427715">更新账号</translation>
@@ -3772,6 +3776,7 @@
 <translation id="3922823422695198027">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />和<ph name="APP_NAME_4" />打开受支持的链接。</translation>
 <translation id="3923184630988645767">流量使用</translation>
 <translation id="3923221004758245114">要从您的 <ph name="DEVICE_TYPE" /> 中卸载 <ph name="VM_NAME" /> 吗？此操作会删除虚拟机中的所有应用和数据！</translation>
+<translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3923676227229836009">此页面可查看文件</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">显示大小和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
@@ -4238,6 +4243,7 @@
 <translation id="4298660926525614540">可移动存储设备名称</translation>
 <translation id="4299022904780065004">打开新的无痕式窗口(&amp;I)</translation>
 <translation id="4301671483919369635">此页面可修改文件</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“<ph name="FEATURE_NAME" />”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“<ph name="FEATURE_NAME" />”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
@@ -4409,7 +4415,6 @@
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="4430204941092622397">这可能会导致您的移动网络连接断开几分钟。</translation>
 <translation id="443031431654216610">只能使用数字</translation>
 <translation id="4430369329743628066">已添加书签</translation>
 <translation id="4430422687972614133">启用虚拟卡</translation>
@@ -4707,6 +4712,7 @@
 <translation id="4667027203988048332">我们会使用哪些数据：</translation>
 <translation id="4668279686271488041">系统会定期从您的设备中删除广告衡量数据</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">恭喜！您已成功在设备上安装“<ph name="APP_NAME" />”</translation>
 <translation id="4672759829555593783">立即打开“<ph name="FILE_NAME" />”文件</translation>
 <translation id="4673442866648850031">取出触控笔时打开触控笔工具</translation>
 <translation id="4673785607287397025">连接时遇到问题。请确保您的 Chromecast 和计算机位于同一网络上，然后重试。</translation>
@@ -5476,6 +5482,7 @@
 <translation id="5297082477358294722">密码已保存。您可以查看和管理 <ph name="SAVED_PASSWORDS_STORE" />中保存的密码。</translation>
 <translation id="5297946558563358707">当有其他人注视您的屏幕时，屏幕右下角会显示“隐私保护”眼睛图标</translation>
 <translation id="5298219193514155779">主题背景创建者：</translation>
+<translation id="5298315677001348398">要继续操作并允许此软件对您的设备进行更改吗？</translation>
 <translation id="5299109548848736476">不跟踪</translation>
 <translation id="5299558715747014286">查看和管理您的标签页组</translation>
 <translation id="5300426565656326054">基于浏览器的广告个性化</translation>
@@ -6282,7 +6289,6 @@
 <translation id="5955721306465922729">有个网站想打开此应用。</translation>
 <translation id="5955809630138889698">此设备可能只能使用在线演示模式。要了解更多信息，请与您的支持代表联系。</translation>
 <translation id="5956585768868398362">这是您想要的搜索页面吗？</translation>
-<translation id="5957918771633727933">无可用的 eSIM 卡配置文件。您可下载一份新的<ph name="BEGIN_LINK" />配置文件<ph name="END_LINK" />。</translation>
 <translation id="5957987129450536192">点按您的个人资料图片附近的“随选朗读”图标，然后选择您想听到的内容。</translation>
 <translation id="5959471481388474538">网络不可用</translation>
 <translation id="5963413905009737549">章节标记</translation>
@@ -7971,9 +7977,11 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">无效的组合</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
+<translation id="7330533963640151632"><ph name="USER_NAME" />的设备的“<ph name="FEATURE_NAME" />”设置，通过账号 <ph name="USER_EMAIL" /> 分享。</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7332053360324989309">Dedicated Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">备份和恢复您所用的应用和设置</translation>
+<translation id="7335436113423103413">可让用户在“新标签页”页面上从统一侧边栏中使用“自定义 Chrome”功能。</translation>
 <translation id="7335974957018254119">支持拼写检查的语言</translation>
 <translation id="7336799713063880535">已屏蔽通知。</translation>
 <translation id="7338630283264858612">设备序列号无效。</translation>
@@ -8642,6 +8650,7 @@
 <translation id="7828642077514646543">错误：无法对证书进行解码</translation>
 <translation id="7829877209233347340">如需添加学校账号，请让家长登录并向您授权</translation>
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
+<translation id="783088158898934992">应用语言</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到了折扣信息，您就会在此页面上看到相应信息</translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
@@ -10318,6 +10327,7 @@
 <translation id="9115932142612197835">此设置不会影响谷歌翻译或智能镜头的可用性</translation>
 <translation id="9116799625073598554">记事应用</translation>
 <translation id="9117030152748022724">管理应用</translation>
+<translation id="9120362425083889527">无法完成安装。请重试或关闭此窗口</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>

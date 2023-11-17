@@ -209,6 +209,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4677944499843243528">Dit lyk of die profiel deur 'n ander Chromium-proses (<ph name="PROCESS_ID" />) op 'n ander rekenaar (<ph name="HOST_NAME" />) gebruik word. Chromium het jou profiel gesluit sodat dit nie gekorrupteer word nie. As jy seker is dat geen ander prosesse hierdie profiel gebruik nie, kan jy die profiel ontsluit en Chromium herbegin.</translation>
 <translation id="4680828127924988555">Kanselleer installering</translation>
 <translation id="4708774505295300557">Iemand het voorheen op hierdie rekenaar as <ph name="ACCOUNT_EMAIL_LAST" /> by Chromium aangemeld. Skep asseblief 'n nuwe Chromium-gebruiker om jou inligting apart te hou.</translation>
+<translation id="4724676981607797757">Installasie het misluk as gevolg van ’n ongesteunde protokolfout.</translation>
 <translation id="4746050847053251315">Verlaat Chromium in elk geval?</translation>
 <translation id="4748217263233248895">'n Spesiale sekuriteitopdatering vir Chromium is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="4765210420921718862">Jy kan enige tyd in Chromium-instellings van plan verander. Die proeflopies werk saam met die huidige manier waarop advertensies gewys word, en daarom sal jy nie dadelik veranderinge sien nie.</translation>
@@ -279,6 +280,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="6145820983052037069">Jy kan hier tussen Chromium-profiele wissel</translation>
 <translation id="615103374448673771">As jy webkoekies toelaat, kan Chromium hulle met vooraflaai gebruik</translation>
 <translation id="6175304430031192654">Chromium kan ook webkoekies en jou huidige URL stuur, afhangende van jou instellings</translation>
+<translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
@@ -464,5 +466,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="942598560705308788">Sertifikate wat deur Chromium bestuur word</translation>
 <translation id="965162752251293939">Wie gebruik tans Chromium?</translation>
 <translation id="967427899662692980">Kry Chromium se sterkste sekuriteit</translation>
+<translation id="983803489796659991">Installering het misluk omdat die opdateringbediener nie enige hutsdata vir die app het nie.</translation>
 <translation id="985602178874221306">Die Chromium-outeurs</translation>
 </translationbundle>

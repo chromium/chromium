@@ -3051,6 +3051,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}}</translation>
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{如要使用「<ph name="FEATURE_NAME" />」傳送此檔案，請騰出裝置空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「<ph name="FEATURE_NAME" />」傳送這些檔案，請騰出裝置空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">請儲存目前的工作，並在儲存好之後開始更新。</translation>
 <translation id="7163295244162773898">{0,plural, =1{要複製機密檔案嗎？}other{要複製機密檔案嗎？}}</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
@@ -3845,6 +3846,7 @@
 <translation id="8687429322371626002">您的裝置和帳戶由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每組頁數</translation>
+<translation id="8693639060656817812">進一步了解用唔用到追蹤保護功能</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8699985386408839112">Kaku 1 信封</translation>

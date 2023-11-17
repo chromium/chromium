@@ -1548,7 +1548,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="216169395504480358">Lägg till wifi ...</translation>
 <translation id="2162155940152307086">Synkroniseringen startar när du lämnar synkroniseringsinställningarna</translation>
 <translation id="2162705204091149050">Läsa information om webbläsaren, operativsystemet, enheten, installerad programvara och filer</translation>
-<translation id="2162926944953615670">Det finns inga tillgängliga eSIM-profiler</translation>
 <translation id="2163470535490402084">Anslut till internet om du vill logga in på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och 1 till brytare</translation>
 <translation id="2165102982098084499">Du länkade de här enheterna genom att skanna en QR-kod.</translation>
@@ -2691,6 +2690,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3021065318976393105">Vid batteridrift</translation>
 <translation id="3021066826692793094">Fjäril</translation>
 <translation id="3021678814754966447">&amp;Visa ramkälla</translation>
+<translation id="3021902017511220299">Genomsökningen misslyckades. Den här åtgärden blockeras av administratören.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> tas bort från denna Chromebook och sparas inte i <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Jag hörde inte.</translation>
 <translation id="3023464535986383522">Textuppläsning</translation>
@@ -3799,6 +3799,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="3922823422695198027">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> och <ph name="APP_NAME_4" /> öppnar länkar som stöds.</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
 <translation id="3923221004758245114">Vill du ta bort <ph name="VM_NAME" /> från <ph name="DEVICE_TYPE" />? Alla appar och all data på den virtuella datorn raderas!</translation>
+<translation id="3923494859158167397">Inga mobilnätverk har konfigurerats</translation>
 <translation id="3923676227229836009">Sidan har läsbehörighet till filer</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Visnings- och textstorlek: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4438,7 +4439,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4427365070557649936">Bekräftelsekoden verifieras …</translation>
 <translation id="4429163740524851942">Layout på fysiskt tangentbord</translation>
 <translation id="4430019312045809116">Volym</translation>
-<translation id="4430204941092622397">Mobilnätverket kan kopplas från i några minuter.</translation>
 <translation id="443031431654216610">Använd bara siffror</translation>
 <translation id="4430369329743628066">Ett bokmärke har lagts till</translation>
 <translation id="4430422687972614133">Aktivera virtuellt kort</translation>
@@ -6317,7 +6317,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5955721306465922729">En webbplats vill öppna den här appen.</translation>
 <translation id="5955809630138889698">Demoläget kanske bara kan användas online på den här enheten. Kontakta supporten om du vill veta mer.</translation>
 <translation id="5956585768868398362">Är det här den söksida du väntade dig?</translation>
-<translation id="5957918771633727933">Det finns inga tillgängliga eSIM-profiler. Ladda ned en ny <ph name="BEGIN_LINK" />profil.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Tryck på textuppläsningsikonen nära profilbilden och markera sedan det som du vill få uppläst.</translation>
 <translation id="5959471481388474538">Nätverket är inte tillgängligt</translation>
 <translation id="5963413905009737549">Avsnitt</translation>
@@ -9064,6 +9063,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="811994229154425014">Skriv punkt med hjälp av dubbelt mellanslag</translation>
 <translation id="8120505434908124087">Installera eSIM-profil</translation>
 <translation id="8121750884985440809">Du castar för närvarande skärmen</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8123975449645947908">Scrolla bakåt</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
@@ -9099,6 +9099,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8148760431881541277">Begränsa inloggning</translation>
 <translation id="8149564499626272569">Verifiera via telefonen med en USB-kabel</translation>
 <translation id="8149870652370242480">Om du vill använda sparade lösenord på telefonen laddar du ned Chrome för iOS och loggar in på ditt Google-konto.</translation>
+<translation id="8151057139207656239">Kopierade versionsinformation</translation>
 <translation id="815114315010033526">Använd en QR-kod i stället</translation>
 <translation id="8151638057146502721">Konfigurera</translation>
 <translation id="8154790740888707867">Ingen fil</translation>

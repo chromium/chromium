@@ -3047,6 +3047,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> dalších}}</translation>
 <translation id="7153618581592392745">Levandulová</translation>
 <translation id="7156870133441232244">Server je třeba upgradovat na protokol TLS 1.2 nebo novější.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce <ph name="FEATURE_NAME" />, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce <ph name="FEATURE_NAME" />, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce <ph name="FEATURE_NAME" />, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce <ph name="FEATURE_NAME" />, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Uložte si práci, a až budete připraveni, spusťte aktualizaci.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Zkopírovat důvěrný soubor?}few{Zkopírovat důvěrné soubory?}many{Zkopírovat důvěrné soubory?}other{Zkopírovat důvěrné soubory?}}</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
@@ -3841,6 +3842,7 @@ Další podrobnosti:
 <translation id="8687429322371626002">Vaše zařízení a účet spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostupné</translation>
 <translation id="868922510921656628">Počet stránek na sadu</translation>
+<translation id="8693639060656817812">Další informace o dostupnosti ochrany před sledováním</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
 <translation id="8699041776323235191">Zařízení HID</translation>
 <translation id="8699985386408839112">Obálka Kaku 1</translation>

@@ -3052,6 +3052,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}one{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andre}}</translation>
 <translation id="7153618581592392745">Lavendelblå</translation>
 <translation id="7156870133441232244">Serveren skal opgraderes til TLS 1.2 eller nyere.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Hvis du vil sende denne fil via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="7160999678034985039">Gem dit arbejde, og start opdateringen, når du er klar.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vil du kopiere den fortrolige fil?}one{Vil du kopiere den fortrolige fil?}other{Vil du kopiere de fortrolige filer?}}</translation>
 <translation id="717330890047184534">Gaia-id:</translation>
@@ -3847,6 +3848,7 @@ Yderligere oplysninger:
 <translation id="8687429322371626002">Din enhed og konto administreres af <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tilgængelig</translation>
 <translation id="868922510921656628">Sider pr. sæt</translation>
+<translation id="8693639060656817812">Få flere oplysninger om tilgængeligheden af Sporingsbeskyttelse</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699041776323235191">HID-enhed</translation>
 <translation id="8699985386408839112">Konvolut Kaku 1</translation>

@@ -234,6 +234,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4633000520311261472">Upang gawing mas ligtas ang Chrome, nag-disable kami ng ilang extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> at maaaring naidagdag nang hindi mo nalalaman.</translation>
 <translation id="4680828127924988555">Kanselahin ang Pag-install</translation>
 <translation id="469553575393225953">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa Chrome Web Store</translation>
+<translation id="4724676981607797757">Hindi na-install dahil sa error na hindi sinusuportahang protocol.</translation>
 <translation id="4728575227883772061">Nabigo ang pag-install dahil sa hindi natukoy na error. Kung kasalukuyang tumatakbo ang Google Chrome, paki-sara ito at subukan ulit.</translation>
 <translation id="4747730611090640388">Puwedeng tantyahin ng Chrome ang iyong mga interes.  Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -319,6 +320,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6157638032135951407">Nagde-delete ang iyong organisasyon ng data ng Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6235018212288296708">Inbound na panuntunan para sa Google Chrome upang payagan ang trapiko ng mDNS.</translation>
 <translation id="624230925347970731">Malapit nang magsara ang Chrome</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -495,6 +497,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="940313311831216333">Para ma-access ang iyong mga bagay sa Chrome sa lahat ng device mo, mag-sign in, at pagkatapos ay i-on ang pag-sync.</translation>
 <translation id="943390475793766444">Inirerekomenda ng Chrome na i-scan ang file na ito dahil posibleng mapanganib ito.</translation>
 <translation id="963650557422347554">Kapag naka-on ito, nakakatipid ng baterya ang Chrome sa pamamagitan ng paglimita sa aktibidad sa background at mga visual effect, tulad ng maayos na pag-scroll at mga frame rate ng video.</translation>
+<translation id="983803489796659991">Hindi na-install dahil walang anumang data ng hash para sa application ang server ng update.</translation>
 <translation id="989369509083708165">Google Chrome ang iyong default na browser</translation>
 <translation id="989816563149873169">Puwedeng magpalipat-lipat sa mga profile sa Chrome sa pamamagitan ng <ph name="SHORTCUT" /></translation>
 </translationbundle>

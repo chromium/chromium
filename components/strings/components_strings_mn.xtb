@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Цайвар ягаан</translation>
 <translation id="7156870133441232244">Серверийг TLS 1.2 эсвэл түүнээс дээших хувилбар луу дэвшүүлэх шаардлагатай.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Энэ файлыг <ph name="FEATURE_NAME" />-г ашиглан илгээхийн тулд төхөөрөмждөө сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}other{Эдгээр файлыг <ph name="FEATURE_NAME" />-г ашиглан илгээхийн тулд төхөөрөмждөө сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}}</translation>
 <translation id="7160999678034985039">Ажлаа хадгалаад бэлэн болсон үедээ шинэчлэлтийг эхлүүлнэ үү.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Нууцлалтай файлыг хуулах уу?}other{Нууцлалтай файлуудыг хуулах уу?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002">Таны төхөөрөмж болон бүртгэлийг <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="868922510921656628">Багц бүрийн хуудас</translation>
+<translation id="8693639060656817812">Хяналтын хамгаалалт боломжтой эсэх талаар нэмэлт мэдээлэл авах</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
 <translation id="8699985386408839112">Каку дугтуй 1</translation>

@@ -1533,7 +1533,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synchronizacja rozpocznie się zaraz po zamknięciu ustawień</translation>
 <translation id="2162705204091149050">Odczytywanie informacji o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu i plikach</translation>
-<translation id="2162926944953615670">Brak dostępnych profili eSIM</translation>
 <translation id="2163470535490402084">Aby zalogować się na urządzeniu <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze 1 przełącznik</translation>
 <translation id="2165102982098084499">Te urządzenia zostały połączone przez zeskanowanie kodu QR.</translation>
@@ -1831,6 +1830,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2402226831639195063">Tony</translation>
 <translation id="2405887402346713222">Numery seryjne urządzenia i komponentu</translation>
 <translation id="2406153734066939945">Usunąć ten profil i powiązane z nim dane?</translation>
+<translation id="2407671304279211586">Wybierz dostawcę DNS</translation>
 <translation id="2408018932941436077">Zapisuję kartę</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2409268599591722235">Rozpocznij</translation>
@@ -3768,6 +3768,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="3922823422695198027">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="APP_NAME_4" /> przestaną otwierać obsługiwane linki.</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
 <translation id="3923221004758245114">Usunąć <ph name="VM_NAME" /> z urządzenia <ph name="DEVICE_TYPE" />? Spowoduje to usunięcie wszystkich aplikacji i danych z maszyny wirtualnej.</translation>
+<translation id="3923494859158167397">Brak skonfigurowanych sieci komórkowych</translation>
 <translation id="3923676227229836009">Ta strona ma zezwolenie na przeglądanie plików</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Rozmiar wyświetlanych elementów i tekstu <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4407,7 +4408,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
 <translation id="4430019312045809116">Głośność</translation>
-<translation id="4430204941092622397">Może to spowodować utratę połączenia z siecią komórkową na kilka minut.</translation>
 <translation id="443031431654216610">Używaj tylko cyfr</translation>
 <translation id="4430369329743628066">Dodano zakładkę</translation>
 <translation id="4430422687972614133">Włącz kartę wirtualną</translation>
@@ -6284,7 +6284,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5955721306465922729">Strona chce otworzyć tę aplikację.</translation>
 <translation id="5955809630138889698">Możliwe, że na tym urządzeniu dozwolony jest tylko tryb demonstracyjny online. Skontaktuj się z przedstawicielem pomocy, by dowiedzieć się więcej.</translation>
 <translation id="5956585768868398362">Czy to oczekiwana strona wyszukiwania?</translation>
-<translation id="5957918771633727933">Brak dostępnych profili eSIM. Pobierz nowy <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Kliknij ikonę Przeczytaj na głos obok swojego zdjęcia profilowego, a następnie zaznacz to, co chcesz usłyszeć.</translation>
 <translation id="5959471481388474538">Sieć niedostępna</translation>
 <translation id="5963413905009737549">Sekcja</translation>

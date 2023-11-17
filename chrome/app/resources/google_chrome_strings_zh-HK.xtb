@@ -359,6 +359,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但您至少已有 30 天未使用該瀏覽器。</translation>
+<translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
@@ -428,6 +429,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8019103195866286235">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>

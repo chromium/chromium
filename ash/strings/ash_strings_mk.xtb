@@ -343,7 +343,6 @@
 <translation id="243878895369688216">Отворено вчера</translation>
 <translation id="2440978926514840421">GIF-датотеката е снимена</translation>
 <translation id="2441427462554639370">Снимањето заврши бидејќи речиси нема простор за складирање на дискот</translation>
-<translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Слаба батерија</translation>
 <translation id="2450205753526923158">Режим на слика од екранот</translation>
 <translation id="2455994958736234930">Додава www. и .com во лентата за адреси, па го отвора веб-сајтот</translation>
@@ -1016,7 +1015,6 @@
 <translation id="5117590920725113268">Прикажи го следниот месец</translation>
 <translation id="5121628974188116412">Одете најдолу на страницата</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
-<translation id="5145331109270917438">Датум на промена</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5150070631291639005">Поставки за приватност</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
@@ -1144,7 +1142,6 @@
 <translation id="5620979661744857819">Ова овозможува пристап за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Не можеше да се потврди лозинката. Обидете се повторно.</translation>
-<translation id="5646376287012673985">Локација</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> го бара вашето внимание.</translation>
 <translation id="5662075790140998213">Работна површина 10</translation>
@@ -1720,7 +1717,6 @@
 <translation id="8001755249288974029">Го избира текстот од курсорот до почетокот на линијата</translation>
 <translation id="8004512796067398576">Зголемување</translation>
 <translation id="8026334261755873520">Исчисти податоци од прелистување</translation>
-<translation id="8028993641010258682">Големина</translation>
 <translation id="8029247720646289474">Поврзувањето со точка на пристап не успеа</translation>
 <translation id="8029629653277878342">Потребен е PIN или лозинка за поголема безбедност</translation>
 <translation id="8030169304546394654">Не е поврзано</translation>
@@ -1822,7 +1818,6 @@
 <translation id="8487699605742506766">Точка на пристап</translation>
 <translation id="8491237443345908933">Отвора линк во нова картичка</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата се смени во <ph name="FALLBACK_RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Прикажете ги поставките за „Споделување во близина“</translation>
 <translation id="8507563469658346379">Сите, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Создајте нова работна површина</translation>
 <translation id="85123341071060231">Bluetooth на вашиот Chromebook е исклучен. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>

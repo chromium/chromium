@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">Um Chrome sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
 <translation id="4680828127924988555">Installation abbrechen</translation>
 <translation id="469553575393225953">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chrome empfiehlt, sie nur über den Chrome Web Store zu installieren.</translation>
+<translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
 <translation id="4747730611090640388">Chrome kann deine Interessen schätzen.  Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">In deiner Organisation werden Chrome-Daten nach <ph name="TIMEOUT_DURATION" /> Inaktivität gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
 <translation id="624230925347970731">Chrome wird bald geschlossen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -487,6 +489,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="940313311831216333">Wenn du auf allen deinen Geräten auf deine Chrome-Inhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung.</translation>
 <translation id="943390475793766444">Chrome empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>
 <translation id="963650557422347554">Wenn die Option aktiviert ist, reduziert Chrome den Akkuverbrauch, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden.</translation>
+<translation id="983803489796659991">Die Installation ist fehlgeschlagen, weil der Update-Server keine Hash-Daten für die Anwendung hat.</translation>
 <translation id="989369509083708165">Google Chrome ist dein Standardbrowser</translation>
 <translation id="989816563149873169">Mit <ph name="SHORTCUT" /> kann zwischen Chrome-Profilen gewechselt werden</translation>
 </translationbundle>

@@ -1547,7 +1547,6 @@
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
 <translation id="2162705204091149050">קריאת מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
-<translation id="2162926944953615670">‏אין פרופילים זמינים של eSIM</translation>
 <translation id="2163470535490402084">צריך להתחבר לאינטרנט כדי להיכנס אל ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד מתג אחד</translation>
 <translation id="2165102982098084499">‏קישרת את המכשירים האלה באמצעות סריקה של קוד QR.</translation>
@@ -1859,6 +1858,7 @@
 <translation id="2402226831639195063">צלילים</translation>
 <translation id="2405887402346713222">מספרים סידוריים של מכשירים ורכיבים</translation>
 <translation id="2406153734066939945">למחוק את הפרופיל הזה ואת הנתונים שלו?</translation>
+<translation id="2407671304279211586">‏בחירת ספק DNS</translation>
 <translation id="2408018932941436077">שמירת הכרטיס מתבצעת</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2409268599591722235">התחל להשתמש</translation>
@@ -3799,6 +3799,7 @@
 <translation id="3922823422695198027">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> וגם <ph name="APP_NAME_4" /> לא יפתחו קישורים נתמכים.</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
 <translation id="3923221004758245114">להסיר את <ph name="VM_NAME" /> מה-<ph name="DEVICE_TYPE" />? הפעולה הזו תמחק את כל האפליקציות והנתונים במכונה הווירטואלית.</translation>
+<translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3923676227229836009">לדף הזה יש הרשאה להציג קבצים</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">גודל הטקסט והתצוגה: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4438,7 +4439,6 @@
 <translation id="4427365070557649936">בתהליך אימות של קוד האישור...</translation>
 <translation id="4429163740524851942">פריסת מקלדת פיזית</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
-<translation id="4430204941092622397">הפעולה עשויה לגרום לניתוק הרשת הסלולרית למשך מספר דקות.</translation>
 <translation id="443031431654216610">יש להשתמש בספרות בלבד</translation>
 <translation id="4430369329743628066">הסימנייה נוספה</translation>
 <translation id="4430422687972614133">הפעלת הכרטיס הווירטואלי</translation>
@@ -6317,7 +6317,6 @@
 <translation id="5955721306465922729">אתר מסוים רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="5955809630138889698">ייתכן שהמכשיר הזה כשיר רק למצב הדגמה אונליין. אפשר לפנות לנציג התמיכה כדי לקבל פרטים נוספים.</translation>
 <translation id="5956585768868398362">האם זהו דף החיפוש שציפית לראות?</translation>
-<translation id="5957918771633727933">‏אין פרופילים זמינים של eSIM. ניתן להוריד <ph name="BEGIN_LINK" />פרופיל<ph name="END_LINK" /> חדש.</translation>
 <translation id="5957987129450536192">יש להקיש על סמל ההקראה לצד תמונת הפרופיל ואז לבחור בטקסט להקראה.</translation>
 <translation id="5959471481388474538">הרשת לא זמינה</translation>
 <translation id="5963413905009737549">קטע</translation>

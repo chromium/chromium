@@ -3052,6 +3052,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Боја на лаванда</translation>
 <translation id="7156870133441232244">Серверот треба да се надгради на TLS 1.2 или понова верзија.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{За да ја испратите датотекава со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}one{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}other{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}}</translation>
 <translation id="7160999678034985039">Зачувајте ја вашата работа и започнете го ажурирањето кога ќе бидете подготвени.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира доверливата датотека?}one{Да се копираат доверливите датотеки?}other{Да се копираат доверливите датотеки?}}</translation>
 <translation id="717330890047184534">ID на Gaia:</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002"><ph name="MANAGER" /> управува со уредот и сметката.</translation>
 <translation id="8688672835843460752">Достапно</translation>
 <translation id="868922510921656628">Страници по група</translation>
+<translation id="8693639060656817812">Дознајте повеќе за достапноста на „Заштита од следење“</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699041776323235191">HID-уред</translation>
 <translation id="8699985386408839112">Плик Kaku 1</translation>

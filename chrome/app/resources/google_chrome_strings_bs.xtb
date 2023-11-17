@@ -360,7 +360,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ulazno pravilo da Google Chrome beta verzija dozvoli mDNS saobraćaj.</translation>
 <translation id="6989339256997917931">Google Chrome je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
-<translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sustava nije podržana.</translation>
+<translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sistema nije podržana.</translation>
 <translation id="7024536598735240744">Greška prilikom otpakivanja: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
 <translation id="7025800014283535195">Ovdje možete prebacivati između Chrome profila</translation>
@@ -430,7 +430,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8019103195866286235">Programer je opozvao objavljivanje ove ekstenzije i može biti nesigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="8086881907087796310">Instalacija nije uspjela jer vaše računalo ne zadovoljava minimalne zahtjeve za hardver.</translation>
+<translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>

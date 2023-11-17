@@ -343,7 +343,6 @@
 <translation id="243878895369688216">어제 열림</translation>
 <translation id="2440978926514840421">GIF 녹화 완료됨</translation>
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
-<translation id="2448312741937722512">유형</translation>
 <translation id="2449089818483227734">배터리 부족</translation>
 <translation id="2450205753526923158">스크린샷 모드</translation>
 <translation id="2455994958736234930">www.와 .com을 주소 표시줄에 추가한 다음 웹사이트 열기</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5121628974188116412">페이지 맨 아래로 이동</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
-<translation id="5145331109270917438">수정된 날짜</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
 <translation id="5155897006997040331">읽기 속도</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">카메라 및 마이크 액세스 권한이 있는 <ph name="APP_NAME" /> 등 모든 앱과 웹사이트에서 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
-<translation id="5646376287012673985">위치</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> 알림이 있습니다.</translation>
 <translation id="5662075790140998213">데스크 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">커서부터 첫 줄까지 텍스트 선택</translation>
 <translation id="8004512796067398576">올리기</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
-<translation id="8028993641010258682">크기</translation>
 <translation id="8029247720646289474">핫스팟에 연결할 수 없음</translation>
 <translation id="8029629653277878342">보안 강화를 위해 PIN 또는 비밀번호가 필요합니다.</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8491237443345908933">새 탭에서 링크 열기</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
-<translation id="8496402167048257517">Nearby Share 설정 표시</translation>
 <translation id="8507563469658346379">모든 사용자, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">새 데스크를 만듭니다.</translation>
 <translation id="85123341071060231">Chromebook의 블루투스가 꺼져 있습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>

@@ -3051,6 +3051,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7153618581592392745">ፈዘዝ ያለ ወይን ጠጅ</translation>
 <translation id="7156870133441232244">አገልጋዩ ወደ TLS 1.2 ወይም ከዚያ በኋላ ማላቅ አለበት።</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{ይህንን ፋይል <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}other{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}}</translation>
 <translation id="7160999678034985039">እባክዎ ሥራዎን ያስቀምጡ እና ዝግጁ ሲሆኑ ዝማኔውን ያስጀምሩ።</translation>
 <translation id="7163295244162773898">{0,plural, =1{ምስጢራዊ ፋይሉ ይቀዳ?}one{ምስጢራዊ ፋይሉ ይቀዳ?}other{ምስጢራዊ ፋይሎቹ ይቀዱ?}}</translation>
 <translation id="717330890047184534">የGaia መታወቂያ፦</translation>
@@ -3846,6 +3847,7 @@
 <translation id="8687429322371626002">የእርስዎ መሣሪያ እና መለያ የሚተዳደሩት በ<ph name="MANAGER" /> ነው።</translation>
 <translation id="8688672835843460752">ይገኛል</translation>
 <translation id="868922510921656628">ገጾች በስብስብብ</translation>
+<translation id="8693639060656817812">ስለ የመከታተል ጥበቃ ተገኝነት የበለጠ ለመረዳት</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699041776323235191">የHID መሣሪያ</translation>
 <translation id="8699985386408839112">ካኩ 1 ፖስታ</translation>

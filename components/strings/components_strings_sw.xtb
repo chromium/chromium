@@ -3052,6 +3052,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Urujuani</translation>
 <translation id="7156870133441232244">Seva inahitaji kupata toleo la TLS 1.2 au jipya zaidi.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Ili utume faili hii ukitumia kipengele cha <ph name="FEATURE_NAME" />, futa ili upate nafasi (<ph name="DISK_SPACE_SIZE" />) kwenye kifaa chako}other{Ili utume faili hizi ukitumia kipengele cha <ph name="FEATURE_NAME" />, futa ili upate nafasi (<ph name="DISK_SPACE_SIZE" />) kwenye kifaa chako}}</translation>
 <translation id="7160999678034985039">Tafadhali hifadhi kazi yako na uanzishe sasisho ukiwa tayari.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Ungependa kunakili faili ya siri?}other{Ungependa kunakili faili za siri?}}</translation>
 <translation id="717330890047184534">Kitambulisho cha Gaia</translation>
@@ -3843,6 +3844,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8687429322371626002"><ph name="MANAGER" /> inadhibiti akaunti na kifaa chako.</translation>
 <translation id="8688672835843460752">Inapatikana</translation>
 <translation id="868922510921656628">Kurasa kwa kila laha</translation>
+<translation id="8693639060656817812">Pata maelezo zaidi kuhusu upatikanaji wa kipengele cha Ulinzi dhidi ya Ufuatiliaji</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699041776323235191">Kifaa cha HID</translation>
 <translation id="8699985386408839112">Bahasha ya muundo wa Kaku ya ukubwa wa 1</translation>

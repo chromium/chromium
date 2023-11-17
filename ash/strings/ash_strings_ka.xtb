@@ -343,7 +343,6 @@
 <translation id="243878895369688216">გუშინ გახსნილი</translation>
 <translation id="2440978926514840421">GIF ჩაწერა შესრულდა</translation>
 <translation id="2441427462554639370">ჩაწერა დასრულდა მეხსიერებაში კრიტიკულად არასაკმარისი სივრცის გამო</translation>
-<translation id="2448312741937722512">ტიპი</translation>
 <translation id="2449089818483227734">ბატარეის დაბალი მუხტი</translation>
 <translation id="2450205753526923158">ეკრანის ანაბეჭდის რეჟიმი</translation>
 <translation id="2455994958736234930">მისამართთა ზოლში www.-სა და .com-ის დამატება, შემდეგ კი ვებსაიტის გახსნა</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5121628974188116412">გვერდის ბოლოში გადასვლა</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
-<translation id="5145331109270917438">ცვლილების თარიღი</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5150070631291639005">კონფიდენციალურობის პარამეტრები</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">წვდომა მიენიჭება <ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">თქვენი პაროლი ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
-<translation id="5646376287012673985">მდებარეობა</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
@@ -1719,7 +1716,6 @@
 <translation id="8001755249288974029">ტექსტის არჩევა კურსორიდან სტრიქონის დასაწყისამდე</translation>
 <translation id="8004512796067398576">ზრდა</translation>
 <translation id="8026334261755873520">დათვალიერების მონაცემების გასუფთავება</translation>
-<translation id="8028993641010258682">ზომა</translation>
 <translation id="8029247720646289474">უსადენო ქსელმა ვერ მოახერხა კავშირის დამყარება</translation>
 <translation id="8029629653277878342">დამატებითი უსაფრთხოებისთვის საჭიროა PIN-კოდის ან პაროლის შეყვანა</translation>
 <translation id="8030169304546394654">გათიშული</translation>
@@ -1821,7 +1817,6 @@
 <translation id="8487699605742506766">უსადენო ქსელი</translation>
 <translation id="8491237443345908933">ბმულის გახსნა ახალ ჩანართში</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">მახლობლად გაზიარების პარამეტრების ჩვენება</translation>
 <translation id="8507563469658346379">ყველა, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ახალი სამუშაო მაგიდის შექმნა</translation>
 <translation id="85123341071060231">თქვენი Chromebook-ის Bluetooth გამორთულია. თქვენი Chromebook-ის განსაბლოკად შეიყვანეთ პაროლი.</translation>

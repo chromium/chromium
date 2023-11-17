@@ -229,6 +229,7 @@
 <translation id="4633000520311261472">Pentru ca browserul Chrome să fie mai sigur, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
 <translation id="4680828127924988555">Anulează instalarea</translation>
 <translation id="469553575393225953">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chrome recomandă să le instalezi numai din Magazinul web Chrome</translation>
+<translation id="4724676981607797757">Nu s-a instalat, din cauza unei erori de protocol neacceptat.</translation>
 <translation id="4728575227883772061">Instalarea nu a reușit din cauza unei erori necunoscute. Dacă Google Chrome rulează în acest moment, închide-l și încearcă din nou.</translation>
 <translation id="4747730611090640388">Chrome îți poate estima interesele.  Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -310,6 +311,7 @@
 <translation id="6157638032135951407">Organizația ta șterge datele Chrome dacă nu sunt folosite timp de <ph name="TIMEOUT_DURATION" />. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6235018212288296708">Regula de intrare pentru Google Chrome pentru a permite traficul mDNS.</translation>
 <translation id="624230925347970731">Chrome se va închide în curând</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
@@ -486,6 +488,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="940313311831216333">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="943390475793766444">Chrome îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>
 <translation id="963650557422347554">Când opțiunea este activată, Chrome economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre ale videoclipurilor.</translation>
+<translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
 <translation id="989369509083708165">Google Chrome este browserul prestabilit</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> poate comuta între profilurile Chrome</translation>
 </translationbundle>

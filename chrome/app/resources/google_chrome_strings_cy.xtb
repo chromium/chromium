@@ -358,6 +358,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6943584222992551122">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rheol dod i mewn ar gyfer Beta Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="6989339256997917931">Mae Google Chrome wedi'i ddiweddaru, ond nid ydych wedi ei ddefnyddio am o leiaf 30 diwrnod.</translation>
+<translation id="7011190694940573312">Wedi methu â gosod oherwydd ni chefnogir y fersiwn hon o'r system weithredu.</translation>
 <translation id="7024536598735240744">Gwall dadbacio: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Wedi Stopio Gosod.</translation>
 <translation id="7025800014283535195">Gallwch newid rhwng proffiliau Chrome yma</translation>
@@ -427,6 +428,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8019103195866286235">Nid oedd yr estyniad hwn wedi'i gyhoeddi gan ei ddatblygwr, a gallai fod yn anniogel. Tynnwch ef o Chrome fel na all weld a newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">Wedi methu â gosod oherwydd nad yw'ch cyfrifiadur yn bodloni'r gofynion caledwedd sylfaenol.</translation>
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8255190535488645436">Mae Google Chrome yn defnyddio'ch camera a'ch meicroffon.</translation>

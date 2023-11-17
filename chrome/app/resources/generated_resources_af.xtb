@@ -1548,7 +1548,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="216169395504480358">Voeg Wi-Fi by …</translation>
 <translation id="2162155940152307086">Sinkronisering sal begin sodra jy sinkroniseringinstellings verlaat</translation>
 <translation id="2162705204091149050">Lees inligting oor jou blaaier, bedryfstelsel, toestel, geïnstalleerde sagteware en lêers</translation>
-<translation id="2162926944953615670">Geen beskikbare e-SIM-profiele nie</translation>
 <translation id="2163470535490402084">Koppel aan die internet om by jou <ph name="DEVICE_TYPE" /> aan te meld.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 skakelaar</translation>
 <translation id="2165102982098084499">Jy het hierdie toestelle gekoppel deur 'n QR-kode te skandeer.</translation>
@@ -3799,6 +3798,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3922823422695198027">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en <ph name="APP_NAME_4" /> deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3923221004758245114">Verwyder <ph name="VM_NAME" /> van jou <ph name="DEVICE_TYPE" />? Dit sal alle apps en data in die virtuele masjien uitvee!</translation>
+<translation id="3923494859158167397">Geen selnetwerke is opgestel nie</translation>
 <translation id="3923676227229836009">Hierdie bladsy word toegelaat om lêers te bekyk</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Skerm- en teksgrootte <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4438,7 +4438,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4427365070557649936">Verifieer tans bevestigingkode …</translation>
 <translation id="4429163740524851942">Fisieke sleutelborduitleg</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Dit kan veroorsaak dat jou selnetwerk vir ’n paar minute ontkoppel.</translation>
 <translation id="443031431654216610">Gebruk net syfers</translation>
 <translation id="4430369329743628066">Boekmerk is bygevoeg</translation>
 <translation id="4430422687972614133">Skakel virtuele kaart aan</translation>
@@ -6318,7 +6317,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5955721306465922729">'n Webwerf wil hierdie program oopmaak.</translation>
 <translation id="5955809630138889698">Hierdie toestel kwalifiseer dalk vir aanlyn demonstrasiemodus. Kontak jou steundiensverteenwoordiger vir meer besonderhede.</translation>
 <translation id="5956585768868398362">Is dit die soekbladsy wat jy verwag het?</translation>
-<translation id="5957918771633727933">Geen beskikbare e-SIM-profiele nie. Laai 'n nuwe <ph name="BEGIN_LINK" />profiel<ph name="END_LINK" /> af.</translation>
 <translation id="5957987129450536192">Tik op die Hardoplees-ikoon naby jou profielprent en kies wat jy wil hoor.</translation>
 <translation id="5959471481388474538">Netwerk nie beskikbaar nie</translation>
 <translation id="5963413905009737549">Afdeling</translation>
@@ -10355,6 +10353,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9115932142612197835">Hierdie instelling verander nie Google Vertaal of Lens se beskikbaarheid nie</translation>
 <translation id="9116799625073598554">Notaprogram</translation>
 <translation id="9117030152748022724">Bestuur jou programme</translation>
+<translation id="9120362425083889527">Die installasie kon nie voltooi word nie. Probeer asseblief weer of maak hierdie venster toe</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Installeer <ph name="DEVICE_OS" /> op jou interne skyf vir die beste ervaring. Jy kan dit ook later van die aanmeldskerm af installeer.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />As jy nie gereed is om dit te installeer nie, kan jy dit van USB af laat loop om dit te probeer. Dit sal jou bestaande bedryfstelsel en data behou, maar jy sal dalk berging- en werkverrigtingbeperkings sien.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Maak as 'n vasgespelde oortjie oop</translation>

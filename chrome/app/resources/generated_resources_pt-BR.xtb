@@ -316,6 +316,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1235924639474699896">{COUNT,plural, =1{Mensagem de texto}one{# mensagem de texto}other{# mensagens de texto}}</translation>
 <translation id="1236009322878349843">Editar smartphone</translation>
 <translation id="1239594683407221485">Ver o conteúdo do dispositivo no app Arquivos.</translation>
+<translation id="1239841552505950173">Iniciar aplicativo</translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="1241066500170667906">Selecione o estado do experimento de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mais idiomas</translation>
@@ -464,6 +465,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1362865166188278099">Problema mecânico. Verificar impressora</translation>
 <translation id="1363585519747660921">A impressora USB precisa ser configurada</translation>
 <translation id="136378536198524553">A Economia de energia está ativada</translation>
+<translation id="136522805455656552">Para proteger seu dispositivo, só execute e instale softwares de fontes e desenvolvedores confiáveis. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">Seu <ph name="DEVICE_TYPE" /> não tem suporte para Linux. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">Conferir e editar arquivos da última vez que você visitou este site:</translation>
 <translation id="1372841398847029212">Sincronizar com sua conta</translation>
@@ -736,6 +738,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Digite seu e-mail</translation>
 <translation id="1573127087832371028">Descreva o problema</translation>
+<translation id="1575036763505533001">Personalizar o painel lateral do Chrome</translation>
 <translation id="1575741822946219011">Idiomas e entradas</translation>
 <translation id="1576594961618857597">Avatar branco padrão</translation>
 <translation id="1576729678809834061">Denunciar este resultado da pesquisa</translation>
@@ -1546,7 +1549,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162155940152307086">A sincronização será iniciada assim que você sair das configurações</translation>
 <translation id="2162705204091149050">Ler informações sobre seu navegador, SO, dispositivo, softwares instalados e arquivos</translation>
-<translation id="2162926944953615670">Nenhum perfil de eSIM disponível</translation>
 <translation id="2163470535490402084">Conecte-se à Internet para fazer login no seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor</translation>
 <translation id="2165102982098084499">Você vinculou estes dispositivos usando um código QR.</translation>
@@ -3173,6 +3175,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Leia seus dados em uma série de websites</translation>
+<translation id="3446548199318150462">Ativa o novo design da área de trabalho. A opção "Personalizar o painel lateral do Chrome" também precisa estar ativada.</translation>
 <translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
 <translation id="3447797901512053632">Transmitindo <ph name="TAB_NAME" /> para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
@@ -3796,6 +3799,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3922823422695198027">Outros apps estão configurados para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e <ph name="APP_NAME_4" /> abram links compatíveis.</translation>
 <translation id="3923184630988645767">Uso de dados</translation>
 <translation id="3923221004758245114">Remover <ph name="VM_NAME" /> do seu <ph name="DEVICE_TYPE" />? Isso excluirá todos os apps e dados da máquina virtual.</translation>
+<translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3923676227229836009">Esta página tem permissão para ver arquivos</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho de exibição e de texto: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4263,6 +4267,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4298660926525614540">Nomes de armazenamento removíveis</translation>
 <translation id="4299022904780065004">Nova &amp;janela anônima</translation>
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
@@ -4434,7 +4439,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4427365070557649936">Verificando código de confirmação…</translation>
 <translation id="4429163740524851942">Layout do teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Isso pode desconectar a rede móvel por alguns minutos.</translation>
 <translation id="443031431654216610">Use apenas dígitos numéricos</translation>
 <translation id="4430369329743628066">Página adicionada como favorito</translation>
 <translation id="4430422687972614133">Ativar cartão virtual</translation>
@@ -4733,6 +4737,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4667027203988048332">Quais dados são usados:</translation>
 <translation id="4668279686271488041">Os dados de medição de anúncios são excluídos regularmente do seu dispositivo</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">Parabéns! O app <ph name="APP_NAME" /> foi instalado no seu dispositivo</translation>
 <translation id="4672759829555593783">Abrir <ph name="FILE_NAME" /> agora</translation>
 <translation id="4673442866648850031">Abrir ferramentas da stylus quando a stylus for removida</translation>
 <translation id="4673785607287397025">Falha na conexão. Verifique se o Chromecast e o computador estão na mesma rede e tente de novo.</translation>
@@ -5502,6 +5507,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5297082477358294722">Senha salva. Veja e gerencie as senhas salvas na sua <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Mostrar o ícone de olho no canto inferior direito da tela quando outra pessoa olhar para ela</translation>
 <translation id="5298219193514155779">Tema criado por</translation>
+<translation id="5298315677001348398">Você quer continuar e permitir que esse software faça mudanças no seu dispositivo?</translation>
 <translation id="5299109548848736476">Não rastrear</translation>
 <translation id="5299558715747014286">Ver e gerenciar seus grupos de guias</translation>
 <translation id="5300426565656326054">Personalização de anúncios com base no navegador</translation>
@@ -6312,7 +6318,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5955721306465922729">Um site quer abrir esse aplicativo.</translation>
 <translation id="5955809630138889698">Este dispositivo pode estar qualificado apenas para o modo de demonstração on-line. Entre em contato com seu representante de suporte para receber mais detalhes.</translation>
 <translation id="5956585768868398362">Esta é a página de pesquisa que você esperava?</translation>
-<translation id="5957918771633727933">Nenhum perfil de eSIM disponível. Faça o download de um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Toque no ícone "Selecionar para ouvir" ao lado da sua imagem de perfil e selecione o que você quer ouvir.</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
 <translation id="5963413905009737549">Seção</translation>
@@ -8003,9 +8008,11 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Combinação inválida</translation>
 <translation id="7329154610228416156">O login falhou porque foi configurado para usar um URL não seguro (<ph name="BLOCKED_URL" />). Entre em contato com o administrador.</translation>
+<translation id="7330533963640151632">Configurações do recurso "<ph name="FEATURE_NAME" />" para o dispositivo de <ph name="USER_NAME" />, compartilhadas pela conta <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7332053360324989309">Worker dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Faça backup e restaure seus apps e configurações</translation>
+<translation id="7335436113423103413">Permite usar a funcionalidade "Personalizar o Chrome" no painel lateral unificado na página "Nova guia".</translation>
 <translation id="7335974957018254119">Usar verificação ortográfica para</translation>
 <translation id="7336799713063880535">Notificações bloq.</translation>
 <translation id="7338630283264858612">O número de série do dispositivo é inválido.</translation>
@@ -8674,6 +8681,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7828642077514646543">Erro: não foi possível decodificar o certificado</translation>
 <translation id="7829877209233347340">Peça a familiar responsável para se conectar e permitir a adição de uma conta escolar</translation>
 <translation id="7830833461614351956">Copiar <ph name="NUM_OF_FILES" /> arquivos para abrir no <ph name="CLOUD_PROVIDER" />?</translation>
+<translation id="783088158898934992">Idioma do app</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Se o Google encontrar um desconto, ele será exibido nesta página</translation>
 <translation id="7833720883933317473">As palavras personalizadas salvas serão exibidas aqui</translation>
@@ -10351,6 +10359,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9115932142612197835">Essa configuração não muda a disponibilidade do Google Tradutor ou do Lens</translation>
 <translation id="9116799625073598554">App de anotações</translation>
 <translation id="9117030152748022724">Gerenciar seus apps</translation>
+<translation id="9120362425083889527">Não foi possível concluir a instalação. Tente de novo ou feche esta janela</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para ter a melhor experiência possível, instale o <ph name="DEVICE_OS" /> no seu disco interno. Você também pode o instalar mais tarde na tela de login.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se ainda não quiser fazer a instalação, é possível o executar no dispositivo USB para conhecer o sistema. Essa opção garantirá que o SO e seus dados sejam mantidos, mas talvez haja limitações de armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como guia fixada</translation>

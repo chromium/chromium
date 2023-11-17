@@ -126,7 +126,7 @@
 <translation id="1594034544529347967">ప్రారంభం</translation>
 <translation id="160275202205869636">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటాను ఉపయోగించండి, దానిని సేవ్ చేయండి. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.</translation>
 <translation id="1605405588277479165">ఆఫ్‌లో ఉంది - సిఫార్సు చేయడం లేదు</translation>
-<translation id="1605658421715042784">చిత్రాన్ని కాపీ చేయి</translation>
+<translation id="1605658421715042784">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="1608337082864370066">కాపీ చేసిన చిత్రం కోసం వెతకండి</translation>
 <translation id="1612730193129642006">ట్యాబ్ గ్రిడ్‌ను చూపించండి</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
@@ -500,7 +500,7 @@
 <translation id="3575234738189584619">Lens ద్వారా సెర్చ్ చేయండి</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
 <translation id="3587885837929752825">మీ Google ఖాతాలో మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
-<translation id="3588820906588687999">చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
+<translation id="3588820906588687999">ఇమేజ్‌ను కొత్త ట్యాబ్‌లో తెరవండి</translation>
 <translation id="3595252146048399851">ఏది సింక్ చేయాలనే దాన్ని, మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌లలో<ph name="END_LINK" /> ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా Search, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="3599500618468205645"><ph name="DOMAIN_NAME" />ను ఫాలో చేయండి‌ని చూపవద్దు</translation>
 <translation id="3603009562372709545">లింక్ URLను కాపీ చేయి</translation>
@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">స్మార్ట్‌గా క్రమపద్ధతిలో అమర్చే మెనూ బార్</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
+<translation id="4883824756452868502">యూనిట్‌లను గుర్తించండి</translation>
 <translation id="488785315393301722">వివరాలను చూపించు</translation>
 <translation id="4894963374040315706">మీ వాయిస్‌ను ఉపయోగించి సెర్చ్ చేయడానికి ఇది అనుమతిస్తుంది</translation>
 <translation id="489903206070130262">మీరు చివరిగా తెరిచిన ట్యాబ్</translation>
@@ -856,8 +857,10 @@
 <translation id="5551897871312988470">అనువదించడం ఆఫర్ చేస్తుంది</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="555749644339804659">పాస్‌వర్డ్‌ల చెకింగ్…</translation>
+<translation id="5559567453458728487">వెబ్‌లో కనుగొనబడిన మెజర్‌మెంట్ యూనిట్‌లను మార్చండి</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5572684875078967866">సమాచార స్టోరేజ్</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{ఈ ప్యాకేజీని ట్రాక్ చేయండి}other{ప్యాకేజీలన్నింటినీ ట్రాక్ చేయండి}}</translation>
 <translation id="5597915316964418992">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="560322036295180549">మీ సంస్థ ఆఫ్ చేసింది</translation>
 <translation id="5614553682702429503">పాస్‌వర్డ్‌ను సేవ్ చేయాలా?</translation>
@@ -1120,6 +1123,7 @@
 <translation id="6781260999953472352">సింక్‌ను ఆన్ చేయాలా?</translation>
 <translation id="6781405765516175232">మార్గం ఆప్షన్‌ల కోసం, "దిశలను పొందండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="6785453220513215166">క్రాష్ రిపోర్ట్‌ను పంపుతోంది...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{ఈ ప్యాకేజీని అన్‌ట్రాక్ చేయండి}other{ప్యాకేజీలన్నింటినీ అన్‌ట్రాక్ చేయండి}}</translation>
 <translation id="6790502149545262384">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="CHANNEL_NAME" /> నుండి కథనాలను చూస్తారు.</translation>
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
 <translation id="6800349425672670802">ట్యాబ్ స్విచర్ ఫీచర్‌ను ఉపయోగించి తెరిచి ఉన్న మీ ట్యాబ్‌లన్నింటినీ మీరు యాక్సెస్ చేయవచ్చు.</translation>

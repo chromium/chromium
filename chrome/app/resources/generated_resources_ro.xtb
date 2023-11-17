@@ -1537,7 +1537,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="216169395504480358">Adăugați o rețea Wi-Fi...</translation>
 <translation id="2162155940152307086">Sincronizarea va porni după ce părăsești setările pentru sincronizare</translation>
 <translation id="2162705204091149050">Citește informații despre browserul, sistemul de operare, dispozitivul, software-ul instalat și fișierele tale</translation>
-<translation id="2162926944953615670">Nu sunt disponibile profiluri eSIM</translation>
 <translation id="2163470535490402084">Accesează internetul pentru a te conecta pe dispozitivul tău <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> și încă un comutator</translation>
 <translation id="2165102982098084499">Ai asociat aceste dispozitive prin scanarea unui cod QR.</translation>
@@ -3785,6 +3784,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3922823422695198027">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> și <ph name="APP_NAME_4" /> vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
 <translation id="3923221004758245114">Elimini <ph name="VM_NAME" /> de pe <ph name="DEVICE_TYPE" />? Astfel se vor șterge toate aplicațiile și datele de pe mașina virtuală!</translation>
+<translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3923676227229836009">Această pagină are permisiunea de a vedea fișiere</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Dimensiunea afișării și a textului: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4424,7 +4424,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4427365070557649936">Este verificat codul de confirmare...</translation>
 <translation id="4429163740524851942">Aspectul tastaturii fizice</translation>
 <translation id="4430019312045809116">Volum</translation>
-<translation id="4430204941092622397">Din acest motiv, rețeaua mobilă se poate deconecta timp de câteva minute.</translation>
 <translation id="443031431654216610">Folosește numai cifre</translation>
 <translation id="4430369329743628066">Marcajul a fost adăugat</translation>
 <translation id="4430422687972614133">Activează cardul virtual</translation>
@@ -6302,7 +6301,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5955721306465922729">Un site intenționează să deschidă această aplicație.</translation>
 <translation id="5955809630138889698">Acest dispozitiv ar putea fi eligibil numai pentru modul demo online. Contactează reprezentantul de asistență pentru mai multe detalii.</translation>
 <translation id="5956585768868398362">Aceasta este pagina de căutare la care vă așteptați?</translation>
-<translation id="5957918771633727933">Nu sunt disponibile profiluri eSIM. Descarcă un <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> nou.</translation>
 <translation id="5957987129450536192">Atinge pictograma Selectează și ascultă de lângă imaginea de profil, apoi selectează ce vrei să auzi.</translation>
 <translation id="5959471481388474538">Rețea indisponibilă</translation>
 <translation id="5963413905009737549">Secțiune</translation>
@@ -10344,6 +10342,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9115932142612197835">Această setare nu modifică disponibilitatea serviciilor Google Traducere sau Lens</translation>
 <translation id="9116799625073598554">Aplicație pentru scris note</translation>
 <translation id="9117030152748022724">Gestionează aplicațiile</translation>
+<translation id="9120362425083889527">Instalarea nu s-a putut finaliza. Încearcă din nou sau închide fereastra</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pentru o experiență optimă, instalează <ph name="DEVICE_OS" /> pe discul intern. Poți să instalezi și mai târziu din ecranul de conectare.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dacă nu ești gata de instalare, poți să rulezi serviciul de pe USB pentru a-l încerca. Astfel, vei păstra sistemul de operare și datele existente, dar pot să existe limitări ale spațiului de stocare și ale performanței.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Deschide ca filă fixată</translation>

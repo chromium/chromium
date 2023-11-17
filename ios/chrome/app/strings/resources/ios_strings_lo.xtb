@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">ແຖບເມນູຈັດຮຽງອັດສະລິຍະ</translation>
 <translation id="4860895144060829044">ໂທ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
+<translation id="4883824756452868502">ກວບພົບໜ່ວຍ</translation>
 <translation id="488785315393301722">ສະແດງລາຍລະອຽດ</translation>
 <translation id="4894963374040315706">ນີ້ຈະເຮັດໃຫ້ທ່ານຊອກຫາໄດ້ໂດຍໃຊ້ສຽງເວົ້າຂອງທ່ານ</translation>
 <translation id="489903206070130262">ແຖບທີ່ເປີດຫຼ້າສຸດຂອງທ່ານ</translation>
@@ -856,8 +857,10 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5551897871312988470">ໃຫ້ການແປພາສາ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
 <translation id="555749644339804659">ກຳລັງກວດສອບລະຫັດຜ່ານ…</translation>
+<translation id="5559567453458728487">ການວັດແທກການປ່ຽນຄ່າໜ່ວຍຖືກພົບຢູ່ເວັບ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5572684875078967866">ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{ຕິດຕາມພັດສະດຸນີ້}other{ຕິດຕາມພັດສະດຸທັງໝົດ}}</translation>
 <translation id="5597915316964418992">ເປີດຊ່ອງແຖບ</translation>
 <translation id="560322036295180549">ຖືກປິດໄວ້ໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="5614553682702429503">ບັນທຶກລະຫັດຜ່ານໄວ້ບໍ?</translation>
@@ -1120,6 +1123,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6781260999953472352">ເປີດໃຊ້ການຊິ້ງຂໍ້ມູນບໍ?</translation>
 <translation id="6781405765516175232">ສຳລັບຕົວເລືອກເສັ້ນທາງ, ໃຫ້ແຕະໃສ່ “ຂໍເສັ້ນທາງ.”</translation>
 <translation id="6785453220513215166">ກຳ​ລັງ​ສົ່ງລາຍງານການຂັດຂ້ອງ...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{ເຊົາຕິດຕາມພັດສະດຸນີ້}other{ເຊົາຕິດຕາມພັດສະດຸທັງໝົດ}}</translation>
 <translation id="6790502149545262384">ໃນອີກບໍ່ດົນ, ທ່ານຈະເຫັນຂ່າວຈາກ <ph name="CHANNEL_NAME" /> ເມື່ອທ່ານເປີດແຖບໃໝ່.</translation>
 <translation id="6797885426782475225">​ການຊອກຫາ​ດ້ວຍສຽງ</translation>
 <translation id="6800349425672670802">ທ່ານສາມາດເຂົ້າເຖິງແຖບທີ່ເປີດທັງໝົດຂອງທ່ານຈາກຕົວປ່ຽນແຖບໄດ້.</translation>

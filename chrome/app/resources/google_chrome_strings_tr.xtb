@@ -351,6 +351,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6943584222992551122">Bu kullanıcının göz atma verileri bu cihazdan silinecektir. Verileri kurtarmak için Chrome'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
 <translation id="6967962315388095737">Google Chrome Beta'nın mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="6989339256997917931">Google Chrome güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
+<translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
 <translation id="7025800014283535195">Chrome profilleri arasında burada geçiş yapabilirsiniz</translation>
@@ -420,6 +421,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8019103195866286235">Bu uzantı, geliştiricisi tarafından yayından kaldırıldığı için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">Bilgisayarınız minimum donanım gereksinimlerini karşılamadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>

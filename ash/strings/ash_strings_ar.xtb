@@ -344,7 +344,6 @@
 <translation id="243878895369688216">تم فتحه أمس.</translation>
 <translation id="2440978926514840421">‏تم تسجيل محتوى الشاشة بتنسيق GIF</translation>
 <translation id="2441427462554639370">تم إنهاء التسجيل نتيجة للانخفاض الكبير في مساحة التخزين.</translation>
-<translation id="2448312741937722512">النوع</translation>
 <translation id="2449089818483227734">انخفاض طاقة البطارية</translation>
 <translation id="2450205753526923158">وضع لقطة الشاشة</translation>
 <translation id="2455994958736234930">‏إضافة www.‎ و‎.com إلى شريط العناوين، ثم فتح الموقع الإلكتروني</translation>
@@ -1017,7 +1016,6 @@
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
 <translation id="5121628974188116412">الانتقال إلى أسفل الصفحة</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
-<translation id="5145331109270917438">تاريخ التعديل</translation>
 <translation id="5147567197700016471">تم فتح القفل.</translation>
 <translation id="5150070631291639005">إعدادات الخصوصية</translation>
 <translation id="5155897006997040331">سرعة القراءة</translation>
@@ -1145,7 +1143,6 @@
 <translation id="5620979661744857819">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لتطبيق "<ph name="APP_NAME" />" ولجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5627392655516693966">لا يمكن التأكد من كلمة المرور لحسابك. يُرجى إعادة المحاولة.</translation>
-<translation id="5646376287012673985">الموقع الجغرافي</translation>
 <translation id="5648021990716966815">مقبس الميكروفون</translation>
 <translation id="5652575806481723716">لديك إشعار من <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">سطح المكتب 10</translation>
@@ -1722,7 +1719,6 @@
 <translation id="8001755249288974029">اختيار النص من موضع المؤشر إلى بداية السطر</translation>
 <translation id="8004512796067398576">زيادة</translation>
 <translation id="8026334261755873520">محو بيانات التصفُّح</translation>
-<translation id="8028993641010258682">الحجم</translation>
 <translation id="8029247720646289474">تعذّر الاتصال بالإنترنت عبر نقطة الاتصال</translation>
 <translation id="8029629653277878342">يجب إدخال رقم التعريف الشخصي أو كلمة المرور لمزيد من الأمان.</translation>
 <translation id="8030169304546394654">غير متصل</translation>
@@ -1824,7 +1820,6 @@
 <translation id="8487699605742506766">نقطة الاتصال</translation>
 <translation id="8491237443345908933">فتح الرابط في علامة تبويب جديدة</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />. انقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">عرض إعدادات ميزة "المشاركة عن قرب"</translation>
 <translation id="8507563469658346379">الجميع: <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">إنشاء سطح مكتب جديد</translation>
 <translation id="85123341071060231">‏البلوتوث غير مفعّل على جهاز Chromebook. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>

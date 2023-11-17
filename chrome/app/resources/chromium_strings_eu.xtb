@@ -344,6 +344,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6981396265751285733">Aktibatuta dagoenean, Chromium-ek tokia egiten du fitxa inaktiboen memorian. Horrela, fitxa aktiboek eta gainerako aplikazioek ordenagailuaren baliabide gehiago izango dituzte, eta bizkorrago ibiliko da Chromium. Fitxa inaktiboak haietara itzultzen zarenean aktibatuko dira berriro.</translation>
 <translation id="6985329841647292029">Chromium OS-ren baldintzak</translation>
 <translation id="6990124437352146030">Chromium-ek webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
+<translation id="7011190694940573312">Instalazioak huts egin du, sistema eragilearen bertsio hau bateragarria ez delako.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Gelditu da instalazioa.</translation>
 <translation id="705851970750939768">Eguneratu Chromium</translation>
@@ -396,6 +397,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7997934263947464652">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chromium-ek.</translation>
 <translation id="8013436988911883588">Chromium-ek sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
+<translation id="8086881907087796310">Instalazioak huts egin du, ordenagailuak hardwarearen gutxieneko eskakizunak betetzen ez dituelako.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" />: Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium-ek kokapena erabiltzeko baimena behar du webgune honetan</translation>
 <translation id="8133124826068723441">Chromium OS-k ezin izan ditu sinkronizatu zure datuak sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>

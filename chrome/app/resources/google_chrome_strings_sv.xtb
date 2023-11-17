@@ -26,6 +26,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="139993653570221430">Du kan när som helst ändra detta i inställningarna för Chrome. Provversionerna körs vid sidan av det sätt som annonser visas på för närvarande, så det kommer inte att märkas någon skillnad med en gång.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen.}=1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Inkognitofönstret öppnas inte igen.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-appar</translation>
+<translation id="146866447420868597">Vill du logga in i Chrome?</translation>
 <translation id="1492280395845991349">Starta om för att slutföra uppdateringen av Chrome</translation>
 <translation id="1497802159252041924">Installationsfel: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Anpassa din nya Chrome-profil</translation>

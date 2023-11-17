@@ -1534,7 +1534,6 @@
 <translation id="216169395504480358">Додај WiFi...</translation>
 <translation id="2162155940152307086">Синхронизација ће почети када изађете из подешавања синхронизације</translation>
 <translation id="2162705204091149050">Читање информација о прегледачу, ОС-у, уређају, инсталираном софтверу и фајловима</translation>
-<translation id="2162926944953615670">Нема доступних eSIM профила</translation>
 <translation id="2163470535490402084">Повежите се на интернет да бисте се пријавили на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још 1 прекидач</translation>
 <translation id="2165102982098084499">Повезали сте ове уређаје скенирањем QR кода.</translation>
@@ -1843,6 +1842,7 @@
 <translation id="2402226831639195063">Звуци</translation>
 <translation id="2405887402346713222">Серијски бројеви уређаја и компоненти</translation>
 <translation id="2406153734066939945">Желите ли да избришете овај профил и податке на њему?</translation>
+<translation id="2407671304279211586">Изаберите DNS добављача</translation>
 <translation id="2408018932941436077">Картица се чува</translation>
 <translation id="2408955596600435184">Унесите PIN</translation>
 <translation id="2409268599591722235">Идемо</translation>
@@ -3782,6 +3782,7 @@
 <translation id="3922823422695198027">Друге апликације су подешене да отварају исте линкове као апликација <ph name="APP_NAME" />. Овим се апликације <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и <ph name="APP_NAME_4" /> онемогућавају да отварају подржане линкове.</translation>
 <translation id="3923184630988645767">Потрошња података</translation>
 <translation id="3923221004758245114">Желите да уклоните виртуелну машину <ph name="VM_NAME" /> са уређаја <ph name="DEVICE_TYPE" />? Тиме ћете избрисати све апликације и податке на виртуелној машини.</translation>
+<translation id="3923494859158167397">Није подешена ниједна мобилна мрежа</translation>
 <translation id="3923676227229836009">Ова страница може да прегледа датотеке</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Величина приказа и текста <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4421,7 +4422,6 @@
 <translation id="4427365070557649936">Верификује се кôд за потврду…</translation>
 <translation id="4429163740524851942">Распоред тастера на физичкој тастатури</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
-<translation id="4430204941092622397">Због тога ће се можда прекинути веза са мобилном мрежом на неколико минута.</translation>
 <translation id="443031431654216610">Користите само цифре</translation>
 <translation id="4430369329743628066">Обележивач је додат</translation>
 <translation id="4430422687972614133">Укључи виртуелну картицу</translation>
@@ -6299,7 +6299,6 @@
 <translation id="5955721306465922729">Веб-сајт жели да отвори ову апликацију.</translation>
 <translation id="5955809630138889698">Овај уређај можда испуњава услове само за онлајн режим демонстрације. Више детаља потражите од представника подршке.</translation>
 <translation id="5956585768868398362">Је ли ово страница претраге коју сте очекивали?</translation>
-<translation id="5957918771633727933">Нема доступних eSIM профила. Преузмите нови <ph name="BEGIN_LINK" />профил<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Додирните икону Изаберите за говор поред слике профила, па изаберите оно што желите да чујете.</translation>
 <translation id="5959471481388474538">Мрежа није доступна</translation>
 <translation id="5963413905009737549">Одељак</translation>

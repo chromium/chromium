@@ -343,7 +343,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="243878895369688216">Aperto ieri</translation>
 <translation id="2440978926514840421">Registrazione GIF acquisita</translation>
 <translation id="2441427462554639370">Registrazione terminata a causa dell'esaurimento dello spazio di archiviazione</translation>
-<translation id="2448312741937722512">Tipo</translation>
 <translation id="2449089818483227734">Batteria in esaurimento</translation>
 <translation id="2450205753526923158">Modalità screenshot</translation>
 <translation id="2455994958736234930">Aggiungi www. e .com alla barra degli indirizzi, quindi apri il sito web</translation>
@@ -1012,7 +1011,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
-<translation id="5145331109270917438">Data modifica</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
@@ -1140,7 +1138,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5620979661744857819">Consente l'accesso per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossibile verificare la password. Riprova.</translation>
-<translation id="5646376287012673985">Posizione</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
 <translation id="5662075790140998213">Scrivania 10</translation>
@@ -1716,7 +1713,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8001755249288974029">Seleziona il testo dal cursore all'inizio della riga</translation>
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
-<translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8029247720646289474">Connessione all'hotspot non riuscita</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
 <translation id="8030169304546394654">Disconnessa</translation>
@@ -1818,7 +1814,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Apri link in un'altra scheda</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Mostra le impostazioni di Condivisione nelle vicinanze</translation>
 <translation id="8507563469658346379">Per tutti, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Crea una nuova scrivania</translation>
 <translation id="85123341071060231">Il Bluetooth di Chromebook è disattivato. Per sbloccare Chromebook, inserisci la password.</translation>

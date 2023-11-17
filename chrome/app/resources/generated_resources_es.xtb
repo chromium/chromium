@@ -1533,7 +1533,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="216169395504480358">Añadir Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronización empezará cuando salgas de la configuración</translation>
 <translation id="2162705204091149050">Leer información sobre tu navegador, tu SO, tu dispositivo, el software que tienes instalado y tus archivos</translation>
-<translation id="2162926944953615670">No hay perfiles de eSIM disponibles</translation>
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
 <translation id="2165102982098084499">Has vinculado estos dispositivos escaneando un código QR.</translation>
@@ -2452,7 +2451,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2850672011315104382">Estilo de puntuación</translation>
 <translation id="2852385257476173980">Una lista de sitios que visites puede aparecer aquí a medida que navegues por la Web</translation>
 <translation id="285241945869362924">Crea subtítulos de forma automática para contenido de audio y vídeo. El audio y los subtítulos no saldrán de tu dispositivo en ningún momento.</translation>
-<translation id="2853121255651601031">Se ha guardado la contraseña</translation>
+<translation id="2853121255651601031">Contraseña guardada</translation>
 <translation id="2856776373509145513">Crear un contenedor</translation>
 <translation id="2856907950922663165">¿Desactivar cifrado de URLs?</translation>
 <translation id="2859741939921354763">Importa contraseñas a <ph name="BRAND" /></translation>
@@ -3782,6 +3781,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3922823422695198027">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3923221004758245114">¿Quitar <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />? Se eliminarán todas las aplicaciones y datos de la máquina virtual.</translation>
+<translation id="3923494859158167397">No se han configurado redes móviles</translation>
 <translation id="3923676227229836009">Esta página tiene permiso para ver archivos</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamaño de la pantalla y del texto: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4419,7 +4419,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
-<translation id="4430204941092622397">Es posible que tu red móvil se desconecte durante unos minutos.</translation>
 <translation id="443031431654216610">Usa solo dígitos numéricos</translation>
 <translation id="4430369329743628066">Añadida a Marcadores</translation>
 <translation id="4430422687972614133">Activar tarjeta virtual</translation>
@@ -6295,7 +6294,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5955721306465922729">Un sitio web quiere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo sea apto para el modo Demo online. Para obtener más información, ponte en contacto con tu representante de soporte.</translation>
 <translation id="5956585768868398362">¿Es esta la página de búsqueda que esperabas?</translation>
-<translation id="5957918771633727933">No hay perfiles de eSIM disponibles. Descarga un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nuevo.</translation>
 <translation id="5957987129450536192">Toca el icono Enunciar selección, situado junto a la imagen de tu perfil, y selecciona la parte que quieres escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="5963413905009737549">Etiqueta de sección</translation>

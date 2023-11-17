@@ -3052,6 +3052,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ac <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}two{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}}</translation>
 <translation id="7153618581592392745">Lafant</translation>
 <translation id="7156870133441232244">Dylai'r gweinydd uwchraddio i TLS 1.2 neu'n ddiweddarach.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{I anfon y ffeil hon gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}zero{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}two{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}few{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}many{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}other{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}}</translation>
 <translation id="7160999678034985039">Cadwch eich gwaith a dechreuwch y diweddariad pan fyddwch yn barod.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copïo ffeil gyfrinachol?}zero{Copïo ffeiliau cyfrinachol?}two{Copïo ffeiliau cyfrinachol?}few{Copïo ffeiliau cyfrinachol?}many{Copïo ffeiliau cyfrinachol?}other{Copïo ffeiliau cyfrinachol?}}</translation>
 <translation id="717330890047184534">Rhif adnabod GAIA:</translation>
@@ -3846,6 +3847,7 @@ Manylion ychwanegol:
 <translation id="8687429322371626002">Rheolir eich dyfais a'ch cyfrif gan <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Ar gael</translation>
 <translation id="868922510921656628">Tudalennau fesul set</translation>
+<translation id="8693639060656817812">Dysgu rhagor am argaeledd Diogelwch Olrhain</translation>
 <translation id="869891660844655955">Dyddiad darfod</translation>
 <translation id="8699041776323235191">Dyfais HID</translation>
 <translation id="8699985386408839112">Amlen Kaku 1</translation>

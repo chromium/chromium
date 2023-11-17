@@ -1538,7 +1538,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronizacija će se pokrenuti kad napustite postavke sinkronizacije</translation>
 <translation id="2162705204091149050">Čitati podatke o vašem pregledniku, OS-u, uređaju, instaliranom softveru i datotekama</translation>
-<translation id="2162926944953615670">Nije dostupan nijedan eSIM profil</translation>
 <translation id="2163470535490402084">Povežite se s internetom da biste se prijavili na uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još jedan prekidač</translation>
 <translation id="2165102982098084499">Ove uređaje povezali ste skeniranjem QR koda.</translation>
@@ -3788,6 +3787,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3922823422695198027">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="APP_NAME_4" /> onemogućiti da otvaraju podržane veze.</translation>
 <translation id="3923184630988645767">Potrošnja podatkovnog prometa</translation>
 <translation id="3923221004758245114">Želite li ukloniti <ph name="VM_NAME" /> s uređaja <ph name="DEVICE_TYPE" />? Time će se izbrisati sve aplikacije i podaci na virtualnom stroju!</translation>
+<translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
 <translation id="3923676227229836009">Ova stranica ima dopuštenje za pregled datoteka</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Veličina prikaza i teksta: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4427,7 +4427,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4427365070557649936">Potvrđivanje potvrdnog koda...</translation>
 <translation id="4429163740524851942">Raspored fizičke tipkovnice</translation>
 <translation id="4430019312045809116">Glasnoća</translation>
-<translation id="4430204941092622397">Zbog toga biste mogli izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
 <translation id="443031431654216610">Upotrijebite samo znamenke</translation>
 <translation id="4430369329743628066">Oznaka je dodana</translation>
 <translation id="4430422687972614133">Uključi virtualnu karticu</translation>
@@ -6302,7 +6301,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5955721306465922729">Web-lokacija želi otvoriti ovu aplikaciju.</translation>
 <translation id="5955809630138889698">Možda uređaj ispunjava uvjete samo za online demo način. Više pojedinosti zatražite od predstavnika podrške.</translation>
 <translation id="5956585768868398362">Je li to stranica pretraživanja koju ste očekivali?</translation>
-<translation id="5957918771633727933">Nije dostupan nijedan eSIM profil. Preuzmite novi <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Dodirnite ikonu Odabira za govor u blizini svoje profilne slike, a zatim odaberite što želite čuti.</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="5963413905009737549">Odjeljak</translation>

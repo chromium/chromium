@@ -1549,7 +1549,6 @@
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
 <translation id="2162705204091149050">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보 읽기</translation>
-<translation id="2162926944953615670">사용 가능한 eSIM 프로필 없음</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
 <translation id="2165102982098084499">QR 코드를 스캔하여 기기를 연결했습니다.</translation>
@@ -3801,6 +3800,7 @@
 <translation id="3922823422695198027">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" />에서 <ph name="VM_NAME" />를 삭제하시겠습니까? 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
+<translation id="3923494859158167397">설정된 모바일 네트워크 없음</translation>
 <translation id="3923676227229836009">이 페이지에서 파일을 볼 수 있습니다.</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">디스플레이 및 텍스트 크기 <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4438,7 +4438,6 @@
 <translation id="4427365070557649936">확인 코드 확인 중…</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
 <translation id="4430019312045809116">볼륨</translation>
-<translation id="4430204941092622397">이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
 <translation id="443031431654216610">숫자만 사용</translation>
 <translation id="4430369329743628066">북마크 추가됨</translation>
 <translation id="4430422687972614133">가상 카드 사용</translation>
@@ -6317,7 +6316,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5955721306465922729">웹사이트에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="5955809630138889698">이 기기는 온라인 데모 모드에서만 사용 가능할 수 있습니다. 자세한 내용은 지원 담당자에게 문의하세요.</translation>
 <translation id="5956585768868398362">설정한 검색 페이지가 맞습니까?</translation>
-<translation id="5957918771633727933">사용할 수 있는 eSIM 프로필이 없습니다. 새 <ph name="BEGIN_LINK" />프로필<ph name="END_LINK" />을 다운로드하세요.</translation>
 <translation id="5957987129450536192">프로필 이미지 근처의 텍스트 읽어주기 아이콘을 탭한 다음 음성으로 들으려는 부분을 선택합니다.</translation>
 <translation id="5959471481388474538">네트워크에 연결할 수 없음</translation>
 <translation id="5963413905009737549">섹션</translation>

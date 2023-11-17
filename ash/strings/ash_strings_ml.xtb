@@ -343,7 +343,6 @@
 <translation id="243878895369688216">ഇന്നലെ തുറന്നത്</translation>
 <translation id="2440978926514840421">GIF റെക്കോർഡിംഗ് എടുത്തു</translation>
 <translation id="2441427462554639370">സ്റ്റോറേജ് ഇടം വളരെ കുറവായതിനാൽ റെക്കോർഡിംഗ് അവസാനിച്ചു</translation>
-<translation id="2448312741937722512">തരം</translation>
 <translation id="2449089818483227734">ബാറ്ററി ചാർജ് കുറവാണ്</translation>
 <translation id="2450205753526923158">സ്ക്രീൻഷോട്ട് മോഡ്</translation>
 <translation id="2455994958736234930">വിലാസ ബാറിൽ, www., .com എന്നിവ ചേർത്ത ശേഷം വെബ്സൈറ്റ് തുറക്കുക</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5121628974188116412">പേജിന്റെ താഴേയ്ക്ക് പോവുക</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
-<translation id="5145331109270917438">പരിഷ്‌ക്കരിച്ചത്</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
 <translation id="5150070631291639005">സ്വകാര്യതാ ക്രമീകരണം</translation>
 <translation id="5155897006997040331">വായനാ വേഗത</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819"><ph name="APP_NAME" /> എന്നതിനും, ക്യാമറ മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള മുഴുവൻ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വെബ് പേജ് റീഫ്രഷ് ചെയ്യേണ്ടതായോ ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതായോ വന്നേക്കാം.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">നിങ്ങളുടെ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="5646376287012673985">സ്ഥാനം</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
 <translation id="5662075790140998213">ഡെസ്‌ക് 10</translation>
@@ -1720,7 +1717,6 @@
 <translation id="8001755249288974029">കഴ്‌സർ മുതൽ വരിയുടെ തുടക്കം വരെയുള്ള ടെക്‌സ്‌റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8004512796067398576">വർദ്ധന</translation>
 <translation id="8026334261755873520">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക</translation>
-<translation id="8028993641010258682">വലുപ്പം</translation>
 <translation id="8029247720646289474">ഹോട്ട്‌സ്പോട്ട് കണക്‌റ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="8029629653277878342">കൂടുതൽ സുരക്ഷയ്ക്ക് പിൻ അല്ലെങ്കിൽ പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="8030169304546394654">വിച്ഛേദിച്ചു</translation>
@@ -1822,7 +1818,6 @@
 <translation id="8487699605742506766">ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="8491237443345908933">പുതിയ ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
-<translation id="8496402167048257517">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
 <translation id="8507563469658346379">എല്ലാവരും, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">പുതിയ ഡെസ്‌ക് സൃഷ്ടിക്കുക</translation>
 <translation id="85123341071060231">നിങ്ങളുടെ Chromebook-ന്റെ Bluetooth ഓഫാണ്. Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക.</translation>

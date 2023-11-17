@@ -894,17 +894,6 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
 
       Se il criterio non viene configurato, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
-<translation id="1808693723592254925">Se questo criterio viene attivato, viene attivata per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di Chrome. Gli utenti possono comunque modificare questa impostazione dalle impostazioni di Chrome.
-
-Se questo criterio viene disattivato, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
-
-Se questo criterio non viene configurato, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e potranno cambiare l'impostazione in un secondo momento dalle impostazioni di Chrome.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Per <ph name="PRODUCT_OS_NAME" />, vedi DeviceMetricsReportingEnabled.</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
 <translation id="1813638828646876133">Attiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>

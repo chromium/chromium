@@ -3053,6 +3053,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o versiones posteriores.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Para enviar este archivo con <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos con <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
 <translation id="7160999678034985039">Guarda tu trabajo y comienza la actualización cuando esté todo listo.</translation>
 <translation id="7163295244162773898">{0,plural, =1{¿Quieres copiar este archivo confidencial?}other{¿Quieres copiar estos archivos confidenciales?}}</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
@@ -3848,6 +3849,7 @@ Detalles adicionales:
 <translation id="8687429322371626002"><ph name="MANAGER" /> administra tu dispositivo y tu cuenta.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Páginas por conjunto</translation>
+<translation id="8693639060656817812">Más información sobre la disponibilidad de la Protección contra seguimiento</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Sobre Kaku n.º 1</translation>

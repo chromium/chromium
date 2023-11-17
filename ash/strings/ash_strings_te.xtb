@@ -343,7 +343,6 @@
 <translation id="243878895369688216">నిన్న తెరిచారు</translation>
 <translation id="2440978926514840421">GIF రికార్డింగ్ తీసుకోబడింది</translation>
 <translation id="2441427462554639370">చాలా తక్కువ స్టోరేజ్ స్పేస్ కారణంగా రికార్డ్ చేయడం ముగించబడింది</translation>
-<translation id="2448312741937722512">రకం</translation>
 <translation id="2449089818483227734">బ్యాటరీ తక్కువ ఉంది</translation>
 <translation id="2450205753526923158">స్క్రీన్‌షాట్ మోడ్</translation>
 <translation id="2455994958736234930">అడ్రస్ బార్‌కు www., .com‌ను జోడించి, ఆపై వెబ్‌సైట్‌ను తెరవండి</translation>
@@ -1016,7 +1015,6 @@
 <translation id="5117590920725113268">తర్వాత నెలను చూపుతుంది</translation>
 <translation id="5121628974188116412">పేజీ దిగువకు వెళ్లండి</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
-<translation id="5145331109270917438">సవరించబడిన తేదీ</translation>
 <translation id="5147567197700016471">అన్‌లాక్ చేయబడింది</translation>
 <translation id="5150070631291639005">గోప్యతా సెట్టింగ్‌లు</translation>
 <translation id="5155897006997040331">రీడింగ్ వేగం</translation>
@@ -1144,7 +1142,6 @@
 <translation id="5620979661744857819">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది <ph name="APP_NAME" />‌తో పాటు, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">మీ పాస్‌వర్డ్ వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
-<translation id="5646376287012673985">లొకేషన్</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5662075790140998213">డెస్క్ 10</translation>
@@ -1402,7 +1399,7 @@
 <translation id="6665545700722362599">స్థాన సేవలు, పరికర మైక్రోఫోన్, కెమెరా లేదా ఇతర ఫీచర్‌లను ఉపయోగించడానికి వెబ్‌సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లను అనుమతించండి</translation>
 <translation id="6667908387435388584">మీ ఫోన్ హాట్‌స్పాట్‌కు కనెక్ట్ చేసి, సైలెంట్‌లో పెట్టి, మీ పరికరాన్ని కనుగొని, మీ ఫోన్‌లో ప్రస్తుతం తెరిచి ఉన్న Chrome ట్యాబ్‌లను చూడండి</translation>
 <translation id="6670153871843998651">డెస్క్ 3</translation>
-<translation id="6671495933530132209">చిత్రాన్ని కాపీ చేయి</translation>
+<translation id="6671495933530132209">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="6671661918848783005">మీ Chromebookను అన్‌లాక్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6682029141988159141">క్లిప్‌బోర్డ్‌లోని కంటెంట్‌ను పేస్ట్ చేయండి</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
@@ -1720,7 +1717,6 @@
 <translation id="8001755249288974029">కర్సర్ నుండి లైన్ ప్రారంభం వరకు ఉన్న టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="8004512796067398576">పెరుగుదల</translation>
 <translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
-<translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="8029247720646289474">హాట్‌స్పాట్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8029629653277878342">మరింత సెక్యూరిటీ కోసం పిన్ లేదా పాస్‌వర్డ్‌ కావాలి</translation>
 <translation id="8030169304546394654">డిస్‌కనెక్ట్ చేయబడింది</translation>
@@ -1822,7 +1818,6 @@
 <translation id="8487699605742506766">హాట్‌స్పాట్</translation>
 <translation id="8491237443345908933">కొత్త ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ను సపోర్ట్ చేయదు. <ph name="FALLBACK_RESOLUTION" />కు రిజల్యూషన్ మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
-<translation id="8496402167048257517">సమీప షేరింగ్ సెట్టింగ్‌లను చూడండి</translation>
 <translation id="8507563469658346379">అందరూ, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">కొత్త డెస్క్‌ను క్రియేట్ చేయండి</translation>
 <translation id="85123341071060231">మీ Chromebookలో బ్లూటూత్ ఆఫ్ చేసి ఉంది. మీ Chromebookను అన్‌లాక్ చేయడానికి, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.</translation>

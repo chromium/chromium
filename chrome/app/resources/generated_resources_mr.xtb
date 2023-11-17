@@ -315,6 +315,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{मजकूर}other{# मजकूर}}</translation>
 <translation id="1236009322878349843">फोनशी संबंधित तपशील संपादित करा</translation>
 <translation id="1239594683407221485">Files अ‍ॅप मधील डिव्हाइसचा आशय एक्सप्लोर करा.</translation>
+<translation id="1239841552505950173">ॲप्लिकेशन लाँच करा</translation>
 <translation id="1240903469550363138">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />सेवा अटी<ph name="END_LINK2" /> पहा.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> साठी प्रयोगाची स्थिती निवडा</translation>
 <translation id="124116460088058876">आणखी भाषा...</translation>
@@ -463,6 +464,7 @@
 <translation id="1362865166188278099">यांत्रिकी समस्या. प्रिंटर तपासा</translation>
 <translation id="1363585519747660921">USB प्रिंटर कॉंफिगर करणे आवश्यक आहे</translation>
 <translation id="136378536198524553">एनर्जी सेव्हर सुरू आहे</translation>
+<translation id="136522805455656552">तुमचे डिव्हाइस सुरक्षित ठेवण्यासाठी, तुम्ही फक्त विश्वासार्ह स्रोत आणि डेव्हलपर यांच्याकडील सॉफ्टवेअर रन व इंस्टॉल केले पाहिजे. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">Linux ला तुमच्या <ph name="DEVICE_TYPE" /> वर सपोर्ट नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">तुम्ही या साइटला शेवटच्या वेळी भेट दिली होती, तेव्हाच्या फाइल पहा आणि संपादित करा:</translation>
 <translation id="1372841398847029212">तुमच्या खात्याशी सिंक करा</translation>
@@ -735,6 +737,7 @@
 <translation id="1572266655485775982">वाय-फाय सक्षम</translation>
 <translation id="1572876035008611720">तुमचा ईमेल एंटर करा</translation>
 <translation id="1573127087832371028">समस्येचे वर्णन करा</translation>
+<translation id="1575036763505533001">Chrome कस्टमाइझ करा हे साइड पॅनल</translation>
 <translation id="1575741822946219011">भाषा आणि इनपुट</translation>
 <translation id="1576594961618857597">डीफॉल्ट पांढरा अवतार</translation>
 <translation id="1576729678809834061">या शोध परिणामाची तक्रार करा</translation>
@@ -1544,7 +1547,6 @@
 <translation id="216169395504480358">वाय-फाय जोडा...</translation>
 <translation id="2162155940152307086">तुम्ही सिंक सेटिंग्ज सोडल्यास सिंक सुरू होईल</translation>
 <translation id="2162705204091149050">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, आणि फाइल याविषयीची माहिती वाचा</translation>
-<translation id="2162926944953615670">कोणत्याही उपलब्ध eSIM प्रोफाइल नाहीत</translation>
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
 <translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
@@ -3171,6 +3173,7 @@
 <translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
 <translation id="3446274660183028131">Windows इंस्टॉल करण्यासाठी कृपया Parallels Desktop लाँच करा.</translation>
 <translation id="344630545793878684">अनेक वेबसाइटवर तुमचा डेटा वाचा</translation>
+<translation id="3446548199318150462">नवीन डेस्कटॉप डिझाइन सुरू करते. Chrome कस्टमाइझ करा हे साइड पॅनल देखील सुरू केलेले असणे आवश्यक आहे.</translation>
 <translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
 <translation id="3447797901512053632"><ph name="DEVICE_NAME" /> वर <ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
@@ -3794,6 +3797,7 @@
 <translation id="3922823422695198027">इतर ॲप्स ही <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केली आहेत. हे <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि <ph name="APP_NAME_4" /> ला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
 <translation id="3923221004758245114">तुमच्या <ph name="DEVICE_TYPE" /> मधून <ph name="VM_NAME" /> काढून टाकायचे आहे का? यामुळे व्हर्च्युअल मशीनमधील सर्व अ‍ॅप्स आणि डेटा हटवला जाईल!</translation>
+<translation id="3923494859158167397">कोणतीही मोबाइल नेटवर्क सेट केलेली नाहीत</translation>
 <translation id="3923676227229836009">या पेजला फाइल पाहण्याची अनुमती आहे</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">डिस्प्ले आणि मजकुराचा आकार <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4259,6 +4263,7 @@
 <translation id="4298660926525614540">काढून टाकता येण्यायोग्य स्टोरेज नावे</translation>
 <translation id="4299022904780065004">नवीन गुप्त विंडो</translation>
 <translation id="4301671483919369635">या पेजला फाइल संपादित करण्याची अनुमती आहे</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# संपर्क उपलब्ध नाही. त्यांच्यासोबत <ph name="FEATURE_NAME" /> वापरण्यासाठी, त्यांचे Google खाते याच्याशी संबंधित ईमेल ॲड्रेस तुमच्या संपर्कांमध्ये जोडा.}other{# संपर्क उपलब्ध नाहीत. त्यांच्यासोबत <ph name="FEATURE_NAME" /> वापरण्यासाठी, त्यांची Google खाती यांच्याशी संबंधित ईमेल ॲड्रेस तुमच्या संपर्कांमध्ये जोडा.}}</translation>
 <translation id="4303079906735388947">तुमच्या सिक्युरिटी कीसाठी नवीन पिन सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> वर कॉपी करा</translation>
@@ -4430,7 +4435,6 @@
 <translation id="4427365070557649936">कंफर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
-<translation id="4430204941092622397">यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते.</translation>
 <translation id="443031431654216610">फक्त अंक वापरा</translation>
 <translation id="4430369329743628066">बुकमार्क जोडला</translation>
 <translation id="4430422687972614133">व्हर्च्युअल कार्ड सुरू करा</translation>
@@ -4729,6 +4733,7 @@
 <translation id="4667027203988048332">कोणता डेटा वापरला जातो:</translation>
 <translation id="4668279686271488041">तुमच्या डिव्हाइसवरून जाहिरात मापन डेटा नियमितपणे हटवला जातो</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">अभिनंदन! तुमच्या डिव्हाइसवर <ph name="APP_NAME" /> यशस्वीरीत्या इंस्टॉल करण्यात आले आहे</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> आता उघडा</translation>
 <translation id="4673442866648850031">स्टायलस काढल्यानंतर स्टायलस टूल उघडा</translation>
 <translation id="4673785607287397025">कनेक्ट करताना समस्या आली. तुमचे Chromecast आणि कॉंप्युटर हे एकाच नेटवर्कवर असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -5498,6 +5503,7 @@
 <translation id="5297082477358294722">पासवर्ड सेव्ह केलेले आहेत. तुमच्या <ph name="SAVED_PASSWORDS_STORE" /> मध्ये सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा.</translation>
 <translation id="5297946558563358707">तुमच्या स्क्रीनकडे कोणीतरी पाहते, तेव्हा तुमच्या स्क्रीनच्या तळाशी उजवीकडे प्रायव्हसी आय आयकॉन दाखवा</translation>
 <translation id="5298219193514155779">द्वारा निर्मित थीम</translation>
+<translation id="5298315677001348398">तुम्ही पुढे सुरू ठेवून या सॉफ्टवेअरला तुमच्या डिव्हाइसवर बदल करण्याची अनुमती देऊ इच्छिता का?</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">तुमचे टॅब गट पहा आणि व्यवस्थापित करा</translation>
 <translation id="5300426565656326054">ब्राउझरवर आधारित जाहिरात पर्सनलायझेशन</translation>
@@ -6308,7 +6314,6 @@
 <translation id="5955721306465922729">वेबसाइटला हे ॲप्लिकेशन उघडायचे आहे.</translation>
 <translation id="5955809630138889698">हे डिव्हाइस फक्त ऑनलाइन डेमो मोडसाठी पात्र असू शकते. अधिक तपशिलांसाठी कृपया तुमच्या साहाय्य प्रतिनिधीशी संपर्क साधा.</translation>
 <translation id="5956585768868398362">तुम्हाला हवे होते तेच हे शोध पेज आहे का?</translation>
-<translation id="5957918771633727933">कोणत्याही eSIM प्रोफाइल उपलब्ध नाहीत. नवीन <ph name="BEGIN_LINK" />प्रोफाइल<ph name="END_LINK" /> डाउनलोड करा.</translation>
 <translation id="5957987129450536192">तुमच्या प्रोफाइल इमेज जवळच्या बोलण्यासाठी निवडा आयकनवर टॅप करा, त्यानंतर तुम्हाला जे ऐकायचे आहे ते निवडा.</translation>
 <translation id="5959471481388474538">नेटवर्क उपलब्ध नाही</translation>
 <translation id="5963413905009737549">विभाग</translation>
@@ -7997,9 +8002,11 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">चुकीचे कॉंबिनेशन</translation>
 <translation id="7329154610228416156">सुरक्षित नसलेली URL (<ph name="BLOCKED_URL" />) वापरण्यासाठी साइन-इन कॉंफिगर केल्यामुळे ते अयशस्वी झाले. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="7330533963640151632"><ph name="USER_NAME" /> यांच्या डिव्हाइससाठी <ph name="FEATURE_NAME" /> सेटिंग्ज, <ph name="USER_EMAIL" /> खात्याच्या अंतर्गत शेअर करणे.</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7332053360324989309">समर्पित कर्मचारी: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">तुमची अ‍ॅप्स आणि सेटिंग्ज यांचा बॅकअप घ्या आणि ती रिस्टोअर करा</translation>
+<translation id="7335436113423103413">नवीन टॅब पेजवरील सर्वसमावेशक साइड पॅनलमधील Chrome कस्टमाइझ करा ही कार्यक्षमता वापरण्याची क्षमता सुरू करते.</translation>
 <translation id="7335974957018254119">यासाठी स्पेल चेक वापरा</translation>
 <translation id="7336799713063880535">सूचना ब्लॉक केल्या.</translation>
 <translation id="7338630283264858612">डिव्हाइस सिरीअल नंबर चुकीचा आहे.</translation>
@@ -8666,6 +8673,7 @@
 <translation id="7828642077514646543">एरर: सर्टिफिकेट डीकोड करता आले नाही</translation>
 <translation id="7829877209233347340">शाळा खाते जोडण्याची परवानगी देण्यासाठी, पालकाला साइन इन करण्यास सांगा</translation>
 <translation id="7830833461614351956">उघडण्यासाठी <ph name="NUM_OF_FILES" /> फाइल <ph name="CLOUD_PROVIDER" /> वर कॉपी करायच्या आहेत का?</translation>
+<translation id="783088158898934992">अ‍ॅपची भाषा</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ला सवलत आढळल्यास, तुम्हाला ती या पेजवर दिसेल</translation>
 <translation id="7833720883933317473">सेव्ह केलेले कस्टम शब्द येथे दिसून येतील</translation>
@@ -10343,6 +10351,7 @@
 <translation id="9115932142612197835">हे सेटिंग Google Translate किंवा Lens ची उपलब्धता बदलत नाही</translation>
 <translation id="9116799625073598554">टीप-घेणारा ॲप</translation>
 <translation id="9117030152748022724">तुमची ॲप्स व्यवस्थापित करा</translation>
+<translation id="9120362425083889527">इंस्टॉलेशन पूर्ण करता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा ही विंडो बंद करा</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />सर्वोत्तम अनुभवासाठी, <ph name="DEVICE_OS" /> हे तुमच्या अंतर्गत डिस्कवर इंस्टॉल करा. तुम्ही नंतर लॉग इन स्क्रीनवरूनदेखील इंस्टॉल करू शकता.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही इंस्टॉल करण्यासाठी तयार नसल्यास, तुम्ही ते वापरून पाहण्याकरिता USB वरून रन करू शकता. हे तुमचे आधीपासून असलेले OS आणि डेटा ठेवेल, पण तुम्हाला कदाचित स्टोरेज आणि परफॉर्मन्स मर्यादा दिसतील.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">पिन केलेला टॅब म्हणून उघडा</translation>

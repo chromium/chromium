@@ -340,6 +340,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6981396265751285733">Bu ayar açık olduğunda Chromium, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chromium hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir.</translation>
 <translation id="6985329841647292029">ChromiumOS şartları</translation>
 <translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
+<translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
 <translation id="705851970750939768">Chromium'u güncelle</translation>
@@ -392,6 +393,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
+<translation id="8086881907087796310">Bilgisayarınız minimum donanım gereksinimlerini karşılamadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Bu site için Chromium'un konum iznine ihtiyacı var</translation>
 <translation id="8133124826068723441">Senkronizasyon alan adınızda kullanılamadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>

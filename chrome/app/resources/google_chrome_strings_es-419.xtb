@@ -350,6 +350,7 @@
 <translation id="6943584222992551122">Los datos de navegación de esta persona se borrarán de este dispositivo. Para recuperarlos, accede a Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla de entrada para que Google Chrome Beta permita el tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
+<translation id="7011190694940573312">La instalación falló porque esta versión del sistema operativo no es compatible.</translation>
 <translation id="7024536598735240744">Error al momento de desempaquetar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Se detuvo la instalación.</translation>
 <translation id="7025800014283535195">Puedes alternar entre los perfiles de Chrome aquí</translation>
@@ -419,6 +420,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8019103195866286235">El desarrollador anuló la publicación de esta extensión y es posible que no sea segura. Quítala de Chrome para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida tu información personal.</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8086881907087796310">La instalación falló porque tu computadora no cumple con los requisitos mínimos de hardware.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>

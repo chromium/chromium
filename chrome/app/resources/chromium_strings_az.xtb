@@ -342,6 +342,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6981396265751285733">Aktiv olduqda Chromium qeyri-aktiv tablardan yaddaşı təmizləyir. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chromium-u sürətləndirir. Qayıtdığınız zaman qeyri-aktiv tablar avtomatik olaraq yenidən aktivləşir.</translation>
 <translation id="6985329841647292029">ChromiumOS şərtləri</translation>
 <translation id="6990124437352146030">Chromium bu sayt üçün mikrofona giriş tələb edir</translation>
+<translation id="7011190694940573312">Əməliyyat sisteminin bu versiyası dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="7024536598735240744">Paketin açılması xətası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Quraşdırma Dayandırılıb.</translation>
 <translation id="705851970750939768">Chromium'u güncəlləşdirin</translation>
@@ -392,6 +393,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7997934263947464652">Naməlum mənbələrdən olan artırmalar, tətbiqlər və temalar cihazınıza zərər verə bilər. Chromium onları yalnız buradan quraşdırmağı tövsiyə edir: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Chromium'un giriş imkanı olduqda veb saytlar giriş üçün Sizdən icazə istəyəcək.</translation>
 <translation id="80471789339884597">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl bütün brauzerlərinizi yenidən başlatmalısınız.</translation>
+<translation id="8086881907087796310">Kompüteriniz minimum avadanlıq tələblərinə cavab vermədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Sınaq üçün Chrome</translation>
 <translation id="8105840573057009683">Chromium bu sayt üçün məkan icazəsi tələb edir</translation>
 <translation id="8133124826068723441">ChromiumOS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>

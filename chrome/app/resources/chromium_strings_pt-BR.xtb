@@ -205,6 +205,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4677944499843243528">O perfil parece estar em uso por outro processo do Chromium (<ph name="PROCESS_ID" />) em outro computador (<ph name="HOST_NAME" />). O Chromium bloqueou o perfil para que ele não seja corrompido. Se você tiver certeza de que nenhum outro processo está usando este perfil, pode desbloquear o perfil e reiniciar o Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
 <translation id="4708774505295300557">Anteriormente, alguém fez login no Chromium neste computador como <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo usuário do Chromium para manter suas informações separadas.</translation>
+<translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo sem suporte.</translation>
 <translation id="4746050847053251315">Sair do Chromium mesmo assim?</translation>
 <translation id="4748217263233248895">Uma atualização de segurança especial para o Chromium acabou de ser aplicada. Reinicie agora, e suas guias serão restauradas.</translation>
 <translation id="4765210420921718862">É possível mudar isso a qualquer momento nas configurações do Chromium. Os testes são realizados junto à veiculação dos anúncios atuais, então você não verá mudanças imediatamente.</translation>
@@ -275,6 +276,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6145820983052037069">Aqui, você pode alternar entre os perfis do Chromium</translation>
 <translation id="615103374448673771">Se você autorizar, o Chromium pode usar cookies no pré-carregamento</translation>
 <translation id="6175304430031192654">Dependendo das suas configurações, o Chromium também pode enviar cookies e seu URL atual</translation>
+<translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183079672144801177">Verifique se sua conta está conectada ao Chromium no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver funcionando, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado em 1 segundo}one{O Chromium será reiniciado em # segundo}other{O Chromium será reiniciado em # segundos}}</translation>
@@ -339,6 +341,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6981396265751285733">Quando essa opção está ativada, o Chromium libera memória das guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e mantém o Chromium rápido. Suas guias inativas são reativadas automaticamente quando você volta para elas.</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>
+<translation id="7011190694940573312">A instalação falhou porque não há suporte para esta versão do sistema operacional.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>
@@ -389,6 +392,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7997934263947464652">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chromium recomenda os instalar apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">A instalação falhou porque o computador não atende aos requisitos mínimos de hardware.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" />: Google Chrome for Testing</translation>
 <translation id="8105840573057009683">O Chromium precisa da permissão de localização para este site</translation>
 <translation id="8133124826068723441">O ChromiumOS não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
@@ -454,5 +458,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="942598560705308788">Certificados gerenciados pelo Chromium</translation>
 <translation id="965162752251293939">Quem está usando o Chromium?</translation>
 <translation id="967427899662692980">Use o nível mais alto de segurança do Chromium</translation>
+<translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
 </translationbundle>

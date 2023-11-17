@@ -735,6 +735,7 @@
 <translation id="4856841893565072365">شريط قوائم الترتيب الذكي</translation>
 <translation id="4860895144060829044">اتصال</translation>
 <translation id="4881695831933465202">فتح</translation>
+<translation id="4883824756452868502">كشف الوحدات</translation>
 <translation id="488785315393301722">عرض التفاصيل</translation>
 <translation id="4894963374040315706">يتيح لك هذا الإجراء البحث باستخدام صوتك.</translation>
 <translation id="489903206070130262">آخر علامة تبويب مفتوحة</translation>
@@ -858,8 +859,10 @@
 <translation id="5551897871312988470">اقتراح الترجمة</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="555749644339804659">جارٍ التحقّق من كلمات المرور…</translation>
+<translation id="5559567453458728487">تحويل وحدات القياس التي تم العثور عليها على الويب</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5572684875078967866">تخزين المعلومات</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{تتبُّع هذا الطرد}zero{تتبُّع كل الطرود}two{تتبُّع هذين الطردَين}few{تتبُّع كل الطرود}many{تتبُّع كل الطرود}other{تتبُّع كل الطرود}}</translation>
 <translation id="5597915316964418992">افتح شبكة علامات التبويب.</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
@@ -1122,6 +1125,7 @@
 <translation id="6781260999953472352">هل تريد تفعيل المزامنة؟</translation>
 <translation id="6781405765516175232">للاطّلاع على خيارات المسارات، انقر على "الحصول على الاتجاهات".</translation>
 <translation id="6785453220513215166">جارٍ إرسال تقرير بالأعطال…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{إيقاف تتبُّع هذا الطرد}zero{إيقاف تتبُّع كل الطرود}two{إيقاف تتبُّع هذين الطردَين}few{إيقاف تتبُّع كل الطرود}many{إيقاف تتبُّع كل الطرود}other{إيقاف تتبُّع كل الطرود}}</translation>
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
 <translation id="6797885426782475225">البحث الصوتي</translation>
 <translation id="6800349425672670802">يمكنك الوصول إلى جميع علامات التبويب المفتوحة من خلال "أداة التبديل بين علامات التبويب".</translation>

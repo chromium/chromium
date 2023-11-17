@@ -343,7 +343,6 @@
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
 <translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
-<translation id="2448312741937722512">Төрөл</translation>
 <translation id="2449089818483227734">Батарей бага байна</translation>
 <translation id="2450205753526923158">Дэлгэцийн агшны горим</translation>
 <translation id="2455994958736234930">Хаяг оруулах хэсэгт www. болон .com гэж нэмээд дараа нь вебсайтыг нээх</translation>
@@ -1016,7 +1015,6 @@
 <translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
 <translation id="5121628974188116412">Хуудасны доод хэсэгт очих</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
-<translation id="5145331109270917438">Огноо өөрчлөгдсөн</translation>
 <translation id="5147567197700016471">Түгжээг тайлсан</translation>
 <translation id="5150070631291639005">Нууцлалын тохиргоо</translation>
 <translation id="5155897006997040331">Унших хурд</translation>
@@ -1144,7 +1142,6 @@
 <translation id="5620979661744857819">Энэ нь <ph name="APP_NAME" /> болон камер, микрофоны зөвшөөрөлтэй бүх апп, вебсайтын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Таны нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
-<translation id="5646376287012673985">Байршил</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5662075790140998213">10-р дэлгэц</translation>
@@ -1720,7 +1717,6 @@
 <translation id="8001755249288974029">Курсороос мөрийн эхлэл хүртэлх текстийг сонгох</translation>
 <translation id="8004512796067398576">Тоон өсөлт</translation>
 <translation id="8026334261755873520">Хайлтын өгөгдлийг цэвэрлэх</translation>
-<translation id="8028993641010258682">Хэмжээ</translation>
 <translation id="8029247720646289474">Сүлжээний цэгийн холболт амжилтгүй боллоо</translation>
 <translation id="8029629653277878342">Нэмэлт аюулгүй байдлын үүднээс ПИН эсвэл нууц үг шаардлагатай</translation>
 <translation id="8030169304546394654">Салгасан</translation>
@@ -1823,7 +1819,6 @@
 <translation id="8487699605742506766">Сүлжээний цэг</translation>
 <translation id="8491237443345908933">Холбоосыг шинэ табд нээх</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
-<translation id="8496402167048257517">Ойролцоо хуваалцах тохиргоог харуулна уу</translation>
 <translation id="8507563469658346379">Бүгд, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Шинэ дэлгэц үүсгэх</translation>
 <translation id="85123341071060231">Таны Chromebook-н Bluetooth унтраалттай байна. Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу.</translation>

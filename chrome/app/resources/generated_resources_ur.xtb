@@ -1537,7 +1537,6 @@
 <translation id="216169395504480358">‏Wi-Fi شامل کریں…</translation>
 <translation id="2162155940152307086">آپ کی مطابقت پذیری کی ترتیبات کو چھوڑنے پر مطابقت پذیری شروع ہوگی</translation>
 <translation id="2162705204091149050">‏اپنے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر اور فائلز سے متعلق معلومات پڑھیں</translation>
-<translation id="2162926944953615670">‏کوئی eSIM پروفائل دستیاب نہیں ہے</translation>
 <translation id="2163470535490402084">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور 1 مزید سوئچ</translation>
 <translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
@@ -3786,6 +3785,7 @@
 <translation id="3922823422695198027">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، اور <ph name="APP_NAME_4" /> کو تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
 <translation id="3923221004758245114">اپنے <ph name="DEVICE_TYPE" /> سے <ph name="VM_NAME" /> کو ہٹائیں؟ اس سے ورچوئل مشین میں موجود سبھی ایپس اور ڈیٹا حذف ہو جائیں گے!</translation>
+<translation id="3923494859158167397">کوئی موبائل نیٹ ورک سیٹ اپ نہیں کیا گیا</translation>
 <translation id="3923676227229836009">اس صفحہ کو فائلز دیکھنے کی اجازت ہے</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ڈسپلے اور ٹیکسٹ کا سائز <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4425,7 +4425,6 @@
 <translation id="4427365070557649936">توثیقی کوڈ کی توثیق کی جا رہی ہے...</translation>
 <translation id="4429163740524851942">جسمانی کی بورڈ لے آؤٹ</translation>
 <translation id="4430019312045809116">والیوم</translation>
-<translation id="4430204941092622397">اس سے آپ کا موبائل نیٹ ورک کچھ منٹ کے لیے منقطع ہو سکتا ہے۔</translation>
 <translation id="443031431654216610">صرف عددی ہندسے استعمال کریں</translation>
 <translation id="4430369329743628066">بُک مارک شامل کر دیا گیا</translation>
 <translation id="4430422687972614133">ورچوئل کارڈ آن کریں</translation>
@@ -6302,7 +6301,6 @@
 <translation id="5955721306465922729">ایک ویب سائٹ یہ ایپلیکیشن کھولنا چاہتی ہے۔</translation>
 <translation id="5955809630138889698">ہو سکتا ہے کہ یہ آلہ صرف آن لائن ڈیمو موڈ کیلئے ہی اہل ہو۔ براہ کرم مزید تفصیلات کیلئے اپنے معاون نمائندے سے رابطہ کریں۔</translation>
 <translation id="5956585768868398362">کیا یہی وہ تلاش صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
-<translation id="5957918771633727933">‏کوئی eSIM پروفائلز دستیاب نہیں ہے۔ ایک نئی <ph name="BEGIN_LINK" />پروفائل<ph name="END_LINK" /> ڈاؤن لوڈ کریں۔</translation>
 <translation id="5957987129450536192">اپنی پروفائل تصویر کے قریب موجود "سننے کیلئے منتخب کریں" آئیکن کو تھپتھپائیں، پھر جو آپ سننا چاہتے ہیں اسے منتخب کریں۔</translation>
 <translation id="5959471481388474538">نیٹ ورک دستیاب نہیں ہے</translation>
 <translation id="5963413905009737549">سیکشن</translation>

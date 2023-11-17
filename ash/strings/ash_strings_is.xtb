@@ -343,7 +343,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="243878895369688216">Opnað í gær</translation>
 <translation id="2440978926514840421">GIF-upptaka gerð</translation>
 <translation id="2441427462554639370">Upptöku lauk vegna mjög lítils geymslurýmis</translation>
-<translation id="2448312741937722512">Gerð</translation>
 <translation id="2449089818483227734">Rafhlaða að tæmast</translation>
 <translation id="2450205753526923158">Skjámyndastilling</translation>
 <translation id="2455994958736234930">Bættu www. og .com við í veffangastikunni og opnaðu svo vefsvæði</translation>
@@ -1015,7 +1014,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5121628974188116412">Fara neðst á síðu</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
-<translation id="5145331109270917438">Dagsetning breytingar</translation>
 <translation id="5147567197700016471">Ólæst</translation>
 <translation id="5150070631291639005">Persónuverndarstillingar</translation>
 <translation id="5155897006997040331">Leshraði</translation>
@@ -1143,7 +1141,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5620979661744857819">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ekki var hægt að staðfesta auðkenni þitt. Reyndu aftur.</translation>
-<translation id="5646376287012673985">Staðsetning</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vill ná athygli þinni.</translation>
 <translation id="5662075790140998213">Skrifborð 10</translation>
@@ -1719,7 +1716,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8001755249288974029">Velja texta frá bendli að upphafi línu</translation>
 <translation id="8004512796067398576">Auka</translation>
 <translation id="8026334261755873520">Hreinsa vafragögn</translation>
-<translation id="8028993641010258682">Stærð</translation>
 <translation id="8029247720646289474">Tenging við heitan reit mistókst</translation>
 <translation id="8029629653277878342">Krafa er um PIN-númer eða aðgangsorð fyrir aukið öryggi</translation>
 <translation id="8030169304546394654">Aftengt</translation>
@@ -1821,7 +1817,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8487699605742506766">Heitur reitur</translation>
 <translation id="8491237443345908933">Opna tengil í nýjum flipa</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8496402167048257517">Sýna stillingar nærdeilingar</translation>
 <translation id="8507563469658346379">Öll, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Búa til nýtt skrifborð</translation>
 <translation id="85123341071060231">Slökkt er á Bluetooth í Chromebook. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>

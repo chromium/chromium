@@ -207,6 +207,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="4677944499843243528">Úgy tűnik, a profilt egy másik Chromium-folyamat (<ph name="PROCESS_ID" />) használja egy másik számítógépen (<ph name="HOST_NAME" />). A Chromium zárolta a profilt, hogy az ne sérülhessen. Ha biztos benne, hogy nem használja másik folyamat a profilt, feloldhatja azt, és újraindíthatja a Chromiumot.</translation>
 <translation id="4680828127924988555">Telepítés megszakítása</translation>
 <translation id="4708774505295300557">Valaki korábban <ph name="ACCOUNT_EMAIL_LAST" /> néven bejelentkezett a Chromiumba erről a számítógépről. Az adatai elkülönítéséhez hozzon létre új Chromium-felhasználót.</translation>
+<translation id="4724676981607797757">A telepítés nem támogatott protokoll hiba miatt nem sikerült.</translation>
 <translation id="4746050847053251315">Biztosan kilép a Chromiumból?</translation>
 <translation id="4748217263233248895">A rendszer egy speciális biztonsági frissítést alkalmazott a Chromiumon. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
 <translation id="4765210420921718862">Beállításait bármikor módosíthatja a Chromium-beállítások között. A próbaidőszak a jelenlegi hirdetésmegjelenítéssel párhuzamosan zajlik, így nem fognak azonnal megjelenni a változtatások.</translation>
@@ -277,6 +278,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6145820983052037069">Itt válthat a Chromium-profilok között</translation>
 <translation id="615103374448673771">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chromium előtöltéskor felhasználja őket.</translation>
 <translation id="6175304430031192654">A beállításaitól függően a Chromium cookie-kat és az Ön jelenlegi URL-jét is elküldheti.</translation>
+<translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
 <translation id="6183079672144801177">Ellenőrizze, hogy bejelentkezett-e a Chromiumba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="6212496753309875659">A számítógépen már megtalálható a Chromium újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Chromiumot, majd próbálkozzon újra.</translation>
 <translation id="6219195342503754812">{0,plural, =0{A Chromium most újraindul}=1{A Chromium 1 másodpercen belül újraindul}other{A Chromium # másodpercen belül újraindul}}</translation>
@@ -460,5 +462,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="942598560705308788">A Chromium által kezelt tanúsítványok</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>
 <translation id="967427899662692980">Állítsa be a Chromium legerősebb védelmét</translation>
+<translation id="983803489796659991">A telepítés nem sikerült, mert a frissítési szerver nem rendelkezik hash-adatokkal az alkalmazáshoz.</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
 </translationbundle>

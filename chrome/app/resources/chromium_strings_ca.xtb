@@ -207,6 +207,7 @@
 <translation id="4677944499843243528">Sembla que un altre procés de Chromium (<ph name="PROCESS_ID" />) està fent servir el perfil en un altre ordinador (<ph name="HOST_NAME" />). Chromium ha bloquejat el perfil perquè no es malmeti. Si esteu segur que no hi ha cap altre procés que utilitzi el perfil, podeu desbloquejar-lo i tornar a iniciar Chromium.</translation>
 <translation id="4680828127924988555">Cancel·la la instal·lació</translation>
 <translation id="4708774505295300557">Algú ha iniciat anteriorment la sessió a Chromium en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chromium per mantenir la informació separada.</translation>
+<translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4746050847053251315">Vols sortir de Chromium igualment?</translation>
 <translation id="4748217263233248895">S'acaba d'aplicar una actualització de seguretat especial per a Chromium. Reinicia el navegador i restaurarem les pestanyes.</translation>
 <translation id="4765210420921718862">Si canvies d'opinió, pots modificar la configuració de Chromium en qualsevol moment. Com que les proves s'executen en paral·lel a la manera actual de difondre els anuncis, no veuràs els canvis de seguida.</translation>
@@ -277,6 +278,7 @@
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>
 <translation id="615103374448673771">Si permets les galetes, Chromium pot utilitzar-les en la precàrrega</translation>
 <translation id="6175304430031192654">En funció de la teva configuració, Chromium també pot enviar galetes i el teu URL actual</translation>
+<translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="6212496753309875659">Aquest equip ja té una versió més recent de Chromium. Si el programari no funciona, desinstal·leu Chromium i torneu-ho a provar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium es reiniciarà ara}=1{Chromium es reiniciarà d'aquí a 1 segon}other{Chromium es reiniciarà d'aquí a # segons}}</translation>
@@ -343,6 +345,7 @@
 <translation id="6981396265751285733">Quan aquesta opció està activada, Chromium allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chromium. Les pestanyes inactives s'activen de nou automàticament quan hi tornes.</translation>
 <translation id="6985329841647292029">Condicions de Chromium OS</translation>
 <translation id="6990124437352146030">Per visitar aquest lloc web, Chromium necessita permís per accedir al micròfon</translation>
+<translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">La instal·lació s'ha aturat.</translation>
 <translation id="705851970750939768">Actualitza Chromium</translation>
@@ -395,6 +398,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7997934263947464652">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chromium recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="8133124826068723441">Chromium OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
@@ -460,5 +464,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="942598560705308788">Certificats gestionats per Chromium</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguretat més efectiva de Chromium</translation>
+<translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de cap valor de resum de dades per a l'aplicació.</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

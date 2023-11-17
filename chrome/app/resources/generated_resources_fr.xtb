@@ -314,6 +314,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1235924639474699896">{COUNT,plural, =1{SMS}one{# SMS}other{# SMS}}</translation>
 <translation id="1236009322878349843">Modifier le téléphone</translation>
 <translation id="1239594683407221485">Explorez le contenu de l'appareil dans l'application Fichiers.</translation>
+<translation id="1239841552505950173">Lancer l'application</translation>
 <translation id="1240903469550363138">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
 <translation id="1241066500170667906">Sélectionner l'état des tests pour <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Plus de langues</translation>
@@ -462,6 +463,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1362865166188278099">Problème mécanique. Vérifiez l'imprimante</translation>
 <translation id="1363585519747660921">L'imprimante USB n'est pas configurée</translation>
 <translation id="136378536198524553">Économiseur d'énergie activé</translation>
+<translation id="136522805455656552">Pour protéger votre appareil, nous vous recommandons d'exécuter et d'installer uniquement des logiciels provenant de développeurs et de sources fiables. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">Linux n'est pas compatible avec votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">Affichez et modifiez les fichiers enregistrés lors de votre dernière visite sur ce site :</translation>
 <translation id="1372841398847029212">Synchroniser avec votre compte</translation>
@@ -733,6 +735,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1572266655485775982">Activation du Wi-Fi</translation>
 <translation id="1572876035008611720">Saisissez votre adresse e-mail</translation>
 <translation id="1573127087832371028">Décrivez le problème</translation>
+<translation id="1575036763505533001">Panneau latéral "Personnaliser Chrome"</translation>
 <translation id="1575741822946219011">Langues et modes de saisie</translation>
 <translation id="1576594961618857597">Avatar blanc par défaut</translation>
 <translation id="1576729678809834061">Signaler ce résultat de recherche</translation>
@@ -1534,7 +1537,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera une fois que vous aurez quitté les paramètres de synchronisation</translation>
 <translation id="2162705204091149050">Lire les infos sur vos navigateur, OS, appareil, logiciels installés et fichiers</translation>
-<translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
 <translation id="2165102982098084499">Vous avez associé ces appareils en scannant un code QR.</translation>
@@ -3158,6 +3160,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur plusieurs sites web</translation>
+<translation id="3446548199318150462">Active la nouvelle interface pour ordinateur. Le panneau latéral "Personnaliser Chrome" doit également être activé.</translation>
 <translation id="3447644283769633681">Bloquer tous les cookies tiers</translation>
 <translation id="3447797901512053632">Caster "<ph name="TAB_NAME" />" sur "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">Mettre à jour le compte</translation>
@@ -3781,6 +3784,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3922823422695198027">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="APP_NAME_4" /> d'ouvrir les liens compatibles.</translation>
 <translation id="3923184630988645767">Consommation des données</translation>
 <translation id="3923221004758245114">Supprimer <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" /> ? Cela supprimera toutes les applis et données de la machine virtuelle.</translation>
+<translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3923676227229836009">Cette page est autorisée à afficher les fichiers</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Taille de police et d'affichage : <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -4248,6 +4252,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4298660926525614540">Noms de mémoires de stockage amovibles</translation>
 <translation id="4299022904780065004">Nouvelle fenêtre de navigation &amp;privée</translation>
 <translation id="4301671483919369635">Cette page est autorisée à modifier les fichiers</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# contact n'est pas disponible. Pour utiliser <ph name="FEATURE_NAME" /> avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}one{# contact n'est pas disponible. Pour utiliser <ph name="FEATURE_NAME" /> avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}other{# contacts ne sont pas disponibles. Pour utiliser <ph name="FEATURE_NAME" /> avec ces personnes, ajoutez à vos contacts les adresses e-mail associées à leurs comptes Google.}}</translation>
 <translation id="4303079906735388947">Configurez un nouveau code pour votre clé de sécurité</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4305402730127028764">Copier sur <ph name="DEVICE_NAME" /></translation>
@@ -4419,7 +4424,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4427365070557649936">Vérification du code de confirmation…</translation>
 <translation id="4429163740524851942">Disposition du clavier physique</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4430204941092622397">Votre réseau mobile pourrait se déconnecter pendant quelques minutes.</translation>
 <translation id="443031431654216610">N'utilisez que des chiffres</translation>
 <translation id="4430369329743628066">Favori ajouté</translation>
 <translation id="4430422687972614133">Activer la carte virtuelle</translation>
@@ -4717,6 +4721,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4667027203988048332">Quelles sont les données utilisées :</translation>
 <translation id="4668279686271488041">Les données de mesure des annonces sont régulièrement supprimées de votre appareil</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">Félicitations ! <ph name="APP_NAME" /> a bien été installé sur votre appareil.</translation>
 <translation id="4672759829555593783">Ouvrir <ph name="FILE_NAME" /> maintenant</translation>
 <translation id="4673442866648850031">Ouvrir les outils de stylet lors du retrait du stylet</translation>
 <translation id="4673785607287397025">Problème de connexion. Assurez-vous que le Chromecast et l'ordinateur sont connectés au même réseau, puis réessayez.</translation>
@@ -5486,6 +5491,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5297082477358294722">Mot de passe enregistré. Affichez et gérez les mots de passe enregistrés dans votre <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Lorsque quelqu'un d'autre regarde votre écran, l'icône de confidentialité représentant un œil s'affiche en bas à droite de l'écran</translation>
 <translation id="5298219193514155779">Thème créé par</translation>
+<translation id="5298315677001348398">Voulez-vous continuer et autoriser ce logiciel à apporter des modifications à votre appareil ?</translation>
 <translation id="5299109548848736476">Interdire le suivi</translation>
 <translation id="5299558715747014286">Afficher et gérer vos groupes d'onglets</translation>
 <translation id="5300426565656326054">Personnalisation des annonces basée sur le navigateur</translation>
@@ -6296,7 +6302,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Il se peut que cet appareil soit seulement compatible avec le mode de démonstration en ligne. Pour en savoir plus, veuillez contacter le service d'assistance.</translation>
 <translation id="5956585768868398362">Est-ce la page de recherche que vous attendiez ?</translation>
-<translation id="5957918771633727933">Aucun profil eSIM disponible. Téléchargez un nouveau <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour prononcer, située à côté de votre image de profil, puis choisissez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Réseau indisponible</translation>
 <translation id="5963413905009737549">Section</translation>
@@ -7987,9 +7992,11 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Combinaison non valide</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>
+<translation id="7330533963640151632">Paramètres de <ph name="FEATURE_NAME" /> pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7332053360324989309">Nœud de calcul dédié : <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Sauvegarder et restaurer vos applis et paramètres</translation>
+<translation id="7335436113423103413">Permet d'utiliser la fonctionnalité Personnaliser Chrome depuis le panneau latéral unifié sur la page "Nouvel onglet".</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique</translation>
 <translation id="7336799713063880535">Notif. bloquées.</translation>
 <translation id="7338630283264858612">Le numéro de série de l'appareil n'est pas valide.</translation>
@@ -8658,6 +8665,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7828642077514646543">Erreur : Impossible de décoder le certificat</translation>
 <translation id="7829877209233347340">Demande à un parent de t'autoriser à ajouter un compte scolaire</translation>
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers dans <ph name="CLOUD_PROVIDER" /> et les ouvrir ?</translation>
+<translation id="783088158898934992">Langue de l'appli</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Si Google trouve une remise, vous la verrez sur cette page</translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>

@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
+<translation id="4336566011000459927">A Chrome ma ismét korlátozza a cookie-kat</translation>
 <translation id="4338831206024587507">Minden <ph name="DOMAIN" /> alatti webhely</translation>
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4412992751769744546">Harmadik felektől származó cookie-k engedélyezése</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">Kapcsolata a webhellyel nem biztonságos</translation>
 <translation id="6181444274883918285">Webhelykivétel hozzáadása</translation>
 <translation id="6192792657125177640">Kivételek</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{A Chrome holnap ismét letiltja a cookie-kat}other{# nap múlva ismét le lesznek tiltva a cookie-k}}</translation>
 <translation id="6195163219142236913">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804248752222191302">Egy webhely használja az Ön kameráját</translation>
 <translation id="7807060072011926525">A Google biztosítja</translation>
+<translation id="7822573154188733812">A Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>
 <translation id="783819812427904514">Videó némításának feloldása</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>
 <translation id="8087000398470557479">Ez a Google által megjelenített tartalom a(z) <ph name="DOMAIN_NAME" /> domainről származik.</translation>
 <translation id="8088603949666785339">További lehetőségek itt: <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{A Chrome holnap ismét korlátozza a cookie-kat}other{# nap múlva a Chrome ismét korlátozza a cookie-kat}}</translation>
 <translation id="8116925261070264013">Némítva</translation>
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
 <translation id="8131740175452115882">Megerősítés</translation>

@@ -209,6 +209,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4677944499843243528">Parece que outro proceso de Chromium (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chromium bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquear o perfil e volver iniciar Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalación</translation>
 <translation id="4708774505295300557">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chromium neste ordenador. Crea un novo usuario de Chromium para manter a túa información por separado.</translation>
+<translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
 <translation id="4746050847053251315">Queres saír de Chromium de todas formas?</translation>
 <translation id="4748217263233248895">Acábase de aplicar unha actualización de seguranza especial para Chromium. Reinicia agora e restauraremos as túas pestanas.</translation>
 <translation id="4765210420921718862">Se cambias de idea, podes modificar a configuración de Chromium en calquera momento. Con todo, as probas inscríbense na experiencia actual de publicación de anuncios, polo que non verás cambios de inmediato.</translation>
@@ -279,6 +280,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6145820983052037069">Aquí podes cambiar entre perfís de Chromium</translation>
 <translation id="615103374448673771">Se permites o uso de cookies, Chromium poderá utilizalas para as precargas</translation>
 <translation id="6175304430031192654">En función da túa configuración, é posible que Chromium tamén envíe cookies e o teu URL actual</translation>
+<translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6183079672144801177">Asegúrate de iniciar sesión en Chromium no teu <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="6212496753309875659">Este ordenador xa conta cunha versión máis recente de Chromium. Se o software non funciona, desinstala Chromium e téntao de novo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium reiniciarase agora}=1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
@@ -344,6 +346,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6981396265751285733">Cando esta opción está activada, Chromium libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chromium segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas.</translation>
 <translation id="6985329841647292029">Condicións de Chromium OS</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder ao micrófono neste sitio</translation>
+<translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Detívose a instalación.</translation>
 <translation id="705851970750939768">Actualizar Chromium</translation>
@@ -396,6 +399,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7997934263947464652">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Unha vez que Chromium teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="80471789339884597">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar todos os teus navegadores.</translation>
+<translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" />: Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium necesita permiso de acceso á localización para este sitio</translation>
 <translation id="8133124826068723441">Chromium OS non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
@@ -461,5 +465,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="942598560705308788">Certificados que xestiona Chromium</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>
 <translation id="967427899662692980">Goza da máxima seguranza de Chromium</translation>
+<translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
 </translationbundle>

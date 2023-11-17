@@ -234,6 +234,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4633000520311261472">Om Chrome veiliger te maak, het ons sekere uitbreidings wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys is nie en dalk sonder jou medewete bygevoeg kon wees, gedeaktiveer.</translation>
 <translation id="4680828127924988555">Kanselleer installering</translation>
 <translation id="469553575393225953">Uitbreidings, programme en temas van onbekende bronne af kan jou toestel beskadig. Chrome beveel aan dat hulle net uit die Chrome Webwinkel geïnstalleer word</translation>
+<translation id="4724676981607797757">Installasie het misluk as gevolg van ’n ongesteunde protokolfout.</translation>
 <translation id="4728575227883772061">Installering het weens 'n ongespesifiseerde fout misluk. As Google Chrome tans gebruik word, maak dit asseblief toe en probeer weer.</translation>
 <translation id="4747730611090640388">Chrome kan jou belangstellings skat.  ’n Werf wat jy besoek kan Chrome later vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="4754614261631455953">Google Chrome Kanarie (mDNS-In)</translation>
@@ -319,6 +320,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6157638032135951407">Jou organisasie vee Chrome-data uit wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
 <translation id="624230925347970731">Chrome gaan binnekort toemaak</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
@@ -495,6 +497,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="940313311831216333">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chrome-goed te kry.</translation>
 <translation id="943390475793766444">Chrome beveel aan dat hierdie lêer geskandeer word omdat dit gevaarlik kan wees.</translation>
 <translation id="963650557422347554">Wanneer dit aan is, bespaar Chrome batterykrag deur agtergrondaktiwiteit en visuele effekte, soos gladde rollees en videoraamtempo’s, te beperk.</translation>
+<translation id="983803489796659991">Installering het misluk omdat die opdateringbediener nie enige hutsdata vir die app het nie.</translation>
 <translation id="989369509083708165">Google Chrome is jou verstekblaaier</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan tussen Chrome-profiele wissel</translation>
 </translationbundle>

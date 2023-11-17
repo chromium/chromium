@@ -1533,7 +1533,6 @@
 <translation id="216169395504480358">Wi-Fi を追加...</translation>
 <translation id="2162155940152307086">同期設定を閉じると同期が開始します</translation>
 <translation id="2162705204091149050">ブラウザ、OS、デバイス、インストール済みソフトウェア、ファイルに関する情報の読み取り</translation>
-<translation id="2162926944953615670">eSIM プロファイルがありません</translation>
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
 <translation id="2165102982098084499">次のデバイスを QR コードのスキャンによりリンクしました。</translation>
@@ -3778,6 +3777,7 @@
 <translation id="3922823422695198027"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" /> で対応リンクを開けなくなります。</translation>
 <translation id="3923184630988645767">データ使用</translation>
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" /> から <ph name="VM_NAME" /> を削除しますか？仮想マシン内のすべてのアプリとデータが削除されます。</translation>
+<translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3923676227229836009">このページはファイルの表示が許可されています</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ディスプレイとテキストのサイズ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -4416,7 +4416,6 @@
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="4430204941092622397">これにより、モバイル ネットワークが数分切断されることがあります。</translation>
 <translation id="443031431654216610">数字のみ指定可能</translation>
 <translation id="4430369329743628066">ブックマークを追加しました</translation>
 <translation id="4430422687972614133">仮想カードをオンにする</translation>
@@ -6292,7 +6291,6 @@
 <translation id="5955721306465922729">ウェブサイトがこのアプリケーションを開く許可を求めています。</translation>
 <translation id="5955809630138889698">このデバイスの使用はオンライン デモモードのみに限定されている可能性があります。詳しくはサポート担当者にお問い合わせください。</translation>
 <translation id="5956585768868398362">この検索ページでよろしいですか？</translation>
-<translation id="5957918771633727933">eSIM プロファイルがありません。新しい<ph name="BEGIN_LINK" />プロファイル<ph name="END_LINK" />をダウンロードしてください。</translation>
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="5963413905009737549">セクション</translation>

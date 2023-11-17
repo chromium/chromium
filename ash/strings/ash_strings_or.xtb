@@ -343,7 +343,6 @@
 <translation id="243878895369688216">ଗତକାଲି ଖୋଲାଯାଇଛି</translation>
 <translation id="2440978926514840421">GIF ରେକର୍ଡିଂ ନିଆଯାଇଛି</translation>
 <translation id="2441427462554639370">ଷ୍ଟୋରେଜ ସ୍ପେସ ଅତ୍ୟନ୍ତ କମ୍ ଥିବା ଯୋଗୁଁ ରେକର୍ଡିଂ ଶେଷ ହୋଇଛି</translation>
-<translation id="2448312741937722512">ପ୍ରକାର</translation>
 <translation id="2449089818483227734">ବ୍ୟାଟେରୀର ଚାର୍ଜ କମ୍ ଅଛି</translation>
 <translation id="2450205753526923158">ସ୍କ୍ରିନସଟ୍ ମୋଡ୍</translation>
 <translation id="2455994958736234930">ଠିକଣା ବାରରେ www. ଏବଂ .com ଯୋଗ କରି ୱେବସାଇଟ ଖୋଲନ୍ତୁ</translation>
@@ -1015,7 +1014,6 @@
 <translation id="5117590920725113268">ପରବର୍ତ୍ତୀ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="5121628974188116412">ପୃଷ୍ଠାର ତଳଭାଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
-<translation id="5145331109270917438">ପରିବର୍ତ୍ତିତ ତାରିଖ</translation>
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
@@ -1143,7 +1141,6 @@
 <translation id="5620979661744857819">ଏହା କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ସହିତ <ph name="APP_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟକୁ ଆକ୍ସେସ କରିବାକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="5646376287012673985">ଅବସ୍ଥାନ</translation>
 <translation id="5648021990716966815">ମାଇକ୍ ଜ୍ୟାକ୍</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
 <translation id="5662075790140998213">ଡେସ୍କ 10</translation>
@@ -1718,7 +1715,6 @@
 <translation id="8001755249288974029">କର୍ସରରୁ ଲାଇନର ଆରମ୍ଭ ପର୍ଯ୍ୟନ୍ତ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8004512796067398576">ବୃଦ୍ଧି</translation>
 <translation id="8026334261755873520">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
-<translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8029247720646289474">ହଟସ୍ପଟ୍ ସହ ସଂଯୋଗ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8029629653277878342">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ PIN କିମ୍ବା ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="8030169304546394654">ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
@@ -1820,7 +1816,6 @@
 <translation id="8487699605742506766">ହଟସ୍ପଟ</translation>
 <translation id="8491237443345908933">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
-<translation id="8496402167048257517">Nearby Share ସେଟିଂସ ଦେଖାନ୍ତୁ</translation>
 <translation id="8507563469658346379">ସମସ୍ତେ, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ନୂଆ ଡେସ୍କ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="85123341071060231">ଆପଣଙ୍କ Chromebookର ବ୍ଲୁଟୁଥ ବନ୍ଦ ଅଛି। ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ କରିବା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
