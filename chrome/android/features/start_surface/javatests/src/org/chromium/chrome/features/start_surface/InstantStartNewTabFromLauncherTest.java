@@ -113,7 +113,7 @@ public class InstantStartNewTabFromLauncherTest {
     }
 
     private void testNewIncognitoTabFromLauncherImpl() throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
@@ -130,7 +130,7 @@ public class InstantStartNewTabFromLauncherTest {
     }
 
     private void testNewTabFromLauncherWithHomepageDisabledImpl() throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google");
 

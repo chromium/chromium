@@ -416,10 +416,7 @@ public class TabPersistentStoreTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return new TabbedModeTabPersistencePolicy(
-                            selectorIndex,
-                            mergeTabs,
-                            tabMergingEnabled,
-                            TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
+                            selectorIndex, mergeTabs, tabMergingEnabled);
                 });
     }
 

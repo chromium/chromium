@@ -9,7 +9,7 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM;
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStatesAndMetadataFile;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -178,13 +178,13 @@ public class ReturnToChromeUtilTest {
     }
 
     /**
-     * Ideally we should use {@link StartSurfaceTestUtils#createTabStateFile} so that we don't need
-     * to create tabs with thumbnails and then restart. However, we cannot use stock serialized
-     * TabStates like {@link TestTabModelDirectory#M26_GOOGLE_COM} because all of them have URLs
-     * that requires network. Serializing URL for EmbeddedTestServer doesn't work because each run
-     * might be different. Serializing "about:blank" doesn't work either because when loaded, the
-     * URL would somehow become empty string. This issue can also be reproduced by creating tabs
-     * with "about:blank" and then restart.
+     * Ideally we should use {@link StartSurfaceTestUtils#createTabStatesAndMetadataFile} so that we
+     * don't need to create tabs with thumbnails and then restart. However, we cannot use stock
+     * serialized TabStates like {@link TestTabModelDirectory#M26_GOOGLE_COM} because all of them
+     * have URLs that requires network. Serializing URL for EmbeddedTestServer doesn't work because
+     * each run might be different. Serializing "about:blank" doesn't work either because when
+     * loaded, the URL would somehow become empty string. This issue can also be reproduced by
+     * creating tabs with "about:blank" and then restart.
      */
     @Test
     @SmallTest
@@ -231,7 +231,7 @@ public class ReturnToChromeUtilTest {
     }
 
     private void testTabSwitcherModeTriggeredBeyondThreshold() throws Exception {
-        createTabStateFile(new int[] {0, 1});
+        createTabStatesAndMetadataFile(new int[] {0, 1});
         startMainActivityWithURLWithoutCurrentTab(null);
 
         @LayoutType int layoutType = StartSurfaceTestUtils.getStartSurfaceLayoutType();

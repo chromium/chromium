@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import android.app.Activity;
 import android.util.SparseBooleanArray;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -191,7 +192,7 @@ public class CustomTabTabPersistencePolicyTest {
         File stateDirectory = policy.getOrCreateStateDirectory();
         Assert.assertNotNull(stateDirectory);
 
-        String stateFileName = policy.getStateFileName();
+        String stateFileName = policy.getMetadataFileName();
         File existingStateFile = new File(stateDirectory, stateFileName);
         Assert.assertTrue(existingStateFile.createNewFile());
 
@@ -311,7 +312,7 @@ public class CustomTabTabPersistencePolicyTest {
                             }
                         });
         FileOutputStream fos = null;
-        File metadataFile = new File(stateDirectory, TabPersistentStore.getStateFileName("3"));
+        File metadataFile = new File(stateDirectory, TabPersistentStore.getMetadataFileName("3"));
         try {
             fos = new FileOutputStream(metadataFile);
             fos.write(data);
@@ -362,7 +363,7 @@ public class CustomTabTabPersistencePolicyTest {
         File stateDirectory = policy.getOrCreateStateDirectory();
         Assert.assertNotNull(stateDirectory);
 
-        File metadataFile = new File(stateDirectory, policy.getStateFileName());
+        File metadataFile = new File(stateDirectory, policy.getMetadataFileName());
         Assert.assertTrue(metadataFile.createNewFile());
 
         long previousTimestamp =
@@ -436,14 +437,13 @@ public class CustomTabTabPersistencePolicyTest {
             }
 
             @Override
-            @Nullable
-            public List<String> getStateToBeMergedFileNames() {
+            public @Nullable String getMetadataFileNameToBeMerged() {
                 return null;
             }
 
             @Override
-            public String getStateFileName() {
-                return TabPersistentStore.getStateFileName("cct_testing0");
+            public @NonNull String getMetadataFileName() {
+                return TabPersistentStore.getMetadataFileName("cct_testing0");
             }
 
             @Override

@@ -98,8 +98,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabCreatorManager.getTabCreator(false)).thenReturn(mNormalTabCreator);
         when(mTabCreatorManager.getTabCreator(true)).thenReturn(mIncognitoTabCreator);
 
-        when(mPersistencePolicy.getStateFileName())
-                .thenReturn(TabPersistentStore.SAVED_STATE_FILE_PREFIX + "state_files_yay");
+        when(mPersistencePolicy.getMetadataFileName())
+                .thenReturn(TabPersistentStore.SAVED_METADATA_FILE_PREFIX + "state_files_yay");
         when(mPersistencePolicy.isMergeInProgress()).thenReturn(false);
         when(mPersistencePolicy.performInitialization(any(TaskRunner.class))).thenReturn(false);
 

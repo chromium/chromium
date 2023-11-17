@@ -85,11 +85,10 @@ public class TabPersistentStore {
     private static final int SAVED_STATE_VERSION = 5;
 
     /**
-     * The prefix of the name of the file where the state is saved.  Values returned by
-     * {@link #getStateFileName(String)} must begin with this prefix.
+     * The prefix of the name of the file where the metadata is saved. Values returned by {@link
+     * #getMetadataFileName(String)} must begin with this prefix.
      */
-    @VisibleForTesting
-    static final String SAVED_STATE_FILE_PREFIX = "tab_state";
+    @VisibleForTesting static final String SAVED_METADATA_FILE_PREFIX = "tab_state";
 
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
@@ -314,7 +313,7 @@ public class TabPersistentStore {
         mPrefetchTabListToMergeTasks = new ArrayList<>();
         mMergedFileNames = new HashSet<>();
 
-        assert isStateFile(policy.getStateFileName()) : "State file name is not valid";
+        assert isMetadataFile(policy.getMetadataFileName()) : "Metadata file name is not valid";
         boolean needsInitialization =
                 mPersistencePolicy.performInitialization(mSequencedTaskRunner);
 
@@ -328,14 +327,14 @@ public class TabPersistentStore {
                 needsInitialization ? mSequencedTaskRunner : PostTask.createTaskRunner(taskTraits);
 
         mPrefetchTabListTask =
-                startFetchTabListTask(taskRunner, mPersistencePolicy.getStateFileName());
+                startFetchTabListTask(taskRunner, mPersistencePolicy.getMetadataFileName());
         startPrefetchActiveTabTask(taskRunner);
 
         if (mPersistencePolicy.shouldMergeOnStartup()) {
-            for (String mergedFileName : mPersistencePolicy.getStateToBeMergedFileNames()) {
-                AsyncTask<DataInputStream> task = startFetchTabListTask(taskRunner, mergedFileName);
-                mPrefetchTabListToMergeTasks.add(Pair.create(task, mergedFileName));
-            }
+            String mergedFileName = mPersistencePolicy.getMetadataFileNameToBeMerged();
+            assert mergedFileName != null;
+            AsyncTask<DataInputStream> task = startFetchTabListTask(taskRunner, mergedFileName);
+            mPrefetchTabListToMergeTasks.add(Pair.create(task, mergedFileName));
         }
     }
 
@@ -439,7 +438,8 @@ public class TabPersistentStore {
                 // exists.
                 if (stream != null) {
                     mLoadInProgress = true;
-                    readSavedStateFile(stream,
+                    readSavedMetadataFile(
+                            stream,
                             createOnTabStateReadCallback(
                                     mTabModelSelector.isIncognitoSelected(), false),
                             null);
@@ -456,8 +456,10 @@ public class TabPersistentStore {
                     if (stream == null) continue;
                     mMergedFileNames.add(mergeTask.second);
                     mPersistencePolicy.setMergeInProgress(true);
-                    readSavedStateFile(stream,
-                            createOnTabStateReadCallback(mTabModelSelector.isIncognitoSelected(),
+                    readSavedMetadataFile(
+                            stream,
+                            createOnTabStateReadCallback(
+                                    mTabModelSelector.isIncognitoSelected(),
                                     mTabsToRestore.size() != 0),
                             null);
                 }
@@ -498,19 +500,22 @@ public class TabPersistentStore {
 
         try {
             // Read the tab state metadata file.
-            for (String mergeFileName : mPersistencePolicy.getStateToBeMergedFileNames()) {
-                DataInputStream stream =
-                        startFetchTabListTask(mSequencedTaskRunner, mergeFileName).get();
-                if (stream == null) continue;
+            String mergeFileName = mPersistencePolicy.getMetadataFileNameToBeMerged();
+            assert mergeFileName != null
+                    : "mergeState called when no metadata file to be merged exists.";
+            DataInputStream stream =
+                    startFetchTabListTask(mSequencedTaskRunner, mergeFileName).get();
+            if (stream != null) {
                 mMergedFileNames.add(mergeFileName);
                 mPersistencePolicy.setMergeInProgress(true);
-                readSavedStateFile(stream,
+                readSavedMetadataFile(
+                        stream,
                         createOnTabStateReadCallback(mTabModelSelector.isIncognitoSelected(), true),
                         null);
             }
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing app.
-            Log.d(TAG, "meregeState exception: " + e.toString(), e);
+            Log.d(TAG, "mergeState exception: " + e.toString(), e);
         }
 
         // Restore the tabs from the second activity asynchronously.
@@ -1053,7 +1058,7 @@ public class TabPersistentStore {
     private void saveListToFile(byte[] listData) {
         if (Arrays.equals(mLastSavedMetadata, listData)) return;
 
-        saveListToFile(getStateDirectory(), mPersistencePolicy.getStateFileName(), listData);
+        saveListToFile(getStateDirectory(), mPersistencePolicy.getMetadataFileName(), listData);
         mLastSavedMetadata = listData;
     }
 
@@ -1160,12 +1165,12 @@ public class TabPersistentStore {
                                 TabStateFileManager.parseInfoFromFilename(file.getName());
                         if (tabStateInfo != null) {
                             maxId = Math.max(maxId, tabStateInfo.first);
-                        } else if (isStateFile(file.getName())) {
+                        } else if (isMetadataFile(file.getName())) {
                             DataInputStream stream = null;
                             try {
                                 stream = new DataInputStream(
                                         new BufferedInputStream(new FileInputStream(file)));
-                                maxId = Math.max(maxId, readSavedStateFile(stream, null, null));
+                                maxId = Math.max(maxId, readSavedMetadataFile(stream, null, null));
                             } finally {
                                 StreamUtil.closeQuietly(stream);
                             }
@@ -1182,15 +1187,17 @@ public class TabPersistentStore {
     }
 
     /**
-     * Extracts the tab information from a given tab state stream.
+     * Extracts the tab information from a given tab state metadata stream.
      *
-     * @param stream   The stream pointing to the tab state file to be parsed.
+     * @param stream The stream pointing to the tab state metadata file to be parsed.
      * @param callback A callback to be streamed updates about the tab state information being read.
-     * @param tabIds   A mapping of tab ID to whether the tab is an off the record tab.
+     * @param tabIds A mapping of tab ID to whether the tab is an off the record tab.
      * @return The next available tab ID based on the maximum ID referenced in this state file.
      */
-    public static int readSavedStateFile(DataInputStream stream,
-            @Nullable OnTabStateReadCallback callback, @Nullable SparseBooleanArray tabIds)
+    public static int readSavedMetadataFile(
+            DataInputStream stream,
+            @Nullable OnTabStateReadCallback callback,
+            @Nullable SparseBooleanArray tabIds)
             throws IOException {
         if (stream == null) return 0;
         int nextId = 0;
@@ -1525,7 +1532,9 @@ public class TabPersistentStore {
                     public void onResult(TabPersistenceFileInfo result) {
                         // Delete the instance state file (tab_stateX) as well.
                         deleteFileAsync(
-                                TabbedModeTabPersistencePolicy.getStateFileName(instanceId), true);
+                                TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
+                                        instanceId),
+                                true);
 
                         // |result| can be null if the task gets cancelled.
                         if (result == null) return;
@@ -1734,30 +1743,34 @@ public class TabPersistentStore {
     }
 
     /**
-     * @param uniqueId The ID that uniquely identifies this state file.
+     * @param uniqueTag The tag that uniquely identifies this state file. Typically this is an index
+     *     or ID.
      * @return The name of the state file.
      */
-    public static String getStateFileName(String uniqueId) {
-        return SAVED_STATE_FILE_PREFIX + uniqueId;
+    public static String getMetadataFileName(String uniqueTag) {
+        return SAVED_METADATA_FILE_PREFIX + uniqueTag;
     }
 
     /**
-     * Parses the state file name and returns the unique ID encoded into it.
-     * @param stateFileName The state file name to be parsed.
-     * @return The unique ID used when generating the file name.
+     * Parses the metadata file name and returns the unique tag encoded into it.
+     *
+     * @param metadataFileName The state file name to be parsed.
+     * @return The unique tag used when generating the file name.
      */
-    public static String getStateFileUniqueId(String stateFileName) {
-        assert isStateFile(stateFileName);
-        return stateFileName.substring(SAVED_STATE_FILE_PREFIX.length());
+    public static String getMetadataFileUniqueTag(String metadataFileName) {
+        assert isMetadataFile(metadataFileName);
+        return metadataFileName.substring(SAVED_METADATA_FILE_PREFIX.length());
     }
 
     /**
-     * @return Whether the specified filename matches the expected pattern of the tab state files.
+     * Returns whether the specified filename matches the expected pattern of the tab metadata
+     * files.
      */
-    public static boolean isStateFile(String fileName) {
+    public static boolean isMetadataFile(String fileName) {
         // The .new/.bak suffixes may be added internally by AtomicFile before the file finishes
         // writing. Ignore files in this transitory state.
-        return fileName.startsWith(SAVED_STATE_FILE_PREFIX) && !fileName.endsWith(".new")
+        return fileName.startsWith(SAVED_METADATA_FILE_PREFIX)
+                && !fileName.endsWith(".new")
                 && !fileName.endsWith(".bak");
     }
 

@@ -244,7 +244,7 @@ public class StartSurfaceTestUtils {
                 tabIDs[i] = i;
                 createThumbnailBitmapAndWriteToFile(i, fakeBrowserControlsStateProvider);
             }
-            createTabStateFile(tabIDs);
+            createTabStatesAndMetadataFile(tabIDs);
         }
         if (immediateReturn) {
             StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
@@ -377,25 +377,28 @@ public class StartSurfaceTestUtils {
 
     /**
      * Create all the files so that tab models can be restored.
+     *
      * @param tabIds all the Tab IDs in the normal tab model.
      */
-    public static void createTabStateFile(int[] tabIds) throws IOException {
-        createTabStateFile(tabIds, null, 0);
+    public static void createTabStatesAndMetadataFile(int[] tabIds) throws IOException {
+        createTabStatesAndMetadataFile(tabIds, null, 0);
     }
 
     /**
      * Create all the files so that tab models can be restored.
+     *
      * @param tabIds all the Tab IDs in the normal tab model.
      * @param urls all of the URLs in the normal tab model.
      * @param selectedIndex the selected index of normal tab model.
      */
-    public static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex)
-            throws IOException {
-        createTabStateFile(tabIds, urls, selectedIndex, true);
+    public static void createTabStatesAndMetadataFile(
+            int[] tabIds, @Nullable String[] urls, int selectedIndex) throws IOException {
+        createTabStatesAndMetadataFile(tabIds, urls, selectedIndex, true);
     }
 
-    private static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex,
-            boolean createStateFile) throws IOException {
+    private static void createTabStatesAndMetadataFile(
+            int[] tabIds, @Nullable String[] urls, int selectedIndex, boolean createStateFile)
+            throws IOException {
         TabPersistentStore.TabModelMetadata normalInfo =
                 new TabPersistentStore.TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
@@ -412,9 +415,11 @@ public class StartSurfaceTestUtils {
 
         byte[] listData = TabPersistentStore.serializeMetadata(normalInfo, incognitoInfo);
 
-        File stateFile = new File(TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
-                TabbedModeTabPersistencePolicy.getStateFileName(0));
-        FileOutputStream output = new FileOutputStream(stateFile);
+        File metadataFile =
+                new File(
+                        TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
+        FileOutputStream output = new FileOutputStream(metadataFile);
         output.write(listData);
         output.close();
     }
@@ -427,7 +432,7 @@ public class StartSurfaceTestUtils {
      */
     public static void prepareTabStateMetadataFile(
             int[] tabIds, @Nullable String[] urls, int selectedIndex) throws IOException {
-        createTabStateFile(tabIds, urls, selectedIndex, false);
+        createTabStatesAndMetadataFile(tabIds, urls, selectedIndex, false);
     }
 
     /**

@@ -231,7 +231,7 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1});
 
         // Restart and open tab grid dialog.
         mActivityTestRule.startMainActivityFromLauncher();

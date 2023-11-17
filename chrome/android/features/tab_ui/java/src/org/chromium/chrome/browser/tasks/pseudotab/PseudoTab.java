@@ -330,20 +330,22 @@ public class PseudoTab {
         sReadStateFile = true;
 
         long startMs = SystemClock.elapsedRealtime();
-        File stateFile = new File(TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
-                TabbedModeTabPersistencePolicy.getStateFileName(0));
-        if (!stateFile.exists()) {
-            Log.i(TAG, "State file does not exist.");
+        File metadataFile =
+                new File(
+                        TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
+        if (!metadataFile.exists()) {
+            Log.i(TAG, "Metadata file does not exist.");
             return;
         }
         FileInputStream stream = null;
         byte[] data;
         try {
-            stream = new FileInputStream(stateFile);
-            data = new byte[(int) stateFile.length()];
+            stream = new FileInputStream(metadataFile);
+            data = new byte[(int) metadataFile.length()];
             stream.read(data);
         } catch (IOException exception) {
-            Log.e(TAG, "Could not read state file.", exception);
+            Log.e(TAG, "Could not read metadata file.", exception);
             return;
         } finally {
             StreamUtil.closeQuietly(stream);
@@ -354,9 +356,14 @@ public class PseudoTab {
         Set<Integer> seenRootId = new HashSet<>();
         sAllTabsFromStateFile = new ArrayList<>();
         try {
-            TabPersistentStore.readSavedStateFile(dataStream,
-                    (index, id, url, isIncognito, isStandardActiveIndex, isIncognitoActiveIndex)
-                            -> {
+            TabPersistentStore.readSavedMetadataFile(
+                    dataStream,
+                    (index,
+                            id,
+                            url,
+                            isIncognito,
+                            isStandardActiveIndex,
+                            isIncognitoActiveIndex) -> {
                         // Skip restoring of non-selected NTP to match the real restoration logic.
                         if (UrlUtilities.isCanonicalizedNTPUrl(url) && !isStandardActiveIndex) {
                             return;

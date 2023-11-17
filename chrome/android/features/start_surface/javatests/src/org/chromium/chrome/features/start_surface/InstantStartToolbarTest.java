@@ -200,7 +200,7 @@ public class InstantStartToolbarTest {
 
     private void testMenuUpdateBadge(boolean shouldShowUpdateBadgeOnStartAndTabs)
             throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1, 2});
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);

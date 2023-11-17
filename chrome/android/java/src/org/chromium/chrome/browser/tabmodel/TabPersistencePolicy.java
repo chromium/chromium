@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.util.SparseBooleanArray;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -14,7 +15,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Policy that handles the Activity specific behaviors regarding the persistence of tab data.
@@ -28,22 +28,20 @@ public interface TabPersistencePolicy {
     File getOrCreateStateDirectory();
 
     /**
-     * @return The filename of the primary state file containing information about the tabs to be
-     *         loaded.
+     * Returns the filename of the primary metadata file containing information about the tabs to be
+     * loaded.
      */
-    String getStateFileName();
+    @NonNull
+    String getMetadataFileName();
 
     /**
      * @return Whether a merge needs to be performed on startup.
      */
     boolean shouldMergeOnStartup();
 
-    /**
-     * @return The filename list of the state that is to be merged.  If null or empty list, no
-     *         merge will be triggered.
-     */
+    /** Returns the filename of the metadata file that is to be merged. */
     @Nullable
-    List<String> getStateToBeMergedFileNames();
+    String getMetadataFileNameToBeMerged();
 
     /**
      * Performs any necessary initialization required before accessing the tab information.  This

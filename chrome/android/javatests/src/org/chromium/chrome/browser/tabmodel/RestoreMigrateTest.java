@@ -70,7 +70,10 @@ public class RestoreMigrateTest {
         try {
             fos =
                     new FileOutputStream(
-                            new File(f, TabbedModeTabPersistencePolicy.getStateFileName(index)));
+                            new File(
+                                    f,
+                                    TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
+                                            index)));
             fos.write(data);
         } finally {
             StreamUtil.closeQuietly(fos);
@@ -137,12 +140,7 @@ public class RestoreMigrateTest {
                     @Override
                     public TabPersistentStore call() {
                         TabPersistencePolicy persistencePolicy =
-                                new TabbedModeTabPersistencePolicy(
-                                        selectorIndex,
-                                        false,
-                                        true,
-                                        TabWindowManagerSingleton.getInstance()
-                                                .getMaxSimultaneousSelectors());
+                                new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
                         TabPersistentStore store =
                                 new TabPersistentStore(persistencePolicy, selector, null);
                         return store;
@@ -190,7 +188,8 @@ public class RestoreMigrateTest {
 
         // Check that the files were moved.
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab0 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
         File newTab1 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "1");
         File newTab2 =
@@ -240,7 +239,8 @@ public class RestoreMigrateTest {
 
         // Write new state files
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab4 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "4");
 
         Assert.assertTrue("Could not create new tab 4 file", newTab4.createNewFile());
@@ -302,7 +302,8 @@ public class RestoreMigrateTest {
 
         // Check that the files were moved.
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab0 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
         File newOtherFile = new File(newDir, "other.file");
 

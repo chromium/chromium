@@ -106,8 +106,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     @Override
-    public String getStateFileName() {
-        return TabPersistentStore.getStateFileName(Integer.toString(mTaskId));
+    public String getMetadataFileName() {
+        return TabPersistentStore.getMetadataFileName(Integer.toString(mTaskId));
     }
 
     @Override
@@ -117,31 +117,34 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     @Nullable
-    public List<String> getStateToBeMergedFileNames() {
+    public String getMetadataFileNameToBeMerged() {
         return null;
     }
 
     @Override
     public boolean performInitialization(TaskRunner taskRunner) {
-        mInitializationTask = new BackgroundOnlyAsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                File stateDir = getOrCreateStateDirectory();
-                File metadataFile = new File(stateDir, getStateFileName());
-                if (metadataFile.exists()) {
-                    if (mShouldRestore) {
-                        if (!metadataFile.setLastModified(System.currentTimeMillis())) {
-                            Log.e(TAG, "Unable to update last modified time: " + metadataFile);
+        mInitializationTask =
+                new BackgroundOnlyAsyncTask<Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        File stateDir = getOrCreateStateDirectory();
+                        File metadataFile = new File(stateDir, getMetadataFileName());
+                        if (metadataFile.exists()) {
+                            if (mShouldRestore) {
+                                if (!metadataFile.setLastModified(System.currentTimeMillis())) {
+                                    Log.e(
+                                            TAG,
+                                            "Unable to update last modified time: " + metadataFile);
+                                }
+                            } else {
+                                if (!metadataFile.delete()) {
+                                    Log.e(TAG, "Failed to delete file: " + metadataFile);
+                                }
+                            }
                         }
-                    } else {
-                        if (!metadataFile.delete()) {
-                            Log.e(TAG, "Failed to delete file: " + metadataFile);
-                        }
+                        return null;
                     }
-                }
-                return null;
-            }
-        }.executeOnTaskRunner(taskRunner);
+                }.executeOnTaskRunner(taskRunner);
 
         return true;
     }
@@ -205,13 +208,14 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
      */
     public void deleteMetadataStateFileAsync() {
         assert mTaskRunner != null;
-        mTaskRunner.postTask(() -> {
-            File stateDir = getOrCreateStateDirectory();
-            File metadataFile = new File(stateDir, getStateFileName());
-            if (metadataFile.exists() && !metadataFile.delete()) {
-                Log.e(TAG, "Failed to delete file: " + metadataFile);
-            }
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    File stateDir = getOrCreateStateDirectory();
+                    File metadataFile = new File(stateDir, getMetadataFileName());
+                    if (metadataFile.exists() && !metadataFile.delete()) {
+                        Log.e(TAG, "Failed to delete file: " + metadataFile);
+                    }
+                });
     }
 
     /**
@@ -311,7 +315,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             Set<Integer> allReferencedTabIds = new HashSet<>();
             List<File> metadataFiles = new ArrayList<>();
             for (File file : stateFiles) {
-                if (TabPersistentStore.isStateFile(file.getName())) {
+                if (TabPersistentStore.isMetadataFile(file.getName())) {
                     metadataFiles.add(file);
 
                     SparseBooleanArray tabIds = new SparseBooleanArray();
@@ -366,7 +370,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
             for (int i = 0; i < mDeletableMetadataFiles.size(); i++) {
                 File metadataFile = mDeletableMetadataFiles.get(i);
-                String id = TabPersistentStore.getStateFileUniqueId(metadataFile.getName());
+                String id = TabPersistentStore.getMetadataFileUniqueTag(metadataFile.getName());
                 try {
                     int taskId = Integer.parseInt(id);
 
@@ -399,7 +403,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             try {
                 stream = new DataInputStream(
                         new BufferedInputStream(new FileInputStream(metadataFile)));
-                TabPersistentStore.readSavedStateFile(stream, null, tabIds);
+                TabPersistentStore.readSavedMetadataFile(stream, null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
             } finally {

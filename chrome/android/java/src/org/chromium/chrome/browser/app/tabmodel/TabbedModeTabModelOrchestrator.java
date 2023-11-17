@@ -81,9 +81,9 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         int assignedIndex = selectorAssignment.first;
 
         // Instantiate TabPersistentStore
-        int maxSelectors = TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors();
-        mTabPersistencePolicy = new TabbedModeTabPersistencePolicy(
-                assignedIndex, mergeTabsOnStartup, mTabMergingEnabled, maxSelectors);
+        mTabPersistencePolicy =
+                new TabbedModeTabPersistencePolicy(
+                        assignedIndex, mergeTabsOnStartup, mTabMergingEnabled);
         mTabPersistentStore =
                 new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
 

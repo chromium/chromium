@@ -56,7 +56,7 @@ public class CustomTabTabPersistenceIntegrationTest {
                         .getComponent()
                         .resolveTabPersistencePolicy();
 
-        String expectedMetadataFileName = tabPersistencePolicy.getStateFileName();
+        String expectedMetadataFileName = tabPersistencePolicy.getMetadataFileName();
         File stateDir = tabPersistencePolicy.getOrCreateStateDirectory();
 
         waitForFileExistState(true, expectedTabFileName, stateDir);
