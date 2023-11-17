@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -35,16 +36,13 @@ const char kBasePath[] = "file:///c:/tmp/";
 
 class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
  public:
-  BookmarkMenuDelegateTest() : model_(nullptr) {}
-
+  BookmarkMenuDelegateTest() = default;
   BookmarkMenuDelegateTest(const BookmarkMenuDelegateTest&) = delete;
   BookmarkMenuDelegateTest& operator=(const BookmarkMenuDelegateTest&) = delete;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-
-    model_ = BookmarkModelFactory::GetForBrowserContext(profile());
-    bookmarks::test::WaitForBookmarkModelToLoad(model_);
+    bookmarks::test::WaitForBookmarkModelToLoad(model());
 
     AddTestData();
   }
@@ -75,7 +73,8 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
     // Since we never show the menu we need to pass the MenuItemView to
     // MenuRunner so that the MenuItemView is destroyed.
-    views::MenuRunner menu_runner(bookmark_menu_delegate_->menu(), 0);
+    views::MenuRunner menu_runner(
+        base::WrapUnique(bookmark_menu_delegate_->menu()), 0);
     bookmark_menu_delegate_.reset();
   }
 
@@ -87,7 +86,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   }
 
   void NewAndInitDelegateForPermanent() {
-    const BookmarkNode* node = model_->bookmark_bar_node();
+    const BookmarkNode* node = model()->bookmark_bar_node();
     NewDelegate();
     bookmark_menu_delegate_->Init(&test_delegate_, nullptr, node, 0,
                                   BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
@@ -106,7 +105,9 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   // items of tyep SUBMENU.
   void LoadAllMenus() { LoadAllMenus(bookmark_menu_delegate_->menu()); }
 
-  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
+  BookmarkModel* model() {
+    return BookmarkModelFactory::GetForBrowserContext(profile());
+  }
 
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
 
@@ -135,20 +136,20 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   //   OF1
   //     of1a
   void AddTestData() {
-    const BookmarkNode* bb_node = model_->bookmark_bar_node();
+    const BookmarkNode* bb_node = model()->bookmark_bar_node();
     std::string test_base(kBasePath);
-    model_->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
-    const BookmarkNode* f1 = model_->AddFolder(bb_node, 1, u"F1");
-    model_->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
-    const BookmarkNode* f11 = model_->AddFolder(f1, 1, u"F11");
-    model_->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
-    model_->AddFolder(bb_node, 2, u"F2");
+    model()->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
+    const BookmarkNode* f1 = model()->AddFolder(bb_node, 1, u"F1");
+    model()->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
+    const BookmarkNode* f11 = model()->AddFolder(f1, 1, u"F11");
+    model()->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
+    model()->AddFolder(bb_node, 2, u"F2");
 
     // Children of the other node.
-    model_->AddURL(model_->other_node(), 0, u"oa", GURL(test_base + "oa"));
+    model()->AddURL(model()->other_node(), 0, u"oa", GURL(test_base + "oa"));
     const BookmarkNode* of1 =
-        model_->AddFolder(model_->other_node(), 1, u"OF1");
-    model_->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
+        model()->AddFolder(model()->other_node(), 1, u"OF1");
+    model()->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
   }
 
   views::MenuDelegate test_delegate_;
@@ -172,7 +173,7 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
             next_menu_id());
   ASSERT_EQ(2u, f1_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f1_node =
-      model_->bookmark_bar_node()->children()[1].get();
+      model()->bookmark_bar_node()->children()[1].get();
   EXPECT_EQ(f1_node->children()[0].get(),
             GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(0)));
   EXPECT_EQ(f1_node->children()[1].get(),
@@ -202,7 +203,7 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
 // have since been deleted.
 TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   views::MenuDelegate test_delegate;
-  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
@@ -220,40 +221,41 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
 // have since been deleted.
 TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   views::MenuDelegate test_delegate;
-  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
                                 BookmarkLaunchLocation::kNone);
   // Any nodes on the bookmark bar should close on remove.
   EXPECT_TRUE(
-      ShouldCloseOnRemove(model_->bookmark_bar_node()->children()[2].get()));
+      ShouldCloseOnRemove(model()->bookmark_bar_node()->children()[2].get()));
 
   // Descendants of the bookmark should not close on remove.
   EXPECT_FALSE(ShouldCloseOnRemove(
-      model_->bookmark_bar_node()->children()[1]->children()[0].get()));
+      model()->bookmark_bar_node()->children()[1]->children()[0].get()));
 
-  EXPECT_FALSE(ShouldCloseOnRemove(model_->other_node()->children()[0].get()));
+  EXPECT_FALSE(ShouldCloseOnRemove(model()->other_node()->children()[0].get()));
 
   // Make it so the other node only has one child.
   // Destroy the current delegate so that it doesn't have any references to
   // deleted nodes.
   DestroyDelegate();
-  while (model_->other_node()->children().size() > 1)
-    model_->Remove(model_->other_node()->children()[1].get(),
-                   bookmarks::metrics::BookmarkEditSource::kOther);
+  while (model()->other_node()->children().size() > 1) {
+    model()->Remove(model()->other_node()->children()[1].get(),
+                    bookmarks::metrics::BookmarkEditSource::kOther);
+  }
 
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
                                 BookmarkLaunchLocation::kNone);
   // Any nodes on the bookmark bar should close on remove.
-  EXPECT_TRUE(ShouldCloseOnRemove(model_->other_node()->children()[0].get()));
+  EXPECT_TRUE(ShouldCloseOnRemove(model()->other_node()->children()[0].get()));
 }
 
 TEST_F(BookmarkMenuDelegateTest, DropCallback) {
   views::MenuDelegate test_delegate;
-  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
@@ -270,7 +272,7 @@ TEST_F(BookmarkMenuDelegateTest, DropCallback) {
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f1_item = root_item->GetSubmenu()->GetMenuItemAt(1);
   EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1_item, drop_data));
-  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
+  EXPECT_EQ(model()->bookmark_bar_node()->children()[1]->children().size(), 2u);
 
   auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
       f1_item, views::MenuDelegate::DropPosition::kAfter, target_event);
@@ -279,12 +281,12 @@ TEST_F(BookmarkMenuDelegateTest, DropCallback) {
                          /*drag_image_layer_owner=*/nullptr);
 
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
-  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 3u);
+  EXPECT_EQ(model()->bookmark_bar_node()->children()[1]->children().size(), 3u);
 }
 
 TEST_F(BookmarkMenuDelegateTest, DropCallback_ModelChanged) {
   views::MenuDelegate test_delegate;
-  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
@@ -301,16 +303,16 @@ TEST_F(BookmarkMenuDelegateTest, DropCallback_ModelChanged) {
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f1_item = root_item->GetSubmenu()->GetMenuItemAt(1);
   EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1_item, drop_data));
-  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
+  EXPECT_EQ(model()->bookmark_bar_node()->children()[1]->children().size(), 2u);
 
   auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
       f1_item, views::MenuDelegate::DropPosition::kAfter, target_event);
-  model_->AddURL(model_->bookmark_bar_node(), 2, u"z1",
-                 GURL(std::string(kBasePath) + "z1"));
+  model()->AddURL(model()->bookmark_bar_node(), 2, u"z1",
+                  GURL(std::string(kBasePath) + "z1"));
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
 
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
-  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
+  EXPECT_EQ(model()->bookmark_bar_node()->children()[1]->children().size(), 2u);
 }

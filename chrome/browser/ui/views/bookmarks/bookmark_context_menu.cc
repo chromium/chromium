@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -54,12 +57,11 @@ BookmarkContextMenu::BookmarkContextMenu(
           selection)),
       parent_widget_(parent_widget),
       menu_(new views::MenuItemView(this)),
-      menu_runner_(new views::MenuRunner(menu_,
-                                         views::MenuRunner::HAS_MNEMONICS |
-                                             views::MenuRunner::IS_NESTED |
-                                             views::MenuRunner::CONTEXT_MENU)),
-      observer_(nullptr),
       close_on_remove_(close_on_remove) {
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      base::WrapUnique<views::MenuItemView>(menu_),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
+          views::MenuRunner::CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(

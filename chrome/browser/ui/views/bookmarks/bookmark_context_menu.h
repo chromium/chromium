@@ -88,15 +88,15 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   std::unique_ptr<BookmarkContextMenuController> controller_;
 
   // The parent of dialog boxes opened from the context menu.
-  raw_ptr<views::Widget> parent_widget_;
-
-  // The menu itself. This is owned by |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged> menu_;
+  const raw_ptr<views::Widget> parent_widget_;
 
   // Responsible for running the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  raw_ptr<BookmarkContextMenuObserver> observer_;
+  // The menu itself. This is owned by `menu_runner_`.
+  const raw_ptr<views::MenuItemView> menu_;
+
+  raw_ptr<BookmarkContextMenuObserver> observer_ = nullptr;
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;

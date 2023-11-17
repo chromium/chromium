@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -39,8 +40,8 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
   int run_type = 0;
   if (for_drop)
     run_type |= views::MenuRunner::FOR_DROP;
-  menu_runner_ =
-      std::make_unique<views::MenuRunner>(menu_delegate_->menu(), run_type);
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      base::WrapUnique<MenuItemView>(menu_delegate_->menu()), run_type);
 }
 
 void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
