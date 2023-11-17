@@ -55,7 +55,7 @@ The source of truth for supported RPM-based distros is given in the
 From the earlier section "(Debian) Determine which packages are needed", we know
 that we need `libdbus-1-dev` and `libdbus-1-3`. Add these both to the
 `DEBIAN_PACKAGES` list in
-[`//build/linux/sysroot_scripts/sysroot-creator.sh`](https://cs.chromium.org/chromium/src/build/linux/sysroot_scripts/sysroot-creator.sh).
+[`//build/linux/sysroot_scripts/sysroot_creator.py`](https://cs.chromium.org/chromium/src/build/linux/sysroot_scripts/sysroot_creator.py).
 Building and uploading the sysroot images is detailed in [Linux sysroot
 images](https://chromium.googlesource.com/chromium/src.git/+/main/docs/sysroot.md).
 You may need to add additional dependent libraries for your new library.
