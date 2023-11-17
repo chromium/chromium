@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -69,6 +70,20 @@ public class SiteSettingsTestUtils {
                         ApplicationProvider.getApplicationContext(),
                         SingleCategorySettings.class.getName(),
                         fragmentArgs);
+        return (SettingsActivity)
+                InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+    }
+
+    public static SettingsActivity startStorageAccessSettingsActivity(Website site) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(StorageAccessSubpageSettings.EXTRA_STORAGE_ACCESS_STATE, site);
+        fragmentArgs.putBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED, true);
+
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent =
+                settingsLauncher.createSettingsActivityIntent(
+                        context, StorageAccessSubpageSettings.class.getName(), fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
     }

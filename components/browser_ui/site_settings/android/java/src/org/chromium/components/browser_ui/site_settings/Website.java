@@ -205,18 +205,47 @@ public final class Website implements WebsiteEntry {
     }
 
     /**
+     * Returns the ContentSettingValue associated with the list of embedded exceptions associated
+     * with the website. Each website object should only have embedded exceptions of a single
+     * ContentSettingValue.
+     *
+     * @param exceptions Website embedded exceptions.
+     * @return the ContentSettingValue of the list of |exceptions|.
+     */
+    private @ContentSettingValues @Nullable Integer getContentSetting(
+            List<ContentSettingException> exceptions) {
+        assert !exceptions.isEmpty();
+
+        @ContentSettingValues
+        @Nullable
+        Integer contentSetting = exceptions.get(0).getContentSetting();
+
+        for (ContentSettingException exception : exceptions) {
+            assert exception.getContentSetting().equals(contentSetting);
+        }
+
+        return contentSetting;
+    }
+
+    public List<ContentSettingException> getEmbeddedContentSettings(@ContentSettingsType int type) {
+        assert isEmbeddedPermission(type);
+        return getEmbeddedPermissions().get(type);
+    }
+
+    /**
      * @return ContentSettingValue for specified ContentSettingsType.
      *         (Camera, Clipboard, etc.).
      */
     public @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
         if (isEmbeddedPermission(type)) {
-            var exceptions = getEmbeddedPermissions().get(type);
-            if (exceptions == null) return null;
-            // This function may not be used when multiple embedded permissions have been merged
-            // into one website like for SingleWebsiteSettings.
-            assert exceptions.size() == 1;
-            return exceptions.get(0).getContentSetting();
+            var exceptions = getEmbeddedContentSettings(type);
+            if (exceptions == null || exceptions.isEmpty()) return null;
+
+            // If multiple embedded permissions have been merged into one website like for
+            // SingleWebsiteSettings, this function may only be used if all permission exceptions
+            // have been grouped by content setting.
+            return getContentSetting(exceptions);
         } else if (getPermissionInfo(type) != null) {
             return getPermissionInfo(type).getContentSetting(browserContextHandle);
         } else if (getContentSettingException(type) != null) {
@@ -297,6 +326,13 @@ public final class Website implements WebsiteEntry {
      * is embargoed.
      */
     public boolean isEmbargoed(@ContentSettingsType int type) {
+        if (isEmbeddedPermission(type)) {
+            List<ContentSettingException> exceptions = getEmbeddedContentSettings(type);
+            assert exceptions.size() == 1;
+
+            return exceptions.get(0).isEmbargoed();
+        }
+
         PermissionInfo permissionInfo = getPermissionInfo(type);
         if (permissionInfo != null && permissionInfo.isEmbargoed()) return true;
 
@@ -395,6 +431,10 @@ public final class Website implements WebsiteEntry {
      */
     public List<ChosenObjectInfo> getChosenObjectInfo() {
         return new ArrayList<ChosenObjectInfo>(mObjectInfo);
+    }
+
+    public String getTitleForEmbeddedPreferenceRow() {
+        return omitProtocolIfPresent(mEmbedder.getTitle());
     }
 
     // WebsiteEntry implementation.

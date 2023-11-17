@@ -103,16 +103,20 @@ import java.util.Set;
 
 /**
  * Shows a list of sites in a particular Site Settings category. For example, this could show all
- * the websites with microphone permissions. When the user selects a site, SingleWebsiteSettings
- * is launched to allow the user to see or modify the settings for that particular website.
+ * the websites with microphone permissions. When the user selects a site, SingleWebsiteSettings is
+ * launched to allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("site_settings_preferences.xml")
 public class SingleCategorySettings extends BaseSiteSettingsFragment
-        implements OnPreferenceChangeListener, OnPreferenceClickListener, SiteAddedCallback,
-                   OnPreferenceTreeClickListener, FragmentSettingsLauncher,
-                   OnCookiesDetailsRequested,
-                   TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
-                   CustomDividerFragment {
+        implements OnPreferenceChangeListener,
+                OnPreferenceClickListener,
+                SiteAddedCallback,
+                OnPreferenceTreeClickListener,
+                FragmentSettingsLauncher,
+                OnCookiesDetailsRequested,
+                TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
+                CustomDividerFragment,
+                WebsitePreference.OnStorageAccessWebsiteDetailsRequested {
     @IntDef({GlobalToggleLayout.BINARY_TOGGLE, GlobalToggleLayout.TRI_STATE_TOGGLE,
             GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE,
             GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE})
@@ -186,6 +190,18 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         mSettingsLauncher.launchSettingsActivity(
                 getActivity(), FPSCookieSettings.class, fragmentArgs);
+    }
+
+    @Override
+    public void onStorageAccessWebsiteDetailsRequested(WebsitePreference website) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(
+                StorageAccessSubpageSettings.EXTRA_STORAGE_ACCESS_STATE, website.site());
+        fragmentArgs.putBoolean(
+                StorageAccessSubpageSettings.EXTRA_ALLOWED, !isOnBlockList(website));
+
+        mSettingsLauncher.launchSettingsActivity(
+                getActivity(), StorageAccessSubpageSettings.class, fragmentArgs);
     }
 
     // Note: these values must match the SiteLayout enum in enums.xml.
@@ -537,6 +553,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             WebsitePreference websitePreference = (WebsitePreference) preference;
             if (websitePreference.isManaged()) {
                 showManagedToast();
+                return false;
+            }
+
+            if (websitePreference.hasSubPage()) {
+                // TODO(http://b/307249155): Deletion for a group of storage access.
                 return false;
             }
 
@@ -934,6 +955,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
                 WebsitePreference preference = new WebsitePreference(
                         getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
+
+                if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
+                    preference.setStorageAccessSettingsPageListener(this);
+                }
                 websites.add(preference);
                 preference.setManagedPreferenceDelegate(websiteDelegate);
             }

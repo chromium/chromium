@@ -202,7 +202,7 @@
     Turn on permissions for <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
-    Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
+      Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
   <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
     Clear browsing data…
@@ -934,5 +934,16 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_STORAGE_ACCESS_PAGE_DESCRIPTION" desc="The body description on the Embedded content settings page.">
     Sites you visit can embed content from other sites, for example images, ads, and text. These other sites can ask for permission to use info they've saved about you as you browse the site. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about embedded content<ph name="END_LINK">&lt;/link&gt;</ph>
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_STORAGE_ACCESS_ALLOWED_SUBTITLE" desc="Text that explains that a webite is allowed to “use their info“ on one or more sites that follow this text. Previously, the user 1) visited a site, such as www.myfavoritesite.com 2)  www.myfavoritesite.com embeds content and services, such as Google Docs. 3) Google Docs prompted the user for permission to use data Google Docs has previously saved related to the user. 4) The user says yes. 5) Later in settings, the user sees the site exception with this text and can revoke its access.">
+    <ph name="SITE">%1$s<ex>google.com</ex></ph> can use your info as you browse
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_STORAGE_ACCESS_BLOCKED_SUBTITLE" desc="Text that explains that a webite is not allowed to “use their info“ on one or more sites that follow this text. Previously, the user 1) visited a site, such as www.myfavoritesite.com 2)  www.myfavoritesite.com embeds content and services, such as Google Docs. 3) Google Docs prompted the user for permission to use data Google Docs has previously saved related to the user. 4) The user says yes. 5) Later in settings, the user sees the site exception with this text and can unblock the site.">
+    <ph name="SITE">%1$s<ex>google.com</ex></ph> is blocked from using your info on
+  </message>
+  <message name="IDS_NUMBER_SITES" desc="Number of embedded sites associated with a permission">
+    {COUNT, plural,
+      =1 {<ph name="SITE_COUNT">%1$s<ex>1</ex></ph> site}
+      other {<ph name="SITE_COUNT">%1$s<ex>9</ex></ph> sites}}
   </message>
 </grit-part>

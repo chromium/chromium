@@ -10,9 +10,11 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
@@ -202,8 +204,9 @@ public class WebsitePermissionsFetcher {
      * the permissions that the user has set for them.
      */
     private class WebsitePermissionFetcherInternal {
-        // This map looks up Websites by their origin and embedder.
-        private final Map<OriginAndEmbedder, Website> mSites = new HashMap<>();
+        // This map looks up Websites by their origin and embedder and content setting (e.g. allow,
+        // block).
+        private final Map<Pair<OriginAndEmbedder, Integer>, Website> mSites = new HashMap<>();
 
         /**
          * Fetches preferences for all sites that have them. TODO(mvanouwerkerk): Add an argument
@@ -352,6 +355,13 @@ public class WebsitePermissionsFetcher {
         }
 
         private Website findOrCreateSite(String origin, String embedder) {
+            return findOrCreateSite(origin, embedder, null);
+        }
+
+        private Website findOrCreateSite(
+                String origin,
+                String embedder,
+                @ContentSettingValues @Nullable Integer contentSetting) {
             // Ensure that the origin parameter is actually an origin or a wildcard.
             // The purpose of the check is to prevent duplicate entries in the list when getting a
             // mix of origins and hosts. Except, in the case of the Zoom category, where we want to
@@ -375,7 +385,10 @@ public class WebsitePermissionsFetcher {
             WebsiteAddress permissionOrigin = WebsiteAddress.create(origin);
             WebsiteAddress permissionEmbedder = WebsiteAddress.create(embedder);
 
-            OriginAndEmbedder key = OriginAndEmbedder.create(permissionOrigin, permissionEmbedder);
+            Pair<OriginAndEmbedder, Integer> key =
+                    new Pair<>(
+                            OriginAndEmbedder.create(permissionOrigin, permissionEmbedder),
+                            contentSetting);
 
             Website site = mSites.get(key);
             if (site == null) {
@@ -393,6 +406,9 @@ public class WebsitePermissionsFetcher {
                             mBrowserContextHandle, contentSettingsType)) {
                 String address = exception.getPrimaryPattern();
                 String embedder = exception.getSecondaryPattern();
+                @ContentSettingValues
+                @Nullable
+                Integer contentSetting = null;
 
                 if (isEmbeddedPermission
                         && embedder != null
@@ -402,6 +418,12 @@ public class WebsitePermissionsFetcher {
                     // AllSites should group embedded permissions by embedder.
                     address = embedder;
                     embedder = SITE_WILDCARD;
+                } else if (isEmbeddedPermission
+                        && mSiteSettingsCategory != null
+                        && mSiteSettingsCategory.getType()
+                                == SiteSettingsCategory.Type.STORAGE_ACCESS) {
+                    embedder = SITE_WILDCARD;
+                    contentSetting = exception.getContentSetting();
                 }
 
                 // If both patterns are the wildcard, dont display this rule.
@@ -413,7 +435,7 @@ public class WebsitePermissionsFetcher {
                 String origin = containsPatternWildcards(address)
                         ? address
                         : WebsiteAddress.create(address).getOrigin();
-                Website site = findOrCreateSite(origin, embedder);
+                Website site = findOrCreateSite(origin, embedder, contentSetting);
                 if (isEmbeddedPermission) {
                     site.addEmbeddedPermission(exception);
                 } else {

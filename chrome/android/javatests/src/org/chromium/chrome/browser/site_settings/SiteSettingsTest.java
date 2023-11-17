@@ -14,7 +14,9 @@ import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -35,7 +37,11 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForViewCheckingState;
 
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +53,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -103,6 +110,7 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.FPSCookieSettings;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
@@ -114,6 +122,7 @@ import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
+import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.Website;
@@ -349,10 +358,42 @@ public class SiteSettingsTest {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.STORAGE_ACCESS,
+                            "primary.com",
+                            "secondary3.com",
+                            ContentSettingValues.ALLOW);
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.STORAGE_ACCESS,
                             "primary2.com",
                             "secondary2.com",
                             ContentSettingValues.ALLOW);
                 });
+    }
+
+    private Website getStorageAccessSite() {
+        WebsiteAddress permissionOrigin = WebsiteAddress.create("primary.com");
+        WebsiteAddress permissionEmbedder = WebsiteAddress.create("*");
+        Website site = new Website(permissionOrigin, permissionEmbedder);
+        site.addEmbeddedPermission(
+                new ContentSettingException(
+                        ContentSettingsType.STORAGE_ACCESS,
+                        "primary.com",
+                        "secondary1.com",
+                        ContentSettingValues.ALLOW,
+                        "preference",
+                        30,
+                        false));
+        site.addEmbeddedPermission(
+                new ContentSettingException(
+                        ContentSettingsType.STORAGE_ACCESS,
+                        "primary.com",
+                        "secondary3.com",
+                        ContentSettingValues.ALLOW,
+                        "preference",
+                        30,
+                        false));
+
+        return site;
     }
 
     /** Sets Allow Location Enabled to be true and make sure it is set correctly. */
@@ -1523,33 +1564,106 @@ public class SiteSettingsTest {
     @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testExpectedExceptionsStorageAccess() {
         createStorageAccessExceptions();
-        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.STORAGE_ACCESS);
 
         onView(withText("primary.com")).check(matches(isDisplayed()));
-        onView(withText("Embedded on secondary.com")).check(matches(isDisplayed()));
+        onView(withText("2 sites")).check(matches(isDisplayed()));
         onView(withText("primary2.com")).check(matches(isDisplayed()));
-        onView(withText("Embedded on secondary2.com")).check(matches(isDisplayed()));
+        onView(withText("1 site")).check(matches(isDisplayed()));
 
-        onView(withText("primary.com")).perform(click());
-        onView(withText("Block")).perform(click());
+        SingleCategorySettings websitePreferences =
+                (SingleCategorySettings) settingsActivity.getMainFragment();
+        ExpandablePreferenceGroup managedGroup =
+                (ExpandablePreferenceGroup)
+                        websitePreferences.findPreference(SingleCategorySettings.ALLOWED_GROUP);
+
+        ChromeImageViewPreference websitePreference =
+                (ChromeImageViewPreference) managedGroup.getPreference(0);
+
+        Mockito.clearInvocations(mSettingsLauncher);
+        websitePreferences.setSettingsLauncher(mSettingsLauncher);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Click on the chevron button of the first permission group.
+                    websitePreference.getButton().performClick();
+                });
+
+        Mockito.verify(mSettingsLauncher)
+                .launchSettingsActivity(
+                        eq(websitePreferences.getContext()),
+                        eq(StorageAccessSubpageSettings.class),
+                        Mockito.any(Bundle.class));
+
+        // TODO(http://b/307249155): Test deletion for a group of storage access.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testStorageAccessSubpage() {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startStorageAccessSettingsActivity(getStorageAccessSite());
+
+        onViewWaiting(withText("secondary1.com")).check(matches(isDisplayed()));
+        onViewWaiting(withText("secondary3.com")).check(matches(isDisplayed()));
+
+        StorageAccessSubpageSettings embeddedWebsitePreferences =
+                (StorageAccessSubpageSettings) settingsActivity.getMainFragment();
+
+        // Reset first permission.
+        getImageViewWidget("secondary1.com").check(matches(isDisplayed())).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            ContentSettingValues.BLOCK,
+                            ContentSettingValues.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
-                                    new GURL("https://secondary.com")));
+                                    new GURL("https://secondary1.com")));
                     assertEquals(
                             ContentSettingValues.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
-                                    new GURL("https://primary2.com"),
-                                    new GURL("https://secondary2.com")));
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary3.com")));
                 });
+
+        waitForViewCheckingState(
+                withText("secondary1.com"), VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
+        onView(withText("secondary1.com")).check(doesNotExist());
+        onView(withText("secondary3.com")).check(matches(isDisplayed()));
+
+        // Reset second permission.
+        getImageViewWidget("secondary3.com").check(matches(isDisplayed())).perform(click());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            ContentSettingValues.ASK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    getBrowserContextHandle(),
+                                    ContentSettingsType.STORAGE_ACCESS,
+                                    new GURL("https://primary.com"),
+                                    new GURL("https://secondary3.com")));
+                });
+
+        // Check that, because there aren't any permissions to show, the activity is closed.
+        Assert.assertTrue(settingsActivity.isFinishing());
+    }
+
+    private ViewInteraction getImageViewWidget(String preferenceTitle) {
+        return onView(
+                allOf(
+                        withId(R.id.image_view_widget),
+                        isDescendantOfA(withChild(withChild(withText(preferenceTitle))))));
     }
 
     @Test
@@ -2682,20 +2796,46 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    private void renderCategoryPage(@SiteSettingsCategory.Type int category, String name)
+    private void renderSettingsPage(SettingsActivity settingsActivity, String name)
             throws IOException {
-        createCookieExceptions();
-        var settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(category);
         View view = settingsActivity.findViewById(android.R.id.content).getRootView();
         ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, name);
         settingsActivity.finish();
     }
 
+    private void renderCategoryPage(@SiteSettingsCategory.Type int category, String name)
+            throws IOException {
+        var settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(category);
+        renderSettingsPage(settingsActivity, name);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testRenderStorageAccessPage() throws Exception {
+        createStorageAccessExceptions();
+        renderCategoryPage(
+                SiteSettingsCategory.Type.STORAGE_ACCESS, "site_settings_storage_access_page");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testRenderStorageAccessSubpage() throws Exception {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startStorageAccessSettingsActivity(getStorageAccessSite());
+        renderSettingsPage(settingsActivity, "site_settings_storage_access_subpage");
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderSiteDataPage() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(SiteSettingsCategory.Type.SITE_DATA, "site_settings_site_data_page");
     }
 
@@ -2704,6 +2844,7 @@ public class SiteSettingsTest {
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderThirdPartyCookiesPage() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 "site_settings_third_party_cookies_page");
@@ -2714,6 +2855,7 @@ public class SiteSettingsTest {
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
     public void testRenderThirdPartyCookiesPageWithFPS() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 "site_settings_third_party_cookies_page_fps");
@@ -2724,6 +2866,7 @@ public class SiteSettingsTest {
     @Feature({"RenderTest"})
     @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
     public void testRenderCookiesPageThirdPartyCookiesPageWithoutFPS() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 "site_settings_third_party_cookies_page_without_fps");
@@ -2734,6 +2877,7 @@ public class SiteSettingsTest {
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookiesPageWithFPS() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page_fps");
     }
 
@@ -2741,6 +2885,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderLocationPage() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.DEVICE_LOCATION, "site_settings_location_page");
     }
@@ -2749,6 +2894,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderProtectedMediaPage() throws Exception {
+        createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, "site_settings_protected_media_page");
     }

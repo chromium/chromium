@@ -92,6 +92,8 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessSubpageSettings.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessWebsitePreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
@@ -259,6 +261,7 @@ android_resources("java_resources") {
     "java/res/xml/grouped_websites_preferences.xml",
     "java/res/xml/single_website_preferences.xml",
     "java/res/xml/site_settings_preferences.xml",
+    "java/res/xml/storage_access_settings.xml",
     "java/res/xml/website_preferences.xml",
   ]
 
