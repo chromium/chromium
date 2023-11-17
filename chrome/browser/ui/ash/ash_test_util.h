@@ -5,20 +5,34 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 
-namespace chromeos {
-enum class WindowStateType;
-}
+#include <string>
+
+class Profile;
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
-namespace test {
+namespace base {
+class FilePath;
+}  // namespace base
 
-// The snap window. This will activate the |window|.
+namespace chromeos {
+enum class WindowStateType;
+}  // namespace chromeos
+
+namespace ash::test {
+
+// The snap window. This will activate the `window`.
 void ActivateAndSnapWindow(aura::Window* window,
                            chromeos::WindowStateType type);
 
-}  // namespace test
+// Creates a file at the root of the downloads mount point with the specified
+// `extension`. The default extension is "txt". Returns the path of the created
+// file.
+base::FilePath CreateFile(Profile* profile,
+                          const std::string& extension = "txt");
+
+}  // namespace ash::test
 
 #endif  // CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_

@@ -6841,6 +6841,8 @@ static_library("test_support") {
       "../ash/file_suggest/mock_file_suggest_keyed_service_observer.h",
       "ash/ash_test_util.cc",
       "ash/ash_test_util.h",
+      "ash/download_status/display_test_util.cc",
+      "ash/download_status/display_test_util.h",
       "ash/shelf/chrome_shelf_controller_test_util.cc",
       "ash/shelf/chrome_shelf_controller_test_util.h",
       "ash/test_login_screen.cc",
@@ -6863,6 +6865,7 @@ static_library("test_support") {
       "//ash/public/cpp",
       "//ash/public/mojom",
       "//ash/webui/settings/public/constants:mojom",
+      "//chrome/browser/ash:ash",
       "//chromeos/ash/components/dbus",
       "//chromeos/ui/base",
     ]

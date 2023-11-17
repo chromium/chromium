@@ -3,19 +3,29 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/ash_test_util.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/wm/core/window_util.h"
 
-namespace test {
+namespace ash::test {
+
 namespace {
+
+// SnapWaiter ------------------------------------------------------------------
 
 // Wait until the window's state changes to given the snapped state.
 // The window should stay alive, so no need to observer destroying.
@@ -35,8 +45,9 @@ class SnapWaiter : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key == chromeos::kWindowStateTypeKey && IsSnapped())
+    if (key == chromeos::kWindowStateTypeKey && IsSnapped()) {
       run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -51,13 +62,25 @@ class SnapWaiter : public aura::WindowObserver {
   base::RunLoop run_loop_;
 };
 
+// Helpers ---------------------------------------------------------------------
+
+// Returns the path of the downloads mount point associated with the `profile`.
+base::FilePath GetDownloadsPath(Profile* profile) {
+  base::FilePath result;
+  EXPECT_TRUE(
+      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
+          file_manager::util::GetDownloadsMountPointName(profile), &result));
+  return result;
+}
+
 }  // namespace
 
 void ActivateAndSnapWindow(aura::Window* window,
                            chromeos::WindowStateType type) {
   DCHECK(window);
-  if (!wm::IsActiveWindow(window))
+  if (!wm::IsActiveWindow(window)) {
     wm::ActivateWindow(window);
+  }
 
   ASSERT_TRUE(wm::IsActiveWindow(window));
 
@@ -66,8 +89,9 @@ void ActivateAndSnapWindow(aura::Window* window,
               type == chromeos::WindowStateType::kPrimarySnapped);
 
   // Early return if it's already snapped.
-  if (snap_waiter.IsSnapped())
+  if (snap_waiter.IsSnapped()) {
     return;
+  }
 
   ui_controls::SendKeyPress(window,
                             type == chromeos::WindowStateType::kPrimarySnapped
@@ -80,4 +104,24 @@ void ActivateAndSnapWindow(aura::Window* window,
   snap_waiter.Wait();
 }
 
-}  // namespace test
+base::FilePath CreateFile(Profile* profile, const std::string& extension) {
+  const base::FilePath file_path =
+      GetDownloadsPath(profile).Append(base::StrCat(
+          {base::UnguessableToken::Create().ToString(), ".", extension}));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::CreateDirectory(file_path.DirName())) {
+      ADD_FAILURE() << "Failed to create parent directory.";
+      return base::FilePath();
+    }
+    if (!base::WriteFile(file_path, /*data=*/std::string())) {
+      ADD_FAILURE() << "Filed to write file contents.";
+      return base::FilePath();
+    }
+  }
+
+  return file_path;
+}
+
+}  // namespace ash::test
