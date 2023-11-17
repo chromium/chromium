@@ -1139,6 +1139,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsReparentAboveOtherChangeCrash) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("aria-owns-reparent-above-other-change-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaOwnsIgnored) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-ignored.html"));
 }

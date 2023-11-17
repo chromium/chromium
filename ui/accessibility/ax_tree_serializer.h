@@ -253,10 +253,11 @@ class AXTreeSerializer {
 struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
+  bool IsDirty() { return in_dirty_subtree || is_dirty; }
   AXNodeID id;
   raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
   std::vector<ClientTreeNode*> children;
-  bool ignored;
+  bool ignored : 1;
   // Additional nodes that must be serialized. When a dirty subtree is reached,
   // the entire subtree will be added to the current serialization.
   // For this to occur, the root of the dirty subtree must be reached in
@@ -264,7 +265,10 @@ struct AX_EXPORT ClientTreeNode {
   // passed in.
   // TODO(accessibility) It is an error if there any dirty nodes to remain
   // after serialization is complete, and this could be turned into a DCHECK.
-  bool in_dirty_subtree;
+  bool in_dirty_subtree : 1;
+
+  // An individual node that is dirty, but its subtree may not be.
+  bool is_dirty : 1;
 };
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
@@ -345,6 +349,16 @@ AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::LeastCommonAncestor(
        source_index > 0 && client_index > 0; --source_index, --client_index) {
     if (tree_->GetId(ancestors[(unsigned int)(source_index - 1)]) !=
         client_ancestors[client_index - 1]->id) {
+      // The passed-in |node| must be serialized. To ensure this, mark the
+      // downward path from the new LCA to |node| as dirty. Use the source tree
+      // as opposed to the client tree, because the serializer traverses that.
+      for (unsigned int dirty_index = 0; dirty_index < source_index;
+           ++dirty_index) {
+        AXNodeID source_id = tree_->GetId(ancestors[dirty_index]);
+        if (ClientTreeNode* node_mark_dirty = ClientTreeNodeById(source_id)) {
+          node_mark_dirty->is_dirty = true;
+        }
+      }
       return lca;
     }
     lca = ancestors[(unsigned int)(source_index - 1)];
@@ -357,7 +371,7 @@ AXSourceNode
 AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::LeastCommonAncestor(
     AXSourceNode node) {
   // Walk up the tree until the source node's id also exists in the
-  // client tree, whose parent is not invalid, then call LeastCommonAncestor
+  // client tree, whose parent is not dirty, then call LeastCommonAncestor
   // on those two nodes.
   //
   // Note that it's okay if |client_node| is dirty - the LCA can be the
@@ -412,7 +426,7 @@ bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
         *out_lca = LeastCommonAncestor(*out_lca, client_child);
         result = true;
         continue;
-      } else if (!client_child->in_dirty_subtree) {
+      } else if (!client_child->IsDirty()) {
         // This child is already in the client tree and not dirty, we won't
         // recursively serialize it so we don't need to check this
         // subtree recursively for reparenting.
@@ -578,7 +592,7 @@ template <typename AXSourceNode, typename AXSourceNodeVectorType>
 bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::IsDirty(
     AXSourceNode node) {
   ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
-  return client_node ? client_node->in_dirty_subtree : false;
+  return client_node ? client_node->IsDirty() : false;
 }
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
@@ -677,8 +691,9 @@ bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
 
   DCHECK_EQ(tree_->GetId(tree_->GetRoot()), client_root_->id);
 
-  // We're about to serialize it, so mark it as valid.
+  // We're about to serialize it, so clear its dirty states.
   client_node->in_dirty_subtree = false;
+  client_node->is_dirty = false;
   client_node->ignored = tree_->IsIgnored(node);
 
   // Terminate early if a maximum number of nodes is reached.
@@ -848,7 +863,7 @@ bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
           (new_ignored_ids.find(reused_child->id) != new_ignored_ids.end());
       // Re-serialize it if the child is marked as dirty, otherwise
       // we don't have to because the client already has it.
-      if (reused_child->in_dirty_subtree || ignored_state_changed) {
+      if (reused_child->IsDirty() || ignored_state_changed) {
         if (!SerializeChangedNodes(child, out_update, out_error)) {
           tree_->ClearChildCache(node);
           return false;
@@ -860,6 +875,7 @@ bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
       new_child->parent = client_node;
       new_child->ignored = tree_->IsIgnored(child);
       new_child->in_dirty_subtree = false;
+      new_child->is_dirty = false;
       client_node->children.push_back(new_child);
       if (ClientTreeNodeById(child_id)) {
         // TODO(accessibility) Remove all cases where this occurs and re-add
