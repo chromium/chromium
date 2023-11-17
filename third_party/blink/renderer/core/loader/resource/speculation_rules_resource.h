@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_SPECULATION_RULES_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_SPECULATION_RULES_RESOURCE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 
 namespace blink {
@@ -13,7 +14,7 @@ class FetchParameters;
 class ResourceFetcher;
 
 // This is the implementation of Resource for the Speculation-Rules header.
-class SpeculationRulesResource final : public TextResource {
+class CORE_EXPORT SpeculationRulesResource final : public TextResource {
  public:
   static SpeculationRulesResource* Fetch(FetchParameters&, ResourceFetcher*);
 

@@ -252,7 +252,7 @@ void SpeculationRulesHeader::StartFetches(Document& document) {
 
     SpeculationRuleLoader* speculation_rule_loader =
         MakeGarbageCollected<SpeculationRuleLoader>(document);
-    speculation_rule_loader->LoadResource(resource, speculation_rule_url);
+    speculation_rule_loader->LoadResource(resource);
   }
 }
 

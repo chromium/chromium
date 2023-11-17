@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -20,10 +21,8 @@ SpeculationRuleLoader::SpeculationRuleLoader(Document& document)
 
 SpeculationRuleLoader::~SpeculationRuleLoader() = default;
 
-void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource,
-                                         const KURL& base_url) {
+void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource) {
   DCHECK(!resource_);
-  base_url_ = base_url;
   resource_ = resource;
   resource_->AddFinishObserver(
       this, document_->GetTaskRunner(TaskType::kNetworking).get());
@@ -37,7 +36,9 @@ void SpeculationRuleLoader::NotifyFinished() {
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.SpeculationRules.FetchTime",
                              base::TimeTicks::Now() - start_time_);
 
-  int response_code = resource_->GetResponse().HttpStatusCode();
+  const ResourceResponse& response = resource_->GetResponse();
+  int response_code = response.HttpStatusCode();
+
   if (!network::IsSuccessfulStatus(response_code)) {
     CountSpeculationRulesLoadOutcome(
         SpeculationRulesLoadOutcome::kInvalidStatusCode);
@@ -78,9 +79,9 @@ void SpeculationRuleLoader::NotifyFinished() {
     return;
   }
 
-  const auto& source_text = resource_->DecodedText();
+  String source_text = resource_->DecodedText();
   auto* source = SpeculationRuleSet::Source::FromRequest(
-      source_text, base_url_, resource_->InspectorId());
+      source_text, response.ResponseUrl(), resource_->InspectorId());
   auto* rule_set =
       SpeculationRuleSet::Parse(source, document_->GetExecutionContext());
   CHECK(rule_set);
