@@ -3078,10 +3078,10 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  const std::string guid = personal_data_manager_->AddIban(iban);
+  const std::string guid = personal_data_manager_->AddAsLocalIban(iban);
   // Should set identifier and record_type manually here as `iban` has been
-  // passed by value above in `AddIban`, and `AddIban` method sets identifier
-  // and record_type to the given `iban`.
+  // passed by value above in `AddAsLocalIban`, and `AddAsLocalIban` method sets
+  // identifier and record_type to the given `iban`.
   iban.set_identifier(Iban::Guid(guid));
   iban.set_record_type(Iban::kLocalIban);
 
@@ -3969,7 +3969,7 @@ TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data_manager_->AddIban(iban);
+  personal_data_manager_->AddAsLocalIban(iban);
 
   // Simulate a form submission with the same IBAN. The IBAN should not be
   // offered to be saved, because it already exists as a local IBAN.

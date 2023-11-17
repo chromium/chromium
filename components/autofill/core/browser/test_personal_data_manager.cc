@@ -102,7 +102,7 @@ void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   NotifyPersonalDataObserver();
 }
 
-std::string TestPersonalDataManager::AddIban(Iban iban) {
+std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   iban.set_record_type(Iban::kLocalIban);
   iban.set_identifier(

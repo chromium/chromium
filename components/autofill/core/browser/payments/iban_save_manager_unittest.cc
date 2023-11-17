@@ -139,7 +139,7 @@ TEST_F(IbanSaveManagerTest, AttemptToOfferSave_NewIban_ShouldOfferSave) {
 TEST_F(IbanSaveManagerTest, AttemptToOfferSave_LocalIban_ShouldOfferSave) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddIban(iban);
+  personal_data().AddAsLocalIban(iban);
 
   Iban another_iban;
   another_iban.set_value(iban.value());
@@ -170,7 +170,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban) {
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddIban(iban);
+  personal_data().AddAsLocalIban(iban);
 
   Iban another_iban;
   another_iban.set_value(iban.value());
@@ -464,7 +464,7 @@ TEST_F(
 TEST_F(IbanSaveManagerTest, OfferUploadSave_LocalIban_Success) {
   Iban local_iban;
   local_iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddIban(local_iban);
+  personal_data().AddAsLocalIban(local_iban);
   Iban another_iban;
   another_iban.set_value(local_iban.value());
 
@@ -483,7 +483,7 @@ TEST_F(IbanSaveManagerTest,
        OfferUploadSave_LocalIban_Failure_LocalSaveNotOffered) {
   Iban local_iban;
   local_iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddIban(local_iban);
+  personal_data().AddAsLocalIban(local_iban);
   Iban another_iban;
   another_iban.set_value(local_iban.value());
 

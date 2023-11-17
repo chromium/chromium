@@ -908,7 +908,7 @@ void PersonalDataManager::MigrateProfileToAccount(
   AddProfile(account_profile);
 }
 
-std::string PersonalDataManager::AddIban(Iban iban) {
+std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   // IBAN shares the same pref with payment methods enablement toggle.
   if (!IsAutofillPaymentMethodsEnabled()) {
@@ -2207,9 +2207,10 @@ std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
 
 std::string PersonalDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
   DCHECK(!imported_iban.value().empty());
-  // If an existing IBAN is found, call `UpdateIban()`, otherwise, `AddIban()`.
-  // `local_ibans_` will be in sync with the local web database as of
-  // `Refresh()` which will be called by both `UpdateIban()` and `AddIban()`.
+  // If an existing IBAN is found, call `UpdateIban()`, otherwise,
+  // `AddAsLocalIban()`. `local_ibans_` will be in sync with the local web
+  // database as of `Refresh()` which will be called by both `UpdateIban()` and
+  // `AddAsLocalIban()`.
   for (auto& iban : local_ibans_) {
     if (iban->value().compare(imported_iban.value()) == 0) {
       // Set the GUID of the IBAN to the one that matches it in
@@ -2219,7 +2220,7 @@ std::string PersonalDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
       return UpdateIban(imported_iban);
     }
   }
-  return AddIban(std::move(imported_iban));
+  return AddAsLocalIban(std::move(imported_iban));
 }
 
 void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {

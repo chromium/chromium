@@ -316,7 +316,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   void AddLocalIban(Iban& iban) {
-    iban.set_identifier(Iban::Guid(personal_data_->AddIban(iban)));
+    iban.set_identifier(Iban::Guid(personal_data_->AddAsLocalIban(iban)));
     PersonalDataProfileTaskWaiter(*personal_data_).Wait();
     iban.set_record_type(Iban::kLocalIban);
   }
@@ -1129,8 +1129,8 @@ TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
   Iban iban1;
   iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
 
-  personal_data_->AddIban(iban);
-  personal_data_->AddIban(iban1);
+  personal_data_->AddAsLocalIban(iban);
+  personal_data_->AddAsLocalIban(iban1);
 
   EXPECT_EQ(0U, personal_data_->GetLocalIbans().size());
 }
@@ -1141,7 +1141,7 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
 
-  personal_data_->AddIban(iban);
+  personal_data_->AddAsLocalIban(iban);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   // Adding an IBAN permanently enables the pref.
   EXPECT_TRUE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
@@ -1165,10 +1165,10 @@ TEST_F(PersonalDataManagerTest, AddLocalIbans) {
   AddLocalIban(iban1);
   AddLocalIban(iban2);
   // Do not add `PersonalDataProfileTaskWaiter(*personal_data_).Wait()` for this
-  // `AddIban` operation, as it will be terminated prematurely for
+  // `AddAsLocalIban` operation, as it will be terminated prematurely for
   // `iban2_with_different_nickname` due to the presence of an IBAN with the
   // same value.
-  personal_data_->AddIban(iban2_with_different_nickname);
+  personal_data_->AddAsLocalIban(iban2_with_different_nickname);
 
   std::vector<Iban*> ibans = {&iban1, &iban2};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
