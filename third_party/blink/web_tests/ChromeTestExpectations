@@ -30,6 +30,7 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_re
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
 
 # Chrome specific failures
+crbug.com/1499775 external/wpt/soft-navigation-heuristics/keyup.tentative.html [ Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=forwarddelete&block=blockquote [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-search-text-border-inline-start-color-001.html [ Failure ]
 crbug.com/1499775 external/wpt/document-policy/font-display/override-to-optional.tentative.html [ Failure ]
