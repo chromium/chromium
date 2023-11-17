@@ -111,6 +111,11 @@ OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
     // happened if the |after_raster_sync_token_| was set.
     backing_->returned_sync_token = gpu::SyncToken();
   }
+  if (should_destroy_shared_image_ && !mailbox_.IsZero()) {
+    backing_->worker_context_provider->SharedImageInterface()
+        ->DestroySharedImage(before_raster_sync_token_, mailbox_);
+    mailbox_.SetZero();
+  }
   backing_->mailbox = mailbox_;
 }
 
@@ -131,7 +136,8 @@ void OneCopyRasterBufferProvider::RasterBufferImpl::Playback(
       &mailbox_, mailbox_texture_target_, mailbox_texture_is_overlay_candidate_,
       before_raster_sync_token_, raster_source, raster_full_rect,
       raster_dirty_rect, transform, resource_size_, format_, color_space_,
-      playback_settings, previous_content_id_, new_content_id);
+      playback_settings, previous_content_id_, new_content_id,
+      should_destroy_shared_image_);
 }
 
 bool OneCopyRasterBufferProvider::RasterBufferImpl::
@@ -289,7 +295,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
     const gfx::ColorSpace& color_space,
     const RasterSource::PlaybackSettings& playback_settings,
     uint64_t previous_content_id,
-    uint64_t new_content_id) {
+    uint64_t new_content_id,
+    bool& should_destroy_shared_image) {
   std::unique_ptr<StagingBuffer> staging_buffer =
       staging_pool_.AcquireStagingBuffer(resource_size, format,
                                          previous_content_id);
@@ -308,16 +315,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
         staging_buffer.get(), raster_source, raster_full_rect, format,
         resource_size, mailbox, mailbox_texture_target,
         mailbox_texture_is_overlay_candidate, sync_token, color_space);
-  } else {
+  } else if (!mailbox->IsZero()) {
     // If we failed to put data in the staging buffer
     // (https://crbug.com/554541), then we don't have anything to give to copy
     // into the resource. We report a zero mailbox that will result in
     // checkerboarding, and be treated as OOM which should retry.
-    if (!mailbox->IsZero()) {
-      worker_context_provider_->SharedImageInterface()->DestroySharedImage(
-          sync_token, *mailbox);
-      mailbox->SetZero();
-    }
+    should_destroy_shared_image = true;
   }
 
   staging_pool_.ReleaseStagingBuffer(std::move(staging_buffer));

@@ -86,7 +86,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::ColorSpace& color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
-      uint64_t new_content_id);
+      uint64_t new_content_id,
+      bool& should_destroy_shared_image);
 
  protected:
   void Flush() override;
@@ -133,6 +134,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
     gpu::SyncToken after_raster_sync_token_;
+    bool should_destroy_shared_image_ = false;
   };
 
   // Returns true if data has successfully put in the staging buffer.
