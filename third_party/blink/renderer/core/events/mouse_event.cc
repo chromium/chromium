@@ -389,7 +389,10 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return dispatcher.Dispatch();
 
   if (is_click || type() == event_type_names::kMousedown ||
-      type() == event_type_names::kMouseup) {
+      type() == event_type_names::kMouseup ||
+      (RuntimeEnabledFeatures::
+           DontFireDblclickOnDisabledFormControlsEnabled() &&
+       type() == event_type_names::kDblclick)) {
     GetEventPath().AdjustForDisabledFormControl();
   }
 

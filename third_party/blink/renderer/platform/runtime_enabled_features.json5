@@ -1460,6 +1460,11 @@
       depends_on: ["DOMPartsAPI"],
     },
     {
+      // Shipping in M121, so should be safe to remove in M126.
+      name: "DontFireDblclickOnDisabledFormControls",
+      status: "stable",
+    },
+    {
       name: "EditContext",
       origin_trial_feature_name: "EditContext",
       status: "stable",
