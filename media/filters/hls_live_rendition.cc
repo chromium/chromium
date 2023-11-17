@@ -159,6 +159,11 @@ void HlsLiveRendition::Stop() {
   is_stopped_for_shutdown_ = true;
 }
 
+void HlsLiveRendition::UpdatePlaylist(
+    scoped_refptr<hls::MediaPlaylist> playlist) {
+  // TODO(crbug/1266991) Implement in a future CL.
+}
+
 base::TimeDelta HlsLiveRendition::GetForwardBufferSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);

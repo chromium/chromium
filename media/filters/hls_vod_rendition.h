@@ -23,7 +23,8 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
                   HlsRenditionHost* rendition_host,
                   std::string role,
                   scoped_refptr<hls::MediaPlaylist> playlist,
-                  base::TimeDelta duration);
+                  std::optional<base::TimeDelta> duration,
+                  GURL media_playlist_uri);
 
   // `HlsRendition` implementation
   absl::optional<base::TimeDelta> GetDuration() override;
@@ -33,6 +34,7 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) override;
   void StartWaitingForSeek() override;
   void Stop() override;
+  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) override;
 
  private:
   // A pending segment consists of the stream from which network data is fetched
@@ -57,6 +59,29 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
                      base::TimeTicks net_req_start,
                      HlsDataSourceProvider::ReadResult result);
 
+  // This allows calculating the ideal buffer size, based on adaptability,
+  // network speed, and playback type.
+  base::TimeDelta GetIdealBufferSize() const;
+
+  // A helper method for CheckState, which will fetch new manifests for live
+  // content if needed, and also fetch the next segment for both live and vod
+  // content.
+  void TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
+                         base::TimeDelta media_time);
+
+  // Live playback helpers which enforce section 6.3.4 of the HLS spec regarding
+  // the delay between fetching new playlists for live content.
+  void FetchManifestUpdates(ManifestDemuxer::DelayCallback, base::TimeDelta);
+  void MaybeFetchManifestUpdates(ManifestDemuxer::DelayCallback,
+                                 base::TimeDelta);
+
+  // Callback helper to receive notice when a new manifest has been updated.
+  void OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
+                        base::TimeDelta delay);
+
+  // Helper method to use duration to determine stream liveness.
+  bool IsLive() const;
+
   // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed
   // to access the chunk demuxer, and |engine_| is needed to make network
@@ -73,18 +98,24 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   base::TimeDelta parse_offset_;
 
   // Total duration of the playback.
-  base::TimeDelta duration_;
-
-  // If this is set, then use it to get more data. Otherwise, fetch another
-  // segment.
-  absl::optional<PendingSegment> pending_stream_fetch_ = absl::nullopt;
+  std::optional<base::TimeDelta> duration_;
 
   // Record the time it takes to download content.
   base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_;
 
-  bool set_stream_end_ = false;
+  // The URI of the active rendition's playlist.
+  GURL media_playlist_uri_;
 
+  // The last time the manifest was downloaded.
+  base::TimeTicks last_download_time_;
+
+  // The time that a livestream was paused at.
+  std::optional<base::TimeTicks> livestream_pause_time_ = std::nullopt;
+
+  // toggleable bool flags.
+  bool set_stream_end_ = false;
   bool is_stopped_for_shutdown_ = false;
+  bool has_ever_played_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

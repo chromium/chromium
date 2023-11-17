@@ -362,7 +362,7 @@ void HlsManifestDemuxerEngine::ReadFromUrl(
     return;
   }
 
-  if (read_chunked) {
+  if (!read_chunked) {
     cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
                         weak_factory_.GetWeakPtr(), std::move(cb));
   }
@@ -441,6 +441,57 @@ HlsManifestDemuxerEngine::ParseMediaPlaylistFromStringSource(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return hls::MediaPlaylist::Parse(source, uri, version,
                                    multivariant_root_.get());
+}
+
+void HlsManifestDemuxerEngine::UpdateRenditionManifestUri(
+    std::string role,
+    GURL uri,
+    base::OnceClosure cb) {
+  GURL uri_copy = uri;
+  ReadFromUrl(
+      std::move(uri_copy), false, absl::nullopt,
+      base::BindOnce(&HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole,
+                     weak_factory_.GetWeakPtr(), role, std::move(uri),
+                     std::move(cb)));
+}
+
+void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
+    std::string role,
+    GURL uri,
+    base::OnceClosure cb,
+    HlsDataSourceProvider::ReadResult maybe_stream) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (!maybe_stream.has_value()) {
+    Abort(std::move(maybe_stream).error().AddHere());
+    std::move(cb).Run();
+    return;
+  }
+  auto stream = std::move(maybe_stream).value();
+
+  auto maybe_info = hls::Playlist::IdentifyPlaylist(stream->AsString());
+  if (!maybe_info.has_value()) {
+    Abort(std::move(maybe_info).error().AddHere());
+    std::move(cb).Run();
+    return;
+  }
+
+  if ((*maybe_info).kind != hls::Playlist::Kind::kMediaPlaylist) {
+    Abort(HlsDemuxerStatus::Codes::kInvalidManifest);
+    std::move(cb).Run();
+    return;
+  }
+
+  auto maybe_playlist = ParseMediaPlaylistFromStringSource(
+      stream->AsString(), std::move(uri), (*maybe_info).version);
+  if (!maybe_playlist.has_value()) {
+    Abort(std::move(maybe_playlist).error().AddHere());
+    std::move(cb).Run();
+    return;
+  }
+
+  // TODO(crbug/1266991): Actually update!
+  renditions_[role]->UpdatePlaylist(std::move(maybe_playlist).value());
+  std::move(cb).Run();
 }
 
 void HlsManifestDemuxerEngine::AddRenditionForTesting(

@@ -67,6 +67,9 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       base::StringPiece source,
       GURL uri,
       hls::types::DecimalInteger version) override;
+  void UpdateRenditionManifestUri(std::string role,
+                                  GURL uri,
+                                  base::OnceClosure cb) override;
 
   // Test helpers.
   void AddRenditionForTesting(std::string role,
@@ -180,6 +183,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       ManifestDemuxerEngineHost* host,
       PipelineStatusCallback status_cb,
       std::unique_ptr<HlsCodecDetector> codec_detector);
+  void UpdateMediaPlaylistForRole(
+      std::string role,
+      GURL uri,
+      base::OnceClosure cb,
+      HlsDataSourceProvider::ReadResult maybe_stream);
 
   base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

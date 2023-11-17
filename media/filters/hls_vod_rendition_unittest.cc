@@ -52,8 +52,8 @@ class HlsVodRenditionUnittest : public testing::Test {
 
   std::unique_ptr<HlsVodRendition> MakeVodRendition(base::StringPiece content) {
     constexpr hls::types::DecimalInteger version = 3;
-    auto parsed = hls::MediaPlaylist::Parse(
-        content, GURL("https://example.m3u8"), version, nullptr);
+    auto uri = GURL("https://example.m3u8");
+    auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
     if (!parsed.has_value()) {
       LOG(ERROR) << MediaSerialize(std::move(parsed).error());
       return nullptr;
@@ -62,7 +62,7 @@ class HlsVodRenditionUnittest : public testing::Test {
     auto duration = playlist->GetComputedDuration();
     return std::make_unique<HlsVodRendition>(mock_mdeh_.get(), mock_hrh_.get(),
                                              "test", std::move(playlist),
-                                             duration);
+                                             duration, uri);
   }
 
   MOCK_METHOD(void, CheckStateComplete, (base::TimeDelta delay), ());

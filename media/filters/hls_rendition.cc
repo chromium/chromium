@@ -50,10 +50,11 @@ HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
   if (duration.has_value()) {
     rendition = std::make_unique<HlsVodRendition>(
         engine_host, rendition_host, std::move(role), std::move(playlist),
-        duration.value());
+        duration, std::move(uri));
   } else {
     rendition = std::make_unique<HlsLiveRendition>(
-        engine_host, rendition_host, role, std::move(playlist), uri);
+        engine_host, rendition_host, std::move(role), std::move(playlist),
+        std::move(uri));
   }
   return rendition;
 }

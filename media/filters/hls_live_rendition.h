@@ -31,6 +31,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) override;
   void StartWaitingForSeek() override;
   void Stop() override;
+  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) override;
 
  private:
   base::TimeDelta GetForwardBufferSize() const;

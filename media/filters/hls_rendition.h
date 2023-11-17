@@ -43,6 +43,11 @@ class MEDIA_EXPORT HlsRenditionHost {
   ParseMediaPlaylistFromStringSource(base::StringPiece source,
                                      GURL uri,
                                      hls::types::DecimalInteger version) = 0;
+
+  // Fetch a new playlist for live content at the requested URI.
+  virtual void UpdateRenditionManifestUri(std::string role,
+                                          GURL uri,
+                                          base::OnceClosure cb) = 0;
 };
 
 class MEDIA_EXPORT HlsRendition {
@@ -69,6 +74,9 @@ class MEDIA_EXPORT HlsRendition {
   // Stop the rendition, including canceling pending seeks. After stopping,
   // `CheckState` and `Seek` should be no-ops.
   virtual void Stop() = 0;
+
+  // Update playlist because we've adapted to a network or resolution change.
+  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) = 0;
 
   static HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,
