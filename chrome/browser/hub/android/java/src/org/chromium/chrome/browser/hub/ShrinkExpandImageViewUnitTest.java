@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 
 /** Tests for {@link RunOnNextLayoutDelegate}. */
 // TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
@@ -46,6 +48,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @LooperMode(Mode.PAUSED)
 public class ShrinkExpandImageViewUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
@@ -60,6 +66,8 @@ public class ShrinkExpandImageViewUnitTest {
 
     @Before
     public void setUp() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+
         // This setup is necessary to get isAttachedToWindow to work correctly.
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivityController.setup();
@@ -280,6 +288,20 @@ public class ShrinkExpandImageViewUnitTest {
 
         mShrinkExpandImageView.runOnNextLayoutRunnables();
         verify(mRunnable1, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testImageBitmapDensityOnAutomotive() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+
+        Bitmap testBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888);
+        testBitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
+        mShrinkExpandImageView.setImageBitmap(testBitmap);
+        assertEquals(
+                "Bitmap density in automotive should be scaled up from 160 to 220.",
+                DisplayMetrics.DENSITY_220,
+                testBitmap.getDensity());
     }
 
     private void assertReset(@NonNull Rect rect, boolean keepingBitmap) {
