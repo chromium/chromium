@@ -7130,3 +7130,7 @@ crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-b
 
 # Gardener 2023-11-16
 crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass ]
+
+# Gerdener 2023-11-17
+crbug.com/1503051 [ Mac ] external/wpt/credential-management/fedcm-revoke.sub.https.html [ Pass Failure ]
+crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Pass Failure ]
