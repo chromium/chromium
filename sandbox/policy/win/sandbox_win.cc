@@ -1146,7 +1146,8 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
-  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
+  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer ||
+      sandbox_type == Sandbox::kOnDeviceModelExecution) {
     constexpr uint64_t GB = 1024 * 1024 * 1024;
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
