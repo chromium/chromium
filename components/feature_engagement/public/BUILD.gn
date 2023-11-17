@@ -48,6 +48,7 @@ source_set("public") {
     "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
+    "//extensions/buildflags",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

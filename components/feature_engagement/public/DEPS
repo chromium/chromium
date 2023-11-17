@@ -1,5 +1,6 @@
 include_rules = [
   "+components/feature_engagement/features.h",
+  "+extensions/buildflags",
 ]
 
 specific_include_rules = {

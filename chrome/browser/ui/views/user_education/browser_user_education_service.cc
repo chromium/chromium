@@ -425,6 +425,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
           .SetInAnyContext(true)));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(
       user_education::FeaturePromoSpecification::CreateForSnoozePromo(
@@ -441,6 +442,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_BODY)
           .SetBubbleTitleText(
               IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_TITLE)));
+#endif
 
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(

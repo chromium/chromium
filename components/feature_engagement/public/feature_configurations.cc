@@ -324,6 +324,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (kIPHExtensionsMenuFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -354,6 +355,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+#endif
 
   if (kIPHCompanionSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
