@@ -241,7 +241,7 @@ class AXRelationCache {
   AXObject* ObjectFromAXID(AXID) const;
   AXObject* GetOrCreate(Node*, const AXObject* owner);
   AXObject* Get(Node*);
-  void ChildrenChanged(AXObject*);
+  void ChildrenChangedWithCleanLayout(AXObject*);
 
   // Do an initial scan of document to find any relations. We'll catch any
   // subsequent relations when nodes fare attached or attributes change.

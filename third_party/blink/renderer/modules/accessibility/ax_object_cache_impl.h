@@ -156,9 +156,9 @@ class MODULES_EXPORT AXObjectCacheImpl
       pause_tree_updates_until_more_loaded_content_ = false;
       UpdateAXForAllDocuments();
     }
-    CHECK(FocusedObject());
     ax_tree_source_->Freeze();
     is_frozen_ = true;
+    CHECK(FocusedObject());
   }
   void Thaw() override {
     is_frozen_ = false;
@@ -408,6 +408,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
   void HandleUpdateActiveMenuOptionWithCleanLayout(Node*);
   void HandleEditableTextContentChangedWithCleanLayout(Node*);
+  void UpdateAriaOwnsWithCleanLayout(Node*);
   void UpdateTableRoleWithCleanLayout(Node*);
 
   AXID GenerateAXID() const override;
@@ -740,9 +741,10 @@ class MODULES_EXPORT AXObjectCacheImpl
     kTextMarkerDataAdded = 30,
     kUpdateActiveMenuOption = 31,
     kNodeIsAttached = 32,
-    kUpdateTableRole = 33,
-    kUseMapAttributeChanged = 34,
-    kValidationMessageVisibilityChanged = 35,
+    kUpdateAriaOwns = 33,
+    kUpdateTableRole = 34,
+    kUseMapAttributeChanged = 35,
+    kValidationMessageVisibilityChanged = 36,
 
     // These updates are associated with an AXID:
     kChildrenChanged = 100,

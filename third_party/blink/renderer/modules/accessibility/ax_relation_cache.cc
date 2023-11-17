@@ -483,7 +483,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
       added_child->DetachFromParent();
       added_child->SetParent(const_cast<AXObject*>(owner));
       if (original_parent) {
-        ChildrenChanged(original_parent);
+        ChildrenChangedWithCleanLayout(original_parent);
         // Reparenting detection requires the parent of the original parent to
         // be reserialized.
         // This change prevents several DumpAccessibilityEventsTest failures:
@@ -678,7 +678,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
                                         validated_owned_child_axids);
   }
 
-  ChildrenChanged(owner);
+  ChildrenChangedWithCleanLayout(owner);
 }
 
 bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
@@ -714,9 +714,12 @@ void AXRelationCache::GetReverseRelated(
 }
 
 AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
-  if (!node) {
+  CHECK(object_cache_->IsProcessingDeferredEvents());
+
+  if (!IsA<Element>(node)) {
     return nullptr;
   }
+
 #if DCHECK_IS_ON()
   if (obj)
     DCHECK(!obj->IsDetached());
@@ -766,19 +769,10 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   }
 
   if (AXObject* owner = GetOrCreateAriaOwnerFor(node, obj)) {
-    if (object_cache_->IsProcessingDeferredEvents()) {
-      // Ensure the aria-owns relation is processed, which in turn ensures that
-      // both the owner and owned child exist, and that the parent-child
-      // relations are correctly set on each.
-      ProcessUpdatesWithCleanLayout();
-      AXObject* owned = Get(node);
-      if (owned && IsAriaOwned(owned)) {
-        CHECK_EQ(owner, owned->CachedParentObject())
-            << "\n* Owned: " << owned
-            << "\n* ValidatedAriaOwner: " << ValidatedAriaOwner(owned);
-        CHECK_EQ(owner, ValidatedAriaOwner(owned));
-      }
-    }
+    // Ensure the aria-owns relation is processed, which in turn ensures that
+    // both the owner and owned child exist, and that the parent-child
+    // relations are correctly set on each.
+    ProcessUpdatesWithCleanLayout();
   }
 
   UpdateRelatedText(node);
@@ -899,7 +893,7 @@ AXObject* AXRelationCache::GetOrCreate(Node* node, const AXObject* owner) {
   return object_cache_->GetOrCreate(node, const_cast<AXObject*>(owner));
 }
 
-void AXRelationCache::ChildrenChanged(AXObject* object) {
+void AXRelationCache::ChildrenChangedWithCleanLayout(AXObject* object) {
   object->ChildrenChangedWithCleanLayout();
 }
 
@@ -929,6 +923,15 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
                  object_cache_->RestoreParentOrPrune(child)) {
     object_cache_->ChildrenChanged(new_parent);
     object_cache_->ChildrenChanged(old_parent);
+  }
+  // Handle case where there were multiple elements aria-owns=|child|,
+  // by making sure they are updated in the next round, in case one of them
+  // can now own it because of the removal the old_parent.
+  HeapVector<Member<AXObject>> other_potential_owners;
+  GetReverseRelated(child->GetNode(), id_attr_to_owns_relation_mapping_,
+                    other_potential_owners);
+  for (AXObject* other_potential_owner : other_potential_owners) {
+    owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
   }
 }
 

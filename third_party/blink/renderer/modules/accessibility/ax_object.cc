@@ -1201,53 +1201,6 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
 }
 
 #if DCHECK_IS_ON()
-void AXObject::EnsureCorrectParentComputation() {
-  if (!parent_)
-    return;
-
-  DCHECK(!parent_->IsDetached());
-
-  DCHECK(parent_->CanHaveChildren());
-
-  // Don't check the computed parent if the cached parent is a mock object.
-  // It is expected that a computed parent could never be a mock object,
-  // which has no backing DOM node or layout object, and therefore cannot be
-  // found by traversing DOM/layout ancestors.
-  if (parent_->IsMockObject())
-    return;
-
-  // Cannot compute a parent for an object that has no backing node or layout
-  // object to start from.
-  if (!GetNode() || !GetLayoutObject())
-    return;
-
-  // Don't check the computed parent if the cached parent is an image:
-  // <area> children's location in the DOM and HTML hierarchy does not match.
-  // TODO(aleventhal) Try to remove this rule, it may be unnecessary now.
-  if (parent_->RoleValue() == ax::mojom::blink::Role::kImage)
-    return;
-
-  // TODO(aleventhal) Different in test fast/css/first-letter-removed-added.html
-  // when run with --force-renderer-accessibility.
-  if (GetNode() && GetNode()->IsPseudoElement())
-    return;
-
-  // Verify that the algorithm in ComputeParent() provides same results as
-  // parents that init their children with themselves as the parent.
-  // Inconsistency indicates a problem could potentially exist where a child's
-  // parent does not include the child in its children.
-  AXObject* computed_parent = ComputeParent();
-
-  DCHECK(computed_parent) << "Computed parent was null for " << this
-                          << ", expected " << parent_;
-  DCHECK_EQ(computed_parent, parent_)
-      << "\n**** ComputeParent should have provided the same result as "
-         "the known parent.\n**** Computed parent layout object was "
-      << computed_parent->GetLayoutObject()
-      << "\n**** Actual parent's layout object was "
-      << parent_->GetLayoutObject() << "\n**** Child was " << this;
-}
-
 std::string AXObject::GetAXTreeForThis() const {
   return TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(), this);
 }

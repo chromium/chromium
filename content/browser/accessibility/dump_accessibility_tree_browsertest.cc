@@ -155,6 +155,26 @@ struct DumpAccessibilityTreeTestPassToString {
   }
 };
 
+class YieldingParserDumpAccessibilityTreeTest
+    : public DumpAccessibilityTreeTest {
+ protected:
+  YieldingParserDumpAccessibilityTreeTest() {
+    feature_list_.InitWithFeatures(
+        {{blink::features::kHTMLParserYieldAndDelayOftenForTesting}},
+        {/* disabled_features */});
+  }
+
+  ~YieldingParserDumpAccessibilityTreeTest() override {
+    // Ensure that the feature lists are destroyed in the same order they
+    // were created in.
+    scoped_feature_list_.Reset();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // TODO(https://crbug.com/1470120): We need to create a way to incrementally
 // enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
@@ -173,6 +193,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestWithIgnoredNodes,
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    YieldingParserDumpAccessibilityTreeTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
     DumpAccessibilityTreeTestPassToString());
 
 // TODO(crbug.com/1428967): Flaky on asan of linux, chromeos and win.
@@ -1167,16 +1193,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-included-in-tree.html"));
 }
 
-// TODO(crbug.com/1367886): Test flaky on win-asan. Renable it.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AccessibilityAriaOwnsFromDisplayNone \
-  DISABLED_AccessibilityAriaOwnsFromDisplayNone
-#else
-#define MAYBE_AccessibilityAriaOwnsFromDisplayNone \
-  AccessibilityAriaOwnsFromDisplayNone
-#endif
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsFromDisplayNone) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-owns-from-display-none.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaOwnsFromDisplayNone) {
+                       AccessibilityAriaOwnsFromDisplayNone) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-from-display-none.html"));
 }
 
@@ -3126,32 +3149,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityStyle) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySub) {
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
-
-class YieldingParserDumpAccessibilityTreeTest
-    : public DumpAccessibilityTreeTest {
- protected:
-  YieldingParserDumpAccessibilityTreeTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kHTMLParserYieldAndDelayOftenForTesting}},
-        {/* disabled_features */});
-  }
-
-  ~YieldingParserDumpAccessibilityTreeTest() override {
-    // Ensure that the feature lists are destroyed in the same order they
-    // were created in.
-    scoped_feature_list_.Reset();
-    feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    YieldingParserDumpAccessibilityTreeTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
-    DumpAccessibilityTreeTestPassToString());
 
 // TODO(crbug.com/1480429): Flaky
 #if BUILDFLAG(IS_MAC)

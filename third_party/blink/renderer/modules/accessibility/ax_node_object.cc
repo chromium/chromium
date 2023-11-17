@@ -4756,10 +4756,6 @@ void AXNodeObject::InsertChild(AXObject* child,
   // - For a reused, older object, it may need to be changed to a new parent.
   child->SetParent(this);
 
-#if DCHECK_IS_ON()
-  child->EnsureCorrectParentComputation();
-#endif
-
   // Update cached values preemptively, but don't allow children changed to be
   // called if ignored change, we are already recomputing children and don't
   // want to recurse.

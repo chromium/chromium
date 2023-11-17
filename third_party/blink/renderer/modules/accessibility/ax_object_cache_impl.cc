@@ -908,13 +908,23 @@ AXObject* AXObjectCacheImpl::FocusedObject() {
   Node* focused_node = FocusedNode();
   CHECK(focused_node);
 
-  AXObject* obj = GetOrCreate(focused_node);
+  AXObject* obj = nullptr;
+  if (IsProcessingDeferredEvents()) {
+    obj = GetOrCreate(focused_node);
+  } else {
+    // The focus is on a node that has been pruned from the a11y tree, such as
+    // on an area in an image map that is not being used. Handle this rare
+    // edge case without crashing (do not try to create an accessible while
+    // being frozen).
+    obj = Get(focused_node);
+  }
   if (!obj) {
     // In rare cases it's possible for the focus to not exist in the tree.
     // An example would be a focused element inside of an image map that
     // gets trimmed.
     // In these cases, treat the focus as on the root object itself, so that
     // AT users have some starting point.
+    DLOG(ERROR) << "The focus was not part of the a11y tree: " << focused_node;
     return Root();
   }
 
@@ -2408,10 +2418,26 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
     }
   }
 
-  // Register relation ids so that reverse relations can be computed.
-  if (relation_cache_) {
-    if (Element* element = DynamicTo<Element>(node)) {
+  if (Element* element = DynamicTo<Element>(node)) {
+    if (relation_cache_) {
+      // Register relation ids so that reverse relations can be computed.
       relation_cache_->CacheRelationIds(*element);
+      ScheduleAXUpdate();
+    }
+    if (AXObject::HasARIAOwns(element)) {
+      DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
+    }
+  }
+}
+
+void AXObjectCacheImpl::UpdateAriaOwnsWithCleanLayout(Node* node) {
+  // Process any relation attributes that can affect ax objects already created.
+  // Force computation of aria-owns, so that original parents that already
+  // computed their children get the aria-owned children removed.
+  if (AXObject::HasARIAOwns(To<Element>(node))) {
+    if (AXObject* obj = GetOrCreate(node)) {
+      CHECK(relation_cache_);
+      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
     }
   }
 }
@@ -2491,16 +2517,6 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
       << "Unclean document at lifecycle "
       << node->GetDocument().Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
-
-  // Process any relation attributes that can affect ax objects already created.
-  // Force computation of aria-owns, so that original parents that already
-  // computed their children get the aria-owned children removed.
-  if (AXObject::HasARIAOwns(element)) {
-    if (AXObject* obj = GetOrCreate(element)) {
-      CHECK(relation_cache_);
-      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
-    }
-  }
 
   if (AccessibleNode::GetPropertyOrARIAAttributeValue(
           element, AOMRelationProperty::kActiveDescendant)) {
@@ -3376,6 +3392,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       break;
     case TreeUpdateReason::kNodeIsAttached:
       NodeIsAttachedWithCleanLayout(node);
+      break;
+    case TreeUpdateReason::kUpdateAriaOwns:
+      UpdateAriaOwnsWithCleanLayout(node);
       break;
     case TreeUpdateReason::kUpdateTableRole:
       UpdateTableRoleWithCleanLayout(node);
