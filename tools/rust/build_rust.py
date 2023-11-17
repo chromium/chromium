@@ -92,8 +92,6 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1479875 This fails on Mac. It relates to the large code
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
-    # https://crbug.com/1486137 Fails on Mac. Probably not critical.
-    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
