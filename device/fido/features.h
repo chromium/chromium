@@ -98,10 +98,6 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 
-// Get caBLE pre-linking information from Play Services
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPrelinkPlayServices);
-
 // Don't show the single-account sheet on macOS if Touch ID is available.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
