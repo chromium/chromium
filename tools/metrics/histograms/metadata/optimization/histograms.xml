@@ -462,6 +462,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.{ModelExecutionFeature}"
+    enum="FeatureCurrentlyEnabledResult" expires_after="2024-05-12">
+  <owner>tbansal@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether a feature is currently enabled. Recorded everytime the
+    feature status is queried.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.SettingsVisibilityResult.{ModelExecutionFeature}"
+    enum="FeaturesSettingsVisibilityResult" expires_after="2024-05-12">
+  <owner>tbansal@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records visibility of different features. Recorded everytime the feature's
+    settings visibility status is queried.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecutionFetcher.FetchLatency.{ModelExecutionFeature}"
     units="ms" expires_after="2024-05-12">
   <owner>sophiechang@chromium.org</owner>

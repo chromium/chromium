@@ -44,6 +44,23 @@ optimization_guide::proto::Platform GetPlatform() {
 
 namespace optimization_guide {
 
+std::string_view GetStringNameForModelExecutionFeature(
+    proto::ModelExecutionFeature feature) {
+  switch (feature) {
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      return "WallpaperSearch";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      return "TabOrganization";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      return "Compose";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      return "Unknown";
+      // Must be in sync with the ModelExecutionFeature variant in
+      // optimization/histograms.xml for metric recording. The output may also
+      // be used for storing other persistent data (e.g., prefs).
+  }
+}
+
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
   if (net::HostStringIsLocalhost(host))
     return false;

@@ -5,11 +5,103 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
+
+namespace {
+
+enum class SettingsVisibilityResult {
+  kUnknown = 0,
+  // Not visible because user is invalid.
+  kNotVisibleInvalidUser = 1,
+  // Visible because feature is already enabled.
+  kVisibleFeatureAlreadyEnabled = 2,
+  // Not visible because field trial is disabled.
+  kNotVisibleFieldTrialDisabled = 3,
+  // Visible because field trial is enabled.
+  kVisibleFieldTrialEnabled = 4,
+  // Updates should match with FeaturesSettingsVisibilityResult enum in
+  // enums.xml.
+  kMaxValue = kVisibleFieldTrialEnabled
+};
+
+// Util class for recording the construction and validation of Settings
+// Visibility histogram.
+class ScopedSettingsVisibilityResultHistogramRecorder {
+ public:
+  explicit ScopedSettingsVisibilityResultHistogramRecorder() = default;
+
+  ~ScopedSettingsVisibilityResultHistogramRecorder() {
+    CHECK(is_valid_);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.SettingsVisibilityResult.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        result_);
+  }
+
+  void SetValid() { is_valid_ = true; }
+
+  void SetResult(proto::ModelExecutionFeature feature,
+                 SettingsVisibilityResult result) {
+    is_valid_ = true;
+    feature_ = feature;
+    result_ = result;
+  }
+
+ private:
+  bool is_valid_ = false;
+  proto::ModelExecutionFeature feature_;
+  SettingsVisibilityResult result_;
+};
+
+enum class FeatureCurrentlyEnabledResult {
+  kUnknown = 0,
+  // Not enabled because user is invalid.
+  kNotEnabledInvalidUser = 1,
+  // Returned result as enabled because feature was enabled at startup.
+  kEnabledAtStartup = 2,
+  // Returned result as not enabled because feature was not enabled at startup.
+  kNotEnabledAtStartup = 3,
+  // Updates should match with FeatureCurrentlyEnabledResult enum in enums.xml.
+  kMaxValue = kNotEnabledAtStartup
+};
+
+// Util class for recording the construction and validation of Settings
+// Visibility histogram.
+class ScopedFeatureCurrentlyEnabledHistogramRecorder {
+ public:
+  explicit ScopedFeatureCurrentlyEnabledHistogramRecorder() = default;
+
+  ~ScopedFeatureCurrentlyEnabledHistogramRecorder() {
+    CHECK(is_valid_);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        result_);
+  }
+
+  void SetResult(proto::ModelExecutionFeature feature,
+                 FeatureCurrentlyEnabledResult result) {
+    is_valid_ = true;
+    feature_ = feature;
+    result_ = result;
+  }
+
+ private:
+  bool is_valid_ = false;
+  proto::ModelExecutionFeature feature_;
+  FeatureCurrentlyEnabledResult result_;
+};
+
+}  // namespace
 
 ModelExecutionFeaturesController::ModelExecutionFeaturesController(
     PrefService* browser_context_profile_service,
@@ -35,12 +127,22 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  ScopedFeatureCurrentlyEnabledHistogramRecorder metrics_recorder;
+
   if (!IsCurrentlyAValidUser()) {
+    metrics_recorder.SetResult(
+        feature, FeatureCurrentlyEnabledResult::kNotEnabledInvalidUser);
     return false;
   }
 
-  return features_enabled_at_startup_.find(static_cast<int>(feature)) !=
-         features_enabled_at_startup_.end();
+  bool result = features_enabled_at_startup_.find(static_cast<int>(feature)) !=
+                features_enabled_at_startup_.end();
+
+  metrics_recorder.SetResult(
+      feature, result ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
+                      : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup);
+
+  return result;
 }
 
 prefs::FeatureOptInState ModelExecutionFeaturesController::GetPrefState(
@@ -70,23 +172,35 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  ScopedSettingsVisibilityResultHistogramRecorder metrics_recorder;
+
   if (!IsCurrentlyAValidUser()) {
+    metrics_recorder.SetResult(
+        feature, SettingsVisibilityResult::kNotVisibleInvalidUser);
     return false;
   }
 
   // If the setting is currently enabled by user, then we should show the
   // setting to the user regardless of any other checks.
   if (ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
+    metrics_recorder.SetResult(
+        feature, SettingsVisibilityResult::kVisibleFeatureAlreadyEnabled);
     return true;
   }
 
   switch (feature) {
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      metrics_recorder.SetValid();
       return false;
     default:
-      return base::FeatureList::IsEnabled(
+      bool result = base::FeatureList::IsEnabled(
           *features::internal::GetFeatureToUseToCheckSettingsVisibility(
               feature));
+      SettingsVisibilityResult visibility_result =
+          result ? SettingsVisibilityResult::kVisibleFieldTrialEnabled
+                 : SettingsVisibilityResult::kNotVisibleFieldTrialDisabled;
+      metrics_recorder.SetResult(feature, visibility_result);
+      return result;
   }
 }
 

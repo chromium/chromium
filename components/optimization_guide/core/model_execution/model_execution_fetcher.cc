@@ -24,22 +24,6 @@ namespace {
 
 constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
 
-std::string_view GetStringNameForModelExecutionFeature(
-    proto::ModelExecutionFeature feature) {
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      return "WallpaperSearch";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      return "TabOrganization";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      return "Compose";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      return "Unknown";
-      // Must be in sync with the ModelExecutionFeature variant in
-      // optimization/histograms.xml for metric recording.
-  }
-}
-
 void RecordRequestStatusHistogram(proto::ModelExecutionFeature feature,
                                   FetcherRequestStatus status) {
   base::UmaHistogramEnumeration(
