@@ -272,6 +272,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            FilterCookiesWithOptionsWarnShadowingDomains);
 
+  // For StoreLoadedCookies behavior with origin-bound cookies.
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
+                           NoSchemeNoPort);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
+                           YesSchemeNoPort);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
+                           NoSchemeYesPort);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
+                           YesSchemeYesPort);
+
   // Internal reasons for deletion, used to populate informative histograms
   // and to provide a public cause for onCookieChange notifications.
   //

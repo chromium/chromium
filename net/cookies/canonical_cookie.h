@@ -55,10 +55,23 @@ struct NET_EXPORT CookieAccessParams {
 
 class NET_EXPORT CanonicalCookie {
  public:
+  // StrictlyUniqueCookieKey always populates the cookie's source scheme and
+  // source port.
+  using StrictlyUniqueCookieKey = std::tuple<absl::optional<CookiePartitionKey>,
+                                             /*name=*/std::string,
+                                             /*domain=*/std::string,
+                                             /*path=*/std::string,
+                                             CookieSourceScheme,
+                                             /*source_port=*/int>;
+
+  // Conditionally populates the source scheme and source port depending on the
+  // state of their associated feature.
   using UniqueCookieKey = std::tuple<absl::optional<CookiePartitionKey>,
-                                     std::string,
-                                     std::string,
-                                     std::string>;
+                                     /*name=*/std::string,
+                                     /*domain=*/std::string,
+                                     /*path=*/std::string,
+                                     absl::optional<CookieSourceScheme>,
+                                     /*source_port=*/absl::optional<int>>;
 
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
@@ -270,13 +283,18 @@ class NET_EXPORT CanonicalCookie {
     return UniqueKey() == ecc.UniqueKey();
   }
 
+  StrictlyUniqueCookieKey StrictlyUniqueKey() const {
+    return std::make_tuple(partition_key_, name_, domain_, path_,
+                           source_scheme_, source_port_);
+  }
+
   // Returns a key such that two cookies with the same UniqueKey() are
   // guaranteed to be equivalent in the sense of IsEquivalent().
   // The `partition_key_` field will always be nullopt when partitioned cookies
   // are not enabled.
-  UniqueCookieKey UniqueKey() const {
-    return std::make_tuple(partition_key_, name_, domain_, path_);
-  }
+  // The source_scheme and source_port fields depend on whether or not their
+  // associated features are enabled.
+  UniqueCookieKey UniqueKey() const;
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
   // to support the stricter 'Secure' behaviors specified in Step 12 of

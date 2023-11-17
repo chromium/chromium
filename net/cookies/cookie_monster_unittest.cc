@@ -173,6 +173,14 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     return callback.cookies();
   }
 
+  CookieList GetAllCookies(CookieMonster* cm) {
+    DCHECK(cm);
+    GetAllCookiesCallback callback;
+    cm->GetAllCookiesAsync(callback.MakeCallback());
+    callback.WaitUntilDone();
+    return callback.cookies();
+  }
+
   CookieAccessResultList GetExcludedCookiesForURLWithOptions(
       CookieMonster* cm,
       const GURL& url,
@@ -4148,6 +4156,307 @@ TEST_F(CookieMonsterTest,
           cm.get(), https_www_foo_.url(), CookieOptions::MakeAllInclusive(),
           CookiePartitionKeyCollection(cookie_partition_key1)),
       ::testing::HasSubstr("A=B"));
+}
+
+// Tests whether cookies that vary based on their source scheme/port are
+// overwritten correctly depending on the state of the origin-bound feature
+// flags.
+class CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus
+    : public CookieMonsterTest {
+ public:
+  // Creates a store, CookieMonster, and inserts a single cookie, created on an
+  // https/443 origin.
+  void InitializeTest() {
+    store_ = base::MakeRefCounted<MockPersistentCookieStore>();
+    cm_ = std::make_unique<CookieMonster>(store_.get(), net::NetLog::Get());
+
+    auto preexisting_cookie_https = CanonicalCookie::Create(
+        https_www_foo_.url(), "A=PreexistingHttps443", base::Time::Now(),
+        /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(preexisting_cookie_https), https_www_foo_.url(),
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+
+    ASSERT_EQ(GetAllCookies(cm_.get()).size(), 1UL);
+  }
+
+  // Inserts a single cookie that differs from "PreexistingHttps443" by scheme
+  // only.
+  void AddHttp443Cookie() {
+    GURL::Replacements replace_scheme;
+    replace_scheme.SetSchemeStr("http");
+    // We need to explicitly set the existing port, otherwise GURL will
+    // implicitly take the port of the new scheme. I.e.: We'll inadvertently
+    // change the port to 80.
+    replace_scheme.SetPortStr("443");
+    GURL foo_made_http = https_www_foo_.url().ReplaceComponents(replace_scheme);
+
+    auto differ_by_scheme_only = CanonicalCookie::Create(
+        foo_made_http, "A=InsertedHttp443", base::Time::Now(),
+        /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_scheme_only), foo_made_http,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  // Inserts a single cookie that differs from "PreexistingHttps443" by port
+  // only.
+  void AddHttps80Cookie() {
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("80");
+    GURL foo_made_80 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto differ_by_port_only = CanonicalCookie::Create(
+        foo_made_80, "A=InsertedHttps80", base::Time::Now(),
+        /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_port_only), foo_made_80,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  scoped_refptr<net::MockPersistentCookieStore> store_;
+  std::unique_ptr<CookieMonster> cm_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Scheme binding disabled.
+// Port binding disabled.
+// Cookies that differ only in their scheme and/or port should overwrite the
+// preexisting cookie.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       NoSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+
+  InitializeTest();
+
+  AddHttp443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "InsertedHttp443")));
+
+  AddHttps80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "InsertedHttps80")));
+}
+
+// Scheme binding enabled.
+// Port binding disabled.
+// Cookies that differ in scheme are separate, cookies that differ only by
+// port should be overwritten.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       YesSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+
+  InitializeTest();
+
+  AddHttp443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "PreexistingHttps443"),
+                           MatchesCookieNameValue("A", "InsertedHttp443")));
+
+  AddHttps80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "InsertedHttp443"),
+                           MatchesCookieNameValue("A", "InsertedHttps80")));
+}
+
+// Scheme binding disabled.
+// Port binding enabled.
+// Cookies that differ by port are separate, cookies that differ only by
+// scheme should be overwritten.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       NoSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+
+  InitializeTest();
+
+  AddHttp443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "InsertedHttp443")));
+
+  AddHttps80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "InsertedHttp443"),
+                           MatchesCookieNameValue("A", "InsertedHttps80")));
+}
+
+// Scheme binding enabled.
+// Port binding enabled.
+// Cookies that differ by port or scheme are separate.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       YesSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies,
+       net::features::kEnablePortBoundCookies},
+      {});
+
+  InitializeTest();
+
+  AddHttp443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "PreexistingHttps443"),
+                           MatchesCookieNameValue("A", "InsertedHttp443")));
+
+  AddHttps80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "PreexistingHttps443"),
+                           MatchesCookieNameValue("A", "InsertedHttp443"),
+                           MatchesCookieNameValue("A", "InsertedHttps80")));
+}
+
+// Tests that only the correct set of (potentially duplicate) cookies are loaded
+// from the backend store depending on the state of the origin-bound feature
+// flags.
+class CookieMonsterTest_StoreLoadedCookies : public CookieMonsterTest {
+ public:
+  void InitializeTest() {
+    store_ = base::MakeRefCounted<MockPersistentCookieStore>();
+    cm_ = std::make_unique<CookieMonster>(store_.get(), net::NetLog::Get());
+
+    base::Time most_recent_time = base::Time::Now();
+    base::Time middle_time = most_recent_time - base::Minutes(1);
+    base::Time least_recent_time = middle_time - base::Minutes(1);
+
+    auto basic_cookie = CanonicalCookie::Create(
+        https_www_foo_.url(), "A=basic", base::Time::Now(),
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
+
+    // When there are duplicate cookies the most recent one is kept. So, this
+    // one.
+    basic_cookie->SetCreationDate(most_recent_time);
+    starting_list_.push_back(std::move(basic_cookie));
+
+    GURL::Replacements replace_scheme;
+    replace_scheme.SetSchemeStr("http");
+    // We need to explicitly set the existing port, otherwise GURL will
+    // implicitly take the port of the new scheme. I.e.: We'll inadvertently
+    // change the port to 80.
+    replace_scheme.SetPortStr("443");
+    GURL foo_with_http = https_www_foo_.url().ReplaceComponents(replace_scheme);
+
+    auto http_cookie =
+        CanonicalCookie::Create(foo_with_http, "A=http", base::Time::Now(),
+                                absl::nullopt /* server_time */,
+                                absl::nullopt /* cookie_partition_key */);
+
+    http_cookie->SetCreationDate(middle_time);
+    starting_list_.push_back(std::move(http_cookie));
+
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("450");
+    GURL foo_with_450 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto port_450_cookie =
+        CanonicalCookie::Create(foo_with_450, "A=port450", base::Time::Now(),
+                                absl::nullopt /* server_time */,
+                                absl::nullopt /* cookie_partition_key */);
+    port_450_cookie->SetCreationDate(least_recent_time);
+    starting_list_.push_back(std::move(port_450_cookie));
+
+    ASSERT_EQ(starting_list_.size(), 3UL);
+  }
+
+  scoped_refptr<net::MockPersistentCookieStore> store_;
+  std::unique_ptr<CookieMonster> cm_;
+  std::vector<std::unique_ptr<CanonicalCookie>> starting_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Scheme binding disabled.
+// Port binding disabled.
+// Only 1 cookie, the oldest, should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic")));
+}
+
+// Scheme binding enabled.
+// Port binding disabled.
+// 2 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "http")));
+}
+
+// Scheme binding disabled.
+// Port binding enabled.
+// 2 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "port450")));
+}
+
+// Scheme binding enabled.
+// Port binding enabled.
+// All 3 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies,
+       net::features::kEnableSchemeBoundCookies},
+      {});
+
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "http"),
+                           MatchesCookieNameValue("A", "port450")));
 }
 
 // Test skipping a cookie in MaybeDeleteEquivalentCookieAndUpdateStatus for

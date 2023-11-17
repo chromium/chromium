@@ -48,6 +48,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -126,6 +127,34 @@ void CookieCryptor::InitComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_ = true;
   callbacks_.Notify();
+}
+
+// Matches the CanonicalCookie's strictly_unique_key and last_access_date
+// against a unique_ptr<CanonicalCookie>.
+MATCHER_P2(MatchesCookieKeyAndLastAccessDate,
+           StrictlyUniqueKey,
+           last_access_date,
+           "") {
+  if (!arg) {
+    return false;
+  }
+  const CanonicalCookie& list_cookie = *arg;
+
+  return testing::ExplainMatchResult(StrictlyUniqueKey,
+                                     list_cookie.StrictlyUniqueKey(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(
+             last_access_date, list_cookie.LastAccessDate(), result_listener);
+}
+
+// Matches every field of a CanonicalCookie against a
+// unique_ptr<CanonicalCookie>.
+MATCHER_P(MatchesEveryCookieField, cookie, "") {
+  if (!arg) {
+    return false;
+  }
+  const CanonicalCookie& list_cookie = *arg;
+  return cookie.HasEquivalentDataMembers(list_cookie);
 }
 
 }  // namespace
@@ -2004,6 +2033,152 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion19) {
                                    /*expect_last_update_date=*/true);
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 19);
   connection.Close();
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
+  // Open db.
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  // V19's schema is the same as V18, so we can reuse the creation function.
+  ASSERT_TRUE(CreateV18Schema(&connection));
+  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
+  ASSERT_TRUE(AddV18CookiesToDB(&connection));
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
+                &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                   /*expect_last_update_date=*/true);
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 20);
+  connection.Close();
+}
+
+class SQLitePersistentCookieStoreTest_OriginBoundCookies
+    : public SQLitePersistentCookieStoreTest {
+ public:
+  // Creates and stores 4 cookies that differ only by scheme and/or port. When
+  // this function returns, the store will be created and all the cookies loaded
+  // into cookies_.
+  void InitializeTest() {
+    InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
+
+    basic_cookie_ = CanonicalCookie::Create(
+        basic_url_, "a=b; max-age=100000", /*creation_time=*/base::Time::Now(),
+        /*server_time=*/absl::nullopt, /*cookie_partition_key=*/absl::nullopt);
+
+    http_cookie_ = std::make_unique<CanonicalCookie>(*basic_cookie_);
+    http_cookie_->SetSourceScheme(CookieSourceScheme::kNonSecure);
+
+    port_444_cookie_ = std::make_unique<CanonicalCookie>(*basic_cookie_);
+    port_444_cookie_->SetSourcePort(444);
+
+    http_444_cookie_ = std::make_unique<CanonicalCookie>(*basic_cookie_);
+    http_444_cookie_->SetSourceScheme(CookieSourceScheme::kNonSecure);
+    http_444_cookie_->SetSourcePort(444);
+
+    store_->AddCookie(*basic_cookie_);
+    store_->AddCookie(*http_cookie_);
+    store_->AddCookie(*port_444_cookie_);
+    store_->AddCookie(*http_444_cookie_);
+    // Force the store to write its data to the disk.
+    DestroyStore();
+
+    CreateAndLoad(false, false, &cookies_);
+
+    EXPECT_EQ(cookies_.size(), 4UL);
+  }
+
+  GURL basic_url_ = GURL("https://example.com");
+  std::unique_ptr<net::CanonicalCookie> basic_cookie_;
+  std::unique_ptr<net::CanonicalCookie> http_cookie_;
+  std::unique_ptr<net::CanonicalCookie> port_444_cookie_;
+  std::unique_ptr<net::CanonicalCookie> http_444_cookie_;
+
+  CanonicalCookieVector cookies_;
+};
+
+// Tests that cookies which differ only in their scheme and port are considered
+// distinct.
+TEST_F(SQLitePersistentCookieStoreTest_OriginBoundCookies,
+       UniquenessConstraint) {
+  InitializeTest();
+
+  // Try to add another cookie that is the same as basic_cookie_ except that its
+  // value is different. Value isn't considered as part of the unique constraint
+  // and so this cookie won't be considered unique and should fail to be added.
+  auto basic_cookie2 = CanonicalCookie::Create(
+      basic_url_, "a=b2; max-age=100000",
+      /*creation_time=*/base::Time::Now(),
+      /*server_time=*/absl::nullopt, /*cookie_partition_key=*/absl::nullopt);
+
+  store_->AddCookie(*basic_cookie2);
+
+  // Force the store to write its data to the disk.
+  DestroyStore();
+
+  cookies_.clear();
+  CreateAndLoad(false, false, &cookies_);
+
+  // Confirm that basic_cookie2 failed to be added.
+  EXPECT_THAT(cookies_, testing::UnorderedElementsAre(
+                            MatchesEveryCookieField(*basic_cookie_),
+                            MatchesEveryCookieField(*http_cookie_),
+                            MatchesEveryCookieField(*port_444_cookie_),
+                            MatchesEveryCookieField(*http_444_cookie_)));
+}
+
+// Tests that deleting a cookie correctly takes the scheme and port into
+// account.
+TEST_F(SQLitePersistentCookieStoreTest_OriginBoundCookies, DeleteCookie) {
+  InitializeTest();
+
+  // Try to delete just one of the cookies.
+  store_->DeleteCookie(*http_444_cookie_);
+  DestroyStore();
+  cookies_.clear();
+
+  CreateAndLoad(false, false, &cookies_);
+
+  // Only the single cookie should be deleted.
+  EXPECT_THAT(cookies_, testing::UnorderedElementsAre(
+                            MatchesEveryCookieField(*basic_cookie_),
+                            MatchesEveryCookieField(*http_cookie_),
+                            MatchesEveryCookieField(*port_444_cookie_)));
+}
+
+// Tests that updating a cookie correctly takes the scheme and port into
+// account.
+TEST_F(SQLitePersistentCookieStoreTest_OriginBoundCookies,
+       UpdateCookieAccessTime) {
+  InitializeTest();
+
+  base::Time basic_last_access = basic_cookie_->LastAccessDate();
+  base::Time http_last_access = http_cookie_->LastAccessDate();
+  base::Time port_444_last_access = port_444_cookie_->LastAccessDate();
+  base::Time http_444_last_access = http_444_cookie_->LastAccessDate();
+
+  base::Time new_last_access = http_444_last_access + base::Hours(1);
+  http_444_cookie_->SetLastAccessDate(new_last_access);
+
+  store_->UpdateCookieAccessTime(*http_444_cookie_);
+  DestroyStore();
+  cookies_.clear();
+
+  CreateAndLoad(false, false, &cookies_);
+
+  // All loaded cookies' should have their original LastAccessDate() except for
+  // the one updated to new_last_access.
+  EXPECT_THAT(
+      cookies_,
+      testing::UnorderedElementsAre(
+          MatchesCookieKeyAndLastAccessDate(basic_cookie_->StrictlyUniqueKey(),
+                                            basic_last_access),
+          MatchesCookieKeyAndLastAccessDate(http_cookie_->StrictlyUniqueKey(),
+                                            http_last_access),
+          MatchesCookieKeyAndLastAccessDate(
+              port_444_cookie_->StrictlyUniqueKey(), port_444_last_access),
+          MatchesCookieKeyAndLastAccessDate(
+              http_444_cookie_->StrictlyUniqueKey(), new_last_access)));
 }
 
 class PartitionedCookiesSQLitePersistentCookieStoreTest

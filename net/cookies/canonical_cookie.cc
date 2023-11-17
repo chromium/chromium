@@ -989,6 +989,19 @@ void CanonicalCookie::SetSourcePort(int port) {
   source_port_ = ValidateAndAdjustSourcePort(port);
 }
 
+CanonicalCookie::UniqueCookieKey CanonicalCookie::UniqueKey() const {
+  absl::optional<CookieSourceScheme> source_scheme =
+      cookie_util::IsSchemeBoundCookiesEnabled()
+          ? absl::make_optional(source_scheme_)
+          : absl::nullopt;
+  absl::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                        ? absl::make_optional(source_port_)
+                                        : absl::nullopt;
+
+  return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme,
+                         source_port);
+}
+
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
   // Partition keys must both be equivalent.
