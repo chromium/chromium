@@ -667,7 +667,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2288422996159078444">Mọi thông tin bạn nhập, mọi trang bạn xem hoặc mọi hoạt động khác trên web đều sẽ bị theo dõi. Nội dung trên các trang web có thể bị thay đổi mà bạn không hề hay biết.</translation>
 <translation id="2289385804009217824">Cắt bỏ</translation>
 <translation id="2292556288342944218">Quyền truy cập Internet của bạn bị chặn</translation>
-<translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
+<translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể không hoạt động như bình thường.</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
 <translation id="230286397113210245">Nút Mở cửa sổ ẩn danh, hãy nhấn nút này để mở cửa sổ ẩn danh mới và duyệt web ở chế độ riêng tư</translation>
 <translation id="2312234273148520048">Gia vị và nêm gia vị</translation>
@@ -2541,7 +2541,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6160391204859821737">Bật một tính năng về quyền riêng tư trong quảng cáo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6167577165590485365">Lần tìm nạp mới nhất:</translation>
-<translation id="6169916984152623906">Giờ đây, bạn có thể duyệt web riêng tư và người khác sử dụng thiết bị này sẽ không thấy hoạt động của bạn. Tuy nhiên, tài nguyên đã tải xuống và dấu trang sẽ được lưu.</translation>
+<translation id="6169916984152623906">Giờ đây, bạn có thể duyệt web ở chế độ riêng tư. Những người khác dùng thiết bị này sẽ không xem được hoạt động của bạn. Tuy nhiên, tệp đã tải xuống và dấu trang sẽ được lưu lại.</translation>
 <translation id="617256461084925519">Google Chrome đang cố gắng xác minh danh tính của bạn để có thể điền thông tin thanh toán cho bạn.</translation>
 <translation id="6176387967264100435">Đây là mức giá cao</translation>
 <translation id="6177128806592000436">Kết nối của bạn tới trang web này không an toàn</translation>

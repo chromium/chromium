@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
 <translation id="429312253194641664">គេហទំព័រ​កំពុង​ចាក់មេឌៀ</translation>
 <translation id="42981349822642051">ពង្រីក</translation>
+<translation id="4336566011000459927">Chrome នឹង​ដាក់កំហិត​ខូគី​ម្ដង​ទៀត​នៅ​ថ្ងៃនេះ</translation>
 <translation id="4338831206024587507">គេហទំព័រ​ទាំង​អស់​នៅក្រោម <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">ទប់ស្កាត់​គេហទំព័រមិនឱ្យដឹង​អំពីពេលវេលាដែលអ្នក​កំពុងប្រើឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
 <translation id="4412992751769744546">អនុញ្ញាតខុកឃីភាគីទីបី</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">ការតភ្ជាប់របស់អ្នកទៅគេហទំព័រនេះមិនមានសុវត្ថិភាពទេ</translation>
 <translation id="6181444274883918285">បន្ថែមការលើកលែងចំពោះគេហទំព័រ</translation>
 <translation id="6192792657125177640">ការលើកលែង</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome នឹង​ទប់ស្កាត់​ខូគីម្ដងទៀត​នៅថ្ងៃស្អែក}other{នៅសល់ # ថ្ងៃ​ទៀត​ទើប​ខូគី​ត្រូវ​បានទប់ស្កាត់​ម្ដងទៀត}}</translation>
 <translation id="6195163219142236913">បានដាក់​កំហិត​ខូគី​ភាគីទីបី</translation>
 <translation id="6196640612572343990">រារាំង​ខូគី​ភាគី​ទីបី</translation>
 <translation id="6205314730813004066">ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7804248752222191302">គេហទំព័រមួយកំពុងប្រើប្រាស់កាមេរ៉ារបស់អ្នក</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
+<translation id="7822573154188733812">Chrome ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើប្រាស់​ខូគី​ភាគីទីបី​ដើម្បីតាមដាន​អ្នក នៅពេលដែលអ្នក​រុករក។ សូម​ចូលទៅកាន់​ការកំណត់ ដើម្បី<ph name="BEGIN_LINK" />គ្រប់គ្រង​ការការពារ​ការតាមដាន​របស់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="7835852323729233924">ការចាក់មេឌៀ</translation>
 <translation id="783819812427904514">បើក​សំឡេង​វីដេអូ</translation>
 <translation id="7846076177841592234">បោះបង់ការជ្រើសរើស</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">គ្រប់គេហទំព័រដែល​អ្នក​ចូលមើល អាច​បង្ហាញ​ការ​ផ្សាយពាណិជ្ជកម្ម​ណាក៏បាន​ដល់​អ្នក</translation>
 <translation id="8087000398470557479">មាតិកានេះបានពី <ph name="DOMAIN_NAME" /> ដែលចែកចាយដោយ Google។</translation>
 <translation id="8088603949666785339">ជម្រើសច្រើនទៀតនៅក្នុង <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome នឹង​ដាក់កំហិត​ខូគី​ម្ដង​ទៀត​នៅ​ថ្ងៃ​ស្អែក}other{នៅសល់ # ថ្ងៃ​ទៀត​ទើប Chrome ដាក់កំហិត​ខូគីម្ដង​ទៀត}}</translation>
 <translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="813082847718468539">មើលព័ត៌មានគេហទំព័រ</translation>
 <translation id="8131740175452115882">អះអាង</translation>
