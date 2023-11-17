@@ -534,8 +534,14 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // allows, for example, the input of "foo.c" to autocomplete to "foo.com" for
   // a fill_into_edit of "http://foo.com".
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
+  const bool is_starter_pack = AutocompleteMatch::IsStarterPackType(match.type);
 
-  DCHECK(is_search_type != match.keyword.empty());
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    DCHECK(!is_starter_pack);
+    DCHECK(is_search_type != match.keyword.empty());
+  } else {
+    DCHECK(is_search_type != match.keyword.empty() || is_starter_pack);
+  }
 
   const bool keyword_matches =
       base::StartsWith(base::UTF16ToUTF8(input.text()),
