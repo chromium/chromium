@@ -347,6 +347,11 @@ void AvatarToolbarButtonDelegate::OnExtendedAccountInfoRemoved(
   avatar_toolbar_button_->UpdateIcon();
 }
 
+void AvatarToolbarButtonDelegate::OnIdentityManagerShutdown(
+    signin::IdentityManager*) {
+  identity_manager_observation_.Reset();
+}
+
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
   const absl::optional<AvatarSyncErrorType> error =
       ::GetAvatarSyncErrorType(profile_);
@@ -356,6 +361,10 @@ void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
   last_avatar_error_ = error;
   avatar_toolbar_button_->UpdateIcon();
   avatar_toolbar_button_->UpdateText();
+}
+
+void AvatarToolbarButtonDelegate::OnSyncShutdown(syncer::SyncService*) {
+  sync_service_observation_.Reset();
 }
 
 void AvatarToolbarButtonDelegate::OnUserIdentityChanged() {

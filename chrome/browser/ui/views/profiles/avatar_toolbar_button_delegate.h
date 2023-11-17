@@ -105,9 +105,11 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
       const GoogleServiceAuthError& error) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override;
+  void OnSyncShutdown(syncer::SyncService*) override;
 
   // Initiates showing the identity.
   void OnUserIdentityChanged();
