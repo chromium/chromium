@@ -5,7 +5,6 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 
 #include <stddef.h>
-
 #include <optional>
 #include <tuple>
 
@@ -1465,67 +1464,83 @@ void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,
     ElementChangeSource source) {
-  if (source == ElementChangeSource::WILL_SEND_SUBMIT_EVENT) {
-    // Fire the form submission event to avoid missing submission when web site
-    // handles the onsubmit event, this also gets the form before Javascript
-    // could change it.
-    // We don't clear submitted_forms_ because OnFormSubmitted will normally be
-    // invoked afterwards and we don't want to fire the same event twice.
-    FireHostSubmitEvents(form, /*known_success=*/false,
-                         SubmissionSource::FORM_SUBMISSION);
-    ResetLastInteractedElements();
-  } else if (source == ElementChangeSource::TEXTFIELD_CHANGED ||
-             source == ElementChangeSource::SELECT_CHANGED) {
-    // Remember the last form the user interacted with.
-    if (!element.Form().IsNull()) {
-      UpdateLastInteractedForm(element.Form());
-    } else {
-      // Remove visible elements.
-      if (!unsafe_render_frame()) {
-        return;
-      }
-      WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
-      if (!doc.IsNull()) {
-        std::erase_if(
-            formless_elements_user_edited_,
-            [&doc](const FieldRendererId field_id) {
-              WebFormControlElement field =
-                  form_util::FindFormControlByRendererId(
-                      doc, field_id, /*form_to_be_searched =*/FormRendererId());
-              return !field.IsNull() &&
-                     form_util::IsWebElementFocusableForAutofill(field);
-            });
-      }
-      formless_elements_user_edited_.insert(
-          form_util::GetFieldRendererId(element));
-      provisionally_saved_form_ = CollectFormlessElements();
-      if (provisionally_saved_form_) {
-        last_interacted_form_.Reset();
-      }
+  // Updates cached data needed for submission so that we only cache the latest
+  // version of the to-be-submitted form.
+  auto update_submission_data_on_user_edit = [&]() {
+    // If dealing with a form, forward directly to UpdateLastInteractedForm. The
+    // remaining logic deals with formless fields.
+    if (!form.IsNull()) {
+      UpdateLastInteractedForm(form);
+      return;
     }
+    if (!unsafe_render_frame()) {
+      return;
+    }
+    // Remove visible elements.
+    // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
+    // document the reason, if not, remove.
+    WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
+    if (!doc.IsNull()) {
+      std::erase_if(formless_elements_user_edited_,
+                    [&doc](const FieldRendererId field_id) {
+                      WebFormControlElement field =
+                          form_util::FindFormControlByRendererId(
+                              doc, field_id,
+                              /*form_to_be_searched =*/FormRendererId());
+                      return !field.IsNull() &&
+                             form_util::IsWebElementFocusableForAutofill(field);
+                    });
+    }
+    // Update provisionally_saved_form_. Afterwards, only keep one of
+    // `provisionally_saved_form_` or `last_interacted_form_` non-null to avoid
+    // tracking different and outdated elements.
+    formless_elements_user_edited_.insert(
+        form_util::GetFieldRendererId(element));
+    provisionally_saved_form_ = CollectFormlessElements();
+    // TODO(crbug.com/1483242): Investigate why don't we reset
+    // `last_interacted_form_` except when formless extraction fails, document
+    // the reason if any, cleanup otherwise.
+    if (provisionally_saved_form_) {
+      last_interacted_form_.Reset();
+    }
+  };
 
-    if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
+  switch (source) {
+    case FormTracker::Observer::ElementChangeSource::WILL_SEND_SUBMIT_EVENT:
+      // Fire the form submission event to avoid missing submissions where
+      // websites handle the onsubmit event. This also gets the form before
+      // Javascript's submit event handler could change it. We don't clear
+      // submitted_forms_ because OnFormSubmitted will normally be invoked
+      // afterwards and we don't want to fire the same event twice.
+      FireHostSubmitEvents(form, /*known_success=*/false,
+                           SubmissionSource::FORM_SUBMISSION);
+      ResetLastInteractedElements();
+      break;
+    case FormTracker::Observer::ElementChangeSource::TEXTFIELD_CHANGED:
+      update_submission_data_on_user_edit();
       OnTextFieldDidChange(element);
-    } else {
+      break;
+    case FormTracker::Observer::ElementChangeSource::SELECT_CHANGED:
+      update_submission_data_on_user_edit();
+      // Signal the browser of change in select fields.
+      // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
+      // document the reason, if not, remove.
       FormData form_data;
       FormFieldData field;
-      if (FindFormAndFieldForFormControlElement(
-              element, field_data_manager(),
-              MaybeExtractDatalist({ExtractOption::kBounds}), &form_data,
-              &field)) {
-        if (auto* autofill_driver = unsafe_autofill_driver()) {
-          autofill_driver->SelectControlDidChange(form_data, field,
-                                                  field.bounds);
-        }
+      if (auto* autofill_driver = unsafe_autofill_driver();
+          autofill_driver && FindFormAndFieldForFormControlElement(
+                                 element, field_data_manager(),
+                                 MaybeExtractDatalist({ExtractOption::kBounds}),
+                                 &form_data, &field)) {
+        autofill_driver->SelectControlDidChange(form_data, field, field.bounds);
       }
-    }
+      break;
   }
   SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::OnProbablyFormSubmitted() {
-  absl::optional<FormData> form_data = GetSubmittedForm();
-  if (form_data.has_value()) {
+  if (std::optional<FormData> form_data = GetSubmittedForm()) {
     FireHostSubmitEvents(form_data.value(), /*known_success=*/false,
                          SubmissionSource::PROBABLY_FORM_SUBMITTED);
   }
@@ -1550,21 +1565,32 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     return;
   }
   switch (source) {
+    // This source is only used as a default values to variables.
     case mojom::SubmissionSource::NONE:
+    // This source is handled by `AutofillAgent::OnFormSubmitted`.
     case mojom::SubmissionSource::FORM_SUBMISSION:
+    // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       NOTREACHED_NORETURN();
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+      // TODO(crbug.com/1483242): Investigate if discarding subframe same
+      // document navigation is necessary: if it is, document the reason, if
+      // not, remove.
       if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
         break;
       }
-      if (absl::optional<FormData> form_data = GetSubmittedForm(); form_data) {
-        FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
+      if (std::optional<FormData> form_data = GetSubmittedForm()) {
+        FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
       }
       break;
     // This event occurs only when either this frame or a same process parent
     // frame of it gets detached.
     case mojom::SubmissionSource::FRAME_DETACHED:
+      // Detaching the main frame means that navigation happened or the current
+      // tab was closed, both reasons being too general to be able to deduce
+      // submission from it (and the relevant use cases will most probably be
+      // handled by other sources), therefore we only consider detached
+      // subframes.
       if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
           provisionally_saved_form_.has_value()) {
         // Should not access the frame because it is now detached. Instead, use
@@ -1575,8 +1601,8 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       break;
     case mojom::SubmissionSource::XHR_SUCCEEDED:
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      if (absl::optional<FormData> form_data = GetSubmittedForm(); form_data) {
-        FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
+      if (std::optional<FormData> form_data = GetSubmittedForm()) {
+        FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
       }
       break;
   }

@@ -345,8 +345,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HidePopup();
 
   // Attempt to get submitted FormData from last_interacted_form_ or
-  // provisionally_saved_form_, return true if |form| is set.
-  absl::optional<FormData> GetSubmittedForm() const;
+  // provisionally_saved_form_, return the form in question if found, and
+  // std::nullopt otherwise.
+  std::optional<FormData> GetSubmittedForm() const;
 
   // Pushes the value of GetSubmittedForm() to the AutofillDriver.
   void SendPotentiallySubmittedFormToBrowser();
@@ -406,7 +407,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // The form the user interacted with last. It is used if last_interacted_form_
   // or a formless form can't be converted to FormData at the time of form
   // submission (e.g. because they have been removed from the DOM).
-  absl::optional<FormData> provisionally_saved_form_;
+  std::optional<FormData> provisionally_saved_form_;
 
   // Keeps track of the forms for which form submitted event has been sent to
   // AutofillDriver. We use it to avoid fire duplicated submission event when

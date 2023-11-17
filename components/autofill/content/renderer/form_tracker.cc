@@ -210,6 +210,8 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
     last_interacted_formless_element_ = FieldRef(element);
   else
     last_interacted_form_ = FormRef(element.Form());
+  // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
+  // document the reason, if not, remove.
   TrackElement();
 }
 
@@ -260,10 +262,6 @@ void FormTracker::DidStartNavigation(
       !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     return;
   }
-
-  // Bug fix for crbug.com/368690. isProcessingUserGesture() is false when
-  // the user is performing actions outside the page (e.g. typed url,
-  // history navigation). We don't want to trigger saving in these cases.
 
   // We are interested only in content-initiated navigations. Explicit browser
   // initiated navigations (e.g. via omnibox) don't have a navigation type
