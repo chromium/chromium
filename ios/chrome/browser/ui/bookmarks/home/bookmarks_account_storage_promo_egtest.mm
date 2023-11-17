@@ -10,6 +10,7 @@
 #import "components/bookmarks/common/storage_type.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -48,9 +49,17 @@ using chrome_test_util::SecondarySignInButton;
             (testPromoViewNotShownWhenSyncDataNotRemoved)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
+  } else if ([self
+                 isRunningTest:@selector
+                 (testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
   } else {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
   }
   return config;
 }
@@ -137,6 +146,32 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
 
   [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that signin promo is shown even if local data exists.
+- (void)testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled {
+  // Sign-in with sync with `fakeIdentity1`.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:YES];
+
+  // Sign-out without removing data.
+  [SigninEarlGrey signOut];
+
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify that signin promo is visible.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  // Sign in from the promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Result: the sign-in is successful without any issue.
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
 }
 
 // Tests to sign-in in incognito mode with the promo.

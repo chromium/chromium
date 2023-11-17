@@ -709,11 +709,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Returns true if batch upload dialog should be shown. This checks for the
 // appropriate feature flags, bookmarks state and sync state.
 - (BOOL)shouldShowBatchUploadSection {
-  // Show batch upload section only if both - kReplaceSyncPromosWithSignInPromos
-  // and kEnableBatchUploadFromBookmarksManager flags are enabled.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
-      !base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
+  // Show batch upload section only if kEnableBatchUploadFromBookmarksManager
+  // flag is enabled.
+  if (!base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
     return false;
   }
   // Do not show if profile section is empty.
