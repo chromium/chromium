@@ -245,14 +245,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".FromSettingsPage" summary="Opt-in from settings page"/>
 </variants>
 
-<variants name="AutofillDataAvailability">
-  <variant name=".WithBothServerAndLocalData"
-      summary="both server and local autofill data"/>
-  <variant name=".WithNoData" summary="no autofill data"/>
-  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
-  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
-</variants>
-
 <variants name="AutofillFieldFillingStats">
   <variant name=".Accepted"
       summary="The field was autofilled without subsequent corrections."/>
@@ -417,6 +409,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".IBANSave" summary="IBAN save"/>
   <variant name=".LocalCardMigration" summary="Local card migration"/>
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
+</variants>
+
+<variants name="CreditCardDataAvailability">
+  <variant name=".WithBothServerAndLocalData"
+      summary="both server and local autofill data"/>
+  <variant name=".WithNoData" summary="no autofill data"/>
+  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
+  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
 <variants name="IbanTypeToBeSaved">
@@ -1934,14 +1934,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FormEvents.Address{AutofillDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2024-12-12">
+<histogram name="Autofill.FormEvents.Address" enum="AutofillFormEvent"
+    expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Autofill form events for address forms. These are recorded when the user
-    interacts with a form requesting an address. {AutofillDataAvailability}
+    interacts with a form requesting an address.
 
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
@@ -1953,9 +1953,6 @@ chromium-metrics-reviews@google.com.
     filled with server, we will only emit &quot;Submitted with server suggestion
     filled (once)&quot;.
   </summary>
-  <token key="AutofillDataAvailability" variants="AutofillDataAvailability">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
@@ -1969,13 +1966,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FormEvents.CreditCard{AutofillDataAvailability}"
+<histogram name="Autofill.FormEvents.CreditCard{CreditCardDataAvailability}"
     enum="AutofillFormEvent" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
     Autofill form events for credit card forms. These are recorded when the user
-    interacts with a form requesting a credit card. {AutofillDataAvailability}
+    interacts with a form requesting a credit card. {CreditCardDataAvailability}
 
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
@@ -1987,7 +1984,7 @@ chromium-metrics-reviews@google.com.
     filled with server, we will only emit &quot;Submitted with server suggestion
     filled (once)&quot;.
   </summary>
-  <token key="AutofillDataAvailability" variants="AutofillDataAvailability">
+  <token key="CreditCardDataAvailability" variants="CreditCardDataAvailability">
     <variant name=""/>
   </token>
 </histogram>

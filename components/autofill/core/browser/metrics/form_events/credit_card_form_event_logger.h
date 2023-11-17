@@ -47,6 +47,14 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   ~CreditCardFormEventLogger() override;
 
+  void set_server_record_type_count(size_t server_record_type_count) {
+    server_record_type_count_ = server_record_type_count;
+  }
+
+  void set_local_record_type_count(size_t local_record_type_count) {
+    local_record_type_count_ = local_record_type_count;
+  }
+
   // Invoked when `suggestions` are successfully fetched. `with_offer` indicates
   // whether an offer is attached to any of the suggestion in the list.
   // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
@@ -98,6 +106,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 
+  void Log(FormEvent event, const FormStructure& form) override;
+
   // Logging what type of authentication flow was prompted.
   void LogCardUnmaskAuthenticationPromptShown(UnmaskAuthFlowType flow);
 
@@ -127,6 +137,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnLog(const std::string& name,
              FormEvent event,
              const FormStructure& form) const override;
+  bool HasLoggedDataToFillAvailable() const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;
@@ -139,6 +150,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Returns whether the shown suggestions included a virtual credit card.
   bool DoSuggestionsIncludeVirtualCard();
 
+  size_t server_record_type_count_ = 0;
+  size_t local_record_type_count_ = 0;
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;

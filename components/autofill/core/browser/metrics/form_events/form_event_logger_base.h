@@ -29,14 +29,6 @@ class FormEventLoggerBase {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
-  inline void set_server_record_type_count(size_t server_record_type_count) {
-    server_record_type_count_ = server_record_type_count;
-  }
-
-  inline void set_local_record_type_count(size_t local_record_type_count) {
-    local_record_type_count_ = local_record_type_count;
-  }
-
   void OnDidInteractWithAutofillableForm(
       const FormStructure& form,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
@@ -84,7 +76,7 @@ class FormEventLoggerBase {
   void OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
       const FormStructure& form);
 
-  void Log(FormEvent event, const FormStructure& form);
+  virtual void Log(FormEvent event, const FormStructure& form);
 
   void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
 
@@ -117,7 +109,7 @@ class FormEventLoggerBase {
   // Only used for UKM backward compatibility since it depends on IsCreditCard.
   // TODO (crbug.com/925913): Remove IsCreditCard from UKM logs amd replace with
   // |form_type_name_|.
-  virtual void LogUkmInteractedWithForm(FormSignature form_signature);
+  virtual void LogUkmInteractedWithForm(FormSignature form_signature) = 0;
 
   virtual void OnSuggestionsShownOnce(const FormStructure& form) {}
   virtual void OnSuggestionsShownSubmittedOnce(const FormStructure& form) {}
@@ -171,13 +163,15 @@ class FormEventLoggerBase {
 
   void UpdateFlowId();
 
+  // Returns whether the logger was notified that any data to fill is available.
+  // This is used to emit the readiness key metric.
+  virtual bool HasLoggedDataToFillAvailable() const = 0;
+
   // Constructor parameters.
   std::string form_type_name_;
   bool is_in_any_main_frame_;
 
   // State variables.
-  size_t server_record_type_count_ = 0;
-  size_t local_record_type_count_ = 0;
   bool has_parsed_form_ = false;
   bool has_logged_interacted_ = false;
   bool has_logged_user_hide_suggestions_ = false;

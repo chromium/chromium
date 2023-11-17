@@ -2251,15 +2251,11 @@ bool BrowserAutofillManager::RefreshDataModels() {
   if (!IsAutofillEnabled())
     return false;
 
-  // No autofill data to return if the profiles are empty.
-  const std::vector<AutofillProfile*>& profiles =
-      client().GetPersonalDataManager()->GetProfiles();
   credit_card_access_manager_->UpdateCreditCardFormEventLogger();
 
-  // Updating the FormEventLogger for addresses.
-  address_form_event_logger_->set_local_record_type_count(profiles.size());
-  // TODO(crbug.com/1457187): Server addresses don't exist anymore. Remove.
-  address_form_event_logger_->set_server_record_type_count(0);
+  const std::vector<AutofillProfile*>& profiles =
+      client().GetPersonalDataManager()->GetProfiles();
+  address_form_event_logger_->set_record_type_count(profiles.size());
 
   return !profiles.empty() ||
          !client().GetPersonalDataManager()->GetCreditCards().empty();

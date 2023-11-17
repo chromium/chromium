@@ -304,6 +304,26 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
   UpdateFlowId();
 }
 
+void CreditCardFormEventLogger::Log(FormEvent event,
+                                    const FormStructure& form) {
+  FormEventLoggerBase::Log(event, form);
+  std::string name = "Autofill.FormEvents.CreditCard";
+  if (server_record_type_count_ == 0 && local_record_type_count_ == 0) {
+    name += ".WithNoData";
+  } else if (server_record_type_count_ > 0 && local_record_type_count_ == 0) {
+    name += ".WithOnlyServerData";
+  } else if (server_record_type_count_ == 0 && local_record_type_count_ > 0) {
+    name += ".WithOnlyLocalData";
+  } else {
+    name += ".WithBothServerAndLocalData";
+  }
+  base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
+  base::UmaHistogramEnumeration(
+      name +
+          AutofillMetrics::GetMetricsSyncStateSuffix(signin_state_for_metrics_),
+      event, NUM_FORM_EVENTS);
+}
+
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(
     UnmaskAuthFlowType flow) {
   RecordCardUnmaskFlowEvent(flow, UnmaskAuthFlowEvent::kPromptShown);
@@ -459,6 +479,10 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
   if (has_eligible_offer_) {
     base::UmaHistogramEnumeration(name + ".WithOffer", event, NUM_FORM_EVENTS);
   }
+}
+
+bool CreditCardFormEventLogger::HasLoggedDataToFillAvailable() const {
+  return server_record_type_count_ + local_record_type_count_ > 0;
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(

@@ -146,4 +146,16 @@ void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
                             !has_logged_edited_autofilled_field_);
 }
 
+void AddressFormEventLogger::LogUkmInteractedWithForm(
+    FormSignature form_signature) {
+  // Address Autofill has deprecated the concept of server addresses.
+  form_interactions_ukm_logger_->LogInteractedWithForm(
+      /*is_for_credit_card=*/false, record_type_count_,
+      /*server_record_type_count=*/0, form_signature);
+}
+
+bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
+  return record_type_count_ > 0;
+}
+
 }  // namespace autofill::autofill_metrics

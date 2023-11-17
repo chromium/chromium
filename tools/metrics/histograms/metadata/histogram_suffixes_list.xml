@@ -478,11 +478,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.CardUploadEnabled"/>
   <affected-histogram name="Autofill.CreditCard.IsEnabled.PageLoad"/>
   <affected-histogram
-      name="Autofill.FormEvents.Address.WithBothServerAndLocalData"/>
-  <affected-histogram name="Autofill.FormEvents.Address.WithNoData"/>
-  <affected-histogram name="Autofill.FormEvents.Address.WithOnlyLocalData"/>
-  <affected-histogram name="Autofill.FormEvents.Address.WithOnlyServerData"/>
-  <affected-histogram
       name="Autofill.FormEvents.CreditCard.WithBothServerAndLocalData"/>
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithNoData"/>
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithOnlyLocalData"/>

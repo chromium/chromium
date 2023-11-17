@@ -4567,7 +4567,7 @@ TEST_F(AutofillMetricsTest, MixedParsedFormEvents) {
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
-  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address.WithNoData",
+  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address",
                                       FORM_EVENT_DID_PARSE_FORM, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.WithNoData", FORM_EVENT_DID_PARSE_FORM,
@@ -4587,7 +4587,7 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
-  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address.WithNoData",
+  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address",
                                       FORM_EVENT_DID_PARSE_FORM, 1);
 
   // Check if FormEvent UKM is logged properly
@@ -5195,44 +5195,6 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithBothServerAndLocalData",
-        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
-}
-
-// Test that we log interacted form event for address only once.
-TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
-  FormData form = CreateForm(
-      {CreateTestFormField("State", "state", "", FormControlType::kInputText),
-       CreateTestFormField("City", "city", "", FormControlType::kInputText),
-       CreateTestFormField("Street", "street", "",
-                           FormControlType::kInputText)});
-
-  std::vector<ServerFieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
-
-  autofill_manager().AddSeenForm(form, field_types);
-  personal_data().ClearProfiles();
-
-  {
-    // Simulate activating the autofill popup for the street field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[2]);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.Address.WithNoData", FORM_EVENT_INTERACTED_ONCE,
-        1);
-  }
-
-  // Reset the autofill manager state.
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
-  RecreateProfile();
-
-  {
-    // Simulate activating the autofill popup for the street field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[2]);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.Address.WithOnlyLocalData",
         FORM_EVENT_INTERACTED_ONCE, 1);
   }
 }
