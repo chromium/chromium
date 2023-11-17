@@ -55,16 +55,17 @@ def main(argv: List[str]) -> int:
                       action='store_true',
                       help='cache ResultDB rpc results, useful for testing.')
 
-  group = parser.add_mutually_exclusive_group()
-  group.add_argument('-b',
-                     '--bug',
-                     help="write a TODO referencing this bug in a comment " +
-                     "next to the disabled test. Bug can be given as just the" +
-                     " ID or a URL (e.g. 123456, crbug.com/v8/654321).")
-  group.add_argument('-m',
-                     '--message',
-                     help="write a comment containing this message next to " +
-                     "the disabled test.")
+  # group = parser.add_mutually_exclusive_group()
+  parser.add_argument(
+      '-b',
+      '--bug',
+      help="write a TODO referencing this bug in a comment " +
+      "next to the disabled test. Bug can be given as just the" +
+      " ID or a URL (e.g. 123456, crbug.com/v8/654321).")
+  parser.add_argument('-m',
+                      '--message',
+                      help="write a comment containing this message next to " +
+                      "the disabled test.")
 
   args = parser.parse_args(argv[1:])
 
@@ -75,7 +76,7 @@ def main(argv: List[str]) -> int:
   message = args.message
   if args.bug is not None:
     try:
-      message = make_bug_message(args.bug)
+      message = make_bug_message(args.bug, message)
     except Exception:
       print(
           'Invalid value for --bug. Should have one of the following forms:\n' +
@@ -105,11 +106,14 @@ def main(argv: List[str]) -> int:
     return 1
 
 
-def make_bug_message(bug: str) -> str:
+def make_bug_message(bug: str, message: str) -> str:
   bug_id, project = parse_bug(bug)
   project_component = '' if project == 'chromium' else f'{project}/'
   bug_url = f"crbug.com/{project_component}{bug_id}"
-  return f"TODO({bug_url}): Re-enable this test"
+  if not message:
+    # if no message given, set default message for TODO.
+    message = "Re-enable this test"
+  return f"TODO({bug_url}): {message}"
 
 
 def parse_bug(bug: str) -> Tuple[int, str]:
