@@ -351,15 +351,18 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
                                       weak_ptr_factory_.GetWeakPtr())}
           : nullptr);
 
+  // If the window was minimized while in overview, the preview may not exist.
+  // `OverviewItemView::SetShowPreview()` is a no-op if the preview already
+  // exists, so it is free to ensure it here.
+  overview_item_view_->SetShowPreview(true);
+  ui::Layer* preview_layer = overview_item_view_->preview_view()->layer();
+
   // Minimized windows have a `WindowPreviewView` which mirrors content from the
   // window. `target_bounds` may not have a matching aspect ratio to the
   // actual window (eg. in splitview overview). In this case, the contents
   // will be squashed to fit the given bounds. To get around this, stretch out
   // the contents so that it matches `unclipped_size_`, then clip the layer to
   // match `target_bounds`. This is what is done on non-minimized windows.
-  auto* preview_view = overview_item_view_->preview_view();
-  CHECK(preview_view);
-  ui::Layer* preview_layer = preview_view->layer();
   if (unclipped_size_) {
     gfx::SizeF target_size(*unclipped_size_);
     gfx::SizeF preview_size = GetTargetBoundsWithInsets().size();
