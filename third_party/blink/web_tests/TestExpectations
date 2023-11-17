@@ -7137,3 +7137,4 @@ crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fe
 crbug.com/1503067 [ Linux ] virtual/plz-dedicated-worker-disabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Pass Failure ]
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Pass Failure ]
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Pass Failure ]
+crbug.com/1503086 [ Linux ] external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Pass Failure ]
