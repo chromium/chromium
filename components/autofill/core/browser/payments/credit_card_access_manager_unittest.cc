@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,7 +92,9 @@ std::string BytesToBase64(const std::vector<uint8_t> bytes) {
 }
 #endif
 
-class TestAccessor : public CreditCardAccessManager::Accessor {
+// Implements an `OnCreditCardFetched()` callback that stores the values it
+// receives.
+class TestAccessor {
  public:
   TestAccessor() = default;
 
@@ -100,7 +103,7 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
   }
 
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* card) override {
+                           const CreditCard* card) {
     result_ = result;
     if (result == CreditCardFetchResult::kSuccess) {
       DCHECK(card);
@@ -416,8 +419,9 @@ class CreditCardAccessManagerTest : public testing::Test {
     // |is_user_verifiable_| related logic from CreditCardAccessManager to
     // CreditCardFidoAuthenticator.
     credit_card_access_manager().is_user_verifiable_ = is_user_verifiable;
-    credit_card_access_manager().FetchCreditCard(virtual_card,
-                                                 accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                     accessor_->GetWeakPtr()));
 
     // This checks risk-based authentication flow is successfully invoked,
     // because it is always the very first authentication flow in a VCN
@@ -728,7 +732,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   // TODO(crbug/1489440): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   // The only time we should expect an error is if mandatory re-auth is
   // enabled, but the mandatory re-auth authentication was not successful.
@@ -773,8 +779,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -839,8 +846,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   CreditCard* masked_server_card =
       personal_data().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -915,7 +923,9 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
@@ -937,8 +947,9 @@ TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(nullptr,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      nullptr, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                              accessor_->GetWeakPtr()));
   EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
@@ -963,7 +974,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
     credit_card_access_manager().PrepareToFetchCreditCard();
     WaitForCallbacks();
 
-    credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                             accessor_->GetWeakPtr()));
     histogram_tester.ExpectUniqueSample(
         flow_events_histogram_name,
         CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
@@ -1002,7 +1015,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   EXPECT_TRUE(GetRealPanForCVCAuth(
       AutofillClient::PaymentsRpcResult::kNetworkError, std::string()));
@@ -1018,7 +1033,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   EXPECT_TRUE(GetRealPanForCVCAuth(
       AutofillClient::PaymentsRpcResult::kPermanentFailure, std::string()));
@@ -1030,7 +1047,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   EXPECT_TRUE(GetRealPanForCVCAuth(
       AutofillClient::PaymentsRpcResult::kTryAgainFailure, std::string()));
@@ -1159,7 +1178,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
   histogram_tester.ExpectUniqueSample(
       flow_events_histogram_name,
@@ -1214,7 +1235,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // FIDO Success.
@@ -1243,7 +1266,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // FIDO Success.
@@ -1281,7 +1306,9 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
   histogram_tester.ExpectUniqueSample(
       flow_events_fido_histogram_name,
@@ -1339,7 +1366,9 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // FIDO Failure.
@@ -1383,7 +1412,9 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // FIDO Failure.
@@ -1407,7 +1438,9 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1446,8 +1479,9 @@ TEST_F(CreditCardAccessManagerTest,
       task_environment_.FastForwardBy(base::Seconds(4));
       WaitForCallbacks();
 
-      credit_card_access_manager().FetchCreditCard(local_card,
-                                                   accessor_->GetWeakPtr());
+      credit_card_access_manager().FetchCreditCard(
+          local_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                     accessor_->GetWeakPtr()));
       WaitForCallbacks();
 
       histogram_tester.ExpectUniqueSample(
@@ -1462,8 +1496,9 @@ TEST_F(CreditCardAccessManagerTest,
 
       ResetFetchCreditCard();
       credit_card_access_manager().PrepareToFetchCreditCard();
-      credit_card_access_manager().FetchCreditCard(server_card,
-                                                   accessor_->GetWeakPtr());
+      credit_card_access_manager().FetchCreditCard(
+          server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                      accessor_->GetWeakPtr()));
       task_environment_.FastForwardBy(base::Seconds(4));
       WaitForCallbacks();
 
@@ -1493,8 +1528,9 @@ TEST_F(CreditCardAccessManagerTest,
       credit_card_access_manager().PrepareToFetchCreditCard();
       WaitForCallbacks();
 
-      credit_card_access_manager().FetchCreditCard(server_card,
-                                                   accessor_->GetWeakPtr());
+      credit_card_access_manager().FetchCreditCard(
+          server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                      accessor_->GetWeakPtr()));
       WaitForCallbacks();
 
       histogram_tester.ExpectUniqueSample(
@@ -1532,8 +1568,9 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
 
     ResetFetchCreditCard();
     credit_card_access_manager().PrepareToFetchCreditCard();
-    credit_card_access_manager().FetchCreditCard(server_card,
-                                                 accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                    accessor_->GetWeakPtr()));
 
     // Mock a delayed response.
     InvokeDelayedGetUnmaskDetailsResponse();
@@ -1558,8 +1595,9 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
 
     ResetFetchCreditCard();
     credit_card_access_manager().PrepareToFetchCreditCard();
-    credit_card_access_manager().FetchCreditCard(server_card,
-                                                 accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                    accessor_->GetWeakPtr()));
     task_environment_.FastForwardBy(base::Seconds(4));
     WaitForCallbacks();
 
@@ -1593,7 +1631,9 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
   histogram_tester.ExpectUniqueSample(
@@ -1649,7 +1689,9 @@ TEST_F(CreditCardAccessManagerTest, FetchExpiredServerCardInvokesCvcPrompt) {
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // Expect CVC prompt to be invoked.
@@ -1672,7 +1714,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1724,7 +1768,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1765,7 +1811,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1803,7 +1851,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1838,7 +1888,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOSettingsPageOptInSuccess_Android) {
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1876,7 +1928,9 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1935,7 +1989,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1972,7 +2028,9 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -2010,7 +2068,9 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -2057,7 +2117,9 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -2209,8 +2271,9 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     }
 
     credit_card_access_manager().PrepareToFetchCreditCard();
-    credit_card_access_manager().FetchCreditCard(GetCreditCard(),
-                                                 accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        GetCreditCard(), base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                        accessor_->GetWeakPtr()));
   }
 
   bool IsVirtualCard() { return std::get<0>(GetParam()); }
@@ -2374,7 +2437,9 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   // Ensure the auth flow type is CVC because no unmask detail response is
   // returned and local pref denotes that user is opted out.
@@ -2416,7 +2481,9 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -2452,7 +2519,9 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -2487,7 +2556,9 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -2561,7 +2632,9 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   histogram_tester.ExpectUniqueSample(
       flow_events_histogram_name,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
@@ -2582,7 +2655,9 @@ TEST_F(CreditCardAccessManagerTest, AuthenticationInProgress) {
 
   EXPECT_FALSE(IsAuthenticationInProgress());
 
-  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
   EXPECT_TRUE(IsAuthenticationInProgress());
 
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -2601,11 +2676,13 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true);
   CreditCard* masked_card = personal_data().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().FetchCreditCard(masked_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                  accessor_->GetWeakPtr()));
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 1, 1);
-  credit_card_access_manager().FetchCreditCard(masked_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                  accessor_->GetWeakPtr()));
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 2, 1);
 
   // Create a virtual card.
@@ -2618,8 +2695,9 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
 
   // Mocks that user selects the virtual card option of the masked card.
   masked_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  credit_card_access_manager().FetchCreditCard(masked_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                  accessor_->GetWeakPtr()));
 
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedVirtualCard", 1, 1);
 }
@@ -2667,7 +2745,9 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
       features::kAutofillEnableFpanRiskBasedAuthentication};
 
   void MockRiskBasedAuthSucceedsWithoutPanReturned(CreditCard* card) {
-    credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+    credit_card_access_manager().FetchCreditCard(
+        card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                             accessor_->GetWeakPtr()));
 
     // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
     // invoked.
@@ -2694,8 +2774,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, test_number, /*masked=*/true, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -2733,8 +2814,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -2760,8 +2842,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -2787,8 +2870,9 @@ TEST_F(
   CreditCard* masked_server_card =
       personal_data().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
   ASSERT_FALSE(autofill_client_.risk_based_authentication_invoked());
@@ -2837,8 +2921,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   credit_card_access_manager().is_user_verifiable_ = true;
   fido_authenticator().set_is_user_opted_in(true);
 
-  credit_card_access_manager().FetchCreditCard(masked_server_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -2991,8 +3076,9 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3198,8 +3284,9 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().is_user_verifiable_ = true;
   fido_authenticator().set_is_user_opted_in(true);
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3256,8 +3343,9 @@ TEST_F(
   credit_card_access_manager().is_user_verifiable_ = true;
   fido_authenticator().set_is_user_opted_in(true);
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3378,8 +3466,9 @@ TEST_F(
   credit_card_access_manager().is_user_verifiable_ = true;
   fido_authenticator().set_is_user_opted_in(false);
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3426,8 +3515,9 @@ TEST_F(CreditCardAccessManagerTest,
   fido_authenticator().set_is_user_opted_in(true);
 #endif
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3471,8 +3561,9 @@ TEST_F(CreditCardAccessManagerTest,
   fido_authenticator().set_is_user_opted_in(true);
 #endif
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -3507,8 +3598,9 @@ TEST_F(CreditCardAccessManagerTest,
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   AutofillErrorDialogContext autofill_error_dialog_context;
   autofill_error_dialog_context.server_returned_title =
@@ -3550,8 +3642,9 @@ TEST_F(CreditCardAccessManagerTest,
   fido_authenticator().set_is_user_opted_in(true);
 #endif
 
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN

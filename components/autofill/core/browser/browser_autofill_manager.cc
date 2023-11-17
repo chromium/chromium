@@ -1409,11 +1409,13 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     credit_card_form_ = form;
     credit_card_field_ = field;
 
-    // CreditCardAccessManager::FetchCreditCard() will call
+    // CreditCardAccessManager::FetchCreditCard() will trigger
     // OnCreditCardFetched() in this class after successfully fetching the card.
     fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
     credit_card_access_manager_->FetchCreditCard(
-        credit_card, weak_ptr_factory_.GetWeakPtr());
+        credit_card,
+        base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 

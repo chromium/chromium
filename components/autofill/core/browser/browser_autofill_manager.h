@@ -100,9 +100,9 @@ enum class ValuePatternsMetric {
 
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
-class BrowserAutofillManager : public AutofillManager,
-                               public SingleFieldFormFiller::SuggestionsHandler,
-                               public CreditCardAccessManager::Accessor {
+class BrowserAutofillManager
+    : public AutofillManager,
+      public SingleFieldFormFiller::SuggestionsHandler {
  public:
   BrowserAutofillManager(AutofillDriver* driver,
                          AutofillClient* client,
@@ -470,9 +470,11 @@ class BrowserAutofillManager : public AutofillManager,
       bool skip_unrecognized_autocomplete_fields,
       bool is_refill) const;
 
-  // CreditCardAccessManager::Accessor
+  // When `FillOrPreviewCreditCardForm()` fetches a credit card, this gets
+  // called once the fetching has finished. If successful, the `credit_card` is
+  // filled.
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card) override;
+                           const CreditCard* credit_card);
 
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();

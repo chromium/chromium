@@ -43,10 +43,6 @@ class CreditCardAccessoryControllerImpl
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
 
-  // CreditCardAccessManager::Accessor:
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card) override;
-
   static void CreateForWebContentsForTesting(
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
@@ -82,6 +78,11 @@ class CreditCardAccessoryControllerImpl
   // Cards that are already unmasked by the user. These are shown to the user in
   // plaintext and won't require any authentication when filling is triggered.
   std::vector<const CachedServerCardInfo*> GetUnmaskedCreditCards() const;
+
+  // `OnFillingTriggered()` fetches the credit card and calls this function
+  // once the `credit_card` is available. If successful, it fills it.
+  void OnCreditCardFetched(CreditCardFetchResult result,
+                           const CreditCard* credit_card);
 
   // Gets promo code offers from personal data manager.
   std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;

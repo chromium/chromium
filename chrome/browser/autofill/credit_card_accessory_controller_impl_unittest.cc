@@ -68,9 +68,11 @@ class TestAccessManager : public CreditCardAccessManager {
                                 personal_data,
                                 /*credit_card_form_event_logger=*/nullptr) {}
 
-  void FetchCreditCard(const CreditCard* card,
-                       base::WeakPtr<Accessor> accessor) override {
-    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card);
+  void FetchCreditCard(
+      const CreditCard* card,
+      OnCreditCardFetchedCallback on_credit_card_fetched) override {
+    std::move(on_credit_card_fetched)
+        .Run(CreditCardFetchResult::kSuccess, card);
   }
 };
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -95,12 +96,8 @@ class CreditCardAccessManager
       public CreditCardOtpAuthenticator::Requester,
       public CreditCardRiskBasedAuthenticator::Requester {
  public:
-  class Accessor {
-   public:
-    virtual ~Accessor() = default;
-    virtual void OnCreditCardFetched(CreditCardFetchResult result,
-                                     const CreditCard* credit_card) = 0;
-  };
+  using OnCreditCardFetchedCallback =
+      base::OnceCallback<void(CreditCardFetchResult, const CreditCard*)>;
 
   CreditCardAccessManager(AutofillDriver* driver,
                           AutofillClient* client,
@@ -129,9 +126,10 @@ class CreditCardAccessManager
   // Makes a call to Google Payments to retrieve authentication details.
   void PrepareToFetchCreditCard();
 
-  // Calls |accessor->OnCreditCardFetched()| once credit card is fetched.
-  virtual void FetchCreditCard(const CreditCard* card,
-                               base::WeakPtr<Accessor> accessor);
+  // `on_credit_card_fetched` is run once `card` is fetched.
+  virtual void FetchCreditCard(
+      const CreditCard* card,
+      OnCreditCardFetchedCallback on_credit_card_fetched);
 
   // Checks whether we should offer risk-based authentication for masked server
   // card retrieval.
@@ -422,14 +420,14 @@ class CreditCardAccessManager
 
   // Starts the device authentication flow during a payments autofill form fill.
   // `OnDeviceAuthenticationResponseForFilling()` will be invoked when we
-  // receive a response from the device authentication. `accessor` will be used
-  // to handle the response of the authentication, and possibly fill the card
-  // into the form. `card` is the card that needs to be filled. This function
-  // should only be called on platforms where DeviceAuthenticator is present.
+  // receive a response from the device authentication.
+  // `on_credit_card_fetched_callback_` will be used to handle the response of
+  // the authentication, and possibly fill the card into the form. `card` is the
+  // card that needs to be filled. This function should only be called on
+  // platforms where DeviceAuthenticator is present.
   // TODO(crbug.com/1447084): Move authentication logic for re-auth into
   // MandatoryReauthManager.
-  void StartDeviceAuthenticationForFilling(base::WeakPtr<Accessor> accessor,
-                                           const CreditCard* card);
+  void StartDeviceAuthenticationForFilling(const CreditCard* card);
 
   // Callback function invoked when we receive a response from a mandatory
   // re-auth authentication in a flow where we might fill the card after the
@@ -440,7 +438,6 @@ class CreditCardAccessManager
   // TODO(crbug.com/1447084): Move authentication logic for re-auth into
   // MandatoryReauthManager.
   void OnDeviceAuthenticationResponseForFilling(
-      base::WeakPtr<Accessor> accessor,
       payments::MandatoryReauthAuthenticationMethod authentication_method,
       const CreditCard* card,
       bool successful_auth);
@@ -530,8 +527,10 @@ class CreditCardAccessManager
   // unnecessary calls to payments.
   bool unmask_details_request_in_progress_ = false;
 
-  // The object attempting to access a card.
-  base::WeakPtr<Accessor> accessor_;
+  // Callback to notify the caller of the access manager when fetching the
+  // card has finished. Only has a meaningful value when an authentication is in
+  // progress.
+  OnCreditCardFetchedCallback on_credit_card_fetched_callback_;
 
   // Used only in virtual card authentication to differentiate between
   // authentication methods. Set when a challenge option is selected, and we are

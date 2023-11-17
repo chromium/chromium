@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -244,7 +245,9 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
 
   last_focused_field_id_ = focused_field_id;
   GetManager()->GetCreditCardAccessManager()->FetchCreditCard(
-      UnwrapCardOrVirtualCard(*card_iter), AsWeakPtr());
+      UnwrapCardOrVirtualCard(*card_iter),
+      base::BindOnce(&CreditCardAccessoryControllerImpl::OnCreditCardFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardAccessoryControllerImpl::OnPasskeySelected(

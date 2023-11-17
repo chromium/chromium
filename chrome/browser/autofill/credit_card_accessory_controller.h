@@ -19,8 +19,7 @@ namespace autofill {
 // Interface for credit card-specific keyboard accessory controller between the
 // ManualFillingController and Autofill backend logic.
 class CreditCardAccessoryController : public AccessoryController,
-                                      public PersonalDataManagerObserver,
-                                      public CreditCardAccessManager::Accessor {
+                                      public PersonalDataManagerObserver {
  public:
   CreditCardAccessoryController() = default;
   ~CreditCardAccessoryController() override = default;
