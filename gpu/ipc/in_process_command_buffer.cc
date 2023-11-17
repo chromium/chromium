@@ -276,14 +276,15 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
 
   context_state_ = task_executor_->GetSharedContextState();
 
+  scoped_refptr<gl::GLSurface> surface;
   if (context_state_) {
-    surface_ = context_state_->surface();
+    surface = context_state_->surface();
   } else {
     // TODO(crbug.com/1247756): Is creating an offscreen GL surface needed
     // still?
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
-                                                  gfx::Size());
-    if (!surface_.get()) {
+    surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                 gfx::Size());
+    if (!surface) {
       DestroyOnGpuThread();
       LOG(ERROR) << "ContextResult::kFatalFailure: Failed to create surface.";
       return gpu::ContextResult::kFatalFailure;
@@ -358,13 +359,13 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
           use_virtualized_gl_context_ ? gl_share_group_->shared_context()
                                       : nullptr;
       if (real_context &&
-          (!real_context->MakeCurrent(surface_.get()) ||
+          (!real_context->MakeCurrent(surface.get()) ||
            real_context->CheckStickyGraphicsResetStatus() != GL_NO_ERROR)) {
         real_context = nullptr;
       }
       if (!real_context) {
         real_context = gl::init::CreateGLContext(
-            gl_share_group_.get(), surface_.get(),
+            gl_share_group_.get(), surface.get(),
             GenerateGLContextAttribsForDecoder(*params.attribs,
                                                context_group_.get()));
         if (!real_context) {
@@ -385,7 +386,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
           gl_share_group_->SetSharedContext(real_context.get());
       }
 
-      if (!real_context->MakeCurrent(surface_.get())) {
+      if (!real_context->MakeCurrent(surface.get())) {
         LOG(ERROR) << "ContextResult::kTransientFailure, failed to make "
                       "context current";
         DestroyOnGpuThread();
@@ -398,7 +399,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       if (use_virtualized_gl_context_) {
         context_ = base::MakeRefCounted<GLContextVirtual>(
             gl_share_group_.get(), real_context.get(), decoder_->AsWeakPtr());
-        if (!context_->Initialize(surface_.get(),
+        if (!context_->Initialize(surface.get(),
                                   GenerateGLContextAttribsForDecoder(
                                       *params.attribs, context_group_.get()))) {
           // TODO(piman): This might not be fatal, we could recurse into
@@ -410,7 +411,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
           return gpu::ContextResult::kFatalFailure;
         }
 
-        if (!context_->MakeCurrent(surface_.get())) {
+        if (!context_->MakeCurrent(surface.get())) {
           DestroyOnGpuThread();
           // The caller should retry making a context, but this one won't work.
           LOG(ERROR) << "ContextResult::kTransientFailure: "
@@ -419,7 +420,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         }
       } else {
         context_ = real_context;
-        DCHECK(context_->IsCurrent(surface_.get()));
+        DCHECK(context_->IsCurrent(surface.get()));
       }
     }
 
@@ -427,10 +428,11 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         !context_group_->feature_info()->workarounds().disable_program_cache) {
       context_group_->set_program_cache(task_executor_->program_cache());
     }
+    DCHECK(context_->default_surface());
   }
 
   gles2::DisallowedFeatures disallowed_features;
-  auto result = decoder_->Initialize(surface_, context_, /*offscreen=*/true,
+  auto result = decoder_->Initialize(surface, context_, /*offscreen=*/true,
                                      disallowed_features, *params.attribs);
   if (result != gpu::ContextResult::kSuccess) {
     DestroyOnGpuThread();
@@ -448,7 +450,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     // the case that this command decoder is the next one to be
     // processed, force a "full virtual" MakeCurrent to be performed.
     context_->ForceReleaseVirtuallyCurrent();
-    if (!context_->MakeCurrent(surface_.get())) {
+    if (!context_->MakeCurrent(surface.get())) {
       DestroyOnGpuThread();
       LOG(ERROR) << "ContextResult::kTransientFailure: "
                     "Failed to make context current after initialization.";
@@ -491,7 +493,7 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
 
   gpu_thread_weak_ptr_factory_.InvalidateWeakPtrs();
   // Clean up GL resources if possible.
-  bool have_context = context_.get() && context_->MakeCurrent(surface_.get());
+  bool have_context = context_.get() && context_->MakeCurrentDefault();
   std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
     CreateCacheUse(cache_use);
@@ -501,7 +503,6 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
     decoder_.reset();
   }
   command_buffer_.reset();
-  surface_ = nullptr;
 
   context_ = nullptr;
   if (sync_point_client_state_) {
