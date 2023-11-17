@@ -114,5 +114,6 @@ public class Trip extends Transition {
             mOrigin.setStateFinished();
         }
         mDestination.setStateActive();
+        TrafficControl.notifyActiveStationChanged(mDestination);
     }
 }

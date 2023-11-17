@@ -29,6 +29,7 @@ public abstract class TransitStation extends ConditionalState {
 
     protected TransitStation() {
         mId = ++sLastStationId;
+        TrafficControl.notifyCreatedStation(this);
     }
 
     List<Condition> getActiveFacilityExitConditions() {
