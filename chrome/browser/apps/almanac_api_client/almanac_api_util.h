@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -33,6 +34,9 @@ std::string GetAlmanacApiUrl();
 // Returns the URL for the specified endpoint for the ChromeOS Almanac
 // API. An endpoint suffix is e.g. "v1/app-preload".
 GURL GetAlmanacEndpointUrl(std::string_view endpoint_suffix);
+
+// Overrides the Almanac endpoint URL for testing.
+void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override);
 
 // Returns a SimpleURLLoader for the ChromeOS Almanac API created from
 // the given parameters. request_body is a proto serialized as string.

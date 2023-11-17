@@ -138,6 +138,10 @@ class TestControllerAsh : public mojom::TestController,
 
   void GetAllOpenTabURLs(GetAllOpenTabURLsCallback callback) override;
 
+  void SetAlmanacEndpointUrlForTesting(
+      const std::optional<std::string>& url_override,
+      SetAlmanacEndpointUrlForTestingCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());

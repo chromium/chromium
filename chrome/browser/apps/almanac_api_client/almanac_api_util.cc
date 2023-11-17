@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/google_api_keys.h"
@@ -40,6 +41,11 @@ std::unique_ptr<network::ResourceRequest> GetAlmanacResourceRequest(
   return resource_request;
 }
 
+std::optional<std::string>& GetAlmanacEndpointUrlOverride() {
+  static base::NoDestructor<std::optional<std::string>> url_override;
+  return *url_override;
+}
+
 }  // namespace
 
 std::string GetAlmanacApiUrl() {
@@ -48,11 +54,16 @@ std::string GetAlmanacApiUrl() {
     return command_line->GetSwitchValueASCII(ash::switches::kAlmanacApiUrl);
   }
 
-  return "https://chromeosalmanac-pa.googleapis.com/";
+  return GetAlmanacEndpointUrlOverride().value_or(
+      "https://chromeosalmanac-pa.googleapis.com/");
 }
 
 GURL GetAlmanacEndpointUrl(std::string_view endpoint_suffix) {
   return GURL(base::StrCat({GetAlmanacApiUrl(), endpoint_suffix}));
+}
+
+void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override) {
+  GetAlmanacEndpointUrlOverride() = std::move(url_override);
 }
 
 std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
