@@ -126,8 +126,10 @@ public class DirectWritingTriggerTest {
         mDwTrigger.onWebContentsChanged(mContext, mWebContents);
         assertNotNull(mDwTrigger.getStylusWritingImeCallbackForTest());
 
+        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         mDwTrigger.onImeAdapterDestroyed();
         assertNull(mDwTrigger.getStylusWritingImeCallbackForTest());
+        verify(mDwServiceCallback).setImeCallback(null);
     }
 
     @Test
