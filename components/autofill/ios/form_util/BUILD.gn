@@ -37,6 +37,7 @@ source_set("form_util_feature") {
     "form_util_java_script_feature.mm",
   ]
   deps = [
+    ":autofill_form_features",
     ":fill_js",
     ":form_js",
     "//base",
@@ -61,6 +62,25 @@ source_set("form_handler_feature") {
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+# For inclusion by other TS/JS files, so they can check feature state
+compile_ts("autofill_form_features_ts") {
+  sources = [ "resources/autofill_form_features.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+# For bundling with form_util_feature, which enables/disables features
+optimize_js("autofill_form_features") {
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+
+  _script = filter_include(get_target_outputs(":autofill_form_features_ts"),
+                           [ "*autofill_form_features.js" ])
+  primary_script = _script[0]
+  sources = _script
 }
 
 compile_ts("fill_js_dependencies") {

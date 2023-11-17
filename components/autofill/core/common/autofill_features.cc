@@ -10,11 +10,13 @@
 
 namespace autofill::features {
 
+// LINT.IfChange(autofill_across_iframes_ios)
 // Controls whether to flatten and fill cross-iframe forms on iOS.
 // TODO(crbug.com/1441921) Remove once launched.
 BASE_FEATURE(kAutofillAcrossIframesIos,
              "AutofillAcrossIframesIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
 // When enabled, address data will be verified and autocorrected in the
 // save/update prompt before saving an address profile. Relevant only if the

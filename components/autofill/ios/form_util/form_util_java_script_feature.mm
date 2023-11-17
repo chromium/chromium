@@ -12,6 +12,7 @@
 namespace {
 const char kFillScriptName[] = "fill";
 const char kFormScriptName[] = "form";
+const char kFeaturesScriptName[] = "autofill_form_features";
 }  // namespace
 
 namespace autofill {
@@ -26,6 +27,11 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
     : web::JavaScriptFeature(
           ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
+               kFeaturesScriptName,
+               FeatureScript::InjectionTime::kDocumentStart,
+               FeatureScript::TargetFrames::kAllFrames,
+               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
+           FeatureScript::CreateWithFilename(
                kFillScriptName,
                FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
@@ -46,6 +52,13 @@ void FormUtilJavaScriptFeature::SetUpForUniqueIDsWithInitialState(
   CallJavaScriptFunction(
       frame, "fill.setUpForUniqueIDs",
       base::Value::List().Append(static_cast<int>(next_available_id)));
+}
+
+void FormUtilJavaScriptFeature::SetAutofillAcrossIframes(web::WebFrame* frame,
+                                                         bool enabled) {
+  CallJavaScriptFunction(frame,
+                         "autofill_form_features.setAutofillAcrossIframes",
+                         base::Value::List().Append(enabled));
 }
 
 }  // namespace autofill
