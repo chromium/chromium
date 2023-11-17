@@ -25,9 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * A container class for a view showing a contact in the Contacts Picker.
- */
+/** A container class for a view showing a contact in the Contacts Picker. */
 public class ContactView extends SelectableItemView<ContactDetails> {
     // Our context.
     private Context mContext;
@@ -61,9 +59,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     // The property model listing the contents of the contact details dialog.
     private PropertyModel mModel;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ContactView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -92,7 +88,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.address_overflow_count || id == R.id.email_overflow_count
+        if (id == R.id.address_overflow_count
+                || id == R.id.email_overflow_count
                 || id == R.id.telephone_number_overflow_count) {
             onLongClick(this);
         } else {
@@ -109,28 +106,33 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     @Override
     public boolean onLongClick(View view) {
         mManager = mCategoryView.getModalDialogManager();
-        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                mManager.dismissDialog(model, buttonType);
-                mModel = null;
-                mManager = null;
-            }
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        mManager.dismissDialog(model, buttonType);
+                        mModel = null;
+                        mManager = null;
+                    }
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
-        };
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, controller)
-                         .with(ModalDialogProperties.TITLE, mContactDetails.getDisplayName())
-                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                 mContactDetails.getContactDetailsAsString(
-                                         PickerAdapter.includesAddresses(),
-                                         PickerAdapter.includesEmails(),
-                                         PickerAdapter.includesTelephones()))
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
-                                 R.string.close)
-                         .build();
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.TITLE, mContactDetails.getDisplayName())
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                mContactDetails.getContactDetailsAsString(
+                                        PickerAdapter.includesAddresses(),
+                                        PickerAdapter.includesEmails(),
+                                        PickerAdapter.includesTelephones()))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mContext.getResources(),
+                                R.string.close)
+                        .build();
         mModel.set(ModalDialogProperties.TITLE_ICON, getStartIconDrawable());
         mManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         return true;
@@ -152,8 +154,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     /**
      * Sets the {@link PickerCategoryView} for this ContactView.
-     * @param categoryView The category view showing the images. Used to access
-     *     common functionality and sizes and retrieve the {@link SelectionDelegate}.
+     *
+     * @param categoryView The category view showing the images. Used to access common functionality
+     *     and sizes and retrieve the {@link SelectionDelegate}.
      */
     public void setCategoryView(PickerCategoryView categoryView) {
         mCategoryView = categoryView;
@@ -167,8 +170,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     }
 
     /**
-     * Completes the initialization of the ContactView. Must be called before the
-     * {@link ContactView} can respond to click events.
+     * Completes the initialization of the ContactView. Must be called before the {@link
+     * ContactView} can respond to click events.
+     *
      * @param contactDetails The details about the contact represented by this ContactView.
      * @param icon The icon to show for the contact (or null if not loaded yet).
      */
@@ -183,9 +187,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
         ContactDetails.AbbreviatedContactDetails details =
                 contactDetails.getAbbreviatedContactDetails(
-                        /*includeAddresses=*/PickerAdapter.includesAddresses(),
-                        /*includeEmails=*/PickerAdapter.includesEmails(),
-                        /*includeTels=*/PickerAdapter.includesTelephones(),
+                        /* includeAddresses= */ PickerAdapter.includesAddresses(),
+                        /* includeEmails= */ PickerAdapter.includesEmails(),
+                        /* includeTels= */ PickerAdapter.includesTelephones(),
                         mContext.getResources());
 
         updateTextViewVisibilityAndContent(mAddress, details.primaryAddress);
@@ -199,8 +203,10 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         if (contactDetails.isSelf()) mStar.setVisibility(View.VISIBLE);
 
         if (icon == null || !PickerAdapter.includesIcons()) {
-            icon = mCategoryView.getIconGenerator().generateIconForText(
-                    contactDetails.getDisplayNameAbbreviation());
+            icon =
+                    mCategoryView
+                            .getIconGenerator()
+                            .generateIconForText(contactDetails.getDisplayNameAbbreviation());
             setStartIconDrawable(new BitmapDrawable(getResources(), icon));
         } else {
             setIconBitmap(icon);
@@ -209,6 +215,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     /**
      * Sets the icon to display for the contact and fade it into view.
+     *
      * @param icon The icon to display.
      */
     public void setIconBitmap(Bitmap icon) {

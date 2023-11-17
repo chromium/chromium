@@ -18,9 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * Contains the properties that a pwa-restore {@link PropertyModel} can have.
- */
+/** Contains the properties that a pwa-restore {@link PropertyModel} can have. */
 public class PwaRestoreProperties {
     /** Encapsulates the information about an app to show in the PWA Restore dialog. */
     public static class AppInfo {
@@ -55,12 +53,10 @@ public class PwaRestoreProperties {
         }
     }
 
-    /**
-     * View states of the PWA Restore Bottom Sheet.
-     */
+    /** View states of the PWA Restore Bottom Sheet. */
     @IntDef({
-            ViewState.PREVIEW,
-            ViewState.VIEW_PWA_LIST,
+        ViewState.PREVIEW,
+        ViewState.VIEW_PWA_LIST,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {

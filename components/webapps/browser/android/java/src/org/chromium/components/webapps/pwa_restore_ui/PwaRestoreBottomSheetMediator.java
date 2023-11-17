@@ -15,9 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Mediator for the PWA Restore bottom sheet.
- */
+/** The Mediator for the PWA Restore bottom sheet. */
 class PwaRestoreBottomSheetMediator {
     // The current activity.
     private final Activity mActivity;
@@ -41,16 +39,21 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void initializeState() {
-        mModel.set(PwaRestoreProperties.PEEK_TITLE,
+        mModel.set(
+                PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
-        mModel.set(PwaRestoreProperties.PEEK_DESCRIPTION,
+        mModel.set(
+                PwaRestoreProperties.PEEK_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_peeking));
-        mModel.set(PwaRestoreProperties.PEEK_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.PEEK_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_peeking));
 
-        mModel.set(PwaRestoreProperties.EXPANDED_TITLE,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_expanded));
-        mModel.set(PwaRestoreProperties.EXPANDED_DESCRIPTION,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_expanded));
         mModel.set(
                 PwaRestoreProperties.RECENT_APPS_TITLE,
@@ -58,9 +61,11 @@ class PwaRestoreBottomSheetMediator {
         mModel.set(
                 PwaRestoreProperties.OLDER_APPS_TITLE,
                 mActivity.getString(R.string.pwa_restore_older_apps_list));
-        mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_expanded));
-        mModel.set(PwaRestoreProperties.DESELECT_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.DESELECT_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_deselect));
 
         // TODO(finnur): Replace with actual apps, queried from profile.

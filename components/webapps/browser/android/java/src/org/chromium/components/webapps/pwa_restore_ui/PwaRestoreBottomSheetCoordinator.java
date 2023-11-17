@@ -13,18 +13,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * The Coordinator for managing the Pwa Restore bottom sheet experience.
- */
+/** The Coordinator for managing the Pwa Restore bottom sheet experience. */
 public class PwaRestoreBottomSheetCoordinator {
     private final BottomSheetController mController;
     private final PwaRestoreBottomSheetView mView;
     private final PwaRestoreBottomSheetContent mContent;
     private final PwaRestoreBottomSheetMediator mMediator;
 
-    /**
-     * Constructs the PwaRestoreBottomSheetCoordinator.
-     */
+    /** Constructs the PwaRestoreBottomSheetCoordinator. */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
             Activity activity, BottomSheetController bottomSheetController, int backArrowId) {
@@ -33,8 +29,9 @@ public class PwaRestoreBottomSheetCoordinator {
         mView = new PwaRestoreBottomSheetView(activity);
         mView.initialize(backArrowId);
         mContent = new PwaRestoreBottomSheetContent(mView);
-        mMediator = new PwaRestoreBottomSheetMediator(
-                activity, this::onReviewButtonClicked, this::onBackButtonClicked);
+        mMediator =
+                new PwaRestoreBottomSheetMediator(
+                        activity, this::onReviewButtonClicked, this::onBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);
@@ -42,6 +39,7 @@ public class PwaRestoreBottomSheetCoordinator {
 
     /**
      * Attempts to show the bottom sheet on the screen.
+     *
      * @return True if showing is successful.
      */
     public boolean show() {

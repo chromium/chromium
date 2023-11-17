@@ -14,11 +14,9 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 
-/**
- * Holds on to a {@link ContactView} that displays information about a contact.
- */
-public class ContactViewHolder
-        extends ViewHolder implements FetchIconWorkerTask.IconRetrievedCallback {
+/** Holds on to a {@link ContactView} that displays information about a contact. */
+public class ContactViewHolder extends ViewHolder
+        implements FetchIconWorkerTask.IconRetrievedCallback {
     // Our parent category.
     private final PickerCategoryView mCategoryView;
 
@@ -42,13 +40,17 @@ public class ContactViewHolder
 
     /**
      * The PickerBitmapViewHolder.
+     *
      * @param itemView The {@link ContactView} for the contact.
      * @param categoryView The {@link PickerCategoryView} showing the contacts.
      * @param contentResolver The {@link ContentResolver} to use for the lookup.
      * @param iconSize The size the contact icon will be displayed at (one side of a square).
      */
-    public ContactViewHolder(ContactView itemView, PickerCategoryView categoryView,
-            ContentResolver contentResolver, int iconSize) {
+    public ContactViewHolder(
+            ContactView itemView,
+            PickerCategoryView categoryView,
+            ContentResolver contentResolver,
+            int iconSize) {
         super(itemView);
         mCategoryView = categoryView;
         mContentResolver = contentResolver;
@@ -57,8 +59,9 @@ public class ContactViewHolder
     }
 
     /**
-     * Sets the contact details to show in the itemview. If the image is not found in the cache,
-     * an asynchronous worker task is created to load it.
+     * Sets the contact details to show in the itemview. If the image is not found in the cache, an
+     * asynchronous worker task is created to load it.
+     *
      * @param contact The contact details to show.
      */
     public void setContactDetails(ContactDetails contact) {
@@ -85,9 +88,7 @@ public class ContactViewHolder
         }
     }
 
-    /**
-     * Cancels the worker task to retrieve the icon.
-     */
+    /** Cancels the worker task to retrieve the icon. */
     public void cancelIconRetrieval() {
         mWorkerTask.cancel(true);
         mWorkerTask = null;

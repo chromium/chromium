@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * The view portion of the PWA Install bottom sheet.
  *
- * The class is suppressing lint error for 'missing performClick override' because we don't need the
- * override. We're forwarding the event along (and the implementation of the override would be a
+ * <p>The class is suppressing lint error for 'missing performClick override' because we don't need
+ * the override. We're forwarding the event along (and the implementation of the override would be a
  * no-op for us).
  */
 @SuppressLint("ClickableViewAccessibility")
@@ -68,17 +68,21 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
     }
 
     public void initialize(int backArrowId) {
-        mPreviewView = LayoutInflater.from(mContext).inflate(
-                R.layout.pwa_restore_bottom_sheet_preview, /* root= */ null);
-        mContentView = LayoutInflater.from(mContext).inflate(
-                R.layout.pwa_restore_bottom_sheet_content, /* root= */ null);
+        mPreviewView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.pwa_restore_bottom_sheet_preview, /* root= */ null);
+        mContentView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.pwa_restore_bottom_sheet_content, /* root= */ null);
 
         int backgroundId = R.drawable.pwa_restore_icon;
         mPreviewView.findViewById(R.id.icon).setBackgroundResource(backgroundId);
         mPreviewView.findViewById(R.id.icon).setTag(backgroundId);
-        mBackArrow = backArrowId != 0 ? ResourcesCompat.getDrawable(
-                             mContext.getResources(), backArrowId, mContext.getTheme())
-                                      : null;
+        mBackArrow =
+                backArrowId != 0
+                        ? ResourcesCompat.getDrawable(
+                                mContext.getResources(), backArrowId, mContext.getTheme())
+                        : null;
         TextView contentViewTitle = (TextView) mContentView.findViewById(R.id.title);
         contentViewTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 mBackArrow, null, null, null);

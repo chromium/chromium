@@ -35,9 +35,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 
 import java.util.List;
 
-/**
- * A container class for a view showing a photo in the Photo Picker.
- */
+/** A container class for a view showing a photo in the Photo Picker. */
 public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     // The length of the image selection animation (in ms).
     private static final int ANIMATION_DURATION = 100;
@@ -110,9 +108,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     // The selected state of a given picture tile.
     private boolean mSelectedState;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PickerBitmapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -217,7 +213,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         }
 
         super.setChecked(checked);
-        updateSelectionState(/*animateBorderChanges=*/false);
+        updateSelectionState(/* animateBorderChanges= */ false);
     }
 
     @Override
@@ -285,8 +281,9 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
             endX = endStateWhenSelectedX;
             endY = endStateWhenSelectedY;
 
-            float pixels = getResources().getDimensionPixelSize(
-                    R.dimen.photo_picker_video_duration_offset);
+            float pixels =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.photo_picker_video_duration_offset);
             videoDurationOffsetX = -pixels;
             videoDurationOffsetY = pixels;
         } else {
@@ -299,10 +296,16 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
             videoDurationOffsetY = 0;
         }
 
-        Animation animation = new ScaleAnimation(startX, endX, // Values for x axis.
-                startY, endY, // Values for y axis.
-                Animation.RELATIVE_TO_SELF, 0.5f, // Pivot X-axis type and value.
-                Animation.RELATIVE_TO_SELF, 0.5f); // Pivot Y-axis type and value.
+        Animation animation =
+                new ScaleAnimation(
+                        startX,
+                        endX, // Values for x axis.
+                        startY,
+                        endY, // Values for y axis.
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f, // Pivot X-axis type and value.
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f); // Pivot Y-axis type and value.
         animation.setDuration(animate ? ANIMATION_DURATION : 0);
         animation.setFillAfter(true); // Keep the results of the animation.
         if (sAnimationListenerForTest != null) {
@@ -310,10 +313,12 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         }
         mIconView.startAnimation(animation);
 
-        ObjectAnimator videoDurationX = ObjectAnimator.ofFloat(
-                mVideoControlsSmall, View.TRANSLATION_X, videoDurationOffsetX);
-        ObjectAnimator videoDurationY = ObjectAnimator.ofFloat(
-                mVideoControlsSmall, View.TRANSLATION_Y, videoDurationOffsetY);
+        ObjectAnimator videoDurationX =
+                ObjectAnimator.ofFloat(
+                        mVideoControlsSmall, View.TRANSLATION_X, videoDurationOffsetX);
+        ObjectAnimator videoDurationY =
+                ObjectAnimator.ofFloat(
+                        mVideoControlsSmall, View.TRANSLATION_Y, videoDurationOffsetY);
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(videoDurationX, videoDurationY);
         animatorSet.setDuration(animate ? ANIMATION_DURATION : 0);
@@ -328,15 +333,18 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
         info.setCheckable(true);
         info.setChecked(isChecked());
-        CharSequence text = mBitmapDetails.getFilenameWithoutExtension() + " "
-                + mBitmapDetails.getLastModifiedString();
+        CharSequence text =
+                mBitmapDetails.getFilenameWithoutExtension()
+                        + " "
+                        + mBitmapDetails.getLastModifiedString();
         info.setText(text);
     }
 
     /**
      * Sets the {@link PickerCategoryView} for this PickerBitmapView.
-     * @param categoryView The category view showing the images. Used to access
-     *     common functionality and sizes and retrieve the {@link SelectionDelegate}.
+     *
+     * @param categoryView The category view showing the images. Used to access common functionality
+     *     and sizes and retrieve the {@link SelectionDelegate}.
      */
     public void setCategoryView(PickerCategoryView categoryView) {
         mCategoryView = categoryView;
@@ -347,14 +355,19 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     /**
      * Completes the initialization of the PickerBitmapView. Must be called before the image can
      * respond to click events.
+     *
      * @param bitmapDetails The details about the bitmap represented by this PickerBitmapView.
      * @param thumbnails The Bitmaps to use for the thumbnail (or null).
      * @param videoDuration The time-length of the video (human-friendly string).
      * @param placeholder Whether the image given is a placeholder or the actual image.
      * @ratio The aspect ratio of the image, if it were shown full-width.
      */
-    public void initialize(PickerBitmap bitmapDetails, @Nullable List<Bitmap> thumbnails,
-            String videoDuration, boolean placeholder, float ratio) {
+    public void initialize(
+            PickerBitmap bitmapDetails,
+            @Nullable List<Bitmap> thumbnails,
+            String videoDuration,
+            boolean placeholder,
+            float ratio) {
         resetTile();
 
         mBitmapDetails = bitmapDetails;
@@ -367,31 +380,32 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
             mImageLoaded = !placeholder;
         }
 
-        updateSelectionState(/*animateBorderChanges=*/false);
+        updateSelectionState(/* animateBorderChanges= */ false);
     }
 
-    /**
-     * Initialization for the special tiles (camera/gallery icon).
-     */
+    /** Initialization for the special tiles (camera/gallery icon). */
     public void initializeSpecialTile() {
         int labelStringId = 0;
         Drawable image = null;
         Resources resources = mContext.getResources();
 
         if (isCameraTile()) {
-            image = TraceEventVectorDrawableCompat.create(
-                    resources, R.drawable.ic_photo_camera_grey, mContext.getTheme());
+            image =
+                    TraceEventVectorDrawableCompat.create(
+                            resources, R.drawable.ic_photo_camera_grey, mContext.getTheme());
             labelStringId = R.string.photo_picker_camera;
         } else if (isGalleryTile()) {
-            image = TraceEventVectorDrawableCompat.create(
-                    resources, R.drawable.ic_collections_grey, mContext.getTheme());
+            image =
+                    TraceEventVectorDrawableCompat.create(
+                            resources, R.drawable.ic_collections_grey, mContext.getTheme());
             labelStringId = R.string.photo_picker_browse;
         } else {
             assert false;
         }
 
         mSpecialTileIcon.setImageDrawable(image);
-        ImageViewCompat.setImageTintList(mSpecialTileIcon,
+        ImageViewCompat.setImageTintList(
+                mSpecialTileIcon,
                 AppCompatResources.getColorStateList(
                         mContext, R.color.default_icon_color_secondary_tint_list));
         ImageViewCompat.setImageTintMode(mSpecialTileIcon, PorterDuff.Mode.SRC_IN);
@@ -406,6 +420,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     /**
      * Sets a thumbnail bitmap for the current view and ensures the selection border is showing, if
      * the image has already been selected.
+     *
      * @param thumbnails The Bitmaps to use for the icon ImageView.
      * @param videoDuration The time-length of the video (human-friendly string).
      * @param ratio The aspect ratio of the image, if it were shown using the full screen width.
@@ -441,7 +456,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
         boolean noImageWasLoaded = !mImageLoaded;
         mImageLoaded = true;
-        updateSelectionState(/*animateBorderChanges=*/false);
+        updateSelectionState(/* animateBorderChanges= */ false);
 
         return noImageWasLoaded;
     }
@@ -475,14 +490,11 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         setEnabled(true);
     }
 
-    /**
-     * Updates the selection controls for this view.
-     */
+    /** Updates the selection controls for this view. */
     private void updateSelectionState(boolean animateBorderChanges) {
         boolean special = !isPictureTile();
         boolean anySelection =
                 mSelectionDelegate != null && mSelectionDelegate.isSelectionEnabled();
-        Resources resources = mContext.getResources();
         int bgColorId;
         if (!special) {
             bgColorId = R.color.photo_picker_tile_bg_color;
@@ -494,23 +506,29 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         }
 
         mBackgroundColor = mContext.getColor(bgColorId);
-        setBackgroundColor(mCategoryView.isZoomSwitchingInEffect() && !special ? Color.TRANSPARENT
-                                                                               : mBackgroundColor);
+        setBackgroundColor(
+                mCategoryView.isZoomSwitchingInEffect() && !special
+                        ? Color.TRANSPARENT
+                        : mBackgroundColor);
 
         boolean isSelected = mSelectionDelegate.isItemSelected(mBitmapDetails);
         mSelectedView.setVisibility(!special && isSelected ? View.VISIBLE : View.GONE);
         // The visibility of the unselected toggle for multi-selection mode is a little more complex
         // because we don't want to show it when nothing is selected (unless in magnifying mode) and
         // also not on a blank canvas.
-        boolean showUnselectedToggle = !special && !isSelected && mImageLoaded
-                && (anySelection || mCategoryView.isInMagnifyingMode())
-                && mCategoryView.isMultiSelectAllowed();
+        boolean showUnselectedToggle =
+                !special
+                        && !isSelected
+                        && mImageLoaded
+                        && (anySelection || mCategoryView.isInMagnifyingMode())
+                        && mCategoryView.isMultiSelectAllowed();
         mUnselectedView.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
         mScrim.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
 
         boolean showVideoControls =
                 mImageLoaded && mBitmapDetails.type() == PickerBitmap.TileTypes.VIDEO;
-        mVideoControlsSmall.setVisibility(showVideoControls && !mCategoryView.isInMagnifyingMode()
+        mVideoControlsSmall.setVisibility(
+                showVideoControls && !mCategoryView.isInMagnifyingMode()
                         ? View.VISIBLE
                         : View.GONE);
         mPlayButtonLarge.setVisibility(

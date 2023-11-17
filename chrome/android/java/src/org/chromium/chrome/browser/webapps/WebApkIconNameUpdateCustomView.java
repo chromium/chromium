@@ -23,15 +23,14 @@ import org.chromium.chrome.R;
  * changes to name and short_name.
  */
 public class WebApkIconNameUpdateCustomView extends LinearLayout {
-    /**
-     * Constructor for inflating from XMLs.
-     */
+    /** Constructor for inflating from XMLs. */
     public WebApkIconNameUpdateCustomView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
      * Setup the views showing the two icons (before and after).
+     *
      * @param oldIcon The icon of the currently installed app.
      * @param newIcon The proposed new icon for the updated app.
      * @param oldIconAdaptive Wheter the current icon is adaptive.
@@ -57,6 +56,7 @@ public class WebApkIconNameUpdateCustomView extends LinearLayout {
 
     /**
      * Setup the short app names text views.
+     *
      * @param oldAppShortName The short name of the currently installed app.
      * @param newAppShortName The proposed short name for the updated app.
      */
@@ -71,6 +71,7 @@ public class WebApkIconNameUpdateCustomView extends LinearLayout {
 
     /**
      * Setup the app names text views.
+     *
      * @param oldAppName The name of the currently installed app.
      * @param newAppName The proposed name for the updated app.
      */

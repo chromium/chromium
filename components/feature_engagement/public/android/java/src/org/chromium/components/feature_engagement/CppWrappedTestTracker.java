@@ -15,29 +15,30 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.Callback;
 
 /**
- * CppWrappedTestTracker is a Java implementation of a {@link Tracker} object that is
- * encapsulated by a Tracker object in C++, which will proxy (most) calls over from C++ to
- * Java.
+ * CppWrappedTestTracker is a Java implementation of a {@link Tracker} object that is encapsulated
+ * by a Tracker object in C++, which will proxy (most) calls over from C++ to Java.
  *
- * NOTE: For testing, most of the time this class is overkill and it suffices to create a test
+ * <p>NOTE: For testing, most of the time this class is overkill and it suffices to create a test
  * object that derives from Tracker and call TrackerFactory#setTrackerForTests on it. However, this
  * will only replace the Tracker object on the Java side, and that object will never receive the
  * notifyEvent calls that the actual tracker in C++ receives. So, if receiving events is important
  * for your test, you may need {@link CppWrapperTestTracker}.
  *
- * Example usage in tests:
- *
- *   mTracker = new CppWrappedTestTracker(FeatureConstants.YOU_FEATURE_HERE) {
- *       @Override
- *       public void notifyEvent(String event) {
- *           super.notifyEvent(event);
- *           // Validate that the right event was received.
- *       }
- *   };
- *   TrackerFactory.getTrackerForProfile(profile).injectTracker(mTracker);
+ * <p>For example usage in tests, see below.
  */
 @JNINamespace("feature_engagement")
 public class CppWrappedTestTracker implements Tracker {
+    // Example usage in tests:
+    //
+    //   mTracker = new CppWrappedTestTracker(FeatureConstants.YOU_FEATURE_HERE) {
+    //       @Override
+    //       public void notifyEvent(String event) {
+    //           super.notifyEvent(event);
+    //           // Validate that the right event was received.
+    //       }
+    //   };
+    //   TrackerFactory.getTrackerForProfile(profile).injectTracker(mTracker);
+
     private String mOurFeature;
     private boolean mWasDismissed;
     private String mLastEvent;
@@ -89,8 +90,9 @@ public class CppWrappedTestTracker implements Tracker {
     @CalledByNative
     @Override
     public int getTriggerState(String feature) {
-        return ourFeature(feature) ? TriggerState.HAS_NOT_BEEN_DISPLAYED
-                                   : TriggerState.HAS_BEEN_DISPLAYED;
+        return ourFeature(feature)
+                ? TriggerState.HAS_NOT_BEEN_DISPLAYED
+                : TriggerState.HAS_BEEN_DISPLAYED;
     }
 
     @CalledByNative

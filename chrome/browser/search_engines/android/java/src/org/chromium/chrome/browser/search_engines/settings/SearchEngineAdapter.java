@@ -41,12 +41,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * A custom adapter for listing search engines.
- */
+/** A custom adapter for listing search engines. */
 public class SearchEngineAdapter extends BaseAdapter
-        implements TemplateUrlService.LoadListener, TemplateUrlService.TemplateUrlServiceObserver,
-                   OnClickListener {
+        implements TemplateUrlService.LoadListener,
+                TemplateUrlService.TemplateUrlServiceObserver,
+                OnClickListener {
 
     @VisibleForTesting static final int VIEW_TYPE_ITEM = 0;
     @VisibleForTesting static final int VIEW_TYPE_DIVIDER = 1;
@@ -59,8 +58,11 @@ public class SearchEngineAdapter extends BaseAdapter
      * Type for source of search engine. This is needed because if a custom search engine is set as
      * default, it will be moved to the prepopulated list.
      */
-    @IntDef({TemplateUrlSourceType.DEFAULT, TemplateUrlSourceType.PREPOPULATED,
-            TemplateUrlSourceType.RECENT})
+    @IntDef({
+        TemplateUrlSourceType.DEFAULT,
+        TemplateUrlSourceType.PREPOPULATED,
+        TemplateUrlSourceType.RECENT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TemplateUrlSourceType {
         int DEFAULT = 0;
@@ -70,6 +72,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     /** The current context. */
     private final Context mContext;
+
     private final Profile mProfile;
 
     /** The layout inflater to use for the custom views. */
@@ -95,14 +98,13 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private boolean mIsLocationPermissionChanged;
 
-    @Nullable
-    private Runnable mDisableAutoSwitchRunnable;
+    @Nullable private Runnable mDisableAutoSwitchRunnable;
 
-    @Nullable
-    private SettingsLauncher mSettingsLauncher;
+    @Nullable private SettingsLauncher mSettingsLauncher;
 
     /**
      * Construct a SearchEngineAdapter.
+     *
      * @param context The current context.
      * @param profile The Profile associated with these settings.
      */
@@ -113,17 +115,13 @@ public class SearchEngineAdapter extends BaseAdapter
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    /**
-     * Start the adapter to gather the available search engines and listen for updates.
-     */
+    /** Start the adapter to gather the available search engines and listen for updates. */
     public void start() {
         refreshData();
         TemplateUrlServiceFactory.getForProfile(mProfile).addObserver(this);
     }
 
-    /**
-     * Stop the adapter from listening for future search engine updates.
-     */
+    /** Stop the adapter from listening for future search engine updates. */
     public void stop() {
         if (mHasLoadObserver) {
             TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
@@ -145,9 +143,7 @@ public class SearchEngineAdapter extends BaseAdapter
         return toKeyword(index);
     }
 
-    /**
-     * Initialize the search engine list.
-     */
+    /** Initialize the search engine list. */
     private void refreshData() {
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
         if (!templateUrlService.isLoaded()) {
@@ -200,11 +196,13 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (mSelectedSearchEnginePosition == -1) {
-            throw new IllegalStateException(String.format(
-                    "Default search engine is not found in available search engines:"
-                            + " DSE is valid=%b, is managed=%b",
-                    defaultSearchEngineTemplateUrl != null,
-                    TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchManaged()));
+            throw new IllegalStateException(
+                    String.format(
+                            "Default search engine is not found in available search engines:"
+                                    + " DSE is valid=%b, is managed=%b",
+                            defaultSearchEngineTemplateUrl != null,
+                            TemplateUrlServiceFactory.getForProfile(mProfile)
+                                    .isDefaultSearchManaged()));
         }
 
         mInitialEnginePosition = mSelectedSearchEnginePosition;
@@ -426,20 +424,23 @@ public class SearchEngineAdapter extends BaseAdapter
         // and instead, "checked" or "not checked" is read along with the search engine's name, e.g.
         // "google.com checked" or "google.com not checked".
         radioButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        description.setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-                super.onInitializeAccessibilityEvent(host, event);
-                event.setChecked(selected);
-            }
+        description.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityEvent(
+                            View host, AccessibilityEvent event) {
+                        super.onInitializeAccessibilityEvent(host, event);
+                        event.setChecked(selected);
+                    }
 
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                info.setCheckable(true);
-                info.setChecked(selected);
-            }
-        });
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setCheckable(true);
+                        info.setChecked(selected);
+                    }
+                });
 
         return view;
     }
