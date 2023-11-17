@@ -1091,9 +1091,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         // Groups with different origins or joined by different origins should
         // not be modified in any way.
         EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
-      } else if (groups_to_keep &&
-                 std::find(groups_to_keep->begin(), groups_to_keep->end(),
-                           name) != groups_to_keep->end()) {
+      } else if (groups_to_keep && base::Contains(*groups_to_keep, name)) {
         // Interest groups that are excluded by name also should not be
         // modified.
         EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
