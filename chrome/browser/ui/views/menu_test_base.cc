@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/menu_test_base.h"
 
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -54,13 +56,16 @@ void MenuTestBase::SetUp() {
 
   views::test::DisableMenuClosureAnimations();
 
-  menu_ = new views::MenuItemView(this);
+  auto menu_owning = std::make_unique<views::MenuItemView>(/*delegate=*/this);
+  menu_ = menu_owning.get();
   BuildMenu(menu_);
-  menu_runner_ =
-      std::make_unique<views::MenuRunner>(menu_, GetMenuRunnerFlags());
+  menu_runner_ = std::make_unique<views::MenuRunner>(std::move(menu_owning),
+                                                     GetMenuRunnerFlags());
 }
 
 void MenuTestBase::TearDown() {
+  button_ = nullptr;
+  menu_ = nullptr;
   // We cancel the menu first because certain operations (like a menu opened
   // with views::MenuRunner::FOR_DROP) don't take kindly to simply pulling the
   // runner out from under them.

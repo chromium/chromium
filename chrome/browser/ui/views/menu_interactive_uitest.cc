@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "ui/views/controls/menu/menu_controller.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,9 +71,11 @@ class MenuControllerUITest : public InProcessBrowserTest {
   // menu item and move the mouse there, and closes the menu.
   void SetupMenu(Widget* widget) {
     menu_delegate_ = std::make_unique<MenuDelegate>();
-    MenuItemView* menu_item = new MenuItemView(menu_delegate_.get());
+    auto menu_item_owning =
+        std::make_unique<MenuItemView>(menu_delegate_.get());
+    MenuItemView* menu_item = menu_item_owning.get();
     menu_runner_ = std::make_unique<MenuRunner>(
-        +menu_item, views::MenuRunner::CONTEXT_MENU);
+        std::move(menu_item_owning), views::MenuRunner::CONTEXT_MENU);
     first_item_ = menu_item->AppendMenuItem(1, u"One");
     menu_item->AppendMenuItem(2, u"Two");
     // Run the menu, so that the menu item size will be calculated.
@@ -110,12 +114,13 @@ class MenuControllerUITest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    first_item_ = nullptr;
     menu_runner_.reset();
     menu_delegate_.reset();
   }
 
  protected:
-  raw_ptr<MenuItemView, DanglingUntriaged> first_item_ = nullptr;
+  raw_ptr<MenuItemView> first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.
@@ -229,14 +234,15 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   content::ScopedAccessibilityModeOverride ax_mode_override(
       ui::kAXModeComplete);
   MenuDelegate menu_delegate;
-  MenuItemView* menu_item = new MenuItemView(&menu_delegate);
+  auto menu_item_owning = std::make_unique<MenuItemView>(&menu_delegate);
+  MenuItemView* menu_item = menu_item_owning.get();
   AXEventCounter ax_counter(views::AXEventManager::Get());
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuEnd), 0);
-  std::unique_ptr<MenuRunner> menu_runner(
-      std::make_unique<MenuRunner>(menu_item, views::MenuRunner::CONTEXT_MENU));
+  std::unique_ptr<MenuRunner> menu_runner(std::make_unique<MenuRunner>(
+      std::move(menu_item_owning), views::MenuRunner::CONTEXT_MENU));
   MenuItemView* first_item = menu_item->AppendMenuItem(1, u"One");
   menu_item->AppendMenuItem(2, u"Two");
   menu_runner->RunMenuAt(nullptr, nullptr, gfx::Rect(),
