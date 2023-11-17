@@ -691,6 +691,26 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* root,
                   local_ancestor->PixelSnappedScrolledContentOffset()));
         intersection_rect.Move(scroll_offset);
         unclipped_intersection_rect.Move(scroll_offset);
+      } else {
+        // In case the ancestor in an SVG element with a viewbox property
+        // we need to convert the child's coordinates to the SVG coordinates
+        if (auto* properties =
+                local_ancestor->FirstFragment().PaintProperties()) {
+          if (auto* replaced_transform =
+                  properties->ReplacedContentTransform()) {
+            gfx::Transform invert_replaced_transform =
+                GeometryMapper::SourceToDestinationProjection(
+                    *replaced_transform, *replaced_transform->Parent());
+            // TODO(yotha) remove coversion to RectF and back to physical_rect
+            // once ComputeGeometry works with RectF
+            intersection_rect = PhysicalRect::FastAndLossyFromRectF(
+                invert_replaced_transform.MapRect(
+                    gfx::RectF(unclipped_intersection_rect)));
+            unclipped_intersection_rect = PhysicalRect::FastAndLossyFromRectF(
+                invert_replaced_transform.MapRect(
+                    gfx::RectF(unclipped_intersection_rect)));
+          }
+        }
       }
 
       PhysicalRect root_clip_rect = root_rect;
