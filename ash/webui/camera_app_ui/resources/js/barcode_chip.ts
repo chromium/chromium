@@ -5,6 +5,7 @@
 import {assert} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
+import {Flag} from './flag.js';
 import {I18nString} from './i18n_string.js';
 import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -16,6 +17,15 @@ import {
   ErrorLevel,
   ErrorType,
 } from './type.js';
+
+interface WifiConfig {
+  securityType: string;
+  ssid: string;
+  password: string;
+  hidden: boolean;
+}
+
+const QR_CODE_ESCAPE_CHARS = ['\\', ';', ',', ':'];
 
 // TODO(b/172879638): Tune the duration according to the final motion spec.
 const CHIP_DURATION = 8000;
@@ -80,6 +90,55 @@ function isSafeUrl(s: string): boolean {
   } catch (e) {
     return false;
   }
+}
+
+/**
+ * Parses the given string `s`. If the string is a wifi connection request,
+ * return `WifiConfig` and if not, return null.
+ */
+function parseWifi(s: string): WifiConfig|null {
+  // Example string `WIFI:S:<SSID>;P:<PASSWORD>;T:<WPA|WEP|WPA2-EAP|nopass>;H;;`
+  const wifiConfig =
+      {securityType: 'nopass', ssid: '', password: '', hidden: false};
+  if (s.startsWith('WIFI:') && s.endsWith(';;')) {
+    s = s.substring(5, s.length - 1);
+    let i = 0;
+    let component = '';
+    while (i < s.length) {
+      // Unescape characters escaped with a backslash
+      if (s[i] === '\\' && i + 1 < s.length &&
+          QR_CODE_ESCAPE_CHARS.includes(s[i + 1])) {
+        component += s[i + 1];
+        i += 2;
+      } else if (s[i] === ';') {
+        const splitIdx = component.search(':');
+        if (splitIdx === -1) {
+          return null;
+        }
+        const key = component.substring(0, splitIdx);
+        const val = component.substring(splitIdx + 1);
+        if (key === 'T') {
+          wifiConfig.securityType = val;
+        } else if (key === 'S') {
+          wifiConfig.ssid = val;
+        } else if (key === 'P') {
+          wifiConfig.password = val;
+        } else if (key === 'H') {
+          wifiConfig.hidden = true;
+        }
+        component = '';
+        i += 1;
+      } else {
+        component += s[i];
+        i += 1;
+      }
+    }
+  }
+
+  if (wifiConfig.ssid === '') {
+    return null;
+  }
+  return wifiConfig;
 }
 
 /**
@@ -177,8 +236,17 @@ export function show(code: string): void {
   }
 
   currentCode = code;
-
-  if (isSafeUrl(code)) {
+  const wifiConfig = parseWifi(code);
+  if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
+    sendBarcodeDetectedEvent(
+        {contentType: BarcodeContentType.WIFI}, wifiConfig.securityType);
+    if (!['WPA', 'WEP', 'WPA2-EAP', 'nopass'].includes(
+            wifiConfig.securityType)) {
+      // For unsupported security types, we show a raw string.
+      showText(code);
+    }
+    // TODO(dorahkim): If securityType is supported, showWifi().
+  } else if (isSafeUrl(code)) {
     sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
     showUrl(code);
   } else {
