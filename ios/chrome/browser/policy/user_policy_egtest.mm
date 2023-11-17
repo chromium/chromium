@@ -147,6 +147,49 @@ void WaitOnUserPolicy(base::TimeDelta timeout) {
              @"Didn't fetch user policies");
 }
 
+void VerifyTheNotificationUI() {
+  // Swipe up to make sure that all the text content in the prompt is visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE);
+  NSString* subtitle = l10n_util::GetNSStringF(
+      IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_SUBTITLE,
+      base::UTF8ToUTF16(std::string(policy::SignatureProvider::kTestDomain1)));
+
+  // Verify the notification UI.
+  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_text(subtitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Wait for the chrome management url to become visible in the web state
+// without validating the content. The goal being to verify that the page was
+// opened.
+void WaitForVisibleChromeManagementURL() {
+  // const GURL expectedURL(base::StrCat({kChromeUIManagementURL, "/"}));
+
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web state"
+                       @" with visible url %@ ",
+                       base::SysUTF8ToNSString(kChromeUIManagementURL)];
+
+  GREYCondition* waitForUrl = [GREYCondition
+      conditionWithName:errorString
+                  block:^{
+                    return base::StartsWith(
+                        [ChromeEarlGrey webStateVisibleURL].spec(),
+                        kChromeUIManagementURL);
+                  }];
+  base::TimeDelta timeout = base::Seconds(5);
+  bool visibleUrl = [waitForUrl waitWithTimeout:timeout.InSecondsF()];
+  GREYAssert(visibleUrl, errorString);
+}
+
 }  // namespace
 
 // Test suite for User Policy.
@@ -342,6 +385,110 @@ void WaitOnUserPolicy(base::TimeDelta timeout) {
   // Verifiy that the policies that were fetched in the previous session are
   // loaded from the cache at startup.
   VerifyThatPoliciesAreSet();
+}
+
+// TODO(crbug.com/1386163): Tests that the user policies are fetched when the
+// user decides to "Continue" in the notification dialog.
+- (void)DISABLED_testUserPolicyNotificationWithAcceptChoice {
+  // Clear the prefs related to user policy to make sure that the notification
+  // isn't skipped and that the fetch is started within the minimal schedule
+  // interval.
+  ClearUserPolicyPrefs();
+
+  // Restart the app to disable user policy and allow turning on Sync for the
+  // managed account.
+  AppLaunchConfiguration config;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Turn on Sync for managed account. This won't trigger the user policy fetch.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+
+  // Restart the browser while keeping Sync ON by preserving the identity of the
+  // managed account.
+  config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
+      [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify that the notification dialog is there.
+  VerifyTheNotificationUI();
+
+  // Tap on the "Continue" button to dismiss the alert dialog and start the user
+  // policy fetch.
+  NSString* continueLabel =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(continueLabel),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+
+  // Wait for user policy fetch. This will take at least 5 seconds which
+  // corresponds to the minimal user policy fetch delay when triggering the
+  // fetch at startup.
+  WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);
+
+  // Verifiy that the policies were fetched and loaded.
+  VerifyThatPoliciesAreSet();
+}
+
+// Tests that the learn more page is displayed when choosing that option in the
+// notice dialog.
+// TODO(crbug.com/1478990): reenable this test.
+- (void)DISABLED_testUserPolicyNotificationWithLearnMoreChoice {
+  // Clear the prefs related to user policy to make sure that the notification
+  // isn't skipped and that the fetch is started within the minimal schedule
+  // interval.
+  ClearUserPolicyPrefs();
+
+  // Restart the app to disable user policy and allow turning on Sync for the
+  // managed account.
+  AppLaunchConfiguration config;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Turn on Sync for managed account. This won't trigger the user policy fetch.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
+
+  // Restart the browser while keeping sign-in by preserving the identity of the
+  // managed account.
+  config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
+      [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify that the notification dialog is there.
+  VerifyTheNotificationUI();
+
+  // Tap on the "Sign Out and Clear Data" button to dismiss the alert dialog
+  // without triggering the user policy fetch.
+  NSString* label =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(label),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          nil)] performAction:grey_tap()];
+
+  WaitForVisibleChromeManagementURL();
 }
 
 // Tests that the managed accout confirmation dialog is shown in the
