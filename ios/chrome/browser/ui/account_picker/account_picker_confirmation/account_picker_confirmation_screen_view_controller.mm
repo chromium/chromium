@@ -98,8 +98,9 @@ CGFloat GetPixelLength() {
   [_activityIndicatorView startAnimating];
   // Disable buttons.
   _identityButtonControl.enabled = NO;
+  _askEveryTimeSwitch.enabled = NO;
   _primaryButton.enabled = NO;
-  SetConfigurationTitle(_primaryButton, @"");
+  SetConfigurationTitle(_primaryButton, @" ");
 }
 
 - (void)stopSpinner {
@@ -111,6 +112,7 @@ CGFloat GetPixelLength() {
   _identityButtonControl.hidden = NO;
   // Enable buttons.
   _identityButtonControl.enabled = YES;
+  _askEveryTimeSwitch.enabled = YES;
   _primaryButton.enabled = YES;
   DCHECK(_submitString);
   SetConfigurationTitle(_primaryButton, _submitString);
