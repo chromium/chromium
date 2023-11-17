@@ -4,14 +4,12 @@
 ++++++[section]
 ++++++++[section]
 ++++++++++[section]
-++++++++++++[push button] name='play' xml-roles:button
-++++++++++++[section] name='elapsed time: 0:00'
-++++++++++++++[static] name='0:00'
-++++++++++++[section] name='remaining time: / 0:00'
-++++++++++++++[static] name='/ 0:00'
-++++++++++++[slider] name='audio time scrubber 0:00 / 0:00' horizontal xml-roles:slider
+++++++++++++[push button] name='play'
+++++++++++++++[section]
+++++++++++++[slider] name='audio time scrubber' description='total time: 0:00' horizontal description:total time: 0:00 description-from:aria-description current=0.000000 minimum=0.000000 maximum=0.313469
 ++++++++++++[section]
 ++++++++++++++[section]
-++++++++++++++[slider] name='volume' horizontal xml-roles:slider
-++++++++++++++[push button] name='mute' xml-roles:button
-++++++++++++[push button] name='show more media controls' description='more options' xml-roles:button
+++++++++++++++[slider] name='volume' horizontal current=100.000000 minimum=0.000000 maximum=100.000000
+++++++++++++++[push button] name='mute'
+++++++++++++[push button] name='show more media controls' description='more options' description-from:tooltip
+++++++++++++++[section]

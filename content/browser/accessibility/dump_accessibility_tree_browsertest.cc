@@ -1585,9 +1585,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("aside-inside-section-role-generic.html"));
 }
 
-// https://crbug.com/923993
-// Super flaky with NetworkService.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityAudio) {
+// TODO(crbug.com/1502854): Fix failure on android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityAudio DISABLED_AccessibilityAudio
+#else
+#define MAYBE_AccessibilityAudio AccessibilityAudio
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityAudio) {
   RunHtmlTest(FILE_PATH_LITERAL("audio.html"));
 }
 

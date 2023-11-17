@@ -1,8 +1,12 @@
-#<skip -- crbug.com/281952>
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.view.View focusable name='0:00'
-++++++android.view.View name='audio'
-++++++++android.view.View name='audio'
-++++++++++android.widget.Button clickable focusable name='play'
-++++++++++android.widget.SeekBar clickable focusable range name='movie time scrubber'
+++++android.view.View focusable
+++++++android.view.View
+++++++++android.view.View
+++++++++++android.view.View
+++++++++++++android.widget.Button role_description='button' clickable focusable name='play'
+++++++++++++android.widget.SeekBar role_description='slider' clickable focusable range name='elapsed time: 0:00, audio time scrubber' hint='total time: 0:00'
+++++++++++++android.view.View
+++++++++++++++android.widget.TextView
+++++++++++++++android.widget.Button role_description='button' clickable focusable name='mute'
+++++++++++++android.widget.Button role_description='menu pop up button' clickable focusable name='show more media controls' hint='more options'
