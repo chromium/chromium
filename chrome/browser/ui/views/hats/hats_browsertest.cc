@@ -18,7 +18,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -49,7 +49,7 @@ const SurveyStringData kHatsNextTestSurveyProductSpecificStringData{
 
 // The locale expected by the test survey. This value is checked in
 // hats_next_mock.html for tests that expect a loaded response.
-const std::string kTestLocale = "lt";
+const char kTestLocale[] = "lt";
 
 }  // namespace
 
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
   // Because no loaded state was provided, only a rejection should be recorded.
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoRejectedByHatsService, 1);
 }
 
 // Test that a survey which first reports as loaded, then reports closure, only
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
   // The only recorded sample should indicate that the survey was shown.
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kYes, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kYes, 1);
 }
 
 // Test that if the survey does not indicate it is ready for display before the
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
   EXPECT_EQ(1, failure_count);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoSurveyUnreachable, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {

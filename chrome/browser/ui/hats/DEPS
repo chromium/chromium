@@ -6,5 +6,5 @@ specific_include_rules = {
 
   "trust_safety_sentiment_service_browsertest\.cc": [
     "+chrome/browser/ui/views/page_info",
-  ]
+  ],
 }

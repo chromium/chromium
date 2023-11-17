@@ -21,7 +21,6 @@ extern const char kChooserBluetoothOverviewURL[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kEmbeddedContentHelpCenterURL[];
 
-#if !BUILDFLAG(IS_ANDROID)
 // The key in `Product Specific String Data` under which the disposition of the
 // permission prompt is recorded in the prompt HaTS survey.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -71,7 +70,6 @@ extern const char kPermissionsPromptSurveyHadGestureKey[];
 // restriction to specific channels (typically to stable).
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyReleaseChannelKey[];
-#endif
 
 // TODO(crbug.com/1410489): Remove the code related to unused site permissions
 // from Android builds.

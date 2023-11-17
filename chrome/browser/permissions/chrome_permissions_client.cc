@@ -34,6 +34,9 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/channel_info.h"
@@ -44,6 +47,7 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -73,10 +77,7 @@
 #include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
-#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/vector_icons/vector_icons.h"
 #endif
 
@@ -261,11 +262,10 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
   return PermissionsClient::GetOverrideIconId(request_type);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Triggers the prompt HaTS survey if enabled by field trials for this
 // combination of prompt parameters.
 void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
-    content::BrowserContext* context,
+    content::WebContents* web_contents,
     permissions::RequestType request_type,
     absl::optional<permissions::PermissionAction> action,
     permissions::PermissionPromptDisposition prompt_disposition,
@@ -275,7 +275,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     bool is_post_prompt,
     const GURL& gurl,
     base::OnceCallback<void()> hats_shown_callback) {
-  Profile* profile = Profile::FromBrowserContext(context);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   absl::optional<GURL> recorded_gurl =
       profile->GetPrefs()->GetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)
@@ -315,12 +316,13 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
   auto survey_data = permissions::PermissionHatsTriggerHelper::
       SurveyProductSpecificData::PopulateFrom(prompt_parameters);
 
-  hats_service->LaunchSurvey(trigger_and_probability->first,
-                             std::move(hats_shown_callback), base::DoNothing(),
-                             survey_data.survey_bits_data,
-                             survey_data.survey_string_data);
+  hats_service->LaunchSurveyForWebContents(
+      trigger_and_probability->first, web_contents,
+      survey_data.survey_bits_data, survey_data.survey_string_data,
+      std::move(hats_shown_callback), base::DoNothing());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 permissions::PermissionIgnoredReason
 ChromePermissionsClient::DetermineIgnoreReason(
     content::WebContents* web_contents) {
@@ -384,7 +386,6 @@ void ChromePermissionsClient::OnPromptResolved(
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   auto content_setting_type = RequestTypeToContentSettingsType(request_type);
   if (content_setting_type.has_value()) {
     permissions::PermissionHatsTriggerHelper::
@@ -393,12 +394,10 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 
   TriggerPromptHatsSurveyIfEnabled(
-      web_contents->GetBrowserContext(), request_type,
-      absl::make_optional(action), prompt_disposition,
-      prompt_disposition_reason, gesture_type,
+      web_contents, request_type, absl::make_optional(action),
+      prompt_disposition, prompt_disposition_reason, gesture_type,
       absl::make_optional(prompt_display_duration), true,
       web_contents->GetLastCommittedURL(), base::DoNothing());
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 absl::optional<bool>
