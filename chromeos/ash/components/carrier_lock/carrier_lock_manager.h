@@ -98,15 +98,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
   // Return current status of modem lock configuration
   static ModemLockStatus GetModemLockStatus();
 
- private:
-  friend class CarrierLockManagerTest;
-
   static std::unique_ptr<CarrierLockManager> CreateForTesting(
       PrefService*,
       Network3gppHandler*,
       std::unique_ptr<FcmTopicSubscriber>,
       std::unique_ptr<PsmClaimVerifier>,
       std::unique_ptr<ProvisioningConfigFetcher>);
+
+ private:
+  friend class CarrierLockManagerTest;
 
   // ash::NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState*) override;

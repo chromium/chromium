@@ -165,6 +165,7 @@ suite('<settings-internet-detail-subpage>', () => {
       type: NetworkType.kCellular,
       managedNetworkAvailable: false,
       serial: undefined,
+      isCarrierLocked: false,
     };
   }
 

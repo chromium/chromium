@@ -638,6 +638,7 @@ suite('<os-settings-menu>', () => {
         type: NetworkType.kCellular,
         managedNetworkAvailable: false,
         serial: undefined,
+        isCarrierLocked: false,
       };
     }
 

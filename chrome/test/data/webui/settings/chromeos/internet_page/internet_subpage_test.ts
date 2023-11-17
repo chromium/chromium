@@ -78,6 +78,7 @@ suite('<settings-internet-subpage>', () => {
       simAbsent: false,
       managedNetworkAvailable: false,
       serial: undefined,
+      isCarrierLocked: false,
     };
   }
 

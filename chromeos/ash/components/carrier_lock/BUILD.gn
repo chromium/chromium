@@ -28,8 +28,6 @@ component("carrier_lock") {
   ]
 
   sources = [
-    "//chromeos/ash/components/network/fake_network_3gpp_handler.cc",
-    "//chromeos/ash/components/network/fake_network_3gpp_handler.h",
     "carrier_lock_manager.cc",
     "carrier_lock_manager.h",
     "common.h",

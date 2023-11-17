@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -648,6 +649,13 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     if (features::IsCellularCarrierLockEnabled() && serial_number &&
         !serial_number->empty()) {
       result->serial = std::string(serial_number.value());
+    }
+    if (features::IsCellularCarrierLockEnabled()) {
+      carrier_lock::ModemLockStatus status =
+          carrier_lock::CarrierLockManager::GetModemLockStatus();
+      if (status == carrier_lock::ModemLockStatus::kCarrierLocked) {
+        result->is_carrier_locked = true;
+      }
     }
   }
   return result;

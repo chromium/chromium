@@ -21,10 +21,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
+#include "chromeos/ash/components/carrier_lock/fake_fcm_topic_subscriber.h"
+#include "chromeos/ash/components/carrier_lock/fake_provisioning_config_fetcher.h"
+#include "chromeos/ash/components/carrier_lock/fake_psm_claim_verifier.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/fake_network_3gpp_handler.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
@@ -297,6 +302,7 @@ class CrosNetworkConfigTest : public testing::Test {
   CrosNetworkConfigTest& operator=(const CrosNetworkConfigTest&) = delete;
 
   ~CrosNetworkConfigTest() override {
+    carrier_lock_manager_.reset();
     cros_network_config_test_helper_.reset();
     cros_network_config_.reset();
     helper_.reset();
@@ -319,6 +325,26 @@ class CrosNetworkConfigTest : public testing::Test {
         network_handler->technology_state_controller());
     SetupPolicy();
     SetupNetworks();
+  }
+
+  void SetupCarrierLock(bool is_locked) {
+    ash::carrier_lock::CarrierLockManager::RegisterLocalPrefs(
+        local_state_.registry());
+    if (is_locked) {
+      local_state_.SetBoolean(carrier_lock::kDisableManagerPref, false);
+      local_state_.SetString(carrier_lock::kFcmTopicPref, "testtopic");
+    }
+    fake_modem_handler_ = std::make_unique<FakeNetwork3gppHandler>();
+    fake_config_fetcher_ =
+        std::make_unique<carrier_lock::FakeProvisioningConfigFetcher>();
+    fake_psm_verifier_ = std::make_unique<carrier_lock::FakePsmClaimVerifier>();
+    fake_fcm_subscriber_ =
+        std::make_unique<carrier_lock::FakeFcmTopicSubscriber>();
+
+    carrier_lock_manager_ = carrier_lock::CarrierLockManager::CreateForTesting(
+        &local_state_, fake_modem_handler_.get(),
+        std::move(fake_fcm_subscriber_), std::move(fake_psm_verifier_),
+        std::move(fake_config_fetcher_));
   }
 
   void SetupPolicy() {
@@ -1181,6 +1207,13 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<CrosNetworkConfigTestHelper> cros_network_config_test_helper_;
   std::unique_ptr<CrosNetworkConfigTestObserver> observer_;
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
+  std::unique_ptr<FakeNetwork3gppHandler> fake_modem_handler_;
+  std::unique_ptr<carrier_lock::FakeFcmTopicSubscriber> fake_fcm_subscriber_;
+  std::unique_ptr<carrier_lock::FakePsmClaimVerifier> fake_psm_verifier_;
+  std::unique_ptr<carrier_lock::FakeProvisioningConfigFetcher>
+      fake_config_fetcher_;
+
   std::string wifi1_path_;
   std::string vpn_path_;
 };
@@ -1561,6 +1594,44 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerialFeatureDisable) {
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
   EXPECT_EQ(kCellularTestImei, cellular->imei);
   EXPECT_EQ(absl::nullopt, cellular->serial);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierLocked) {
+  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  SetupCarrierLock(true);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  ASSERT_TRUE(cellular->is_carrier_locked);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
+  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  SetupCarrierLock(false);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  ASSERT_FALSE(cellular->is_carrier_locked);
 }
 
 // Tests that no VPN device state is returned by GetDeviceStateList if no VPN
