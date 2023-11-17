@@ -633,9 +633,9 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kScrollPositionChanged));
-  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   SendPendingAccessibilityEvents();
 
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());

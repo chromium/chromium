@@ -650,16 +650,8 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   }
 
   const AXObject* ancestor = this;
-  bool can_repair_parents = AXObjectCache().IsProcessingDeferredEvents();
 
   while (true) {
-    if (can_repair_parents && ancestor->IsMissingParent()) {
-      // RepairMissingParent() will finish setting the
-      // "has dirty descendants" flag the rest of the way of the parent chain
-      // by calling back into this method.
-      ancestor->RepairMissingParent();
-      break;
-    }
     ancestor = ancestor->CachedParentObject();
     if (!ancestor) {
       break;
@@ -708,15 +700,22 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
 }
 
 void AXObject::Init(AXObject* parent) {
-#if DCHECK_IS_ON()
-  DCHECK(!parent_) << "Should not already have a cached parent:"
-                   << "\n* Child = " << GetNode() << " / " << GetLayoutObject()
-                   << "\n* Parent = " << parent_->ToString(true, true)
-                   << "\n* Equal to passed-in parent? " << (parent == parent_);
-  DCHECK(!is_initializing_);
+  CHECK(!parent_) << "Should not already have a cached parent:"
+                  << "\n* Child = " << GetNode() << " / " << GetLayoutObject()
+                  << "\n* Parent = " << parent_->ToString(true, true)
+                  << "\n* Equal to passed-in parent? " << (parent == parent_);
+  CHECK(parent || IsRoot())
+      << "The following node should have a parent: " << GetNode();
   CHECK(!AXObjectCache().IsFrozen());
+#if DCHECK_IS_ON()
+  CHECK(!is_initializing_);
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
 #endif  // DCHECK_IS_ON()
+
+  // Determine the parent as soon as possible.
+  // Every AXObject must have a parent unless it's the root.
+  SetParent(parent);
+
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
@@ -735,12 +734,6 @@ void AXObject::Init(AXObject* parent) {
     DCHECK(!optgroup->OwnerSelectElement()->UsesMenuList());
   }
 #endif  // DCHECK_IS_ON()
-
-  // Determine the parent as soon as possible.
-  // Every AXObject must have a parent unless it's the root.
-  SetParent(parent);
-  DCHECK(parent_ || IsRoot())
-      << "The following node should have a parent: " << GetNode();
 
   // The parent cannot have children. This object must be destroyed.
   DCHECK(!parent_ || parent_->CanHaveChildren())
@@ -842,8 +835,7 @@ bool AXObject::IsRoot() const {
 }
 
 void AXObject::SetParent(AXObject* new_parent) const {
-// TODO(crbug.com/1353205): Re-enable DCHECK for all platforms.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if DCHECK_IS_ON()
   if (!new_parent && !IsRoot()) {
     std::ostringstream message;
     message << "Parent cannot be null, except at the root."
@@ -933,27 +925,6 @@ bool AXObject::IsMissingParent() const {
   return false;
 }
 
-void AXObject::RepairMissingParent() const {
-  DCHECK(IsMissingParent());
-  DCHECK(!AXObjectCache().HasBeenDisposed());
-
-  AXObject* new_parent = ComputeParent();
-  if (!new_parent) {
-    // If no parent is possible, this is no longer part of the tree.
-    AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ true);
-    return;
-  }
-
-  SetParent(new_parent);
-
-  SANITIZER_CHECK(!parent_ ||
-                  parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
-                  RoleValue() == ax::mojom::blink::Role::kDocument)
-      << "An iframe can only have a document child."
-      << "\n* Child = " << ToString(true, true)
-      << "\n* Parent =  " << parent_->ToString(true, true);
-}
-
 // In many cases, ComputeParent() is not called, because the parent adding
 // the parent adding the child will pass itself into AXObjectCacheImpl.
 // ComputeParent() is still necessary because some parts of the code,
@@ -965,8 +936,8 @@ AXObject* AXObject::ComputeParent() const {
   AXObject* ax_parent = ComputeParentOrNull();
 
   CHECK(!ax_parent || !ax_parent->IsDetached())
-      << "Computed parent should never be detached:"
-      << "\n* Child: " << GetNode()
+      << "Computed parent should never be detached:" << "\n* Child: "
+      << ToString(true, true)
       << "\n* Parent: " << ax_parent->ToString(true, true);
 
   return ax_parent;
@@ -1014,12 +985,9 @@ AXObject* AXObject::ComputeParentOrNull() const {
 // static
 Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
                                               Node* node) {
-  if (!node) {
+  if (!node || !node->isConnected()) {
     return nullptr;
   }
-
-  DCHECK(node->isConnected())
-      << "Should not call with disconnected node: " << node;
 
   // A document's parent should be the page popup owner, if any, otherwise null.
   if (auto* document = DynamicTo<Document>(node)) {
@@ -2922,7 +2890,7 @@ bool AXObject::IsNonAtomicTextField() const {
 AXObject* AXObject::GetTextFieldAncestor() {
   AXObject* ancestor = this;
   while (ancestor && !ancestor->IsTextField()) {
-    ancestor = ancestor->ParentObject();
+    ancestor = ancestor->CachedParentObject();
   }
   return ancestor;
 }
@@ -3122,11 +3090,13 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_values_need_update_ = false;
 
-#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
-  DCHECK(!AXObjectCache().IsFrozen())
+  CHECK(!AXObjectCache().IsFrozen())
       << "All cached values must be updated before the tree is frozen "
          "serialization, because changes to the ignored state could cause tree "
          "structure changes.";
+  CHECK(AXObjectCache().IsProcessingDeferredEvents());
+
+#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!is_computing_role_)
       << "Updating cached values while computing a role is dangerous as it "
          "can lead to code that uses the AXObject before it is ready.";
@@ -3142,9 +3112,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (IsMissingParent()) {
-    RepairMissingParent();
-  }
+  CHECK(!IsMissingParent()) << "Missing parent: " << ToString(true, true);
 
   // Mock objects are created by, owned and dependent on their parents.
   // If the mock object's values change, recompute the parent's as well.
@@ -5674,18 +5642,7 @@ AXObject* AXObject::ParentObject() const {
     return nullptr;
   }
 
-  // This can happen when an object in the middle of the tree is suddenly
-  // detached, but the children still exist. One example of this is when
-  // a <select size="1"> changes to <select size="2">, where the
-  // Role::kMenuListPopup is detached.
-  if (IsMissingParent()) {
-    RepairMissingParent();
-    // If the parent cannot be repaired, the entire subtree rooted at this node
-    // will be detached.
-    if (IsDetached()) {
-      return nullptr;
-    }
-  }
+  CHECK(!IsMissingParent()) << "Missing parent: " << ToString(true, true);
 
   return parent_.Get();
 }
@@ -5795,27 +5752,14 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
-  DCHECK(!AXObjectCache().IsFrozen())
+  CHECK(!AXObjectCache().IsFrozen())
       << "Object should have already had its children updated in "
          "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
       << ToString(true, true);
 
-#if DCHECK_IS_ON()
-  // Ensure there are no unexpected, preexisting children, before we add more.
-  if (IsMenuList()) {
-    // AXMenuList is special and keeps its popup child, even when cleared.
-    DCHECK_LE(children_.size(), 1U);
-  } else {
-    // Ensure children have been correctly cleared.
-    DCHECK_EQ(children_.size(), 0U)
-        << "\nChildren should have been cleared in SetNeedsToUpdateChildren(): "
-        << GetNode() << "  with " << children_.size() << " children";
-  }
-#endif
-
-  CHECK(!cached_values_need_update_ || !AXObjectCache().IsFrozen());
   UpdateCachedAttributeValuesIfNeeded();
 
+  ClearChildren();
   AddChildren();
 }
 
@@ -5828,12 +5772,32 @@ void AXObject::SetNeedsToUpdateChildren() const {
                        << ToString(true, true);
   CHECK(!AXObjectCache().IsFrozen());
   CHECK(!AXObjectCache().HasBeenDisposed());
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_adding_children_)
+      << "Should not invalidate children while adding them: "
+      << ToString(true, true);
+#endif
+
   if (children_dirty_) {
+#if DCHECK_IS_ON()
+    if (!AXObjectCache().EntireDocumentIsDirty()) {
+      // Already dirty. In this case, the first included parent should have
+      // the "has dirty descendants" flag.
+      // This check is skipped when marking the entire document dirty, because
+      // that path only marks the root as having dirty descendants.
+      AXObject* ancestor = CachedParentObject();
+      while (ancestor && !ancestor->LastKnownIsIncludedInTreeValue()) {
+        ancestor = ancestor->CachedParentObject();
+      }
+      DCHECK(!ancestor || ancestor->HasDirtyDescendants());
+    }
+#endif
     return;
   }
+
   CHECK(!AXObjectCache().UpdatingTree());
+
   children_dirty_ = true;
-  ClearChildren();
   SetAncestorsHaveDirtyDescendants();
 }
 
@@ -5943,8 +5907,9 @@ void AXObject::ClearChildren() const {
     // also be a descendant (unlike children_, parent_ does not skip levels).
     // Another case where the parent is not the same is when the child has been
     // reparented using aria-owns.
-    if (child->CachedParentObject() == this)
+    if (child->CachedParentObject() == this) {
       child->DetachFromParent();
+    }
   }
 
   children_.clear();
@@ -7627,9 +7592,9 @@ void AXObject::PreSerializationConsistencyCheck() {
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
   // TODO(https://crbug.com/1480627): convert to CHECKs.
-  DCHECK(AXObjectCache().IsFrozen());
-  DCHECK(!NeedsToUpdateCachedValues());
-  DCHECK(AccessibilityIsIncludedInTree())
+  CHECK(AXObjectCache().IsFrozen());
+  CHECK(!NeedsToUpdateCachedValues());
+  CHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.
@@ -7663,6 +7628,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
     // Add useful HTML element info, like <div.myClass#myId>.
     if (GetNode()) {
+      string_builder =
+          string_builder + " node#" + String::Number(GetNode()->GetDomNodeId());
       string_builder = string_builder + " " + GetNodeString(GetNode());
       if (IsRoot()) {
         string_builder = string_builder + " isRoot";
@@ -7771,15 +7738,31 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isInert";
     if (children_dirty_) {
       string_builder = string_builder + " needsToUpdateChildren";
-    } else if (!children_.empty()) {
+    }
+    if (!children_.empty()) {
       string_builder = string_builder + " #children=";
       string_builder = string_builder + String::Number(children_.size());
     }
-    if (parent_) {
-      if (parent_->HasDirtyDescendants()) {
-        string_builder = string_builder + " parentHasDirtyDescendants";
-      } else if (children_dirty_) {
-        string_builder = string_builder + " parentMissingHasDirtyDescendants";
+    if (HasDirtyDescendants()) {
+      string_builder = string_builder + " hasDirtyDescendants";
+    }
+    AXObject* included_parent = parent_;
+    while (included_parent &&
+           !included_parent->LastKnownIsIncludedInTreeValue()) {
+      included_parent = included_parent->CachedParentObject();
+    }
+    if (included_parent) {
+      if (!included_parent->HasDirtyDescendants() && children_dirty_) {
+        string_builder =
+            string_builder + " includedParentMissingHasDirtyDescendants";
+      }
+      if (LastKnownIsIncludedInTreeValue()) {
+        // All cached children must be included.
+        const HeapVector<Member<AXObject>>& siblings =
+            included_parent->CachedChildrenIncludingIgnored();
+        if (!siblings.Contains(this)) {
+          string_builder = string_builder + " missingFromParentsChildren";
+        }
       }
     } else if (IsMissingParent()) {
       string_builder = string_builder + " isMissingParent";

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div class="container">
+    <div role="group">
+        <ul id="future_parent" aria-owns="future_child"></ul>
+    </div>
+
+    <fieldset>
+        <p>
+          <mark></mark>
+        </p>
+    </fieldset>
+</div>
+
+
+
+<script>
+test(function(t) {
+    const axFutureParent = accessibilityController.accessibleElementById("future_parent");
+    assert_equals(axFutureParent.childrenCount, 0);
+    const futureParent = document.getElementById("future_parent");
+    const child = document.createElement("li");
+    child.id = "future_child";
+    assert_equals(axFutureParent.childrenCount, 0, "before appending child");
+
+    document.querySelector('mark').appendChild(child);
+    assert_equals(axFutureParent.childrenCount, 1, "after appending child");
+    assert_array_equals(futureParent.ariaOwnsElements, [child]);
+}, "Aria-owns is dynamically recomputed.");
+</script>
+</script>
