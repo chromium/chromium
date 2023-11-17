@@ -366,7 +366,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::ET_GESTURE_SCROLL_END ||
       event->type() == ui::ET_SCROLL_FLING_START ||
       event->type() == ui::ET_GESTURE_END) {
-    if (multitask_menu_ &&
+    if (multitask_menu_ && !multitask_menu_->GetWidget()->IsClosed() &&
         multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
             views::View::ConvertPointToScreen(this, event->location()))) {
       event->SetHandled();

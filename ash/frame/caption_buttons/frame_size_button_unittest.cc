@@ -1136,6 +1136,35 @@ TEST_F(MultitaskMenuTest, PressOnSizeButtonReleaseOnMultitaskMenu) {
   }
 }
 
+// Tests that if the window is right snapped, and we try to fullscreen the
+// window via touch-dragging the multitask menu, the window is properly
+// fullscreened. Regression test for http://b/304437185.
+TEST_F(MultitaskMenuTest, FullscreenFromTouchMultitaskMenu) {
+  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  window_state()->OnWMEvent(&snap_secondary);
+  ASSERT_TRUE(window_state()->IsSnapped());
+
+  // Long press on the size button until the multitask menu is shown.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kMultitaskMenuBubbleWidgetName));
+  event_generator->PressTouch(size_button()->GetBoundsInScreen().CenterPoint());
+  waiter.WaitIfNeededAndGet();
+
+  // Without releasing, drag to the full button and release. Test that we are
+  // in fullscreen state.
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  event_generator->MoveTouch(
+      MultitaskMenuViewTestApi(multitask_menu->multitask_menu_view())
+          .GetFullButton()
+          ->GetBoundsInScreen()
+          .CenterPoint());
+  event_generator->ReleaseTouch();
+  EXPECT_TRUE(window_state()->IsFullscreen());
+}
+
 // Tests that focus traversal with the tab and arrow keys works as expected.
 TEST_F(MultitaskMenuTest, TabAndArrowKeyTraversal) {
   // First assert that all four buttons are visible with the display size and
