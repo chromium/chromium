@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "media/audio/android/audio_manager_android.h"
 
@@ -23,8 +22,7 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
       ::media::AudioLogFactory* audio_log_factory,
       CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector);
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
   ~CastAudioManagerAndroid() override;
 
   // AudioManager implementation.

@@ -14,22 +14,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "chromecast/common/mojom/constants.mojom.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
-#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/test/mock_cma_backend.h"
 #include "chromecast/media/api/test/mock_cma_backend_factory.h"
 #include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
-#include "chromecast/media/cma/test/mock_multiroom_manager.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_ANDROID)
@@ -70,8 +62,7 @@ int OnMoreData(base::TimeDelta delay,
 namespace chromecast {
 namespace media {
 
-class CastAudioManagerTest : public testing::Test,
-                             public chromecast::mojom::ServiceConnector {
+class CastAudioManagerTest : public testing::Test {
  public:
   CastAudioManagerTest() : audio_thread_("CastAudioThread") {}
 
@@ -82,16 +73,6 @@ class CastAudioManagerTest : public testing::Test,
     audio_manager_->Shutdown();
     RunThreadsUntilIdle();
     audio_thread_.Stop();
-  }
-
-  // chromecast::mojom::ServiceConnector implementation:
-  void Connect(const std::string& service_name,
-               mojo::GenericPendingReceiver receiver) override {
-    if (service_name != chromecast::mojom::kChromecastServiceName)
-      return;
-
-    if (auto r = receiver.As<mojom::MultiroomManager>())
-      multiroom_manager_.Bind(r.PassPipe());
   }
 
  protected:
@@ -119,7 +100,7 @@ class CastAudioManagerTest : public testing::Test,
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), &connector_, use_mixer,
+        audio_thread_.task_runner(), use_mixer,
         true /* force_use_cma_backend_for_output*/
         ));
     // A few AudioManager implementations post initialization tasks to
@@ -169,12 +150,9 @@ class CastAudioManagerTest : public testing::Test,
   std::unique_ptr<MockCmaBackend> mock_cma_backend_;
   std::unique_ptr<MockCmaBackend::AudioDecoder> mock_audio_decoder_;
 
-  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<CastAudioManager> audio_manager_;
   std::unique_ptr<::media::AudioDeviceInfoAccessorForTests>
       device_info_accessor_;
-  mojo::ReceiverSet<chromecast::mojom::ServiceConnector> connector_receivers_;
-  MockMultiroomManager multiroom_manager_;
 };
 
 TEST_F(CastAudioManagerTest, HasValidOutputStreamParameters) {

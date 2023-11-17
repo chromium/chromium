@@ -35,8 +35,6 @@ cast_source_set("audio_output_service") {
     ":receiver",
     "//base",
     "//chromecast/base",
-    "//chromecast/common/mojom",
-    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media/api",
     "//chromecast/media/audio/audio_output_service:constants",
     "//chromecast/media/audio/audio_output_service:output_connection",
@@ -44,7 +42,6 @@ cast_source_set("audio_output_service") {
     "//chromecast/media/audio/net:common",
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
-    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -57,7 +54,6 @@ cast_source_set("receiver_instance") {
   deps = [
     ":audio_output_service",
     "//base",
-    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media/audio:audio_io_thread",
   ]
 }

@@ -81,7 +81,6 @@ cast_source_set("cma_audio_output") {
   deps = [
     "//base",
     "//chromecast/base",
-    "//chromecast/common/mojom",
     "//chromecast/media/base",
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
@@ -158,8 +157,6 @@ cast_source_set("audio") {
     ":cma_audio_output",
     "//base",
     "//chromecast/base",
-    "//chromecast/common/mojom",
-    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media/api",
     "//chromecast/media/audio/capture_service:common",
     "//chromecast/media/audio/capture_service:receiver",
@@ -175,7 +172,6 @@ cast_source_set("audio") {
     "//chromecast/public/media",
     "//media",
     "//media:shared_memory_support",
-    "//services/service_manager/public/cpp",
   ]
 
   if (use_alsa) {

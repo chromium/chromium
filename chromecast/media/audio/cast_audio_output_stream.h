@@ -14,12 +14,9 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 namespace media {
@@ -132,13 +129,10 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   class MixerServiceWrapper;
 
   void FinishClose();
-  void OnGetMultiroomInfo(const std::string& application_session_id,
-                          chromecast::mojom::MultiroomInfoPtr multiroom_info);
 
   double volume_;
   AudioOutputState audio_thread_state_;
   CastAudioManagerHelper* const audio_manager_;
-  external_service_support::ExternalConnector* const connector_;
   const ::media::AudioParameters audio_params_;
   // Valid |device_id_| are kDefaultDeviceId, and kCommunicationsDeviceId
   const std::string device_id_;
@@ -146,15 +140,8 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   // empty string if group_id is unused.
   const std::string group_id_;
   const bool use_mixer_service_;
-  mojo::Remote<chromecast::mojom::MultiroomManager> multiroom_manager_;
   std::unique_ptr<CmaAudioOutputStream> cma_wrapper_;
   std::unique_ptr<MixerServiceWrapper> mixer_service_wrapper_;
-
-  // Hold bindings to Start and SetVolume if they were called before Open
-  // completed. After initialization has finished, these bindings will be
-  // called.
-  base::OnceCallback<void()> pending_start_;
-  base::OnceCallback<void()> pending_volume_;
 
   THREAD_CHECKER(audio_thread_checker_);
   base::WeakPtr<CastAudioOutputStream> audio_weak_this_;

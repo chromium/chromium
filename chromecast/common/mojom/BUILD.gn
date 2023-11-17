@@ -20,7 +20,6 @@ mojom("mojom") {
     "media_caps.mojom",
     "memory_pressure.mojom",
     "metrics_helper.mojom",
-    "multiroom.mojom",
     "queryable_data_store.mojom",
     "service_connector.mojom",
     "settings_ui.mojom",
@@ -43,16 +42,6 @@ mojom("mojom") {
       ]
       traits_headers = [ "application_media_capabilities_traits.h" ]
       traits_public_deps = [ "//chromecast/base" ]
-    },
-    {
-      types = [
-        {
-          mojom = "chromecast.mojom.AudioChannel"
-          cpp = "::chromecast::media::AudioChannel"
-        },
-      ]
-      traits_headers = [ "multiroom_mojom_traits.h" ]
-      traits_public_deps = [ "//chromecast/public/media" ]
     },
   ]
 }

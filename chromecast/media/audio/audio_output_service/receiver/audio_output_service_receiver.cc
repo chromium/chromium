@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_output_service/constants.h"
 #include "chromecast/media/audio/audio_output_service/output_socket.h"
@@ -75,7 +74,7 @@ class AudioOutputServiceReceiver::Stream
           weak_factory_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault(),
           receiver_->media_task_runner(), message.backend_params(),
-          receiver_->cma_backend_factory(), receiver_->connector()));
+          receiver_->cma_backend_factory()));
     }
 
     if (message.has_set_start_timestamp()) {
@@ -221,17 +220,14 @@ class AudioOutputServiceReceiver::Stream
 
 AudioOutputServiceReceiver::AudioOutputServiceReceiver(
     CmaBackendFactory* cma_backend_factory,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    std::unique_ptr<external_service_support::ExternalConnector> connector)
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : Receiver(
           audio_output_service::kDefaultAudioOutputServiceUnixDomainSocketPath,
           audio_output_service::kDefaultAudioOutputServiceTcpPort),
       cma_backend_factory_(cma_backend_factory),
-      media_task_runner_(std::move(media_task_runner)),
-      connector_(std::move(connector)) {
+      media_task_runner_(std::move(media_task_runner)) {
   DCHECK(cma_backend_factory_);
   DCHECK(media_task_runner_);
-  DCHECK(connector_);
 }
 
 AudioOutputServiceReceiver::~AudioOutputServiceReceiver() = default;
