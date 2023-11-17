@@ -50,12 +50,14 @@ BASE_FEATURE(kAVFoundationOverlays,
              "avfoundation-overlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
 // Whether the presentation should be delayed until the next CVDisplayLink
 // callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
 // effect if kCVDisplayLinkBeginFrameSource is disabled.
 BASE_FEATURE(kDelayOnFramePresent,
              "DelayOnFramePresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
