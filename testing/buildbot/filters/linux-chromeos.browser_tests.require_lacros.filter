@@ -4,6 +4,7 @@
 *Magn*.*
 AccessibilityExtension*
 AccessibilityHighlightsBrowserTest.*
+AppServiceAppWindowLacrosBrowserTest*
 Autoclick*
 AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
