@@ -467,8 +467,16 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
 // Tests that the SearchSuggestionService can trigger prerendering after the
 // corresponding prefetch request succeeds.
+// TODO(crbug.com/1503002): enable the flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrerenderHintReceivedBeforeSucceed \
+  DISABLED_PrerenderHintReceivedBeforeSucceed
+#else
+#define MAYBE_PrerenderHintReceivedBeforeSucceed \
+  PrerenderHintReceivedBeforeSucceed
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       PrerenderHintReceivedBeforeSucceed) {
+                       MAYBE_PrerenderHintReceivedBeforeSucceed) {
   SearchPrefetchServiceFactory::GetForProfile(chrome_test_utils::GetProfile(this));
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
