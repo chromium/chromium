@@ -1168,6 +1168,19 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
   EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
 }
 
+// Test that month should be empty for Preview if the form control type of the
+// field is `kSelectOne`, i.e., is a combobox or listbox.
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonthOneSelectOne_Empty) {
+  AutofillField field;
+  field.form_control_type = FormControlType::kSelectOne;
+  field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_EXP_MONTH);
+
+  CreditCard card = test::GetVirtualCard();
+  std::optional<std::u16string> value_to_fill = GetValueForCreditCard(
+      card, /*cvc=*/u"", kAppLocale, mojom::ActionPersistence::kPreview, field);
+  EXPECT_FALSE(value_to_fill.has_value());
+}
+
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
@@ -1187,6 +1200,36 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
+}
+
+// Test that 4 digit year should be empty for Preview if the form control type
+// of the field is `kSelectOne`, i.e., is a combobox or listbox.
+TEST_F(FieldFillingPaymentsUtilTest,
+       PreviewVirtualFourDigitYearOnSelectOne_Empty) {
+  AutofillField field;
+  field.form_control_type = FormControlType::kSelectOne;
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           CREDIT_CARD_EXP_4_DIGIT_YEAR);
+
+  CreditCard card = test::GetVirtualCard();
+  std::optional<std::u16string> value_to_fill = GetValueForCreditCard(
+      card, /*cvc=*/u"", kAppLocale, mojom::ActionPersistence::kPreview, field);
+  EXPECT_FALSE(value_to_fill.has_value());
+}
+
+// Test that 2 digit year should be empty for Preview if the form control type
+// of the field is `kSelectOne`, i.e., is a combobox or listbox.
+TEST_F(FieldFillingPaymentsUtilTest,
+       PreviewVirtualTwoDigitYearOnSelectOne_Empty) {
+  AutofillField field;
+  field.form_control_type = FormControlType::kSelectOne;
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           CREDIT_CARD_EXP_2_DIGIT_YEAR);
+
+  CreditCard card = test::GetVirtualCard();
+  std::optional<std::u16string> value_to_fill = GetValueForCreditCard(
+      card, /*cvc=*/u"", kAppLocale, mojom::ActionPersistence::kPreview, field);
+  EXPECT_FALSE(value_to_fill.has_value());
 }
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {

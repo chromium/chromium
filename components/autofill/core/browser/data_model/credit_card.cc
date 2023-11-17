@@ -530,7 +530,6 @@ bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
 
 // static
 std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
-  DCHECK(num_dots > 0);
   std::u16string dots;
   dots.reserve(sizeof(kMidlineEllipsisDot) * num_dots);
 

@@ -464,7 +464,8 @@ std::optional<std::u16string> GetValueForVirtualCardInputPreview(
           virtual_card, field.credit_card_number_offset(), field.max_length);
     case CREDIT_CARD_EXP_MONTH:
       // Expects MM
-      return CreditCard::GetMidlineEllipsisDots(2);
+      return CreditCard::GetMidlineEllipsisDots(
+          std::min(field.max_length, static_cast<uint64_t>(2)));
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:
       return GetExpirationYearForVirtualCardPreviewInput(storable_type,
