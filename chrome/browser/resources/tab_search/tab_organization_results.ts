@@ -17,9 +17,13 @@ import {TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_results.html.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
+const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
+const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
+
 export interface TabOrganizationResultsElement {
   $: {
     input: CrInputElement,
+    scrollable: HTMLElement,
   };
 }
 
@@ -33,6 +37,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
       tabs: Array,
       name: String,
 
+      availableHeight: {
+        type: Number,
+        observer: 'onAvailableHeightChange_',
+      },
+
       tabDatas_: {
         type: Array,
         value: () => [],
@@ -43,6 +52,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   tabs: Tab[];
   name: string;
+  availableHeight: number;
 
   private tabDatas_: TabData[];
 
@@ -54,6 +64,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return this.tabs.map(
         tab => new TabData(
             tab, TabItemType.OPEN_TAB, new URL(tab.url.url).hostname));
+  }
+
+  private onAvailableHeightChange_() {
+    const maxHeight = Math.max(
+        MINIMUM_SCROLLABLE_MAX_HEIGHT,
+        (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
+    this.$.scrollable.style.maxHeight = maxHeight + 'px';
   }
 
   private onInputFocus_() {

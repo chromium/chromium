@@ -44,6 +44,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       name_: String,
       tabs_: Array,
       error_: Object,
+      availableHeight_: Number,
 
       tabOrganizationStateEnum_: {
         type: Object,
@@ -63,29 +64,46 @@ export class TabOrganizationPageElement extends PolymerElement {
   private name_: string;
   private tabs_: Tab[];
   private error_: TabOrganizationError = TabOrganizationError.kNone;
+  private availableHeight_: number = 0;
   private sessionId_: number = -1;
   private organizationId_: number = -1;
   private showFRE_: boolean;
+  private documentVisibilityChangedListener_: () => void;
 
   static get template() {
     return getTemplate();
   }
 
+  constructor() {
+    super();
+    this.documentVisibilityChangedListener_ = () => {
+      if (document.visibilityState === 'visible') {
+        this.updateAvailableHeight_();
+      }
+    };
+  }
+
   override connectedCallback() {
     super.connectedCallback();
-    this.updateContentsHeight_();
     this.apiProxy_.getTabOrganizationSession().then(
         ({session}) => this.setSession_(session));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.tabOrganizationSessionUpdated.addListener(
             this.setSession_.bind(this)));
+    if (document.visibilityState === 'visible') {
+      this.updateAvailableHeight_();
+    }
+    document.addEventListener(
+        'visibilitychange', this.documentVisibilityChangedListener_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+    document.removeEventListener(
+        'visibilitychange', this.documentVisibilityChangedListener_);
 
     if (this.sessionId_ > -1 && this.organizationId_ > -1) {
       this.apiProxy_.rejectTabOrganization(
@@ -120,6 +138,19 @@ export class TabOrganizationPageElement extends PolymerElement {
         break;
     }
     this.$.contents.style.height = contentsHeight + 'px';
+  }
+
+  // TODO(emshack): Consider moving the available height calculation into
+  // app.ts and reusing across both tab search and tab organization.
+  private updateAvailableHeight_() {
+    this.apiProxy_.getProfileData().then(({profileData}) => {
+      // TODO(crbug.com/c/1349350): Determine why no active window is reported
+      // in some cases on ChromeOS and Linux.
+      const activeWindow = profileData.windows.find((t) => t.active);
+      this.availableHeight_ =
+          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+      this.updateContentsHeight_();
+    });
   }
 
   private getPaddingTopValue_(element: HTMLElement): number {
