@@ -9,9 +9,14 @@
 #include <cstring>
 #include <map>
 #include <numeric>
-#include <vector>
 
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/glx.h"
+
+namespace x11 {
+
+namespace {
 
 // These constants are obtained from GL/glx.h and GL/glxext.h.
 constexpr uint32_t GLX_LEVEL = 3;
@@ -30,33 +35,16 @@ constexpr uint32_t GLX_ACCUM_GREEN_SIZE = 15;
 constexpr uint32_t GLX_ACCUM_BLUE_SIZE = 16;
 constexpr uint32_t GLX_ACCUM_ALPHA_SIZE = 17;
 
-constexpr uint32_t GLX_CONFIG_CAVEAT = 0x20;
 constexpr uint32_t GLX_VISUAL_CAVEAT_EXT = 0x20;
 constexpr uint32_t GLX_X_VISUAL_TYPE = 0x22;
 
-constexpr uint32_t GLX_BIND_TO_TEXTURE_TARGETS_EXT = 0x20D3;
-
-constexpr uint32_t GLX_NONE = 0x8000;
 constexpr uint32_t GLX_NONE_EXT = 0x8000;
-constexpr uint32_t GLX_TRUE_COLOR = 0x8002;
 constexpr uint32_t GLX_VISUAL_ID = 0x800B;
-constexpr uint32_t GLX_DRAWABLE_TYPE = 0x8010;
 constexpr uint32_t GLX_RENDER_TYPE = 0x8011;
-constexpr uint32_t GLX_FBCONFIG_ID = 0x8013;
-
-constexpr uint32_t GLX_PIXMAP_BIT = 0x00000002;
-constexpr uint32_t GLX_TEXTURE_2D_BIT_EXT = 0x00000002;
 
 constexpr uint32_t GLX_SAMPLE_BUFFERS_ARB = 100000;
-constexpr uint32_t GLX_SAMPLES = 100001;
 
-constexpr uint32_t GL_FALSE = 0;
-
-namespace x11 {
-
-namespace {
-
-bool IsArgbVisual(const x11::Connection::VisualInfo& visual) {
+bool IsArgbVisual(const Connection::VisualInfo& visual) {
   auto bits = [](auto x) {
     return std::bitset<8 * sizeof(decltype(x))>(x).count();
   };
@@ -67,35 +55,25 @@ bool IsArgbVisual(const x11::Connection::VisualInfo& visual) {
 }
 
 // Used to filter visuals by the best class.
-int VisualScore(x11::VisualClass c_class) {
+int VisualScore(VisualClass c_class) {
   // A higher score is more preferable.
   switch (c_class) {
-    case x11::VisualClass::TrueColor:
+    case VisualClass::TrueColor:
       return 1;
-    case x11::VisualClass::DirectColor:
+    case VisualClass::DirectColor:
       return 0;
     default:
       return -1;
   }
 }
 
-}  // anonymous namespace
-
-x11::Glx::FbConfig VisualPickerGlx::GetFbConfigForFormat(
-    gfx::BufferFormat format) {
-  if (!config_map_) {
-    FillConfigMap();
-  }
-  auto it = config_map_->find(format);
-  return it == config_map_->end() ? x11::Glx::FbConfig{} : it->second;
-}
-
-x11::VisualId VisualPickerGlx::PickBestGlVisual(
-    const x11::Glx::GetVisualConfigsReply& configs,
-    base::RepeatingCallback<bool(const x11::Connection::VisualInfo&)> pred,
-    bool want_alpha) const {
+VisualId PickBestGlVisual(
+    Connection* connection,
+    const Glx::GetVisualConfigsReply& configs,
+    base::RepeatingCallback<bool(const Connection::VisualInfo&)> pred,
+    bool want_alpha) {
   int highest_score = -1;
-  x11::VisualId best_visual{};
+  VisualId best_visual{};
   for (size_t cfg = 0; cfg < configs.num_visuals; cfg++) {
     size_t i = cfg * configs.num_properties;
     std::map<uint32_t, uint32_t> props;
@@ -127,8 +105,8 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
       return it == props.end() ? 0 : it->second;
     };
 
-    const auto visual_id = static_cast<x11::VisualId>(get(GLX_VISUAL_ID));
-    const auto* info = connection_->GetVisualInfoFromId(visual_id);
+    const auto visual_id = static_cast<VisualId>(get(GLX_VISUAL_ID));
+    const auto* info = connection->GetVisualInfoFromId(visual_id);
     if (!pred.Run(*info)) {
       continue;
     }
@@ -144,7 +122,7 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
 
     // Give precedence to the root visual if it satisfies the basic
     // requirements above.  This can avoid an expensive copy-on-present.
-    if (visual_id == connection_->default_root_visual().visual_id) {
+    if (visual_id == connection->default_root_visual().visual_id) {
       return visual_id;
     }
 
@@ -169,15 +147,14 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
   return best_visual;
 }
 
-x11::VisualId VisualPickerGlx::PickBestSystemVisual(
-    const x11::Glx::GetVisualConfigsReply& configs) const {
-  x11::Connection::VisualInfo default_visual_info =
-      *connection_->GetVisualInfoFromId(
-          connection_->default_root_visual().visual_id);
+VisualId PickBestSystemVisual(Connection* connection,
+                              const Glx::GetVisualConfigsReply& configs) {
+  Connection::VisualInfo default_visual_info = *connection->GetVisualInfoFromId(
+      connection->default_root_visual().visual_id);
 
   auto is_compatible_with_root_visual =
-      [](const x11::Connection::VisualInfo& default_visual_info,
-         const x11::Connection::VisualInfo& visual_info) {
+      [](const Connection::VisualInfo& default_visual_info,
+         const Connection::VisualInfo& visual_info) {
         const auto& dvt = *default_visual_info.visual_type;
         const auto& vt = *visual_info.visual_type;
         return vt.c_class == dvt.c_class &&
@@ -189,129 +166,40 @@ x11::VisualId VisualPickerGlx::PickBestSystemVisual(
       };
 
   return PickBestGlVisual(
-      configs,
+      connection, configs,
       base::BindRepeating(is_compatible_with_root_visual, default_visual_info),
       IsArgbVisual(default_visual_info));
 }
 
-x11::VisualId VisualPickerGlx::PickBestRgbaVisual(
-    const x11::Glx::GetVisualConfigsReply& configs) const {
+VisualId PickBestRgbaVisual(Connection* connection,
+                            const Glx::GetVisualConfigsReply& configs) {
   int best_class_score = -1;
-  for (const auto& depth : connection_->default_screen().allowed_depths) {
+  for (const auto& depth : connection->default_screen().allowed_depths) {
     for (const auto& vis : depth.visuals) {
       best_class_score = std::max(best_class_score, VisualScore(vis.c_class));
     }
   }
   auto pred = [](int best_class_score,
-                 const x11::Connection::VisualInfo& visual_info) {
+                 const Connection::VisualInfo& visual_info) {
     if (!IsArgbVisual(visual_info)) {
       return false;
     }
     return VisualScore(visual_info.visual_type->c_class) == best_class_score;
   };
-  return PickBestGlVisual(configs, base::BindRepeating(pred, best_class_score),
-                          true);
+  return PickBestGlVisual(connection, configs,
+                          base::BindRepeating(pred, best_class_score), true);
 }
 
-void VisualPickerGlx::FillConfigMap() {
-  DCHECK(!config_map_);
-  config_map_ =
-      std::make_unique<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>();
+}  // anonymous namespace
 
-  if (auto configs = connection_->glx()
-                         .GetFBConfigs({static_cast<uint32_t>(
-                             connection_->DefaultScreenId())})
-                         .Sync()) {
-    const auto n_cfgs = configs->num_FB_configs;
-    const auto n_props = configs->num_properties;
-
-    // Iterate from back to front since "preferred" FB configs appear earlier.
-    for (size_t cfg = n_cfgs; cfg-- > 0;) {
-      std::map<uint32_t, uint32_t> props;
-      for (size_t prop = 0; prop < n_props; prop++) {
-        size_t i = 2 * cfg * n_props + 2 * prop;
-        const auto key = configs->property_list[i];
-        const auto value = configs->property_list[i + 1];
-        props[key] = value;
-      }
-
-      auto get = [&](uint32_t key) {
-        auto it = props.find(key);
-        return it == props.end() ? 0 : it->second;
-      };
-
-      // Each config must have an ID.
-      auto id = get(GLX_FBCONFIG_ID);
-      DCHECK(id);
-      auto fbconfig = static_cast<x11::Glx::FbConfig>(id);
-
-      // Ensure the config is compatible with pixmap drawing.
-      if (!(get(GLX_DRAWABLE_TYPE) & GLX_PIXMAP_BIT)) {
-        continue;
-      }
-
-      // Ensure we can bind to GL_TEXTURE_2D.
-      if (!(get(GLX_BIND_TO_TEXTURE_TARGETS_EXT) & GLX_TEXTURE_2D_BIT_EXT)) {
-        continue;
-      }
-
-      // No double-buffering.
-      if (get(GLX_DOUBLEBUFFER) != GL_FALSE) {
-        continue;
-      }
-
-      // Prefer true-color over direct-color.
-      if (get(GLX_X_VISUAL_TYPE) != GLX_TRUE_COLOR) {
-        continue;
-      }
-
-      // No caveats.
-      auto caveat = get(GLX_CONFIG_CAVEAT);
-      if (caveat && caveat != GLX_NONE) {
-        continue;
-      }
-
-      // No antialiasing needed.
-      if (get(GLX_SAMPLES)) {
-        continue;
-      }
-
-      // No depth buffer needed.
-      if (get(GLX_DEPTH_SIZE)) {
-        continue;
-      }
-
-      auto r = get(GLX_RED_SIZE);
-      auto g = get(GLX_GREEN_SIZE);
-      auto b = get(GLX_BLUE_SIZE);
-      auto a = get(GLX_ALPHA_SIZE);
-      if (r == 5 && g == 6 && b == 5 && a == 0) {
-        (*config_map_)[gfx::BufferFormat::BGR_565] = fbconfig;
-      } else if (r == 8 && g == 8 && b == 8 && a == 0) {
-        (*config_map_)[gfx::BufferFormat::BGRX_8888] = fbconfig;
-      } else if (r == 10 && g == 10 && b == 10 && a == 0) {
-        (*config_map_)[gfx::BufferFormat::BGRA_1010102] = fbconfig;
-      } else if (r == 8 && g == 8 && b == 8 && a == 8) {
-        (*config_map_)[gfx::BufferFormat::BGRA_8888] = fbconfig;
-      }
-    }
+void PickBestVisuals(Connection* connection,
+                     VisualId& system_visual,
+                     VisualId& rgba_visual) {
+  auto screen = static_cast<uint32_t>(connection->DefaultScreenId());
+  if (auto configs = connection->glx().GetVisualConfigs(screen).Sync()) {
+    system_visual = PickBestSystemVisual(connection, *configs.reply);
+    rgba_visual = PickBestRgbaVisual(connection, *configs.reply);
   }
 }
-
-VisualPickerGlx::VisualPickerGlx(x11::Connection* connection)
-    : connection_(connection) {
-  auto configs =
-      connection_->glx()
-          .GetVisualConfigs(
-              {static_cast<uint32_t>(connection_->DefaultScreenId())})
-          .Sync();
-
-  if (configs) {
-    system_visual_ = PickBestSystemVisual(*configs.reply);
-    rgba_visual_ = PickBestRgbaVisual(*configs.reply);
-  }
-}
-
-VisualPickerGlx::~VisualPickerGlx() = default;
 
 }  // namespace x11

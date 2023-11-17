@@ -42,10 +42,9 @@ VisualManager::VisualManager(Connection* connection) : connection_(connection) {
   }
 
   ColorMap colormap;
-  VisualPickerGlx visual_picker_glx(connection_);
+  PickBestVisuals(connection, opaque_visual_id_, transparent_visual_id_);
 
   // Choose the opaque visual.
-  opaque_visual_id_ = visual_picker_glx.system_visual();
   if (opaque_visual_id_ == VisualId{}) {
     opaque_visual_id_ = connection->default_screen().root_visual;
   }
@@ -56,7 +55,6 @@ VisualManager::VisualManager(Connection* connection) : connection_(connection) {
   }
 
   // Choose the transparent visual.
-  transparent_visual_id_ = visual_picker_glx.rgba_visual();
   if (transparent_visual_id_ == VisualId{}) {
     for (const auto& pair : visuals_) {
       // Why support only 8888 ARGB? Because it's all that GTK supports. In

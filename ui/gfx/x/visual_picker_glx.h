@@ -5,57 +5,22 @@
 #ifndef UI_GFX_X_VISUAL_PICKER_GLX_H_
 #define UI_GFX_X_VISUAL_PICKER_GLX_H_
 
-#include "base/component_export.h"
-#include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
-#include "ui/gfx/buffer_types.h"  // nogncheck
-#include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/glx.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace x11 {
+
+class Connection;
 
 // Picks the best X11 visuals to use for GL.  This class is adapted from GTK's
 // pick_better_visual_for_gl.  Tries to find visuals that
 // 1. Support GL
 // 2. Support double buffer
 // 3. Have an alpha channel only if we want one
-class COMPONENT_EXPORT(X11) VisualPickerGlx {
- public:
-  explicit VisualPickerGlx(x11::Connection* connection);
-
-  VisualPickerGlx(const VisualPickerGlx&) = delete;
-  VisualPickerGlx& operator=(const VisualPickerGlx&) = delete;
-
-  ~VisualPickerGlx();
-
-  x11::VisualId system_visual() const { return system_visual_; }
-
-  x11::VisualId rgba_visual() const { return rgba_visual_; }
-
-  x11::Glx::FbConfig GetFbConfigForFormat(gfx::BufferFormat format);
-
- private:
-  x11::VisualId PickBestGlVisual(
-      const x11::Glx::GetVisualConfigsReply& configs,
-      base::RepeatingCallback<bool(const x11::Connection::VisualInfo&)> pred,
-      bool want_alpha) const;
-
-  x11::VisualId PickBestSystemVisual(
-      const x11::Glx::GetVisualConfigsReply& configs) const;
-
-  x11::VisualId PickBestRgbaVisual(
-      const x11::Glx::GetVisualConfigsReply& configs) const;
-
-  void FillConfigMap();
-
-  const raw_ptr<x11::Connection> connection_;
-
-  x11::VisualId system_visual_{};
-  x11::VisualId rgba_visual_{};
-
-  std::unique_ptr<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>
-      config_map_;
-};
+// `system_visual` and `rgba_visual` are output parameters populated with the
+// visuals, or are left unchanged if GLX isn't available.
+void PickBestVisuals(Connection* connection,
+                     VisualId& system_visual,
+                     VisualId& rgba_visual);
 
 }  // namespace x11
 
