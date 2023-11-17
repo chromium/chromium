@@ -146,7 +146,7 @@ suite('ApnListTest', function() {
         apnList.i18n('apnSettingsZeroStateDescription'),
         getZeroStateText().querySelector('div').innerText);
     const getErrorMessage = () =>
-        apnList.shadowRoot.querySelector('#errorMessage');
+        apnList.shadowRoot.querySelector('#errorMessageContainer');
     assertFalse(!!getErrorMessage());
 
     // Set as non-APN-related error.
@@ -161,7 +161,7 @@ suite('ApnListTest', function() {
     assertFalse(!!getZeroStateText());
     assertTrue(!!getErrorMessage());
     const getErrorMessageText = () =>
-        getErrorMessage().querySelector('localized-link').localizedString;
+        getErrorMessage().querySelector('#errorMessage').innerHTML.trim();
     assertEquals(
         apnList.i18n('apnSettingsDatabaseApnsErrorMessage'),
         getErrorMessageText());

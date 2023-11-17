@@ -5,6 +5,7 @@
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -329,8 +330,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnPageAddNewApn", IDS_SETTINGS_ADD_NEW_APN},
       {"apnSettingsDescriptionNoLink", IDS_SETTINGS_APN_DESCRIPTION_NO_LINK},
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
-      {"apnSettingsDescriptionWithLink",
-       IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK},
       {"apnSettingsZeroStateDescription",
        IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
       {"apnSettingsDatabaseApnsErrorMessage",
@@ -529,6 +528,11 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
                           ash::features::IsApnRevampEnabled());
   html_source->AddBoolean("isCellularCarrierLockEnabled",
                           ash::features::IsCellularCarrierLockEnabled());
+
+  html_source->AddString("apnSettingsDescriptionWithLink",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,
+                             chrome::kApnSettingsLearnMoreUrl));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

@@ -261,13 +261,6 @@ export class ApnList extends ApnListBase {
   }
 
   /**
-   * Redirects to "Lean more about APN" page.
-   * TODO(b/162365553): Implement.
-   * @private
-   */
-  onLearnMoreClicked_() {}
-
-  /**
    * @param {!Event} event
    * @private
    */
