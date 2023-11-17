@@ -99,6 +99,15 @@ export type SessionCommand =
   | Session.Status
   | Session.Subscribe
   | Session.Unsubscribe;
+export namespace Session {
+  export type ProxyConfiguration =
+    | Session.AutodetectProxyConfiguration
+    | Session.DirectProxyConfiguration
+    | Session.ManualProxyConfiguration
+    | Session.PacProxyConfiguration
+    | Session.SystemProxyConfiguration
+    | Record<string, never>;
+}
 export type SessionResult = Session.NewResult | Session.StatusResult;
 export namespace Session {
   export type CapabilitiesRequest = {
@@ -112,19 +121,48 @@ export namespace Session {
     browserName?: string;
     browserVersion?: string;
     platformName?: string;
-    proxy?: {
-      proxyType?: 'pac' | 'direct' | 'autodetect' | 'system' | 'manual';
-      proxyAutoconfigUrl?: string;
-      ftpProxy?: string;
-      httpProxy?: string;
+    proxy?: Session.ProxyConfiguration;
+    webSocketUrl?: boolean;
+  } & Extensible;
+}
+export namespace Session {
+  export type AutodetectProxyConfiguration = {
+    proxyType: 'autodetect';
+  } & Extensible;
+}
+export namespace Session {
+  export type DirectProxyConfiguration = {
+    proxyType: 'direct';
+  } & Extensible;
+}
+export namespace Session {
+  export type ManualProxyConfiguration = {
+    proxyType: 'manual';
+    ftpProxy?: string;
+    httpProxy?: string;
+    sslProxy?: string;
+  } & ({} | Session.SocksProxyConfiguration) & {
       noProxy?: [...string[]];
-      sslProxy?: string;
-      socksProxy?: string;
-      /**
-       * Must be between `0` and `255`, inclusive.
-       */
-      socksVersion?: number;
-    };
+    } & Extensible;
+}
+export namespace Session {
+  export type SocksProxyConfiguration = {
+    socksProxy: string;
+    /**
+     * Must be between `0` and `255`, inclusive.
+     */
+    socksVersion: number;
+  };
+}
+export namespace Session {
+  export type PacProxyConfiguration = {
+    proxyType: 'pac';
+    proxyAutoconfigUrl: string;
+  } & Extensible;
+}
+export namespace Session {
+  export type SystemProxyConfiguration = {
+    proxyType: 'system';
   } & Extensible;
 }
 export namespace Session {
@@ -164,20 +202,9 @@ export namespace Session {
       browserName: string;
       browserVersion: string;
       platformName: string;
-      proxy: {
-        proxyType?: 'pac' | 'direct' | 'autodetect' | 'system' | 'manual';
-        proxyAutoconfigUrl?: string;
-        ftpProxy?: string;
-        httpProxy?: string;
-        noProxy?: [...string[]];
-        sslProxy?: string;
-        socksProxy?: string;
-        /**
-         * Must be between `0` and `255`, inclusive.
-         */
-        socksVersion?: number;
-      };
       setWindowRect: boolean;
+      proxy?: Session.ProxyConfiguration;
+      webSocketUrl?: string | true;
     } & Extensible;
   };
 }

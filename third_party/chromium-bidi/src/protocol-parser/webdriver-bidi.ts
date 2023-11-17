@@ -130,6 +130,18 @@ export const SessionCommandSchema = z.lazy(() =>
     Session.UnsubscribeSchema,
   ])
 );
+export namespace Session {
+  export const ProxyConfigurationSchema = z.lazy(() =>
+    z.union([
+      Session.AutodetectProxyConfigurationSchema,
+      Session.DirectProxyConfigurationSchema,
+      Session.ManualProxyConfigurationSchema,
+      Session.PacProxyConfigurationSchema,
+      Session.SystemProxyConfigurationSchema,
+      z.object({}),
+    ])
+  );
+}
 export const SessionResultSchema = z.lazy(() =>
   z.union([Session.NewResultSchema, Session.StatusResultSchema])
 );
@@ -149,26 +161,71 @@ export namespace Session {
         browserName: z.string().optional(),
         browserVersion: z.string().optional(),
         platformName: z.string().optional(),
-        proxy: z
-          .object({
-            proxyType: z
-              .enum(['pac', 'direct', 'autodetect', 'system', 'manual'])
-              .optional(),
-            proxyAutoconfigUrl: z.string().optional(),
-            ftpProxy: z.string().optional(),
-            httpProxy: z.string().optional(),
-            noProxy: z.array(z.string()).optional(),
-            sslProxy: z.string().optional(),
-            socksProxy: z.string().optional(),
-            socksVersion: z
-              .number()
-              .int()
-              .nonnegative()
-              .gte(0)
-              .lte(255)
-              .optional(),
-          })
-          .optional(),
+        proxy: Session.ProxyConfigurationSchema.optional(),
+        webSocketUrl: z.boolean().optional(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Session {
+  export const AutodetectProxyConfigurationSchema = z.lazy(() =>
+    z
+      .object({
+        proxyType: z.literal('autodetect'),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Session {
+  export const DirectProxyConfigurationSchema = z.lazy(() =>
+    z
+      .object({
+        proxyType: z.literal('direct'),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Session {
+  export const ManualProxyConfigurationSchema = z.lazy(() =>
+    z
+      .object({
+        proxyType: z.literal('manual'),
+        ftpProxy: z.string().optional(),
+        httpProxy: z.string().optional(),
+        sslProxy: z.string().optional(),
+      })
+      .and(Session.SocksProxyConfigurationSchema.or(z.object({})))
+      .and(
+        z.object({
+          noProxy: z.array(z.string()).optional(),
+        })
+      )
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Session {
+  export const SocksProxyConfigurationSchema = z.lazy(() =>
+    z.object({
+      socksProxy: z.string(),
+      socksVersion: z.number().int().nonnegative().gte(0).lte(255),
+    })
+  );
+}
+export namespace Session {
+  export const PacProxyConfigurationSchema = z.lazy(() =>
+    z
+      .object({
+        proxyType: z.literal('pac'),
+        proxyAutoconfigUrl: z.string(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Session {
+  export const SystemProxyConfigurationSchema = z.lazy(() =>
+    z
+      .object({
+        proxyType: z.literal('system'),
       })
       .and(ExtensibleSchema)
   );
@@ -222,25 +279,9 @@ export namespace Session {
           browserName: z.string(),
           browserVersion: z.string(),
           platformName: z.string(),
-          proxy: z.object({
-            proxyType: z
-              .enum(['pac', 'direct', 'autodetect', 'system', 'manual'])
-              .optional(),
-            proxyAutoconfigUrl: z.string().optional(),
-            ftpProxy: z.string().optional(),
-            httpProxy: z.string().optional(),
-            noProxy: z.array(z.string()).optional(),
-            sslProxy: z.string().optional(),
-            socksProxy: z.string().optional(),
-            socksVersion: z
-              .number()
-              .int()
-              .nonnegative()
-              .gte(0)
-              .lte(255)
-              .optional(),
-          }),
           setWindowRect: z.boolean(),
+          proxy: Session.ProxyConfigurationSchema.optional(),
+          webSocketUrl: z.union([z.string(), z.literal(true)]).optional(),
         })
         .and(ExtensibleSchema),
     })
