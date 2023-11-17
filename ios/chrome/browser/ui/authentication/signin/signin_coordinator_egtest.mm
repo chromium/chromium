@@ -1468,9 +1468,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as it is sync specific.
 - (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
