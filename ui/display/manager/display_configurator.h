@@ -390,6 +390,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // request.
   bool ShouldConfigureVrr() const;
 
+  // Returns whether variable refresh rates are enabled on the internal display
+  // (if there is one).
+  bool IsVrrEnabledOnInternalDisplay() const;
+
   raw_ptr<StateController> state_controller_;
   raw_ptr<SoftwareMirroringController> mirroring_controller_;
   std::unique_ptr<NativeDisplayDelegate> native_display_delegate_;
