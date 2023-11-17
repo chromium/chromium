@@ -71,8 +71,8 @@ class ChoobeScreenTest : public OobeBaseTest {
 
     test::SetFakeTouchpadDevice();
     original_callback_ = choobe_screen->get_exit_callback_for_testing();
-    choobe_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &ChoobeScreenTest::HandleScreenExit, base::Unretained(this)));
+    choobe_screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
     OobeBaseTest::SetUpOnMainThread();
   }
 
@@ -83,32 +83,19 @@ class ChoobeScreenTest : public OobeBaseTest {
         ChoobeScreenView::kScreenId);
   }
 
-  void WaitForScreenExit() {
-    if (result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    quit_closure_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  ChoobeScreen::Result WaitForScreenExitResult() {
+    ChoobeScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
-
-  ChoobeScreen::ScreenExitCallback original_callback_;
-  absl::optional<ChoobeScreen::Result> result_;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
  private:
-  void HandleScreenExit(ChoobeScreen::Result result) {
-    result_ = result;
-    original_callback_.Run(result);
-    if (quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
-  }
-
-  base::OnceClosure quit_closure_;
+  base::test::TestFuture<ChoobeScreen::Result> screen_result_waiter_;
+  ChoobeScreen::ScreenExitCallback original_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChoobeScreenTest, Next) {
@@ -124,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(ChoobeScreenTest, Next) {
   // Check Next Button not disabled
   test::OobeJS().ExpectEnabledPath(kNextButtonPath);
   test::OobeJS().ClickOnPath(kNextButtonPath);
-  WaitForScreenExit();
+  ChoobeScreen::Result result = WaitForScreenExitResult();
 
-  EXPECT_EQ(result_.value(), ChoobeScreen::Result::SELECTED);
+  EXPECT_EQ(result, ChoobeScreen::Result::SELECTED);
 }
 
 IN_PROC_BROWSER_TEST_F(ChoobeScreenTest, Skip) {
@@ -135,9 +122,9 @@ IN_PROC_BROWSER_TEST_F(ChoobeScreenTest, Skip) {
   test::OobeJS().ExpectVisiblePath(kDialogPath);
   test::OobeJS().ExpectDisabledPath(kNextButtonPath);
   test::OobeJS().ClickOnPath(kSkipButtonPath);
-  WaitForScreenExit();
+  ChoobeScreen::Result result = WaitForScreenExitResult();
 
-  EXPECT_EQ(result_.value(), ChoobeScreen::Result::SKIPPED);
+  EXPECT_EQ(result, ChoobeScreen::Result::SKIPPED);
 }
 
 class ChoobeScreenDisabledScreenTest : public ChoobeScreenTest {
@@ -152,9 +139,9 @@ class ChoobeScreenDisabledScreenTest : public ChoobeScreenTest {
 
 IN_PROC_BROWSER_TEST_F(ChoobeScreenDisabledScreenTest, NotEnoughScreen) {
   ShowChoobeScreen();
-  WaitForScreenExit();
+  ChoobeScreen::Result result = WaitForScreenExitResult();
 
-  EXPECT_EQ(result_.value(), ChoobeScreen::Result::NOT_APPLICABLE);
+  EXPECT_EQ(result, ChoobeScreen::Result::NOT_APPLICABLE);
 }
 
 class ChoobeScreenTestWithParams
@@ -215,8 +202,8 @@ IN_PROC_BROWSER_TEST_P(ChoobeScreenTestWithParams, SelectTiles) {
   if (is_theme_selection_selected || is_touchpad_scroll_selected ||
       is_display_size_selected) {
     test::OobeJS().TapOnPath(kNextButtonPath);
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(), ChoobeScreen::Result::SELECTED);
+    ChoobeScreen::Result result = WaitForScreenExitResult();
+    EXPECT_EQ(result, ChoobeScreen::Result::SELECTED);
 
     EXPECT_EQ(WizardController::default_controller()
                   ->choobe_flow_controller()
@@ -239,9 +226,9 @@ IN_PROC_BROWSER_TEST_P(ChoobeScreenTestWithParams, SelectTiles) {
   } else {
     test::OobeJS().ExpectDisabledPath(kNextButtonPath);
     test::OobeJS().ClickOnPath(kSkipButtonPath);
-    WaitForScreenExit();
+    ChoobeScreen::Result result = WaitForScreenExitResult();
 
-    EXPECT_EQ(result_.value(), ChoobeScreen::Result::SKIPPED);
+    EXPECT_EQ(result, ChoobeScreen::Result::SKIPPED);
     PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
     EXPECT_FALSE(prefs->HasPrefPath(prefs::kChoobeSelectedScreens));
   }
