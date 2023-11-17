@@ -347,6 +347,7 @@ suite('ApnListItemTest', function() {
 
     // Enabled custom APN, non-connected.
     const apnName = 'apn1';
+    const apnUserFriendlyName = 'userFriendlyNameApn1';
     const apnId = '1';
     const defaultTypeOnly = apnListItem.i18n('apnA11yDefaultApnOnly');
     const attachTypeOnly = apnListItem.i18n('apnA11yAttachApnOnly');
@@ -444,5 +445,33 @@ suite('ApnListItemTest', function() {
             'apnA11yName', /*index=*/ 1, /*count=*/ 1,
             apnListItem.i18n('apnNameModem')) +
             ' ' + autoDetectedText + ' ' + connectedText);
+
+    // User friendly APN name same as APN has no text indicating as such.
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+      name: apnName,
+    };
+    apnListItem.isConnected = true;
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + connectedText);
+
+    // User friendly APN name different from APN has indicating text.
+    const userFriendlyNameText = apnListItem.i18n(
+        'apnA11yName', /*index=*/ 1, /*count=*/ 1,
+        /*name=*/ 'userFriendlyNameApn1');
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+      name: apnUserFriendlyName,
+    };
+
+    const indicateUserFriendlyNameText = apnListItem.i18n(
+        'apnA11yUserFriendlyNameIndicator', apnUserFriendlyName, apnName);
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        userFriendlyNameText + ' ' + connectedText + ' ' +
+            indicateUserFriendlyNameText);
   });
 });

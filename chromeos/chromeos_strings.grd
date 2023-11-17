@@ -4510,6 +4510,9 @@
         <message name="IDS_SETTINGS_APN_A11Y_NAME" desc="Accessibility text to display the name of an APN item in the APN list and what index it is in the list">
           <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>5</ex></ph>, <ph name="NAME">$3<ex>ATT Broadband</ex></ph>.
         </message>
+        <message name="IDS_SETTINGS_APN_A11Y_USER_FRIENDLY_NAME_INDICATOR" desc="Accessibility text to indicate that the displayed APN name is the user-friendly name">
+          <ph name="USER_FRIENDLY_APN_NAME">$1<ex>ATT Broadband</ex></ph> is the user-friendly name for <ph name="APN_NAME">$2<ex>broadband</ex></ph>.
+        </message>
         <message name="IDS_SETTINGS_APN_A11Y_AUTO_DETECTED" desc="Accessibility text for when an APN is automatically detected">
           APN is automatically detected.
         </message>

@@ -343,6 +343,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnMenuRemove", IDS_SETTINGS_APN_MENU_REMOVE},
       {"apnMoreActionsTitle", IDS_SETTINGS_APN_MORE_ACTIONS_TITLE},
       {"apnA11yName", IDS_SETTINGS_APN_A11Y_NAME},
+      {"apnA11yUserFriendlyNameIndicator",
+       IDS_SETTINGS_APN_A11Y_USER_FRIENDLY_NAME_INDICATOR},
       {"apnA11yAutoDetected", IDS_SETTINGS_APN_A11Y_AUTO_DETECTED},
       {"apnA11yConnected", IDS_SETTINGS_APN_A11Y_CONNECTED},
       {"apnA11yDisabled", IDS_SETTINGS_APN_A11Y_DISABLED},

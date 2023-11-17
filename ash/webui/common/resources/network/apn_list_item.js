@@ -323,6 +323,12 @@ class ApnListItem extends ApnListItemBase {
       a11yLabel += ' ' + this.i18n('apnA11yAttachApnOnly');
     }
 
+    const userFriendlyName = this.apn.name;
+    const name = this.apn.accessPointName;
+    if (!!name && !!userFriendlyName && name != userFriendlyName) {
+      a11yLabel += ' ' +
+          this.i18n('apnA11yUserFriendlyNameIndicator', userFriendlyName, name);
+    }
     return a11yLabel;
   }
 }
