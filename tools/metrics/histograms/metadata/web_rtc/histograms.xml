@@ -1221,6 +1221,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.DtlsFingerprintLegacySha1"
+    units="boolean" expires_after="2024-07-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>phancke@microsoft.com</owner>
+  <summary>
+    Measures the use of the weak SHA-1 hash algorithm in the X509 certificate
+    presented by the peer. Recorded during the first DTLS connection
+    establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.DtlsHandshakeError"
     enum="DtlsHandshakeError" expires_after="M81">
   <owner>zhihuang@chromium.org</owner>
