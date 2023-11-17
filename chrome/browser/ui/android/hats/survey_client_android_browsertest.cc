@@ -6,15 +6,18 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/hats/hats_service_android.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/hats/survey_client_android.h"
+#include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/message_wrapper.h"
 #include "components/messages/android/test/messages_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 
 namespace hats {
 namespace {
@@ -42,29 +45,6 @@ class MessageWaiter {
 
   content::WaiterHelper waiter_helper_;
 };
-
-class SurveyObserver {
- public:
-  SurveyObserver() = default;
-  void Accept() { accepted_ = true; }
-
-  void Dismiss() { dismissed_ = true; }
-
-  bool IsAccepted() { return accepted_; }
-
-  bool IsDismissed() { return dismissed_; }
-
-  base::WeakPtr<SurveyObserver> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  bool accepted_ = false;
-  bool dismissed_ = false;
-
-  base::WeakPtrFactory<SurveyObserver> weak_ptr_factory_{this};
-};
-
 }  // namespace
 
 class SurveyClientAndroidBrowserTest : public AndroidBrowserTest {
@@ -97,39 +77,63 @@ class SurveyClientAndroidBrowserTest : public AndroidBrowserTest {
     return web_contents()->GetTopLevelNativeWindow();
   }
 
-  HatsServiceAndroid* GetHatsService() {
-    HatsServiceAndroid* service =
-        static_cast<HatsServiceAndroid*>(HatsServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-            true));
-    return service;
+  messages::MessageWrapper* createMessage() {
+    message_ = std::make_unique<messages::MessageWrapper>(
+        messages::MessageIdentifier::TEST_MESSAGE,
+        base::BindOnce(&SurveyClientAndroidBrowserTest::MessageAccepted,
+                       base::Unretained(this)),
+        base::BindOnce(&SurveyClientAndroidBrowserTest::MessageDeclined,
+                       base::Unretained(this)));
+    return message_.get();
   }
 
+  bool message_accepted() { return message_accepted_; }
+
+  bool message_declined() { return message_declined_; }
+
  protected:
+  void MessageAccepted() { message_accepted_ = true; }
+
+  void MessageDeclined(messages::DismissReason dismiss_reason) {
+    message_declined_ = true;
+  }
+
   messages::MessagesTestHelper messages_test_helper_;
+
+ private:
+  std::unique_ptr<messages::MessageWrapper> message_;
+  bool message_accepted_;
+  bool message_declined_;
 };
 
-IN_PROC_BROWSER_TEST_F(SurveyClientAndroidBrowserTest, LaunchSurvey) {
+IN_PROC_BROWSER_TEST_F(SurveyClientAndroidBrowserTest,
+                       CreateSurveyWithMessage) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  auto* message = createMessage();
+  std::unique_ptr<SurveyUiDelegateAndroid> delegate =
+      std::make_unique<SurveyUiDelegateAndroid>(message, window_android());
+  EXPECT_TRUE(delegate.get());
 
-  SurveyObserver observer;
-
-  auto* hatsService = GetHatsService();
+  // Create survey client with delegate.
+  std::unique_ptr<SurveyClientAndroid> survey_client =
+      std::make_unique<SurveyClientAndroid>(
+          kTestSurveyTrigger, delegate.get(),
+          ProfileManager::GetActiveUserProfile());
   {
     MessageWaiter waiter(messages_test_helper_);
-    hatsService->LaunchSurveyForWebContents(
-        kTestSurveyTrigger, web_contents(), kTestSurveyProductSpecificBitsData,
-        kTestSurveyProductSpecificStringData,
-        base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
-        base::BindOnce(&SurveyObserver::Dismiss, observer.GetWeakPtr()));
+    survey_client->LaunchSurvey(window_android(),
+                                kTestSurveyProductSpecificBitsData,
+                                kTestSurveyProductSpecificStringData);
     EXPECT_TRUE(waiter.Wait());
   }
 
-  hatsService->GetFirstTaskForTesting()
-      .GetMessageForTesting()
-      ->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_EQ(1, messages_test_helper_.GetMessageCount(window_android()));
+  EXPECT_EQ(static_cast<int>(messages::MessageIdentifier::TEST_MESSAGE),
+            messages_test_helper_.GetMessageIdentifier(window_android(), 0));
 
-  EXPECT_TRUE(observer.IsAccepted());
+  messages::MessageDispatcherBridge::Get()->DismissMessage(
+      message, messages::DismissReason::UNKNOWN);
+  EXPECT_TRUE(message_declined());
 }
 
 }  // namespace hats

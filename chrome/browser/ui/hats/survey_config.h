@@ -30,6 +30,7 @@ extern const char kHatsSurveyTriggerPerformanceControlsPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
+extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerRedWarning[];
@@ -72,8 +73,6 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 #else
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 #endif
-
-extern const char kHatsSurveyTriggerPermissionsPrompt[];
 
 extern const char kHatsSurveyTriggerTesting[];
 // The Trigger ID for a test HaTS Next survey which is available for testing
