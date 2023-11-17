@@ -280,6 +280,9 @@ extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 
+extern const char kAutofillEnableUserAvatarInSaveCardFooterName[];
+extern const char kAutofillEnableUserAvatarInSaveCardFooterDescription[];
+
 extern const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[];
 extern const char
     kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[];

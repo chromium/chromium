@@ -11350,6 +11350,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCloudGamingDevice)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"autofill-enable-user-avatar-in-save-card-footer",
+     flag_descriptions::kAutofillEnableUserAvatarInSaveCardFooterName,
+     flag_descriptions::kAutofillEnableUserAvatarInSaveCardFooterDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableUserAvatarInSaveCardFooter)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

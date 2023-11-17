@@ -463,6 +463,13 @@ const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
     "merchant_domain parameter populated with the last origin of the main "
     "frame.";
 
+const char kAutofillEnableUserAvatarInSaveCardFooterName[] =
+    "Show the user's account information in the upload save card bubble footer";
+const char kAutofillEnableUserAvatarInSaveCardFooterDescription[] =
+    "When enabled, the user's avatar and email will appear in the bottom "
+    "footer of the upload save card bubble. This will provide users with more "
+    "context about which account the card is being saved to.";
+
 const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[] =
     "Enable Autofill merchant opt-out client side URL filtering";
 const char kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[] =
