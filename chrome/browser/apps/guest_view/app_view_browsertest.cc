@@ -44,10 +44,7 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   AppViewTest(const AppViewTest&) = delete;
   AppViewTest& operator=(const AppViewTest&) = delete;
 
-  enum TestServer {
-    NEEDS_TEST_SERVER,
-    NO_TEST_SERVER
-  };
+  enum TestServer { NEEDS_TEST_SERVER, NO_TEST_SERVER };
 
   void TestHelper(const std::string& test_name,
                   const std::string& app_location,
@@ -119,48 +116,44 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
+  void TearDownOnMainThread() override {
+    test_guest_view_manager_ = nullptr;
+    extensions::PlatformAppBrowserTest::TearDownOnMainThread();
+  }
+
   TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
-      test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
 };
 
 // Tests that <appview> is able to navigate to another installed app.
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
-  TestHelper("testAppViewWithUndefinedDataShouldSucceed",
-             "app_view/shim",
-             skeleton_app->id(),
-             NO_TEST_SERVER);
+  TestHelper("testAppViewWithUndefinedDataShouldSucceed", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
-  TestHelper("testAppViewRefusedDataShouldFail",
-             "app_view/shim",
-             skeleton_app->id(),
-             NO_TEST_SERVER);
+  TestHelper("testAppViewRefusedDataShouldFail", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewGoodDataShouldSucceed) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
-  TestHelper("testAppViewGoodDataShouldSucceed",
-             "app_view/shim",
-             skeleton_app->id(),
-             NO_TEST_SERVER);
+  TestHelper("testAppViewGoodDataShouldSucceed", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
 }
 
 // Tests that <appview> correctly handles multiple successive connects.
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewMultipleConnects) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
-  TestHelper("testAppViewMultipleConnects",
-             "app_view/shim",
-             skeleton_app->id(),
+  TestHelper("testAppViewMultipleConnects", "app_view/shim", skeleton_app->id(),
              NO_TEST_SERVER);
 }
 
@@ -178,10 +171,8 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewEmbedSelfShouldFail) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
-  TestHelper("testAppViewEmbedSelfShouldFail",
-             "app_view/shim",
-             skeleton_app->id(),
-             NO_TEST_SERVER);
+  TestHelper("testAppViewEmbedSelfShouldFail", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestDeny) {
