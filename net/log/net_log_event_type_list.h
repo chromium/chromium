@@ -4016,24 +4016,6 @@ EVENT_TYPE(HTTP3_HEADERS_RECEIVED)
 //  }
 EVENT_TYPE(HTTP3_HEADERS_DECODED)
 
-// Event emitted when the receipt of an HTTP/3 PUSH_PROMISE frame is complete.
-//  {
-//    "stream_id": <The ID of the stream on which the PUSH_PROMISE frame is
-//                  received>
-//    "push_id": <The push_id field of the PUSH_PROMISE frame>
-//  }
-EVENT_TYPE(HTTP3_PUSH_PROMISE_RECEIVED)
-
-// Event emitted when headers received in an HTTP/3 PUSH_PROMISE frame are
-// decoded.
-//  {
-//    "stream_id": <The ID of the stream on which the PUSH_PROMISE frame had
-//                  been received>
-//    "push_id": <The push_id field of the PUSH_PROMISE frame>
-//    "headers": <A dictionary of the decoded headers>
-//  }
-EVENT_TYPE(HTTP3_PUSH_PROMISE_DECODED)
-
 // Event emitted when the frame header of an HTTP/3 frame of unknown type is
 // received.
 //  {
