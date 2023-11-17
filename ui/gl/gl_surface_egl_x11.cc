@@ -9,6 +9,7 @@
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/egl_util.h"
 
@@ -71,7 +72,7 @@ gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
 
 EGLint NativeViewGLSurfaceEGLX11::GetNativeVisualID() const {
   x11::VisualId visual_id;
-  ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+  GetXNativeConnection()->GetOrCreateVisualManager().ChooseVisualForWindow(
       true, &visual_id, nullptr, nullptr, nullptr);
   return static_cast<EGLint>(visual_id);
 }

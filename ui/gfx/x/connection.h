@@ -26,6 +26,7 @@ namespace x11 {
 
 class Event;
 class KeyboardState;
+class VisualManager;
 class WriteBuffer;
 
 // On the wire, sequence IDs are 16 bits.  In xcb, they're usually extended to
@@ -310,6 +311,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   Window CreateDummyWindow(const std::string& name = std::string());
 
+  VisualManager& GetOrCreateVisualManager();
+
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
   // TODO(thomasanderson): This is a layering violation and this should be moved
@@ -423,6 +426,9 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   IOErrorHandler io_error_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Must be after `sequence_checker_`.
+  std::unique_ptr<VisualManager> visual_manager_;
 };
 
 }  // namespace x11

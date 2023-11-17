@@ -22,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -34,7 +33,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/base/x/visual_picker_glx.h"
 #include "ui/display/util/gpu_info_util.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -47,6 +45,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -682,19 +681,6 @@ UMALinuxWindowManager GetWindowManagerUMA() {
   return UMALinuxWindowManager::kOther;
 }
 
-bool IsCompositingManagerPresent() {
-  auto is_compositing_manager_present_impl = []() {
-    auto response = x11::Connection::Get()
-                        ->GetSelectionOwner({x11::GetAtom("_NET_WM_CM_S0")})
-                        .Sync();
-    return response && response->owner != x11::Window::None;
-  };
-
-  static bool is_compositing_manager_present =
-      is_compositing_manager_present_impl();
-  return is_compositing_manager_present;
-}
-
 bool IsX11WindowFullScreen(x11::Window window) {
   // If _NET_WM_STATE_FULLSCREEN is in _NET_SUPPORTED, use the presence or
   // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
@@ -857,7 +843,7 @@ bool IsVulkanSurfaceSupported() {
 bool DoesVisualHaveAlphaForTest() {
   uint8_t depth = 0;
   bool visual_has_alpha = false;
-  ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+  x11::Connection::Get()->GetOrCreateVisualManager().ChooseVisualForWindow(
       true, nullptr, &depth, nullptr, &visual_has_alpha);
 
   if (visual_has_alpha) {
@@ -910,132 +896,6 @@ gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
   }
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
-}
-
-// static
-XVisualManager* XVisualManager::GetInstance() {
-  return base::Singleton<XVisualManager>::get();
-}
-
-XVisualManager::XVisualManager() {
-  auto* connection = x11::Connection::Get();
-  for (const auto& depth : connection->default_screen().allowed_depths) {
-    for (const auto& visual : depth.visuals) {
-      visuals_[visual.visual_id] =
-          std::make_unique<XVisualData>(connection, depth.depth, &visual);
-    }
-  }
-
-  auto* visual_picker = VisualPickerGlx::GetInstance();
-  x11::ColorMap colormap;
-
-  // Choose the opaque visual.
-  opaque_visual_id_ = visual_picker->system_visual();
-  if (opaque_visual_id_ == x11::VisualId{}) {
-    opaque_visual_id_ = connection->default_screen().root_visual;
-  }
-  // opaque_visual_id_ may be unset in headless environments
-  if (opaque_visual_id_ != x11::VisualId{}) {
-    DCHECK(visuals_.find(opaque_visual_id_) != visuals_.end());
-    ChooseVisualForWindow(false, nullptr, nullptr, &colormap, nullptr);
-  }
-
-  // Choose the transparent visual.
-  transparent_visual_id_ = visual_picker->rgba_visual();
-  if (transparent_visual_id_ == x11::VisualId{}) {
-    for (const auto& pair : visuals_) {
-      // Why support only 8888 ARGB? Because it's all that GTK+ supports. In
-      // gdkvisual-x11.cc, they look for this specific visual and use it for
-      // all their alpha channel using needs.
-      const auto& data = *pair.second;
-      if (data.depth == 32 && data.info->red_mask == 0xff0000 &&
-          data.info->green_mask == 0x00ff00 &&
-          data.info->blue_mask == 0x0000ff) {
-        transparent_visual_id_ = pair.first;
-        break;
-      }
-    }
-  }
-  if (transparent_visual_id_ != x11::VisualId{}) {
-    DCHECK(visuals_.find(transparent_visual_id_) != visuals_.end());
-    ChooseVisualForWindow(true, nullptr, nullptr, &colormap, nullptr);
-  }
-}
-
-XVisualManager::~XVisualManager() = default;
-
-void XVisualManager::ChooseVisualForWindow(bool want_argb_visual,
-                                           x11::VisualId* visual_id,
-                                           uint8_t* depth,
-                                           x11::ColorMap* colormap,
-                                           bool* visual_has_alpha) {
-  bool use_argb = want_argb_visual && ArgbVisualAvailable();
-  x11::VisualId visual = use_argb ? transparent_visual_id_ : opaque_visual_id_;
-
-  if (visual_id) {
-    *visual_id = visual;
-  }
-  bool success = GetVisualInfo(visual, depth, colormap, visual_has_alpha);
-  DCHECK(success);
-}
-
-bool XVisualManager::GetVisualInfo(x11::VisualId visual_id,
-                                   uint8_t* depth,
-                                   x11::ColorMap* colormap,
-                                   bool* visual_has_alpha) {
-  DCHECK_NE(visual_id, x11::VisualId{});
-  auto it = visuals_.find(visual_id);
-  if (it == visuals_.end()) {
-    return false;
-  }
-  XVisualData& data = *it->second;
-  const x11::VisualType& info = *data.info;
-
-  if (depth) {
-    *depth = data.depth;
-  }
-  if (colormap) {
-    bool is_default_visual =
-        visual_id == x11::Connection::Get()->default_root_visual().visual_id;
-    *colormap = is_default_visual ? x11::ColorMap{} : data.GetColormap();
-  }
-  if (visual_has_alpha) {
-    auto popcount = [](auto x) {
-      return std::bitset<8 * sizeof(decltype(x))>(x).count();
-    };
-    *visual_has_alpha = popcount(info.red_mask) + popcount(info.green_mask) +
-                            popcount(info.blue_mask) <
-                        static_cast<std::size_t>(data.depth);
-  }
-  return true;
-}
-
-bool XVisualManager::ArgbVisualAvailable() const {
-  return IsCompositingManagerPresent() &&
-         transparent_visual_id_ != x11::VisualId{};
-}
-
-XVisualManager::XVisualData::XVisualData(x11::Connection* connection,
-                                         uint8_t depth,
-                                         const x11::VisualType* info)
-    : depth(depth), info(info) {}
-
-// Do not free the colormap as this would uninstall the colormap even for
-// non-Chromium clients.
-XVisualManager::XVisualData::~XVisualData() = default;
-
-x11::ColorMap XVisualManager::XVisualData::GetColormap() {
-  if (colormap_ == x11::ColorMap{}) {
-    auto* connection = x11::Connection::Get();
-    colormap_ = connection->GenerateId<x11::ColorMap>();
-    connection->CreateColormap({x11::ColormapAlloc::None, colormap_,
-                                connection->default_root(), info->visual_id});
-    // In single-process mode, XVisualManager may be used on multiple threads,
-    // so we need to flush colormap creation early so that other threads are
-    // able to use it.
-    connection->Flush();
-  }
-  return colormap_;
 }
 
 }  // namespace ui

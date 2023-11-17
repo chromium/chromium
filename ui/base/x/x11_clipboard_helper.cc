@@ -89,12 +89,9 @@ SelectionChangeObserver* SelectionChangeObserver::Get() {
 
 void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
   if (auto* ev = xev.As<x11::XFixes::SelectionNotifyEvent>()) {
-    DCHECK(ev->selection == x11::Atom::PRIMARY ||
-           ev->selection == clipboard_atom_)
-        << "Unexpected selection atom: "
-        << static_cast<uint32_t>(ev->selection);
-
-    if (callback_) {
+    if ((ev->selection == x11::Atom::PRIMARY ||
+         ev->selection == clipboard_atom_) &&
+        callback_) {
       callback_.Run(ev->selection == x11::Atom::PRIMARY
                         ? ClipboardBuffer::kSelection
                         : ClipboardBuffer::kCopyPaste);

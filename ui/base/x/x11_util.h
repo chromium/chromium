@@ -33,11 +33,6 @@
 typedef unsigned long Cursor;
 class SkPixmap;
 
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
-
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -331,9 +326,6 @@ COMPONENT_EXPORT(UI_BASE_X) UMALinuxWindowManager GetWindowManagerUMA();
 // or stacking (false).
 COMPONENT_EXPORT(UI_BASE_X) bool IsWmTiling(WindowManagerName window_manager);
 
-// Returns true if a compositing manager is present.
-COMPONENT_EXPORT(UI_BASE_X) bool IsCompositingManagerPresent();
-
 // Returns true if a given window is in full-screen mode.
 COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 
@@ -377,60 +369,6 @@ COMPONENT_EXPORT(UI_BASE_X) bool DoesVisualHaveAlphaForTest();
 // any window on screen.
 COMPONENT_EXPORT(UI_BASE_X)
 gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id);
-
-// --------------------------------------------------------------------------
-// Selects a visual with a preference for alpha support on compositing window
-// managers.
-class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
- public:
-  static XVisualManager* GetInstance();
-
-  // Picks the best argb or opaque visual given |want_argb_visual|.
-  void ChooseVisualForWindow(bool want_argb_visual,
-                             x11::VisualId* visual_id,
-                             uint8_t* depth,
-                             x11::ColorMap* colormap,
-                             bool* visual_has_alpha);
-
-  bool GetVisualInfo(x11::VisualId visual_id,
-                     uint8_t* depth,
-                     x11::ColorMap* colormap,
-                     bool* visual_has_alpha);
-
-  // Are all of the system requirements met for using transparent visuals?
-  bool ArgbVisualAvailable() const;
-
-  XVisualManager(const XVisualManager&) = delete;
-  XVisualManager& operator=(const XVisualManager&) = delete;
-
-  ~XVisualManager();
-
- private:
-  friend struct base::DefaultSingletonTraits<XVisualManager>;
-
-  class XVisualData {
-   public:
-    XVisualData(x11::Connection* connection,
-                uint8_t depth,
-                const x11::VisualType* info);
-    ~XVisualData();
-
-    x11::ColorMap GetColormap();
-
-    const uint8_t depth;
-    const raw_ptr<const x11::VisualType> info;
-
-   private:
-    x11::ColorMap colormap_{};
-  };
-
-  XVisualManager();
-
-  std::unordered_map<x11::VisualId, std::unique_ptr<XVisualData>> visuals_;
-
-  x11::VisualId opaque_visual_id_{};
-  x11::VisualId transparent_visual_id_{};
-};
 
 }  // namespace ui
 

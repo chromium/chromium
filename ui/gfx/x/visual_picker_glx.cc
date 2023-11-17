@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/visual_picker_glx.h"
+#include "ui/gfx/x/visual_picker_glx.h"
 
 #include <algorithm>
 #include <bitset>
@@ -11,7 +11,6 @@
 #include <numeric>
 #include <vector>
 
-#include "base/memory/singleton.h"
 #include "ui/gfx/x/future.h"
 
 // These constants are obtained from GL/glx.h and GL/glxext.h.
@@ -53,7 +52,7 @@ constexpr uint32_t GLX_SAMPLES = 100001;
 
 constexpr uint32_t GL_FALSE = 0;
 
-namespace ui {
+namespace x11 {
 
 namespace {
 
@@ -82,15 +81,11 @@ int VisualScore(x11::VisualClass c_class) {
 
 }  // anonymous namespace
 
-// static
-VisualPickerGlx* VisualPickerGlx::GetInstance() {
-  return base::Singleton<VisualPickerGlx>::get();
-}
-
 x11::Glx::FbConfig VisualPickerGlx::GetFbConfigForFormat(
     gfx::BufferFormat format) {
-  if (!config_map_)
+  if (!config_map_) {
     FillConfigMap();
+  }
   auto it = config_map_->find(format);
   return it == config_map_->end() ? x11::Glx::FbConfig{} : it->second;
 }
@@ -112,16 +107,18 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
         GLX_STEREO,          GLX_BUFFER_SIZE,      GLX_DEPTH_SIZE,
         GLX_STENCIL_SIZE,    GLX_AUX_BUFFERS,      GLX_LEVEL,
     };
-    for (const uint32_t prop : static_props)
+    for (const uint32_t prop : static_props) {
       props[prop] = configs.property_list[i++];
+    }
     const size_t extra_props =
         (configs.num_properties - std::size(static_props)) / 2;
     for (size_t j = 0; j < extra_props; j++) {
       const auto key = configs.property_list[i++];
       const auto value = configs.property_list[i++];
       // Mesa adds a (0, 0) key-value pair at the end of each property list.
-      if (!key)
+      if (!key) {
         continue;
+      }
       props[key] = value;
     }
 
@@ -132,20 +129,24 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
 
     const auto visual_id = static_cast<x11::VisualId>(get(GLX_VISUAL_ID));
     const auto* info = connection_->GetVisualInfoFromId(visual_id);
-    if (!pred.Run(*info))
+    if (!pred.Run(*info)) {
       continue;
+    }
 
-    if (!get(GLX_DOUBLEBUFFER) || get(GLX_STEREO))
+    if (!get(GLX_DOUBLEBUFFER) || get(GLX_STEREO)) {
       continue;
+    }
 
     auto caveat = get(GLX_VISUAL_CAVEAT_EXT);
-    if (caveat && caveat != GLX_NONE_EXT)
+    if (caveat && caveat != GLX_NONE_EXT) {
       continue;
+    }
 
     // Give precedence to the root visual if it satisfies the basic
     // requirements above.  This can avoid an expensive copy-on-present.
-    if (visual_id == connection_->default_root_visual().visual_id)
+    if (visual_id == connection_->default_root_visual().visual_id) {
       return visual_id;
+    }
 
     int score = 0;
     if (get(GLX_SAMPLE_BUFFERS_ARB) == 0) {
@@ -153,8 +154,9 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
       if (get(GLX_DEPTH_SIZE) == 0 && get(GLX_STENCIL_SIZE) == 0) {
         score++;
         const bool has_alpha = get(GLX_ALPHA_SIZE) > 0;
-        if (has_alpha == want_alpha)
+        if (has_alpha == want_alpha) {
           score++;
+        }
       }
     }
 
@@ -196,13 +198,15 @@ x11::VisualId VisualPickerGlx::PickBestRgbaVisual(
     const x11::Glx::GetVisualConfigsReply& configs) const {
   int best_class_score = -1;
   for (const auto& depth : connection_->default_screen().allowed_depths) {
-    for (const auto& vis : depth.visuals)
+    for (const auto& vis : depth.visuals) {
       best_class_score = std::max(best_class_score, VisualScore(vis.c_class));
+    }
   }
   auto pred = [](int best_class_score,
                  const x11::Connection::VisualInfo& visual_info) {
-    if (!IsArgbVisual(visual_info))
+    if (!IsArgbVisual(visual_info)) {
       return false;
+    }
     return VisualScore(visual_info.visual_type->c_class) == best_class_score;
   };
   return PickBestGlVisual(configs, base::BindRepeating(pred, best_class_score),
@@ -242,51 +246,60 @@ void VisualPickerGlx::FillConfigMap() {
       auto fbconfig = static_cast<x11::Glx::FbConfig>(id);
 
       // Ensure the config is compatible with pixmap drawing.
-      if (!(get(GLX_DRAWABLE_TYPE) & GLX_PIXMAP_BIT))
+      if (!(get(GLX_DRAWABLE_TYPE) & GLX_PIXMAP_BIT)) {
         continue;
+      }
 
       // Ensure we can bind to GL_TEXTURE_2D.
-      if (!(get(GLX_BIND_TO_TEXTURE_TARGETS_EXT) & GLX_TEXTURE_2D_BIT_EXT))
+      if (!(get(GLX_BIND_TO_TEXTURE_TARGETS_EXT) & GLX_TEXTURE_2D_BIT_EXT)) {
         continue;
+      }
 
       // No double-buffering.
-      if (get(GLX_DOUBLEBUFFER) != GL_FALSE)
+      if (get(GLX_DOUBLEBUFFER) != GL_FALSE) {
         continue;
+      }
 
       // Prefer true-color over direct-color.
-      if (get(GLX_X_VISUAL_TYPE) != GLX_TRUE_COLOR)
+      if (get(GLX_X_VISUAL_TYPE) != GLX_TRUE_COLOR) {
         continue;
+      }
 
       // No caveats.
       auto caveat = get(GLX_CONFIG_CAVEAT);
-      if (caveat && caveat != GLX_NONE)
+      if (caveat && caveat != GLX_NONE) {
         continue;
+      }
 
       // No antialiasing needed.
-      if (get(GLX_SAMPLES))
+      if (get(GLX_SAMPLES)) {
         continue;
+      }
 
       // No depth buffer needed.
-      if (get(GLX_DEPTH_SIZE))
+      if (get(GLX_DEPTH_SIZE)) {
         continue;
+      }
 
       auto r = get(GLX_RED_SIZE);
       auto g = get(GLX_GREEN_SIZE);
       auto b = get(GLX_BLUE_SIZE);
       auto a = get(GLX_ALPHA_SIZE);
-      if (r == 5 && g == 6 && b == 5 && a == 0)
+      if (r == 5 && g == 6 && b == 5 && a == 0) {
         (*config_map_)[gfx::BufferFormat::BGR_565] = fbconfig;
-      else if (r == 8 && g == 8 && b == 8 && a == 0)
+      } else if (r == 8 && g == 8 && b == 8 && a == 0) {
         (*config_map_)[gfx::BufferFormat::BGRX_8888] = fbconfig;
-      else if (r == 10 && g == 10 && b == 10 && a == 0)
+      } else if (r == 10 && g == 10 && b == 10 && a == 0) {
         (*config_map_)[gfx::BufferFormat::BGRA_1010102] = fbconfig;
-      else if (r == 8 && g == 8 && b == 8 && a == 8)
+      } else if (r == 8 && g == 8 && b == 8 && a == 8) {
         (*config_map_)[gfx::BufferFormat::BGRA_8888] = fbconfig;
+      }
     }
   }
 }
 
-VisualPickerGlx::VisualPickerGlx() : connection_(x11::Connection::Get()) {
+VisualPickerGlx::VisualPickerGlx(x11::Connection* connection)
+    : connection_(connection) {
   auto configs =
       connection_->glx()
           .GetVisualConfigs(
@@ -301,4 +314,4 @@ VisualPickerGlx::VisualPickerGlx() : connection_(x11::Connection::Get()) {
 
 VisualPickerGlx::~VisualPickerGlx() = default;
 
-}  // namespace ui
+}  // namespace x11

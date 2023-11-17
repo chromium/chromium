@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
@@ -1068,7 +1069,7 @@ bool X11Window::IsTranslucentWindowOpacitySupported() const {
   // initializes |visual_has_alpha_|), return whether it is possible
   // to create windows with ARGB visuals.
   if (xwindow_ == x11::Window::None) {
-    ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
+    connection_->GetOrCreateVisualManager().ArgbVisualAvailable();
   }
 
   return visual_has_alpha_;
@@ -1847,13 +1848,12 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   x11::VisualId visual_id = visual_id_;
   uint8_t depth = 0;
   x11::ColorMap colormap{};
-  XVisualManager* visual_manager = XVisualManager::GetInstance();
+  auto& visual_manager = connection_->GetOrCreateVisualManager();
   if (visual_id_ == x11::VisualId{} ||
-      !visual_manager->GetVisualInfo(visual_id_, &depth, &colormap,
-                                     &visual_has_alpha_)) {
-    visual_manager->ChooseVisualForWindow(enable_transparent_visuals,
-                                          &visual_id, &depth, &colormap,
-                                          &visual_has_alpha_);
+      !visual_manager.GetVisualInfo(visual_id_, &depth, &colormap,
+                                    &visual_has_alpha_)) {
+    visual_manager.ChooseVisualForWindow(enable_transparent_visuals, &visual_id,
+                                         &depth, &colormap, &visual_has_alpha_);
   }
   // When drawing translucent windows, ensure a translucent background pixel
   // value so that a colored border won't be shown in the time after the window

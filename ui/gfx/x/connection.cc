@@ -23,6 +23,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/keyboard_state.h"
 #include "ui/gfx/x/randr.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
@@ -212,6 +213,13 @@ Window Connection::CreateDummyWindow(const std::string& name) {
     SetStringProperty(window, Atom::WM_NAME, Atom::STRING, name);
   }
   return window;
+}
+
+VisualManager& Connection::GetOrCreateVisualManager() {
+  if (!visual_manager_) {
+    visual_manager_ = std::make_unique<VisualManager>(this);
+  }
+  return *visual_manager_;
 }
 
 Connection::Request::Request(ResponseCallback callback)
