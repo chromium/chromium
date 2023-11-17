@@ -23,7 +23,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
+#include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,7 +99,7 @@ const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
 const char kPhReportingUrl[] = "https://foobar.com/";
 const char kExpsRegistrationSuccessUrl[] = "https://foobar.com/experiments";
 
-const char kRelativeVisualSearchUrl[] = "/test_visual.html";
+const char kRelativeVisualQueryUrl[] = "/test_visual.html";
 
 const char kExpectedNewTabLinkMetadata[] =
     "{\"openAction\":1,\"isSearchCompanionPinnedByDefault\":false}";
@@ -278,7 +278,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     page_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     companion_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    vss_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    vqs_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 
     // Register a handler to inspect the URL and examine the proto.
     // Nevertheless, it returns null which causes the default handler to be
@@ -288,7 +288,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(page_url_server_.Start());
     ASSERT_TRUE(companion_server_.Start());
-    ASSERT_TRUE(vss_url_server_.Start());
+    ASSERT_TRUE(vqs_url_server_.Start());
     SetUpFeatureList();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     InProcessBrowserTest::SetUp();
@@ -698,7 +698,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer companion_server_{net::EmbeddedTestServer::TYPE_HTTP};
-  net::EmbeddedTestServer vss_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer vqs_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), vss_url_server_.GetURL(kHost, kRelativeVisualSearchUrl)));
+      browser(), vqs_url_server_.GetURL(kHost, kRelativeVisualQueryUrl)));
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   WaitForCompanionToBeLoaded();
@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
     histogram_tester.ExpectBucketCount(
         "Companion.VisualQuery.ClassificationResultsSize", 1, 1);
     histogram_tester.ExpectBucketCount(
-        "Companion.VisualSearch.EndClassificationSuccess", true, 1);
+        "Companion.VisualQuery.EndClassificationSuccess", true, 1);
     histogram_tester.ExpectBucketCount(
         "Companion.VisualQuery.SendVisualResultSuccess", true, 1);
   }

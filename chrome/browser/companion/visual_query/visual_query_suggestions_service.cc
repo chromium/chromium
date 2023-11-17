@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -46,7 +46,7 @@ std::string GetModelSpec(ModelMetadata& metadata) {
 
 }  // namespace
 
-VisualSearchSuggestionsService::VisualSearchSuggestionsService(
+VisualQuerySuggestionsService::VisualQuerySuggestionsService(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
     : model_provider_(model_provider),
@@ -70,7 +70,7 @@ VisualSearchSuggestionsService::VisualSearchSuggestionsService(
   }
 }
 
-VisualSearchSuggestionsService::~VisualSearchSuggestionsService() {
+VisualQuerySuggestionsService::~VisualQuerySuggestionsService() {
   if (model_provider_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         optimization_guide::proto::
@@ -80,17 +80,17 @@ VisualSearchSuggestionsService::~VisualSearchSuggestionsService() {
   }
 }
 
-void VisualSearchSuggestionsService::BindModelReceiver(
+void VisualQuerySuggestionsService::BindModelReceiver(
     mojo::PendingReceiver<mojom::VisualSuggestionsModelProvider> receiver) {
   model_receivers_.Add(this, std::move(receiver));
 }
 
-void VisualSearchSuggestionsService::Shutdown() {
+void VisualQuerySuggestionsService::Shutdown() {
   model_receivers_.Clear();
   UnloadModelFile();
 }
 
-void VisualSearchSuggestionsService::UnloadModelFile() {
+void VisualQuerySuggestionsService::UnloadModelFile() {
   if (model_file_) {
     // If the model file is already loaded, it should be closed on a
     // background thread.
@@ -100,7 +100,7 @@ void VisualSearchSuggestionsService::UnloadModelFile() {
   }
 }
 
-void VisualSearchSuggestionsService::NotifyModelUpdatesAndClear() {
+void VisualQuerySuggestionsService::NotifyModelUpdatesAndClear() {
   for (auto& callback : model_callbacks_) {
     std::move(callback).Run(
         model_file_ ? model_file_->Duplicate() : base::File(),
@@ -109,7 +109,7 @@ void VisualSearchSuggestionsService::NotifyModelUpdatesAndClear() {
   model_callbacks_.clear();
 }
 
-void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
+void VisualQuerySuggestionsService::OnModelFileLoaded(base::File model_file) {
   if (!model_file.IsValid()) {
     return;
   }
@@ -119,7 +119,7 @@ void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
   NotifyModelUpdatesAndClear();
 }
 
-void VisualSearchSuggestionsService::OnModelUpdated(
+void VisualQuerySuggestionsService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   if (optimization_target !=
@@ -143,11 +143,11 @@ void VisualSearchSuggestionsService::OnModelUpdated(
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
-      base::BindOnce(&VisualSearchSuggestionsService::OnModelFileLoaded,
+      base::BindOnce(&VisualQuerySuggestionsService::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VisualSearchSuggestionsService::RegisterModelUpdateCallback(
+void VisualQuerySuggestionsService::RegisterModelUpdateCallback(
     ModelUpdateCallback callback) {
   if (model_file_) {
     std::move(callback).Run(model_file_->Duplicate(),
@@ -157,7 +157,7 @@ void VisualSearchSuggestionsService::RegisterModelUpdateCallback(
   model_callbacks_.emplace_back(std::move(callback));
 }
 
-void VisualSearchSuggestionsService::GetModelWithMetadata(
+void VisualQuerySuggestionsService::GetModelWithMetadata(
     GetModelWithMetadataCallback callback) {
   RegisterModelUpdateCallback(base::BindOnce(std::move(callback)));
   LOCAL_HISTOGRAM_BOOLEAN(

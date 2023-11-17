@@ -222,7 +222,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service_factory.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
@@ -873,10 +873,10 @@ void BindVisualSuggestionsModelProvider(
     mojo::PendingReceiver<
         companion::visual_search::mojom::VisualSuggestionsModelProvider>
         receiver) {
-  companion::visual_search::VisualSearchSuggestionsServiceFactory::
-      GetForProfile(Profile::FromBrowserContext(
-                        frame_host->GetProcess()->GetBrowserContext()))
-          ->BindModelReceiver(std::move(receiver));
+  companion::visual_search::VisualQuerySuggestionsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(
+          frame_host->GetProcess()->GetBrowserContext()))
+      ->BindModelReceiver(std::move(receiver));
 }
 #endif
 

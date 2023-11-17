@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_HOST_H_
-#define CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_HOST_H_
+#ifndef CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_
+#define CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -34,7 +34,7 @@ using VisualSuggestionsResults = std::vector<VisualSuggestionsResult>;
 using ClassificationStats = mojom::ClassificationStatsPtr;
 
 // Used to store the last GURL/result pair that was classified.
-using VisualSearchResultPair = std::pair<GURL, VisualSuggestionsResults>;
+using VisualQueryResultPair = std::pair<GURL, VisualSuggestionsResults>;
 
 // Used to record classification initialization success or one of the various
 // causes for initialization failure.
@@ -79,25 +79,25 @@ enum class InitStatus {
   kMaxValue = kQueryCancelled,
 };
 
-// This class serves as the main orchestator for visual search suggestions
+// This class serves as the main orchestator for visual query suggestions
 // components. It handles mojom IPC with both main renderer and side panel.
 // It also fetches model file descriptors from the keyed service.
-class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
+class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
  public:
   using ResultCallback =
       base::OnceCallback<void(const VisualSuggestionsResults results,
                               const VisualSuggestionsMetrics metrics)>;
 
-  explicit VisualSearchClassifierHost(
-      VisualSearchSuggestionsService* visual_search_service);
+  explicit VisualQueryClassifierHost(
+      VisualQuerySuggestionsService* visual_query_service);
 
-  VisualSearchClassifierHost(const VisualSearchClassifierHost&) = delete;
-  VisualSearchClassifierHost& operator=(const VisualSearchClassifierHost&) =
+  VisualQueryClassifierHost(const VisualQueryClassifierHost&) = delete;
+  VisualQueryClassifierHost& operator=(const VisualQueryClassifierHost&) =
       delete;
-  ~VisualSearchClassifierHost() override;
+  ~VisualQueryClassifierHost() override;
 
   // From mojom::VisualSuggestionsResultsHandler.
-  // Processes the list of images returned from the visual search classifier.
+  // Processes the list of images returned from the visual query classifier.
   // Its main job is to take a list of SkBitmap and convert to data uris.
   // The list of image data uris are sent to side panel companion for
   // rendering.
@@ -106,7 +106,7 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
       mojom::ClassificationStatsPtr stats) override;
 
   // This is the main method used by the companion page handler to start the
-  // visual search classification task. The RenderFrameHost is needed to
+  // visual query classification task. The RenderFrameHost is needed to
   // establish IPC channel with the Renderer process.
   void StartClassification(content::RenderFrameHost* render_frame_host,
                            const GURL& validated_url,
@@ -116,21 +116,21 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
   // mainly tracks the model fetching step.
   void CancelClassification(const GURL& visible_url);
 
-  // Returns the |VisualSearchResult| for a given url, currently we only cache
+  // Returns the |VisualQueryResult| for a given url, currently we only cache
   // the current url that we are processing.
   absl::optional<VisualSuggestionsResults> GetVisualResult(const GURL& url);
 
  private:
   // This method performs the actual mojom IPC to start classifier agent after
-  // we have obtained the model from |visual_search_service_|.
+  // we have obtained the model from |visual_query_service_|.
   void StartClassificationWithModel(
       mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
-          visual_search,
+          visual_query,
       base::File file,
       const std::string& base64_config);
 
-  // Pointer to visual search service which we do not own.
-  raw_ptr<VisualSearchSuggestionsService> visual_search_service_ = nullptr;
+  // Pointer to visual query service which we do not own.
+  raw_ptr<VisualQuerySuggestionsService> visual_query_service_ = nullptr;
 
   // This callback is used to send list of data uris (i.e. strings) to caller.
   ResultCallback result_callback_;
@@ -144,13 +144,13 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
   // Tracks whether or not we are waiting for result to a request.
   bool waiting_for_result_ = false;
 
-  // Used to store last |VisualSearchResult|, this is needed for instances where
+  // Used to store last |VisualQueryResult|, this is needed for instances where
   // the result is ready before the WebUI is ready to render it.
-  absl::optional<VisualSearchResultPair> current_result_;
+  absl::optional<VisualQueryResultPair> current_result_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
-  base::WeakPtrFactory<VisualSearchClassifierHost> weak_ptr_factory_{this};
+  base::WeakPtrFactory<VisualQueryClassifierHost> weak_ptr_factory_{this};
 };
 }  // namespace companion::visual_search
 
-#endif  // CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_HOST_H_
+#endif  // CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_

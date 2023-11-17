@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using companion::visual_search::VisualSearchSuggestionsService;
+using companion::visual_search::VisualQuerySuggestionsService;
 
 namespace {
 
@@ -41,7 +41,7 @@ void GetModelWithMetadataCallback(base::File model,
 }
 }  // namespace
 
-class VisualSearchSuggestionsServiceTest : public ::testing::Test {
+class VisualQuerySuggestionsServiceTest : public ::testing::Test {
  protected:
   void SetUp() override {
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
@@ -49,7 +49,7 @@ class VisualSearchSuggestionsServiceTest : public ::testing::Test {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     test_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
-    service_ = std::make_unique<VisualSearchSuggestionsService>(
+    service_ = std::make_unique<VisualQuerySuggestionsService>(
         test_model_provider_.get(), background_task_runner);
 
     absl::optional<optimization_guide::proto::Any> model_metadata;
@@ -69,15 +69,15 @@ class VisualSearchSuggestionsServiceTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<companion::visual_search::VisualSearchSuggestionsService>
+  std::unique_ptr<companion::visual_search::VisualQuerySuggestionsService>
       service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider_;
   std::unique_ptr<optimization_guide::ModelInfo> model_info_;
 };
 
-TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
-  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated) {
+  VisualQuerySuggestionsService::ModelUpdateCallback callback =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->RegisterModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
@@ -86,9 +86,9 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(VisualSearchSuggestionsServiceTest,
+TEST_F(VisualQuerySuggestionsServiceTest,
        OnModelUpdated_BadOptimizationTarget) {
-  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+  VisualQuerySuggestionsService::ModelUpdateCallback callback =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->RegisterModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
@@ -97,7 +97,7 @@ TEST_F(VisualSearchSuggestionsServiceTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
+TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
   base::FilePath source_root_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
   std::unique_ptr<optimization_guide::ModelInfo> invalid_model_info_ =
@@ -110,7 +110,7 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
           .SetVersion(123)
           .Build();
 
-  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+  VisualQuerySuggestionsService::ModelUpdateCallback callback =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->RegisterModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
@@ -119,8 +119,8 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
-  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
+  VisualQuerySuggestionsService::ModelUpdateCallback callback =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->RegisterModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
@@ -134,8 +134,8 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
-  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
+  VisualQuerySuggestionsService::ModelUpdateCallback callback =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->RegisterModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
@@ -144,7 +144,7 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
   task_environment_.RunUntilIdle();
 
   // Null model update should unload the model.
-  VisualSearchSuggestionsService::ModelUpdateCallback callback2 =
+  VisualQuerySuggestionsService::ModelUpdateCallback callback2 =
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,

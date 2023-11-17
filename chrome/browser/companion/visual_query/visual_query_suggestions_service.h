@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_SUGGESTIONS_SERVICE_H_
-#define CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_SUGGESTIONS_SERVICE_H_
+#ifndef CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_
+#define CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_
 
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
@@ -23,7 +23,7 @@ namespace companion::visual_search {
 using ModelMetadata =
     absl::optional<optimization_guide::proto::VisualSearchModelMetadata>;
 
-class VisualSearchSuggestionsService
+class VisualQuerySuggestionsService
     : public KeyedService,
       public mojom::VisualSuggestionsModelProvider,
       public optimization_guide::OptimizationTargetModelObserver {
@@ -31,15 +31,15 @@ class VisualSearchSuggestionsService
   using ModelUpdateCallback =
       base::OnceCallback<void(base::File, const std::string&)>;
 
-  VisualSearchSuggestionsService(
+  VisualQuerySuggestionsService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
 
-  VisualSearchSuggestionsService(const VisualSearchSuggestionsService&) =
+  VisualQuerySuggestionsService(const VisualQuerySuggestionsService&) =
       delete;
-  VisualSearchSuggestionsService& operator=(
-      const VisualSearchSuggestionsService&) = delete;
-  ~VisualSearchSuggestionsService() override;
+  VisualQuerySuggestionsService& operator=(
+      const VisualQuerySuggestionsService&) = delete;
+  ~VisualQuerySuggestionsService() override;
 
   void Shutdown() override;
 
@@ -87,9 +87,9 @@ class VisualSearchSuggestionsService
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
-  base::WeakPtrFactory<VisualSearchSuggestionsService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<VisualQuerySuggestionsService> weak_ptr_factory_{this};
 };
 
 }  // namespace companion::visual_search
 
-#endif  // CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_SUGGESTIONS_SERVICE_H_
+#endif  // CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_

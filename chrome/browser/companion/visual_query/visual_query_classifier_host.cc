@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
+#include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,14 +68,14 @@ VisualSuggestionsMetrics GenerateMetrics(const ClassificationStats& stats) {
 
 }  // namespace
 
-VisualSearchClassifierHost::VisualSearchClassifierHost(
-    VisualSearchSuggestionsService* visual_search_service)
-    : visual_search_service_(visual_search_service),
-      current_result_(VisualSearchResultPair()) {}
+VisualQueryClassifierHost::VisualQueryClassifierHost(
+    VisualQuerySuggestionsService* visual_query_service)
+    : visual_query_service_(visual_query_service),
+      current_result_(VisualQueryResultPair()) {}
 
-VisualSearchClassifierHost::~VisualSearchClassifierHost() = default;
+VisualQueryClassifierHost::~VisualQueryClassifierHost() = default;
 
-void VisualSearchClassifierHost::HandleClassification(
+void VisualQueryClassifierHost::HandleClassification(
     std::vector<mojom::VisualSearchSuggestionPtr> results,
     mojom::ClassificationStatsPtr classification_stats) {
   base::UmaHistogramCounts100("Companion.VisualQuery.ClassificationResultsSize",
@@ -96,7 +96,7 @@ void VisualSearchClassifierHost::HandleClassification(
   current_result_->second = converted_results;
   waiting_for_result_ = false;
 
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualQuery.EndClassificationSuccess",
                           !result_callback_.is_null());
   if (!result_callback_.is_null()) {
     std::move(result_callback_)
@@ -115,7 +115,7 @@ void VisualSearchClassifierHost::HandleClassification(
   result_handler_.reset();
 }
 
-void VisualSearchClassifierHost::StartClassification(
+void VisualQueryClassifierHost::StartClassification(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     ResultCallback callback) {
@@ -139,23 +139,23 @@ void VisualSearchClassifierHost::StartClassification(
   // We set the callback so that we know where to send back the results.
   result_callback_ = std::move(callback);
 
-  // Use |render_frame_host| to get visual search mojom IPC running in renderer.
-  mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_search;
+  // Use |render_frame_host| to get visual query mojom IPC running in renderer.
+  mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_query;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &visual_search);
+      &visual_query);
 
-  visual_search_service_->RegisterModelUpdateCallback(
-      base::BindOnce(&VisualSearchClassifierHost::StartClassificationWithModel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(visual_search)));
+  visual_query_service_->RegisterModelUpdateCallback(
+      base::BindOnce(&VisualQueryClassifierHost::StartClassificationWithModel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(visual_query)));
 
   base::UmaHistogramEnumeration(
       "Companion.VisualQuery.ClassificationInitStatus",
       InitStatus::kFetchModel);
 }
 
-void VisualSearchClassifierHost::StartClassificationWithModel(
+void VisualQueryClassifierHost::StartClassificationWithModel(
     mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
-        visual_search,
+        visual_query,
     base::File model,
     const std::string& base64_config) {
   base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
@@ -170,8 +170,8 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     return;
   }
 
-  if (visual_search.is_bound() && !result_handler_.is_bound()) {
-    visual_search->StartVisualClassification(
+  if (visual_query.is_bound() && !result_handler_.is_bound()) {
+    visual_query->StartVisualClassification(
         std::move(model), base64_config,
         result_handler_.BindNewPipeAndPassRemote());
 
@@ -194,14 +194,14 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
   }
 }
 
-void VisualSearchClassifierHost::CancelClassification(const GURL& visible_url) {
+void VisualQueryClassifierHost::CancelClassification(const GURL& visible_url) {
   result_callback_.Reset();
   waiting_for_result_ = false;
   RecordStatusChange(InitStatus::kQueryCancelled);
 }
 
 absl::optional<VisualSuggestionsResults>
-VisualSearchClassifierHost::GetVisualResult(const GURL& url) {
+VisualQueryClassifierHost::GetVisualResult(const GURL& url) {
   // We only send back results if we have received result from the renderer.
   if (!waiting_for_result_ && current_result_ &&
       url.GetContent() == current_result_->first.GetContent()) {

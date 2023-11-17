@@ -7,7 +7,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/companion/visual_search/features.h"
@@ -23,10 +23,10 @@
 
 namespace {
 
-class VisualSearchSuggestionsServiceDisabledBrowserTest
+class VisualQuerySuggestionsServiceDisabledBrowserTest
     : public InProcessBrowserTest {
  public:
-  VisualSearchSuggestionsServiceDisabledBrowserTest() {
+  VisualQuerySuggestionsServiceDisabledBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
         companion::visual_search::features::kVisualSearchSuggestions);
   }
@@ -46,35 +46,35 @@ class VisualSearchSuggestionsServiceDisabledBrowserTest
       test_model_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(VisualSearchSuggestionsServiceDisabledBrowserTest,
-                       VisualSearchSuggestionsServiceDisabled) {
-  EXPECT_FALSE(companion::visual_search::VisualSearchSuggestionsServiceFactory::
+IN_PROC_BROWSER_TEST_F(VisualQuerySuggestionsServiceDisabledBrowserTest,
+                       VisualQuerySuggestionsServiceDisabled) {
+  EXPECT_FALSE(companion::visual_search::VisualQuerySuggestionsServiceFactory::
                    GetForProfile(browser()->profile()));
 }
 
-class VisualSearchSuggestionsServiceBrowserTest
-    : public VisualSearchSuggestionsServiceDisabledBrowserTest {
+class VisualQuerySuggestionsServiceBrowserTest
+    : public VisualQuerySuggestionsServiceDisabledBrowserTest {
  public:
-  VisualSearchSuggestionsServiceBrowserTest() {
+  VisualQuerySuggestionsServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {companion::visual_search::features::kVisualSearchSuggestions}, {});
   }
 
-  companion::visual_search::VisualSearchSuggestionsService*
-  visual_search_suggestions_service() {
-    return companion::visual_search::VisualSearchSuggestionsServiceFactory::
+  companion::visual_search::VisualQuerySuggestionsService*
+  visual_query_suggestions_service() {
+    return companion::visual_search::VisualQuerySuggestionsServiceFactory::
         GetForProfile(browser()->profile());
   }
 
-  ~VisualSearchSuggestionsServiceBrowserTest() override = default;
+  ~VisualQuerySuggestionsServiceBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(VisualSearchSuggestionsServiceBrowserTest,
-                       VisualSearchSuggestionsServiceEnabled) {
-  EXPECT_TRUE(visual_search_suggestions_service());
+IN_PROC_BROWSER_TEST_F(VisualQuerySuggestionsServiceBrowserTest,
+                       VisualQuerySuggestionsServiceEnabled) {
+  EXPECT_TRUE(visual_query_suggestions_service());
 }
 
 }  // namespace

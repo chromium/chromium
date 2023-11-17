@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
+#include "chrome/browser/companion/visual_query/visual_query_suggestions_service_factory.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,16 +16,16 @@
 namespace companion::visual_search {
 
 // static
-VisualSearchSuggestionsService*
-VisualSearchSuggestionsServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<VisualSearchSuggestionsService*>(
+VisualQuerySuggestionsService*
+VisualQuerySuggestionsServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<VisualQuerySuggestionsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */
                                                  true));
 }
 
-VisualSearchSuggestionsServiceFactory::VisualSearchSuggestionsServiceFactory()
+VisualQuerySuggestionsServiceFactory::VisualQuerySuggestionsServiceFactory()
     : ProfileKeyedServiceFactory(
-          "VisualSearchSuggestionsService",
+          "VisualQuerySuggestionsService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
@@ -37,21 +37,21 @@ VisualSearchSuggestionsServiceFactory::VisualSearchSuggestionsServiceFactory()
 }
 
 // static
-VisualSearchSuggestionsServiceFactory*
-VisualSearchSuggestionsServiceFactory::GetInstance() {
-  static base::NoDestructor<VisualSearchSuggestionsServiceFactory> instance;
+VisualQuerySuggestionsServiceFactory*
+VisualQuerySuggestionsServiceFactory::GetInstance() {
+  static base::NoDestructor<VisualQuerySuggestionsServiceFactory> instance;
   return instance.get();
 }
 
 std::unique_ptr<KeyedService>
-VisualSearchSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
+VisualQuerySuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           companion::visual_search::features::kVisualSearchSuggestions)) {
     return nullptr;
   }
 
-  // The optimization guide service must be available for the visual search
+  // The optimization guide service must be available for the visual query
   // suggestion service to be created.
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context));
@@ -59,19 +59,19 @@ VisualSearchSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    return std::make_unique<VisualSearchSuggestionsService>(
+    return std::make_unique<VisualQuerySuggestionsService>(
         opt_guide, background_task_runner);
   }
   return nullptr;
 }
 
-bool VisualSearchSuggestionsServiceFactory::ServiceIsCreatedWithBrowserContext()
+bool VisualQuerySuggestionsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return base::FeatureList::IsEnabled(
       visual_search::features::kVisualSearchSuggestions);
 }
 
-bool VisualSearchSuggestionsServiceFactory::ServiceIsNULLWhileTesting() const {
+bool VisualQuerySuggestionsServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
