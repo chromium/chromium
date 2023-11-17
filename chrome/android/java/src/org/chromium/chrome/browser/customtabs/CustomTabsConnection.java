@@ -126,34 +126,6 @@ public class CustomTabsConnection {
     @VisibleForTesting
     static final String ON_DETACHED_REQUEST_COMPLETED = "onDetachedRequestCompleted";
 
-    // For SpeculationStatusOnStart status.
-    // TODO(crbug.com/1384816): remove if applicable.
-    @VisibleForTesting
-    private static final int SPECULATION_STATUS_ON_START_ALLOWED = 0;
-
-    // What kind of speculation was started, counted in addition to
-    // SPECULATION_STATUS_ALLOWED.
-    private static final int SPECULATION_STATUS_ON_START_PRERENDER = 2;
-    private static final int SPECULATION_STATUS_ON_START_BACKGROUND_TAB = 3;
-    // The following describe reasons why a speculation was not allowed, and are
-    // counted instead of SPECULATION_STATUS_ALLOWED.
-    private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_DEVICE_CLASS = 5;
-    private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_BLOCK_3RD_PARTY_COOKIES = 6;
-    private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED =
-            7;
-    // Obsolete due to no longer running the experiment
-    // "PredictivePrefetchingAllowedOnAllConnectionTypes".
-    // private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_METERED = 9;
-
-    // Obsolete due to expired histogram.
-    //private static final int SPECULATION_STATUS_ON_START_MAX = 10;
-
-    // For CustomTabs.SpeculationStatusOnSwap, see tools/metrics/enums.xml. Append only.
-    // Obsolete due to expired histogram.
-    // private static final int SPECULATION_STATUS_ON_SWAP_BACKGROUND_TAB_TAKEN = 0;
-    // private static final int SPECULATION_STATUS_ON_SWAP_BACKGROUND_TAB_NOT_MATCHED = 1;
-    // private static final int SPECULATION_STATUS_ON_SWAP_MAX = 4;
-
     // Constants for sending connection characteristics.
     public static final String DATA_REDUCTION_ENABLED = "dataReductionEnabled";
 
@@ -1708,24 +1680,18 @@ public class CustomTabsConnection {
         }
     }
 
-    @VisibleForTesting
-    int maySpeculateWithResult(CustomTabsSessionToken session) {
+    boolean maySpeculate(CustomTabsSessionToken session) {
         if (!DeviceClassManager.enablePrerendering()) {
-            return SPECULATION_STATUS_ON_START_NOT_ALLOWED_DEVICE_CLASS;
+            return false;
         }
         if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getInteger(COOKIE_CONTROLS_MODE)
                 == CookieControlsMode.BLOCK_THIRD_PARTY) {
-            return SPECULATION_STATUS_ON_START_NOT_ALLOWED_BLOCK_3RD_PARTY_COOKIES;
+            return false;
         }
         if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
-            return SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED;
+            return false;
         }
-        return SPECULATION_STATUS_ON_START_ALLOWED;
-    }
-
-    boolean maySpeculate(CustomTabsSessionToken session) {
-        int speculationResult = maySpeculateWithResult(session);
-        return speculationResult == SPECULATION_STATUS_ON_START_ALLOWED;
+        return true;
     }
 
     /** Cancels the speculation for a given session, or any session if null. */
