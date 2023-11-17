@@ -349,6 +349,10 @@ void UserPoliciesManager::SetFakesForTesting(FakesForTesting* fakes) {
   if (fakes->os_user_manager_for_testing) {
     OSUserManager::SetInstanceForTesting(fakes->os_user_manager_for_testing);
   }
+  if (fakes->internet_availability_checker_for_testing) {
+    InternetAvailabilityChecker::SetInstanceForTesting(
+        fakes->internet_availability_checker_for_testing);
+  }
 }
 
 }  // namespace credential_provider

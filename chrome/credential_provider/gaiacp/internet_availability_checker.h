@@ -15,6 +15,8 @@ class InternetAvailabilityChecker {
 
   virtual bool HasInternetConnection();
 
+  static void SetInstanceForTesting(InternetAvailabilityChecker*);
+
  protected:
   InternetAvailabilityChecker();
   virtual ~InternetAvailabilityChecker();

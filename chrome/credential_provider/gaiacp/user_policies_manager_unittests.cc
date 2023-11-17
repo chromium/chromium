@@ -33,6 +33,7 @@ void GcpUserPoliciesBaseTest::SetUp() {
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
+  fakes.internet_availability_checker_for_testing = fake_internet_checker();
   UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
 }
 
