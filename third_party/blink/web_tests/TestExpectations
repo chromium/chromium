@@ -3840,6 +3840,15 @@ crbug.com/721435 external/wpt/html/semantics/embedded-content/the-img-element/de
 # Test times out for some reason on Chromium browsers
 crbug.com/1357623 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-zero-intersection-area.html [ Timeout ]
 
+# Implement lazy loading scroll margin
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-horizontal.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-nested-2.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-nested-3.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-nested-4.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-nested-5.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller-nested.html [ Failure ]
+crbug.com/1391989 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-in-scroller.html [ Failure ]
+
 # Sheriff failures 2017-05-23
 crbug.com/725470 editing/shadow/doubleclick-on-meter-in-shadow-crash.html [ Crash Failure Pass ]
 
