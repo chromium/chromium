@@ -61,10 +61,9 @@ var allTests = [
     assertEq(body, cancelButton.parent);
 
     assertEq(undefined, okButton.previousSibling);
-    const buttonChild = okButton.firstChild;
-    assertEq('genericContainer', buttonChild.role);
-    assertEq(buttonChild, okButton.lastChild);
+    assertEq({}, okButton.firstChild);
     assertEq(userNameInput, okButton.nextSibling);
+    assertEq({}, okButton.lastChild);
 
     assertEq(okButton, userNameInput.previousSibling);
     assertEq(cancelButton, userNameInput.nextSibling);
