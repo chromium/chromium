@@ -1865,6 +1865,13 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
 inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
     "managed_private_network_access_restrictions_enabled";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Boolean indicating whether or not Compose consent has been given or
+// acknowledged.
+inline constexpr char kPrefHasAcceptedComposeConsent[] =
+    "compose_has_accepted_consent";
+#endif
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
