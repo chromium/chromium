@@ -47,7 +47,7 @@ class VoidifyStream {
   VoidifyStream() = default;
   explicit VoidifyStream(bool) {}
 
-  // This operator has lower precedence than << but higher than ?:
+  // Binary & has lower precedence than << but higher than ?:
   void operator&(std::ostream&) {}
 };
 

@@ -72,26 +72,26 @@ namespace logging {
 
 // The NOTIMPLEMENTED() macro annotates codepaths which have not been
 // implemented yet. If output spam is a serious concern,
-// NOTIMPLEMENTED_LOG_ONCE can be used.
-// Note that the NOTIMPLEMENTED_LOG_ONCE() macro does not allow custom error
-// messages to be appended to the macro to log, unlike NOTIMPLEMENTED() which
-// does support the pattern of appending a custom error message.  As in, the
-// NOTIMPLEMENTED_LOG_ONCE() << "foo message"; pattern is not supported.
+// NOTIMPLEMENTED_LOG_ONCE() can be used.
 #if DCHECK_IS_ON()
 #define NOTIMPLEMENTED() \
   ::logging::CheckError::NotImplemented(__PRETTY_FUNCTION__)
+
+// The lambda returns false the first time it is run, and true every other time.
+#define NOTIMPLEMENTED_LOG_ONCE()                                \
+  LOGGING_CHECK_FUNCTION_IMPL(NOTIMPLEMENTED(), []() {           \
+    bool old_value = true;                                       \
+    [[maybe_unused]] static const bool call_once = [](bool* b) { \
+      *b = false;                                                \
+      return true;                                               \
+    }(&old_value);                                               \
+    return old_value;                                            \
+  }())
+
 #else
 #define NOTIMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
+#define NOTIMPLEMENTED_LOG_ONCE() EAT_CHECK_STREAM_PARAMS()
 #endif
-
-#define NOTIMPLEMENTED_LOG_ONCE()    \
-  {                                  \
-    static bool logged_once = false; \
-    if (!logged_once) {              \
-      NOTIMPLEMENTED();              \
-      logged_once = true;            \
-    }                                \
-  }
 
 }  // namespace logging
 

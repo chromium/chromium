@@ -539,9 +539,11 @@ TEST(CheckDeathTest, DumpWillBeNotReachedNoreturn) {
                             DUMP_WILL_BE_NOTREACHED_NORETURN() << "foo");
 }
 
+static const std::string kNotImplementedMessage = "Not implemented reached in ";
+
 TEST(CheckTest, NotImplemented) {
   static const std::string expected_msg =
-      std::string("Not implemented reached in ") + __PRETTY_FUNCTION__;
+      kNotImplementedMessage + __PRETTY_FUNCTION__;
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact.
@@ -561,7 +563,7 @@ void NiLogOnce() {
 
 TEST(CheckTest, NotImplementedLogOnce) {
   static const std::string expected_msg =
-      "Not implemented reached in void (anonymous namespace)::NiLogOnce()\n";
+      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce()\n";
 
 #if DCHECK_IS_ON()
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
@@ -571,6 +573,37 @@ TEST(CheckTest, NotImplementedLogOnce) {
 #else
   EXPECT_NO_LOG(NiLogOnce());
   EXPECT_NO_LOG(NiLogOnce());
+#endif
+}
+
+void NiLogTenTimesWithStream() {
+  for (int i = 0; i < 10; ++i) {
+    NOTIMPLEMENTED_LOG_ONCE() << " iteration: " << i;
+  }
+}
+
+TEST(CheckTest, NotImplementedLogOnceWithStreamedParams) {
+  static const std::string expected_msg1 =
+      kNotImplementedMessage +
+      "void (anonymous namespace)::NiLogTenTimesWithStream() iteration: 0\n";
+
+#if DCHECK_IS_ON()
+  // Expect LOG(ERROR) with streamed params intact, exactly once.
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number() - 13,
+                                 NiLogTenTimesWithStream(), expected_msg1);
+  // A different NOTIMPLEMENTED_LOG_ONCE() call is still logged.
+  static const std::string expected_msg2 =
+      kNotImplementedMessage + __PRETTY_FUNCTION__ + "tree fish\n";
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number(),
+                                 NOTIMPLEMENTED_LOG_ONCE() << "tree fish",
+                                 expected_msg2);
+
+#else
+  // Expect nothing.
+  EXPECT_NO_LOG(NiLogTenTimesWithStream());
+  EXPECT_NO_LOG(NOTIMPLEMENTED_LOG_ONCE() << "tree fish");
 #endif
 }
 
