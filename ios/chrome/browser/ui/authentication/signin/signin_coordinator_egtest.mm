@@ -212,9 +212,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
 
-  if ([self
-          isRunningTest:@selector(testSignOutWithClearDataForSupervisedUser)] ||
-      [self isRunningTest:@selector
+  if ([self isRunningTest:@selector
             (testSignInSwitchAccountsAndKeepDataSeparate)] ||
       [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
       [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
@@ -252,6 +250,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   }
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
       [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
+      [self isRunningTest:@selector
+            (testSignOutForSupervisedUserClearAccountData)] ||
       [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
       [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
@@ -388,12 +388,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests that signing out a supervised user account with the clear local data
-// option is honored.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
-- (void)testSignOutWithClearDataForSupervisedUser {
+// Tests that signing out a supervised user account clears the account data.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testSignOutForSupervisedUserClearAccountData {
   // Sign in with a fake supervised identity.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
@@ -405,7 +402,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Sign out from the supervised account with option to clear local data.
   [SigninEarlGreyUI
