@@ -427,8 +427,8 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
 OpenXrAnchorManager* OpenXrApiWrapper::GetOrCreateAnchorManager(
     const OpenXrExtensionHelper& extension_helper) {
   if (session_ && !anchor_manager_) {
-    anchor_manager_ = std::make_unique<OpenXrAnchorManager>(
-        extension_helper, session_, local_space_);
+    anchor_manager_ =
+        extension_helper.CreateAnchorManager(session_, local_space_);
   }
   return anchor_manager_.get();
 }
@@ -450,8 +450,8 @@ OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper) {
   if (session_ && !scene_understanding_manager_) {
     scene_understanding_manager_ =
-        std::make_unique<OpenXRSceneUnderstandingManager>(
-            extension_helper, session_, local_space_);
+        extension_helper.CreateSceneUnderstandingManager(session_,
+                                                         local_space_);
   }
   return scene_understanding_manager_.get();
 }

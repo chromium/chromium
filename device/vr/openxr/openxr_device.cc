@@ -38,30 +38,17 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
 bool AreAllRequiredFeaturesSupported(
     const std::vector<mojom::XRSessionFeature>& required_features,
     const OpenXrExtensionHelper& extension_helper) {
-  auto* extension_enum = extension_helper.ExtensionEnumeration();
   return base::ranges::all_of(
       required_features,
-      [extension_enum](const mojom::XRSessionFeature& feature) {
-        switch (feature) {
-          case device::mojom::XRSessionFeature::ANCHORS:
-            return extension_enum->ExtensionSupported(
-                XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-          case device::mojom::XRSessionFeature::HAND_INPUT:
-            return extension_enum->ExtensionSupported(
-                XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
-          case device::mojom::XRSessionFeature::HIT_TEST:
-            return extension_enum->ExtensionSupported(
-                XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
-          case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
-            return extension_enum->ExtensionSupported(
-                XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
-          default:
-            // All features that don't require an extension are assumed to be
-            // supported. We rely on the Browser process pre-filtering and not
-            // passing us any features that we haven't already indicated that
-            // we could support.
-            return true;
-        }
+      [&extension_helper](const mojom::XRSessionFeature& feature) {
+        // This function returns true for features that are supported entirely
+        // by the core spec. We rely on the Browser process pre-filtering and
+        // not passing us any features that we haven't already indicated that
+        // we could support, which is the union of core spec features and things
+        // that could theoretically be supported depending on enabled
+        // extensions (which we're now checking if they're actually supported,
+        // since we need to create an instance to confirm that).
+        return extension_helper.IsFeatureSupported(feature);
       });
 }
 

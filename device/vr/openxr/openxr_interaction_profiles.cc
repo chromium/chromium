@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 
 #include "base/no_destructor.h"
+#include "device/vr/openxr/openxr_interaction_profile_paths.h"
 
 namespace device {
 OpenXrSystemInputProfiles::OpenXrSystemInputProfiles(
