@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -157,10 +159,16 @@ public class CustomTabMinimizationManager
 
     private void updateTabForMinimization(Tab tab) {
         if (tab == null) return;
+
+        GURL url =
+                DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
+                        ? tab.getOriginalUrl()
+                        : tab.getUrl();
+
         PropertyModel model =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(TITLE, tab.getTitle())
-                        .with(URL, tab.getUrl().getHost())
+                        .with(URL, url.getHost())
                         .with(FAVICON, TabFavicon.getBitmap(tab))
                         .build();
         var fragment = MinimizedCardDialogFragment.newInstance(model);

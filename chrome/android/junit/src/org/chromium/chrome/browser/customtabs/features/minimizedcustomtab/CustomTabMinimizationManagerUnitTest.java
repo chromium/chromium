@@ -39,6 +39,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -49,7 +50,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link CustomTabMinimizationManager}. */
@@ -67,6 +70,7 @@ public class CustomTabMinimizationManagerUnitTest {
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final String TITLE = "Google";
     private static final String HOST = JUnitTestGURLs.GOOGLE_URL.getHost();
@@ -79,12 +83,14 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private BrowserServicesIntentDataProvider mIntentData;
     @Mock private CustomTabsConnection mConnection;
     @Mock private Runnable mCloseTabRunnable;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
     private CustomTabMinimizationManager mManager;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = spy(activity));
+        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -176,5 +182,19 @@ public class CustomTabMinimizationManagerUnitTest {
                 "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
         timeElapsedWatcher.assertExpected(
                 "CustomTabs.TimeElapsedSinceMinimized.Destroyed should be recorded once");
+    }
+
+    @Test
+    public void testDistilledPage() {
+        String distillerUrl = "chrome-distiller://url/";
+        // Simulate having a distiller URL in the tab.
+        when(mTab.getUrl()).thenReturn(new GURL(distillerUrl));
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(distillerUrl)).thenReturn(true);
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
+
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
     }
 }
