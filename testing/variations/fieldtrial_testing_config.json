@@ -7122,6 +7122,21 @@
             ]
         }
     ],
+    "FocusMode": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "FocusModeEnabled",
+                    "enable_features": [
+                        "FocusMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "FollowOnboarding": [
         {
             "platforms": [
