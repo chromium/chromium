@@ -1772,6 +1772,24 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
               ? mojom::BackgroundBlurMode::BLUR
               : mojom::BackgroundBlurMode::OFF;
     }
+
+    hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for digital window", hr);
+    if (SUCCEEDED(hr) &&
+        (extended_camera_control->GetCapabilities() &
+         KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)) {
+      photo_capabilities->supported_face_framing_modes = {
+          mojom::MeteringMode::NONE, mojom::MeteringMode::CONTINUOUS};
+      photo_capabilities->current_face_framing_mode =
+          (extended_camera_control->GetFlags() &
+           KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)
+              ? mojom::MeteringMode::CONTINUOUS
+              : mojom::MeteringMode::NONE;
+    }
   }
 
   std::move(callback).Run(std::move(photo_capabilities));
@@ -1959,6 +1977,18 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
       hr = SetAndCommitExtendedCameraControlFlags(
           KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION, flag);
       DLOG_IF_FAILED_WITH_HRESULT("Background blur mode config failed", hr);
+      if (FAILED(hr)) {
+        return;
+      }
+    }
+    if (settings->has_face_framing_mode) {
+      const ULONGLONG flags =
+          settings->face_framing_mode == mojom::MeteringMode::CONTINUOUS
+              ? KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING
+              : KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
+      hr = SetAndCommitExtendedCameraControlFlags(
+          KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW, flags);
+      DLOG_IF_FAILED_WITH_HRESULT("Auto face framing config failed", hr);
       if (FAILED(hr)) {
         return;
       }
