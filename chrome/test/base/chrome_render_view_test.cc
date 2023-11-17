@@ -86,6 +86,10 @@ void ChromeRenderViewTest::SetUp() {
 }
 
 void ChromeRenderViewTest::TearDown() {
+  autofill_agent_ = nullptr;
+  password_generation_ = nullptr;
+  password_autofill_agent_ = nullptr;
+
   base::RunLoop().RunUntilIdle();
 
 #if defined(LEAK_SANITIZER)
