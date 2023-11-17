@@ -1123,23 +1123,11 @@ NSString* const kVersionKey = @"KSVersion";
 }
 
 - (BOOL)wantsFullInstaller {
-  // It's difficult to check the tag prior to Keystone registration, and
-  // performing registration replaces the tag. keystone_install.sh
-  // communicates a need for a full installer with Chrome in this file,
-  // .want_full_installer.
-  NSString* wantFullInstallerPath =
-      [_appPath stringByAppendingPathComponent:@".want_full_installer"];
-  NSString* wantFullInstallerContents =
-      [NSString stringWithContentsOfFile:wantFullInstallerPath
-                                encoding:NSUTF8StringEncoding
-                                   error:nil];
-  if (!wantFullInstallerContents) {
-    return NO;
-  }
-
-  NSString* wantFullInstallerVersion = [wantFullInstallerContents
-      stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-  return [wantFullInstallerVersion isEqualToString:_version];
+  // Historically, Chrome would read a breadcrumb file here, but this was
+  // removed due to code signing issues. This path is now only exercised in
+  // corner cases where UseChromiumUpdater isn't set, so for simplicity, always
+  // assume a full installer is needed.
+  return YES;
 }
 
 - (NSString*)tagSuffix {

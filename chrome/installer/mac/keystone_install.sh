@@ -479,10 +479,9 @@ infoplist_read() {
 # provide a full update package.
 mark_failed_patch_update() {
   local product_id="${1}"
-  local want_full_installer_path="${2}"
-  local old_ks_plist="${3}"
-  local old_version_app="${4}"
-  local system_ticket="${5}"
+  local old_ks_plist="${2}"
+  local old_version_app="${3}"
+  local system_ticket="${4}"
 
   # This step isn't critical.
   local set_e=
@@ -517,34 +516,6 @@ mark_failed_patch_update() {
     fi
     return 0
   fi
-
-  # Chrome can't easily read its Keystone ticket prior to registration, and
-  # when Chrome registers with Keystone, it obliterates old tag values in its
-  # ticket. Therefore, an alternative mechanism is provided to signal to
-  # Chrome that a full installer is desired. If the .want_full_installer file
-  # is present and it contains Chrome's current version number, Chrome will
-  # include "-full" in its tag when it registers with Keystone. This allows
-  # "-full" to persist in the tag even after Chrome is relaunched, which on a
-  # user ticket, triggers a re-registration.
-  #
-  # .want_full_installer is placed immediately inside the .app bundle as a
-  # sibling to the Contents directory. In this location, it's outside of the
-  # view of the code signing and code signature verification machinery. This
-  # file can safely be added, modified, and removed without affecting the
-  # signature.
-  rm -f "${want_full_installer_path}" 2> /dev/null
-  echo "${old_version_app}" > "${want_full_installer_path}"
-
-  # See the comment below in the "setting permissions" section for an
-  # explanation of the groups and modes selected here.
-  local chmod_mode="644"
-  if [[ -z "${system_ticket}" ]] &&
-     [[ "${want_full_installer_path:0:14}" = "/Applications/" ]] &&
-     chgrp admin "${want_full_installer_path}" 2> /dev/null; then
-    chmod_mode="664"
-  fi
-  note "chmod_mode = ${chmod_mode}"
-  chmod "${chmod_mode}" "${want_full_installer_path}" 2> /dev/null
 
   local old_ks_plist_path="${old_ks_plist}.plist"
 
@@ -862,9 +833,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   fi
   note "installed_app = ${installed_app}"
 
-  local want_full_installer_path="${installed_app}/.want_full_installer"
-  note "want_full_installer_path = ${want_full_installer_path}"
-
   if [[ "${installed_app:0:1}" != "/" ]] ||
      ! [[ -d "${installed_app}" ]]; then
     err "installed_app must be an absolute path to a directory"
@@ -1051,7 +1019,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
                          "${versioned_dir_target}"; then
       err "dirpatcher of versioned directory failed, status ${PIPESTATUS[0]}"
       mark_failed_patch_update "${product_id}" \
-                               "${want_full_installer_path}" \
                                "${old_ks_plist}" \
                                "${old_version_app}" \
                                "${system_ticket}"
@@ -1135,7 +1102,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
                          "${update_app}"; then
       err "dirpatcher of app directory failed, status ${PIPESTATUS[0]}"
       mark_failed_patch_update "${product_id}" \
-                               "${want_full_installer_path}" \
                                "${old_ks_plist}" \
                                "${old_version_app}" \
                                "${system_ticket}"
@@ -1191,10 +1157,13 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     note "g_temp_dir = ${g_temp_dir}"
   fi
 
-  # Clean up any old .want_full_installer files from previous dirpatcher
-  # failures. This is not considered a critical step, because this file
-  # normally does not exist at all.
-  rm -f "${want_full_installer_path}" || true
+  # Previous versions may have left a .want_full_installer file to hint to
+  # Chrome that it should append "-full" to its tag in order to avoid a
+  # differential update. These files are no longer needed (tag updates in this
+  # script are sufficient), but the file should be cleaned up to fix
+  # codesigning failures if it exists. This is not considered a critical step,
+  # because this file normally does not exist at all.
+  rm -f "${installed_app}/.want_full_installer" || true
 
   # If necessary, touch the outermost .app so that it appears to the outside
   # world that something was done to the bundle.  This will cause
