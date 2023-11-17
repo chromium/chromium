@@ -292,6 +292,9 @@
 # TODO(crbug.com/1502137): Consistently fails on the platform.
 -All/PrerenderTargetAgnosticBrowserTest.RenderFrameHostLifecycleState/_blank
 
+# TODO(crbug.com/1503172): Fails due to video capture issues.
+-BackForwardCacheBrowserTest.DoesNotCacheIfDisplayMediaAccessGranted
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
