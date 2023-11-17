@@ -34,6 +34,9 @@ class ExtensionInstallEventRouter
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
                             bool is_update) override;
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
 
   void StartObserving();
 
@@ -42,6 +45,8 @@ class ExtensionInstallEventRouter
       reporting_client_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
       extension_registry_ = nullptr;
+  void ReportExtensionInstallEvent(const extensions::Extension* extension,
+                                   const char* extension_action);
 };
 
 }  // namespace enterprise_connectors

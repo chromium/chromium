@@ -13,11 +13,24 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
 // Key names used with when building the dictionary to pass to the real-time
-// reporting API.
-const char kKeyId[] = "id";
-const char kKeyName[] = "name";
-const char kKeyDescription[] = "description";
+// reporting API. These matches proto defined in
+// google3/chrome/cros/reporting/api/proto/browser_events.proto
+constexpr char kKeyId[] = "id";
+constexpr char kKeyName[] = "name";
+constexpr char kKeyDescription[] = "description";
+constexpr char kKeyAction[] = "extension_action_type";
+constexpr char kKeyVersion[] = "extension_version";
+constexpr char kKeyFromWebstore[] = "from_webstore";
+
+// Extension action types
+constexpr char kInstallAction[] = "INSTALL";
+constexpr char kUpdateAction[] = "UPDATE";
+constexpr char kUninstallAction[] = "UNINSTALL";
+
+}  // namespace
 
 ExtensionInstallEventRouter::ExtensionInstallEventRouter(
     content::BrowserContext* context) {
@@ -39,10 +52,9 @@ void ExtensionInstallEventRouter::StartObserving() {
   }
 }
 
-void ExtensionInstallEventRouter::OnExtensionInstalled(
-    content::BrowserContext* browser_context,
+void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
     const extensions::Extension* extension,
-    bool is_update) {
+    const char* extension_action) {
   absl::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
@@ -55,10 +67,28 @@ void ExtensionInstallEventRouter::OnExtensionInstalled(
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
   event.Set(kKeyDescription, extension->description());
+  event.Set(kKeyAction, extension_action);
+  event.Set(kKeyVersion, extension->GetVersionForDisplay());
+  event.Set(kKeyFromWebstore, extension->from_webstore());
 
   reporting_client_->ReportRealtimeEvent(
       ReportingServiceSettings::kExtensionInstallEvent,
       std::move(settings.value()), std::move(event));
+}
+
+void ExtensionInstallEventRouter::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    bool is_update) {
+  ReportExtensionInstallEvent(extension,
+                              is_update ? kUpdateAction : kInstallAction);
+}
+
+void ExtensionInstallEventRouter::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  ReportExtensionInstallEvent(extension, kUninstallAction);
 }
 
 }  // namespace enterprise_connectors
