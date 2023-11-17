@@ -266,8 +266,8 @@ void X11WholeScreenMoveLoop::CreateDragInputWindow(
       x11::EventMask::KeyRelease | x11::EventMask::StructureNotify;
   grab_input_window_events_ = std::make_unique<x11::XScopedEventSelector>(
       grab_input_window_, event_mask);
-  connection->MapWindow({grab_input_window_});
-  RaiseWindow(grab_input_window_);
+  connection->MapWindow(grab_input_window_);
+  connection->RaiseWindow(grab_input_window_);
 }
 
 }  // namespace ui

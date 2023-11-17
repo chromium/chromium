@@ -495,7 +495,7 @@ TEST_F(X11WindowTest,
 
     SendClientMessage(x11_window, GetX11RootWindow(),
                       x11::GetAtom("WM_CHANGE_STATE"),
-                      {WM_STATE_ICONIC, 0, 0, 0, 0});
+                      {x11::WM_STATE_ICONIC, 0, 0, 0, 0});
     // Wait till set.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", true);
     waiter.Wait();
@@ -507,7 +507,7 @@ TEST_F(X11WindowTest,
   {
     SendClientMessage(x11_window, GetX11RootWindow(),
                       x11::GetAtom("WM_CHANGE_STATE"),
-                      {WM_STATE_NORMAL, 0, 0, 0, 0});
+                      {x11::WM_STATE_NORMAL, 0, 0, 0, 0});
     // Wait till unset.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", false);
     waiter.Wait();

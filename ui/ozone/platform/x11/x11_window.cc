@@ -347,7 +347,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
     // any security surfaces since the WM will not do it if the window is
     // override-redirect.
     for (x11::Window window : GetSecuritySurfaces()) {
-      RaiseWindow(window);
+      connection_->RaiseWindow(window);
     }
   }
 
@@ -474,7 +474,7 @@ void X11Window::Hide() {
   // Make sure no resize task will run after the window is unmapped.
   CancelResize();
 
-  WithdrawWindow(xwindow_);
+  connection_->WithdrawWindow(xwindow_);
   window_mapped_in_client_ = false;
 }
 
@@ -753,7 +753,7 @@ void X11Window::Maximize() {
 void X11Window::Minimize() {
   if (window_mapped_in_client_) {
     SendClientMessage(xwindow_, x_root_window_, x11::GetAtom("WM_CHANGE_STATE"),
-                      {WM_STATE_ICONIC, 0, 0, 0, 0});
+                      {x11::WM_STATE_ICONIC, 0, 0, 0, 0});
   } else {
     SetWMSpecState(true, x11::GetAtom("_NET_WM_STATE_HIDDEN"), x11::Atom::None);
   }
@@ -810,7 +810,7 @@ void X11Window::Activate() {
     SendClientMessage(xwindow_, x_root_window_,
                       x11::GetAtom("_NET_ACTIVE_WINDOW"), data);
   } else {
-    RaiseWindow(xwindow_);
+    connection_->RaiseWindow(xwindow_);
     // Directly ask the X server to give focus to the window. Note that the call
     // would have raised an X error if the window is not mapped.
     connection_->SetInputFocus({x11::InputFocus::Parent, xwindow_, timestamp})
@@ -832,7 +832,7 @@ void X11Window::Deactivate() {
   // Ignore future input events.
   ignore_keyboard_input_ = true;
 
-  ui::LowerWindow(xwindow_);
+  connection_->LowerWindow(xwindow_);
 
   AfterActivationStateChanged();
 }
@@ -862,7 +862,8 @@ void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
   }
 
   last_cursor_ = X11Cursor::FromPlatformCursor(cursor);
-  on_cursor_loaded_.Reset(base::BindOnce(DefineCursor, xwindow_));
+  on_cursor_loaded_.Reset(base::BindOnce(
+      &x11::Connection::DefineCursor, base::Unretained(connection_), xwindow_));
   last_cursor_->OnCursorLoaded(on_cursor_loaded_.callback());
 }
 
@@ -981,7 +982,7 @@ void X11Window::StackAbove(gfx::AcceleratedWidget widget) {
 }
 
 void X11Window::StackAtTop() {
-  RaiseWindow(xwindow_);
+  connection_->RaiseWindow(xwindow_);
 }
 
 void X11Window::FlashFrame(bool flash_frame) {
@@ -1017,21 +1018,21 @@ void X11Window::SetShape(std::unique_ptr<ShapeRects> native_shape,
 }
 
 void X11Window::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  SizeHints size_hints;
+  x11::SizeHints size_hints;
   memset(&size_hints, 0, sizeof(size_hints));
 
-  GetWmNormalHints(xwindow_, &size_hints);
+  connection_->GetWmNormalHints(xwindow_, &size_hints);
   // Unforce aspect ratio is parameter length is 0, otherwise set normally.
   if (aspect_ratio.IsEmpty()) {
-    size_hints.flags &= ~SIZE_HINT_P_ASPECT;
+    size_hints.flags &= ~x11::SIZE_HINT_P_ASPECT;
   } else {
-    size_hints.flags |= SIZE_HINT_P_ASPECT;
+    size_hints.flags |= x11::SIZE_HINT_P_ASPECT;
     size_hints.min_aspect_num = size_hints.max_aspect_num =
         aspect_ratio.width();
     size_hints.min_aspect_den = size_hints.max_aspect_den =
         aspect_ratio.height();
   }
-  SetWmNormalHints(xwindow_, size_hints);
+  connection_->SetWmNormalHints(xwindow_, size_hints);
 }
 
 void X11Window::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -1291,7 +1292,7 @@ gfx::Rect X11Window::GetXRootWindowOuterBounds() const {
 }
 
 void X11Window::LowerXWindow() {
-  ui::LowerWindow(xwindow_);
+  connection_->LowerWindow(xwindow_);
 }
 
 void X11Window::SetOverrideRedirect(bool override_redirect) {
@@ -1909,13 +1910,13 @@ void X11Window::CloseXWindow() {
 void X11Window::Map(bool inactive) {
   // Before we map the window, set size hints. Otherwise, some window managers
   // will ignore toplevel XMoveWindow commands.
-  SizeHints size_hints;
+  x11::SizeHints size_hints;
   memset(&size_hints, 0, sizeof(size_hints));
-  GetWmNormalHints(xwindow_, &size_hints);
-  size_hints.flags |= SIZE_HINT_P_POSITION;
+  connection_->GetWmNormalHints(xwindow_, &size_hints);
+  size_hints.flags |= x11::SIZE_HINT_P_POSITION;
   size_hints.x = bounds_in_pixels_.x();
   size_hints.y = bounds_in_pixels_.y();
-  SetWmNormalHints(xwindow_, size_hints);
+  connection_->SetWmNormalHints(xwindow_, size_hints);
 
   ignore_keyboard_input_ = inactive;
   auto wm_user_time_ms = ignore_keyboard_input_
@@ -2017,17 +2018,17 @@ void X11Window::SetFlashFrameHint(bool flash_frame) {
     return;
   }
 
-  WmHints hints;
+  x11::WmHints hints;
   memset(&hints, 0, sizeof(hints));
-  GetWmHints(xwindow_, &hints);
+  connection_->GetWmHints(xwindow_, &hints);
 
   if (flash_frame) {
-    hints.flags |= WM_HINT_X_URGENCY;
+    hints.flags |= x11::WM_HINT_X_URGENCY;
   } else {
-    hints.flags &= ~WM_HINT_X_URGENCY;
+    hints.flags &= ~x11::WM_HINT_X_URGENCY;
   }
 
-  SetWmHints(xwindow_, hints);
+  connection_->SetWmHints(xwindow_, hints);
 
   urgency_hint_set_ = flash_frame;
 }
@@ -2045,27 +2046,27 @@ void X11Window::UpdateMinAndMaxSize() {
   min_size_in_pixels_ = minimum_in_pixels.value();
   max_size_in_pixels_ = maximum_in_pixels.value();
 
-  SizeHints hints;
+  x11::SizeHints hints;
   memset(&hints, 0, sizeof(hints));
-  GetWmNormalHints(xwindow_, &hints);
+  connection_->GetWmNormalHints(xwindow_, &hints);
 
   if (min_size_in_pixels_.IsEmpty()) {
-    hints.flags &= ~SIZE_HINT_P_MIN_SIZE;
+    hints.flags &= ~x11::SIZE_HINT_P_MIN_SIZE;
   } else {
-    hints.flags |= SIZE_HINT_P_MIN_SIZE;
+    hints.flags |= x11::SIZE_HINT_P_MIN_SIZE;
     hints.min_width = min_size_in_pixels_.width();
     hints.min_height = min_size_in_pixels_.height();
   }
 
   if (max_size_in_pixels_.IsEmpty()) {
-    hints.flags &= ~SIZE_HINT_P_MAX_SIZE;
+    hints.flags &= ~x11::SIZE_HINT_P_MAX_SIZE;
   } else {
-    hints.flags |= SIZE_HINT_P_MAX_SIZE;
+    hints.flags |= x11::SIZE_HINT_P_MAX_SIZE;
     hints.max_width = max_size_in_pixels_.width();
     hints.max_height = max_size_in_pixels_.height();
   }
 
-  SetWmNormalHints(xwindow_, hints);
+  connection_->SetWmNormalHints(xwindow_, hints);
 }
 
 void X11Window::BeforeActivationStateChanged() {

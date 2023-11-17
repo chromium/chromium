@@ -30,7 +30,6 @@
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 
-typedef unsigned long Cursor;
 class SkPixmap;
 
 namespace gfx {
@@ -38,106 +37,6 @@ class Point;
 }  // namespace gfx
 
 namespace ui {
-
-enum WmState : uint32_t {
-  WM_STATE_WITHDRAWN = 0,
-  WM_STATE_NORMAL = 1,
-  WM_STATE_ICONIC = 3,
-};
-
-enum SizeHintsFlags : int32_t {
-  SIZE_HINT_US_POSITION = 1 << 0,
-  SIZE_HINT_US_SIZE = 1 << 1,
-  SIZE_HINT_P_POSITION = 1 << 2,
-  SIZE_HINT_P_SIZE = 1 << 3,
-  SIZE_HINT_P_MIN_SIZE = 1 << 4,
-  SIZE_HINT_P_MAX_SIZE = 1 << 5,
-  SIZE_HINT_P_RESIZE_INC = 1 << 6,
-  SIZE_HINT_P_ASPECT = 1 << 7,
-  SIZE_HINT_BASE_SIZE = 1 << 8,
-  SIZE_HINT_P_WIN_GRAVITY = 1 << 9,
-};
-
-struct SizeHints {
-  // User specified flags
-  int32_t flags;
-  // User-specified position
-  int32_t x, y;
-  // User-specified size
-  int32_t width, height;
-  // Program-specified minimum size
-  int32_t min_width, min_height;
-  // Program-specified maximum size
-  int32_t max_width, max_height;
-  // Program-specified resize increments
-  int32_t width_inc, height_inc;
-  // Program-specified minimum aspect ratios
-  int32_t min_aspect_num, min_aspect_den;
-  // Program-specified maximum aspect ratios
-  int32_t max_aspect_num, max_aspect_den;
-  // Program-specified base size
-  int32_t base_width, base_height;
-  // Program-specified window gravity
-  uint32_t win_gravity;
-};
-
-enum WmHintsFlags : uint32_t {
-  WM_HINT_INPUT = 1L << 0,
-  WM_HINT_STATE = 1L << 1,
-  WM_HINT_ICON_PIXMAP = 1L << 2,
-  WM_HINT_ICON_WINDOW = 1L << 3,
-  WM_HINT_ICON_POSITION = 1L << 4,
-  WM_HINT_ICON_MASK = 1L << 5,
-  WM_HINT_WINDOW_GROUP = 1L << 6,
-  // 1L << 7 doesn't have any defined meaning
-  WM_HINT_X_URGENCY = 1L << 8
-};
-
-struct WmHints {
-  // Marks which fields in this structure are defined
-  int32_t flags;
-  // Does this application rely on the window manager to get keyboard input?
-  uint32_t input;
-  // See below
-  int32_t initial_state;
-  // Pixmap to be used as icon
-  x11::Pixmap icon_pixmap;
-  // Window to be used as icon
-  x11::Window icon_window;
-  // Initial position of icon
-  int32_t icon_x, icon_y;
-  // Icon mask bitmap
-  x11::Pixmap icon_mask;
-  // Identifier of related window group
-  x11::Window window_group;
-};
-
-// These functions use the default display and this /must/ be called from
-// the UI thread. Thus, they don't support multiple displays.
-
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetWmNormalHints(x11::Window window, SizeHints* hints);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void SetWmNormalHints(x11::Window window, const SizeHints& hints);
-
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetWmHints(x11::Window window, WmHints* hints);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void SetWmHints(x11::Window window, const WmHints& hints);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void WithdrawWindow(x11::Window window);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void RaiseWindow(x11::Window window);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void LowerWindow(x11::Window window);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void DefineCursor(x11::Window window, x11::Cursor cursor);
 
 COMPONENT_EXPORT(UI_BASE_X)
 size_t RowBytesForVisualWidth(const x11::Connection::VisualInfo& visual_info,

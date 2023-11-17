@@ -182,9 +182,9 @@ XlibDisplay& Connection::GetXlibDisplay() {
   return *xlib_display_;
 }
 
-void Connection::DeleteProperty(x11::Window window, x11::Atom name) {
+void Connection::DeleteProperty(Window window, Atom name) {
   XProto::DeleteProperty({
-      .window = static_cast<x11::Window>(window),
+      .window = static_cast<Window>(window),
       .property = name,
   });
 }
@@ -220,6 +220,66 @@ VisualManager& Connection::GetOrCreateVisualManager() {
     visual_manager_ = std::make_unique<VisualManager>(this);
   }
   return *visual_manager_;
+}
+
+bool Connection::GetWmNormalHints(Window window, SizeHints* hints) {
+  std::vector<uint32_t> hints32;
+  if (!GetArrayProperty(window, Atom::WM_NORMAL_HINTS, &hints32)) {
+    return false;
+  }
+  if (hints32.size() != sizeof(SizeHints) / 4) {
+    return false;
+  }
+  memcpy(hints, hints32.data(), sizeof(*hints));
+  return true;
+}
+
+void Connection::SetWmNormalHints(Window window, const SizeHints& hints) {
+  std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
+  memcpy(hints32.data(), &hints, sizeof(SizeHints));
+  SetArrayProperty(window, Atom::WM_NORMAL_HINTS, Atom::WM_SIZE_HINTS, hints32);
+}
+
+bool Connection::GetWmHints(Window window, WmHints* hints) {
+  std::vector<uint32_t> hints32;
+  if (!GetArrayProperty(window, Atom::WM_HINTS, &hints32)) {
+    return false;
+  }
+  if (hints32.size() != sizeof(WmHints) / 4) {
+    return false;
+  }
+  memcpy(hints, hints32.data(), sizeof(*hints));
+  return true;
+}
+
+void Connection::SetWmHints(Window window, const WmHints& hints) {
+  std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
+  memcpy(hints32.data(), &hints, sizeof(WmHints));
+  SetArrayProperty(window, Atom::WM_HINTS, Atom::WM_HINTS, hints32);
+}
+
+void Connection::WithdrawWindow(Window window) {
+  UnmapWindow({window});
+
+  auto root = default_root();
+  UnmapNotifyEvent event{.event = root, .window = window};
+  auto mask = EventMask::SubstructureNotify | EventMask::SubstructureRedirect;
+  SendEvent(event, root, mask);
+}
+
+void Connection::RaiseWindow(Window window) {
+  ConfigureWindow(
+      ConfigureWindowRequest{.window = window, .stack_mode = StackMode::Above});
+}
+
+void Connection::LowerWindow(Window window) {
+  ConfigureWindow(
+      ConfigureWindowRequest{.window = window, .stack_mode = StackMode::Below});
+}
+
+void Connection::DefineCursor(Window window, Cursor cursor) {
+  ChangeWindowAttributes(
+      ChangeWindowAttributesRequest{.window = window, .cursor = cursor});
 }
 
 Connection::Request::Request(ResponseCallback callback)
