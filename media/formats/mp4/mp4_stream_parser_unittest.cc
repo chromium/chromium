@@ -664,6 +664,78 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
                                 buffer->data(), buffer->data_size(), 512));
 }
 
+TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kAC4);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  constexpr bool kExpectSuccess = true;
+#else
+  constexpr bool kExpectSuccess = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x61632d34 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2432000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("ac4-only-ims-frag.mp4");
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
+TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kAC4);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  constexpr bool kExpectSuccess = true;
+#else
+  constexpr bool kExpectSuccess = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x61632d34 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2135000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("ac4-only-ajoc-frag.mp4");
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
+TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kAC4);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  constexpr bool kExpectSuccess = true;
+#else
+  constexpr bool kExpectSuccess = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x61632d34 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(4087000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("ac4-only-channel-based-coding-frag.mp4");
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
 TEST_F(MP4StreamParserTest, DemuxingDTS) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kDTS);

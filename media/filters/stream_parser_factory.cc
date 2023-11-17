@@ -71,7 +71,8 @@ struct CodecInfo {
     HISTOGRAM_DTS,
     HISTOGRAM_DTSXP2,
     HISTOGRAM_DTSE,
-    HISTOGRAM_MAX = HISTOGRAM_DTSE  // Must be equal to largest logged entry.
+    HISTOGRAM_AC4,
+    HISTOGRAM_MAX = HISTOGRAM_AC4  // Must be equal to largest logged entry.
   };
 
   const char* pattern;
@@ -223,6 +224,27 @@ static const CodecInfo kEAC3CodecInfo3 = {"mp4a.A6", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_EAC3};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+// The 'ac-4' is mime codec id for AC4 according to
+// http://www.mp4ra.org/codecs.html
+// The object types for AC4 in MP4 container is 0xae, so according to RFC 6381
+// this corresponds to codec ids 'mp4a.AE'.
+// Codec id with lower case oti (mp4a.ae) is supported for backward
+// compatibility.
+static const CodecInfo kAC4CodecInfo1 = {"ac-4.*", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+static const CodecInfo kAC4CodecInfo2 = {"mp4a.ae.*", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+static const CodecInfo kAC4CodecInfo3 = {"mp4a.AE.*", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+static const CodecInfo kAC4CodecInfo4 = {"ac-4", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+static const CodecInfo kAC4CodecInfo5 = {"mp4a.ae", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+static const CodecInfo kAC4CodecInfo6 = {"mp4a.AE", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_AC4};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 // The 'dtsc' and 'dtsx' are mime codec ids for DTS and DTSX according to
 // http://mp4ra.org/#/codecs
@@ -326,6 +348,14 @@ static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
                                                    &kEAC3CodecInfo2,
                                                    &kEAC3CodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+                                                   &kAC4CodecInfo1,
+                                                   &kAC4CodecInfo2,
+                                                   &kAC4CodecInfo3,
+                                                   &kAC4CodecInfo4,
+                                                   &kAC4CodecInfo5,
+                                                   &kAC4CodecInfo6,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
                                                    &kDTSCodecInfo1,
                                                    &kDTSCodecInfo2,
@@ -381,6 +411,15 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                base::MatchPattern(codec_id, kEAC3CodecInfo3.pattern)) {
       audio_object_types.insert(mp4::kEAC3);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    } else if (base::MatchPattern(codec_id, kAC4CodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kAC4CodecInfo2.pattern) ||
+               base::MatchPattern(codec_id, kAC4CodecInfo3.pattern) ||
+               base::MatchPattern(codec_id, kAC4CodecInfo4.pattern) ||
+               base::MatchPattern(codec_id, kAC4CodecInfo5.pattern) ||
+               base::MatchPattern(codec_id, kAC4CodecInfo6.pattern)) {
+      audio_object_types.insert(mp4::kAC4);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (base::MatchPattern(codec_id, kDTSCodecInfo1.pattern) ||
                base::MatchPattern(codec_id, kDTSCodecInfo2.pattern) ||

@@ -420,6 +420,9 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
           audio_format != FOURCC_AC3 && audio_format != FOURCC_EAC3 &&
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+          audio_format != FOURCC_AC4 &&
+#endif
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
           audio_format != FOURCC_DTSC && audio_format != FOURCC_DTSX &&
           audio_format != FOURCC_DTSE &&
@@ -485,6 +488,13 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
             audio_type = kEAC3;
         }
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+        if (audio_type == kForbidden) {
+          if (audio_format == FOURCC_AC4) {
+            audio_type = kAC4;
+          }
+        }
+#endif
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         if (audio_type == kForbidden) {
           if (audio_format == FOURCC_DTSC)
@@ -531,6 +541,16 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
               GuessChannelLayout(entry.eac3.dec3.GetChannelCount());
           sample_per_second = entry.samplerate;
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+        } else if (audio_type == kAC4) {
+          codec = AudioCodec::kAC4;
+          // channel_layout and sample rate will be ignored on decoding.
+          // Refer to E.4.1 AC4SampleEntry Box in
+          //    ETSI TS 103 190 - 2 V1 .2.1(2018 - 02)
+          channel_layout = GuessChannelLayout(entry.channelcount);
+          sample_per_second = entry.samplerate;
+          extra_data = entry.ac4.dac4.StreamInfo();
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         } else if (audio_type == kDTS) {
           codec = AudioCodec::kDTS;

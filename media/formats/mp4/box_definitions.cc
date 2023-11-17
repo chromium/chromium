@@ -1617,7 +1617,7 @@ FourCC EC3SpecificBox::BoxType() const {
 }
 
 bool EC3SpecificBox::Parse(BoxReader* reader) {
-  // Read ddts into buffer.
+  // Read dec3 into buffer.
   std::vector<uint8_t> eac3_data;
 
   RCHECK(reader->ReadVec(&eac3_data, reader->box_size() - reader->pos()));
@@ -1637,7 +1637,7 @@ FourCC AC3SpecificBox::BoxType() const {
 }
 
 bool AC3SpecificBox::Parse(BoxReader* reader) {
-  // Read ddts into buffer.
+  // Read dac3 into buffer.
   std::vector<uint8_t> ac3_data;
 
   RCHECK(reader->ReadVec(&ac3_data, reader->box_size() - reader->pos()));
@@ -1646,6 +1646,28 @@ bool AC3SpecificBox::Parse(BoxReader* reader) {
   return true;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+AC4SpecificBox::AC4SpecificBox() {}
+
+AC4SpecificBox::AC4SpecificBox(const AC4SpecificBox& other) = default;
+
+AC4SpecificBox::~AC4SpecificBox() = default;
+
+FourCC AC4SpecificBox::BoxType() const {
+  return FOURCC_DAC4;
+}
+
+bool AC4SpecificBox::Parse(BoxReader* reader) {
+  // Read dac4 into buffer.
+  std::vector<uint8_t> ac4_data;
+
+  RCHECK(reader->ReadVec(&ac4_data, reader->box_size() - reader->pos()));
+  RCHECK(dac4.Parse(ac4_data, reader->media_log()));
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
@@ -1720,6 +1742,14 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
                         "Failure parsing EC3SpecificBox (dec3)");
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  if (format == FOURCC_AC4 ||
+      (format == FOURCC_ENCA && sinf.format.format == FOURCC_AC4)) {
+    RCHECK_MEDIA_LOGGED(reader->ReadChild(&ac4), reader->media_log(),
+                        "Failure parsing AC4SpecificBox (dac4)");
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
   // Read the FLACSpecificBox, even if CENC is signalled.
   if (format == FOURCC_FLAC ||

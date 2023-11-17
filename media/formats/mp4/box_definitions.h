@@ -19,6 +19,7 @@
 #include "media/base/video_codecs.h"
 #include "media/formats/mp4/aac.h"
 #include "media/formats/mp4/ac3.h"
+#include "media/formats/mp4/ac4.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/dts.h"
@@ -425,6 +426,13 @@ struct MEDIA_EXPORT EC3SpecificBox : Box {
 };
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+struct MEDIA_EXPORT AC4SpecificBox : Box {
+  DECLARE_BOX_METHODS(AC4SpecificBox);
+  AC4 dac4;
+};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
 struct MEDIA_EXPORT AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
@@ -446,6 +454,9 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
   AC3SpecificBox ac3;
   EC3SpecificBox eac3;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  AC4SpecificBox ac4;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 };
 
 struct MEDIA_EXPORT SampleDescription : Box {

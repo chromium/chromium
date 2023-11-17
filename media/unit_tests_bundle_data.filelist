@@ -35,6 +35,12 @@
 //media/test/data/aac-44100-packet-1
 //media/test/data/aac-44100-packet-2
 //media/test/data/aac-44100-packet-3
+//media/test/data/ac4-ajoc.ac4
+//media/test/data/ac4-channel-based-coding.ac4
+//media/test/data/ac4-ims.ac4
+//media/test/data/ac4-only-ajoc-frag.mp4
+//media/test/data/ac4-only-channel-based-coding-frag.mp4
+//media/test/data/ac4-only-ims-frag.mp4
 //media/test/data/audio-start-time-only.webm
 //media/test/data/av1-I-frame-1280x720
 //media/test/data/av1-I-frame-320x240

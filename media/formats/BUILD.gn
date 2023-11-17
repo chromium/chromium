@@ -157,6 +157,13 @@ source_set("formats") {
     ]
   }
 
+  if (enable_platform_ac4_audio) {
+    sources += [
+      "mp4/ac4.cc",
+      "mp4/ac4.h",
+    ]
+  }
+
   if (proprietary_codecs && enable_mse_mpeg2ts_stream_parser) {
     deps += [ "//ui/gfx/geometry" ]
     sources += [
@@ -329,6 +336,10 @@ source_set("unit_tests") {
         "mp4/ac3_unittest.cc",
         "mp4/eac3_unittest.cc",
       ]
+    }
+
+    if (enable_platform_ac4_audio) {
+      sources += [ "mp4/ac4_unittest.cc" ]
     }
 
     if (enable_mse_mpeg2ts_stream_parser) {
