@@ -691,9 +691,10 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
 
   for (size_t i = 0; i < kMinSupportedConcurrentDecoders; ++i) {
     EXPECT_TRUE(tvps[i]->WaitForFlushDone());
-    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u);
-    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames());
-    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors());
+    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u) << "Decoder #" << i;
+    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames())
+        << "Decoder #" << i;
+    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors()) << "Decoder #" << i;
   }
 }
 

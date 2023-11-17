@@ -1093,7 +1093,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         output_size ? *output_size : decoder_visible_rect.size(),
         estimated_num_buffers_for_renderer_);
   } else {
-    VLOGF(1) << "Initializing ImageProcessor; max buffers: "
+    VLOGF(2) << "Initializing ImageProcessor; max buffers: "
              << estimated_num_buffers_for_renderer_;
     image_processor = ImageProcessorFactory::CreateWithInputCandidates(
         candidates, /*input_visible_rect=*/decoder_visible_rect,
@@ -1129,7 +1129,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
       return CroStatus::Codes::kInsufficientFramePoolSize;
     }
 
-    VLOGF(1) << "Initializing auxiliary frame pool with up to " << num_pictures
+    VLOGF(2) << "Initializing auxiliary frame pool with up to " << num_pictures
              << " VideoFrames";
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
 
@@ -1174,7 +1174,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // to linear transformation, that the created frame pool is of linear format.
   // TODO(b/203240043): Add CHECKs to verify that the image processor is being
   // created for only valid use cases. Writing to a linear output buffer, e.g.
-  VLOGF(1) << "Initializing Image Processor frame pool with up to "
+  VLOGF(2) << "Initializing Image Processor frame pool with up to "
            << num_buffers << " VideoFrames";
   auto status_or_image_processor = ImageProcessorWithPool::Create(
       std::move(image_processor), main_frame_pool_.get(), num_buffers,

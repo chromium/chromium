@@ -19,6 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
@@ -258,8 +259,6 @@ V4L2StatefulVideoDecoder::GetSupportedConfigs() {
   SupportedVideoDecoderConfigs supported_media_configs;
 
   constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-  CHECK(base::PathExists(base::FilePath(kVideoDeviceDriverPath)));
-
   base::ScopedFD device_fd(HANDLE_EINTR(
       open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
   if (!device_fd.is_valid()) {
@@ -343,8 +342,6 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (!device_fd_.is_valid()) {
     constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-    CHECK(base::PathExists(base::FilePath(kVideoDeviceDriverPath)));
-
     device_fd_.reset(HANDLE_EINTR(
         open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
     if (!device_fd_.is_valid()) {
@@ -495,7 +492,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  PrintOutQueueStatesForVLOG(FROM_HERE);
+  PrintAndTraceQueueStates(FROM_HERE);
 
   if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kH264) {
     auto processed_buffer_and_decode_cbs = h264_frame_reassembler_->Process(
@@ -889,7 +886,7 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
   for (std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer();
        success && dequeued_buffer;
        std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer()) {
-    PrintOutQueueStatesForVLOG(FROM_HERE);
+    PrintAndTraceQueueStates(FROM_HERE);
 
     const int64_t flat_timespec =
         TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()).InMilliseconds();
@@ -1047,7 +1044,7 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
   for (std::tie(success, dequeued_buffer) = OUTPUT_queue_->DequeueBuffer();
        success && dequeued_buffer;
        std::tie(success, dequeued_buffer) = OUTPUT_queue_->DequeueBuffer()) {
-    PrintOutQueueStatesForVLOG(FROM_HERE);
+    PrintAndTraceQueueStates(FROM_HERE);
   }
   return success;
 }
@@ -1066,7 +1063,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
            OUTPUT_queue_->GetFreeBuffer();
        v4l2_buffer && !decoder_buffer_and_callbacks_.empty();
        v4l2_buffer = OUTPUT_queue_->GetFreeBuffer()) {
-    PrintOutQueueStatesForVLOG(FROM_HERE);
+    PrintAndTraceQueueStates(FROM_HERE);
 
     auto media_buffer = std::move(decoder_buffer_and_callbacks_.front().first);
     auto media_decode_cb =
@@ -1107,7 +1104,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
   return true;
 }
 
-void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(
+void V4L2StatefulVideoDecoder::PrintAndTraceQueueStates(
     const base::Location& from_here) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(4) << from_here.function_name() << "(): |OUTPUT_queue_| "
@@ -1115,6 +1112,14 @@ void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(
           << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
           << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0) << "/"
           << (CAPTURE_queue_ ? CAPTURE_queue_->AllocatedBuffersCount() : 0);
+
+  TRACE_COUNTER_ID1(
+      "media,gpu", "V4L2 OUTPUT Q used buffers", this,
+      base::checked_cast<int32_t>(OUTPUT_queue_->QueuedBuffersCount()));
+  TRACE_COUNTER_ID1("media,gpu", "V4L2 CAPTURE Q free buffers", this,
+                    (CAPTURE_queue_ ? base::checked_cast<int32_t>(
+                                          CAPTURE_queue_->QueuedBuffersCount())
+                                    : 0));
 }
 
 bool V4L2StatefulVideoDecoder::IsInitialized() const {
