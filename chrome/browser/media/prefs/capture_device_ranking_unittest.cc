@@ -29,7 +29,7 @@ std::vector<T>::const_iterator GetIterForInfo(const std::vector<T>& infos,
 
 }  // namespace
 
-class DeviceRankingTest : public testing::Test {
+class CaptureDeviceRankingTest : public testing::Test {
   void SetUp() override { media_prefs::RegisterUserPrefs(prefs_.registry()); }
 
  protected:
@@ -65,7 +65,7 @@ class DeviceRankingTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(DeviceRankingTest, PreferenceRankVideoDeviceInfos) {
+TEST_F(CaptureDeviceRankingTest, PreferenceRankVideoDeviceInfos) {
   const media::VideoCaptureDeviceInfo kIntegratedCamera(
       {/*display_name=*/"Integrated Camera",
        /*device_id=*/"integrated_camera"});
@@ -110,7 +110,7 @@ TEST_F(DeviceRankingTest, PreferenceRankVideoDeviceInfos) {
                            kDeviceExtra});
 }
 
-TEST_F(DeviceRankingTest, PreferenceRankAudioDeviceInfos) {
+TEST_F(CaptureDeviceRankingTest, PreferenceRankAudioDeviceInfos) {
   const media::AudioDeviceDescription kIntegratedMic(
       {/*device_name=*/"Integrated Mic",
        /*unique_id=*/"integrated_mic",
@@ -160,8 +160,73 @@ TEST_F(DeviceRankingTest, PreferenceRankAudioDeviceInfos) {
       /*expected_output=*/{kUsbMic, kIntegratedMic, kDevice3, kDeviceExtra});
 }
 
-class DeviceRankingWebMediaDeviceTest
-    : public DeviceRankingTest,
+TEST_F(CaptureDeviceRankingTest, InitializeAudioDeviceInfosRanking) {
+  const media::AudioDeviceDescription kIntegratedMic(
+      {/*device_name=*/"Integrated Mic",
+       /*unique_id=*/"integrated_mic",
+       /*group_id=*/"integrated_group"});
+  const media::AudioDeviceDescription kUsbMic({
+      /*device_name=*/"USB Mic",
+      /*unique_id=*/"usb_mic",
+      /*group_id=*/"usb_group",
+  });
+
+  prefs_.registry()->RegisterStringPref(prefs::kDefaultAudioCaptureDevice, "");
+
+  // The default device is set to "" so the output should be unmodified.
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
+
+  // The default device isn't in the passed device list, so the output should be
+  // unmodified.
+  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, "not_found_id");
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
+
+  // The default device is USB mic so the device ranking gets initialized to put
+  // that first.
+  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, kUsbMic.unique_id);
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kUsbMic, kIntegratedMic});
+
+  // The device ranking pref now has a value, so use that instead of the default
+  // device pref.
+  UpdateAudioRanking(kIntegratedMic, {kIntegratedMic, kUsbMic});
+  ExpectAudioRanking({kUsbMic, kIntegratedMic}, {kIntegratedMic, kUsbMic});
+}
+
+TEST_F(CaptureDeviceRankingTest, InitializeVideoDeviceInfosRanking) {
+  const media::VideoCaptureDeviceInfo kIntegratedCamera(
+      {/*display_name=*/"Integrated Camera",
+       /*device_id=*/"integrated_camera"});
+  const media::VideoCaptureDeviceInfo kUsbCamera({/*display_name=*/"USB Camera",
+                                                  /*device_id=*/"usb_camera"});
+
+  prefs_.registry()->RegisterStringPref(prefs::kDefaultVideoCaptureDevice, "");
+
+  // The default device is set to "" so the output should be unmodified.
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kIntegratedCamera, kUsbCamera});
+
+  // The default device isn't in the passed device list, so the output should be
+  // unmodified.
+  prefs_.SetString(prefs::kDefaultVideoCaptureDevice, "not_found_id");
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kIntegratedCamera, kUsbCamera});
+
+  // The default device is usb camera so the device ranking gets Initialized to
+  // put that first.
+  prefs_.SetString(prefs::kDefaultVideoCaptureDevice,
+                   kUsbCamera.descriptor.device_id);
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kUsbCamera, kIntegratedCamera});
+
+  // The device ranking pref now has a value, so use that instead of the default
+  // device pref.
+  UpdateVideoRanking(kIntegratedCamera, {kIntegratedCamera, kUsbCamera});
+  ExpectVideoRanking({kUsbCamera, kIntegratedCamera},
+                     {kIntegratedCamera, kUsbCamera});
+}
+
+class CaptureDeviceRankingWebMediaDeviceTest
+    : public CaptureDeviceRankingTest,
       public testing::WithParamInterface<blink::mojom::MediaDeviceType> {
  protected:
   void UpdateDeviceRanking(
@@ -197,11 +262,11 @@ class DeviceRankingWebMediaDeviceTest
 
 INSTANTIATE_TEST_SUITE_P(
     AudioVideoInput,
-    DeviceRankingWebMediaDeviceTest,
+    CaptureDeviceRankingWebMediaDeviceTest,
     ::testing::Values(blink::mojom::MediaDeviceType::kMediaAudioInput,
                       blink::mojom::MediaDeviceType::kMediaVideoInput));
 
-TEST_P(DeviceRankingWebMediaDeviceTest, PreferenceWebMediaDeviceInfos) {
+TEST_P(CaptureDeviceRankingWebMediaDeviceTest, PreferenceWebMediaDeviceInfos) {
   const blink::WebMediaDeviceInfo kIntegratedDevice(
       /*device_id=*/"integrated_device",
       /*label=*/"Integrated Device",

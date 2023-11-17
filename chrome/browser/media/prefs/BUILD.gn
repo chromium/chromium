@@ -22,7 +22,10 @@ source_set("prefs") {
     "//third_party/blink/public/common:headers",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+  ]
 }
 
 source_set("unit_tests") {
