@@ -337,11 +337,15 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
             "ServiceWorker.InstallEvent.WithFetch.Time", time);
       }
       break;
+    case EventType::MESSAGE:
+      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ExtendableMessageEvent.Time",
+                                 time);
+      break;
     case EventType::FETCH_MAIN_FRAME:
     case EventType::FETCH_SUB_FRAME:
-    case EventType::FETCH_FENCED_FRAME:
     case EventType::FETCH_SHARED_WORKER:
     case EventType::FETCH_SUB_RESOURCE:
+    case EventType::FETCH_FENCED_FRAME:
       if (was_handled) {
         UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.FetchEvent.HasResponse.Time",
                                    time);
@@ -350,48 +354,9 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
                                    time);
       }
       break;
-    case EventType::FETCH_WAITUNTIL:
-      // Do nothing: the histogram has been removed.
-      break;
-    case EventType::SYNC:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundSyncEvent.Time",
-                                 time);
-      break;
-    case EventType::NOTIFICATION_CLICK:
-      // Do nothing: the histogram has been removed.
-      break;
-    case EventType::NOTIFICATION_CLOSE:
-      // Do nothing: the histogram has been removed.
-      break;
-    case EventType::PUSH:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.PushEvent.Time", time);
-      break;
-    case EventType::MESSAGE:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ExtendableMessageEvent.Time",
-                                 time);
-      break;
-    case EventType::EXTERNAL_REQUEST:
-      // Do nothing: the histogram has been removed.
-      break;
     case EventType::PAYMENT_REQUEST:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.PaymentRequestEvent.Time",
                                  time);
-      break;
-    case EventType::BACKGROUND_FETCH_ABORT:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundFetchAbortEvent.Time",
-                                 time);
-      break;
-    case EventType::BACKGROUND_FETCH_CLICK:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundFetchClickEvent.Time",
-                                 time);
-      break;
-    case EventType::BACKGROUND_FETCH_FAIL:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundFetchFailEvent.Time",
-                                 time);
-      break;
-    case EventType::BACKGROUND_FETCH_SUCCESS:
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "ServiceWorker.BackgroundFetchSuccessEvent.Time", time);
       break;
     case EventType::CAN_MAKE_PAYMENT:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.CanMakePaymentEvent.Time",
@@ -400,26 +365,30 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::ABORT_PAYMENT:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.AbortPaymentEvent.Time", time);
       break;
-    case EventType::COOKIE_CHANGE:
-      // Do nothing: the histogram has been removed.
-      break;
     case EventType::PERIODIC_SYNC:
       UMA_HISTOGRAM_MEDIUM_TIMES(
           "ServiceWorker.PeriodicBackgroundSyncEvent.Time", time);
       break;
+    case EventType::SYNC:
+    case EventType::NOTIFICATION_CLICK:
+    case EventType::PUSH:
+    case EventType::NOTIFICATION_CLOSE:
+    case EventType::FETCH_WAITUNTIL:
+    case EventType::EXTERNAL_REQUEST:
+    case EventType::BACKGROUND_FETCH_ABORT:
+    case EventType::BACKGROUND_FETCH_CLICK:
+    case EventType::BACKGROUND_FETCH_FAIL:
+    case EventType::COOKIE_CHANGE:
+    case EventType::BACKGROUND_FETCH_SUCCESS:
     case EventType::CONTENT_DELETE:
-      // Do nothing: the histogram has been removed.
-      break;
     case EventType::PUSH_SUBSCRIPTION_CHANGE:
-      // Do nothing: the histogram has been removed.
-      break;
     case EventType::WARM_UP:
       // Do nothing: the warm up should not be sent as an event.
       break;
-    case EventType::BYPASS_MAIN_RESOURCE:
-    // The bypass main resource should not be sent as an event.
     case EventType::NAVIGATION_HINT:
     // The navigation hint should not be sent as an event.
+    case EventType::BYPASS_MAIN_RESOURCE:
+    // The bypass main resource should not be sent as an event.
     case EventType::SKIP_EMPTY_FETCH_HANDLER:
     // The skip empty fetch handler should not be sent as an event.
     case EventType::BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:

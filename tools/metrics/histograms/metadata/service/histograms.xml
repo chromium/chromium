@@ -172,66 +172,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.BackgroundFetchAbortEvent.Time" units="ms"
-    expires_after="2022-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a BackgroundFetchAbortEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.BackgroundFetchClickEvent.Time" units="ms"
-    expires_after="2022-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a BackgroundFetchClickEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.BackgroundFetchFailEvent.Time" units="ms"
-    expires_after="2022-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a BackgroundFetchFailEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.BackgroundFetchSuccessEvent.Time" units="ms"
-    expires_after="2022-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a BackgroundFetchSuccessEvent to a
-    Service Worker and receiving a message that it finished handling the event.
-    Includes the time for the waitUntil() promise to settle. This event is sent
-    when the background fetch succeeds.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.BackgroundSyncEvent.Time" units="ms"
-    expires_after="2022-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a SyncEvent to a Service Worker and
-    receiving a message that it finished handling the event. Includes the time
-    for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize"
     units="bytes" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -1233,17 +1173,6 @@ chromium-metrics-reviews@google.com.
     The time taken between dispatching a PeriodicSyncEvent to a Service Worker
     and receiving a message that it finished handling the event. Includes the
     time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.PushEvent.Time" units="ms"
-    expires_after="2022-10-30">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a PushEvent to a Service Worker and
-    receiving a message that it finished handling the event. Includes the time
-    for the waitUntil() promise to settle.
   </summary>
 </histogram>
 
