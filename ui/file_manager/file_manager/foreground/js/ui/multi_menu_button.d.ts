@@ -4,4 +4,6 @@
 
 export class MultiMenuButton extends HTMLButtonElement {
   showMenu(shouldFocus: boolean, mousePos?: {x: number, y: number}): void;
+
+  menu: HTMLElement;
 }

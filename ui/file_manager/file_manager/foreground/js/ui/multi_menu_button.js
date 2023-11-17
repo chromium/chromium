@@ -13,13 +13,11 @@ import {MultiMenu} from './multi_menu.js';
 
 /**
  * A button that displays a MultiMenu (menu with sub-menus).
- * @extends {HTMLButtonElement}
- * @implements {EventListener}
  */
-// @ts-ignore: error TS2420: Class 'MultiMenuButton' incorrectly implements
-// interface 'EventListener'.
-export class MultiMenuButton {
+export class MultiMenuButton extends HTMLButtonElement {
   constructor() {
+    super();
+
     /**
      * Property that hosts sub-menus for filling with overflow items.
      * @public @type {Menu|null} Used for menu-items that overflow parent
