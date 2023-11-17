@@ -796,6 +796,7 @@
       // Use full cascading for applying @try fallback for anchor positioning
       // during layout.
       name: "CSSAnchorPositioningCascadeFallback",
+      implied_by: ["CSSAnchorPositioning"],
     },
     {
       name: "CSSAnimationComposition",
