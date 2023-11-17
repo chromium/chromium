@@ -490,7 +490,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 struct FeaturePromoParams {
   // NOLINTNEXTLINE(google-explicit-constructor)
   FeaturePromoParams(const base::Feature& iph_feature);
-  FeaturePromoParams(FeaturePromoParams&& other);
+  FeaturePromoParams(FeaturePromoParams&& other) noexcept;
   ~FeaturePromoParams();
 
   // The feature for the IPH to show. Must be an IPH feature defined in

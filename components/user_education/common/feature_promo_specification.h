@@ -112,11 +112,10 @@ class FeaturePromoSpecification {
 
     AcceleratorInfo();
     AcceleratorInfo(const AcceleratorInfo& other);
-    ~AcceleratorInfo();
-
     explicit AcceleratorInfo(ValueType value);
     AcceleratorInfo& operator=(ValueType value);
     AcceleratorInfo& operator=(const AcceleratorInfo& other);
+    ~AcceleratorInfo();
 
     explicit operator bool() const;
     bool operator!() const { return !static_cast<bool>(*this); }
@@ -138,15 +137,16 @@ class FeaturePromoSpecification {
         std::string display_description_ = std::string(),
         base::RepeatingClosure setup_for_feature_promo_callback_ =
             base::DoNothing());
-    ~DemoPageInfo();
     DemoPageInfo(const DemoPageInfo& other);
     DemoPageInfo& operator=(const DemoPageInfo& other);
+    ~DemoPageInfo();
   };
 
   FeaturePromoSpecification();
-  FeaturePromoSpecification(FeaturePromoSpecification&& other);
+  FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
+  FeaturePromoSpecification& operator=(
+      FeaturePromoSpecification&& other) noexcept;
   ~FeaturePromoSpecification();
-  FeaturePromoSpecification& operator=(FeaturePromoSpecification&& other);
 
   // Format a localized string with ID `string_id` based on the given
   // `format_params`.

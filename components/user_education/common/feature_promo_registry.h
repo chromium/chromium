@@ -19,9 +19,9 @@ namespace user_education {
 class FeaturePromoRegistry {
  public:
   FeaturePromoRegistry();
-  FeaturePromoRegistry(FeaturePromoRegistry&& other);
+  FeaturePromoRegistry(FeaturePromoRegistry&& other) noexcept;
+  FeaturePromoRegistry& operator=(FeaturePromoRegistry&& other) noexcept;
   ~FeaturePromoRegistry();
-  FeaturePromoRegistry& operator=(FeaturePromoRegistry&& other);
 
   // Determines whether or not a particular feature is registered.
   bool IsFeatureRegistered(const base::Feature& iph_feature) const;

@@ -31,8 +31,8 @@ class TutorialHistograms {
  public:
   TutorialHistograms() = default;
   TutorialHistograms(const TutorialHistograms& other) = delete;
-  virtual ~TutorialHistograms() = default;
   void operator=(const TutorialHistograms& other) = delete;
+  virtual ~TutorialHistograms() = default;
 
   // Records whether the tutorial was completed or not.
   virtual void RecordComplete(bool value) = 0;
@@ -132,9 +132,9 @@ struct TutorialDescription {
       base::RepeatingCallback<void(ui::TrackedElement* current_anchor)>;
 
   TutorialDescription();
+  TutorialDescription(TutorialDescription&& other) noexcept;
+  TutorialDescription& operator=(TutorialDescription&& other) noexcept;
   ~TutorialDescription();
-  TutorialDescription(TutorialDescription&& other);
-  TutorialDescription& operator=(TutorialDescription&& other);
 
   using ContextMode = ui::InteractionSequence::ContextMode;
   using ElementSpecifier = absl::variant<ui::ElementIdentifier, std::string>;

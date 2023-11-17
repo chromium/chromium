@@ -148,10 +148,10 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
 }  // namespace
 
 ShowPromoInPage::Params::Params() = default;
+ShowPromoInPage::Params::Params(Params&& other) noexcept = default;
+ShowPromoInPage::Params& ShowPromoInPage::Params::operator=(
+    Params&& other) noexcept = default;
 ShowPromoInPage::Params::~Params() = default;
-ShowPromoInPage::Params::Params(Params&& other) = default;
-ShowPromoInPage::Params& ShowPromoInPage::Params::operator=(Params&& other) =
-    default;
 
 ShowPromoInPage::ShowPromoInPage() = default;
 ShowPromoInPage::~ShowPromoInPage() = default;

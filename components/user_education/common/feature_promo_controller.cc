@@ -822,7 +822,8 @@ FeaturePromoControllerCommon::BlockActiveWindowCheckForTesting() {
 
 FeaturePromoParams::FeaturePromoParams(const base::Feature& iph_feature)
     : feature(iph_feature) {}
-FeaturePromoParams::FeaturePromoParams(FeaturePromoParams&& other) = default;
+FeaturePromoParams::FeaturePromoParams(FeaturePromoParams&& other) noexcept =
+    default;
 FeaturePromoParams::~FeaturePromoParams() = default;
 
 }  // namespace user_education

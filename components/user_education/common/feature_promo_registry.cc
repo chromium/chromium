@@ -11,11 +11,11 @@
 namespace user_education {
 
 FeaturePromoRegistry::FeaturePromoRegistry() = default;
-FeaturePromoRegistry::FeaturePromoRegistry(FeaturePromoRegistry&& other) =
-    default;
-FeaturePromoRegistry::~FeaturePromoRegistry() = default;
+FeaturePromoRegistry::FeaturePromoRegistry(
+    FeaturePromoRegistry&& other) noexcept = default;
 FeaturePromoRegistry& FeaturePromoRegistry::operator=(
-    FeaturePromoRegistry&& other) = default;
+    FeaturePromoRegistry&& other) noexcept = default;
+FeaturePromoRegistry::~FeaturePromoRegistry() = default;
 
 bool FeaturePromoRegistry::IsFeatureRegistered(
     const base::Feature& iph_feature) const {

@@ -7,11 +7,11 @@
 namespace user_education {
 
 HelpBubbleButtonParams::HelpBubbleButtonParams() = default;
-HelpBubbleButtonParams::HelpBubbleButtonParams(HelpBubbleButtonParams&&) =
-    default;
+HelpBubbleButtonParams::HelpBubbleButtonParams(
+    HelpBubbleButtonParams&&) noexcept = default;
 HelpBubbleButtonParams::~HelpBubbleButtonParams() = default;
 HelpBubbleButtonParams& HelpBubbleButtonParams::operator=(
-    HelpBubbleButtonParams&&) = default;
+    HelpBubbleButtonParams&&) noexcept = default;
 
 HelpBubbleParams::ExtendedProperties::ExtendedProperties() = default;
 
@@ -20,7 +20,7 @@ HelpBubbleParams::ExtendedProperties::ExtendedProperties(
     : dict_(other.dict_.Clone()) {}
 
 HelpBubbleParams::ExtendedProperties::ExtendedProperties(
-    ExtendedProperties&& other)
+    ExtendedProperties&& other) noexcept
     : dict_(std::move(other.dict_)) {}
 
 HelpBubbleParams::ExtendedProperties&
@@ -31,12 +31,11 @@ HelpBubbleParams::ExtendedProperties::operator=(
 }
 
 HelpBubbleParams::ExtendedProperties&
-HelpBubbleParams::ExtendedProperties::operator=(ExtendedProperties&& other) {
+HelpBubbleParams::ExtendedProperties::operator=(
+    ExtendedProperties&& other) noexcept {
   dict_ = std::move(other.dict_);
   return *this;
 }
-
-HelpBubbleParams::ExtendedProperties::~ExtendedProperties() = default;
 
 bool HelpBubbleParams::ExtendedProperties::operator==(
     const ExtendedProperties& other) const {
@@ -48,9 +47,12 @@ bool HelpBubbleParams::ExtendedProperties::operator!=(
   return dict_ != other.dict_;
 }
 
+HelpBubbleParams::ExtendedProperties::~ExtendedProperties() = default;
+
 HelpBubbleParams::HelpBubbleParams() = default;
-HelpBubbleParams::HelpBubbleParams(HelpBubbleParams&&) = default;
+HelpBubbleParams::HelpBubbleParams(HelpBubbleParams&&) noexcept = default;
+HelpBubbleParams& HelpBubbleParams::operator=(HelpBubbleParams&&) noexcept =
+    default;
 HelpBubbleParams::~HelpBubbleParams() = default;
-HelpBubbleParams& HelpBubbleParams::operator=(HelpBubbleParams&&) = default;
 
 }  // namespace user_education

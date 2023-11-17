@@ -63,9 +63,9 @@ class ShowPromoInPage {
   // Specifies how a page should be open to show a help bubble.
   struct Params {
     Params();
+    Params(Params&& other) noexcept;
+    Params& operator=(Params&& other) noexcept;
     ~Params();
-    Params(Params&& other);
-    Params& operator=(Params&& other);
 
     // The page to open. If not specified, the current page will be used.
     absl::optional<GURL> target_url = absl::nullopt;

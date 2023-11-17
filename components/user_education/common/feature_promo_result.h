@@ -48,7 +48,7 @@ class FeaturePromoResult {
   constexpr FeaturePromoResult() = default;
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr FeaturePromoResult(Failure reason) : failure_(reason) {}
-  constexpr FeaturePromoResult(FeaturePromoResult&& other)
+  constexpr FeaturePromoResult(FeaturePromoResult&& other) noexcept
       : failure_(other.failure_) {}
   FeaturePromoResult(const FeaturePromoResult& other);
   ~FeaturePromoResult();

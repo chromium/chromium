@@ -44,9 +44,9 @@ enum class HelpBubbleArrow {
 
 struct HelpBubbleButtonParams {
   HelpBubbleButtonParams();
-  HelpBubbleButtonParams(HelpBubbleButtonParams&&);
+  HelpBubbleButtonParams(HelpBubbleButtonParams&&) noexcept;
+  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&) noexcept;
   ~HelpBubbleButtonParams();
-  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&);
 
   std::u16string text;
   bool is_default = false;
@@ -61,9 +61,9 @@ struct HelpBubbleParams {
    public:
     ExtendedProperties();
     ExtendedProperties(const ExtendedProperties&);
-    ExtendedProperties(ExtendedProperties&&);
+    ExtendedProperties(ExtendedProperties&&) noexcept;
     ExtendedProperties& operator=(const ExtendedProperties&);
-    ExtendedProperties& operator=(ExtendedProperties&&);
+    ExtendedProperties& operator=(ExtendedProperties&&) noexcept;
     ~ExtendedProperties();
 
     bool operator==(const ExtendedProperties&) const;
@@ -77,9 +77,9 @@ struct HelpBubbleParams {
   };
 
   HelpBubbleParams();
-  HelpBubbleParams(HelpBubbleParams&&);
+  HelpBubbleParams(HelpBubbleParams&&) noexcept;
+  HelpBubbleParams& operator=(HelpBubbleParams&&) noexcept;
   ~HelpBubbleParams();
-  HelpBubbleParams& operator=(HelpBubbleParams&&);
 
   HelpBubbleArrow arrow = HelpBubbleArrow::kTopRight;
 
