@@ -33,6 +33,9 @@ class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
   METADATA_HEADER(WebAppConfirmationView);
+
+  static WebAppConfirmationView* GetDialogForTesting();
+
   WebAppConfirmationView(
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -40,6 +43,19 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
   WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
   ~WebAppConfirmationView() override;
+
+  views::Checkbox* GetOpenAsWindowCheckboxForTesting() {
+    return open_as_window_checkbox_.get();
+  }
+  views::RadioButton* GetOpenAsTabRadioForTesting() {
+    return open_as_tab_radio_.get();
+  }
+  views::RadioButton* GetOpenAsWindowRadioForTesting() {
+    return open_as_window_radio_.get();
+  }
+  views::RadioButton* GetOpenAsTabbedWindowRadioForTesting() {
+    return open_as_tabbed_window_radio_.get();
+  }
 
  private:
   // Overridden from views::WidgetDelegate:

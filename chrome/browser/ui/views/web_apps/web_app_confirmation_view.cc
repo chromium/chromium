@@ -37,8 +37,13 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace {
 
+WebAppConfirmationView* g_dialog_for_testing = nullptr;
 bool g_auto_accept_web_app_for_testing = false;
 bool g_auto_check_open_in_window_for_testing = false;
 const char* g_title_to_use_for_app = nullptr;
@@ -49,6 +54,14 @@ bool ShowRadioButtons() {
             base::FEATURE_DISABLED_BY_DEFAULT);
   return base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
          base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);
+}
+
+bool AllowOpenInWindowOptions() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return !chromeos::features::IsCrosShortstandEnabled();
+#else
+  return true;
+#endif
 }
 
 // When pre-populating the shortcut name field (using the web app title) we
@@ -78,7 +91,12 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
 
 }  // namespace
 
-WebAppConfirmationView::~WebAppConfirmationView() {}
+// static
+WebAppConfirmationView* WebAppConfirmationView::GetDialogForTesting() {
+  return g_dialog_for_testing;
+}
+
+WebAppConfirmationView::~WebAppConfirmationView() = default;
 
 WebAppConfirmationView::WebAppConfirmationView(
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
@@ -148,55 +166,58 @@ WebAppConfirmationView::WebAppConfirmationView(
                            .SetController(this));
 
   const auto display_mode = web_app_info_->user_display_mode;
-  // Build the content child views.
-  if (ShowRadioButtons()) {
-    constexpr int kRadioGroupId = 0;
-    builder.AddChildren(
-        views::Builder<views::View>(),  // Skip the first column.
-        views::Builder<views::RadioButton>()
-            .CopyAddressTo(&open_as_tab_radio_)
-            .SetText(
-                l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
-            .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode ==
-                        web_app::mojom::UserDisplayMode::kBrowser),
-        views::Builder<views::View>(),  // Column skip.
-        views::Builder<views::RadioButton>()
-            .CopyAddressTo(&open_as_window_radio_)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-            .SetGroup(kRadioGroupId)
-            .SetChecked(
-                display_mode != web_app::mojom::UserDisplayMode::kBrowser &&
-                display_mode != web_app::mojom::UserDisplayMode::kTabbed),
-        views::Builder<views::View>(),  // Column skip.
-        views::Builder<views::RadioButton>()
-            .CopyAddressTo(&open_as_tabbed_window_radio_)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
-            .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode ==
-                        web_app::mojom::UserDisplayMode::kTabbed));
-  } else {
-    builder.AddChildren(
-        views::Builder<views::View>(),  // Column skip.
-        views::Builder<views::Checkbox>()
-            .CopyAddressTo(&open_as_window_checkbox_)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-            .SetChecked(display_mode !=
-                        web_app::mojom::UserDisplayMode::kBrowser));
+
+  if (AllowOpenInWindowOptions()) {
+    // Build the content child views.
+    if (ShowRadioButtons()) {
+      constexpr int kRadioGroupId = 0;
+      builder.AddChildren(
+          views::Builder<views::View>(),  // Skip the first column.
+          views::Builder<views::RadioButton>()
+              .CopyAddressTo(&open_as_tab_radio_)
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
+              .SetGroup(kRadioGroupId)
+              .SetChecked(display_mode ==
+                          web_app::mojom::UserDisplayMode::kBrowser),
+          views::Builder<views::View>(),  // Column skip.
+          views::Builder<views::RadioButton>()
+              .CopyAddressTo(&open_as_window_radio_)
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+              .SetGroup(kRadioGroupId)
+              .SetChecked(
+                  display_mode != web_app::mojom::UserDisplayMode::kBrowser &&
+                  display_mode != web_app::mojom::UserDisplayMode::kTabbed),
+          views::Builder<views::View>(),  // Column skip.
+          views::Builder<views::RadioButton>()
+              .CopyAddressTo(&open_as_tabbed_window_radio_)
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
+              .SetGroup(kRadioGroupId)
+              .SetChecked(display_mode ==
+                          web_app::mojom::UserDisplayMode::kTabbed));
+    } else {
+      builder.AddChildren(
+          views::Builder<views::View>(),  // Column skip.
+          views::Builder<views::Checkbox>()
+              .CopyAddressTo(&open_as_window_checkbox_)
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+              .SetChecked(display_mode !=
+                          web_app::mojom::UserDisplayMode::kBrowser));
+    }
   }
 
   std::move(builder).BuildChildren();
 
-  if (g_auto_check_open_in_window_for_testing) {
-    if (ShowRadioButtons())
+  if (g_auto_check_open_in_window_for_testing && AllowOpenInWindowOptions()) {
+    if (ShowRadioButtons()) {
       open_as_window_radio_->SetChecked(true);
-    else
+    } else {
       open_as_window_checkbox_->SetChecked(true);
+    }
   }
-
   title_tf_->SelectAll(true);
 }
 
@@ -229,21 +250,26 @@ std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
 void WebAppConfirmationView::OnAccept() {
   CHECK(web_app_info_);
   web_app_info_->title = GetTrimmedTitle();
-  if (ShowRadioButtons()) {
-    if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->user_display_mode =
-          web_app::mojom::UserDisplayMode::kTabbed;
+  if (AllowOpenInWindowOptions()) {
+    if (ShowRadioButtons()) {
+      if (open_as_tabbed_window_radio_->GetChecked()) {
+        web_app_info_->user_display_mode =
+            web_app::mojom::UserDisplayMode::kTabbed;
+      } else {
+        web_app_info_->user_display_mode =
+            open_as_window_radio_->GetChecked()
+                ? web_app::mojom::UserDisplayMode::kStandalone
+                : web_app::mojom::UserDisplayMode::kBrowser;
+      }
     } else {
       web_app_info_->user_display_mode =
-          open_as_window_radio_->GetChecked()
+          open_as_window_checkbox_->GetChecked()
               ? web_app::mojom::UserDisplayMode::kStandalone
               : web_app::mojom::UserDisplayMode::kBrowser;
     }
   } else {
     web_app_info_->user_display_mode =
-        open_as_window_checkbox_->GetChecked()
-            ? web_app::mojom::UserDisplayMode::kStandalone
-            : web_app::mojom::UserDisplayMode::kBrowser;
+        web_app::mojom::UserDisplayMode::kBrowser;
   }
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
@@ -289,8 +315,10 @@ void ShowWebAppInstallDialog(
       std::move(web_app_info), std::move(install_tracker), std::move(callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 
+  g_dialog_for_testing = dialog;
+
   if (g_auto_accept_web_app_for_testing) {
-    dialog->Accept();
+    g_dialog_for_testing->Accept();
   }
 }
 

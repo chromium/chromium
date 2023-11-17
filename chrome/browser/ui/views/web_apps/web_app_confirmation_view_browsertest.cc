@@ -5,8 +5,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/web_apps/web_app_confirmation_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -20,9 +22,18 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
+struct Params {
+  bool shortstand_enabled;
+  bool tab_strip_enabled;
+};
+
 class WebAppConfirmViewBrowserTest
     : public DialogBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<Params> {
  public:
   WebAppConfirmViewBrowserTest() = default;
   WebAppConfirmViewBrowserTest(const WebAppConfirmViewBrowserTest&) = delete;
@@ -53,16 +64,30 @@ class WebAppConfirmViewBrowserTest
   }
 
   void SetUp() override {
-    if (GetParam()) {
-      feature_list.InitWithFeatures({blink::features::kDesktopPWAsTabStrip,
-                                     features::kDesktopPWAsTabStripSettings},
-                                    {});
-    } else {
-      feature_list.InitWithFeatures({},
-                                    {blink::features::kDesktopPWAsTabStrip,
-                                     features::kDesktopPWAsTabStripSettings});
-    }
+    base::flat_map<base::test::FeatureRef, bool> features;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    features.insert(
+        {chromeos::features::kCrosShortstand, IsShortstandEnabled()});
+    // TODO(b/311512111): Write lacros test
+#endif
+
+    features.insert(
+        {blink::features::kDesktopPWAsTabStrip, GetParam().tab_strip_enabled});
+    features.insert(
+        {features::kDesktopPWAsTabStripSettings, GetParam().tab_strip_enabled});
+
+    feature_list.InitWithFeatureStates(features);
     DialogBrowserTest::SetUp();
+  }
+
+  bool IsShortstandEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return GetParam().shortstand_enabled;
+#else
+    // TODO(b/311512111): Write lacros test
+    return false;
+#endif
   }
 
  private:
@@ -78,9 +103,12 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
   web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                                /*auto_open_in_window=*/true);
   bool is_accepted = false;
-  auto callback = [&is_accepted](bool result,
-                                 std::unique_ptr<web_app::WebAppInstallInfo>) {
+  std::unique_ptr<web_app::WebAppInstallInfo> install_info;
+  auto callback = [&is_accepted, &install_info](
+                      bool result,
+                      std::unique_ptr<web_app::WebAppInstallInfo> info) {
     is_accepted = result;
+    install_info = std::move(info);
   };
 
   content::WebContents* web_contents =
@@ -94,6 +122,59 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
                                    std::move(install_tracker),
                                    base::BindLambdaForTesting(callback));
   EXPECT_TRUE(is_accepted);
+
+  if (IsShortstandEnabled()) {
+    EXPECT_EQ(install_info->user_display_mode,
+              web_app::mojom::UserDisplayMode::kBrowser);
+  } else {
+    EXPECT_EQ(install_info->user_display_mode,
+              web_app::mojom::UserDisplayMode::kStandalone);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest,
+                       VerifyWebAppInstallDialogContents) {
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
+      web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
+  app_info->title = u"Test app";
+  app_info->start_url = GURL("https://example.com");
+
+  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/false,
+                                               /*auto_open_in_window=*/false);
+  base::test::TestFuture<bool, std::unique_ptr<web_app::WebAppInstallInfo>>
+      install_result;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+          ->RegisterCurrentInstallForWebContents(
+              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+  web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                   std::move(install_tracker),
+                                   install_result.GetCallback());
+
+  WebAppConfirmationView* dialog =
+      WebAppConfirmationView::GetDialogForTesting();
+
+  ASSERT_TRUE(dialog);
+  EXPECT_TRUE(dialog->GetVisible());
+
+  if (IsShortstandEnabled()) {
+    EXPECT_FALSE(dialog->GetOpenAsWindowCheckboxForTesting());
+    EXPECT_FALSE(dialog->GetOpenAsTabRadioForTesting());
+    EXPECT_FALSE(dialog->GetOpenAsWindowRadioForTesting());
+    EXPECT_FALSE(dialog->GetOpenAsTabbedWindowRadioForTesting());
+  }
+
+  dialog->Accept();
+
+  EXPECT_TRUE(install_result.Get<bool /*is_accepted*/>());
+
+  EXPECT_EQ(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
+                ->user_display_mode,
+            web_app::mojom::UserDisplayMode::kBrowser);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, InvokeUi_default) {
@@ -146,4 +227,7 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppConfirmViewBrowserTest,
-                         ::testing::Values(false, true));
+                         ::testing::Values(Params{false, false},
+                                           Params{false, true},
+                                           Params{true, false},
+                                           Params{true, true}));
