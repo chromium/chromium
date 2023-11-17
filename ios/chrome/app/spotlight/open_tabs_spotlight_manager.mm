@@ -326,7 +326,7 @@ using web::WebState;
   }
 }
 
-/// Stops observing all objects and resets bridges.
+/// Stops observing all objects and resets bridges and the browser list.
 - (void)shutdownAllObservation {
   if (!_browserList) {
     return;
@@ -355,6 +355,9 @@ using web::WebState;
   // Stop observing brower list.
   _browserList->RemoveObserver(_browserListObserverBridge.get());
   _browserListObserverBridge.reset();
+
+  // Finally, reset the browser list to make repeated calls safe.
+  _browserList = nil;
 }
 
 @end
