@@ -930,6 +930,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidColorVolumeMetadata) {
             deserialized_color_volume_metadata.luminance_min);
   EXPECT_EQ(color_volume_metadata.luminance_max,
             deserialized_color_volume_metadata.luminance_max);
+  EXPECT_EQ(color_volume_metadata, deserialized_color_volume_metadata);
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest, ValidHDRMetadata) {
@@ -950,6 +951,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidHDRMetadata) {
   EXPECT_EQ(hdr_metadata.smpte_st_2086,
             deserialized_hdr_metadata.smpte_st_2086);
   EXPECT_EQ(hdr_metadata.cta_861_3, deserialized_hdr_metadata.cta_861_3);
+  EXPECT_EQ(hdr_metadata, deserialized_hdr_metadata);
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest, ValidColorSpace) {
