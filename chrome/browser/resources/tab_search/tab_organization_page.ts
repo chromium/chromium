@@ -21,6 +21,7 @@ import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabO
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const BODY_VERTICAL_MARGIN: number = 32;
+const HEIGHT_ANIMATION_LENGTH: number = 250;
 
 export interface TabOrganizationPageElement {
   $: {
@@ -78,7 +79,7 @@ export class TabOrganizationPageElement extends PolymerElement {
     super();
     this.documentVisibilityChangedListener_ = () => {
       if (document.visibilityState === 'visible') {
-        this.updateAvailableHeight_();
+        this.onVisible_();
       }
     };
   }
@@ -92,7 +93,7 @@ export class TabOrganizationPageElement extends PolymerElement {
         callbackRouter.tabOrganizationSessionUpdated.addListener(
             this.setSession_.bind(this)));
     if (document.visibilityState === 'visible') {
-      this.updateAvailableHeight_();
+      this.onVisible_();
     }
     document.addEventListener(
         'visibilitychange', this.documentVisibilityChangedListener_);
@@ -138,6 +139,16 @@ export class TabOrganizationPageElement extends PolymerElement {
         break;
     }
     this.$.contents.style.height = contentsHeight + 'px';
+  }
+
+  private onVisible_() {
+    // When the UI goes from not shown to shown, bypass height transition.
+    this.$.contents.classList.toggle('no-transition', true);
+    this.updateAvailableHeight_();
+    // TODO(emshack): We should find a way to avoid using a timeout here.
+    setTimeout(
+        () => this.$.contents.classList.toggle('no-transition', false),
+        HEIGHT_ANIMATION_LENGTH);
   }
 
   // TODO(emshack): Consider moving the available height calculation into
