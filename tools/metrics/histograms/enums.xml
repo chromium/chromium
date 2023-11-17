@@ -2112,36 +2112,6 @@ Unknown properties are collapsed to zero. -->
   <int value="20" label="kCodecDTSE"/>
 </enum>
 
-<enum name="AudioDeviceChange">
-  <int value="0" label="Output Device"/>
-  <int value="1" label="Input Device"/>
-</enum>
-
-<enum name="AudioDeviceType">
-  <int value="0" label="Headphone"/>
-  <int value="1" label="Microphone"/>
-  <int value="2" label="USB"/>
-  <int value="3" label="Bluetooth"/>
-  <int value="4" label="Bluetooth microphone"/>
-  <int value="5" label="HDMI"/>
-  <int value="6" label="Internal speaker"/>
-  <int value="7" label="Internal microphone"/>
-  <int value="8" label="Front microphone"/>
-  <int value="9" label="Rear microphone"/>
-  <int value="10" label="Keyboard microphone"/>
-  <int value="11" label="Hotword"/>
-  <int value="12" label="Post DSP loopback"/>
-  <int value="13" label="Post mix loopback"/>
-  <int value="14" label="Lineout"/>
-  <int value="15" label="ALSA loopback"/>
-  <int value="16" label="Other"/>
-</enum>
-
-<enum name="AudioMuteButtonAction">
-  <int value="0" label="Muted"/>
-  <int value="1" label="Unmuted"/>
-</enum>
-
 <enum name="AudioPermissionState">
   <int value="0" label="Granted"/>
   <int value="1" label="Denied but can ask again"/>
