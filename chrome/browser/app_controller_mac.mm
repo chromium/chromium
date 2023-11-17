@@ -846,6 +846,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _isShuttingDown = true;
 
+  // `_historyMenuBridge` has a dependency on `_lastProfile`, so that’s why it’s
+  // deleted first.
+  _historyMenuBridge.reset();
+
   // It's safe to delete |_lastProfile| now.
   [self setLastProfile:nullptr];
 

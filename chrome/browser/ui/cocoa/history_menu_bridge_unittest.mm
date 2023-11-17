@@ -580,9 +580,9 @@ TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownAfterProfile) {
   std::unique_ptr<TestingProfile> profile = profile_builder.Build();
 
   auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
-  profile.reset();
   // Should not crash.
   bridge.reset();
+  profile.reset();
 }
 
 // Does a full setup and tear down of the bridge.
@@ -597,6 +597,7 @@ TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownBeforeProfile) {
 
   auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
   bridge.reset();
+  profile.reset();
 }
 
 // Initializes the menu, then destroys the Profile but keeps the
