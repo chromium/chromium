@@ -83,6 +83,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Down button is clicked. This implementation is designed for Fishfood only.
   void OpenBugReportingLink() override;
 
+  // Opens the Compose-related Chrome settings page in a new tab when the
+  // "settings" link is clicked in the consent dialog.
+  void OpenComposeSettings() override;
+
   // Non-ComposeSessionPageHandler Methods
 
   // Notifies the session that a new dialog is opening and starts refreshing

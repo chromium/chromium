@@ -41,6 +41,7 @@ export interface ComposeAppElement {
     body: HTMLElement,
     cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
+    closeButtonConsent: HTMLElement,
     editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
     insertButton: CrButtonElement,
@@ -317,10 +318,21 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.openBugReportingLink();
   }
 
+  private onConsentTopTextClick_(e: Event) {
+    e.preventDefault();
+    // The "settings" link is embedded into the string used here as it may need
+    // to be localized as part of the sentence. However, such embedded links do
+    // not function in WebUI. Handle the event by using this parent event
+    // listener to target the link and instruct the browser to open the
+    // corresponding settings page.
+    if ((e.target as HTMLElement).tagName === 'A') {
+      this.apiProxy_.openComposeSettings();
+    }
+  }
+
   private compose_(rewrite: boolean = false) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
-
     this.loading_ = true;
     this.response_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.

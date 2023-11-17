@@ -554,6 +554,7 @@ extern const char kSafetyHubSubPage[];
 extern const char kSearchSubPage[];
 extern const char kSearchEnginesSubPage[];
 extern const char kSignOutSubPage[];
+extern const char kSyncSetupPageContentSubPage[];
 extern const char kSyncSetupSubPage[];
 extern const char kTriggeredResetProfileSettingsSubPage[];
 // TODO(crbug.com/1378703): Remove these constants after the feature is

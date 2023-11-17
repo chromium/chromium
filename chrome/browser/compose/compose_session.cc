@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/compose/type_conversions.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -339,6 +341,16 @@ void ComposeSession::InitializeWithText(
                                             compose::mojom::Tone::kUnset,
                                             compose::mojom::Length::kUnset),
           initial_input_, /*rewrite=*/false);
+}
+
+void ComposeSession::OpenComposeSettings() {
+  auto* browser = chrome::FindBrowserWithTab(web_contents_);
+  // `browser` should never be null here. The ComposeSession is indirectly owned
+  // by the same WebContents that holds the field that the Compose dialog is
+  // triggered from. The session is created when that dialog is opened and it is
+  // destroyed if its WebContents is destroyed.
+  CHECK(browser);
+  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupPageContentSubPage);
 }
 
 void ComposeSession::SaveLastOKStateToUndoStack() {

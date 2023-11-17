@@ -145,6 +145,10 @@ interface ComposeSessionPageHandler {
   // Asks the Browser to open a new tab navigated to the Compose bug report
   // Buganizer.
   OpenBugReportingLink();
+
+  // Asks the Browser to open a new tab navigated to the Compose-related Chrome
+  // settings page.
+  OpenComposeSettings();
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.
