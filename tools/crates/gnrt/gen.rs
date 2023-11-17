@@ -443,8 +443,6 @@ fn generate_for_third_party_ng(
         // Use locked to prevent updating dependencies at the same time as generating
         // metadata.
         "--locked".to_string(),
-        // Allow the binary dependency on cxxbridge-cmd.
-        "-Zbindeps".to_string(),
     ];
 
     // Compute the set of all third-party crates.

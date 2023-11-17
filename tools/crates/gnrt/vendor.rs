@@ -6,7 +6,10 @@ use crate::config;
 use crate::crates;
 use crate::paths;
 use crate::readme;
-use crate::util::{create_dirs_if_needed, init_handlebars, run_cargo_metadata};
+use crate::util::{
+    create_dirs_if_needed, init_handlebars, remove_checksums_from_lock, run_cargo_metadata,
+    without_cargo_config_toml,
+};
 use anyhow::{format_err, Context, Result};
 use cargo_metadata::{Node, Package, PackageId};
 use std::collections::{HashMap, HashSet};
@@ -15,15 +18,9 @@ use std::path::PathBuf;
 pub fn vendor(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    let config_file = paths.third_party_cargo_root.join(".cargo").join("config.toml");
-    let config_contents =
-        std::fs::read_to_string(&config_file).context("reading .cargo/config.toml")?;
-    std::fs::remove_file(&config_file)?;
-
-    let r = vendor_impl(args, paths);
-
-    std::fs::write(config_file, config_contents).context("writing .cargo/config.toml")?;
-    r
+    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
+    println!("Vendor successful: run gnrt gen to generate GN rules.");
+    Ok(())
 }
 
 fn vendor_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
@@ -40,30 +37,16 @@ fn vendor_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<
 
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
-    let cargo_extra_options = vec![
-        // Allow the binary dependency on cxxbridge-cmd.
-        "-Zbindeps".to_string(),
-    ];
+    let metadata =
+        run_cargo_metadata(paths.third_party_cargo_root.into(), args, Vec::new(), HashMap::new())
+            .context("run_cargo_metadata")?;
 
-    let metadata = run_cargo_metadata(
-        paths.third_party_cargo_root.into(),
-        args,
-        cargo_extra_options,
-        HashMap::new(),
-    )
-    .context("run_cargo_metadata")?;
-
-    // Running cargo metadata against actual crates.io will put checksum into
+    // Running cargo commands against actual crates.io will put checksum into
     // the Cargo.lock file, but we don't generate checksums when we download
     // the crates. This mismatch causes everything else to fail when cargo is
     // using our vendor/ directory. So we remove all the checksums from the
     // lock file.
-    let lock_contents = std::fs::read_to_string(paths.third_party_cargo_root.join("Cargo.lock"))?
-        .split('\n')
-        .filter(|line| !line.starts_with("checksum = "))
-        .map(String::from)
-        .collect::<Vec<_>>();
-    std::fs::write(paths.third_party_cargo_root.join("Cargo.lock"), lock_contents.join("\n"))?;
+    remove_checksums_from_lock(paths.third_party_cargo_root)?;
 
     // Collect the set of third-party crates.
     let packages = {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use crate::paths::ChromiumPaths;
 use handlebars::handlebars_helper;
 use std::collections::HashMap;
 use std::fs;
@@ -51,13 +52,36 @@ pub fn create_dirs_if_needed(path: &Path) -> Result<()> {
         .with_context(|| format_err!("Could not create directories for {}", path.to_string_lossy()))
 }
 
+/// Runs a function with the `.cargo/config.toml` file removed for the duration
+/// of the function. This allows access to the online crates.io repository
+/// instead of using our vendor/ directory as the source of truth. It should
+/// only be done for actions like adding or updating crates.
+pub fn without_cargo_config_toml<T>(
+    paths: &ChromiumPaths,
+    f: impl FnOnce() -> Result<T>,
+) -> Result<T> {
+    let config_file = paths.third_party_cargo_root.join(".cargo").join("config.toml");
+    let config_contents =
+        std::fs::read_to_string(&config_file).context("reading .cargo/config.toml");
+    if config_contents.is_ok() {
+        std::fs::remove_file(&config_file)?;
+    }
+
+    let r = f();
+
+    if let Ok(contents) = config_contents {
+        std::fs::write(config_file, contents).context("writing .cargo/config.toml")?;
+    }
+    r
+}
+
 /// Run cargo metadata command, optionally with extra flags and environment.
 pub fn run_cargo_metadata(
     workspace_path: PathBuf,
     args: &clap::ArgMatches,
-    extra_options: Vec<String>,
+    mut extra_options: Vec<String>,
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
-) -> anyhow::Result<cargo_metadata::Metadata> {
+) -> Result<cargo_metadata::Metadata> {
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(workspace_path);
     if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
@@ -67,6 +91,8 @@ pub fn run_cargo_metadata(
         command.env("RUSTC", rustc_path);
     }
 
+    // Allow the binary dependency on cxxbridge-cmd.
+    extra_options.push("-Zbindeps".to_string());
     command.other_options(extra_options);
     for (k, v) in extra_env.into_iter() {
         command.env(k, v);
@@ -74,6 +100,60 @@ pub fn run_cargo_metadata(
 
     log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
     command.exec().context("running cargo metadata")
+}
+
+/// Run a cargo command, other than metadata which should use
+/// `run_cargo_metadata`.
+pub fn run_cargo_command(
+    workspace_path: PathBuf,
+    subcommand: &str,
+    args: &clap::ArgMatches,
+    extra_options: Vec<String>,
+    extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
+) -> Result<()> {
+    assert!(subcommand != "metadata");
+    let cargo = if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
+        cargo_path
+    } else {
+        "cargo"
+    };
+
+    let mut command = std::process::Command::new(&cargo);
+    command.current_dir(workspace_path);
+    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
+        command.env("RUSTC", rustc_path);
+    }
+
+    command.arg(subcommand);
+    command.args(extra_options);
+    // Allow the binary dependency on cxxbridge-cmd.
+    command.arg("-Zbindeps");
+
+    for (k, v) in extra_env.into_iter() {
+        command.env(k, v);
+    }
+
+    log::debug!("invoking cargo {} with:\n`{:?}`", subcommand, cargo);
+    let mut handle = command.spawn().with_context(|| format!("running cargo {}", subcommand))?;
+    let code = handle.wait().context("waiting for cargo process")?;
+    if !code.success() {
+        Err(format_err!("cargo {} exited with status {}", subcommand, code))
+    } else {
+        Ok(())
+    }
+}
+
+pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
+    let lock_file_path = cargo_root.join("Cargo.lock");
+    let lock_contents = std::fs::read_to_string(&lock_file_path)?
+        .lines()
+        .filter(|line| !line.starts_with("checksum = "))
+        .map(String::from)
+        // Add (back) the trailing newline.
+        .chain(std::iter::once(String::new()))
+        .collect::<Vec<_>>();
+    std::fs::write(&lock_file_path, lock_contents.join("\n"))?;
+    Ok(())
 }
 
 pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
