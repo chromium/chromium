@@ -921,8 +921,11 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // support iOS 13 dynamic colors, so those must be resolved more often.
 - (void)updateLayerColors {
   [self.traitCollection performAsCurrentTraitCollection:^{
+    BOOL darkModeEnabled =
+        (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
     _selectionCircleLayer.fillColor =
-        [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
+        darkModeEnabled ? [UIColor colorWithWhite:0.7 alpha:0.2].CGColor
+                        : [UIColor colorWithWhite:0.3 alpha:0.125].CGColor;
   }];
 }
 
