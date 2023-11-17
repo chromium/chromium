@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -93,8 +94,8 @@ void MakeMockReferrerPolicyTransaction(const char* original_url,
   transaction->data = "hello";
   transaction->dns_aliases = {};
   transaction->test_mode = TEST_MODE_NORMAL;
-  transaction->handler = nullptr;
-  transaction->read_handler = nullptr;
+  transaction->handler = MockTransactionHandler();
+  transaction->read_handler = MockTransactionReadHandler();
   if (GURL(original_url).SchemeIsCryptographic()) {
     transaction->cert =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
@@ -122,8 +123,8 @@ const MockTransaction kNoFilterTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    nullptr,
-    nullptr,
+    MockTransactionHandler(),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     OK,
@@ -146,8 +147,8 @@ const MockTransaction kNoFilterTransactionWithInvalidLength = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    nullptr,
-    nullptr,
+    MockTransactionHandler(),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     OK,
@@ -171,8 +172,8 @@ const MockTransaction kGZipTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    &GZipServer,
-    nullptr,
+    base::BindRepeating(&GZipServer),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -196,8 +197,8 @@ const MockTransaction kGzipSlowTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_SLOW_READ,
-    &GZipHelloServer,
-    nullptr,
+    base::BindRepeating(&GZipHelloServer),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -222,8 +223,8 @@ const MockTransaction kRedirectTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    nullptr,
-    nullptr,
+    MockTransactionHandler(),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -246,8 +247,8 @@ const MockTransaction kEmptyBodyGzipTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    nullptr,
-    nullptr,
+    MockTransactionHandler(),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -271,8 +272,8 @@ const MockTransaction kInvalidContentGZipTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    nullptr,
-    nullptr,
+    MockTransactionHandler(),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -297,8 +298,8 @@ const MockTransaction kBrotliSlowTransaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_SLOW_READ,
-    &BrotliHelloServer,
-    nullptr,
+    base::BindRepeating(&BrotliHelloServer),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -443,7 +444,7 @@ TEST_F(URLRequestJobTest, SyncSlowTransaction) {
                              TRAFFIC_ANNOTATION_FOR_TESTS));
   MockTransaction transaction(kGZipTransaction);
   transaction.test_mode = TEST_MODE_SYNC_ALL | TEST_MODE_SLOW_READ;
-  transaction.handler = &BigGZipServer;
+  transaction.handler = base::BindRepeating(&BigGZipServer);
   AddMockTransaction(&transaction);
 
   req->set_method("GET");

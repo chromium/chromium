@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/secure_hash.h"
@@ -219,15 +220,15 @@ static void ZstdTestTransactionHandler(const net::HttpRequestInfo* request,
   *response_data = kZstdEncodedDataString;
 }
 
-static void TestTransactionHandlerWithoutAvailableDictionary(
-    const net::HttpRequestInfo* request,
-    std::string* response_status,
-    std::string* response_headers,
-    std::string* response_data) {
-  EXPECT_FALSE(request->extra_headers.HasHeader(
-      network::shared_dictionary::kSecAvailableDictionaryHeaderName));
-  *response_data = kTestData;
-}
+static const auto kTestTransactionHandlerWithoutAvailableDictionary =
+    base::BindRepeating([](const net::HttpRequestInfo* request,
+                           std::string* response_status,
+                           std::string* response_headers,
+                           std::string* response_data) {
+      EXPECT_FALSE(request->extra_headers.HasHeader(
+          network::shared_dictionary::kSecAvailableDictionaryHeaderName));
+      *response_data = kTestData;
+    });
 
 const net::MockTransaction kBrotliDictionaryTestTransaction = {
     .url = "https://test.example/test",
@@ -244,8 +245,8 @@ const net::MockTransaction kBrotliDictionaryTestTransaction = {
     .fps_cache_filter = absl::nullopt,
     .browser_run_id = absl::nullopt,
     .test_mode = net::TEST_MODE_NORMAL,
-    .handler = BrotliTestTransactionHandler,
-    .read_handler = nullptr,
+    .handler = base::BindRepeating(&BrotliTestTransactionHandler),
+    .read_handler = net::MockTransactionReadHandler(),
     .cert = nullptr,
     .cert_status = 0,
     .ssl_connection_status = 0,
@@ -268,8 +269,8 @@ const net::MockTransaction kZstdDictionaryTestTransaction = {
     .fps_cache_filter = absl::nullopt,
     .browser_run_id = absl::nullopt,
     .test_mode = net::TEST_MODE_NORMAL,
-    .handler = ZstdTestTransactionHandler,
-    .read_handler = nullptr,
+    .handler = base::BindRepeating(&ZstdTestTransactionHandler),
+    .read_handler = net::MockTransactionReadHandler(),
     .cert = nullptr,
     .cert_status = 0,
     .ssl_connection_status = 0,
@@ -345,7 +346,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
   // header.
   net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
   new_mock_transaction.handler =
-      TestTransactionHandlerWithoutAvailableDictionary;
+      kTestTransactionHandlerWithoutAvailableDictionary;
   net::AddMockTransaction(&new_mock_transaction);
 
   net::MockHttpRequest request(new_mock_transaction);
@@ -379,7 +380,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
   // header.
   net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
   new_mock_transaction.handler =
-      TestTransactionHandlerWithoutAvailableDictionary;
+      kTestTransactionHandlerWithoutAvailableDictionary;
   net::AddMockTransaction(&new_mock_transaction);
 
   net::MockHttpRequest request(new_mock_transaction);
@@ -414,7 +415,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
   // header.
   net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
   new_mock_transaction.handler =
-      TestTransactionHandlerWithoutAvailableDictionary;
+      kTestTransactionHandlerWithoutAvailableDictionary;
   net::AddMockTransaction(&new_mock_transaction);
 
   net::MockHttpRequest request(new_mock_transaction);
@@ -448,7 +449,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
   // header.
   net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
   new_mock_transaction.handler =
-      TestTransactionHandlerWithoutAvailableDictionary;
+      kTestTransactionHandlerWithoutAvailableDictionary;
   net::AddMockTransaction(&new_mock_transaction);
 
   net::MockHttpRequest request(new_mock_transaction);

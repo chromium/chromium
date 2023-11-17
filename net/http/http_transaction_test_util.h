@@ -61,14 +61,14 @@ enum {
   TEST_MODE_SLOW_READ = 1 << 5
 };
 
-using MockTransactionReadHandler = int (*)(int64_t content_length,
-                                           int64_t offset,
-                                           IOBuffer* buf,
-                                           int buf_len);
-using MockTransactionHandler = void (*)(const HttpRequestInfo* request,
-                                        std::string* response_status,
-                                        std::string* response_headers,
-                                        std::string* response_data);
+using MockTransactionReadHandler = base::RepeatingCallback<
+    int(int64_t content_length, int64_t offset, IOBuffer* buf, int buf_len)>;
+
+using MockTransactionHandler =
+    base::RepeatingCallback<void(const HttpRequestInfo* request,
+                                 std::string* response_status,
+                                 std::string* response_headers,
+                                 std::string* response_data)>;
 
 // Default TransportInfo suitable for most MockTransactions.
 // Describes a direct connection to (127.0.0.1, 80).
@@ -299,7 +299,7 @@ class MockNetworkTransaction
   int64_t content_length_ = 0;
   int test_mode_;
   RequestPriority priority_;
-  MockTransactionReadHandler read_handler_ = nullptr;
+  MockTransactionReadHandler read_handler_;
   raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_ = nullptr;
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;

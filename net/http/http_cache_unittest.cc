@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -368,8 +369,8 @@ const MockTransaction kFastNoStoreGET_Transaction = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_SYNC_NET_START,
-    &FastTransactionServer::FastNoStoreHandler,
-    nullptr,
+    base::BindRepeating(&FastTransactionServer::FastNoStoreHandler),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -573,8 +574,8 @@ const MockTransaction kRangeGET_TransactionOK = {
     absl::nullopt,
     absl::nullopt,
     TEST_MODE_NORMAL,
-    &RangeTransactionServer::RangeHandler,
-    nullptr,
+    base::BindRepeating(&RangeTransactionServer::RangeHandler),
+    MockTransactionReadHandler(),
     nullptr,
     0,
     0,
@@ -2237,12 +2238,13 @@ TEST_F(HttpCacheTest, StaleWhiteRevalidateTruncateCancelInConnectedCallback) {
   }
 }
 
-static void PreserveRequestHeaders_Handler(const HttpRequestInfo* request,
-                                           std::string* response_status,
-                                           std::string* response_headers,
-                                           std::string* response_data) {
-  EXPECT_TRUE(request->extra_headers.HasHeader(kExtraHeaderKey));
-}
+static const auto kPreserveRequestHeaders =
+    base::BindRepeating([](const net::HttpRequestInfo* request,
+                           std::string* response_status,
+                           std::string* response_headers,
+                           std::string* response_data) {
+      EXPECT_TRUE(request->extra_headers.HasHeader(kExtraHeaderKey));
+    });
 
 // Tests that we don't remove extra headers for simple requests.
 TEST_F(HttpCacheTest, SimpleGET_PreserveRequestHeaders) {
@@ -2251,7 +2253,7 @@ TEST_F(HttpCacheTest, SimpleGET_PreserveRequestHeaders) {
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
 
     MockTransaction transaction(kSimpleGET_Transaction);
-    transaction.handler = PreserveRequestHeaders_Handler;
+    transaction.handler = kPreserveRequestHeaders;
     transaction.request_headers = EXTRA_HEADER;
     transaction.response_headers = "Cache-Control: max-age=0\n";
     AddMockTransaction(&transaction);
@@ -2287,7 +2289,7 @@ TEST_F(HttpCacheTest, ConditionalizedGET_PreserveRequestHeaders) {
     RunTransactionTest(cache.http_cache(), kETagGET_Transaction);
 
     MockTransaction transaction(kETagGET_Transaction);
-    transaction.handler = PreserveRequestHeaders_Handler;
+    transaction.handler = kPreserveRequestHeaders;
     transaction.request_headers = "If-None-Match: \"foopy\"\r\n" EXTRA_HEADER;
     AddMockTransaction(&transaction);
 
@@ -6093,16 +6095,17 @@ TEST_F(HttpCacheTest, TypicalGET_ConditionalRequest) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-static void ETagGet_ConditionalRequest_Handler(const HttpRequestInfo* request,
-                                               std::string* response_status,
-                                               std::string* response_headers,
-                                               std::string* response_data) {
-  EXPECT_TRUE(
-      request->extra_headers.HasHeader(HttpRequestHeaders::kIfNoneMatch));
-  response_status->assign("HTTP/1.1 304 Not Modified");
-  response_headers->assign(kETagGET_Transaction.response_headers);
-  response_data->clear();
-}
+static const auto kETagGetConditionalRequestHandler =
+    base::BindRepeating([](const HttpRequestInfo* request,
+                           std::string* response_status,
+                           std::string* response_headers,
+                           std::string* response_data) {
+      EXPECT_TRUE(
+          request->extra_headers.HasHeader(HttpRequestHeaders::kIfNoneMatch));
+      response_status->assign("HTTP/1.1 304 Not Modified");
+      response_headers->assign(kETagGET_Transaction.response_headers);
+      response_data->clear();
+    });
 
 TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304) {
   MockHttpCache cache;
@@ -6119,7 +6122,7 @@ TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304) {
   // Get the same URL again, but this time we expect it to result
   // in a conditional request.
   transaction.load_flags = LOAD_VALIDATE_CACHE;
-  transaction.handler = ETagGet_ConditionalRequest_Handler;
+  transaction.handler = kETagGetConditionalRequestHandler;
   LoadTimingInfo load_timing_info;
   IPEndPoint remote_endpoint;
   RunTransactionTestAndGetTimingAndConnectedSocketAddress(
@@ -6137,47 +6140,41 @@ TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304) {
 
 class RevalidationServer {
  public:
-  RevalidationServer() {
-    s_etag_used_ = false;
-    s_last_modified_used_ = false;
+  RevalidationServer() = default;
+
+  bool EtagUsed() { return etag_used_; }
+  bool LastModifiedUsed() { return last_modified_used_; }
+
+  MockTransactionHandler GetHandlerCallback() {
+    return base::BindLambdaForTesting([this](const HttpRequestInfo* request,
+                                             std::string* response_status,
+                                             std::string* response_headers,
+                                             std::string* response_data) {
+      if (request->extra_headers.HasHeader(HttpRequestHeaders::kIfNoneMatch)) {
+        etag_used_ = true;
+      }
+
+      if (request->extra_headers.HasHeader(
+              HttpRequestHeaders::kIfModifiedSince)) {
+        last_modified_used_ = true;
+      }
+
+      if (etag_used_ || last_modified_used_) {
+        response_status->assign("HTTP/1.1 304 Not Modified");
+        response_headers->assign(kTypicalGET_Transaction.response_headers);
+        response_data->clear();
+      } else {
+        response_status->assign(kTypicalGET_Transaction.status);
+        response_headers->assign(kTypicalGET_Transaction.response_headers);
+        response_data->assign(kTypicalGET_Transaction.data);
+      }
+    });
   }
-
-  bool EtagUsed() { return s_etag_used_; }
-  bool LastModifiedUsed() { return s_last_modified_used_; }
-
-  static void Handler(const HttpRequestInfo* request,
-                      std::string* response_status,
-                      std::string* response_headers,
-                      std::string* response_data);
 
  private:
-  static bool s_etag_used_;
-  static bool s_last_modified_used_;
+  bool etag_used_ = false;
+  bool last_modified_used_ = false;
 };
-bool RevalidationServer::s_etag_used_ = false;
-bool RevalidationServer::s_last_modified_used_ = false;
-
-void RevalidationServer::Handler(const HttpRequestInfo* request,
-                                 std::string* response_status,
-                                 std::string* response_headers,
-                                 std::string* response_data) {
-  if (request->extra_headers.HasHeader(HttpRequestHeaders::kIfNoneMatch))
-      s_etag_used_ = true;
-
-  if (request->extra_headers.HasHeader(HttpRequestHeaders::kIfModifiedSince)) {
-      s_last_modified_used_ = true;
-  }
-
-  if (s_etag_used_ || s_last_modified_used_) {
-    response_status->assign("HTTP/1.1 304 Not Modified");
-    response_headers->assign(kTypicalGET_Transaction.response_headers);
-    response_data->clear();
-  } else {
-    response_status->assign(kTypicalGET_Transaction.status);
-    response_headers->assign(kTypicalGET_Transaction.response_headers);
-    response_data->assign(kTypicalGET_Transaction.data);
-  }
-}
 
 // Tests revalidation after a vary match.
 TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch) {
@@ -6197,7 +6194,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch) {
 
   // Read from the cache.
   RevalidationServer server;
-  transaction.handler = server.Handler;
+  transaction.handler = server.GetHandlerCallback();
   LoadTimingInfo load_timing_info;
   RunTransactionTestAndGetTiming(cache.http_cache(), transaction,
                                  NetLogWithSource::Make(NetLogSourceType::NONE),
@@ -6230,7 +6227,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch) {
 
   // Read from the cache and revalidate the entry.
   RevalidationServer server;
-  transaction.handler = server.Handler;
+  transaction.handler = server.GetHandlerCallback();
   transaction.request_headers = "Foo: none\r\n";
   LoadTimingInfo load_timing_info;
   RunTransactionTestAndGetTiming(cache.http_cache(), transaction,
@@ -6263,7 +6260,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatchStar) {
 
   // Read from the cache and revalidate the entry.
   RevalidationServer server;
-  transaction.handler = server.Handler;
+  transaction.handler = server.GetHandlerCallback();
   LoadTimingInfo load_timing_info;
   RunTransactionTestAndGetTiming(cache.http_cache(), transaction,
                                  NetLogWithSource::Make(NetLogSourceType::NONE),
@@ -6295,7 +6292,7 @@ TEST_F(HttpCacheTest, GET_DontValidateCache_VaryMismatch) {
 
   // Read from the cache and don't revalidate the entry.
   RevalidationServer server;
-  transaction.handler = server.Handler;
+  transaction.handler = server.GetHandlerCallback();
   transaction.request_headers = "Foo: none\r\n";
   LoadTimingInfo load_timing_info;
   RunTransactionTestAndGetTiming(cache.http_cache(), transaction,
@@ -6482,7 +6479,8 @@ TEST_F(HttpCacheTest, ETagGET_Http10) {
 
   // Get the same URL again, without generating a conditional request.
   transaction.load_flags = LOAD_VALIDATE_CACHE;
-  transaction.handler = ETagGet_UnconditionalRequest_Handler;
+  transaction.handler =
+      base::BindRepeating(&ETagGet_UnconditionalRequest_Handler);
   RunTransactionTest(cache.http_cache(), transaction);
 
   EXPECT_EQ(2, cache.network_layer()->transaction_count());
@@ -6505,7 +6503,8 @@ TEST_F(HttpCacheTest, ETagGET_Http10_Range) {
 
   // Get the same URL again, but use a byte range request.
   transaction.load_flags = LOAD_VALIDATE_CACHE;
-  transaction.handler = ETagGet_UnconditionalRequest_Handler;
+  transaction.handler =
+      base::BindRepeating(&ETagGet_UnconditionalRequest_Handler);
   transaction.request_headers = "Range: bytes = 5-\r\n";
   RunTransactionTest(cache.http_cache(), transaction);
 
@@ -6541,7 +6540,8 @@ TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304_NoStore) {
   // Get the same URL again, but this time we expect it to result
   // in a conditional request.
   transaction.load_flags = LOAD_VALIDATE_CACHE;
-  transaction.handler = ETagGet_ConditionalRequest_NoStore_Handler;
+  transaction.handler =
+      base::BindRepeating(&ETagGet_ConditionalRequest_NoStore_Handler);
   RunTransactionTest(cache.http_cache(), transaction);
 
   EXPECT_EQ(2, cache.network_layer()->transaction_count());
@@ -8155,7 +8155,7 @@ TEST_F(HttpCacheTest, GET_Crazy206) {
   MockTransaction transaction(kRangeGET_TransactionOK);
   AddMockTransaction(&transaction);
   transaction.request_headers = EXTRA_HEADER;
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTest(cache.http_cache(), transaction);
 
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
@@ -8367,7 +8367,7 @@ TEST_F(HttpCacheTest, RangeGET_NoContentLength) {
   transaction.response_headers = "ETag: \"foo\"\n"
                                  "Accept-Ranges: bytes\n"
                                  "Content-Range: bytes 40-49/80\n";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
 
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
@@ -8375,7 +8375,8 @@ TEST_F(HttpCacheTest, RangeGET_NoContentLength) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   // Now verify that there's no cached data.
-  transaction.handler = &RangeTransactionServer::RangeHandler;
+  transaction.handler =
+      base::BindRepeating(&RangeTransactionServer::RangeHandler);
   RunTransactionTestWithResponse(cache.http_cache(), kRangeGET_TransactionOK,
                                  &headers);
 
@@ -8795,7 +8796,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_NoCachedContent) {
       "Accept-Ranges: bytes\n"
       "Content-Length: 10\n"
       "Content-Range: bytes 40-49/80\n";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
 
   Verify206Response(headers, 40, 49);
@@ -8827,7 +8828,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_CachedContent) {
       "Accept-Ranges: bytes\n"
       "Content-Length: 10\n"
       "Content-Range: bytes 40-49/80\n";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
 
   // Two new network requests were issued, one from the cache and another after
@@ -8898,7 +8899,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_NoCachedContent) {
       "Accept-Ranges: bytes\n"
       "Content-Length: 10\n"
       "Content-Range: bytes 40-49/80\n";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
 
   Verify206Response(headers, 40, 49);
@@ -8936,7 +8937,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_CachedContent) {
       "Accept-Ranges: bytes\n"
       "Content-Length: 10\n"
       "Content-Range: bytes 40-49/80\n";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
 
   Verify206Response(headers, 40, 49);
@@ -9029,7 +9030,7 @@ TEST_F(HttpCacheTest, RangeGET_301) {
   transaction.status = "HTTP/1.1 301 Moved Permanently";
   transaction.response_headers = "Location: http://www.bar.com/\n";
   transaction.data = "";
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
 
   // Write to the cache.
   RunTransactionTest(cache.http_cache(), transaction);
@@ -9250,7 +9251,8 @@ TEST_F(HttpCacheTest, UnknownRangeGET_302_Replaced) {
 
   // Try to read from the cache. This should send a network request to
   // validate it, and get a different response.
-  transaction.handler = &RangeTransactionServer::RangeHandler;
+  transaction.handler =
+      base::BindRepeating(&RangeTransactionServer::RangeHandler);
   transaction.request_headers = "Range: bytes = -30\r\n" EXTRA_HEADER;
   // Tail 30 bytes out of 80
   transaction.data = "rg: 50-59 rg: 60-69 rg: 70-79 ";
@@ -9892,7 +9894,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse1) {
   std::string headers;
 
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.response_headers = "Content-Range: bytes 40-49/45\n"
                                  "Content-Length: 10\n";
   AddMockTransaction(&transaction);
@@ -9921,7 +9923,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse2) {
   std::string headers;
 
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.response_headers = "Content-Range: bytes 40-49/80\n"
                                  "Content-Length: 20\n";
   AddMockTransaction(&transaction);
@@ -9951,7 +9953,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse3) {
   std::string headers;
 
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.request_headers = "Range: bytes = 50-59\r\n" EXTRA_HEADER;
   std::string response_headers(transaction.response_headers);
   response_headers.append("Content-Range: bytes 50-59/160\n");
@@ -9991,7 +9993,7 @@ TEST_F(HttpCacheTest, RangeGET_LargeValues) {
   std::string headers;
 
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.request_headers = "Range: bytes = 4294967288-4294967297\r\n"
                                 EXTRA_HEADER;
   transaction.response_headers =
@@ -10091,7 +10093,7 @@ TEST_F(HttpCacheTest, RangeGET_FastFlakyServer2) {
   MockTransaction transaction(kRangeGET_TransactionOK);
   transaction.request_headers = "Range: bytes = 40-49\r\n" EXTRA_HEADER;
   transaction.data = "rg: 40-";  // Less than expected.
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   std::string headers(transaction.response_headers);
   headers.append("Content-Range: bytes 40-49/80\n");
   transaction.response_headers = headers.c_str();
@@ -12263,7 +12265,7 @@ void HttpCacheHugeResourceTest::SetupTruncatedCacheEntry(MockHttpCache* cache) {
 void HttpCacheHugeResourceTest::SetupPrefixSparseCacheEntry(
     MockHttpCache* cache) {
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
   transaction.response_headers =
       "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
@@ -12281,7 +12283,7 @@ void HttpCacheHugeResourceTest::SetupPrefixSparseCacheEntry(
 void HttpCacheHugeResourceTest::SetupInfixSparseCacheEntry(
     MockHttpCache* cache) {
   MockTransaction transaction(kRangeGET_TransactionOK);
-  transaction.handler = nullptr;
+  transaction.handler = MockTransactionHandler();
   transaction.request_headers = "Range: bytes = 99990-99999\r\n" EXTRA_HEADER;
   transaction.response_headers =
       "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
@@ -12340,8 +12342,8 @@ TEST_P(HttpCacheHugeResourceTest,
 
   MockTransaction transaction(kSimpleGET_Transaction);
   transaction.url = kRangeGET_TransactionOK.url;
-  transaction.handler = &LargeResourceTransactionHandler;
-  transaction.read_handler = &LargeBufferReader;
+  transaction.handler = base::BindRepeating(&LargeResourceTransactionHandler);
+  transaction.read_handler = base::BindRepeating(&LargeBufferReader);
   ScopedMockTransaction scoped_transaction(transaction);
 
   MockHttpRequest request(transaction);
@@ -12583,7 +12585,7 @@ TEST_F(HttpCacheTest, NetworkBytesConditionalRequest304) {
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
 
   transaction.load_flags = LOAD_VALIDATE_CACHE;
-  transaction.handler = ETagGet_ConditionalRequest_Handler;
+  transaction.handler = kETagGetConditionalRequestHandler;
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
@@ -12607,7 +12609,8 @@ TEST_F(HttpCacheTest, NetworkBytesConditionalRequest200) {
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
 
   RevalidationServer server;
-  transaction.handler = server.Handler;
+  transaction.handler = server.GetHandlerCallback();
+
   transaction.request_headers = "Foo: none\r\n";
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
@@ -13208,7 +13211,7 @@ TEST_F(HttpCacheTest, CacheEntryStatusValidated) {
 
   ScopedMockTransaction still_valid(kETagGET_Transaction);
   still_valid.load_flags = LOAD_VALIDATE_CACHE;  // Force a validation.
-  still_valid.handler = ETagGet_ConditionalRequest_Handler;
+  still_valid.handler = kETagGetConditionalRequestHandler;
 
   HttpResponseInfo response_info;
   RunTransactionTestWithResponseInfo(cache.http_cache(), still_valid,
