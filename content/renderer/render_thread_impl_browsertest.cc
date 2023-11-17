@@ -216,6 +216,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
   }
 
   void TearDown() override {
+    SetRendererClientForTesting(nullptr);
     CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kSingleProcessTests));
     // In a single-process mode, we need to avoid destructing `process_`
