@@ -6204,21 +6204,7 @@ void GLES2DecoderImpl::DoGenerateMipmap(GLenum target) {
   if (workarounds().clamp_texture_base_level_and_max_level) {
     tex->ApplyClampedBaseLevelAndMaxLevelToDriver();
   }
-  if (enable_srgb && workarounds().decode_encode_srgb_for_generatemipmap) {
-    if (target == GL_TEXTURE_2D) {
-      if (!InitializeSRGBConverter("generateMipmap")) {
-        return;
-      }
-      srgb_converter_->GenerateMipmap(this, tex, target);
-    } else {
-      // TODO(yizhou): If the target is GL_TEXTURE_3D ,GL_TEXTURE_2D_ARRAY,
-      // GL_TEXTURE_CUBE_MAP,
-      // this change can not generate correct mipmap.
-      api()->glGenerateMipmapEXTFn(target);
-    }
-  } else {
-    api()->glGenerateMipmapEXTFn(target);
-  }
+  api()->glGenerateMipmapEXTFn(target);
 
   GLenum error = LOCAL_PEEK_GL_ERROR("glGenerateMipmap");
   if (error == GL_NO_ERROR) {

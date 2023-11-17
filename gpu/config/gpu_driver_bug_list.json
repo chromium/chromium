@@ -1059,37 +1059,6 @@
       ]
     },
     {
-      "id": 192,
-      "description": "Decode and encode before generateMipmap for srgb format textures on os except macosx",
-      "cr_bugs": [634519],
-      "gl_type": "gl",
-      "gl_version": {
-        "op": "<",
-        "value": "4.4"
-      },
-      "exceptions": [
-        {
-          "os": {
-            "type": "macosx"
-          }
-        }
-      ],
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 193,
-      "description": "Decode and encode before generateMipmap for srgb format textures on macosx",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
       "id": 205,
       "description": "Adreno 5xx support for EXT_multisampled_render_to_texture is buggy on Android 7.1",
       "cr_bugs": [663811],
@@ -1112,54 +1081,6 @@
       "disabled_extensions": [
         "GL_KHR_blend_equation_advanced",
         "GL_KHR_blend_equation_advanced_coherent"
-      ]
-    },
-    {
-      "id": 207,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Windows",
-      "cr_bugs": [634519],
-      "os" : {
-        "type": "win"
-      },
-      "features" : [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 208,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Linux Mesa ANGLE path",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "linux"
-      },
-      "gl_renderer": "ANGLE.*",
-      "vendor_id": "0x8086",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 209,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Chromeos Intel",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 210,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Linux AMD",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
       ]
     },
     {
@@ -2048,18 +1969,6 @@
       "gl_renderer": "Mali.*",
       "features": [
         "disable_program_caching_for_transform_feedback"
-      ]
-    },
-    {
-      "id": 307,
-      "cr_bugs": [833975],
-      "description": "Workaround for broken EGL_IMAGE_EXTERNAL_FLUSH_EXT implementation on NVIDIA",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "force_gl_flush_on_swap_buffers"
       ]
     },
     {
