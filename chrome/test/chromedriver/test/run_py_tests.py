@@ -215,6 +215,8 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
     'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
     'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
+    # Flaky on Mac: https://crbug.com/1503101
+    'BidiTest.*'
 ]
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
     # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
