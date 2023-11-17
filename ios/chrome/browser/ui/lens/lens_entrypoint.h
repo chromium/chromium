@@ -22,7 +22,8 @@ enum class LensEntrypoint {
   TranslateOnebox = 10,
   Intents = 11,
   WebImagesSearchBar = 12,
-  kMaxValue = WebImagesSearchBar,
+  WhatsNewPromo = 13,
+  kMaxValue = WhatsNewPromo,
 };
 
 extern const char kIOSLensEntrypoint[];

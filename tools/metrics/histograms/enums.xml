@@ -1450,6 +1450,7 @@ Unknown properties are collapsed to zero. -->
   <int value="14" label="Translate Onebox (Camera)"/>
   <int value="15" label="iOS Shortcuts App (Camera)"/>
   <int value="16" label="Web Images Search Bar (Camera)"/>
+  <int value="17" label="What's New Promo (Camera)"/>
 </enum>
 
 <enum name="AMDDeviceId">
@@ -7925,6 +7926,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="Translate Onebox"/>
   <int value="10" label="iOS Shortcuts App"/>
   <int value="11" label="Web Images Search Bar"/>
+  <int value="12" label="What's New Promo"/>
 </enum>
 
 <enum name="CameraResult">

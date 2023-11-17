@@ -46,7 +46,8 @@ enum class CameraOpenEntryPoint {
   TRANSLATE_ONEBOX = 9,
   INTENTS = 10,
   WEB_IMAGES_SEARCH_BAR = 11,
-  kMaxValue = WEB_IMAGES_SEARCH_BAR
+  WHATS_NEW_PROMO = 12,
+  kMaxValue = WHATS_NEW_PROMO
 };
 
 // Needs to be kept in sync with CameraResult enum in
@@ -79,7 +80,8 @@ enum class AmbientSearchEntryPoint {
   TRANSLATE_ONEBOX = 14,
   INTENTS = 15,
   WEB_IMAGES_SEARCH_BAR = 16,
-  kMaxValue = WEB_IMAGES_SEARCH_BAR
+  WHATS_NEW_PROMO = 17,
+  kMaxValue = WHATS_NEW_PROMO
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum

@@ -63,7 +63,8 @@ public class LensMetrics {
             AmbientSearchEntryPoint.COMPANION_REGION_SEARCH,
             AmbientSearchEntryPoint.TRANSLATE_ONEBOX,
             AmbientSearchEntryPoint.INTENTS,
-            AmbientSearchEntryPoint.WEB_IMAGES_SEARCH_BAR, AmbientSearchEntryPoint.NUM_ENTRIES})
+            AmbientSearchEntryPoint.WEB_IMAGES_SEARCH_BAR,
+            AmbientSearchEntryPoint.WHATS_NEW_PROMO, AmbientSearchEntryPoint.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface AmbientSearchEntryPoint {
         int CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS = 0;
@@ -83,7 +84,8 @@ public class LensMetrics {
         int TRANSLATE_ONEBOX = 14;
         int INTENTS = 15;
         int WEB_IMAGES_SEARCH_BAR = 16;
-        int NUM_ENTRIES = 17;
+        int WHATS_NEW_PROMO = 17;
+        int NUM_ENTRIES = 18;
     }
 
     // Note: These values must match the CameraOpenEntryPoint enum in enums.xml.
@@ -94,7 +96,7 @@ public class LensMetrics {
             CameraOpenEntryPoint.APP_ICON_LONG_PRESS, CameraOpenEntryPoint.PLUS_BUTTON,
             CameraOpenEntryPoint.WEB_SEARCH_BAR, CameraOpenEntryPoint.TRANSLATE_ONEBOX,
             CameraOpenEntryPoint.INTENTS, CameraOpenEntryPoint.WEB_IMAGES_SEARCH_BAR,
-            CameraOpenEntryPoint.NUM_ENTRIES})
+            CameraOpenEntryPoint.WHATS_NEW_PROMO, CameraOpenEntryPoint.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface CameraOpenEntryPoint {
         int OMNIBOX = 0;
@@ -109,7 +111,8 @@ public class LensMetrics {
         int TRANSLATE_ONEBOX = 9;
         int INTENTS = 10;
         int WEB_IMAGES_SEARCH_BAR = 11;
-        int NUM_ENTRIES = 12;
+        int WHATS_NEW_PROMO = 12;
+        int NUM_ENTRIES = 13;
     }
 
     /**
