@@ -6,6 +6,7 @@ import './app_management_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,6 +31,26 @@ export class AppManagementAppContentDialogElement extends
     };
   }
   app: App;
+
+  override ready() {
+    super.ready();
+    this.addEventListener('keydown', e => this.trapFocus_(e as KeyboardEvent));
+  }
+
+  // The close button is the only tabbable element in the dialog, so focus
+  // should stay on it.
+  private trapFocus_(e: KeyboardEvent) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const dialogElement = this.shadowRoot?.getElementById('dialog');
+      const buttonElement =
+          dialogElement?.shadowRoot?.querySelector<CrIconButtonElement>(
+              '#close');
+      if (buttonElement) {
+        buttonElement.focus();
+      }
+    }
+  }
 }
 
 declare global {
