@@ -282,4 +282,9 @@ bool PrefetchNIKScopeEnabled() {
   return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
 }
 
+bool PrefetchDocumentManagerEarlyCookieCopySkipped() {
+  return base::FeatureList::IsEnabled(
+      features::kPrefetchDocumentManagerEarlyCookieCopySkipped);
+}
+
 }  // namespace content

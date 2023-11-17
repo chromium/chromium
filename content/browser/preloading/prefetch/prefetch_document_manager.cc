@@ -120,6 +120,13 @@ PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
 
 void PrefetchDocumentManager::DidStartNavigation(
     NavigationHandle* navigation_handle) {
+  if (PrefetchDocumentManagerEarlyCookieCopySkipped()) {
+    // The `DidStartNavigation` logic is for optimization, but we are not sure
+    // how much that is buying us. We are experimenting disabling it.
+    // See crbug.com/1503003 for details.
+    return;
+  }
+
   // Ignore navigations for a different LocalFrameToken.
   // TODO(crbug.com/1431804, crbug.com/1431387): LocalFrameToken is used here
   // for scoping while RenderFrameHost's ID is used elsewhere. In the long term
