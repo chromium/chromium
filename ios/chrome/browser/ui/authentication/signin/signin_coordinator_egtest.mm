@@ -1577,9 +1577,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests to dismiss the sign-in view by swipe down without an identity.
 // See http://crbug.com/1434238.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled because, when enabled,
+// the add account view is directly opened, skipping the sign-in view.
 - (void)testSwipeDownSignInViewWithoutAnIdentity {
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
