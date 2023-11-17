@@ -4,12 +4,22 @@
 
 package org.chromium.ui.accessibility;
 
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK_HEURISTIC;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK_HEURISTIC;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.FEEDBACK_TYPE_MASK;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.FEEDBACK_TYPE_MASK_HEURISTIC;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.FLAGS_MASK;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.FLAGS_MASK_HEURISTIC;
+
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,9 +33,21 @@ import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccessibilityStateTest {
-
     private static final String EVENT_TYPE_MASK_ERROR =
             "Conversion of event masks to event types not correct.";
+
+    @Before
+    public void setUp() {
+        // Reset all flags to empty/default state.
+        AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, 0);
+        AccessibilityState.setStateMaskForTesting(FEEDBACK_TYPE_MASK, 0);
+        AccessibilityState.setStateMaskForTesting(FLAGS_MASK, 0);
+        AccessibilityState.setStateMaskForTesting(CAPABILITIES_MASK, 0);
+        AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK_HEURISTIC, 0);
+        AccessibilityState.setStateMaskForTesting(FEEDBACK_TYPE_MASK_HEURISTIC, 0);
+        AccessibilityState.setStateMaskForTesting(FLAGS_MASK_HEURISTIC, 0);
+        AccessibilityState.setStateMaskForTesting(CAPABILITIES_MASK_HEURISTIC, 0);
+    }
 
     @Test
     @SmallTest
@@ -156,13 +178,13 @@ public class AccessibilityStateTest {
                         | AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END;
 
         // Convert each mask to a set of eventTypes.
-        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_empty);
+        AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, serviceEventMask_empty);
         Set<Integer> outcome_empty = AccessibilityState.relevantEventTypesForCurrentServices();
 
-        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_full);
+        AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, serviceEventMask_full);
         Set<Integer> outcome_full = AccessibilityState.relevantEventTypesForCurrentServices();
 
-        AccessibilityState.setEventTypeMaskForTesting(serviceEventMask_test);
+        AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, serviceEventMask_test);
         Set<Integer> outcome_test = AccessibilityState.relevantEventTypesForCurrentServices();
 
         // Verify results.
@@ -184,5 +206,72 @@ public class AccessibilityStateTest {
 
         Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
         Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
+    }
+
+    @Test
+    @SmallTest
+    public void testAreOnlyPasswordManagerFlagsRequested_empty() {
+        Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testAreOnlyPasswordManagerFlagsRequested_true() {
+        AccessibilityState.setStateMaskForTesting(
+                EVENT_TYPE_MASK_HEURISTIC, AccessibilityState.PASSWORD_MANAGER_EVENT_TYPE_MASK);
+        AccessibilityState.setStateMaskForTesting(
+                FLAGS_MASK_HEURISTIC, AccessibilityState.PASSWORD_MANAGER_FLAG_TYPE_MASK);
+        AccessibilityState.setStateMaskForTesting(
+                CAPABILITIES_MASK_HEURISTIC,
+                AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK);
+
+        Assert.assertTrue(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testAreOnlyPasswordManagerFlagsRequested_missingFlags() {
+        AccessibilityState.setStateMaskForTesting(
+                EVENT_TYPE_MASK_HEURISTIC, AccessibilityState.PASSWORD_MANAGER_EVENT_TYPE_MASK);
+
+        int flags_mask =
+                AccessibilityServiceInfo.DEFAULT
+                        | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+                        | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
+        // Do not add the following to make sure we don't get false negatives:
+        // | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+        // | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+        // | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+
+        AccessibilityState.setStateMaskForTesting(FLAGS_MASK_HEURISTIC, flags_mask);
+        AccessibilityState.setStateMaskForTesting(
+                CAPABILITIES_MASK_HEURISTIC,
+                AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK);
+
+        Assert.assertTrue(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    public void testAreOnlyPasswordManagerFlagsRequested_extraFlags() {
+        AccessibilityState.setStateMaskForTesting(
+                EVENT_TYPE_MASK_HEURISTIC, AccessibilityState.PASSWORD_MANAGER_EVENT_TYPE_MASK);
+
+        int flags_mask =
+                AccessibilityServiceInfo.DEFAULT
+                        | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+                        | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
+                        | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+                        | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+                        | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                        // Add extra flag to make sure we don't get false positives:
+                        | AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME;
+
+        AccessibilityState.setStateMaskForTesting(FLAGS_MASK_HEURISTIC, flags_mask);
+        AccessibilityState.setStateMaskForTesting(
+                CAPABILITIES_MASK_HEURISTIC,
+                AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK);
+
+        Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
     }
 }

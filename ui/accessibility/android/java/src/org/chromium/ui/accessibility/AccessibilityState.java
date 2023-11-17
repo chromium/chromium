@@ -175,19 +175,22 @@ public class AccessibilityState {
     // Analysis of the most popular password managers on Android suggests
     // that services that only request these events, flags, and capabilities is likely a password
     // manager. If not more than these events are requested, we can enable some optimizations.
-    private static final int PASSWORD_MANAGER_EVENT_TYPE_MASK = AccessibilityEvent.TYPE_VIEW_CLICKED
-            | AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
-            | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-            | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+    protected static final int PASSWORD_MANAGER_EVENT_TYPE_MASK =
+            AccessibilityEvent.TYPE_VIEW_CLICKED
+                    | AccessibilityEvent.TYPE_VIEW_FOCUSED
+                    | AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+                    | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+                    | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
 
-    private static final int PASSWORD_MANAGER_FLAG_TYPE_MASK = AccessibilityServiceInfo.DEFAULT
-            | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
-            | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
-            | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
-            | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
-            | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+    protected static final int PASSWORD_MANAGER_FLAG_TYPE_MASK =
+            AccessibilityServiceInfo.DEFAULT
+                    | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+                    | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
+                    | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+                    | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+                    | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
 
-    private static final int PASSWORD_MANAGER_CAPABILITY_TYPE_MASK =
+    protected static final int PASSWORD_MANAGER_CAPABILITY_TYPE_MASK =
             AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
 
     // A bitmask containing the union of all event types, feedback types, flags,
@@ -215,6 +218,7 @@ public class AccessibilityState {
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
+    private static int sFontWeightAdjustment;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
@@ -226,17 +230,6 @@ public class AccessibilityState {
     private static ServicesObserver sDisplayInversionEnabledObserver;
     private static ServicesObserver sTextContrastObserver;
     private static AccessibilityManager sAccessibilityManager;
-
-    /**
-     * The current font weight adjustment set at the Android-OS level. Initialized to be 0, the
-     * default font weight. If a user has the bold text setting enabled, this will be 300.
-     *
-     * This is not included as a part of the {State} object since it is only needed for the web
-     * contents rendering (native widgets have font weight adjusted by the framework).
-     *
-     * This is only available on Android S+, on previous versions of Android this is always 300.
-     */
-    private static int sFontWeightAdjustment;
 
     // The IDs of all running accessibility services.
     private static List<String> sServiceIds;
@@ -281,6 +274,15 @@ public class AccessibilityState {
         return sState.isTouchExplorationEnabled;
     }
 
+    /**
+     * True when perform gestures is enabled. Since a client can call this after observers are
+     * registered, but before the State has been queried for the first time, we allow for an early
+     * return. This is a lighter weight query than the other State booleans, which require manual
+     * calculation and heuristics. In this case we return the value directly from
+     * AccessibilityManager.
+     *
+     * @return true if perform gestures is enabled.
+     */
     public static boolean isPerformGesturesEnabled() {
         if (!sInitialized) {
             if (sPreInitCachedValuePerformGesturesEnabled != null) {
@@ -314,7 +316,7 @@ public class AccessibilityState {
      * booleans, which require manual calculation and heuristics. In this case we return the value
      * directly from AccessibilityManager.
      *
-     * @return true if any service is enabled.
+     * @return true if any service is enabled (includes pseudo-accessibility services).
      */
     public static boolean isAnyAccessibilityServiceEnabled() {
         if (!sInitialized) {
@@ -354,6 +356,13 @@ public class AccessibilityState {
         return sHighContrastEnabled;
     }
 
+    /**
+     * The current font weight adjustment set at the Android-OS level. Initialized to be 0, the
+     * default font weight. If a user has the bold text setting enabled, this will be 300. This is
+     * not included as a part of the {State} object since it is only needed for the web contents
+     * rendering (native widgets have font weight adjusted by the framework). This is only available
+     * on Android S+, on previous versions of Android this is always 0.
+     */
     public static int getFontWeightAdjustment() {
         return sFontWeightAdjustment;
     }
@@ -444,8 +453,7 @@ public class AccessibilityState {
         Context context = ContextUtils.getApplicationContext();
         int displayInversionEnabledSetting = Settings.Secure.getInt(context.getContentResolver(),
                 Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED, 0);
-        boolean isDisplayInversionEnabled = displayInversionEnabledSetting == 1;
-        sDisplayInversionEnabled = isDisplayInversionEnabled;
+        sDisplayInversionEnabled = displayInversionEnabledSetting == 1;
 
         int highTextContrastEnabled = Settings.Secure.getInt(context.getContentResolver(),
                 /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
@@ -480,18 +488,25 @@ public class AccessibilityState {
         if (enabledServiceString != null && !enabledServiceString.isEmpty()) {
             String[] serviceNames = enabledServiceString.split(":");
             for (String name : serviceNames) {
-                // null or empty names can be skipped
-                if (name == null || name.isEmpty()) continue;
-                // Try to canonicalize the component name if possible.
-                ComponentName componentName = ComponentName.unflattenFromString(name);
-                if (componentName != null) {
-                    enabledServiceNames.add(componentName.flattenToShortString());
-                } else {
-                    enabledServiceNames.add(name);
-                }
+                addCanonicalizedComponentNameToArray(enabledServiceNames, name);
             }
         }
         return enabledServiceNames;
+    }
+
+    protected static void addCanonicalizedComponentNameToArray(List<String> array, String name) {
+        assert array != null;
+
+        // null or empty names can be skipped
+        if (name == null || name.isEmpty()) return;
+
+        // Try to canonicalize the component name if possible.
+        ComponentName componentName = ComponentName.unflattenFromString(name);
+        if (componentName != null) {
+            array.add(componentName.flattenToShortString());
+        } else {
+            array.add(name);
+        }
     }
 
     private static void calculateHeuristicState(AccessibilityServiceInfo service) {
@@ -508,6 +523,23 @@ public class AccessibilityState {
             sFlagsMaskHeuristic |= service.flags;
             sCapabilitiesMaskHeuristic |= service.getCapabilities();
         }
+    }
+
+    protected static boolean areOnlyPasswordManagerMasksRequested() {
+        // If there are some events, flags, and capabilities enabled and if there are, at most, the
+        // expected set of password manager event, flags, and capabilities enabled, then the system
+        // is probably running only password managers
+        return (sEventTypeMaskHeuristic != 0
+                        && sFlagsMaskHeuristic != 0
+                        && sCapabilitiesMaskHeuristic != 0)
+                && ((sEventTypeMaskHeuristic | PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                        == PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                && ((sFlagsMaskHeuristic | PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                        == PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                && ((sCapabilitiesMaskHeuristic | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                        == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                && ((sFeedbackTypeMaskHeuristic | AccessibilityServiceInfo.FEEDBACK_GENERIC)
+                        == AccessibilityServiceInfo.FEEDBACK_GENERIC);
     }
 
     static void updateAccessibilityServices() {
@@ -545,6 +577,7 @@ public class AccessibilityState {
 
             String serviceId = service.getId();
             sServiceIds.add(serviceId);
+            addCanonicalizedComponentNameToArray(runningServiceNames, serviceId);
 
             sEventTypeMask |= service.eventTypes;
             sFeedbackTypeMask |= service.feedbackType;
@@ -552,14 +585,6 @@ public class AccessibilityState {
             sCapabilitiesMask |= service.getCapabilities();
 
             calculateHeuristicState(service);
-
-            // Try to canonicalize the component name.
-            ComponentName componentName = ComponentName.unflattenFromString(serviceId);
-            if (componentName != null) {
-                runningServiceNames.add(componentName.flattenToShortString());
-            } else {
-                runningServiceNames.add(serviceId);
-            }
         }
 
         Context context = ContextUtils.getApplicationContext();
@@ -619,24 +644,11 @@ public class AccessibilityState {
             }
         }
 
-        // If there are some events, flags, and capabilities enabled
-        // and if there are, at most, the expected set of password manager event, flags, and
-        // capabilities enabled, then the system is probably running only password managers
-        boolean areOnlyPasswordManagerMasksRequestedByServices =
-                (sEventTypeMaskHeuristic != 0
-                                && sFlagsMaskHeuristic != 0
-                                && sCapabilitiesMaskHeuristic != 0)
-                        && ((sEventTypeMaskHeuristic | PASSWORD_MANAGER_EVENT_TYPE_MASK)
-                                == PASSWORD_MANAGER_EVENT_TYPE_MASK)
-                        && ((sFlagsMaskHeuristic | PASSWORD_MANAGER_FLAG_TYPE_MASK)
-                                == PASSWORD_MANAGER_FLAG_TYPE_MASK)
-                        && ((sCapabilitiesMaskHeuristic | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
-                                == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
-                        && ((sFeedbackTypeMaskHeuristic | AccessibilityServiceInfo.FEEDBACK_GENERIC)
-                                == AccessibilityServiceInfo.FEEDBACK_GENERIC);
+        // Calculate heuristic state value derivations.
+        boolean isScreenReaderEnabled =
+                (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
 
         boolean isOnlyAutofillRunning = false;
-
         AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
         if (autofillManager != null
                 && autofillManager.isEnabled()
@@ -653,6 +665,8 @@ public class AccessibilityState {
         }
 
         boolean isOnlyPasswordManagersEnabled;
+        boolean areOnlyPasswordManagerMasksRequestedByServices =
+                areOnlyPasswordManagerMasksRequested();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // If build is >= S, then check if there are no accessibility tools present, then turn
             // on form controls mode if the heuristic indicates that only password managers are
@@ -667,13 +681,8 @@ public class AccessibilityState {
                     areOnlyPasswordManagerMasksRequestedByServices || isOnlyAutofillRunning;
         }
 
-        // Update all listeners that there was a state change and pass whether or not the
-        // new state includes a screen reader.
-        Log.i(TAG, "Informing listeners of changes.");
-        boolean isScreenReaderEnabled =
-                (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
+        // Calculate traditional state values.
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
-
         boolean isTouchExplorationEnabled;
         if (UiAccessibilityFeatureMap.isEnabled(
                 UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)) {
@@ -683,7 +692,6 @@ public class AccessibilityState {
         } else {
             isTouchExplorationEnabled = sAccessibilityManager.isTouchExplorationEnabled();
         }
-
         boolean isPerformGesturesEnabled =
                 (0 != (sCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
 
@@ -698,6 +706,9 @@ public class AccessibilityState {
                 UPDATE_ACCESSIBILITY_SERVICES_POLL_COUNT, sPollCount, 1, 10, 11);
         sPollCount = 0;
 
+        // Update all listeners that there was a state change and pass whether or not the
+        // new state includes a screen reader.
+        Log.i(TAG, "Informing listeners of changes.");
         updateAndNotifyStateChange(new State(isScreenReaderEnabled, isTouchExplorationEnabled,
                 isPerformGesturesEnabled, isAnyAccessibilityServiceEnabled,
                 isAccessibilityToolPresent, isSpokenFeedbackServicePresent,
@@ -1063,11 +1074,30 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setEventTypeMaskForTesting(int mask) {
+    public enum StateIdentifierForTesting {
+        EVENT_TYPE_MASK,
+        FEEDBACK_TYPE_MASK,
+        FLAGS_MASK,
+        CAPABILITIES_MASK,
+        EVENT_TYPE_MASK_HEURISTIC,
+        FEEDBACK_TYPE_MASK_HEURISTIC,
+        FLAGS_MASK_HEURISTIC,
+        CAPABILITIES_MASK_HEURISTIC,
+    };
+
+    public static void setStateMaskForTesting(StateIdentifierForTesting state, int value) {
         if (!sInitialized) initializeForTesting();
 
-        // Explicitly set mask so events can be (ir)relevant to currently enabled service.
-        sEventTypeMask = mask;
+        switch (state) {
+            case EVENT_TYPE_MASK -> sEventTypeMask = value;
+            case FEEDBACK_TYPE_MASK -> sFeedbackTypeMask = value;
+            case FLAGS_MASK -> sFlagsMask = value;
+            case CAPABILITIES_MASK -> sCapabilitiesMask = value;
+            case EVENT_TYPE_MASK_HEURISTIC -> sEventTypeMaskHeuristic = value;
+            case FEEDBACK_TYPE_MASK_HEURISTIC -> sFeedbackTypeMaskHeuristic = value;
+            case FLAGS_MASK_HEURISTIC -> sFlagsMaskHeuristic = value;
+            case CAPABILITIES_MASK_HEURISTIC -> sCapabilitiesMaskHeuristic = value;
+        }
     }
 
     public static void setEnabledServiceInfoListForTesting(

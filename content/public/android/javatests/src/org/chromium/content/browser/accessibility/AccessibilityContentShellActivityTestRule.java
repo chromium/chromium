@@ -10,6 +10,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.READY_FOR_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sContentShellDelegate;
 import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_ALL;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -96,11 +97,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     /* @Before */
     public void setupTestFramework() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
@@ -112,10 +114,11 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     public void setupTestFrameworkForBasicMode() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
@@ -127,11 +130,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     public void setupTestFrameworkForFormControlsMode() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
