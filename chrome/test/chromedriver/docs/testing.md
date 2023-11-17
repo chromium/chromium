@@ -235,18 +235,17 @@ You can use the following commands to run them:
 
 ```bash
 autoninja -C out/Default chrome_wpt_tests
-out/Default/bin/run_chrome_wpt_tests -t Default webdriver/path/to/test/or/dir.py
+out/Default/bin/run_chrome_wpt_tests -t Default external/wpt/webdriver/path/to/test/or/dir
 ```
 
 This will invoke [`//third_party/blink/tools/run_wpt_tests.py`][1], a thin
-wrapper around [wptrunner] used to run other types of WPTs in Chromium CQ/CI.
-See [these instructions] for suppressing failures with `.ini` metadata files.
-The [WPT importer] will automatically generate `.ini` files to suppress new
+wrapper around wptrunner used to run WPTs (including webdriver tests) in Chromium CQ/CI.
+See [these instructions] for suppressing failures for webdriver tests.
+The [WPT importer] will automatically generate test expectations or baselines to suppress new
 test failures.
 
-[1]: /third_party/blink/tools/run_wpt_tests.py
-[wptrunner]: /docs/testing/web_platform_tests_wptrunner.md
-[these instructions]: /docs/testing/web_platform_tests_wptrunner.md#Expectations
+[1]: /docs/testing/run_web_platform_tests.md
+[these instructions]: /docs/testing/run_web_platform_tests.md#test-expectations-and-baselines
 [WPT importer]: /docs/testing/web_platform_tests.md#Importing-tests
 
 ## JavaScript Unit Tests
