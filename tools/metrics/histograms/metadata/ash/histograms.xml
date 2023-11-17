@@ -4354,7 +4354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Notification.CountOfNotificationsInOneGroup"
-    units="Notifications" expires_after="2023-11-12">
+    units="Notifications" expires_after="2024-11-12">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5422,7 +5422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PrivacyIndicators.IndicatorShowsDuration" units="ms"
-    expires_after="2023-11-19">
+    expires_after="2024-11-19">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
