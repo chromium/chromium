@@ -184,7 +184,7 @@
   "chromeos-jacuzzi-chrome": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "arm64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -197,7 +197,7 @@
   "chromeos-jacuzzi-chrome-dchecks-skylab": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "arm64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -210,7 +210,7 @@
   "chromeos-jacuzzi-chrome-skylab": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "arm64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -223,7 +223,7 @@
   "chromeos-jacuzzi-compile-chrome": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "arm64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,

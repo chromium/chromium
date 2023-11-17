@@ -1615,26 +1615,26 @@
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
       # display-orientation DCHECK failures are resolved.
       # 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm',
+      'also_build_lacros_chrome_for_architecture_arm64',
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_arm',
+      'also_build_lacros_chrome_for_architecture_arm64',
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
       # display-orientation DCHECK failures are resolved.
       # 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm', 'ozone_headless'
+      'also_build_lacros_chrome_for_architecture_arm64', 'ozone_headless'
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_arm',
+      'also_build_lacros_chrome_for_architecture_arm64',
     ],
     'chromeos_jacuzzi_rel_skylab_reclient': [
       'chromeos_device', 'jacuzzi', 'include_unwind_tables',
-      'also_build_lacros_chrome_for_architecture_arm', 'is_skylab'
+      'also_build_lacros_chrome_for_architecture_arm64', 'is_skylab'
     ],
 
     'chromeos_js_coverage_reclient': [
@@ -1852,7 +1852,7 @@
 
     'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [
       'chromeos', 'jacuzzi', 'official', 'release_bot_reclient', 'no_symbols',
-      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm', 'use_dummy_lastchange',
+      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm64', 'use_dummy_lastchange',
     ],
 
     'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient': [
@@ -2832,10 +2832,6 @@
 
     'also_build_lacros_chrome_for_architecture_amd64': {
       'gn_args': 'also_build_lacros_chrome_for_architecture="amd64"',
-    },
-
-    'also_build_lacros_chrome_for_architecture_arm': {
-      'gn_args': 'also_build_lacros_chrome_for_architecture="arm"',
     },
 
     'also_build_lacros_chrome_for_architecture_arm64': {

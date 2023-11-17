@@ -18,7 +18,7 @@
   "Lacros FYI Release (jacuzzi)": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
+      "also_build_lacros_chrome_for_architecture": "arm64",
       "dcheck_always_on": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,

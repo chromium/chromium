@@ -31,7 +31,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "arm",
+                  "arm64",
                   "chromeos"
                 ],
                 "config": "chromium"

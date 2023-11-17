@@ -157,7 +157,7 @@ This is experimental.
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "jacuzzi",
-                "arm-generic",
+                "arm64-generic",
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
@@ -253,7 +253,7 @@ ci.builder(
             apply_configs = ["mb"],
             target_bits = 32,
             target_platform = "chromeos",
-            target_cros_boards = "kevin:jacuzzi:arm-generic",
+            target_cros_boards = "kevin:arm-generic",
         ),
         build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(

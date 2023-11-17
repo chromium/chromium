@@ -573,7 +573,7 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "arm",
+                "arm64",
                 "chromeos",
             ],
         ),
@@ -876,7 +876,6 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "arm-generic",
-                "jacuzzi",
             ],
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
