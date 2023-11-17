@@ -69,6 +69,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -123,12 +124,17 @@ constexpr float kDragDropAppIconScale = 1.2f;
 constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
 constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
+// The promise apps should scale the base constants for bounding proportionally
+// to this icon size.
+constexpr float kPromiseRingBaseIconSize = 36.0f;
+
 // The duration of the animation to animate an app list item view in as a
 // promise app replacement.
 constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(100);
 
-// The amount of space between the progress ring and the promise app background.
-constexpr gfx::Insets kProgressRingMargin = gfx::Insets(-2);
+// The amount of space between the progress ring and the promise app background
+// and icon.
+constexpr float kProgressRingMargin = -2.0f;
 
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
@@ -215,8 +221,8 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 class PromiseIconBackground : public views::Background {
  public:
   PromiseIconBackground(ui::ColorId color_id,
-                        const gfx::Rect& icon_bounds,
-                        const gfx::Insets& insets)
+                        const gfx::RectF& icon_bounds,
+                        const gfx::InsetsF& insets)
       : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
@@ -225,7 +231,7 @@ class PromiseIconBackground : public views::Background {
 
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::Rect bounds = icon_bounds_;
+    gfx::RectF bounds = icon_bounds_;
     bounds.Inset(insets_);
 
     const float radius =
@@ -245,8 +251,8 @@ class PromiseIconBackground : public views::Background {
 
  private:
   const ui::ColorId color_id_;
-  const gfx::Rect icon_bounds_;
-  const gfx::Insets insets_;
+  const gfx::RectF icon_bounds_;
+  const gfx::InsetsF insets_;
 };
 
 // Draws a dot with no shadow.
@@ -901,6 +907,10 @@ float AppListItemView::GetAdjustedIconScaleForProgressRing() {
       case AppStatus::kInstallCancelled:
       case AppStatus::kInstallSuccess:
       case AppStatus::kPaused:
+        // Placeholder icons do not change size between states.
+        if (icon_image_model_.IsVectorIcon()) {
+          return icon_scale_ * kPromiseIconScalePending;
+        }
         return icon_scale_ * kPromiseIconScaleInstalling;
       case AppStatus::kReady:
       case AppStatus::kBlocked:
@@ -2194,10 +2204,11 @@ void AppListItemView::UpdateProgressIndicatorState() {
                          : ProgressIndicator::kProgressComplete;
             },
             base::Unretained(this)));
-    progress_indicator_->SetHasRoundCap(true);
     progress_indicator_->SetInnerIconVisible(false);
     progress_indicator_->SetInnerRingVisible(false);
-    progress_indicator_->SetOuterRingStrokeWidth(2.0);
+    progress_indicator_->SetOuterRingStrokeWidth(
+        2.0 * app_list_config_->grid_icon_dimension() /
+        kPromiseRingBaseIconSize);
     EnsureLayer();
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](AppListItemView* view, ui::ColorId color_id) {
@@ -2209,9 +2220,13 @@ void AppListItemView::UpdateProgressIndicatorState() {
   EnsureLayer();
 
   if (item()->app_status() == AppStatus::kPending) {
+    // TODO(b/311460259): Set rounded caps by default after improving the
+    // drawing algorithm for the progress indicator.
+    progress_indicator_->SetHasRoundCap(false);
     progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
     progress_indicator_->SetOuterRingTrackVisible(true);
   } else {
+    progress_indicator_->SetHasRoundCap(true);
     progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
     progress_indicator_->SetOuterRingTrackVisible(false);
   }
@@ -2227,17 +2242,23 @@ void AppListItemView::UpdateProgressRingBounds() {
 
   CHECK(!is_folder_);
 
-  const gfx::Size progress_indicator_size =
-      gfx::ScaleToRoundedSize(app_list_config_->grid_icon_size(), icon_scale_);
+  gfx::RectF progress_bounds = gfx::RectF(
+      views::View::ConvertRectToTarget(icon_, this, icon_->GetImageBounds()));
 
-  const gfx::Rect progress_bounds = GetIconBoundsForTargetViewBounds(
-      app_list_config_, rect, progress_indicator_size, icon_scale_);
-  progress_indicator_->layer()->SetBounds(progress_bounds);
+  const gfx::InsetsF progress_ring_padding = gfx::InsetsF(
+      kProgressRingMargin * app_list_config_->grid_icon_dimension() /
+      kPromiseRingBaseIconSize);
+
+  progress_bounds.Inset(progress_ring_padding);
+
+  progress_indicator_->layer()->SetBounds(
+      gfx::ToEnclosingRect(progress_bounds));
   layer()->StackAtBottom(progress_indicator_->layer());
   progress_indicator_->InvalidateLayer();
 
   SetBackground(std::make_unique<PromiseIconBackground>(
-      cros_tokens::kCrosSysSystemOnBase, progress_bounds, kProgressRingMargin));
+      cros_tokens::kCrosSysSystemOnBase, progress_bounds,
+      progress_ring_padding));
 }
 
 void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
