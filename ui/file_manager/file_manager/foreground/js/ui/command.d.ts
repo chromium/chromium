@@ -8,6 +8,7 @@ export class Command extends HTMLElement {
   disabled: boolean;
   hidden: any;
   checked: boolean;
+  shortcut: string;
   hideShortcutText: boolean;
   execute(element?: HTMLElement): void;
   canExecuteChange(node?: Node|null): void;

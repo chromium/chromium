@@ -4,9 +4,10 @@
 
 // clang-format off
 import {decorate} from '../../../common/js/ui.js';
+
 import {Command} from './command.js';
 import {Menu} from './menu.js';
-import {MenuItem} from './menu_item.js';
+import {MenuItem, createMenuItem} from './menu_item.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 // clang-format on
@@ -115,7 +116,7 @@ export function testCommandMenuItem() {
   command.checked = true;
   document.body.appendChild(command);
 
-  const menuItem = new MenuItem();
+  const menuItem = createMenuItem();
   // @ts-ignore: error TS2339: Property 'command' does not exist on type
   // 'MenuItem'.
   menuItem.command = '#the-command';
@@ -137,7 +138,7 @@ export function testCommandMenuItem() {
   command2.id = 'the-command2';
   document.body.appendChild(command2);
 
-  const menuItem2 = new MenuItem();
+  const menuItem2 = createMenuItem();
   // @ts-ignore: error TS2339: Property 'label' does not exist on type
   // 'MenuItem'.
   menuItem2.label = 'MenuLabel';

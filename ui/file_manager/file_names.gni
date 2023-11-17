@@ -149,7 +149,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/menu.js",
   "file_manager/foreground/js/ui/menu_button.js",
-  "file_manager/foreground/js/ui/menu_item.js",
   "file_manager/foreground/js/ui/multi_menu.js",
   "file_manager/foreground/js/ui/multi_menu_button.js",
   "file_manager/foreground/js/ui/position_util.js",
@@ -269,6 +268,7 @@ ts_files = [
   "file_manager/foreground/js/ui/list_single_selection_model.ts",
   "file_manager/foreground/js/ui/list_selection_controller.ts",
   "file_manager/foreground/js/ui/list_selection_model.ts",
+  "file_manager/foreground/js/ui/menu_item.ts",
   "file_manager/foreground/js/ui/splitter.ts",
   "file_manager/foreground/js/ui/table/table_column.ts",
   "file_manager/foreground/js/ui/table/table_column_model.ts",
@@ -579,7 +579,6 @@ checked_in_dts_files = [
   "file_manager/externs/volume_info.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
   "file_manager/foreground/js/ui/command.d.ts",
-  "file_manager/foreground/js/ui/menu_item.d.ts",
   "file_manager/foreground/js/ui/multi_menu_button.d.ts",
   "file_manager/foreground/js/ui/tree.d.ts",
 ]

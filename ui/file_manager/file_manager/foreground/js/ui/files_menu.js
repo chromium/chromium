@@ -44,6 +44,7 @@ export class FilesMenuItem extends MenuItem {
    * Decorates the element.
    * @param {!Element} element Element to be decorated.
    * @return {!FilesMenuItem} Decorated element.
+   * @override
    */
   static decorate(element) {
     // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
@@ -242,6 +243,7 @@ export class FilesMenuItem extends MenuItem {
 
   /**
    * @return {string}
+   * @override
    */
   get label() {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
@@ -250,6 +252,7 @@ export class FilesMenuItem extends MenuItem {
 
   /**
    * @param {string} value
+   * @override
    */
   set label(value) {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
