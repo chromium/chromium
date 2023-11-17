@@ -8,10 +8,10 @@ import {CrInputElement, EsimRenameDialogElement} from 'chrome://os-settings/os_s
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {ESimManagerRemote, ESimOperationResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -54,13 +54,6 @@ suite('<esim-rename-dialog>', () => {
     assertEquals(
         eSimProfileName.shadowRoot!.querySelector('input'),
         getDeepActiveElement());
-  }
-
-  /**
-   * Converts a mojoBase.mojom.String16 to a JavaScript String.
-   */
-  function convertString16ToJSString(str: String16): string {
-    return str.data.map(ch => String.fromCodePoint(ch)).join('');
   }
 
   function addEsimCellularNetwork(guid: string, iccid: string): void {
@@ -121,7 +114,7 @@ suite('<esim-rename-dialog>', () => {
     const profileProperties = (await profile.getProperties()).properties;
     assertEquals(
         'new profile nickname',
-        convertString16ToJSString(profileProperties.nickname));
+        mojoString16ToString(profileProperties.nickname));
   });
 
   test('esimProfileRemote_ falsey, show error', async () => {
@@ -201,7 +194,7 @@ suite('<esim-rename-dialog>', () => {
         showErrorToastEvent.detail);
     assertNotEquals(
         'new profile nickname',
-        convertString16ToJSString(profileProperties.nickname));
+        mojoString16ToString(profileProperties.nickname));
   });
 
   test('Warning message visibility', () => {
@@ -309,7 +302,7 @@ suite('<esim-rename-dialog>', () => {
 
     assertEquals(
         '12345678901234567890',
-        convertString16ToJSString(profileProperties.nickname));
+        mojoString16ToString(profileProperties.nickname));
   });
 
   test('Done button is disabled when empty input', async () => {

@@ -20,7 +20,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -325,8 +325,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     // The C++ layer uses std::u16string, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted to
     // an array of 16 bit character codes that match std::u16string.
-    const charCodes = Array.from(query, (c) => c.charCodeAt(0));
-    const queryMojoString16: String16 = {data: charCodes};
+    const queryMojoString16 = stringToMojoString16(query);
     const timeOfSearchRequest = Date.now();
     combinedSearch(
         queryMojoString16, MAX_NUM_SEARCH_RESULTS,

@@ -5,6 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, OsSettingsSearchBoxElement, OsToolbarElement, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -75,12 +76,8 @@ suite('<os-settings-search-box>', () => {
       wasGeneratedFromTextMatch?: boolean,
       relevanceScore?: number): searchMojom.SearchResult {
     return {
-      text: {
-        data: Array.from(text, c => c.charCodeAt(0)),
-      },
-      canonicalText: {
-        data: Array.from(text, c => c.charCodeAt(0)),
-      },
+      text: stringToMojoString16(text),
+      canonicalText: stringToMojoString16(text),
       urlPathWithParameters,
       icon: icon ? icon : searchResultIconMojom.SearchResultIcon.MIN_VALUE,
       wasGeneratedFromTextMatch: wasGeneratedFromTextMatch === undefined ?
@@ -106,9 +103,7 @@ suite('<os-settings-search-box>', () => {
           DEFAULT_RELEVANCE_SCORE): personalizationSearchMojom.SearchResult {
     return ({
       searchConceptId: personalizationSearchMojom.SearchConceptId.MIN_VALUE,
-      text: {
-        data: Array.from(text, c => c.charCodeAt(0)),
-      },
+      text: stringToMojoString16(text),
       relativeUrl,
       relevanceScore,
     });
@@ -718,8 +713,7 @@ suite('<os-settings-search-box>', () => {
         ],
         resultList.items!.map((item: searchMojom.SearchResult) => {
           return {
-            text: item.text.data.map((ch: number) => String.fromCodePoint(ch))
-                      .join(''),
+            text: mojoString16ToString(item.text),
             relevanceScore: item.relevanceScore,
           };
         }),
