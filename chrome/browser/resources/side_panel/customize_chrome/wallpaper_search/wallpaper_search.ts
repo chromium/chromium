@@ -28,7 +28,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -51,6 +51,7 @@ export interface WallpaperSearchElement {
     descriptorComboboxC: CustomizeChromeCombobox,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
+    historyCard: HTMLElement,
     hueSlider: ThemeHueSliderDialogElement,
     loading: HTMLElement,
     submitButton: CrButtonElement,
@@ -96,6 +97,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         type: Boolean,
         value: false,
       },
+      history_: Object,
       results_: Object,
       selectedHue_: Number,
       status_: {
@@ -120,6 +122,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[category: string]: boolean} = {};
+  private history_: WallpaperSearchResult[];
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private selectedDefaultColor_: string|undefined;
@@ -134,8 +137,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private wallpaperSearchCallbackRouter_: WallpaperSearchClientCallbackRouter;
   private wallpaperSearchHandler_: WallpaperSearchHandlerInterface;
   private setThemeListenerId_: number|null = null;
+  private setHistoryListenerId_: number|null = null;
   private loadingUiResizeObserver_: ResizeObserver|null = null;
   private loadingUiDebouncer_: Debouncer|null = null;
 
@@ -143,7 +148,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     super();
     this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.wallpaperSearchHandler_ = WallpaperSearchProxy.getHandler();
+    this.wallpaperSearchHandler_ = WallpaperSearchProxy.getInstance().handler;
+    this.wallpaperSearchCallbackRouter_ =
+        WallpaperSearchProxy.getInstance().callbackRouter;
     this.fetchDescriptors_();
   }
 
@@ -154,6 +161,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           this.theme_ = theme;
         });
     this.pageHandler_.updateTheme();
+    this.setHistoryListenerId_ =
+        this.wallpaperSearchCallbackRouter_.setHistory.addListener(
+            (history: WallpaperSearchResult[]) => {
+              this.history_ = history;
+            });
+    this.wallpaperSearchHandler_.updateHistory();
     this.loadingUiResizeObserver_ = new ResizeObserver(() => {
       // Timeout of 20ms was decided by manual testing to see how often the
       // resizes can be debounced before appearing janky.
@@ -167,7 +180,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setThemeListenerId_);
+    assert(this.setHistoryListenerId_);
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
+    this.wallpaperSearchCallbackRouter_.removeListener(
+        this.setHistoryListenerId_);
     this.loadingUiResizeObserver_!.disconnect();
     this.loadingUiResizeObserver_ = null;
   }

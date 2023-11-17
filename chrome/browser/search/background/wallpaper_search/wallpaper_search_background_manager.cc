@@ -93,6 +93,21 @@ WallpaperSearchBackgroundManager::WallpaperSearchBackgroundManager(
 
 WallpaperSearchBackgroundManager::~WallpaperSearchBackgroundManager() = default;
 
+std::vector<base::Token> WallpaperSearchBackgroundManager::GetHistory() {
+  auto& history_list =
+      pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
+  std::vector<base::Token> history;
+  for (auto& entry : history_list) {
+    if (entry.is_string()) {
+      auto token = base::Token::FromString(entry.GetString());
+      if (token.has_value()) {
+        history.push_back(token.value());
+      }
+    }
+  }
+  return history;
+}
+
 void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
     const base::Token& id,
     const SkBitmap& bitmap) {

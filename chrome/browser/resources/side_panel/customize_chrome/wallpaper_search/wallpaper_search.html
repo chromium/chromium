@@ -405,8 +405,12 @@
   </div>
 </div>
 <hr class="sp-cards-separator">
-<div class="sp-card">
+<div class="sp-card" id="historyCard">
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>
+  <template is="dom-repeat" items="[[history_]]">
+    <img src="data:image/png;base64,[[item.image]]">
+    </img>
+  </template>
 </div>

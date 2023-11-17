@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -30,8 +33,8 @@
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -54,11 +57,36 @@ using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
+class MockClient
+    : public side_panel::customize_chrome::mojom::WallpaperSearchClient {
+ public:
+  MockClient() = default;
+  ~MockClient() override = default;
+
+  mojo::PendingRemote<
+      side_panel::customize_chrome::mojom::WallpaperSearchClient>
+  BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  MOCK_METHOD1(
+      SetHistory,
+      void(std::vector<
+           side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>));
+
+  mojo::Receiver<side_panel::customize_chrome::mojom::WallpaperSearchClient>
+      receiver_{this};
+};
+
 class MockWallpaperSearchBackgroundManager
     : public WallpaperSearchBackgroundManager {
  public:
   explicit MockWallpaperSearchBackgroundManager(Profile* profile)
       : WallpaperSearchBackgroundManager(profile) {}
+  MOCK_METHOD0(GetHistory, std::vector<base::Token>());
   MOCK_METHOD2(SelectLocalBackgroundImage,
                void(const base::Token&, const SkBitmap&));
   MOCK_METHOD0(SaveCurrentBackgroundToHistory, absl::optional<base::Token>());
@@ -158,16 +186,19 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<WallpaperSearchHandler> MakeHandler(int64_t session_id) {
-    return std::make_unique<WallpaperSearchHandler>(
+    auto handler = std::make_unique<WallpaperSearchHandler>(
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
-        profile_.get(), &mock_image_decoder_,
+        mock_client_.BindAndGetRemote(), profile_.get(), &mock_image_decoder_,
         &mock_wallpaper_search_background_manager_, session_id);
+    mock_client_.FlushForTesting();
+    return handler;
   }
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
+  MockClient& mock_client() { return mock_client_; }
   MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
     return *mock_optimization_guide_keyed_service_;
   }
@@ -178,6 +209,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   image_fetcher::MockImageDecoder& mock_image_decoder() {
     return mock_image_decoder_;
   }
+  TestingProfile& profile() { return *profile_.get(); }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -190,10 +222,72 @@ class WallpaperSearchHandlerTest : public testing::Test {
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   image_fetcher::MockImageDecoder mock_image_decoder_;
+  testing::NiceMock<MockClient> mock_client_;
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
+
+TEST_F(WallpaperSearchHandlerTest, GetHistory) {
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback;
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      history_images;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(), GetHistory());
+  EXPECT_CALL(mock_client(), SetHistory(_))
+      .WillOnce(MoveArg<0>(&history_images));
+  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
+      .WillOnce(Invoke(
+          [&decoder_callback](const std::string& image_data,
+                              const gfx::Size& desired_image_frame_size,
+                              data_decoder::DataDecoder* data_decoder,
+                              image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback = std::move(callback);
+          }));
+
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  // Create test bitmap.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  std::vector<unsigned char> encoded;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &encoded);
+
+  // Write bitmap to file.
+  base::Token token = base::Token::CreateRandom();
+  base::WriteFile(profile().GetPath().AppendASCII(
+                      token.ToString() +
+                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+                  base::as_bytes(base::make_span(
+                      std::string(encoded.begin(), encoded.end()))));
+
+  // Return test image from WallpaperSearchBackgroundManager::GetHistory().
+  std::vector<base::Token> history;
+  history.push_back(token);
+  ON_CALL(mock_wallpaper_search_background_manager(), GetHistory())
+      .WillByDefault(testing::Return(history));
+
+  handler->UpdateHistory();
+  task_environment().RunUntilIdle();
+
+  std::move(decoder_callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
+  mock_client().FlushForTesting();
+
+  ASSERT_EQ(static_cast<int>(history_images.size()), 1);
+
+  // Check that resized encoded versions of the original bitmaps is what we
+  // get back and that the id matches.
+  // The bitmap's width should be twice the height to be the same aspect
+  // ratio as the original image.
+  auto resized_bitmap = skia::ImageOperations::Resize(
+      bitmap, skia::ImageOperations::RESIZE_GOOD, 200, 100);
+  std::vector<unsigned char> resized_encoded;
+  gfx::PNGCodec::EncodeBGRASkBitmap(
+      resized_bitmap, /*discard_transparency=*/false, &resized_encoded);
+  EXPECT_EQ(history_images[0]->image, base::Base64Encode(resized_encoded));
+  EXPECT_EQ(history_images[0]->id.ToString(), token.ToString());
+}
 
 TEST_F(WallpaperSearchHandlerTest,
        GetDescriptors_Success_DescriptorsFormatCorrect) {

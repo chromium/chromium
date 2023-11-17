@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
@@ -24,6 +26,9 @@ class WallpaperSearchBackgroundManager {
 
   explicit WallpaperSearchBackgroundManager(Profile* profile);
   virtual ~WallpaperSearchBackgroundManager();
+
+  // Gets the current history list.
+  virtual std::vector<base::Token> GetHistory();
 
   // Invoked by Wallpaper Search to set background image with already decoded
   // data.

@@ -1302,7 +1302,7 @@ void PopulateChromeWebUIFrameBinders(
         base::FeatureList::IsEnabled(
             optimization_guide::features::kOptimizationGuideModelExecution)) {
       RegisterWebUIControllerInterfaceBinder<
-          side_panel::customize_chrome::mojom::WallpaperSearchHandler,
+          side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory,
           CustomizeChromeUI>(map);
     }
   }

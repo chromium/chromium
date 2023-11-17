@@ -12,6 +12,9 @@
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
@@ -21,6 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -29,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/search/ntp_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -69,12 +75,21 @@ std::pair<int, int> CalculateResizeDimensions(int width,
   }
   return dimensions;
 }
+
+std::string ReadFile(const base::FilePath& path) {
+  std::string result;
+  base::ReadFileToString(path, &result);
+  return result;
+}
 }  // namespace
 
 WallpaperSearchHandler::WallpaperSearchHandler(
     mojo::PendingReceiver<
         side_panel::customize_chrome::mojom::WallpaperSearchHandler>
         pending_handler,
+    mojo::PendingRemote<
+        side_panel::customize_chrome::mojom::WallpaperSearchClient>
+        pending_client,
     Profile* profile,
     image_fetcher::ImageDecoder* image_decoder,
     WallpaperSearchBackgroundManager* wallpaper_search_background_manager,
@@ -85,7 +100,14 @@ WallpaperSearchHandler::WallpaperSearchHandler(
       wallpaper_search_background_manager_(
           *wallpaper_search_background_manager),
       session_id_(session_id),
-      receiver_(this, std::move(pending_handler)) {}
+      client_(std::move(pending_client)),
+      receiver_(this, std::move(pending_handler)) {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpWallpaperSearchHistory,
+      base::BindRepeating(&WallpaperSearchHandler::UpdateHistory,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
   auto backround_id =
@@ -227,6 +249,44 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
                                                                    bitmap);
 }
 
+void WallpaperSearchHandler::UpdateHistory() {
+  const auto& history = wallpaper_search_background_manager_->GetHistory();
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      thumbnails;
+
+  auto barrier = base::BarrierCallback<std::pair<SkBitmap, base::Token>>(
+      history.size(), base::BindOnce(&WallpaperSearchHandler::OnHistoryDecoded,
+                                     weak_ptr_factory_.GetWeakPtr(), history));
+
+  for (const auto& entry : history) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(
+            &ReadFile,
+            profile_->GetPath().AppendASCII(
+                entry.ToString() +
+                chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
+        base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::BindOnce(
+                           [](base::RepeatingCallback<void(
+                                  std::pair<SkBitmap, base::Token>)> barrier,
+                              const base::Token& id, const gfx::Image& image) {
+                             std::move(barrier).Run(
+                                 std::pair(image.AsBitmap(), id));
+                           },
+                           barrier, entry)));
+  }
+}
+
+// This function is a wrapper around image_fetcher::ImageDecoder::DecodeImage()
+// because of argument order when working with PostTaskAndReplyWithResult().
+void WallpaperSearchHandler::DecodeHistoryImage(
+    image_fetcher::ImageDecodedCallback callback,
+    std::string image) {
+  image_decoder_->DecodeImage(image, gfx::Size(), nullptr, std::move(callback));
+}
+
 void WallpaperSearchHandler::OnDescriptorsRetrieved(
     GetDescriptorsCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -323,6 +383,40 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
   }
   mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
   std::move(callback).Run(std::move(mojo_descriptors));
+}
+
+void WallpaperSearchHandler::OnHistoryDecoded(
+    std::vector<base::Token> history,
+    std::vector<std::pair<SkBitmap, base::Token>> results) {
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      thumbnails;
+
+  // Use the original history array to order the results.
+  // O(n^2) but there should never be more than 6 in each vector.
+  for (const auto& entry : history) {
+    for (auto& [bitmap, id] : results) {
+      if (entry == id) {
+        auto dimensions =
+            CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
+        SkBitmap small_bitmap = skia::ImageOperations::Resize(
+            bitmap, skia::ImageOperations::RESIZE_GOOD,
+            /* width */ dimensions.first,
+            /* height */ dimensions.second);
+        std::vector<unsigned char> encoded;
+        const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
+            small_bitmap, /*discard_transparency=*/false, &encoded);
+        if (success) {
+          auto thumbnail =
+              side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
+          thumbnail->image = base::Base64Encode(encoded);
+          thumbnail->id = std::move(id);
+          thumbnails.push_back(std::move(thumbnail));
+        }
+        break;
+      }
+    }
+  }
+  client_->SetHistory(std::move(thumbnails));
 }
 
 void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(

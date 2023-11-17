@@ -7,7 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {Descriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
@@ -23,6 +23,7 @@ import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, ins
 suite('WallpaperSearchTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<WallpaperSearchHandlerInterface>;
+  let wallpaperSearchCallbackRouterRemote: WallpaperSearchClientRemote;
   let wallpaperSearchElement: WallpaperSearchElement;
   let windowProxy: TestMock<WindowProxy>;
 
@@ -49,8 +50,12 @@ suite('WallpaperSearchTest', () => {
     windowProxy.setResultFor('onLine', true);
     handler = installMock(
         WallpaperSearchHandlerRemote,
-        (mock: WallpaperSearchHandlerInterface) =>
-            WallpaperSearchProxy.setHandler(mock));
+        (mock: WallpaperSearchHandlerRemote) =>
+            WallpaperSearchProxy.setInstance(
+                mock, new WallpaperSearchClientCallbackRouter()));
+    wallpaperSearchCallbackRouterRemote =
+        WallpaperSearchProxy.getInstance()
+            .callbackRouter.$.bindNewPipeAndPassRemote();
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
   });
@@ -655,5 +660,21 @@ suite('WallpaperSearchTest', () => {
                     'none');
               });
         });
+  });
+
+  suite('History', () => {
+    test('show history in history card', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      const historyElements =
+          wallpaperSearchElement.$.historyCard.querySelectorAll('img');
+      assertEquals(historyElements.length, 2);
+    });
   });
 });

@@ -265,19 +265,13 @@ void CustomizeChromeUI::BindInterface(
 }
 
 void CustomizeChromeUI::BindInterface(
-    content::RenderFrameHost* host,
     mojo::PendingReceiver<
-        side_panel::customize_chrome::mojom::WallpaperSearchHandler>
+        side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory>
         pending_receiver) {
-  if (wallpaper_search_handler_) {
-    // Only allowed to create one Mojo pipe per WebUI.
-    bad_message::ReceivedBadMessage(host->GetProcess(),
-                                    bad_message::CCU_SUPERFLUOUS_BIND);
-    return;
+  if (wallpaper_search_handler_factory_receiver_.is_bound()) {
+    wallpaper_search_handler_factory_receiver_.reset();
   }
-  wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
-      std::move(pending_receiver), profile_, image_decoder_.get(),
-      wallpaper_search_background_manager_.get(), id_);
+  wallpaper_search_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void CustomizeChromeUI::CreatePageHandler(
@@ -329,4 +323,18 @@ void CustomizeChromeUI::CreateThemeColorPickerHandler(
       std::move(handler), std::move(client),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
       web_contents_);
+}
+
+void CustomizeChromeUI::CreateWallpaperSearchHandler(
+    mojo::PendingRemote<
+        side_panel::customize_chrome::mojom::WallpaperSearchClient> client,
+    mojo::PendingReceiver<
+        side_panel::customize_chrome::mojom::WallpaperSearchHandler> handler) {
+  if (wallpaper_search_handler_) {
+    mojo::ReportBadMessage("Only allowed to create one Mojo pipe per WebUI.");
+    return;
+  }
+  wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
+      std::move(handler), std::move(client), profile_, image_decoder_.get(),
+      wallpaper_search_background_manager_.get(), id_);
 }

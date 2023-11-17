@@ -43,6 +43,13 @@ enum WallpaperSearchStatus {
   kOffline,
 };
 
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface WallpaperSearchHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateWallpaperSearchHandler(pending_remote<WallpaperSearchClient> client,
+                pending_receiver<WallpaperSearchHandler> handler);
+};
+
 // Browser-side handler for requests from WebUI page.
 interface WallpaperSearchHandler {
   // Retrieves NTP descriptors.
@@ -64,4 +71,14 @@ interface WallpaperSearchHandler {
   // preview.
   SetBackgroundToWallpaperSearchResult(mojo_base.mojom.Token result_id,
       double time);
+
+  // Triggers a call to |WallpaperSearchClient.SetHistory|.
+  UpdateHistory();
+};
+
+// WebUI-side handler for requests from the browser.
+interface WallpaperSearchClient {
+  // Sets the list of history images.
+  // Contains a list of sanitized image data and their ids.
+  SetHistory(array<WallpaperSearchResult> history);
 };

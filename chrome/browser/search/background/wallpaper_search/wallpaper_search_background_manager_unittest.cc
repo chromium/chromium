@@ -103,6 +103,21 @@ class WallpaperSearchBackgroundManagerTest : public testing::Test {
       wallpaper_search_background_manager_;
 };
 
+TEST_F(WallpaperSearchBackgroundManagerTest, GetHistory) {
+  // Fill history pref.
+  base::Value::List history = base::Value::List();
+  std::vector<base::Token> tokens;
+  for (int i = 0; i < 3; i++) {
+    base::Token temp_token = base::Token::CreateRandom();
+    tokens.push_back(temp_token);
+    history.Append(temp_token.ToString());
+  }
+  pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
+
+  auto result = wallpaper_search_background_manager().GetHistory();
+  EXPECT_EQ(result, tokens);
+}
+
 TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   gfx::Image image_arg;
   base::Token token_arg;
