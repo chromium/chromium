@@ -14,6 +14,9 @@ namespace segmentation_platform {
 // type and ID.
 using TrainingRequestId = base::IdType64<class RequestIdTag>;
 
+// ID for identifying a specific feature processor state.
+using FeatureProcessorStateId = base::IdType64<class RequestIdTag>;
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TRIGGER_H_

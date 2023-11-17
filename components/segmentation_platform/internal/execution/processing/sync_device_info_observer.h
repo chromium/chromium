@@ -31,7 +31,7 @@ class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
 
   // InputDelegate impl
   void Process(const proto::CustomInput& input,
-               const FeatureProcessorState& feature_processor_state,
+               FeatureProcessorState& feature_processor_state,
                ProcessedCallback callback) override;
 
  private:

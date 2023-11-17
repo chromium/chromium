@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::processing {
@@ -29,6 +30,7 @@ class FeatureProcessorState {
  public:
   FeatureProcessorState();
   FeatureProcessorState(
+      FeatureProcessorStateId id,
       base::Time prediction_time,
       base::Time observation_time,
       base::TimeDelta bucket_duration,
@@ -42,6 +44,8 @@ class FeatureProcessorState {
   FeatureProcessorState& operator=(const FeatureProcessorState&) = delete;
 
   // Getters.
+  FeatureProcessorStateId id() const { return id_; }
+
   base::TimeDelta bucket_duration() const { return bucket_duration_; }
 
   base::Time prediction_time() const { return prediction_time_; }
@@ -76,6 +80,8 @@ class FeatureProcessorState {
   void SetError(stats::FeatureProcessingError error,
                 const std::string& message = {});
 
+  base::WeakPtr<FeatureProcessorState> GetWeakPtr();
+
   // For testing only.
   void set_input_context_for_testing(
       scoped_refptr<InputContext> input_context) {
@@ -85,6 +91,9 @@ class FeatureProcessorState {
  private:
   // Format all indexed tensor results into final ordered tensor vector.
   std::vector<float> MergeTensors(const QueryProcessor::IndexedTensors& tensor);
+
+  // ID generation for feature processor state.
+  const FeatureProcessorStateId id_;
 
   const base::Time prediction_time_;
   const base::Time observation_time_;
@@ -101,6 +110,8 @@ class FeatureProcessorState {
 
   // Callback to return feature processing results to model execution manager.
   FeatureListQueryProcessor::FeatureProcessorCallback callback_;
+
+  base::WeakPtrFactory<FeatureProcessorState> weak_ptr_factory_{this};
 };
 
 }  // namespace segmentation_platform::processing

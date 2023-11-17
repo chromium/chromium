@@ -19,13 +19,15 @@ FeatureProcessorState::FeatureProcessorState()
       segment_id_(SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {}
 
 FeatureProcessorState::FeatureProcessorState(
+    FeatureProcessorStateId id,
     base::Time prediction_time,
     base::Time observation_time,
     base::TimeDelta bucket_duration,
     SegmentId segment_id,
     scoped_refptr<InputContext> input_context,
     FeatureListQueryProcessor::FeatureProcessorCallback callback)
-    : prediction_time_(prediction_time),
+    : id_(id),
+      prediction_time_(prediction_time),
       observation_time_(observation_time),
       bucket_duration_(bucket_duration),
       segment_id_(segment_id),
@@ -43,6 +45,10 @@ void FeatureProcessorState::SetError(stats::FeatureProcessingError error,
              << ", message: " << message;
   error_ = true;
   input_tensor_.clear();
+}
+
+base::WeakPtr<FeatureProcessorState> FeatureProcessorState::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>

@@ -46,7 +46,7 @@ class TabSessionSource : public InputDelegate {
 
   // InputDelegate impl:
   void Process(const proto::CustomInput& input,
-               const FeatureProcessorState& feature_processor_state,
+               FeatureProcessorState& feature_processor_state,
                ProcessedCallback callback) override;
 
   // Returns a bucketized value, with bucket in exponent of 2. The value is on original units
@@ -60,10 +60,9 @@ class TabSessionSource : public InputDelegate {
  protected:
   // Adds info about local tabs, to be implemented by the chrome layer which
   // knows about local tabs.
-  virtual void AddLocalTabInfo(
-      const TabFetcher::Tab& tab,
-      const FeatureProcessorState& feature_processor_state,
-      Tensor& inputs);
+  virtual void AddLocalTabInfo(const TabFetcher::Tab& tab,
+                               FeatureProcessorState& feature_processor_state,
+                               Tensor& inputs);
 
  private:
   void AddTabInfo(const sessions::SessionTab* session_tab, Tensor& inputs);

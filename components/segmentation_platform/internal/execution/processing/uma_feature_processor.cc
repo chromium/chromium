@@ -55,9 +55,8 @@ UmaFeatureProcessor::UmaFeatureProcessor(
 UmaFeatureProcessor::~UmaFeatureProcessor() = default;
 
 void UmaFeatureProcessor::Process(
-    std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     QueryProcessorCallback callback) {
-  feature_processor_state_ = std::move(feature_processor_state);
   callback_ = std::move(callback);
 
   size_t max_bucket_count = 0;
@@ -66,11 +65,10 @@ void UmaFeatureProcessor::Process(
     const proto::UMAFeature* uma_feature = GetAsUMA(feature.second);
     if (metadata_utils::ValidateMetadataUmaFeature(*uma_feature) !=
         metadata_utils::ValidationResult::kValidationSuccess) {
-      feature_processor_state_->SetError(
+      feature_processor_state.SetError(
           stats::FeatureProcessingError::kUmaValidationError);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_),
-                                    std::move(feature_processor_state_),
                                     std::move(result_)));
       return;
     }
@@ -80,7 +78,8 @@ void UmaFeatureProcessor::Process(
     }
   }
 
-  ProcessOnGotAllSamples(*signal_database_->GetAllSamples());
+  ProcessOnGotAllSamples(feature_processor_state,
+                         *signal_database_->GetAllSamples());
 }
 
 void UmaFeatureProcessor::GetStartAndEndTime(size_t bucket_count,
@@ -105,9 +104,10 @@ void UmaFeatureProcessor::GetStartAndEndTime(size_t bucket_count,
 }
 
 void UmaFeatureProcessor::ProcessOnGotAllSamples(
+    FeatureProcessorState& feature_processor_state,
     const std::vector<SignalDatabase::DbEntry>& samples) {
   while (!uma_features_.empty()) {
-    if (feature_processor_state_->error()) {
+    if (feature_processor_state.error()) {
       break;
     }
 
@@ -120,9 +120,7 @@ void UmaFeatureProcessor::ProcessOnGotAllSamples(
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback_), std::move(feature_processor_state_),
-                     std::move(result_)));
+      FROM_HERE, base::BindOnce(std::move(callback_), std::move(result_)));
 }
 
 void UmaFeatureProcessor::ProcessSingleUmaFeature(

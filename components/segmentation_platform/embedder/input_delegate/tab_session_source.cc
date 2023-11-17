@@ -45,10 +45,9 @@ TabSessionSource::TabSessionSource(
 
 TabSessionSource::~TabSessionSource() = default;
 
-void TabSessionSource::Process(
-    const proto::CustomInput& input,
-    const FeatureProcessorState& feature_processor_state,
-    ProcessedCallback callback) {
+void TabSessionSource::Process(const proto::CustomInput& input,
+                               FeatureProcessorState& feature_processor_state,
+                               ProcessedCallback callback) {
   auto tab_id_val =
       feature_processor_state.input_context()->GetMetadataArgument("tab_id");
   auto session_tag_val =
@@ -155,7 +154,7 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
 
 void TabSessionSource::AddLocalTabInfo(
     const TabFetcher::Tab& tab,
-    const FeatureProcessorState& feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     Tensor& inputs) {}
 
 }  // namespace segmentation_platform::processing

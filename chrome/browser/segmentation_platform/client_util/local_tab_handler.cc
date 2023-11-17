@@ -174,7 +174,7 @@ LocalTabSource::~LocalTabSource() = default;
 
 void LocalTabSource::AddLocalTabInfo(
     const TabFetcher::Tab& tab,
-    const FeatureProcessorState& feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     Tensor& inputs) {
   inputs[TabSessionSource::kInputLocalTabTimeSinceModified] =
       ProcessedValue::FromFloat(
