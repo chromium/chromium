@@ -15,13 +15,17 @@
 
 namespace blink {
 
-Event* Event{{suffix}}Factory::Create(ExecutionContext* executionContext, const String& type) {
+Event* Event{{suffix}}Factory::Create(ScriptState* script_state, ExecutionContext* executionContext, const String& type) {
   {% for event in events %}
   if (EqualIgnoringASCIICase(type, "{{event|name}}"){% if event.RuntimeEnabled %} && RuntimeEnabledFeatures::{{event.RuntimeEnabled}}(){% endif %}) {
     {% if not event|name|create_event_ignore_case_list %}
     UseCounter::Count(executionContext, WebFeature::k{{event|name|measure_name}});
     {% endif %}
+    {% if event|name|needs_script_state %}
+    return {{event|cpp_name}}::Create(script_state);
+    {% else %}
     return {{event|cpp_name}}::Create();
+    {% endif %}
   }
   {% endfor %}
   return nullptr;

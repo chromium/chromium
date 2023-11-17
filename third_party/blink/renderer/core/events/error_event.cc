@@ -50,19 +50,17 @@ ErrorEvent* ErrorEvent::CreateSanitizedError(ScriptState* script_state) {
       &script_state->World());
 }
 
-ErrorEvent::ErrorEvent()
-    : sanitized_message_(),
-      location_(
+ErrorEvent::ErrorEvent(ScriptState* script_state)
+    : location_(
           std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr)),
-      world_(&DOMWrapperWorld::Current(v8::Isolate::GetCurrent())) {}
+      world_(&script_state->World()) {}
 
 ErrorEvent::ErrorEvent(ScriptState* script_state,
                        const AtomicString& type,
                        const ErrorEventInit* initializer)
     : Event(type, initializer),
-      sanitized_message_(),
+      sanitized_message_(initializer->message()),
       world_(&script_state->World()) {
-  sanitized_message_ = initializer->message();
   location_ = std::make_unique<SourceLocation>(initializer->filename(),
                                                String(), initializer->lineno(),
                                                initializer->colno(), nullptr);

@@ -5845,7 +5845,7 @@ Event* Document::createEvent(ScriptState* script_state,
   Event* event = nullptr;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (const auto& factory : EventFactories()) {
-    event = factory->Create(execution_context, event_type);
+    event = factory->Create(script_state, execution_context, event_type);
     if (event) {
       // createEvent for TouchEvent should throw DOM exception if touch event
       // feature detection is not enabled. See crbug.com/392584#c22
