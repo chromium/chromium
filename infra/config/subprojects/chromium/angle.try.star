@@ -4,6 +4,7 @@
 
 load("//lib/builders.star", "cpu", "os", "reclient", "xcode")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -48,4 +49,10 @@ angle_ios_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.gpu.mac.mini.intel.try",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-angle-builder",
+            "no_symbols",
+        ],
+    ),
 )

@@ -41,6 +41,15 @@
     "android-pie-x86-rel": "ci/android-pie-x86-rel/gn-args.json",
     "android-x86-rel": "ci/android-x86-rel/gn-args.json"
   },
+  "chromium.angle": {
+    "android-angle-chromium-arm64-builder": "ci/android-angle-chromium-arm64-builder/gn-args.json",
+    "fuchsia-angle-builder": "ci/fuchsia-angle-builder/gn-args.json",
+    "ios-angle-builder": "ci/ios-angle-builder/gn-args.json",
+    "linux-angle-chromium-builder": "ci/linux-angle-chromium-builder/gn-args.json",
+    "mac-angle-chromium-builder": "ci/mac-angle-chromium-builder/gn-args.json",
+    "win-angle-chromium-x64-builder": "ci/win-angle-chromium-x64-builder/gn-args.json",
+    "win-angle-chromium-x86-builder": "ci/win-angle-chromium-x86-builder/gn-args.json"
+  },
   "chromium.build": {
     "android-build-perf-developer": "build/android-build-perf-developer/gn-args.json",
     "build-perf-android": "build/build-perf-android/gn-args.json",
@@ -279,6 +288,15 @@
     "android_compile_x64_dbg": "try/android_compile_x64_dbg/gn-args.json",
     "android_compile_x86_dbg": "try/android_compile_x86_dbg/gn-args.json",
     "android_cronet": "try/android_cronet/gn-args.json"
+  },
+  "tryserver.chromium.angle": {
+    "android-angle-chromium-try": "try/android-angle-chromium-try/gn-args.json",
+    "fuchsia-angle-try": "try/fuchsia-angle-try/gn-args.json",
+    "ios-angle-try-intel": "try/ios-angle-try-intel/gn-args.json",
+    "linux-angle-chromium-try": "try/linux-angle-chromium-try/gn-args.json",
+    "mac-angle-chromium-try": "try/mac-angle-chromium-try/gn-args.json",
+    "win-angle-chromium-x64-try": "try/win-angle-chromium-x64-try/gn-args.json",
+    "win-angle-chromium-x86-try": "try/win-angle-chromium-x86-try/gn-args.json"
   },
   "tryserver.chromium.chromiumos": {
     "chromeos-amd64-generic-asan-rel": "try/chromeos-amd64-generic-asan-rel/gn-args.json",

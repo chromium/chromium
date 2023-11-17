@@ -6,6 +6,7 @@
 load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -35,6 +36,12 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-angle-chromium-arm64-builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -46,6 +53,13 @@ try_.builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-angle-builder",
+            "no_symbols",
+            "use_dummy_lastchange",
+        ],
     ),
 )
 
@@ -59,6 +73,12 @@ try_.builder(
     ],
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-angle-chromium-builder",
+            "no_symbols",
+        ],
     ),
 )
 
@@ -76,6 +96,12 @@ try_.builder(
     cores = None,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-angle-chromium-builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -90,6 +116,12 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.WINDOWS_ANY,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-angle-chromium-x64-builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -104,4 +136,10 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.WINDOWS_ANY,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-angle-chromium-x86-builder",
+            "no_symbols",
+        ],
+    ),
 )

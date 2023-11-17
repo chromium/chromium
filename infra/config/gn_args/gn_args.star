@@ -93,6 +93,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "angle_deqp_tests",
+    args = {
+        "build_angle_deqp_tests": True,
+    },
+)
+
+gn_args.config(
     "arm",
     args = {
         "target_cpu": "arm",
@@ -833,6 +840,13 @@ gn_args.config(
     "static",
     args = {
         "is_component_build": False,
+    },
+)
+
+gn_args.config(
+    "static_angle",
+    args = {
+        "use_static_angle": True,
     },
 )
 

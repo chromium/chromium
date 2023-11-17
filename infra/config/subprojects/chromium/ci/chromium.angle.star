@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = "recipe:angle_chromium",
@@ -66,6 +67,18 @@ ci.gpu.linux_builder(
         short_name = "arm64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder_without_codecs",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+            "static_angle",
+            "android_fastbuild",
+        ],
+    ),
 )
 
 ci.thin_tester(
@@ -124,6 +137,17 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "fuchsia",
+        ],
+    ),
 )
 
 ci.gpu.linux_builder(
@@ -151,6 +175,16 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 ci.thin_tester(
@@ -239,6 +273,17 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+            "x64",
+        ],
+    ),
 )
 
 ci.thin_tester(
@@ -330,6 +375,19 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
     xcode = xcode.x14main,
 )
 
@@ -390,6 +448,16 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -478,5 +546,16 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     contact_team_email = "angle-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+            "x86",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

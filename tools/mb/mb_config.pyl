@@ -117,16 +117,6 @@
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
     },
 
-    'chromium.angle': {
-      'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
-      'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient',
-      'ios-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_ios_reclient',
-      'linux-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_x64_reclient',
-      'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
-    },
-
     'chromium.cft': {
       'linux-arm64-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
@@ -787,16 +777,6 @@
       'linux_android_dbg_ng': 'android_debug_bot',
     },
 
-    'tryserver.chromium.angle': {
-      'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild_reclient',
-      'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia_reclient',
-      'ios-angle-try-intel': 'angle_deqp_release_trybot_ios_reclient',
-      'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
-      'mac-angle-chromium-try': 'gpu_tests_release_trybot_x64_reclient',
-      'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
-      'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86_reclient',
-    },
-
     'tryserver.chromium.cft': {
       'linux-arm64-rel-cft': 'release_trybot_no_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
@@ -1299,24 +1279,8 @@
       'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
-    'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'fuchsia',
-    ],
-
-    'angle_deqp_release_bot_dcheck_always_on_ios_reclient': [
-      'angle_deqp_tests', 'release_trybot_minimal_symbols_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
-    ],
-
     'angle_deqp_release_bot_dcheck_always_on_x86_reclient': [
       'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'x86',
-    ],
-
-    'angle_deqp_release_trybot_fuchsia_reclient': [
-      'angle_deqp_tests', 'shared_release_trybot_reclient', 'fuchsia',
-    ],
-
-    'angle_deqp_release_trybot_ios_reclient': [
-      'angle_deqp_tests', 'release_trybot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_deqp_release_trybot_reclient': [
@@ -1899,11 +1863,6 @@
       'android_no_proguard', 'use_clang_coverage',
     ],
 
-    'gpu_tests_android_release_trybot_arm64_fastbuild_reclient': [
-      'gpu_tests', 'android', 'release_trybot_reclient', 'arm64', 'static_angle',
-      'android_fastbuild',
-    ],
-
     'gpu_tests_android_release_trybot_arm64_reclient': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle',
     ],
@@ -1971,10 +1930,6 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'resource_allowlisting',
     ],
 
-    'gpu_tests_release_bot_dcheck_always_on_x86_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
-    ],
-
     'gpu_tests_release_bot_do_typecheck_reclient': [
       'gpu_tests', 'release_bot_reclient', 'devtools_do_typecheck',
     ],
@@ -2007,10 +1962,6 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'gpu_tests_release_trybot_minimal_symbols_x64_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x64',
-    ],
-
     # Keep in sync with
     # gpu_tests_release_trybot_no_symbols_use_dummy_lastchange.
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
@@ -2039,14 +1990,6 @@
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
-    ],
-
-    'gpu_tests_release_trybot_x64_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'x64',
-    ],
-
-    'gpu_tests_release_trybot_x86_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'x86',
     ],
 
     'gpu_tests_release_trybot_x86_resource_allowlisting_reclient': [
