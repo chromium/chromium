@@ -9,6 +9,15 @@
 
 namespace media {
 
+// Chosen mostly arbitrarily.
+constexpr size_t kChunkSize = 1024 * 32;
+
+constexpr base::TimeDelta kBufferDuration = base::Seconds(10);
+
+// A nice round number, chosen to make sure that we get a good average network
+// speed calculation.
+constexpr size_t kMovingAverageSampleSize = 128;
+
 HlsLiveRendition::~HlsLiveRendition() {
   engine_host_->RemoveRole(role_);
 }
@@ -17,17 +26,21 @@ HlsLiveRendition::HlsLiveRendition(ManifestDemuxerEngineHost* engine_host,
                                    HlsRenditionHost* rendition_host,
                                    std::string role,
                                    scoped_refptr<hls::MediaPlaylist> playlist,
+                                   std::optional<base::TimeDelta> duration,
                                    GURL media_playlist_uri)
     : engine_host_(engine_host),
       rendition_host_(rendition_host),
+      segments_(std::make_unique<hls::SegmentStream>(
+          std::move(playlist),
+          /*seekable=*/duration.has_value())),
       role_(std::move(role)),
+      duration_(duration),
+      fetch_time_(kMovingAverageSampleSize),
       media_playlist_uri_(std::move(media_playlist_uri)),
-      segment_duration_upper_limit_(playlist->GetTargetDuration()) {
-  AppendSegments(playlist.get());
-}
+      last_download_time_(base::TimeTicks::Now()) {}
 
 absl::optional<base::TimeDelta> HlsLiveRendition::GetDuration() {
-  return absl::nullopt;
+  return duration_;
 }
 
 void HlsLiveRendition::CheckState(
@@ -35,12 +48,12 @@ void HlsLiveRendition::CheckState(
     double playback_rate,
     ManifestDemuxer::DelayCallback time_remaining_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_stopped_for_shutdown_) {
+  if (is_stopped_for_shutdown_ || !segments_->PlaylistHasSegments()) {
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
   }
 
-  if (playback_rate != 1 && playback_rate != 0) {
+  if (IsLive() && playback_rate != 1 && playback_rate != 0) {
     // TODO(crbug.com/1266991): What should be done about non-paused,
     // non-real-time playback? Anything above 1 would hit the end and constantly
     // be in a state of demuxer underflow, and anything slower than 1 would
@@ -53,211 +66,163 @@ void HlsLiveRendition::CheckState(
     has_ever_played_ = true;
   }
 
-  if (playback_rate == 0.0 && has_ever_played_) {
-    require_seek_after_unpause_ = true;
-    ResetForPause();
+  if (IsLive() && playback_rate == 0.0 && !livestream_pause_time_) {
+    // Any time there is a paused state check and the initial pause timestamp
+    // isn't set, we have to set it.
+    livestream_pause_time_ = base::TimeTicks::Now();
+  }
+
+  if (IsLive() && playback_rate == 0.0 && has_ever_played_) {
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
   }
 
-  auto loaded_ranges = engine_host_->GetBufferedRanges(role_);
-  if (require_seek_after_unpause_) {
-    if (loaded_ranges.empty() && segments_.empty()) {
-      // There should be no loaded ranges or segments after resuming from a
-      // pause, so fetch some.
-      FetchManifestUpdates(base::Seconds(0), std::move(time_remaining_cb));
+  if (playback_rate == 1.0 && livestream_pause_time_.has_value()) {
+    CHECK_EQ(playback_rate, 1.0);
+
+    auto remaining_manifest_time =
+        segments_->QueueSize() * segments_->GetMaxDuration();
+    auto pause_duration = base::TimeTicks::Now() - *livestream_pause_time_;
+    livestream_pause_time_ = absl::nullopt;
+
+    if (pause_duration < remaining_manifest_time) {
+      // our pause was so short that we are still within the segments currently
+      // available since our last fetch. All we have to do is seek to the
+      // correct time. At the moment, `media_time` will still be the old time
+      // when the pause happened. Seeking will restart the CheckState loop.
+      engine_host_->RequestSeek(pause_duration + media_time);
+      std::move(time_remaining_cb).Run(kNoTimestamp);
       return;
     }
 
-    if (loaded_ranges.empty()) {
-      // Now there are segments, but there is still no new content. Fetch and
-      // parse new content, before seeking.
-      ContinuePartialFetching(
-          base::BindOnce(std::move(time_remaining_cb), base::Seconds(0)));
-      return;
+    // This will require a new manifest fetch. Clear the queue first, and tell
+    // it what the new start timestamp should be. Then we request a seek to
+    // the new start timestamp, which will take place after we fetch the
+    // updated manifest.
+    segments_->ResetExpectingFutureManifest(pause_duration + media_time);
+    engine_host_->RequestSeek(pause_duration + media_time +
+                              segments_->GetMaxDuration());
+    FetchManifestUpdates(std::move(time_remaining_cb), base::Seconds(0));
+    return;
+  }
+
+  auto ranges = engine_host_->GetBufferedRanges(role_);
+
+  // Nothing loaded, nothing left, and not live. Time to stop.
+  if (segments_->Exhausted() && duration_.has_value()) {
+    if (!set_stream_end_) {
+      set_stream_end_ = true;
+      engine_host_->SetEndOfStream();
     }
-
-    require_seek_after_unpause_ = false;
-    engine_host_->RequestSeek(std::get<0>(loaded_ranges.back()));
-
-    // When the pipeline seeks, it should re-enter this state checking loop.
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
   }
 
-  if (loaded_ranges.size() > 1) {
-    std::move(time_remaining_cb).Run(kNoTimestamp);
-    engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_OPEN);
+  // Consider re-requesting.
+  if (ranges.empty() && segments_->Exhausted()) {
+    MaybeFetchManifestUpdates(std::move(time_remaining_cb), base::Seconds(0));
     return;
   }
 
-  if (loaded_ranges.empty()) {
-    if (segments_.empty()) {
-      // This is likely to happen right after the player has started playing,
-      // which means we need a full update on the manifest.
-      // TODO(crbug/1266991): Use the manifest frequency polling logic here too.
-      MaybeFetchManifestUpdates(base::Seconds(0), std::move(time_remaining_cb));
-      return;
-    }
-
-    ContinuePartialFetching(
-        base::BindOnce(std::move(time_remaining_cb), base::Seconds(0)));
+  // Fetch the next segment.
+  if (ranges.empty()) {
+    FetchNext(base::BindOnce(std::move(time_remaining_cb), base::Seconds(0)),
+              media_time);
     return;
   }
 
-  auto actual_buffer_time = std::get<1>(loaded_ranges.back()) - media_time;
-  auto ideal_buffer_time = GetForwardBufferSize();
-  if (actual_buffer_time > ideal_buffer_time) {
-    // clear content older than the current media time.
-    ClearOldData(media_time);
-
-    // Finally, in this downtime, try to fetch manifest data. This has to be
-    // done periodically to get new segments, and since there is a good buffer
-    // currently, its a good time to do that fetch. Manifest updates are usually
-    // small, and shouldn't cause the buffer to run out.
-    auto delay_time = ideal_buffer_time / 1.5;
-    MaybeFetchManifestUpdates(delay_time, std::move(time_remaining_cb));
+  // If media time comes before the last loaded range, then a seek probably
+  // failed, and we should raise an error.
+  if (std::get<0>(ranges.back()) > media_time) {
+    PipelineStatus error = DEMUXER_ERROR_COULD_NOT_PARSE;
+    engine_host_->OnError(std::move(error)
+                              .WithData("timestamp", media_time)
+                              .WithData("range_start", ranges.back().first)
+                              .WithData("range_end", ranges.back().second));
     return;
   }
 
-  if (!partial_stream_ && segments_.empty()) {
-    // TODO(crbug/1266991) We've run out of segments, and will demuxer
-    // underflow shortly. This implies that the rendition should be
-    // reselected.
-    MaybeFetchManifestUpdates(base::Seconds(0), std::move(time_remaining_cb));
+  auto end_of_buffer_ts = std::get<1>(ranges.back());
+
+  // We need data ASAP, because the media time is outside the loaded ranges
+  // due to a seek.
+  if (media_time > end_of_buffer_ts) {
+    TryFillingBuffers(std::move(time_remaining_cb), media_time);
     return;
   }
 
-  ContinuePartialFetching(
-      base::BindOnce(std::move(time_remaining_cb), base::Seconds(0)));
+  // Paused content should just pretend that it will be resumed at 1x playback
+  // speed, because that is by far the most common.
+  auto denominator_rate = playback_rate ? playback_rate : 1.0;
+  auto buffer_duration = (end_of_buffer_ts - media_time) / denominator_rate;
+  auto ideal_buffer_duration = GetIdealBufferSize();
+
+  if (buffer_duration < ideal_buffer_duration) {
+    // There is a buffer, but it's not as big as we would like it to be.
+    TryFillingBuffers(std::move(time_remaining_cb), media_time);
+    return;
+  }
+
+  // Our buffers are in good shape. This is a good chance to clear out old
+  // data and then, for live content, see if the manifest is in need of an
+  // update.
+  ClearOldSegments(media_time);
+
+  // We want to delay until the buffer is ~halfway full.
+  auto delay_time = buffer_duration - (ideal_buffer_duration / 2);
+
+  if (IsLive()) {
+    // Use this time to consider updating the manifest.
+    MaybeFetchManifestUpdates(std::move(time_remaining_cb), delay_time);
+    return;
+  }
+
+  std::move(time_remaining_cb).Run(delay_time);
 }
 
-void HlsLiveRendition::ContinuePartialFetching(base::OnceClosure cb) {
+void HlsLiveRendition::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
+                                         base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  if (partial_stream_) {
-    FetchMoreDataFromPendingStream(std::move(cb));
-    return;
-  }
-  if (!segments_.empty()) {
-    LoadSegment(*segments_.front(), std::move(cb));
-    segments_.pop();
-  }
-}
-
-ManifestDemuxer::SeekResponse HlsLiveRendition::Seek(base::TimeDelta time) {
-  return ManifestDemuxer::SeekState::kIsReady;
-}
-
-void HlsLiveRendition::StartWaitingForSeek() {
-  // Do nothing, seeking a live stream is not valid.
-}
-
-void HlsLiveRendition::Stop() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  partial_stream_ = nullptr;
-  is_stopped_for_shutdown_ = true;
-}
-
-void HlsLiveRendition::UpdatePlaylist(
-    scoped_refptr<hls::MediaPlaylist> playlist) {
-  // TODO(crbug/1266991) Implement in a future CL.
-}
-
-base::TimeDelta HlsLiveRendition::GetForwardBufferSize() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  // Try to keep a buffer of at least 5x fetch time, or 3 seconds, whichever
-  // is longer. These numbers were picked based on trial and error to get a
-  // smooth stream.
-  if (fetch_time_.Count() == 0) {
-    return base::Seconds(10);
-  }
-  return std::max(base::Seconds(10), fetch_time_.Mean() * 5);
-}
-
-void HlsLiveRendition::LoadSegment(const hls::MediaSegment& segment,
-                                   base::OnceClosure cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  rendition_host_->ReadFromUrl(
-      segment.GetUri(), /*read_chunked=*/true, segment.GetByteRange(),
-      base::BindOnce(&HlsLiveRendition::OnSegmentData,
-                     weak_factory_.GetWeakPtr(), std::move(cb),
-                     base::TimeTicks::Now()));
-}
-
-void HlsLiveRendition::FetchMoreDataFromPendingStream(base::OnceClosure cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  CHECK(partial_stream_);
-  auto stream = std::move(partial_stream_);
-  rendition_host_->ReadStream(
-      std::move(stream), base::BindOnce(&HlsLiveRendition::OnSegmentData,
-                                        weak_factory_.GetWeakPtr(),
-                                        std::move(cb), base::TimeTicks::Now()));
-}
-
-void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
-                                     base::TimeTicks net_req_start,
-                                     HlsDataSourceProvider::ReadResult result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (is_stopped_for_shutdown_) {
-    std::move(cb).Run();
+  // Live content should fetch an update if the segment queue is exhausted.
+  if (IsLive() && segments_->Exhausted()) {
+    FetchManifestUpdates(std::move(delay), base::Seconds(0));
     return;
   }
 
-  if (!result.has_value()) {
-    engine_host_->OnError(
-        {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
+  // VOD content has nothing to do if the segment queue is exhausted.
+  if (segments_->Exhausted()) {
+    std::move(delay).Run(kNoTimestamp);
     return;
   }
 
-  // Always ensure we are parsing the entirety of the data chunk received.
-  auto sequences_seen = last_sequence_number_ - first_sequence_number_;
-  auto parse_end = segment_duration_upper_limit_ * (sequences_seen + 1);
-  auto stream = std::move(result).value();
-
-  if (!engine_host_->AppendAndParseData(role_, base::TimeDelta(), parse_end,
-                                        &parse_offset_, stream->raw_data(),
-                                        stream->buffer_size())) {
-    engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
-    return;
-  }
-
-  auto fetch_duration = base::TimeTicks::Now() - net_req_start;
-  // Adjust time based on a standard 4k download chunk.
-  auto scaled = (fetch_duration * stream->buffer_size()) / 4096;
-  fetch_time_.AddSample(scaled);
-
-  if (stream->CanReadMore()) {
-    stream->Clear();
-    partial_stream_ = std::move(stream);
-  }
-
-  std::move(cb).Run();
+  // If there are segments in the queue, fetch.
+  FetchNext(base::BindOnce(std::move(delay), base::Seconds(0)), media_time);
 }
 
-void HlsLiveRendition::AppendSegments(hls::MediaPlaylist* playlist) {
+void HlsLiveRendition::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
+                                            base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
-  for (const auto& segment : playlist->GetSegments()) {
-    if (first_sequence_number_ == 0) {
-      first_sequence_number_ = segment->GetMediaSequenceNumber();
-    }
-    if (segment->GetMediaSequenceNumber() <= last_sequence_number_) {
-      continue;
-    }
-    last_sequence_number_ = segment->GetMediaSequenceNumber();
-    segments_.push(segment);
+  rendition_host_->UpdateRenditionManifestUri(
+      role_, media_playlist_uri_,
+      base::BindOnce(&HlsLiveRendition::OnManifestUpdate,
+                     weak_factory_.GetWeakPtr(), std::move(cb), delay));
+}
+
+void HlsLiveRendition::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
+                                        base::TimeDelta delay) {
+  auto update_duration = base::TimeTicks::Now() - last_download_time_;
+  if (update_duration > delay) {
+    std::move(cb).Run(base::Seconds(0));
+    return;
   }
+  std::move(cb).Run(delay - update_duration);
 }
 
 void HlsLiveRendition::MaybeFetchManifestUpdates(
-    base::TimeDelta delay,
-    ManifestDemuxer::DelayCallback cb) {
+    ManifestDemuxer::DelayCallback cb,
+    base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   // Section 6.3.4 of the spec states that:
@@ -265,97 +230,178 @@ void HlsLiveRendition::MaybeFetchManifestUpdates(
   // to reload the Playlist file again, measured from the last time the client
   // began loading the Playlist file.
   auto since_last_manifest = base::TimeTicks::Now() - last_download_time_;
-  auto update_after = segment_duration_upper_limit_ * (segments_.size() + 1);
+  auto update_after = segments_->QueueSize() * segments_->GetMaxDuration();
   if (since_last_manifest > update_after) {
-    FetchManifestUpdates(delay, std::move(cb));
+    FetchManifestUpdates(std::move(cb), delay);
     return;
   }
   std::move(cb).Run(delay);
 }
 
-void HlsLiveRendition::FetchManifestUpdates(base::TimeDelta delay,
-                                            ManifestDemuxer::DelayCallback cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  rendition_host_->ReadFromUrl(
-      media_playlist_uri_, /*read_chunked=*/false, absl::nullopt,
-      base::BindOnce(&HlsLiveRendition::OnManifestUpdates,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), delay,
-                     std::move(cb)));
+base::TimeDelta HlsLiveRendition::GetIdealBufferSize() const {
+  // TODO(crbug.com/1266991): This buffer size _could_ be based on network
+  // speed and video bitrate, but it's actually quite effective to keep it just
+  // at a fixed size, due to the fact that the stream adaptation will always try
+  // to match an appropriate bitrate. 10 seconds was chosen based on a good
+  // amount of buffer to prevent demuxer underflow when toggling between
+  // wired data and fast 3g speeds.
+  return kBufferDuration;
 }
 
-void HlsLiveRendition::OnManifestUpdates(
-    base::TimeTicks download_start_time,
-    base::TimeDelta delay_time,
-    ManifestDemuxer::DelayCallback cb,
-    HlsDataSourceProvider::ReadResult result) {
+ManifestDemuxer::SeekResponse HlsLiveRendition::Seek(
+    base::TimeDelta seek_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
-    std::move(cb).Run(base::Seconds(0));
+    return PIPELINE_ERROR_ABORT;
+  }
+
+  if (set_stream_end_) {
+    set_stream_end_ = false;
+    engine_host_->UnsetEndOfStream();
+  }
+
+  auto ranges = engine_host_->GetBufferedRanges(role_);
+  if (!ranges.empty() && ranges.contains(ranges.size() - 1, seek_time)) {
+    // If the seek time is in the last loaded range, then there is no need to
+    // update the pending fetch state or clear/flush any buffers.
+    return ManifestDemuxer::SeekState::kIsReady;
+  }
+
+  if (IsLive()) {
+    return ManifestDemuxer::SeekState::kNeedsData;
+  }
+
+  // If we seek anywhere else, we should evict everything in order to avoid
+  // fragmented loaded sections and large memory consumption.
+  engine_host_->EvictCodedFrames(role_, base::Seconds(0), 0);
+  engine_host_->RemoveAndReset(role_, base::TimeDelta(), duration_.value(),
+                               &parse_offset_);
+
+  if (segments_->Seek(seek_time)) {
+    // The seek successfully put segments into the queue, se reset the sequence
+    // modes.
+    engine_host_->SetGroupStartIfParsingAndSequenceMode(
+        role_, segments_->NextSegmentStartTime());
+  }
+
+  return ManifestDemuxer::SeekState::kNeedsData;
+}
+
+void HlsLiveRendition::StartWaitingForSeek() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void HlsLiveRendition::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_stopped_for_shutdown_ = true;
+}
+
+void HlsLiveRendition::UpdatePlaylist(
+    scoped_refptr<hls::MediaPlaylist> playlist) {
+  segments_->SetNewPlaylist(std::move(playlist));
+}
+
+base::TimeDelta HlsLiveRendition::ClearOldSegments(base::TimeDelta media_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
+  base::TimeTicks removal_start = base::TimeTicks::Now();
+  // Keep 10 seconds of content before the current media time. On mobile, a very
+  // common pattern is to make double tapping the left side of the player
+  // trigger a 10 second seek backwards. Keeping 10 seconds of time prior to the
+  // current media time allows for a ten second rewind seek without triggering
+  // new data loads. For live content, we keep 2 seconds instead, since seeking
+  // is disallowed. Some content needs to be kept in the buffer to make sure
+  // that bounds checking stays clean.
+  base::TimeDelta remove_until;
+  if (IsLive()) {
+    remove_until = media_time - base::Seconds(2);
+  } else {
+    remove_until = media_time - kBufferDuration - segments_->GetMaxDuration();
+  }
+
+  if ((IsLive() && remove_until > base::Seconds(0)) ||
+      remove_until > kBufferDuration) {
+    engine_host_->Remove(role_, base::TimeDelta(), remove_until);
+  }
+
+  return base::TimeTicks::Now() - removal_start;
+}
+
+void HlsLiveRendition::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
+  CHECK(!segments_->Exhausted());
+
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta segment_start;
+  base::TimeDelta segment_end;
+  std::tie(segment, segment_start, segment_end) = segments_->GetNextSegment();
+
+  rendition_host_->ReadFromUrl(
+      segment->GetUri(), /*read_chunked=*/false, segment->GetByteRange(),
+      base::BindOnce(&HlsLiveRendition::OnSegmentData,
+                     weak_factory_.GetWeakPtr(), std::move(cb), time,
+                     segment_end, base::TimeTicks::Now()));
+}
+
+void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
+                                     base::TimeDelta required_time,
+                                     base::TimeDelta parse_end,
+                                     base::TimeTicks net_req_start,
+                                     HlsDataSourceProvider::ReadResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_for_shutdown_) {
+    std::move(cb).Run();
     return;
   }
 
   if (!result.has_value()) {
-    engine_host_->OnError(
+    // Drop |cb| here, and let the abort handler pick up the pieces.
+    // TODO(crbug/1266991): If a seek abort interrupts us, we want to not bubble
+    // the error upwards.
+    return engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
+  }
+
+  std::unique_ptr<HlsDataSourceStream> stream = std::move(result).value();
+  DCHECK(!stream->CanReadMore());
+
+  if (!engine_host_->AppendAndParseData(
+          role_, base::TimeDelta(), parse_end + base::Seconds(1),
+          &parse_offset_, stream->raw_data(), stream->buffer_size())) {
+    return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+  }
+
+  auto fetch_duration = base::TimeTicks::Now() - net_req_start;
+  // Store the time it took to download this chunk. The time should be scaled
+  // for situations where we only have a few bytes left to download.
+  auto scaled = (fetch_duration * kChunkSize) / stream->buffer_size();
+  fetch_time_.AddSample(scaled);
+
+  // After a seek especially, we will start loading content that comes
+  // potentially much earlier than the seek time, and it's possible that the
+  // loaded ranges won't yet contain the timestamp that is required to be loaded
+  // for the seek to complete. In this case, we just keep fetching until
+  // the seek time is loaded.
+  auto ranges = engine_host_->GetBufferedRanges(role_);
+  if (ranges.size() && ranges.contains(ranges.size() - 1, required_time)) {
+    std::move(cb).Run();
     return;
   }
 
-  auto stream = std::move(result).value();
-  if (stream->CanReadMore()) {
-    // TODO(crbug/1266991): Log a large manifest warning.
-    rendition_host_->ReadStream(
-        std::move(stream),
-        base::BindOnce(&HlsLiveRendition::OnManifestUpdates,
-                       weak_factory_.GetWeakPtr(), download_start_time,
-                       delay_time, std::move(cb)));
-    return;
-  }
-  auto info = hls::Playlist::IdentifyPlaylist(stream->AsString());
-  if (!info.has_value()) {
-    engine_host_->OnError(
-        {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(info).error()});
+  // If the last range doesn't contain the timestamp, keep parsing until it
+  // does. If there is nothing left to download, then we can return.
+  if (segments_->Exhausted()) {
+    std::move(cb).Run();
     return;
   }
 
-  auto playlist = rendition_host_->ParseMediaPlaylistFromStringSource(
-      stream->AsString(), media_playlist_uri_, (*info).version);
-  if (!playlist.has_value()) {
-    engine_host_->OnError(
-        {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(playlist).error()});
-    return;
-  }
-
-  auto playlist_ptr = std::move(playlist).value();
-  AppendSegments(playlist_ptr.get());
-
-  base::TimeDelta fetch_time = base::TimeTicks::Now() - download_start_time;
-  std::move(cb).Run(std::max(base::Seconds(0), delay_time - fetch_time));
+  FetchNext(std::move(cb), required_time);
 }
 
-void HlsLiveRendition::ClearOldData(base::TimeDelta time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  // 5 seconds chosen mostly arbitrarily to keep some prior buffer while not
-  // keeping too much to cause memory issues.
-  if (time <= base::Seconds(5)) {
-    return;
-  }
-  engine_host_->Remove(role_, base::TimeDelta(), time - base::Seconds(5));
-}
-
-void HlsLiveRendition::ResetForPause() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_stopped_for_shutdown_);
-  segments_ = {};
-  last_sequence_number_ = first_sequence_number_;
-  partial_stream_ = nullptr;
-  auto loaded_ranges = engine_host_->GetBufferedRanges(role_);
-  if (!loaded_ranges.empty()) {
-    auto end_time = std::get<1>(loaded_ranges.back());
-    engine_host_->Remove(role_, base::TimeDelta(), end_time);
-  }
+bool HlsLiveRendition::IsLive() const {
+  return !duration_.has_value();
 }
 
 }  // namespace media

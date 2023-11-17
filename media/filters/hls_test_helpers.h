@@ -121,13 +121,6 @@ class MockHlsRenditionHost : public HlsRenditionHost {
                HlsDataSourceProvider::ReadCb cb),
               (override));
 
-  MOCK_METHOD(hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>,
-              ParseMediaPlaylistFromStringSource,
-              (base::StringPiece source,
-               GURL uri,
-               hls::types::DecimalInteger version),
-              (override));
-
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,
               (std::string, GURL, base::OnceClosure),

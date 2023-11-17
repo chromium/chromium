@@ -47,6 +47,7 @@ HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
                               GURL uri) {
   std::unique_ptr<HlsRendition> rendition;
   auto duration = GetPlaylistDuration(playlist.get());
+  // TODO(crbug.com/1266991) Unify these two types!
   if (duration.has_value()) {
     rendition = std::make_unique<HlsVodRendition>(
         engine_host, rendition_host, std::move(role), std::move(playlist),
@@ -54,7 +55,7 @@ HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
   } else {
     rendition = std::make_unique<HlsLiveRendition>(
         engine_host, rendition_host, std::move(role), std::move(playlist),
-        std::move(uri));
+        duration, std::move(uri));
   }
   return rendition;
 }

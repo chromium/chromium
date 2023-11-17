@@ -60,13 +60,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                    HlsDataSourceProvider::ReadCb cb) override;
   void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                   HlsDataSourceProvider::ReadCb cb) override;
-
-  // Parses a playlist using the multivariant playlist, if it's being used.
-  hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
-  ParseMediaPlaylistFromStringSource(
-      base::StringPiece source,
-      GURL uri,
-      hls::types::DecimalInteger version) override;
   void UpdateRenditionManifestUri(std::string role,
                                   GURL uri,
                                   base::OnceClosure cb) override;
@@ -188,6 +181,12 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       GURL uri,
       base::OnceClosure cb,
       HlsDataSourceProvider::ReadResult maybe_stream);
+
+  // Parses a playlist using the multivariant playlist, if it's being used.
+  hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
+  ParseMediaPlaylistFromStringSource(base::StringPiece source,
+                                     GURL uri,
+                                     hls::types::DecimalInteger version);
 
   base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

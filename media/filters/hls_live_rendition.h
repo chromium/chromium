@@ -5,22 +5,25 @@
 #ifndef MEDIA_FILTERS_HLS_LIVE_RENDITION_H_
 #define MEDIA_FILTERS_HLS_LIVE_RENDITION_H_
 
-#include <queue>
-
-#include "base/containers/queue.h"
 #include "base/moving_window.h"
 #include "media/filters/hls_rendition.h"
+#include "media/formats/hls/segment_stream.h"
 
 namespace media {
 
-// Represents the playback logic for livestreams.
 class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
  public:
   ~HlsLiveRendition() override;
+
+  // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
+  // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed
+  // to access the chunk demuxer, and |engine_| is needed to make network
+  // requests.
   HlsLiveRendition(ManifestDemuxerEngineHost* engine_host,
                    HlsRenditionHost* rendition_host,
                    std::string role,
                    scoped_refptr<hls::MediaPlaylist> playlist,
+                   std::optional<base::TimeDelta> duration,
                    GURL media_playlist_uri);
 
   // `HlsRendition` implementation
@@ -34,28 +37,50 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) override;
 
  private:
-  base::TimeDelta GetForwardBufferSize() const;
+  // A pending segment consists of the stream from which network data is fetched
+  // and the time to which the parser should run until.
+  using PendingSegment =
+      std::tuple<std::unique_ptr<HlsDataSourceStream>, base::TimeDelta>;
 
-  // Segment fetching and appending.
-  void LoadSegment(const hls::MediaSegment& segment, base::OnceClosure cb);
-  void FetchMoreDataFromPendingStream(base::OnceClosure cb);
+  // Clears old data and returns the amount of time taken to do so, in order to
+  // aid the delay calculations.
+  base::TimeDelta ClearOldSegments(base::TimeDelta media_time);
+  void FetchNext(base::OnceClosure cb, base::TimeDelta required_time);
+
+  // Continues loading from a stored pending network request.
+  void FetchMoreDataFromPendingStream(base::OnceClosure cb,
+                                      base::TimeDelta fetch_required_time);
+
+  // Appends and parses data on network read. Will additionally set a pending
+  // request if there is more to read.
   void OnSegmentData(base::OnceClosure cb,
+                     base::TimeDelta fetch_required_time,
+                     base::TimeDelta parse_end,
                      base::TimeTicks net_req_start,
                      HlsDataSourceProvider::ReadResult result);
 
-  // Manifest fetching.
-  void AppendSegments(hls::MediaPlaylist* playlist);
-  void MaybeFetchManifestUpdates(base::TimeDelta delay,
-                                 ManifestDemuxer::DelayCallback cb);
-  void FetchManifestUpdates(base::TimeDelta delay,
-                            ManifestDemuxer::DelayCallback cb);
-  void OnManifestUpdates(base::TimeTicks download_start_time,
-                         base::TimeDelta delay_time,
-                         ManifestDemuxer::DelayCallback cb,
-                         HlsDataSourceProvider::ReadResult result);
-  void ClearOldData(base::TimeDelta time);
-  void ResetForPause();
-  void ContinuePartialFetching(base::OnceClosure cb);
+  // This allows calculating the ideal buffer size, based on adaptability,
+  // network speed, and playback type.
+  base::TimeDelta GetIdealBufferSize() const;
+
+  // A helper method for CheckState, which will fetch new manifests for live
+  // content if needed, and also fetch the next segment for both live and vod
+  // content.
+  void TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
+                         base::TimeDelta media_time);
+
+  // Live playback helpers which enforce section 6.3.4 of the HLS spec regarding
+  // the delay between fetching new playlists for live content.
+  void FetchManifestUpdates(ManifestDemuxer::DelayCallback, base::TimeDelta);
+  void MaybeFetchManifestUpdates(ManifestDemuxer::DelayCallback,
+                                 base::TimeDelta);
+
+  // Callback helper to receive notice when a new manifest has been updated.
+  void OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
+                        base::TimeDelta delay);
+
+  // Helper method to use duration to determine stream liveness.
+  bool IsLive() const;
 
   // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed
@@ -64,37 +89,33 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   raw_ptr<ManifestDemuxerEngineHost> engine_host_;
   raw_ptr<HlsRenditionHost> rendition_host_;
 
+  std::unique_ptr<hls::SegmentStream> segments_;
+
   // The chunk demuxer role for this rendition.
   std::string role_;
 
-  // The current playlist. Needs to be updated periodically.
-  GURL media_playlist_uri_;
-
-  // A queue of segments.
-  base::queue<scoped_refptr<hls::MediaSegment>> segments_;
-
   // The parser offset timestamp for this stream.
   base::TimeDelta parse_offset_;
-  base::TimeDelta parse_end_ = base::Seconds(0);
 
-  // Keep state for reloading playlists.
-  base::TimeTicks last_download_time_;
-  hls::types::DecimalInteger last_sequence_number_ = 0;
-  hls::types::DecimalInteger first_sequence_number_ = 0;
-
-  // Manifests should declare an upper limit on the length of segments.
-  base::TimeDelta segment_duration_upper_limit_;
-
-  // If this is set, then use it to get more data. Otherwise, fetch another
-  // segment.
-  std::unique_ptr<HlsDataSourceStream> partial_stream_;
+  // Total duration of the playback.
+  std::optional<base::TimeDelta> duration_;
 
   // Record the time it takes to download content.
-  base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_{32};
+  base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_;
 
-  bool has_ever_played_ = false;
-  bool require_seek_after_unpause_ = false;
+  // The URI of the active rendition's playlist.
+  GURL media_playlist_uri_;
+
+  // The last time the manifest was downloaded.
+  base::TimeTicks last_download_time_;
+
+  // The time that a livestream was paused at.
+  std::optional<base::TimeTicks> livestream_pause_time_ = std::nullopt;
+
+  // toggleable bool flags.
+  bool set_stream_end_ = false;
   bool is_stopped_for_shutdown_ = false;
+  bool has_ever_played_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

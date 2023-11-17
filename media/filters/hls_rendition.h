@@ -39,11 +39,6 @@ class MEDIA_EXPORT HlsRenditionHost {
   virtual void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                           HlsDataSourceProvider::ReadCb cb) = 0;
 
-  virtual hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
-  ParseMediaPlaylistFromStringSource(base::StringPiece source,
-                                     GURL uri,
-                                     hls::types::DecimalInteger version) = 0;
-
   // Fetch a new playlist for live content at the requested URI.
   virtual void UpdateRenditionManifestUri(std::string role,
                                           GURL uri,
