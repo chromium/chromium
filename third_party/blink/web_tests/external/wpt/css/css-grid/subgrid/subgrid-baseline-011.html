@@ -13,10 +13,10 @@ body {
 div {
   align-items: baseline;
   display: inline-grid;
-  grid-template: 30px / 60px;
+  grid-template-columns: repeat(2, auto);
 }
-.subgrid { grid-template: subgrid / repeat(2, 30px) }
-.item { grid-template: auto / subgrid }
+div > div { grid-template-columns: subgrid }
+.subgrid { grid-column: 1 / -1 }
 .item:nth-child(2) { font-size: 30px }
 </style>
 <script src="/resources/testharness.js"></script>

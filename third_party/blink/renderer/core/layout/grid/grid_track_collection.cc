@@ -843,13 +843,18 @@ bool GridLayoutTrackCollection::HasIntrinsicTrack() const {
   return properties_.HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
 }
 
+bool GridLayoutTrackCollection::HasNonDefiniteTrack() const {
+  return properties_.HasProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+}
+
 bool GridLayoutTrackCollection::IsDependentOnAvailableSize() const {
   return properties_.HasProperty(
       TrackSpanProperties::kIsDependentOnAvailableSize);
 }
 
-bool GridLayoutTrackCollection::IsSpanningOnlyDefiniteTracks() const {
-  return !properties_.HasProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+bool GridLayoutTrackCollection::HasIndefiniteSet() const {
+  return !last_indefinite_index_.empty() &&
+         last_indefinite_index_.back() != kNotFound;
 }
 
 GridSizingTrackCollection::GridSizingTrackCollection(

@@ -1528,6 +1528,13 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     if (grid_item.IsSubgrid()) {
       subgrid_layout_subtree = GridLayoutSubtree(
           layout_tree, sizing_subtree.LookupSubgridIndex(grid_item));
+
+      if (subgrid_layout_subtree.HasUnresolvedGeometry()) {
+        // Calling `Layout` for a nested subgrid rely on the geometry of its
+        // respective layout subtree to be fully resolved. Otherwise, the
+        // subgrid won't be able to resolve its intrinsic sizes.
+        continue;
+      }
     }
 
     const auto subgridded_item =
@@ -1685,7 +1692,7 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
 
       // If all tracks have a definite size upfront, we can use the current set
       // sizes as the used track sizes (applying alignment, if present).
-      if (track_collection.IsSpanningOnlyDefiniteTracks()) {
+      if (!track_collection.HasNonDefiniteTrack()) {
         auto first_set_geometry = ComputeFirstSetGeometry(
             track_collection, Style(),
             is_for_columns ? grid_available_size_.inline_size
@@ -1841,8 +1848,8 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   const bool is_for_columns = track_direction == kForColumns;
   const bool has_non_definite_track =
-      is_for_columns ? !layout_data.Columns().IsSpanningOnlyDefiniteTracks()
-                     : !layout_data.Rows().IsSpanningOnlyDefiniteTracks();
+      is_for_columns ? layout_data.Columns().HasNonDefiniteTrack()
+                     : layout_data.Rows().HasNonDefiniteTrack();
 
   if (has_non_definite_track) {
     if (layout_data.HasSubgriddedAxis(track_direction)) {
@@ -3190,7 +3197,9 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
   }
 
   if (opt_layout_subtree) {
-    DCHECK(grid_item.IsSubgrid() && cache_slot == NGCacheSlot::kLayout);
+    DCHECK(grid_item.IsSubgrid());
+    DCHECK_EQ(cache_slot, NGCacheSlot::kLayout);
+    DCHECK(!opt_layout_subtree.HasUnresolvedGeometry());
     builder.SetGridLayoutSubtree(std::move(opt_layout_subtree));
   }
 

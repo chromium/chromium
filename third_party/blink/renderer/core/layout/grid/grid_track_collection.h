@@ -190,8 +190,6 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
 
-  bool HasCachedSetsGeometry() const { return !sets_geometry_.empty(); }
-
   // Increase by |delta| the offset of every set with index > |set_index|.
   void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 
@@ -200,9 +198,6 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   // Returns the total size of all sets with index in the range [begin, end).
   LayoutUnit ComputeSetSpanSize(wtf_size_t begin_set_index,
                                 wtf_size_t end_set_index) const;
-  // Checks whether any set in the range [begin, end) is indefinite.
-  bool IsSpanningIndefiniteSet(wtf_size_t begin_set_index,
-                               wtf_size_t end_set_index) const;
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.
@@ -219,9 +214,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   LayoutUnit GutterSize() const { return gutter_size_; }
 
   bool HasFlexibleTrack() const;
+  bool HasIndefiniteSet() const;
   bool HasIntrinsicTrack() const;
+  bool HasNonDefiniteTrack() const;
   bool IsDependentOnAvailableSize() const;
-  bool IsSpanningOnlyDefiniteTracks() const;
 
  protected:
   struct Baselines {
@@ -231,6 +227,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
 
   explicit GridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : track_direction_(track_direction) {}
+
+  // Checks whether any set in the range [begin, end) is indefinite.
+  bool IsSpanningIndefiniteSet(wtf_size_t begin_set_index,
+                               wtf_size_t end_set_index) const;
 
   LayoutUnit gutter_size_;
   GridRangeVector ranges_;

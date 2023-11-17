@@ -190,18 +190,19 @@ class CORE_EXPORT GridLayoutData {
 class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
+    GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
+        : layout_data(layout_data),
+          subtree_size(subtree_size),
+          has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
+                                  layout_data.Rows().HasIndefiniteSet()) {}
+
     GridLayoutData layout_data;
     wtf_size_t subtree_size;
+    bool has_unresolved_geometry;
   };
 
-  explicit GridLayoutTree(wtf_size_t initial_capacity) {
-    tree_data_.ReserveInitialCapacity(initial_capacity);
-  }
-
-  void Append(const GridLayoutData& layout_data, wtf_size_t subtree_size) {
-    GridTreeNode grid_node_data{layout_data, subtree_size};
-    tree_data_.emplace_back(std::move(grid_node_data));
-  }
+  explicit GridLayoutTree(Vector<GridTreeNode, 16>&& tree_data)
+      : tree_data_(std::move(tree_data)) {}
 
   bool AreSubtreesEqual(wtf_size_t subtree_root,
                         const GridLayoutTree& other,
@@ -219,6 +220,11 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
       }
     }
     return true;
+  }
+
+  bool HasUnresolvedGeometry(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index].has_unresolved_geometry;
   }
 
   const GridLayoutData& LayoutData(wtf_size_t index) const {
@@ -264,6 +270,11 @@ class GridLayoutSubtree
                ? grid_tree_->AreSubtreesEqual(subtree_root_, *other.grid_tree_,
                                               other.subtree_root_)
                : !grid_tree_ && !other.grid_tree_;
+  }
+
+  bool HasUnresolvedGeometry() const {
+    DCHECK(grid_tree_);
+    return grid_tree_->HasUnresolvedGeometry(subtree_root_);
   }
 
   const GridLayoutData& LayoutData() const {
