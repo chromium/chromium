@@ -217,6 +217,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.collectionView.indexPathsForSelectedItems.firstObject;
   PinnedCell* selectedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+  if (!selectedCell) {
+    return nil;
+  }
 
   if (selectedCell.itemIdentifier == _selectedItemID) {
     UICollectionViewLayoutAttributes* attributes = [self.collectionView
@@ -826,6 +829,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Configures `cell`'s identifier and title synchronously, and favicon and
 // snapshot asynchronously from `item`.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
+  CHECK(cell);
   if (item) {
     cell.itemIdentifier = item.identifier;
     cell.title = item.title;

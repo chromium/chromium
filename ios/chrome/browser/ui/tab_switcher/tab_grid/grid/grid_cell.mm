@@ -8,6 +8,7 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -741,6 +742,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 // Scales the tab views relative to the current width of the cell.
 - (void)scaleTabViews {
+  CHECK_NE(_previousTabViewWidth, 0);
   CGFloat scale = self.bounds.size.width / _previousTabViewWidth;
   ScaleView(self.topTabView, scale);
   ScaleView(self.mainTabView, scale);
