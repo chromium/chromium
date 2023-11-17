@@ -13,6 +13,7 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -96,6 +97,9 @@ class OpenXrExtensionHelper {
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(XrSession session, XrSpace base_space) const;
+
+  std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
+      XrSession session) const;
 
  private:
   // Small helper method to check if a given extension is enabled.

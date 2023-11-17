@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 
 namespace device {
@@ -175,6 +176,11 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     XrSpace base_space) const {
   return std::make_unique<OpenXRSceneUnderstandingManager>(*this, session,
                                                            base_space);
+}
+
+std::unique_ptr<OpenXrStageBoundsProvider>
+OpenXrExtensionHelper::CreateStageBoundsProvider(XrSession session) const {
+  return std::make_unique<OpenXrStageBoundsProviderBasic>(session);
 }
 
 }  // namespace device

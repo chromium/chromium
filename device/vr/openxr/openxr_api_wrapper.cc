@@ -19,6 +19,7 @@
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_input_helper.h"
+#include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -171,6 +172,7 @@ OpenXrApiWrapper::~OpenXrApiWrapper() {
 void OpenXrApiWrapper::Reset() {
   SetXrSessionState(XR_SESSION_STATE_UNKNOWN);
   anchor_manager_.reset();
+  unbounded_space_type_ = XR_REFERENCE_SPACE_TYPE_MAX_ENUM;
   unbounded_space_ = XR_NULL_HANDLE;
   local_space_ = XR_NULL_HANDLE;
   stage_space_ = XR_NULL_HANDLE;
@@ -180,6 +182,7 @@ void OpenXrApiWrapper::Reset() {
   session_ = XR_NULL_HANDLE;
   blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
   stage_bounds_ = {};
+  bounds_provider_.reset();
   system_ = XR_NULL_SYSTEM_ID;
   instance_ = XR_NULL_HANDLE;
   stage_parameters_enabled_ = false;
@@ -488,17 +491,6 @@ XrResult OpenXrApiWrapper::InitSession(
       CreateSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, &local_space_));
   RETURN_IF_XR_FAILED(CreateSpace(XR_REFERENCE_SPACE_TYPE_VIEW, &view_space_));
 
-  // It's ok if stage_space_ fails since not all OpenXR devices are required to
-  // support this reference space.
-  CreateSpace(XR_REFERENCE_SPACE_TYPE_STAGE, &stage_space_);
-  UpdateStageBounds();
-
-  if (extension_helper.ExtensionEnumeration()->ExtensionSupported(
-          XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME)) {
-    RETURN_IF_XR_FAILED(
-        CreateSpace(XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT, &unbounded_space_));
-  }
-
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_, extension_helper, session_, local_space_,
       &input_helper_));
@@ -509,6 +501,21 @@ XrResult OpenXrApiWrapper::InitSession(
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_VIEW));
   DCHECK(input_helper_);
+
+  if (stage_parameters_enabled_) {
+    bounds_provider_ = extension_helper.CreateStageBoundsProvider(session_);
+  }
+
+  // It's ok if stage_space_ fails since not all OpenXR devices are required to
+  // support this reference space.
+  CreateSpace(XR_REFERENCE_SPACE_TYPE_STAGE, &stage_space_);
+  UpdateStageBounds();
+
+  if (extension_helper.ExtensionEnumeration()->ExtensionSupported(
+          XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME)) {
+    RETURN_IF_XR_FAILED(
+        CreateSpace(XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT, &unbounded_space_));
+  }
 
   EnsureEventPolling();
 
@@ -1255,22 +1262,20 @@ bool OpenXrApiWrapper::CanEnableAntiAliasing() const {
 XrResult OpenXrApiWrapper::UpdateStageBounds() {
   DCHECK(HasSession());
 
-  XrResult xr_result = XR_SUCCESS;
-
   if (StageParametersEnabled()) {
-    xr_result = xrGetReferenceSpaceBoundsRect(
-        session_, XR_REFERENCE_SPACE_TYPE_STAGE, &stage_bounds_);
-    if (XR_FAILED(xr_result)) {
-      stage_bounds_.height = 0;
-      stage_bounds_.width = 0;
+    if (!bounds_provider_) {
+      return XR_SPACE_BOUNDS_UNAVAILABLE;
     }
+
+    stage_bounds_ = bounds_provider_->GetStageBounds();
   }
 
-  return xr_result;
+  return XR_SUCCESS;
 }
 
-bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df& stage_bounds,
-                                          gfx::Transform& local_from_stage) {
+bool OpenXrApiWrapper::GetStageParameters(
+    std::vector<gfx::Point3F>& stage_bounds,
+    gfx::Transform& local_from_stage) {
   DCHECK(HasSession());
 
   if (!HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL))

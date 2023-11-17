@@ -348,7 +348,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 }
 
 void OpenXrRenderLoop::UpdateStageParameters() {
-  XrExtent2Df stage_bounds;
+  std::vector<gfx::Point3F> stage_bounds;
   gfx::Transform local_from_stage;
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
@@ -356,8 +356,7 @@ void OpenXrRenderLoop::UpdateStageParameters() {
     // mojo_from_local is identity, as is stage_from_floor, so we can directly
     // assign local_from_stage and mojo_from_floor.
     stage_parameters->mojo_from_floor = local_from_stage;
-    stage_parameters->bounds = vr_utils::GetStageBoundsFromSize(
-        stage_bounds.width, stage_bounds.height);
+    stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {
     SetStageParameters(nullptr);

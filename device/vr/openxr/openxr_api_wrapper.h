@@ -15,6 +15,7 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -95,7 +96,7 @@ class OpenXrApiWrapper {
 
   std::vector<mojom::XRViewPtr> GetDefaultViews() const;
   XrTime GetPredictedDisplayTime() const;
-  bool GetStageParameters(XrExtent2Df& stage_bounds,
+  bool GetStageParameters(std::vector<gfx::Point3F>& stage_bounds,
                           gfx::Transform& local_from_stage);
   bool StageParametersEnabled() const;
 
@@ -191,7 +192,7 @@ class OpenXrApiWrapper {
   XrInstance instance_;
   XrSystemId system_;
   XrEnvironmentBlendMode blend_mode_;
-  XrExtent2Df stage_bounds_;
+  std::vector<gfx::Point3F> stage_bounds_;
 
   // These objects are initialized when a session begins and stay constant
   // throughout the lifetime of the session.
@@ -203,6 +204,8 @@ class OpenXrApiWrapper {
   bool stage_parameters_enabled_;
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
   raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
+
+  XrReferenceSpaceType unbounded_space_type_ = XR_REFERENCE_SPACE_TYPE_MAX_ENUM;
 
   // The swapchain is initializd when a session begins and is re-created when
   // the state of a secondary view configuration changes.
@@ -217,6 +220,7 @@ class OpenXrApiWrapper {
       secondary_view_configs_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
+  std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
 
   // The context provider is owned by the OpenXrRenderLoop, and may change when
