@@ -958,6 +958,13 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
 
+  ASSERT_EQ(2ul, images.size());
+
+  // Simulate that front-end has received the images and rendered them.
+  handler->SetResultRenderTime(
+      {images[0]->id, images[1]->id},
+      base::Time::Now().InMillisecondsFSinceUnixEpoch());
+
   // Set background to bitmap2.
   SkBitmap bitmap;
   base::Token token;
@@ -966,7 +973,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
                                          An<const SkBitmap&>()))
       .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap)));
 
-  handler->SetBackgroundToWallpaperSearchResult(images[1]->id);
+  handler->SetBackgroundToWallpaperSearchResult(
+      images[1]->id, (base::Time::Now() + base::Milliseconds(123))
+                         .InMillisecondsFSinceUnixEpoch());
 
   // Check that the 2nd bitmap was selected by comparing color, since the
   // 2 bitmaps are different colors.
@@ -991,4 +1000,5 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_EQ(222, quality.images_quality(1).image_id());
   EXPECT_TRUE(quality.images_quality(1).previewed());
   EXPECT_TRUE(quality.images_quality(1).selected());
+  EXPECT_EQ(123, quality.images_quality(1).preview_latency_ms());
 }

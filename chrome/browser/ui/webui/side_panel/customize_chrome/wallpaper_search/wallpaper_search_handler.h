@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
@@ -58,8 +61,10 @@ class WallpaperSearchHandler
       side_panel::customize_chrome::mojom::DescriptorDValuePtr
           descriptor_d_value,
       GetWallpaperSearchResultsCallback callback) override;
-  void SetBackgroundToWallpaperSearchResult(
-      const base::Token& result_id) override;
+  void SetResultRenderTime(const std::vector<base::Token>& result_ids,
+                           double time) override;
+  void SetBackgroundToWallpaperSearchResult(const base::Token& result_id,
+                                            double time) override;
 
  private:
   void OnDescriptorsRetrieved(GetDescriptorsCallback callback,
@@ -92,8 +97,9 @@ class WallpaperSearchHandler
   // destructed before the pointed to objects in `log_entries_`.
   base::flat_map<
       base::Token,
-      std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
-                SkBitmap>>
+      std::tuple<optimization_guide::proto::WallpaperSearchImageQuality*,
+                 absl::optional<base::Time>,
+                 SkBitmap>>
       wallpaper_search_results_;
   const int64_t session_id_;
 

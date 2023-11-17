@@ -13,7 +13,7 @@ import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chr
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
@@ -368,6 +368,7 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('handle result click', async () => {
+      windowProxy.setResultFor('now', 321);
       handler.setResultFor(
           'getWallpaperSearchResults',
           Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
@@ -380,15 +381,23 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
+      assertGE(handler.getCallCount('setResultRenderTime'), 1);
+      assertDeepEquals(
+          [[{high: 10, low: 1}], 321],
+          handler.getArgs('setResultRenderTime').at(-1));
+
       const result = $$(wallpaperSearchElement, '.tile.result');
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
           1, handler.getCallCount('setBackgroundToWallpaperSearchResult'));
       assertEquals(
-          10, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].high);
+          10,
+          handler.getArgs('setBackgroundToWallpaperSearchResult')[0][0].high);
       assertEquals(
-          1, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].low);
+          1, handler.getArgs('setBackgroundToWallpaperSearchResult')[0][0].low);
+      assertEquals(
+          321, handler.getArgs('setBackgroundToWallpaperSearchResult')[0][1]);
     });
 
     test('results reset between search results', async () => {

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
+#include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/browser_features.h"
@@ -36,6 +39,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "skia/ext/image_operations.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -93,7 +97,8 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
     quality->set_final_request_in_session(true);
     if (backround_id.has_value() &&
         base::Contains(wallpaper_search_results_, *backround_id)) {
-      auto* image_quality = wallpaper_search_results_[*backround_id].first;
+      auto* image_quality =
+          std::get<0>(wallpaper_search_results_[*backround_id]);
       if (image_quality) {
         image_quality->set_selected(true);
       }
@@ -205,11 +210,18 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
 }
 
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
-    const base::Token& result_id) {
+    const base::Token& result_id,
+    double time) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
-  auto& [image_quality, bitmap] = wallpaper_search_results_[result_id];
+  auto& [image_quality, render_time, bitmap] =
+      wallpaper_search_results_[result_id];
   if (image_quality) {
     image_quality->set_previewed(true);
+    if (render_time.has_value()) {
+      image_quality->set_preview_latency_ms(
+          (base::Time::FromMillisecondsSinceUnixEpoch(time) - *render_time)
+              .InMilliseconds());
+    }
   }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(result_id,
                                                                    bitmap);
@@ -390,6 +402,17 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
   }
 }
 
+void WallpaperSearchHandler::SetResultRenderTime(
+    const std::vector<base::Token>& result_ids,
+    double time) {
+  for (const auto& id : result_ids) {
+    CHECK(base::Contains(wallpaper_search_results_, id));
+    auto& tuple = wallpaper_search_results_[id];
+    std::get<1>(tuple) =
+        absl::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
+  }
+}
+
 // Save the full sized bitmaps and create a much smaller image version of each
 // for sending back to the UI through the callback. Re-encode the bitmap and
 // make it base64 for easy reading by the UI.
@@ -416,7 +439,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
           side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
       auto id = base::Token::CreateRandom();
       wallpaper_search_results_[id] =
-          std::make_pair(image_quality, std::move(bitmap));
+          std::make_tuple(image_quality, absl::nullopt, std::move(bitmap));
       thumbnail->image = base::Base64Encode(encoded);
       thumbnail->id = std::move(id);
       thumbnails.push_back(std::move(thumbnail));

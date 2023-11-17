@@ -358,9 +358,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         {length: results.length > 0 ? 6 - results.length : 0}, () => 0);
   }
 
+  private onResultsRender_() {
+    this.wallpaperSearchHandler_.setResultRenderTime(
+        this.results_.map(r => r.id), WindowProxy.getInstance().now());
+  }
+
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
-        e.model.item.id);
+        e.model.item.id, WindowProxy.getInstance().now());
   }
 
   private shouldShowGrid_(): boolean {
