@@ -35,6 +35,8 @@ type BidiServerEvent = {
   message: ChromiumBidi.Command;
 };
 
+export type MapperOptions = {acceptInsecureCerts: boolean};
+
 export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingMessage>;
   #transport: IBidiTransport;
@@ -63,6 +65,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: ICdpConnection,
     browserCdpClient: ICdpClient,
     selfTargetId: string,
+    options?: MapperOptions,
     parser?: IBidiParser,
     logger?: LoggerFn
   ) {
@@ -81,6 +84,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       selfTargetId,
       this.#browsingContextStorage,
       new RealmStorage(),
+      options?.acceptInsecureCerts ?? false,
       parser,
       this.#logger
     );
@@ -92,11 +96,15 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
   }
 
+  /**
+   * Creates and starts BiDi Mapper instance.
+   */
   static async createAndStart(
     bidiTransport: IBidiTransport,
     cdpConnection: ICdpConnection,
     browserCdpClient: ICdpClient,
     selfTargetId: string,
+    options?: MapperOptions,
     parser?: IBidiParser,
     logger?: LoggerFn
   ): Promise<BidiServer> {
@@ -105,6 +113,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       cdpConnection,
       browserCdpClient,
       selfTargetId,
+      options,
       parser,
       logger
     );

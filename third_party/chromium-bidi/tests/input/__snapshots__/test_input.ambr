@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_input_performActionsCancelsDragging
+# name: test_input_performActionsCancelsDragging[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -369,7 +369,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsDoesNotCancelDraggingWithAlt
+# name: test_input_performActionsDoesNotCancelDraggingWithAlt[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -659,7 +659,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsClickCountsByButton
+# name: test_input_performActionsEmitsClickCountsByButton[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -951,7 +951,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsDragging
+# name: test_input_performActionsEmitsDragging[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -1321,7 +1321,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsKeyboardEvents
+# name: test_input_performActionsEmitsKeyboardEvents[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -1451,7 +1451,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsPointerEvents
+# name: test_input_performActionsEmitsPointerEvents[websocket0]
   dict({
     'result': dict({
       'type': 'array',
@@ -1602,7 +1602,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsWheelEvents
+# name: test_input_performActionsEmitsWheelEvents[websocket0]
   dict({
     'result': dict({
       'type': 'array',

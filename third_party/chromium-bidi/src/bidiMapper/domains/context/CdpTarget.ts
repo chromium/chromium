@@ -39,6 +39,7 @@ export class CdpTarget {
   readonly #networkStorage: NetworkStorage;
 
   readonly #targetUnblocked = new Deferred<Result<void>>();
+  readonly #acceptInsecureCerts: boolean;
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -48,7 +49,8 @@ export class CdpTarget {
     realmStorage: RealmStorage,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    networkStorage: NetworkStorage
+    networkStorage: NetworkStorage,
+    acceptInsecureCerts: boolean
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -57,7 +59,8 @@ export class CdpTarget {
       cdpSessionId,
       eventManager,
       preloadScriptStorage,
-      networkStorage
+      networkStorage,
+      acceptInsecureCerts
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -79,7 +82,8 @@ export class CdpTarget {
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    networkStorage: NetworkStorage
+    networkStorage: NetworkStorage,
+    acceptInsecureCerts: boolean
   ) {
     this.#targetId = targetId;
     this.#cdpClient = cdpClient;
@@ -88,6 +92,7 @@ export class CdpTarget {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browserCdpClient = browserCdpClient;
+    this.#acceptInsecureCerts = acceptInsecureCerts;
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -135,6 +140,10 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Page.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
+        }),
+        // Set ignore certificate errors for each target.
+        this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+          ignore: this.#acceptInsecureCerts,
         }),
         // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.

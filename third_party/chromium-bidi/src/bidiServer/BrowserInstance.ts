@@ -31,6 +31,7 @@ import {
 import debug from 'debug';
 import WebSocket from 'ws';
 
+import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
@@ -39,6 +40,13 @@ import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
+
+type ChromeOptions = {
+  chromeArgs: string[];
+  chromeBinary?: string;
+  channel: ChromeReleaseChannel;
+  headless: boolean;
+};
 
 /**
  * BrowserProcess is responsible for running the browser and BiDi Mapper within
@@ -54,17 +62,18 @@ export class BrowserInstance {
   #browserProcess: Process;
 
   static async run(
-    channel: ChromeReleaseChannel,
-    headless: boolean,
-    verbose: boolean,
-    chromeArgs?: string[]
+    chromeOptions: ChromeOptions,
+    mapperOptions: MapperOptions,
+    verbose: boolean
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
       path.join(os.tmpdir(), 'web-driver-bidi-server-')
     );
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
-      ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
+      ...(chromeOptions.headless
+        ? ['--headless', '--hide-scrollbars', '--mute-audio']
+        : []),
       // keep-sorted start
       '--allow-browser-signin=false',
       '--disable-component-update',
@@ -81,17 +90,18 @@ export class BrowserInstance {
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
-      ...(chromeArgs
-        ? chromeArgs.filter((arg) => !arg.startsWith('--headless'))
-        : []),
+      ...chromeOptions.chromeArgs.filter(
+        (arg) => !arg.startsWith('--headless')
+      ),
       'about:blank',
     ];
 
     const executablePath =
+      chromeOptions.chromeBinary ??
       process.env['BROWSER_BIN'] ??
       computeSystemExecutablePath({
         browser: Browser.CHROME,
-        channel,
+        channel: chromeOptions.channel,
       });
 
     if (!executablePath) {
@@ -120,7 +130,8 @@ export class BrowserInstance {
     const mapperCdpConnection = await MapperCdpConnection.create(
       cdpConnection,
       mapperTabSource,
-      verbose
+      verbose,
+      mapperOptions
     );
 
     return new BrowserInstance(mapperCdpConnection, browserProcess);

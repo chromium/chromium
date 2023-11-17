@@ -76,6 +76,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    acceptInsecureCerts: boolean,
     parser: IBidiParser = new BidiNoOpParser(),
     logger?: LoggerFn
   ) {
@@ -97,6 +98,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       realmStorage,
       networkStorage,
       preloadScriptStorage,
+      acceptInsecureCerts,
       logger
     );
     this.#cdpProcessor = new CdpProcessor(

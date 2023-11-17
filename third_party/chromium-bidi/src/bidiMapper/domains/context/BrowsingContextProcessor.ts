@@ -42,6 +42,7 @@ export class BrowsingContextProcessor {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #acceptInsecureCerts: boolean;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -56,8 +57,10 @@ export class BrowsingContextProcessor {
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
     preloadScriptStorage: PreloadScriptStorage,
+    acceptInsecureCerts: boolean,
     logger?: LoggerFn
   ) {
+    this.#acceptInsecureCerts = acceptInsecureCerts;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
     this.#selfTargetId = selfTargetId;
@@ -367,7 +370,8 @@ export class BrowsingContextProcessor {
       this.#realmStorage,
       this.#eventManager,
       this.#preloadScriptStorage,
-      this.#networkStorage
+      this.#networkStorage,
+      this.#acceptInsecureCerts
     );
 
     if (maybeContext) {

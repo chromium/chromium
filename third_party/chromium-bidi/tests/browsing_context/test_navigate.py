@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -418,3 +419,42 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': close_command_id,
         'type': 'success',
     })
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigateBadSsl_notNavigated(
+        websocket, context_id, bad_ssl_url):
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'unknown error',
+                           'message': 'net::ERR_CERT_AUTHORITY_INVALID'
+                       })):
+        await execute_command(
+            websocket, {
+                'method': "browsingContext.navigate",
+                'params': {
+                    'url': bad_ssl_url,
+                    'wait': 'complete',
+                    'context': context_id
+                }
+            })
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('websocket', [{
+    'capabilities': {
+        'acceptInsecureCerts': True
+    }
+}],
+                         indirect=['websocket'])
+async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
+        websocket, context_id, bad_ssl_url):
+    await execute_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': bad_ssl_url,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
