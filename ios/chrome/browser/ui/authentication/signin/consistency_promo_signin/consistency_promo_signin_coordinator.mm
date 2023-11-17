@@ -484,6 +484,11 @@
                          }];
 }
 
+- (void)consistencyPromoSigninMediatorSignInCancelled:
+    (ConsistencyPromoSigninMediator*)mediator {
+  [self.defaultAccountCoordinator stopSigninSpinner];
+}
+
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
                             (ConsistencyPromoSigninMediatorError)error {
@@ -491,7 +496,6 @@
   NSString* errorMessage = nil;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorGeneric:
-    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
       errorMessage =
           l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
       break;

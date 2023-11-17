@@ -738,7 +738,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction.SuppressedAlreadySignedIn";
       break;
-    case AccountConsistencyPromoAction::SIGN_IN_FAILED:
+    case AccountConsistencyPromoAction::IOS_AUTH_FLOW_CANCELLED_OR_FAILED:
       histogram = "Signin.AccountConsistencyPromoAction.SignInFailed";
       break;
     case AccountConsistencyPromoAction::

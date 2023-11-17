@@ -427,11 +427,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
   // that's async (note: the user never really signed-in in this case, but the
   // call is made nonetheless).
   __block auto error_wait_loop = std::make_unique<base::RunLoop>();
-  OCMExpect(
-      [mediator_delegate_mock_
-          consistencyPromoSigninMediator:mediator
-                          errorDidHappen:
-                              ConsistencyPromoSigninMediatorErrorFailedToSignin])
+  OCMExpect([mediator_delegate_mock_
+                consistencyPromoSigninMediatorSignInCancelled:mediator])
       .andDo(^(NSInvocation*) {
         error_wait_loop->Quit();
       });
