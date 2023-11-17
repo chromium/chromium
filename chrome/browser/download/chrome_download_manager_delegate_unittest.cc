@@ -267,7 +267,7 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
 
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
 
-  raw_ptr<ChromeDownloadManagerDelegate> delegate_;
+  raw_ptr<ChromeDownloadManagerDelegate> delegate_ = nullptr;
 };
 
 TestDownloadCoreService::TestDownloadCoreService(Profile* profile)
@@ -341,8 +341,7 @@ class ChromeDownloadManagerDelegateTest
 
  private:
   base::FilePath test_download_dir_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
-      pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
   std::unique_ptr<content::MockDownloadManager> download_manager_;
   std::unique_ptr<TestChromeDownloadManagerDelegate> delegate_;
   MockWebContentsDelegate web_contents_delegate_;
@@ -386,6 +385,7 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
 
 void ChromeDownloadManagerDelegateTest::TearDown() {
   base::RunLoop().RunUntilIdle();
+  pref_service_ = nullptr;
   delegate_->Shutdown();
   ChromeRenderViewHostTestHarness::TearDown();
 }
@@ -2293,7 +2293,7 @@ class AndroidDownloadInfobarCounter
     infobar->RemoveSelf();
   }
 
-  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_;
+  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_ = nullptr;
   int infobar_count_ = 0;
 };
 
