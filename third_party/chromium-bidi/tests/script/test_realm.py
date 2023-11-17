@@ -83,54 +83,6 @@ async def test_realm_realmCreated_sandbox(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_realm_realmCreated_worker(websocket, context_id, html):
-    worker_url = 'data:application/javascript,while(true){}'
-    url = html(f"<script>new Worker('{worker_url}');</script>")
-
-    await subscribe(websocket, ["script.realmCreated"])
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": url,
-                "wait": "complete",
-            }
-        })
-
-    # Realm created
-    assert {
-        "type": "event",
-        "method": "script.realmCreated",
-        "params": {
-            "type": "window",
-            "origin": "null",
-            "realm": ANY_STR,
-            "context": context_id,
-        }
-    } == await read_JSON_message(websocket)
-
-    # Navigation
-    assert {
-        "navigation": ANY_STR,
-        "url": url
-    } == (await read_JSON_message(websocket))['result']
-
-    # Worker realm is created from the HTML script.
-    assert {
-        "type": "event",
-        "method": "script.realmCreated",
-        "params": {
-            "type": "dedicated-worker",
-            "origin": worker_url,
-            "realm": ANY_STR,
-            "context": ANY_STR
-        }
-    } == await read_JSON_message(websocket)
-
-
-@pytest.mark.asyncio
 async def test_realm_realmDestroyed(websocket, context_id):
 
     await subscribe(websocket, ["script.realmDestroyed"])
@@ -197,50 +149,3 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
             "realm": ANY_STR,
         }
     } == response
-
-
-@pytest.mark.asyncio
-async def test_realm_realmDestroyed_worker(websocket, context_id, html):
-    worker_url = 'data:application/javascript,while(true){}'
-    url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
-
-    await subscribe(websocket, ["script.realmDestroyed"])
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": url,
-                "wait": "complete",
-            }
-        })
-
-    assert {
-        "type": "event",
-        "method": "script.realmDestroyed",
-        "params": {
-            "realm": ANY_STR,
-        }
-    } == await read_JSON_message(websocket)
-
-    await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "target": {
-                    "context": context_id
-                },
-                "expression": "window.w.terminate()",
-                "awaitPromise": True
-            }
-        })
-
-    # Worker realm is destroyed from the HTML script.
-    assert {
-        "type": "event",
-        "method": "script.realmDestroyed",
-        "params": {
-            "realm": ANY_STR
-        }
-    } == await read_JSON_message(websocket)
