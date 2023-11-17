@@ -110,7 +110,7 @@ net::CanonicalCookie GetTestCookie(const GURL& url, const std::string& name) {
           /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
           /*secure=*/true, /*http_only=*/false,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          /*same_party=*/false, /*partition_key=*/absl::nullopt);
+          /*partition_key=*/absl::nullopt);
   return *cookie;
 }
 

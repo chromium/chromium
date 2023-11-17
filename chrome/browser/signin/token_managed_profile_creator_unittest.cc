@@ -48,7 +48,7 @@ void CreateCookies(
             url, name, "A=" + name, url.host(), url.path(), base::Time::Now(),
             base::Time::Max(), base::Time::Now(), url.SchemeIsCryptographic(),
             false, net::CookieSameSite::NO_RESTRICTION,
-            net::COOKIE_PRIORITY_DEFAULT, false, absl::nullopt);
+            net::COOKIE_PRIORITY_DEFAULT, absl::nullopt);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(

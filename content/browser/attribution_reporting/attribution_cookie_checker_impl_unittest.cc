@@ -56,7 +56,6 @@ class AttributionCookieCheckerImplTest : public testing::Test {
         /*httponly=*/params.httponly,
         /*same_site=*/params.same_site,
         /*priority=*/net::COOKIE_PRIORITY_DEFAULT,
-        /*same_party=*/false,
         /*partition_key=*/params.partition_key);
     CHECK(cookie);
 

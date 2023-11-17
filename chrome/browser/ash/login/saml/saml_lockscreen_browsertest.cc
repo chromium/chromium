@@ -1036,7 +1036,7 @@ class SAMLCookieTransferTest : public LockscreenWebUiTest {
                 /*expiration_time=*/base::Time(),
                 /*last_access_time=*/base::Time(), /*secure=*/true,
                 /*http_only=*/false, net::CookieSameSite::NO_RESTRICTION,
-                net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+                net::COOKIE_PRIORITY_DEFAULT,
                 /*partition_key=*/absl::nullopt),
             fake_saml_idp()->GetSamlPageUrl(), options, base::DoNothing());
     ExpectCookieInUserProfile(kRandomCookieName, kRandomCookieValue);

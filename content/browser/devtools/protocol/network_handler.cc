@@ -348,7 +348,6 @@ MakeCookieFromProtocolValues(const std::string& name,
                              const std::string& same_site,
                              double expires,
                              const std::string& priority,
-                             bool same_party,
                              const Maybe<std::string>& source_scheme,
                              const Maybe<int>& source_port,
                              const Maybe<std::string>& partition_key) {
@@ -423,7 +422,7 @@ MakeCookieFromProtocolValues(const std::string& name,
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
-          expiration_date, base::Time(), secure, http_only, css, cp, same_party,
+          expiration_date, base::Time(), secure, http_only, css, cp,
           deserialized_partition_key);
 
   if (!cookie)
@@ -1560,8 +1559,8 @@ void NetworkHandler::SetCookie(const std::string& name,
   auto cookie_or_error = MakeCookieFromProtocolValues(
       name, value, url.value_or(""), domain.value_or(""), path.value_or(""),
       secure.value_or(false), http_only.value_or(false), same_site.value_or(""),
-      expires.value_or(-1), priority.value_or(""), same_party.value_or(false),
-      source_scheme, source_port, partition_key);
+      expires.value_or(-1), priority.value_or(""), source_scheme, source_port,
+      partition_key);
 
   if (absl::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
@@ -1609,8 +1608,8 @@ void NetworkHandler::SetCookies(
         cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
         cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
-        cookie->GetExpires(-1), cookie->GetPriority(""),
-        cookie->GetSameParty(false), source_scheme, source_port, partition_key);
+        cookie->GetExpires(-1), cookie->GetPriority(""), source_scheme,
+        source_port, partition_key);
     if (absl::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).

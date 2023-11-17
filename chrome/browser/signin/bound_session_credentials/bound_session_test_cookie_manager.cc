@@ -24,7 +24,7 @@ net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
       /*last_access_time=*/base::Time::Now(), /*secure=*/true,
       /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
       net::CookiePriority::COOKIE_PRIORITY_HIGH,
-      /*same_party=*/true, /*partition_key=*/absl::nullopt);
+      /*partition_key=*/absl::nullopt);
 }
 
 void BoundSessionTestCookieManager::SetCanonicalCookie(

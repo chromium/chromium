@@ -134,7 +134,7 @@ FakeBoundSessionRefreshCookieFetcher::CreateFakeCookie(
           /*last_access_time=*/now, /*secure=*/true,
           /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
-          /*same_party=*/true, /*partition_key=*/absl::nullopt);
+          /*partition_key=*/absl::nullopt);
 
   DCHECK(new_cookie);
   return new_cookie;

@@ -86,7 +86,6 @@ class NET_EXPORT CanonicalCookie {
                   bool httponly,
                   CookieSameSite same_site,
                   CookiePriority priority,
-                  bool same_party,
                   absl::optional<CookiePartitionKey> partition_key,
                   CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
                   int source_port = url::PORT_UNSPECIFIED);
@@ -147,7 +146,6 @@ class NET_EXPORT CanonicalCookie {
       bool http_only,
       CookieSameSite same_site,
       CookiePriority priority,
-      bool same_party,
       absl::optional<CookiePartitionKey> partition_key,
       CookieInclusionStatus* status = nullptr);
 
@@ -171,7 +169,6 @@ class NET_EXPORT CanonicalCookie {
       bool httponly,
       CookieSameSite same_site,
       CookiePriority priority,
-      bool same_party,
       absl::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port);
@@ -191,7 +188,6 @@ class NET_EXPORT CanonicalCookie {
       bool httponly,
       CookieSameSite same_site,
       CookiePriority priority,
-      bool same_party,
       absl::optional<CookiePartitionKey> partition_key = absl::nullopt,
       CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
       int source_port = url::PORT_UNSPECIFIED);

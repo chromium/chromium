@@ -115,7 +115,7 @@ ConsistencyCookieManager::CreateConsistencyCookie(const std::string& value) {
       /*path=*/"/", /*creation=*/now, /*expiration=*/expiry,
       /*last_access=*/now, /*secure=*/true, /*httponly=*/false,
       net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-      /*same_party=*/false, /*partition_key=*/absl::nullopt);
+      /*partition_key=*/absl::nullopt);
 }
 
 // static

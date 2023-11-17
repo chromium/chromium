@@ -104,7 +104,6 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     const std::string* priority = cookie_dict.FindString("priority");
     std::optional<double> expiration_delta = cookie_dict.FindDouble("maxAge");
     const std::string* same_site = cookie_dict.FindString("sameSite");
-    const std::string* same_party = cookie_dict.FindString("sameParty");
 
     base::Time now = base::Time::Now();
     // TODO(crbug.com/1264458) If CreateSanitizedCookie were used below, this
@@ -129,7 +128,6 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
-    bool same_party_bool = same_party && (*same_party == "1");
     // TODO(crbug.com/1155648) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
@@ -138,8 +136,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
             /*last_access=*/now, /*last_update=*/now, is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
-            same_party_bool, /*partition_key=*/std::nullopt,
-            net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
+            /*partition_key=*/std::nullopt, net::CookieSourceScheme::kUnset,
+            url::PORT_UNSPECIFIED);
     // If the unique_ptr is null, it means the cookie was not canonical.
     // FromStorage() also uses a less strict version of IsCanonical(), we need
     // to check the stricter version as well here.
