@@ -41,7 +41,6 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(
               shelf,
-              /*model=*/nullptr,
               /*notification_center_tray=*/this)) {
   SetCallback(base::BindRepeating(&NotificationCenterTray::OnTrayButtonPressed,
                                   base::Unretained(this)));

@@ -50,33 +50,6 @@ class UnifiedSystemTrayModel::DBusObserver
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
 };
 
-class UnifiedSystemTrayModel::SizeObserver : public display::DisplayObserver,
-                                             public ShellObserver {
- public:
-  explicit SizeObserver(UnifiedSystemTrayModel* owner);
-  ~SizeObserver() override;
-  SizeObserver(const SizeObserver&) = delete;
-  SizeObserver& operator=(const SizeObserver&) = delete;
-
- private:
-  // display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
-
-  // ShellObserver:
-  void OnShelfAlignmentChanged(aura::Window* root_window,
-                               ShelfAlignment old_alignment) override;
-
-  void Update();
-
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> owner_;
-
-  display::ScopedDisplayObserver display_observer_{this};
-
-  // Keep track of current system tray size.
-  UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size_;
-};
-
 UnifiedSystemTrayModel::DBusObserver::DBusObserver(
     UnifiedSystemTrayModel* owner)
     : owner_(owner) {
@@ -110,45 +83,8 @@ void UnifiedSystemTrayModel::DBusObserver::KeyboardBrightnessChanged(
   owner_->KeyboardBrightnessChanged(change.percent() / 100., change.cause());
 }
 
-UnifiedSystemTrayModel::SizeObserver::SizeObserver(
-    UnifiedSystemTrayModel* owner)
-    : owner_(owner) {
-  Shell::Get()->AddShellObserver(this);
-  system_tray_size_ = owner_->GetSystemTrayButtonSize();
-}
-
-UnifiedSystemTrayModel::SizeObserver::~SizeObserver() {
-  Shell::Get()->RemoveShellObserver(this);
-}
-
-void UnifiedSystemTrayModel::SizeObserver::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
-  if (owner_->GetDisplay().id() != display.id())
-    return;
-  Update();
-}
-
-void UnifiedSystemTrayModel::SizeObserver::OnShelfAlignmentChanged(
-    aura::Window* root_window,
-    ShelfAlignment old_alignment) {
-  Update();
-}
-
-void UnifiedSystemTrayModel::SizeObserver::Update() {
-  UnifiedSystemTrayModel::SystemTrayButtonSize new_size =
-      owner_->GetSystemTrayButtonSize();
-  if (system_tray_size_ == new_size)
-    return;
-
-  system_tray_size_ = new_size;
-  owner_->SystemTrayButtonSizeChanged(system_tray_size_);
-}
-
 UnifiedSystemTrayModel::UnifiedSystemTrayModel(Shelf* shelf)
-    : shelf_(shelf),
-      dbus_observer_(std::make_unique<DBusObserver>(this)),
-      size_observer_(std::make_unique<SizeObserver>(this)) {
+    : shelf_(shelf), dbus_observer_(std::make_unique<DBusObserver>(this)) {
   // |shelf_| might be null in unit tests.
   pagination_model_ = std::make_unique<PaginationModel>(
       shelf_ ? shelf_->GetStatusAreaWidget()->GetRootView() : nullptr);
@@ -224,12 +160,6 @@ void UnifiedSystemTrayModel::KeyboardBrightnessChanged(
   keyboard_brightness_ = brightness;
   for (auto& observer : observers_)
     observer.OnKeyboardBrightnessChanged(cause);
-}
-
-void UnifiedSystemTrayModel::SystemTrayButtonSizeChanged(
-    SystemTrayButtonSize system_tray_size) {
-  for (auto& observer : observers_)
-    observer.OnSystemTrayButtonSizeChanged(system_tray_size);
 }
 
 const display::Display UnifiedSystemTrayModel::GetDisplay() const {

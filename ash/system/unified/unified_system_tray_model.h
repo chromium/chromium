@@ -59,8 +59,6 @@ class ASH_EXPORT UnifiedSystemTrayModel
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
     virtual void OnKeyboardBrightnessChanged(
         power_manager::BacklightBrightnessChange_Cause cause) {}
-    virtual void OnSystemTrayButtonSizeChanged(
-        SystemTrayButtonSize system_tray_size) {}
   };
 
   explicit UnifiedSystemTrayModel(Shelf* shelf);
@@ -118,9 +116,6 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
   class DBusObserver;
 
-  // Keeps track all the sources that can change the size of system tray button.
-  class SizeObserver;
-
   // Private destructor to prevent subverting reference counting.
   // TODO(crbug/1269517): The use of this class should be refactored so that
   // reference counting is not required. Likely, Message Center and Quick
@@ -158,8 +153,6 @@ class ASH_EXPORT UnifiedSystemTrayModel
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   std::unique_ptr<DBusObserver> dbus_observer_;
-
-  std::unique_ptr<SizeObserver> size_observer_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
