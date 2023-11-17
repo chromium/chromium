@@ -90,14 +90,15 @@ base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
                          bitmap.computeByteSize());
 }
 
-void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
-                       gpu::Mailbox mailbox,
-                       const gpu::SyncToken& sync_token,
-                       bool is_lost) {
+void DeleteSharedImage(
+    scoped_refptr<RasterContextProvider> context_provider,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -508,19 +509,18 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
     gpu::SharedImageInterface* sii =
         child_context_provider_->SharedImageInterface();
     DCHECK(sii);
-    gpu::Mailbox mailbox =
-        sii->CreateSharedImage(format, size, gfx::ColorSpace(),
-                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                               "TestPixels", pixels)
-            ->mailbox();
+    auto client_shared_image = sii->CreateSharedImage(
+        format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestPixels",
+        pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
     TransferableResource gl_resource = TransferableResource::MakeGpu(
-        mailbox, GL_TEXTURE_2D, sync_token, size, format,
+        client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
         /*is_overlay_candidate=*/false);
     auto release_callback =
-        base::BindOnce(&DeleteSharedImage, child_context_provider_, mailbox);
+        base::BindOnce(&DeleteSharedImage, child_context_provider_,
+                       std::move(client_shared_image));
     return child_resource_provider_->ImportResource(
         gl_resource, std::move(release_callback));
   }
