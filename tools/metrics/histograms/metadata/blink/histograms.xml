@@ -2435,20 +2435,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImageDecoders.IncrementalDecodeNeeded"
-    enum="IncrementalDecodeNeeded" expires_after="2022-09-15">
-  <owner>andrescj@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    For JPEG and WebP images, whether all image data has been received before
-    decoding begins or whether we are still receiving data and will need to send
-    partial image data to the decoder and pause/resume decoding until complete.
-
-    It is emitted when the DeferredImageDecoder is about to create the first
-    DecodingImageGenerator for an image.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

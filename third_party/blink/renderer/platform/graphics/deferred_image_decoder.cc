@@ -31,7 +31,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -49,39 +48,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
-
-namespace {
-
-// Do not rename entries or reuse numeric values to ensure the histogram is
-// consistent over time.
-enum class IncrementalDecodePerImageType {
-  kJpegIncrementalNeeded = 0,
-  kJpegAllDataReceivedInitially = 1,
-  kWebPIncrementalNeeded = 2,
-  kWebPAllDataReceivedInitially = 3,
-  kMaxValue = kWebPAllDataReceivedInitially,
-};
-
-void ReportIncrementalDecodeNeeded(bool all_data_received,
-                                   const String& image_type) {
-  DCHECK(IsMainThread());
-  absl::optional<IncrementalDecodePerImageType> status;
-  if (image_type == "jpg") {
-    status = all_data_received
-                 ? IncrementalDecodePerImageType::kJpegAllDataReceivedInitially
-                 : IncrementalDecodePerImageType::kJpegIncrementalNeeded;
-  } else if (image_type == "webp") {
-    status = all_data_received
-                 ? IncrementalDecodePerImageType::kWebPAllDataReceivedInitially
-                 : IncrementalDecodePerImageType::kWebPIncrementalNeeded;
-  }
-  if (status) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.ImageDecoders.IncrementalDecodeNeeded",
-                              *status);
-  }
-}
-
-}  // namespace
 
 struct DeferredFrameData {
   DISALLOW_NEW();
@@ -176,14 +142,9 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
     frames[i].duration = FrameDurationAtIndex(i);
   }
 
-  // Report UMA about whether incremental decoding is done for JPEG/WebP images.
-  const String image_type = FilenameExtension();
   if (!first_decoding_generator_created_) {
     DCHECK(!incremental_decode_needed_.has_value());
     incremental_decode_needed_ = !all_data_received_;
-    if (image_type == "jpg" || image_type == "webp") {
-      ReportIncrementalDecodeNeeded(all_data_received_, image_type);
-    }
   }
   DCHECK(incremental_decode_needed_.has_value());
 

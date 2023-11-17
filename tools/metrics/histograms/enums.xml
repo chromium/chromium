@@ -29465,13 +29465,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Download message not shown due to null message dispatcher"/>
 </enum>
 
-<enum name="IncrementalDecodeNeeded">
-  <int value="0" label="JPEGIncrementalDecodeNeeded"/>
-  <int value="1" label="JPEGAllDataReceivedInitially"/>
-  <int value="2" label="WebPIncrementalDecodeNeeded"/>
-  <int value="3" label="WebPAllDataReceivedInitially"/>
-</enum>
-
 <enum name="InDeveloperMode">
   <summary>A boolean for whether the user is in the developer mode.</summary>
   <int value="0" label="User is not in the developer mode"/>
