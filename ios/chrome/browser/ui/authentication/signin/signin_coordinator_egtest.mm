@@ -240,7 +240,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector(MAYBE_testSwipeDownInAdvancedSettings)] ||
       [self isRunningTest:@selector
             (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
-      [self isRunningTest:@selector(testAddAccountAutomatically)] ||
       [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
       [self
           isRunningTest:@selector
@@ -262,6 +261,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
+      [self isRunningTest:@selector(testOpeningAddAccountView)] ||
       [self isRunningTest:@selector(testSwitchToSupervisedUser)] ||
       [self isRunningTest:@selector(testSigninDisabledByPolicy)] ||
       [self isRunningTest:@selector(testSignInFromNTPAndDeclineHistorySync)] ||
@@ -826,22 +826,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
-// Tests the "ADD ACCOUNT" button in the identity chooser view controller.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
-- (void)testAddAccountAutomatically {
+// Tests that the "add account" view can be opened from settings.
+- (void)testOpeningAddAccountView {
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
   [ChromeEarlGreyUI waitForAppToIdle];
-  // Tap on "ADD ACCOUNT".
-  [SigninEarlGreyUI tapAddAccountButton];
 
   [self assertFakeSSOScreenIsVisible];
-  // Close sign-in screen and Settings.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
-      performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
