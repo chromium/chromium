@@ -33,19 +33,23 @@ config("compiler") {
     "ANDROID_NDK_VERSION_ROLL=${android_ndk_version}_1",
   ]
 
+  if (android_64bit_current_cpu) {
+    _max_page_size = 16384
+  } else {
+    _max_page_size = 4096
+  }
+
   ldflags = [
     # Don't allow visible symbols from libraries that contain
     # assembly code with symbols that aren't hidden properly.
     # http://crbug.com/448386
     "-Wl,--exclude-libs=libvpx_assembly_arm.a",
-  ]
 
-  if (current_cpu == "arm64") {
     # Reduce the page size from 65536 in order to reduce binary size slightly
     # by shrinking the alignment gap between segments. This also causes all
     # segments to be mapped adjacently, which breakpad relies on.
-    ldflags += [ "-Wl,-z,max-page-size=4096" ]
-  }
+    "-Wl,-z,max-page-size=$_max_page_size",
+  ]
 
   if (current_cpu == "arm64") {
     if (arm_control_flow_integrity == "standard") {
