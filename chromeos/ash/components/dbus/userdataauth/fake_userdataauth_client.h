@@ -219,8 +219,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                UnmountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
-  void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
-                CheckKeyCallback callback) override;
   void StartMigrateToDircrypto(
       const ::user_data_auth::StartMigrateToDircryptoRequest& request,
       StartMigrateToDircryptoCallback callback) override;
@@ -288,12 +286,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void GetArcDiskFeatures(
       const ::user_data_auth::GetArcDiskFeaturesRequest& request,
       GetArcDiskFeaturesCallback callback) override;
-
-  // Returns the `unlock_webauthn_secret` parameter passed in the last
-  // CheckKeyEx call (either successful or not).
-  bool get_last_unlock_webauthn_secret() {
-    return last_unlock_webauthn_secret_;
-  }
 
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;
@@ -420,9 +412,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   ::cryptohome::ErrorWrapper TakeOperationError(Operation operation);
 
   int prepare_guest_request_count_ = 0;
-
-  // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
-  bool last_unlock_webauthn_secret_;
 
   // The error that would be triggered once operation is called.
   base::flat_map<Operation, ::cryptohome::ErrorWrapper> operation_errors_;

@@ -42,11 +42,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                RemoveCallback callback),
               (override));
   MOCK_METHOD(void,
-              CheckKey,
-              (const ::user_data_auth::CheckKeyRequest& request,
-               CheckKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
               StartMigrateToDircrypto,
               (const ::user_data_auth::StartMigrateToDircryptoRequest& request,
                StartMigrateToDircryptoCallback callback),

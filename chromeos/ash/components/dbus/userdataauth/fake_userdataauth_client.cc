@@ -716,34 +716,6 @@ void FakeUserDataAuthClient::Remove(
   }
 }
 
-void FakeUserDataAuthClient::CheckKey(
-    const ::user_data_auth::CheckKeyRequest& request,
-    CheckKeyCallback callback) {
-  ::user_data_auth::CheckKeyReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-
-  last_unlock_webauthn_secret_ = request.unlock_webauthn_secret();
-
-  const cryptohome::Key& key = request.authorization_request().key();
-  switch (AuthenticateViaAuthFactors(
-      request.account_id(), /*factor_label=*/key.data().label(),
-      /*secret=*/key.secret(), /*wildcard_allowed=*/true)) {
-    case AuthResult::kAuthSuccess:
-      // Empty reply denotes a successful check.
-      break;
-    case AuthResult::kUserNotFound:
-      reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
-      break;
-    case AuthResult::kFactorNotFound:
-      reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
-      break;
-    case AuthResult::kAuthFailed:
-      reply.set_error(
-          ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-      break;
-  }
-}
-
 void FakeUserDataAuthClient::StartMigrateToDircrypto(
     const ::user_data_auth::StartMigrateToDircryptoRequest& request,
     StartMigrateToDircryptoCallback callback) {
@@ -1226,8 +1198,6 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
     reply.set_error(error);
     return;
   }
-
-  last_unlock_webauthn_secret_ = false;
 
   const auto session_it = auth_sessions_.find(request.auth_session_id());
   if (session_it == auth_sessions_.end()) {

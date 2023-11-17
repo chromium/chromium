@@ -172,12 +172,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void Remove(const ::user_data_auth::RemoveRequest& request,
                       RemoveCallback callback) = 0;
 
-  // This API is still used by old WebAuthN path.
-  // TODO(b/260715686): Remove as part of UseAuthsessionForWebAuthN cleanup.
-  // Try authenticating with key in user's vault.
-  virtual void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
-                        CheckKeyCallback callback) = 0;
-
   // Instructs cryptohome to migrate the vault from eCryptfs to Dircrypto.
   virtual void StartMigrateToDircrypto(
       const ::user_data_auth::StartMigrateToDircryptoRequest& request,

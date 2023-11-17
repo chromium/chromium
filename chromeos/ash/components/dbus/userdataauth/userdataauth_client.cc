@@ -125,13 +125,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
-  void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
-                CheckKeyCallback callback) override {
-    CallProtoMethod(::user_data_auth::kCheckKey,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
   void StartMigrateToDircrypto(
       const ::user_data_auth::StartMigrateToDircryptoRequest& request,
       StartMigrateToDircryptoCallback callback) override {

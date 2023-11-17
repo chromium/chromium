@@ -324,18 +324,6 @@ TEST_F(UserDataAuthClientTest, Remove) {
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_remove_reply_));
 }
 
-TEST_F(UserDataAuthClientTest, CheckKey) {
-  expected_check_key_reply_.set_error(
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::CheckKeyReply> result_reply;
-
-  client_->CheckKey(::user_data_auth::CheckKeyRequest(),
-                    CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_check_key_reply_));
-}
-
 TEST_F(UserDataAuthClientTest, StartMigrateToDircrypto) {
   expected_start_migrate_to_dircrypto_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
