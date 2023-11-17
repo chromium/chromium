@@ -653,6 +653,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad"
+    enum="Boolean" expires_after="2024-06-20">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if when loading interest groups for an owner, an existing call to the
+    database was used. Recorded whenever an owner's interest groups are loaded
+    for an auction, the cache is enabled via FledgeUseInterestGroupCache, and
+    there was no cache hit.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.LoadNoGroupsTime" units="ms"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>

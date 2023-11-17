@@ -509,6 +509,8 @@ TEST_F(InterestGroupCachingStorageTest,
   auto ig = MakeInterestGroup(owner, "name");
   JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
 
+  base::HistogramTester histogram_tester;
+
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
@@ -531,6 +533,10 @@ TEST_F(InterestGroupCachingStorageTest,
                    run_loop.Quit();
                  }));
   run_loop.Run();
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", false, 1);
   ASSERT_EQ(loaded_igs1->get(), loaded_igs2->get());
   ASSERT_EQ(loaded_igs1->get(), loaded_igs3->get());
 }

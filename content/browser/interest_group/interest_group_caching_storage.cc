@@ -126,6 +126,8 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
         .Then(base::BindOnce(
             &InterestGroupCachingStorage::OnLoadInterestGroupsForOwner,
             weak_factory_.GetWeakPtr(), owner));
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", false);
   } else if (outdated_outstanding_interest_group_loads_.contains(owner)) {
     // We can't add the callback to the queue or it would get an outdated
     // result. Load a fresh result.
@@ -136,8 +138,13 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
                                  OnLoadInterestGroupsForOwnerOneCallback,
                              weak_factory_.GetWeakPtr(), owner,
                              std::move(callback)));
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", false);
+
   } else {
     outstanding_callbacks_it->second.push(std::move(callback));
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", true);
   }
 }
 
