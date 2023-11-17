@@ -15,6 +15,8 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -112,6 +114,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         ->SetAutomaticIssueOfAccessTokens(true);
   }
 
+  OptimizationGuideKeyedService* GetOptimizationGuideKeyedService(
+      Profile* profile = nullptr) {
+    if (!profile) {
+      profile = browser()->profile();
+    }
+    return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  }
+
   // Executes the model for the feature, waits until the response is received,
   // and returns the response.
   void ExecuteModel(proto::ModelExecutionFeature feature,
@@ -121,9 +131,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       profile = browser()->profile();
     }
     base::RunLoop run_loop;
-    OptimizationGuideKeyedService* optimization_guide_keyed_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    optimization_guide_keyed_service->ExecuteModel(
+    GetOptimizationGuideKeyedService(profile)->ExecuteModel(
         feature, request_metadata,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -303,6 +311,36 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                 kGenericFailure,
             model_execution_result_->error().error());
   EXPECT_TRUE(model_execution_result_->error().transient());
+}
+
+class ModelExecutionInternalsPageBrowserTest
+    : public ModelExecutionEnabledBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    ModelExecutionEnabledBrowserTest::SetUpCommandLine(cmd);
+    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
+  }
+  void CheckInternalsLog(std::string_view message) {
+    auto* logger =
+        GetOptimizationGuideKeyedService()->GetOptimizationGuideLogger();
+    EXPECT_THAT(logger->recent_log_messages_,
+                testing::Contains(testing::Field(
+                    &OptimizationGuideLogger::LogMessage::message,
+                    testing::HasSubstr(message))));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
+                       LoggedInInternalsPage) {
+  EnableSignin();
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, BuildTestMessage("foo"));
+  EXPECT_TRUE(model_execution_result_.has_value());
+  EXPECT_TRUE(model_execution_result_->has_value());
+  CheckInternalsLog("ExecuteModel");
+  // CheckInternalsLog("TabOrganization Request");
+  CheckInternalsLog("OnModelExecutionResponse");
 }
 
 }  // namespace optimization_guide
