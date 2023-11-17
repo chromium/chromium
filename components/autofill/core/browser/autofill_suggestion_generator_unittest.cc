@@ -71,15 +71,24 @@ Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
   return Field(&Suggestion::popup_item_id, id);
 }
 
-Matcher<Suggestion> EqualsSuggestion(
+Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
+                                     const std::u16string& main_text) {
+  return AllOf(
+      Field(&Suggestion::popup_item_id, id),
+      Field(&Suggestion::main_text,
+            Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))));
+}
+
+Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
-    std::optional<ServerFieldType> field_by_field_filling_type_used =
-        std::nullopt) {
+    ServerFieldType field_by_field_filling_type_used,
+    const Suggestion::Payload& payload) {
   return AllOf(
       Field(&Suggestion::popup_item_id, id),
       Field(&Suggestion::main_text,
             Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))),
+      Field(&Suggestion::payload, payload),
       Field(&Suggestion::field_by_field_filling_type_used,
             std::optional(field_by_field_filling_type_used)));
 }
@@ -1199,34 +1208,42 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
       suggestions[0].children,
       ElementsAre(
           EqualsSuggestion(PopupItemId::kFillFullName),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(NAME_FIRST, app_locale()),
-                           NAME_FIRST),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(NAME_MIDDLE, app_locale()),
-                           NAME_MIDDLE),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(NAME_LAST, app_locale()),
-                           NAME_LAST),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(NAME_MIDDLE, app_locale()), NAME_MIDDLE,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(NAME_LAST, app_locale()), NAME_LAST,
+              Suggestion::Guid(profile().guid())),
           EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(ADDRESS_HOME_LINE1, app_locale()),
-                           ADDRESS_HOME_LINE1),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
-                           ADDRESS_HOME_LINE2),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
-                           ADDRESS_HOME_ZIP),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_LINE1, app_locale()),
+              ADDRESS_HOME_LINE1, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
+              ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
+              ADDRESS_HOME_ZIP, Suggestion::Guid(profile().guid())),
           EqualsSuggestion(PopupItemId::kSeparator),
           // Triggering field is not a phone number, international phone number
           // should be shown to the user.
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           GetFormattedInternationalNumber(),
-                           PHONE_HOME_WHOLE_NUMBER),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile().GetInfo(EMAIL_ADDRESS, app_locale()),
-                           EMAIL_ADDRESS),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              GetFormattedInternationalNumber(), PHONE_HOME_WHOLE_NUMBER,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(EMAIL_ADDRESS, app_locale()), EMAIL_ADDRESS,
+              Suggestion::Guid(profile().guid())),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
@@ -1245,14 +1262,15 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
   ASSERT_EQ(2U, suggestions[0].children[5].children.size());
   EXPECT_THAT(
       suggestions[0].children[5].children,
-      ElementsAre(EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                                   profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER,
-                                                     app_locale()),
-                                   ADDRESS_HOME_HOUSE_NUMBER),
-                  EqualsSuggestion(
-                      PopupItemId::kFieldByFieldFilling,
-                      profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-                      ADDRESS_HOME_STREET_NAME)));
+      ElementsAre(
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
+              ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
+              ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()))));
   // House number and street name suggestions should have labels.
   EXPECT_EQ(suggestions[0].children[5].children[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
@@ -1270,9 +1288,10 @@ TEST_F(
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_THAT(suggestions[0],
-              EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                               profile().GetInfo(NAME_FIRST, app_locale()),
-                               NAME_FIRST));
+              EqualsFieldByFieldFillingSuggestion(
+                  PopupItemId::kFieldByFieldFilling,
+                  profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
+                  Suggestion::Guid(profile().guid())));
 }
 
 TEST_F(AutofillChildrenSuggestionsGenenarationTest,
@@ -1483,16 +1502,17 @@ TEST_F(
   ASSERT_LE(3u, suggestions[0].children.size());
   // The address line 1 (sixth child) should have the street name as child.
   EXPECT_THAT(suggestions[0].children[1].children,
-              ElementsAre(EqualsSuggestion(
+              ElementsAre(EqualsFieldByFieldFillingSuggestion(
                   PopupItemId::kFieldByFieldFilling,
                   profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-                  ADDRESS_HOME_STREET_NAME)));
+                  ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()))));
   // The address line 2 (seventh child) should have the house number as child.
-  EXPECT_THAT(suggestions[0].children[2].children,
-              ElementsAre(EqualsSuggestion(
-                  PopupItemId::kFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-                  ADDRESS_HOME_HOUSE_NUMBER)));
+  EXPECT_THAT(
+      suggestions[0].children[2].children,
+      ElementsAre(EqualsFieldByFieldFillingSuggestion(
+          PopupItemId::kFieldByFieldFilling,
+          profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
+          ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()))));
 }
 
 TEST_F(

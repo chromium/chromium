@@ -221,6 +221,7 @@ bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
       suggestions.emplace_back(main_text, PopupItemId::kFieldByFieldFilling);
       suggestions.back().field_by_field_filling_type_used =
           std::optional(field_type);
+      suggestions.back().payload = Suggestion::Guid(profile.guid());
       any_suggestion_added = true;
     }
   }
