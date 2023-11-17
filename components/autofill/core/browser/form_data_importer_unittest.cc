@@ -513,16 +513,28 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
               (override));
 };
 
-class FormDataImporterTestBase {
+class FormDataImporterTest : public testing::Test {
  public:
   using ExtractedFormData = FormDataImporter::ExtractedFormData;
   using AddressProfileImportCandidate =
       FormDataImporter::AddressProfileImportCandidate;
 
  protected:
-  FormDataImporterTestBase() = default;
+  FormDataImporterTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillUseI18nAddressModel,
+         features::kAutofillEnableSupportForApartmentNumbers,
+         features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillEnableParsingOfStreetLocation},
+        {});
+  }
 
-  void SetUpHelper() {
+  void SetUp() override {
     prefs_ = test::PrefServiceForTesting();
 
     autofill_client_ = std::make_unique<TestAutofillClient>();
@@ -562,7 +574,7 @@ class FormDataImporterTestBase {
         std::move(credit_card_save_manager);
   }
 
-  void TearDownHelper() {
+  void TearDown() override {
     if (personal_data_manager_) {
       personal_data_manager_->Shutdown();
     }
@@ -756,36 +768,6 @@ class FormDataImporterTestBase {
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class FormDataImporterTest : public FormDataImporterTestBase,
-                             public testing::Test {
- public:
-  using ExtractedFormData = FormDataImporter::ExtractedFormData;
-
- private:
-  void SetUp() override {
-    InitializeFeatures();
-    SetUpHelper();
-  }
-
-  void TearDown() override { TearDownHelper(); }
-
-  void InitializeFeatures() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kAutofillUseI18nAddressModel,
-            features::kAutofillEnableSupportForApartmentNumbers,
-            features::kAutofillEnableSupportForLandmark,
-            features::kAutofillEnableSupportForBetweenStreets,
-            features::kAutofillEnableSupportForAdminLevel2,
-            features::kAutofillEnableSupportForAddressOverflow,
-            features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-            features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-            features::kAutofillEnableParsingOfStreetLocation,
-        },
-        {});
-  }
 };
 
 // Tests that the country is not complemented if a country is part of the form.
@@ -4004,15 +3986,7 @@ TEST_F(FormDataImporterTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
-                                             public testing::Test {
- private:
-  void SetUp() override { SetUpHelper(); }
-  void TearDown() override { TearDownHelper(); }
-};
-
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_EmptyCreditCard) {
+TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
   absl::optional<CreditCard> extracted_credit_card;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
@@ -4037,8 +4011,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 }
 
 #if !BUILDFLAG(IS_IOS)
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_VirtualCardEligible) {
+TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   CreditCard extracted_credit_card = test::GetMaskedServerCard();
   extracted_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
   extracted_credit_card.set_instrument_id(1111);
@@ -4085,7 +4058,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // Test that in the case where the MandatoryReauthManager denotes we should not
 // offer re-auth opt-in, we do not start the opt-in flow.
-TEST_F(FormDataImporterNonParameterizedTest,
+TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthNotOffered) {
   CreditCard extracted_credit_card = test::GetVirtualCard();
   std::unique_ptr<FormStructure> form_structure =
@@ -4116,7 +4089,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 
 // Test that in the case where the MandatoryReauthManager denotes we should
 // offer re-auth opt-in, we start the opt-in flow.
-TEST_F(FormDataImporterNonParameterizedTest,
+TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthOffered) {
   CreditCard extracted_credit_card = test::GetCreditCard2();
   std::unique_ptr<FormStructure> form_structure =
@@ -4154,7 +4127,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 
 // Test that ProceedWithSavingIfApplicable gets called for server cards with the
 // correct pre-requisites set.
-TEST_F(FormDataImporterNonParameterizedTest,
+TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Server) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
   std::unique_ptr<FormStructure> form_structure =
@@ -4171,7 +4144,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 
 // Test that ProceedWithSavingIfApplicable gets called for local cards with the
 // correct pre-requisites set.
-TEST_F(FormDataImporterNonParameterizedTest,
+TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Local) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
   std::unique_ptr<FormStructure> form_structure =

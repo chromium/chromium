@@ -415,7 +415,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;
-  friend class FormDataImporterTestBase;
   friend class LocalCardMigrationBrowserTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
   friend class SaveCardInfobarEGTestHelper;
