@@ -25,7 +25,6 @@
 class Profile;
 
 namespace ash {
-class ExtendedAuthenticator;
 class UserContext;
 class AuthenticationError;
 class AuthPerformer;
@@ -38,69 +37,6 @@ namespace quick_unlock_private {
 struct TokenInfo;
 }  // namespace quick_unlock_private
 }  // namespace api
-
-//
-// A single-use adaptor to make calls to
-//   ash::ExtendedAuthenticator::AuthenticateToCheck()
-// and pass result back to a single callback. Re. object lifetime, caller just
-// have to call:
-//
-//   scoped_refptr<LegacyQuickUnlockPrivateGetAuthTokenHelper> helper =
-//      base::MakeRefCounted<LegacyQuickUnlockPrivateGetAuthTokenHelper>(...);
-//   ...
-//   // Attach |helper| to a ash::ExtendedAuthenticator.
-//   ...
-//   // Bind callback and pass as argument.
-//   helper->Run(...);
-//
-// Hereafter, the caller need not worry about |helper|'s lifetime.
-class LegacyQuickUnlockPrivateGetAuthTokenHelper
-    : public ash::AuthStatusConsumer,
-      public base::RefCountedThreadSafe<
-          LegacyQuickUnlockPrivateGetAuthTokenHelper,
-          content::BrowserThread::DeleteOnUIThread> {
- public:
-  using TokenInfo = api::quick_unlock_private::TokenInfo;
-
-  // The only error message that this class ever returns, even if the error is
-  // some internal error and not due to an incorrect password. Should
-  // eventually be refactored/removed together with this legacy class.
-  static const char kPasswordIncorrect[];
-
-  // |error_message| is empty if |success|, and non-empty otherwise.
-  // |token_info| is non-null if |success|, and null otherwise.
-  using ResultCallback =
-      base::OnceCallback<void(bool success,
-                              std::unique_ptr<TokenInfo> token_info,
-                              const std::string& error_message)>;
-
-  explicit LegacyQuickUnlockPrivateGetAuthTokenHelper(Profile* profile);
-  LegacyQuickUnlockPrivateGetAuthTokenHelper(
-      const LegacyQuickUnlockPrivateGetAuthTokenHelper&) = delete;
-  LegacyQuickUnlockPrivateGetAuthTokenHelper& operator=(
-      const LegacyQuickUnlockPrivateGetAuthTokenHelper&) = delete;
-
-  void Run(ash::ExtendedAuthenticator* extended_authenticator,
-           const std::string& password,
-           ResultCallback callback);
-
- protected:
-  ~LegacyQuickUnlockPrivateGetAuthTokenHelper() override;
-
- private:
-  friend class base::RefCountedThreadSafe<
-      LegacyQuickUnlockPrivateGetAuthTokenHelper>;
-  friend class base::DeleteHelper<LegacyQuickUnlockPrivateGetAuthTokenHelper>;
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::UI>;
-
-  // AuthStatusConsumer overrides.
-  void OnAuthFailure(const ash::AuthFailure& error) override;
-  void OnAuthSuccess(const ash::UserContext& user_context) override;
-
-  raw_ptr<Profile> profile_;
-  ResultCallback callback_;
-};
 
 class QuickUnlockPrivateGetAuthTokenHelper {
  public:

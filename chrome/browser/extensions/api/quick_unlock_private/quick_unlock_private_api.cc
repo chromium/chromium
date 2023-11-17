@@ -243,8 +243,7 @@ void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
     absl::optional<ash::AuthenticationError> error) {
   if (!token_info.has_value()) {
     DCHECK(error.has_value());
-    Respond(
-        Error(LegacyQuickUnlockPrivateGetAuthTokenHelper::kPasswordIncorrect));
+    Respond(Error(kInvalidCredential));
     return;
   }
 
