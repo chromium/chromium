@@ -9,6 +9,10 @@
 
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_file_manager.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/manta/proto/manta.pb.h"
@@ -34,10 +38,14 @@ std::string CreateJpgBytes() {
   gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
   return std::string(data.begin(), data.end());
 }
+}  // namespace
 
-class SeaPenWallpaperManagerTest : public testing::Test {
+class SeaPenWallpaperManagerTest : public AshTestBase {
  public:
-  SeaPenWallpaperManagerTest() = default;
+  SeaPenWallpaperManagerTest()
+      : wallpaper_file_manager_(std::make_unique<WallpaperFileManager>()),
+        sea_pen_wallpaper_manager_(
+            SeaPenWallpaperManager(wallpaper_file_manager_.get())) {}
 
   SeaPenWallpaperManagerTest(const SeaPenWallpaperManagerTest&) = delete;
   SeaPenWallpaperManagerTest& operator=(const SeaPenWallpaperManagerTest&) =
@@ -45,25 +53,43 @@ class SeaPenWallpaperManagerTest : public testing::Test {
 
   ~SeaPenWallpaperManagerTest() override = default;
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+  }
+
+  void TearDown() override { AshTestBase::TearDown(); }
+
+  base::FilePath GetTempFileDirectory() { return scoped_temp_dir_.GetPath(); }
+
+  base::FilePath CreateFilePath(base::FilePath::StringPieceType file_name) {
+    return GetTempFileDirectory().Append(file_name);
+  }
+
   SeaPenWallpaperManager& sea_pen_wallpaper_manager() {
     return sea_pen_wallpaper_manager_;
   }
 
-  void SetUp() override {}
+  WallpaperFileManager* wallpaper_file_manager() {
+    return wallpaper_file_manager_.get();
+  }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::ScopedTempDir scoped_temp_dir_;
   InProcessDataDecoder in_process_data_decoder_;
+  const std::unique_ptr<WallpaperFileManager> wallpaper_file_manager_;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
 };
 
 TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   base::test::TestFuture<uint32_t, const gfx::ImageSkia&>
       decode_sea_pen_image_future;
-  sea_pen_wallpaper_manager().DecodeSeaPenImage(
+  const base::FilePath file_path = CreateFilePath("111.jpg");
+  ASSERT_FALSE(base::PathExists(file_path));
+  sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
       {CreateJpgBytes(), /*id=*/111, /*query=*/std::string(),
        manta::proto::ImageResolution::RESOLUTION_64},
-      decode_sea_pen_image_future.GetCallback());
+      GetTempFileDirectory(), decode_sea_pen_image_future.GetCallback());
 
   EXPECT_EQ(111u, decode_sea_pen_image_future.Get<uint32_t>());
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
@@ -72,7 +98,7 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
       CreateBitmap(),
       *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
       /*max_deviation=*/1));
+  EXPECT_TRUE(base::PathExists(file_path));
 }
 
-}  // namespace
 }  // namespace ash

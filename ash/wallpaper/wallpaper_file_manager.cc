@@ -73,7 +73,7 @@ void EnsureWallpaperDirectoryExists(const base::FilePath& wallpaper_dir) {
 // retrieve the wallpapers quickly from cache instead of downloading them again.
 bool DeleteWallpaperPath(WallpaperType type,
                          const base::FilePath& wallpaper_dir) {
-  if (IsOnlineWallpaper(type)) {
+  if (IsOnlineWallpaper(type) || type == WallpaperType::kSeaPen) {
     return true;
   }
   return base::DeletePathRecursively(wallpaper_dir);
@@ -152,8 +152,9 @@ base::FilePath SaveWallpaperPerType(WallpaperType type,
     }
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
-      // Save the Google Photo wallpaper in original size to the local file
-      // system.
+    case WallpaperType::kSeaPen:
+      // Save the Google Photo and Sea Pen wallpaper in original size to the
+      // local file system.
       return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image);
     default:
       NOTREACHED() << "Invalid wallpaper type.";
