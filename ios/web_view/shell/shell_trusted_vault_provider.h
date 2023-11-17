@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_SHELL_SHELL_TRUSTED_VAULT_PROVIDER_H_
 #define IOS_WEB_VIEW_SHELL_SHELL_TRUSTED_VAULT_PROVIDER_H_
 
-#import "ios/web_view/shell/cwv_framework.h"
+#import <ChromeWebView/ChromeWebView.h>
 
 #import "ios/web_view/shell/shell_auth_service.h"
 

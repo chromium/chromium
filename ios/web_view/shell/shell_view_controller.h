@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_SHELL_SHELL_VIEW_CONTROLLER_H_
 #define IOS_WEB_VIEW_SHELL_SHELL_VIEW_CONTROLLER_H_
 
-#import "ios/web_view/shell/cwv_framework.h"
+#import <ChromeWebView/ChromeWebView.h>
 
 #import <UIKit/UIKit.h>
 

@@ -83,8 +83,6 @@ group("gn_all") {
   if (is_cronet_build) {
     if (is_android) {
       deps = [ "//components/cronet/android:cronet_package_android" ]
-    } else if (is_ios) {
-      deps = [ "//components/cronet/ios:cronet_package_ios" ]
     } else {
       deps = []
     }

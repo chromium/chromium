@@ -15,9 +15,7 @@ import("//ios/features.gni")
 # are not used upstream to ensure they are not broken inadvertently.
 group("all") {
   testonly = true
-  if (is_cronet_build) {
-    deps = [ "//components/cronet/ios:cronet_package_ios" ]
-  } else if (is_webkit_only_build) {
+  if (is_webkit_only_build) {
     deps = [ "//ios/third_party/webkit" ]
   } else if (ios_build_chrome) {
     deps = [

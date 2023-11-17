@@ -349,7 +349,6 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
         ],
     ),
 )
@@ -474,7 +473,6 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
         ],
     ),
 )
@@ -584,7 +582,6 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
         ],
     ),
 )
