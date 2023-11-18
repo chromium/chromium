@@ -182,6 +182,14 @@ void TestSystemTrayClient::ShowEolInfoPage() {
 
 void TestSystemTrayClient::RecordEolNoticeShown() {}
 
+void TestSystemTrayClient::ShowGraphicsTabletSettings() {
+  ++show_graphics_tablet_settings_count_;
+}
+
+void TestSystemTrayClient::ShowMouseSettings() {
+  ++show_mouse_settings_count_;
+}
+
 void TestSystemTrayClient::ShowTouchpadSettings() {
   ++show_touchpad_settings_count_;
 }

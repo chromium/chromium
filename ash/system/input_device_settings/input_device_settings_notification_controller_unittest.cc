@@ -24,6 +24,21 @@ namespace ash {
 
 namespace {
 
+const mojom::Mouse kMouse1 = mojom::Mouse(
+    /*name=*/"Razer Basilisk V3",
+    /*is_external=*/false,
+    /*id=*/1,
+    /*device_key=*/"fake-device-key1",
+    /*customization_restriction=*/
+    mojom::CustomizationRestriction::kAllowCustomizations,
+    mojom::MouseSettings::New());
+
+const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
+    /*name=*/"Wacom Intuos S",
+    /*id=*/2,
+    /*device_key=*/"fake-device-key2",
+    mojom::GraphicsTabletSettings::New());
+
 int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -245,6 +260,18 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
                    prefs::kRemapToRightClickNotificationsRemaining));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowPeripheralSettingsOnCustomizationNotificationClick) {
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  message_center()->ClickOnNotification("peripheral_customization_mouse_1");
+  EXPECT_EQ(GetSystemTrayClient()->show_mouse_settings_count(), 1);
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  message_center()->ClickOnNotification(
+      "peripheral_customization_graphics_tablet_2");
+  EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
+}
+
 // TODO(b/279503977): Add test that verifies behavior of clicking on the
 // "Learn more" button.
 TEST_F(InputDeviceSettingsNotificationControllerTest,
@@ -331,18 +358,6 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyPeripheralCustomization) {
   size_t expected_notification_count = 1;
-  const mojom::Mouse kMouse1 = mojom::Mouse(
-      /*name=*/"Razer Basilisk V3",
-      /*is_external=*/false,
-      /*id=*/1,
-      /*device_key=*/"fake-device-key1",
-      /*customization_restriction=*/
-      mojom::CustomizationRestriction::kAllowCustomizations,
-      mojom::MouseSettings::New());
-  const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
-      /*name=*/"Wacom Intuos S",
-      /*id=*/2,
-      /*device_key=*/"fake-device-key2", mojom::GraphicsTabletSettings::New());
   controller()->NotifyMouseIsCustomizable(kMouse1);
   EXPECT_EQ(expected_notification_count++,
             message_center()->NotificationCount());

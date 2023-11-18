@@ -32600,6 +32600,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ShowGraphicsTabletSettingsPage">
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the graphics tablet settings subpage by
+    clicking on the notification shown when a graphics tablet with customizable
+    buttons is connected to a chromebook for the first time.
+  </description>
+</action>
+
 <action name="ShowHelpTab">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -32633,6 +32643,16 @@ should be able to be added at any place in this file.
 <action name="ShowModalDialog">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="ShowMouseSettingsPage">
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the mouse settings subpage by clicking on
+    the notification shown when a mouse with customizable buttons is connected
+    to a chromebook for the first time.
+  </description>
 </action>
 
 <action name="ShowOptions">

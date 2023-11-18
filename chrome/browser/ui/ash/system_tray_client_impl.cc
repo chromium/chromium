@@ -810,6 +810,20 @@ void SystemTrayClientImpl::ShowAudioSettings() {
       chromeos::settings::mojom::kAudioSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowGraphicsTabletSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowGraphicsTabletSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kGraphicsTabletSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowMouseSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowMouseSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceMouseSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowTouchpadSettings() {
   DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
   base::RecordAction(base::UserMetricsAction("ShowTouchpadSettingsPage"));

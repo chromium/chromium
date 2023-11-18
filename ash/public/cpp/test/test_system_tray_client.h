@@ -79,6 +79,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   bool IsUserFeedbackEnabled() override;
   void ShowEolInfoPage() override;
   void RecordEolNoticeShown() override;
+  void ShowGraphicsTabletSettings() override;
+  void ShowMouseSettings() override;
   void ShowTouchpadSettings() override;
   void ShowRemapKeysSubpage(int device_id) override;
 
@@ -196,6 +198,12 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_color_correction_settings_count_;
   }
 
+  int show_graphics_tablet_settings_count() const {
+    return show_graphics_tablet_settings_count_;
+  }
+
+  int show_mouse_settings_count() const { return show_mouse_settings_count_; }
+
   int show_touchpad_settings_count() const {
     return show_touchpad_settings_count_;
   }
@@ -238,6 +246,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   bool user_feedback_enabled_ = false;
   int show_eol_info_count_ = 0;
   int show_color_correction_settings_count_ = 0;
+  int show_graphics_tablet_settings_count_ = 0;
+  int show_mouse_settings_count_ = 0;
   int show_touchpad_settings_count_ = 0;
   int show_remap_keys_subpage_count_ = 0;
 };

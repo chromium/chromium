@@ -114,6 +114,8 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowEolInfoPage() override;
   void RecordEolNoticeShown() override;
   bool IsUserFeedbackEnabled() override;
+  void ShowGraphicsTabletSettings() override;
+  void ShowMouseSettings() override;
   void ShowTouchpadSettings() override;
   void ShowRemapKeysSubpage(int device_id) override;
 

@@ -554,10 +554,16 @@ void InputDeviceSettingsNotificationController::
   message_center_->AddNotification(std::move(notification));
 }
 
-// TODO(wangdanny): Add link to per device mouse settings subpage.
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
     const mojom::Mouse& mouse) {
   const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
+  auto on_click_handler =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([]() {
+            if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+              Shell::Get()->system_tray_model()->client()->ShowMouseSettings();
+            }
+          }));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetPeripheralCustomizationMouseNotificationID(mouse.id),
@@ -571,16 +577,25 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
-      message_center::RichNotificationData(), nullptr, kSettingsIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      message_center::RichNotificationData(), std::move(on_click_handler),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
 }
 
-// TODO(wangdanny): Add link to graphics tablet settings subpage.
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletIsCustomizable(
         const mojom::GraphicsTablet& graphics_tablet) {
   const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
+  auto on_click_handler =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([]() {
+            if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+              Shell::Get()
+                  ->system_tray_model()
+                  ->client()
+                  ->ShowGraphicsTabletSettings();
+            }
+          }));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetPeripheralCustomizationGraphicsTabletNotificationID(
@@ -595,8 +610,8 @@ void InputDeviceSettingsNotificationController::
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
-      message_center::RichNotificationData(), nullptr, kSettingsIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      message_center::RichNotificationData(), std::move(on_click_handler),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
 }
 

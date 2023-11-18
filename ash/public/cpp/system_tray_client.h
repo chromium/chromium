@@ -204,6 +204,12 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;
 
+  // Shows settings related to graphics tablets.
+  virtual void ShowGraphicsTabletSettings() = 0;
+
+  // Shows settings related to mice.
+  virtual void ShowMouseSettings() = 0;
+
   // Shows settings related to touchpads.
   virtual void ShowTouchpadSettings() = 0;
 
