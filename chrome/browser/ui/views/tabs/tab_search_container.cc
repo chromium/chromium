@@ -62,13 +62,13 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
     // vs. when the button as clicked.
     tab_organization_button_ =
         AddChildView(std::make_unique<TabOrganizationButton>(
-            tab_strip_controller, tab_organization_service_,
-            // Force hide the button when pressed, bypassing locked expansion
-            // mode.
-            base::BindRepeating(&TabSearchContainer::ExecuteHideTabOrganization,
+            tab_strip_controller,
+            base::BindRepeating(&TabSearchContainer::OnOrganizeButtonClicked,
+                                base::Unretained(this)),
+            base::BindRepeating(&TabSearchContainer::OnOrganizeButtonDismissed,
                                 base::Unretained(this)),
             tab_organization_service_ ? GetFlatEdge(false, before_tab_strip)
-                                          : Edge::kNone));
+                                      : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
     const int space_between_buttons = 4;
@@ -84,6 +84,8 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
   if (!before_tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
   }
+
+  browser_ = tab_strip_controller->GetBrowser();
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 }
@@ -115,6 +117,20 @@ void TabSearchContainer::HideTabOrganization() {
 void TabSearchContainer::SetLockedExpansionModeForTesting(
     LockedExpansionMode mode) {
   SetLockedExpansionMode(mode);
+}
+
+void TabSearchContainer::OnOrganizeButtonClicked() {
+  tab_organization_service_->OnActionUIAccepted(browser_);
+
+  // Force hide the button when pressed, bypassing locked expansion mode.
+  ExecuteHideTabOrganization();
+}
+
+void TabSearchContainer::OnOrganizeButtonDismissed() {
+  tab_organization_service_->OnActionUIDismissed(browser_);
+
+  // Force hide the button when pressed, bypassing locked expansion mode.
+  ExecuteHideTabOrganization();
 }
 
 void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode) {

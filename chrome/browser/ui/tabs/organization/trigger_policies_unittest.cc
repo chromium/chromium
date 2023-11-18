@@ -53,13 +53,23 @@ TEST_F(UsageTickClockTest, TestClock) {
   EXPECT_EQ(base::Minutes(2), clock()->NowTicks() - start_time);
 }
 
+class FakeBackoffLevelProvider final : public BackoffLevelProvider {
+  unsigned int Get() const override { return level_; }
+  void Increment() override { level_++; }
+  void Decrement() override { level_ = std::max(1u, level_) - 1; }
+
+ private:
+  unsigned int level_ = 0;
+};
+
 class TargetFrequencyTriggerTest : public testing::Test {
  public:
   TargetFrequencyTriggerTest() {
     auto clock = std::make_unique<base::SimpleTestTickClock>();
     clock_ = clock.get();
-    policy_ = std::make_unique<TargetFrequencyTriggerPolicy>(std::move(clock),
-                                                             base::Days(1.0f));
+    policy_ = std::make_unique<TargetFrequencyTriggerPolicy>(
+        std::move(clock), base::Days(1.0f), 2.0f,
+        std::make_unique<FakeBackoffLevelProvider>());
 
     // Start 10% into the period so +1 period doesn't put us exactly on the
     // rollover instant.
@@ -69,10 +79,10 @@ class TargetFrequencyTriggerTest : public testing::Test {
   void advance_to_next_phase() { clock()->Advance(base::Days(0.5f)); }
 
   base::SimpleTestTickClock* clock() { return clock_.get(); }
-  TriggerPolicy* policy() { return policy_.get(); }
+  TargetFrequencyTriggerPolicy* policy() { return policy_.get(); }
 
  private:
-  std::unique_ptr<TriggerPolicy> policy_;
+  std::unique_ptr<TargetFrequencyTriggerPolicy> policy_;
   raw_ptr<base::SimpleTestTickClock> clock_;
 };
 
@@ -118,4 +128,34 @@ TEST_F(TargetFrequencyTriggerTest, TriggersAgainNextPeriod) {
 
   // Should trigger again, as long as we beat this period's best score.
   EXPECT_TRUE(policy()->ShouldTrigger(0.75f));
+}
+
+TEST_F(TargetFrequencyTriggerTest, BacksOffAfterFailure) {
+  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
+
+  policy()->OnTriggerFailed();
+
+  advance_to_next_phase();
+  EXPECT_FALSE(policy()->ShouldTrigger(2.0f));
+  advance_to_next_phase();
+  EXPECT_TRUE(policy()->ShouldTrigger(3.0f));
+}
+
+TEST_F(TargetFrequencyTriggerTest, UnBacksOffAfterSuccess) {
+  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
+  policy()->OnTriggerFailed();
+
+  policy()->OnTriggerSucceeded();
+
+  advance_to_next_phase();
+  EXPECT_TRUE(policy()->ShouldTrigger(2.0f));
+}
+
+TEST_F(TargetFrequencyTriggerTest, PeriodClampedToBasePeriod) {
+  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
+
+  policy()->OnTriggerSucceeded();
+
+  advance_to_next_phase();
+  EXPECT_TRUE(policy()->ShouldTrigger(2.0f));
 }

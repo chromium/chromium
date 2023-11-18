@@ -13,6 +13,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
+namespace content {
+class BrowserContext;
+}
+class PrefService;
+
 // We want to parameterize trigger policies with things like target triggering
 // frequencies. That begs the question - how should we define those frequencies?
 // Once per week? Once every 8 hours of active chrome usage? Once per 200 tabs
@@ -64,6 +69,28 @@ class UsageTickClock final : public base::TickClock,
       absl::nullopt;
 };
 
+class BackoffLevelProvider {
+ public:
+  virtual ~BackoffLevelProvider() = default;
+  virtual unsigned int Get() const = 0;
+  virtual void Increment() = 0;
+  virtual void Decrement() = 0;
+};
+
+class ProfilePrefBackoffLevelProvider final : public BackoffLevelProvider {
+ public:
+  explicit ProfilePrefBackoffLevelProvider(content::BrowserContext* context);
+  ~ProfilePrefBackoffLevelProvider() override;
+
+  // BackoffLevelProvider:
+  unsigned int Get() const override;
+  void Increment() override;
+  void Decrement() override;
+
+ private:
+  raw_ptr<PrefService> prefs_;
+};
+
 // A policy which triggers up to once per period, based on the classic solution
 // to the secretary problem. Has an observation phase and a trigger phase.
 // During the observation phase, it keeps track of the best score seen so far.
@@ -75,14 +102,22 @@ class UsageTickClock final : public base::TickClock,
 // other moments in this period.
 class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
  public:
-  TargetFrequencyTriggerPolicy(std::unique_ptr<base::TickClock> clock,
-                               base::TimeDelta period);
+  TargetFrequencyTriggerPolicy(
+      std::unique_ptr<base::TickClock> clock,
+      base::TimeDelta base_period,
+      float backoff_base,
+      std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
   ~TargetFrequencyTriggerPolicy() override;
   bool ShouldTrigger(float score) override;
+  void OnTriggerSucceeded();
+  void OnTriggerFailed();
 
  private:
-  std::unique_ptr<base::TickClock> clock_;
-  base::TimeDelta period_;
+  const std::unique_ptr<base::TickClock> clock_;
+  const base::TimeDelta base_period_;
+  const float backoff_base_;
+  const std::unique_ptr<BackoffLevelProvider> backoff_level_provider_;
+
   base::TimeTicks cycle_start_time_;
   absl::optional<float> best_score = absl::nullopt;
 };

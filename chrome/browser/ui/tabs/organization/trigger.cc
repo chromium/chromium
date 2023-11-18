@@ -54,14 +54,16 @@ float GetDefaultTriggerScoreThreshold() {
   return kMinTabCount;
 }
 
-std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy() {
+std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
-      base::Hours(6));
+      base::Hours(6), 2.0f, std::move(backoff_level_provider));
 }
 
-std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger() {
+std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TabOrganizationTrigger>(
       GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
-      GetDefaultTriggerPolicy());
+      GetDefaultTriggerPolicy(std::move(backoff_level_provider)));
 }

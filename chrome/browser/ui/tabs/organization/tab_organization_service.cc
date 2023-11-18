@@ -9,13 +9,18 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 
 TabOrganizationService::TabOrganizationService(
-    content::BrowserContext* browser_context)
-    : trigger_observer_(
-          base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
-                              base::Unretained(this)),
-          browser_context) {}
+    content::BrowserContext* browser_context) {
+  auto trigger_backoff =
+      std::make_unique<ProfilePrefBackoffLevelProvider>(browser_context);
+  trigger_backoff_ = trigger_backoff.get();
+  trigger_observer_ = std::make_unique<TabOrganizationTriggerObserver>(
+      base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
+                          base::Unretained(this)),
+      browser_context, MakeMVPTrigger(std::move(trigger_backoff)));
+}
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
@@ -117,4 +122,14 @@ void TabOrganizationService::AcceptTabOrganization(
   if (session->IsComplete()) {
     browser_session_map_.erase(browser);
   }
+}
+
+void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
+  StartRequest(browser);
+  trigger_backoff_->Decrement();
+}
+
+void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
+  trigger_backoff_->Increment();
+  browser_session_map_.erase(browser);
 }

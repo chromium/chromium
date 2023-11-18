@@ -57,6 +57,12 @@ class TabOrganizationService : public KeyedService {
                              TabOrganization::ID session_id,
                              TabOrganization::ID organization_id);
 
+  // Called when the proactive nudge button is clicked.
+  void OnActionUIAccepted(const Browser* browser);
+
+  // Called when the close button on the proactive nudge UI is clicked.
+  void OnActionUIDismissed(const Browser* browser);
+
   // Starts a request for the tab organization session that exists for the
   // browser, creating a new session if one does not already exists. Does not
   // start a request if one is already started.
@@ -77,7 +83,8 @@ class TabOrganizationService : public KeyedService {
   // A list of the observers of a tab organization Service.
   base::ObserverList<TabOrganizationObserver>::Unchecked observers_;
 
-  TabOrganizationTriggerObserver trigger_observer_;
+  std::unique_ptr<TabOrganizationTriggerObserver> trigger_observer_;
+  raw_ptr<BackoffLevelProvider> trigger_backoff_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SERVICE_H_

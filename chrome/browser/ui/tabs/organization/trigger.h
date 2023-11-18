@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 
+class BackoffLevelProvider;
 class TabStripModel;
 
 // Decides whether to trigger the nudge UI. Can incorporate considerations such
@@ -47,8 +48,10 @@ class TabOrganizationTrigger {
 
 TriggerScoringFunction GetDefaultTriggerScoringFunction();
 float GetDefaultTriggerScoreThreshold();
-std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy();
+std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
 
-std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger();
+std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_H_
