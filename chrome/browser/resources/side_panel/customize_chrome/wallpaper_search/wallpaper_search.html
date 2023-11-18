@@ -75,14 +75,9 @@
     padding: 0 20px;
   }
 
-  .category-item:hover,
-  .dropdown-item:hover {
-    background-color: var(--color-combobox-ink-drop-hovered);
-  }
-
-  :host-context(.focus-outline-visible) .category-item[highlighted],
-  :host-context(.focus-outline-visible) .dropdown-item[highlighted] {
-    background: var(--color-button-background-pressed);
+  .category-item[highlighted],
+  .dropdown-item[highlighted] {
+    background: var(--cr-active-neutral-on-subtle-background-color);
   }
 
   .dropdown-item iron-icon {

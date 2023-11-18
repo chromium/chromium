@@ -68,7 +68,9 @@
 </button>
 <div id="dropdownContainer">
   <div id="dropdown" role="listbox" on-click="onDropdownClick_"
-      on-pointerdown="onDropdownPointerdown_">
+      on-pointerdown="onDropdownPointerdown_"
+      on-pointermove="onDropdownPointermove_"
+      on-pointerover="onDropdownPointerover_">
     <slot></slot>
   </div>
 </div>

@@ -67,6 +67,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
   private highlightableElements_: HTMLElement[] = [];
   private highlightedElement_: HTMLElement|null = null;
   label: string;
+  private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
   private selectedElement_: OptionElement|null = null;
   value: string|undefined;
@@ -103,17 +104,21 @@ export class CustomizeChromeCombobox extends PolymerElement {
     return this.label;
   }
 
-  private highlightElement_(element: HTMLElement|null) {
+  private highlightElement_(element: HTMLElement|null, byKeyboard: boolean) {
     if (this.highlightedElement_) {
       this.highlightedElement_.removeAttribute('highlighted');
     }
 
     if (element) {
       element.toggleAttribute('highlighted', true);
-      element.scrollIntoView({block: 'nearest'});
+
+      if (byKeyboard) {
+        element.scrollIntoView({block: 'nearest'});
+      }
     }
 
     this.highlightedElement_ = element;
+    this.lastHighlightWasByKeyboard_ = byKeyboard;
   }
 
   private onDomChange_() {
@@ -152,8 +157,45 @@ export class CustomizeChromeCombobox extends PolymerElement {
     e.preventDefault();
   }
 
+  private onDropdownPointerevent_(event: PointerEvent) {
+    const highlightableTarget =
+        event.composedPath().find(
+            target => target instanceof HTMLElement &&
+                target.matches(HIGHLIGHTABLE_ITEMS_SELECTOR)) as HTMLElement;
+    if (!highlightableTarget ||
+        this.highlightedElement_ === highlightableTarget) {
+      return;
+    }
+
+    this.highlightElement_(highlightableTarget, false);
+  }
+
+  private onDropdownPointermove_(event: PointerEvent) {
+    if (!this.lastHighlightWasByKeyboard_) {
+      // Ignore any pointermove events if the last highlight was done by
+      // pointer. This is to avoid re-calculating a potentially highlighted item
+      // any time the pointer moves within an item.
+      return;
+    }
+
+    this.onDropdownPointerevent_(event);
+  }
+
+  private onDropdownPointerover_(event: PointerEvent) {
+    if (this.lastHighlightWasByKeyboard_) {
+      // Ignore pointerover events if the last highlight was done by keyboard,
+      // as pointermove events should catch any pointer-related events. This
+      // also avoids cases where a pointerover event is fired when a keyboard
+      // highlight causes the dropdown to scroll, leading to the pointer
+      // being over a new element.
+      return;
+    }
+
+    this.onDropdownPointerevent_(event);
+  }
+
   private onExpandedChange_() {
-    this.highlightElement_(this.selectedElement_);
+    this.highlightElement_(this.selectedElement_, false);
   }
 
   private onInputClick_() {
@@ -195,7 +237,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     if (elementToHighlight) {
-      this.highlightElement_(elementToHighlight);
+      this.highlightElement_(elementToHighlight, true);
     }
   }
 
@@ -247,7 +289,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
       index = 0;
     }
 
-    this.highlightElement_(this.highlightableElements_[index]!);
+    this.highlightElement_(this.highlightableElements_[index]!, true);
   }
 
   private onSelectedElementChanged_() {

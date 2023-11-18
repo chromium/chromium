@@ -110,6 +110,50 @@ suite('ComboboxTest', () => {
     assertEquals(null, combobox.querySelector('[highlighted]'));
   });
 
+  test('HighlightsOnPointerover', async () => {
+    const group = addGroup();
+    const option = addOption(group);
+    await flushTasks();
+
+    // Open the dropdown.
+    combobox.$.input.click();
+
+    group.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(group, combobox.querySelector('[highlighted]'));
+    option.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(option, combobox.querySelector('[highlighted]'));
+  });
+
+  test('HighlightsOnPointermoveAfterKeyEvent', async () => {
+    const option1 = addOption();
+    const option2 = addOption();
+    await flushTasks();
+
+    // Open the dropdown.
+    combobox.$.input.click();
+
+    // Mouse moves to first option.
+    option1.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(option1, combobox.querySelector('[highlighted]'));
+
+    // Keydown down to highlight second option. Mouse still over first option.
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(option2, combobox.querySelector('[highlighted]'));
+
+    // Pointerover event over first option should not highlight first option,
+    // since it follows a key event.
+    option1.dispatchEvent(new PointerEvent('pointerover'));
+    assertEquals(option2, combobox.querySelector('[highlighted]'));
+
+    // Mock moving mouse within the first option again.
+    option1.dispatchEvent(
+        new PointerEvent('pointermove', {bubbles: true, composed: true}));
+    assertEquals(option1, combobox.querySelector('[highlighted]'));
+  });
+
   test('SelectsItem', async () => {
     const groupA = addGroup();
     const optionA1 = addOption(groupA);
