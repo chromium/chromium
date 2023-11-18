@@ -16183,12 +16183,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6099.13/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v121.0.6126.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 120.0.6099.13",
+        "description": "Run with ash-chrome version 121.0.6126.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16198,8 +16198,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v120.0.6099.13",
-              "revision": "version:120.0.6099.13"
+              "location": "lacros_version_skew_tests_v121.0.6126.0",
+              "revision": "version:121.0.6126.0"
             }
           ],
           "dimensions": {
@@ -16353,12 +16353,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6099.13/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v121.0.6126.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 120.0.6099.13",
+        "description": "Run with ash-chrome version 121.0.6126.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16368,8 +16368,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v120.0.6099.13",
-              "revision": "version:120.0.6099.13"
+              "location": "lacros_version_skew_tests_v121.0.6126.0",
+              "revision": "version:121.0.6126.0"
             }
           ],
           "dimensions": {
