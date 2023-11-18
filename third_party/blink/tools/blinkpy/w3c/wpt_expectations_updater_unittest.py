@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
 import json
 import textwrap
 import unittest
@@ -429,12 +428,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'external/wpt/x/passing-test.html': [{
                     'status': 'PASS',
                     'expected': True,
-                }],
+                }] * 3,
             },
             step_name='blink_wpt_tests',
             builder_name='MOCK Try Mac10.10')
         updater = WPTExpectationsUpdater(host)
-        filtered_results = updater.filter_results_for_update(results)
+        _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
         self.assertEqual('blink_wpt_tests', results.step_name())
         self.assertEqual('MOCK Try Mac10.10', results.builder_name)
@@ -444,54 +443,51 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         results = WebTestResults.from_rdb_responses(
             {'external/wpt/x/passing-test.html': [{
                 'status': 'PASS'
-            }]},
+            }] * 3},
             step_name='blink_wpt_tests',
             builder_name='MOCK Try Mac10.10')
         updater = WPTExpectationsUpdater(host)
-        filtered_results = updater.filter_results_for_update(results)
+        _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
     def test_filter_results_for_update_some_failing_results(self):
         host = self.mock_host()
         results = WebTestResults.from_rdb_responses(
             {'external/wpt/x/failing-test.html': [{
-                'status': 'FAIL'
+                'status': 'ABORT'
             }] * 3},
             step_name='blink_wpt_tests',
             builder_name='MOCK Try Mac10.10')
         updater = WPTExpectationsUpdater(host)
-        filtered_results = updater.filter_results_for_update(results)
-        (result, ) = filtered_results
+        _, (result, ) = updater.filter_results_for_update(results)
         self.assertEqual('external/wpt/x/failing-test.html',
                          result.test_name())
-        self.assertEqual({'FAIL'}, set(result.actual_results()))
+        self.assertEqual({'TIMEOUT'}, set(result.actual_results()))
 
     def test_filter_results_for_update_non_wpt_test(self):
         host = self.mock_host()
+        # This shouldn't happen because WPT suite results shouldn't contain
+        # non-WPT tests in the first place.
         results = WebTestResults.from_rdb_responses(
-            {
-                'x/failing-test.html': [{
-                    'status': 'FAIL',
-                }] * 3,
-            },
+            {'x/failing-test.html': [{
+                'status': 'FAIL',
+            }] * 3},
             step_name='blink_wpt_tests',
             builder_name='MOCK Try Mac10.10')
         updater = WPTExpectationsUpdater(host)
-        filtered_results = updater.filter_results_for_update(results)
+        _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
     def test_filter_results_for_update_not_retried_test(self):
         host = self.mock_host()
         results = WebTestResults.from_rdb_responses(
-            {
-                'external/wpt/x/failing-test.html': [{
-                    'status': 'FAIL',
-                }],
-            },
+            {'external/wpt/reftest.html': [{
+                'status': 'FAIL',
+            }]},
             step_name='blink_wpt_tests',
             builder_name='MOCK Try Mac10.10')
         updater = WPTExpectationsUpdater(host)
-        filtered_results = updater.filter_results_for_update(results)
+        _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
     def test_get_expectations(self):
@@ -1282,124 +1278,61 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
     def test_get_test_to_rebaseline_returns_only_tests_with_failures(self):
         host = self.mock_host()
         updater = WPTExpectationsUpdater(host)
-        two = {
-            'external/wpt/test/path.html': {
-                'one':
-                SimpleTestResult(expected='FAIL', actual='PASS', bug='bug'),
-                'two':
-                SimpleTestResult(expected='FAIL', actual='TIMEOUT', bug='bug'),
-                'three':
-                SimpleTestResult(expected='FAIL', actual='PASS', bug='bug'),
-            }
-        }
-        tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(two)
-        self.assertEqual(tests_to_rebaseline, ['external/wpt/test/path.html'])
+        raw_results = WebTestResults.from_rdb_responses({
+            'external/wpt/x/y.html': [{
+                'status': 'PASS',
+            }] * 3,
+            'external/wpt/x/z.html': [{
+                'status': 'FAIL',
+            }] * 3,
+        })
+        tests_to_rebaseline, results = updater.filter_results_for_update(
+            raw_results)
+        self.assertEqual(len(results), 0)
+        self.assertEqual(tests_to_rebaseline, {'external/wpt/x/z.html'})
 
     def test_get_test_to_rebaseline_does_not_return_ref_tests(self):
         host = self.mock_host()
         updater = WPTExpectationsUpdater(host)
-        two = {
-            'external/wpt/reftest.html': {
-                'one':
-                SimpleTestResult(expected='FAIL',
-                                 actual='PASS',
-                                 bug='crbug.com/123'),
-                'two':
-                SimpleTestResult(expected='FAIL',
-                                 actual='TIMEOUT',
-                                 bug='crbug.com/123'),
-                'three':
-                SimpleTestResult(expected='FAIL',
-                                 actual='PASS',
-                                 bug='crbug.com/123'),
-            }
-        }
-        tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(two)
-        self.assertEqual(tests_to_rebaseline, [])
+        results = WebTestResults.from_rdb_responses(
+            {'external/wpt/reftest.html': [{
+                'status': 'FAIL',
+            }] * 3})
+        tests_to_rebaseline, _ = updater.filter_results_for_update(results)
+        self.assertEqual(tests_to_rebaseline, set())
+        results = WebTestResults.from_rdb_responses(
+            {'external/wpt/reftest.html': [{
+                'status': 'ABORT',
+            }] * 3})
+        tests_to_rebaseline, _ = updater.filter_results_for_update(results)
+        self.assertEqual(tests_to_rebaseline, set())
+        results = WebTestResults.from_rdb_responses(
+            {'external/wpt/reftest.html': [{
+                'status': 'PASS',
+            }] * 3})
+        tests_to_rebaseline, _ = updater.filter_results_for_update(results)
+        self.assertEqual(tests_to_rebaseline, set())
 
-    def test_get_tests_to_rebaseline_returns_updated_dict(self):
+    def test_get_tests_to_rebaseline_some_rebaselined(self):
         host = self.mock_host()
-        results = {
-            'external/wpt/test/path.html': {
-                'one':
-                SimpleTestResult(expected='PASS', actual='FAIL', bug='bug'),
-                'two':
-                SimpleTestResult(expected='PASS', actual='TIMEOUT', bug='bug'),
-            },
-        }
-        results_copy = copy.deepcopy(results)
         updater = WPTExpectationsUpdater(host)
-        tests_to_rebaseline, modified_test_results = updater.get_tests_to_rebaseline(
-            results)
-        self.assertEqual(tests_to_rebaseline, ['external/wpt/test/path.html'])
+        raw_results = WebTestResults.from_rdb_responses({
+            'external/wpt/x/y.html': [{
+                'status': 'FAIL',
+            }] * 3,
+            'external/wpt/x/z.html': [{
+                'status': 'ABORT',
+            }] * 3,
+        })
+
+        tests_to_rebaseline, (
+            result, ) = updater.filter_results_for_update(raw_results)
+        self.assertEqual(tests_to_rebaseline, {'external/wpt/x/y.html'})
         # The record for the builder with a timeout is kept, but not with a text mismatch,
         # since that should be covered by downloading a new baseline.
-        self.assertEqual(
-            modified_test_results, {
-                'external/wpt/test/path.html': {
-                    'two':
-                    SimpleTestResult(
-                        expected='PASS', actual='TIMEOUT', bug='bug'),
-                },
-            })
-        # The original dict isn't modified.
-        self.assertEqual(results, results_copy)
-
-    def test_get_tests_to_rebaseline_also_returns_slow_tests(self):
-        host = self.mock_host()
-        results = {
-            'external/wpt/test/path.html': {
-                'one':
-                SimpleTestResult(expected='SLOW', actual='FAIL', bug='bug'),
-                'two':
-                SimpleTestResult(expected='SLOW', actual='TIMEOUT', bug='bug'),
-            },
-        }
-        results_copy = copy.deepcopy(results)
-        updater = WPTExpectationsUpdater(host)
-        tests_to_rebaseline, modified_test_results = updater.get_tests_to_rebaseline(
-            results)
-        self.assertEqual(tests_to_rebaseline, ['external/wpt/test/path.html'])
-        # The record for the builder with a timeout is kept, but not with a text mismatch,
-        # since that should be covered by downloading a new baseline.
-        self.assertEqual(
-            modified_test_results, {
-                'external/wpt/test/path.html': {
-                    'two':
-                    SimpleTestResult(
-                        expected='SLOW', actual='TIMEOUT', bug='bug'),
-                },
-            })
-        # The original dict isn't modified.
-        self.assertEqual(results, results_copy)
-
-    def test_get_tests_to_rebaseline_handles_retries(self):
-        host = self.mock_host()
-        results = {
-            'external/wpt/test/foo.html': {
-                'bot':
-                SimpleTestResult(
-                    expected='PASS', actual='FAIL FAIL', bug='bug'),
-            },
-            'external/wpt/test/bar.html': {
-                'bot':
-                SimpleTestResult(
-                    expected='PASS', actual='TIMEOUT TIMEOUT', bug='bug'),
-            },
-        }
-        updater = WPTExpectationsUpdater(host)
-        tests_to_rebaseline, modified_test_results = updater.get_tests_to_rebaseline(
-            results)
-        self.assertEqual(tests_to_rebaseline, ['external/wpt/test/foo.html'])
-        self.assertEqual(
-            modified_test_results, {
-                'external/wpt/test/foo.html': {},
-                'external/wpt/test/bar.html': {
-                    'bot':
-                    SimpleTestResult(
-                        expected='PASS', actual='TIMEOUT TIMEOUT', bug='bug'),
-                },
-            })
+        self.assertEqual(result.test_name(), 'external/wpt/x/z.html')
+        # The original container isn't modified.
+        self.assertEqual(len(raw_results), 2)
 
     def test_run_no_builds(self):
         updater = WPTExpectationsUpdater(self.mock_host())

@@ -9,11 +9,10 @@ Specifically, this class fetches results from try bots for the current CL, then
 """
 
 import argparse
-import copy
 import logging
 import re
 from collections import defaultdict, namedtuple
-from typing import Iterator, List, Optional, Set
+from typing import List, Optional, Set, Tuple
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
@@ -177,7 +176,8 @@ class WPTExpectationsUpdater:
             raise ScriptError(
                 'No try job information was collected.') from error
 
-        results = self._make_results_for_update(build_to_status, flag_specific)
+        tests_to_rebaseline, results = self._fetch_results_for_update(
+            build_to_status, flag_specific)
         test_expectations = {}
         for suite_results in results:
             test_expectations = self.merge_dicts(
@@ -192,19 +192,19 @@ class WPTExpectationsUpdater:
         #     }
         # }
 
-        # Do not create expectations for tests which should have baseline
-        tests_to_rebaseline, test_expectations = self.get_tests_to_rebaseline(
-            test_expectations)
         exp_lines_dict = self.write_to_test_expectations(
             test_expectations, flag_specific)
-        return tests_to_rebaseline, exp_lines_dict
+        return sorted(tests_to_rebaseline), exp_lines_dict
 
-    def _make_results_for_update(
-            self,
-            build_to_status: BuildStatuses,
-            flag_specific: Optional[str] = None) -> Iterator[WebTestResults]:
+    def _fetch_results_for_update(
+        self,
+        build_to_status: BuildStatuses,
+        flag_specific: Optional[str] = None
+    ) -> Tuple[Set[str], List[WebTestResults]]:
+        completed_results, missing_results, final_results = [], [], []
+        tests_to_rebaseline = set()
+
         fetcher = self.host.results_fetcher
-        completed_results, missing_results = [], []
         incomplete_builds = GitCL.filter_incomplete(build_to_status)
         for build, job_status in build_to_status.items():
             if (job_status.result == 'SUCCESS'
@@ -218,22 +218,26 @@ class WPTExpectationsUpdater:
                 # in practice.
                 suite_results = self.host.results_fetcher.gather_results(
                     build, suite, not self.options.include_unexpected_pass)
+                to_rebaseline, suite_results = self.filter_results_for_update(
+                    suite_results)
+                tests_to_rebaseline.update(to_rebaseline)
                 if 'webdriver_wpt_tests' in suite:
                     if build in incomplete_builds:
                         raise ValueError(
                             f"{suite!r} on {build!r} doesn't run the main WPT "
                             'suite and therefore cannot inherit results from '
                             'other builds.')
-                    yield suite_results
+                    final_results.append(suite_results)
                 elif build in incomplete_builds:
                     missing_results.append(suite_results)
                 else:
-                    completed_results.append(
-                        self.filter_results_for_update(suite_results))
+                    completed_results.append(suite_results)
 
-        for results in missing_results:
-            yield self.fill_missing_results(results, completed_results)
-        yield from completed_results
+        final_results.extend(
+            self.fill_missing_results(results, completed_results)
+            for results in missing_results)
+        final_results.extend(completed_results)
+        return tests_to_rebaseline, final_results
 
     def fill_missing_results(
         self,
@@ -305,46 +309,75 @@ class WPTExpectationsUpdater:
         self,
         test_results: WebTestResults,
         min_attempts_for_update: int = 3,
-    ) -> WebTestResults:
-        """Returns a nested dict of failing test results.
+    ) -> Tuple[Set[str], WebTestResults]:
+        """Filters for failing test results that need TestExpectations.
 
-        Collects the builder name, platform and a list of tests that did not
-        run as expected.
-
-        Args:
+        Arguments:
             min_attempts_for_update: Threshold for the number of attempts at
                 which a test's expectations are updated. This prevents excessive
                 expectation creation due to infrastructure issues or flakiness.
                 Note that this threshold is necessary for updating without
                 `--include-unexpected-pass`, but sufficient otherwise.
+
+        Returns:
+            * A set of tests that should be handled by rebaselining, which
+              captures subtest-level testharness/wdspec results. Tests that
+              fail to produce output (crash/timeout) or don't support subtests
+              aren't rebaselined.
+            * The filtered test results.
         """
-        tests_to_update = []
+        failing_results = []
         if not self.options.include_unexpected_pass:
             # TODO(crbug.com/1149035): Consider suppressing flaky passes.
             for result in test_results.didnt_run_as_expected_results():
                 if (result.attempts >= min_attempts_for_update
                         and not result.did_pass()):
-                    tests_to_update.append(result)
+                    failing_results.append(result)
         else:
             for result in test_results.didnt_run_as_expected_results():
                 if (result.attempts >= min_attempts_for_update
                         or result.did_pass()):
-                    tests_to_update.append(result)
+                    failing_results.append(result)
 
-        tests_to_update = [
-            result for result in tests_to_update
-            if 'SKIP' not in result.actual_results()
+        failing_results = [
+            result for result in failing_results
+            if ResultType.Skip not in result.actual_results()
         ]
         # TODO(crbug.com/1149035): Extract or make this check configurable
         # to allow updating expectations for non-WPT tests.
-        tests_to_update = [
-            result for result in tests_to_update
+        failing_results = [
+            result for result in failing_results
             if self._is_wpt_test(result.test_name())
         ]
-        return WebTestResults(tests_to_update,
-                              step_name=test_results.step_name(),
-                              interrupted=test_results.interrupted,
-                              builder_name=test_results.builder_name)
+
+        tests_to_rebaseline, results_to_update = set(), []
+        for result in failing_results:
+            if self.can_rebaseline(result):
+                tests_to_rebaseline.add(result.test_name())
+                # Always assume rebaseline is successful, so delete the line if
+                # Failure is the only result. Otherwise, change Failure to Pass.
+                # TODO(crbug.com/1149035): Consider rebaseline failed scenario
+                # in future, or have `rebaseline-cl` update expectations
+                # instead.
+                statuses = {*result.actual_results(), ResultType.Pass}
+                statuses.discard(ResultType.Failure)
+                if len(statuses) > 1:
+                    new_leaf = {
+                        **result._result_dict, 'actual':
+                        ' '.join(sorted(statuses))
+                    }
+                    result = WebTestResult(result.test_name(), new_leaf,
+                                           result.artifacts)
+                    results_to_update.append(result)
+            else:
+                results_to_update.append(result)
+
+        results_to_update = WebTestResults(
+            results_to_update,
+            step_name=test_results.step_name(),
+            interrupted=test_results.interrupted,
+            builder_name=test_results.builder_name)
+        return tests_to_rebaseline, results_to_update
 
     def generate_failing_results_dict(self, web_test_results):
         """Makes a dict with results for one platform.
@@ -771,74 +804,16 @@ class WPTExpectationsUpdater:
             _log.info('  %s: %s', subcommand, line)
         _log.info('-- end of %s output --', subcommand)
 
-    def get_tests_to_rebaseline(self, test_results):
-        """Filters failing tests that can be rebaselined.
-
-        Creates a list of tests to rebaseline depending on the tests' platform-
-        specific results. In general, this will be non-ref tests that failed
-        due to a baseline mismatch (rather than crash or timeout).
-
-        Args:
-            test_results: A dictionary of failing test results, mapping test
-                names to platforms to SimpleTestResult.
-
-        Returns:
-            A pair: A set of tests to be rebaselined, and a modified copy of
-            the test_results dictionary. The tests to be rebaselined should
-            include testharness.js tests that failed due to a baseline mismatch.
-        """
-        new_test_results = copy.deepcopy(test_results)
-        tests_to_rebaseline = set()
-        for test_name in test_results:
-            for platform, result in test_results[test_name].items():
-                if self.can_rebaseline(test_name, result):
-                    # We always assume rebaseline is successful, so we delete
-                    # the line if Failure is the only result, otherwise we
-                    # change Failure to Pass.
-                    # TODO: consider rebaseline failed scenario in future
-                    self.update_test_results_for_rebaselined_test(
-                        new_test_results, test_name, platform)
-                    tests_to_rebaseline.add(test_name)
-
-        return sorted(tests_to_rebaseline), new_test_results
-
-    def update_test_results_for_rebaselined_test(self, test_results, test_name,
-                                                 platform):
-        """Update test results if we successfully rebaselined a test
-
-        After rebaseline, a failed test will now pass. And if 'PASS' is the
-        only result, we don't add one line for that.
-        We are assuming rebaseline is always successful for now. We can
-        improve this logic in future once rebaseline-cl can tell which test
-        it failed to rebaseline.
-        """
-        result = test_results[test_name][platform]
-        actual = set(result.actual.split(' '))
-        if 'FAIL' in actual:
-            actual.remove('FAIL')
-            actual.add('PASS')
-            if len(actual) == 1:
-                del test_results[test_name][platform]
-            else:
-                test_results[test_name][platform] = SimpleTestResult(
-                    expected=result.expected,
-                    actual=' '.join(sorted(actual)),
-                    bug=result.bug)
-
-    def can_rebaseline(self, test_name, result):
-        """Checks if a test can be rebaselined.
-
-        Args:
-            test_name: The test name string.
-            result: A SimpleTestResult.
-        """
-        if self.is_reference_test(test_name):
+    def can_rebaseline(self, result: WebTestResult) -> bool:
+        """Checks if a test can be rebaselined."""
+        if self.is_reference_test(result.test_name()):
             return False
-        if any(x in result.actual for x in ('CRASH', 'TIMEOUT', 'MISSING')):
-            return False
-        return True
+        statuses = set(result.actual_results())
+        if {ResultType.Pass, ResultType.Failure} <= statuses:
+            return False  # Has nondeterministic output; cannot be rebaselined.
+        return not (statuses & {ResultType.Crash, ResultType.Timeout})
 
-    def is_reference_test(self, test_name):
+    def is_reference_test(self, test_name: str) -> bool:
         """Checks whether a given test is a reference test."""
         return bool(self.port.reference_files(test_name))
 
