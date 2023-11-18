@@ -265,14 +265,14 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
 
   // TODO(crbug.com/1445868): fill in creation date if still relevant and verify
   // incoming invitations.
+  // Prefer the modern proto format that supports representing password groups.
   std::vector<PasswordForm> incoming_credentials_list;
-  if (invitation.client_only_unencrypted_data().has_password_data()) {
-    incoming_credentials_list.push_back(
-        LegacyIncomingSharingInvitationToPasswordForm(invitation));
-  } else if (invitation.client_only_unencrypted_data()
-                 .has_password_group_data()) {
+  if (invitation.client_only_unencrypted_data().has_password_group_data()) {
     incoming_credentials_list =
         ModernIncomingSharingInvitationToPasswordForms(invitation);
+  } else if (invitation.client_only_unencrypted_data().has_password_data()) {
+    incoming_credentials_list.push_back(
+        LegacyIncomingSharingInvitationToPasswordForm(invitation));
   }
   for (const PasswordForm& incoming_credentials : incoming_credentials_list) {
     auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(

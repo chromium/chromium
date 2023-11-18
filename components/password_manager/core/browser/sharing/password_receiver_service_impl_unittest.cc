@@ -633,11 +633,23 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
                          ->add_element_data();
   element_data->set_origin(kPslMatchUrl);
   element_data->set_signon_realm(kPslMatchUrl);
+
+  // Add credentials using the legacy proto format that doesn't support password
+  // group. This should be ignored.
+  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
+      invitation.mutable_client_only_unencrypted_data()
+          ->mutable_password_data();
+  password_data->set_origin("https:/www.to-be-ignored.com");
+  password_data->set_signon_realm("https:/www.to-be-ignored.com");
+  password_data->set_username_value(base::UTF16ToUTF8(kUsername));
+  password_data->set_password_value(base::UTF16ToUTF8(kPassword));
+
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
   RunUntilIdle();
 
-  // Both origins in the invitation should have been added to the store.
+  // Both origins in the invitation using the modern format should have been
+  // added to the store. The one in the legacy format should be ignored.
   EXPECT_EQ(profile_password_store().stored_passwords().size(), 2U);
 
   EXPECT_THAT(
