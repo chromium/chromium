@@ -2,6 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "notifications_promo_view_constants.h",
+    "notifications_promo_view_constants.mm",
+  ]
+}
+
 source_set("feed_top_section") {
   sources = [
     "feed_top_section_consumer.h",
@@ -35,5 +42,21 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/ui/ntp:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("feed_top_section_promos_ui") {
+  sources = [
+    "notifications_promo_view.h",
+    "notifications_promo_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common:button_config",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
   ]
 }
