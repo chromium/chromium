@@ -76,6 +76,8 @@ class ChromeComposeClient
       mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
+  void SetModelQualityLogsUploaderForTest(
+      optimization_guide::ModelQualityLogsUploader* model_quality_uploader);
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest();
@@ -99,6 +101,7 @@ class ChromeComposeClient
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
+  optimization_guide::ModelQualityLogsUploader* GetModelQualityLogsUploader();
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
@@ -132,6 +135,9 @@ class ChromeComposeClient
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
+
+  std::optional<optimization_guide::ModelQualityLogsUploader*>
+      model_quality_uploader_for_test_;
 
   std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;

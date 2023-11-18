@@ -77,11 +77,14 @@ void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideModelExecutor* executor,
+    optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
+      final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
+      model_quality_logs_uploader_(model_quality_logs_uploader),
       weak_ptr_factory_(this) {
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
@@ -99,16 +102,13 @@ ComposeSession::~ComposeSession() {
 
   // If we have a modeling quality log entry, upload it.
   if (modeling_log_entry_) {
-    optimization_guide::proto::ComposeQuality* quality =
-        modeling_log_entry_.get()
-            ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
-    if (quality) {
-      quality->set_final_status(final_status_);
+    modeling_log_entry_
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_final_status(final_status_);
     }
     // Ensure that log gets uploaded on destruction.
     modeling_log_entry_.reset();
   }
-}
 
 void ComposeSession::Bind(
     mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
@@ -182,16 +182,18 @@ void ComposeSession::ComposeWithSession(const std::string& input,
     *request.mutable_generate_params() = std::move(generate_params);
   }
 
-  base::TimeTicks request_start = base::TimeTicks::Now();
+  auto request_timer = std::make_unique<base::ElapsedTimer>();
   request_id_++;
+
   session_->ExecuteModel(
-      request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   request_start, request_id_));
+      request,
+      base::BindRepeating(&ComposeSession::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(request_timer.get()), request_id_));
 }
 
 void ComposeSession::ModelExecutionCallback(
-    base::TimeTicks request_start,
+    base::ElapsedTimer* request_timer,
     int request_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
@@ -200,7 +202,7 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
-  base::TimeDelta request_delta = base::TimeTicks::Now() - request_start;
+  base::TimeDelta request_delta = request_timer->Elapsed();
   current_state_->has_pending_request = false;
 
   compose::mojom::ComposeStatus status =
@@ -244,6 +246,14 @@ void ComposeSession::ModelExecutionCallback(
   // If log entry is null don't do anything.
   if (log_entry.get()) {
     modeling_log_entry_ = std::move(log_entry);
+    modeling_log_entry_
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_request_latency_ms(request_delta.InMilliseconds());
+
+    if (model_quality_logs_uploader_.has_value()) {
+      model_quality_logs_uploader_.value()->UploadModelQualityLogs(
+          std::move(modeling_log_entry_));
+    }
   }
 }
 

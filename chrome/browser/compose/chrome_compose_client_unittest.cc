@@ -25,9 +25,12 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,6 +62,14 @@ class MockModelExecutor
                const google::protobuf::MessageLite& request_metadata,
                optimization_guide::OptimizationGuideModelExecutionResultCallback
                    callback));
+};
+class MockModelQualityLogsUploader
+    : public optimization_guide::ModelQualityLogsUploader {
+ public:
+  MOCK_METHOD(
+      void,
+      UploadModelQualityLogs,
+      (std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry));
 };
 
 class MockSession
@@ -123,6 +134,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
+    client_->SetModelQualityLogsUploaderForTest(&model_quality_logs_uploader_);
 
     ON_CALL(model_executor_, StartSession(_)).WillByDefault([&] {
       return std::make_unique<MockSessionWrapper>(session());
@@ -134,16 +146,22 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                         callback) {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
-                  base::BindOnce(std::move(callback),
-                                 OptimizationGuideResponse(
-                                     ComposeResponse(true, "Cucumbers")),
-                                 nullptr));
+                  base::BindOnce(
+                      std::move(callback),
+                      OptimizationGuideResponse(
+                          ComposeResponse(true, "Cucumbers")),
+                      std::make_unique<
+                          optimization_guide::ModelQualityLogEntry>(
+                          std::make_unique<
+                              optimization_guide::proto::LogAiDataRequest>())));
             })));
     ON_CALL(compose_dialog(), ResponseReceived(_))
         .WillByDefault(
             testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
               compose_future_.SetValue(std::move(response));
             }));
+
+    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
@@ -189,6 +207,9 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   ChromeComposeClient& client() { return *client_; }
   MockSession& session() { return session_; }
+  MockModelQualityLogsUploader& model_quality_logs_uploader() {
+    return model_quality_logs_uploader_;
+  }
 
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
   autofill::FormFieldData& field_data() { return field_data_; }
@@ -274,6 +295,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
  private:
   raw_ptr<ChromeComposeClient> client_;
+  testing::NiceMock<MockModelQualityLogsUploader> model_quality_logs_uploader_;
   testing::NiceMock<MockModelExecutor> model_executor_;
   testing::NiceMock<MockSession> session_;
   testing::NiceMock<MockComposeDialog> compose_dialog_;
@@ -286,6 +308,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       callback_router_;
   mojo::Remote<compose::mojom::ComposeClientPageHandler> client_page_handler_;
   mojo::Remote<compose::mojom::ComposeSessionPageHandler> page_handler_;
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
@@ -1250,6 +1273,34 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   result = open_test_future.Take();
   EXPECT_TRUE(result->compose_state->has_pending_request);
   EXPECT_EQ(base::UTF16ToUTF8(selection), result->initial_input);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
+  ShowDialogAndBindMojo();
+
+  // optimization_guide::proto::ComposeQuality quality;
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      test_future;
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillOnce(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) { test_future.SetValue(std::move(response)); }));
+
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
+                          /*rewrite=*/false);
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      test_future.Take();
+
+  EXPECT_EQ(
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
+      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->request_latency_ms());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

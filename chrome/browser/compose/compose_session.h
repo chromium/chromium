@@ -10,10 +10,12 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/compose/inner_text_extractor.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,9 +46,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // form field on which it was triggered.
   using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
-  ComposeSession(content::WebContents* web_contents,
-                 optimization_guide::OptimizationGuideModelExecutor* executor,
-                 ComposeCallback callback = base::NullCallback());
+  ComposeSession(
+      content::WebContents* web_contents,
+      optimization_guide::OptimizationGuideModelExecutor* executor,
+      optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
+      ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
@@ -115,7 +119,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
  private:
   void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
-      base::TimeTicks request_start,
+      base::ElapsedTimer* request_start,
       int request_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
@@ -181,6 +185,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
 
+  std::optional<optimization_guide::ModelQualityLogsUploader*>
+      model_quality_logs_uploader_;
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };
 

@@ -84,8 +84,8 @@ void ChromeComposeClient::BindComposeDialog(
   url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (origin == url::Origin::Create(GURL(kComposeURL))) {
-    debug_session_ =
-        std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor());
+    debug_session_ = std::make_unique<ComposeSession>(
+        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader());
     debug_session_->set_skip_inner_text(true);
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
@@ -165,7 +165,8 @@ void ChromeComposeClient::CreateOrUpdateSession(
           compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
     }
     auto new_session = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), std::move(callback));
+        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
+        std::move(callback));
     current_session = new_session.get();
     // Insert or replace with a new session.
     sessions_.insert_or_assign(active_compose_field_id_.value(),
@@ -254,6 +255,13 @@ bool ChromeComposeClient::ShouldTriggerContextMenu(
                                                     rfh, params);
 }
 
+optimization_guide::ModelQualityLogsUploader*
+ChromeComposeClient::GetModelQualityLogsUploader() {
+  return model_quality_uploader_for_test_.value_or(
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
+}
+
 optimization_guide::OptimizationGuideModelExecutor*
 ChromeComposeClient::GetModelExecutor() {
   return model_executor_for_test_.value_or(
@@ -269,6 +277,11 @@ ChromeComposeClient::GetOptimizationGuide() {
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
+}
+
+void ChromeComposeClient::SetModelQualityLogsUploaderForTest(
+    optimization_guide::ModelQualityLogsUploader* model_quality_uploader) {
+  model_quality_uploader_for_test_ = model_quality_uploader;
 }
 
 void ChromeComposeClient::SetSkipShowDialogForTest() {
