@@ -1057,6 +1057,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3154506275960390542">Strona zawiera formularz, którego nie można przesłać bezpiecznie. Podczas przesyłania dane mogą zobaczyć inni użytkownicy, a hakerzy mogą je zmodyfikować, by na serwer dotarły zmienione dane.</translation>
 <translation id="3154987252551138431">Podczas używania Udostępniania w pobliżu wystąpił błąd</translation>
 <translation id="315504272643575312">Tym kontem zarządza <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158539265159265653">Dysk</translation>
 <translation id="3162559335345991374">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony logowania.</translation>
@@ -3455,7 +3456,6 @@ Dodatkowe informacje:
 <translation id="79338296614623784">Wpisz prawidłowy numer telefonu</translation>
 <translation id="7934414805353235750"><ph name="URL" /> chce odtworzyć treści chronione. Tożsamość Twojego urządzenia zostanie zweryfikowana przez Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Potwierdź swoją tożsamość, aby przeglądarka Google Chrome mogła uzupełnić dane do płatności.</translation>
 <translation id="7937163678541954811">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim urządzeniu – umożliwi to szybsze płatności</translation>
 <translation id="7937554595067888181">Ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certyfikat serwera nie jest jeszcze ważny.</translation>
@@ -3532,7 +3532,6 @@ Dodatkowe informacje:
 <translation id="8058009102480785916">Produkcja żywności</translation>
 <translation id="8058603697124206642">Niewymagana</translation>
 <translation id="8063875539456488183">Zapisz i obserwuj cenę</translation>
-<translation id="8064892030280197386">zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności.</translation>
 <translation id="8066225060526005217">Zarządzanie przez ustawienia plików cookie</translation>
 <translation id="8067872629359326442">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
 <translation id="8070439594494267500">Ikona aplikacji</translation>
@@ -3955,6 +3954,7 @@ Dodatkowe informacje:
 <translation id="8903921497873541725">Powiększ</translation>
 <translation id="890493561996401738">Usuń przycisk sugestii. Naciśnij Enter, by usunąć, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 cali</translation>
+<translation id="8914504000324227558">Uruchom Chrome ponownie</translation>
 <translation id="8918062451146297192">Kod CVC karty wirtualnej</translation>
 <translation id="8919740778133505789">Samochody sportowe</translation>
 <translation id="8919895429178014996">Ukryj wszystkie elementy</translation>

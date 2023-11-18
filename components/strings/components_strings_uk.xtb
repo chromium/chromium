@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Ця сторінка містить незахищену форму. Інші люди можуть бачити дані під час передавання, а зловмисники можуть змінювати їх.</translation>
 <translation id="3154987252551138431">Під час використання функції "Передавання поблизу" сталася помилка</translation>
 <translation id="315504272643575312">Вашим обліковим записом керує <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Перезапустити Chromium</translation>
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Можливо, щоб під’єднатися до цієї мережі Wi-Fi, потрібно відвідати її сторінку входу.</translation>
@@ -3455,7 +3456,6 @@
 <translation id="79338296614623784">Введіть дійсний номер телефону</translation>
 <translation id="7934414805353235750">Сайт <ph name="URL" /> хоче відтворювати захищений вміст. Google перевірить ідентифікатор вашого пристрою.</translation>
 <translation id="7935318582918952113">Дистилятор DOM</translation>
-<translation id="7936775433939783906">Підтвердьте свою особу в Google Chrome, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="7937163678541954811">Код CVC цієї картки буде зашифровано й збережено на вашому пристрої, щоб ви могли швидше оплачувати замовлення</translation>
 <translation id="7937554595067888181">Діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертифікат сервера ще не дійсний.</translation>
@@ -3532,7 +3532,6 @@
 <translation id="8058009102480785916">Виробництво харчових продуктів</translation>
 <translation id="8058603697124206642">необов’язкова</translation>
 <translation id="8063875539456488183">Зберегти й відстежувати ціну</translation>
-<translation id="8064892030280197386">намагається підтвердити вашу особу, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="8066225060526005217">Задано в налаштуваннях файлів cookie</translation>
 <translation id="8067872629359326442">Щойно ви ввели пароль на оманливому сайті. Chromium може допомогти. Щоб змінити пароль і повідомити Google про можливу небезпеку для облікового запису, натисніть "Захистити обліковий запис".</translation>
 <translation id="8070439594494267500">Значок додатка</translation>
@@ -3956,6 +3955,7 @@
 <translation id="8903921497873541725">Збільшити масштаб</translation>
 <translation id="890493561996401738">Кнопка видалення підказки: натисніть Enter, щоб видалити, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм.</translation>
+<translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8918062451146297192">Код CVC для віртуальної картки</translation>
 <translation id="8919740778133505789">Спортивні авто</translation>
 <translation id="8919895429178014996">Сховати всі об’єкти</translation>

@@ -207,6 +207,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4677944499843243528">Profilen ser ud til at være i brug i en anden Chromium-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chromium har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du fjerne blokeringen af profilen og genstarte Chromium.</translation>
 <translation id="4680828127924988555">Annuller installation</translation>
 <translation id="4708774505295300557">Nogen har tidligere logget ind på Chromium på denne computer som <ph name="ACCOUNT_EMAIL_LAST" />. Opret en ny Chromium-bruger for at holde dine oplysninger adskilt.</translation>
+<translation id="4724676981607797757">Installationen mislykkedes på grund af en fejl med ikke-understøttet protokol.</translation>
 <translation id="4746050847053251315">Vil du slutte Chromium alligevel?</translation>
 <translation id="4748217263233248895">En særlig sikkerhedsopdatering til Chromium blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="4765210420921718862">Du kan til enhver tid ombestemme dig og fravælge dette i Chromium-indstillingerne. Prøveperioderne kører sideløbende med den aktuelle visning af annoncer, så ændringerne kan ikke ses med det samme.</translation>
@@ -277,6 +278,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6145820983052037069">Her kan du skifte mellem Chromium-profiler</translation>
 <translation id="615103374448673771">Hvis du tillader cookies, kan Chromium bruge dem under forudindlæsning</translation>
 <translation id="6175304430031192654">Afhængigt af dine indstillinger sender Chromium muligvis også cookies og din aktuelle webadresse</translation>
+<translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
@@ -462,5 +464,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
+<translation id="983803489796659991">Installationen mislykkedes, fordi opdateringsserveren ikke har nogen hash-data for appen.</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

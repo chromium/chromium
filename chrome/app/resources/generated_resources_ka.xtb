@@ -1844,6 +1844,7 @@
 <translation id="2402226831639195063">ხმები</translation>
 <translation id="2405887402346713222">მოწყობილობათა და კომპონენტების სერიული ნომრები</translation>
 <translation id="2406153734066939945">გსურთ, წაშალოთ ეს პროფილი და მისი მონაცემები?</translation>
+<translation id="2407671304279211586">აირჩიეთ DNS-ის პროვაიდერი</translation>
 <translation id="2408018932941436077">მიმდინარეობს ბარათის შენახვა</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2409268599591722235">დავიწყოთ</translation>
@@ -2675,6 +2676,7 @@
 <translation id="3021065318976393105">ბატარეით მუშაობისას</translation>
 <translation id="3021066826692793094">პეპელა</translation>
 <translation id="3021678814754966447">ჩარჩოს წყაროს &amp;ნახვა</translation>
+<translation id="3021902017511220299">სკანირება ვერ მოხერხდა. ამ მოქმედებას ბლოკავს თქვენი ადმინისტრატორი.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> ამოიშლება ამ Chromebook-იდან და არ შეინახება <ph name="PRIMARY_EMAIL" />-ში.</translation>
 <translation id="3022978424994383087">წარმოთქმულის აღქმა ვერ მოხერხდა.</translation>
 <translation id="3023464535986383522">მონიშვნა წარმოსათქმელად</translation>
@@ -9043,6 +9045,7 @@
 <translation id="811994229154425014">წერტილის აკრეფა ორმაგი შორისით</translation>
 <translation id="8120505434908124087">eSIM პროფილის დაინსტალირება</translation>
 <translation id="8121750884985440809">ამჟამად თქვენი ეკრანის ტრანსლირებას ახორციელებთ</translation>
+<translation id="8122898034710982882">ტელეფონის ცენტრი, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ყვითელი და თეთრი ყვავილი</translation>
 <translation id="8123975449645947908">უკან გადაადგილება</translation>
 <translation id="8124313775439841391">იმართება ONC</translation>
@@ -9078,6 +9081,7 @@
 <translation id="8148760431881541277">შესვლის შეზღუდვა</translation>
 <translation id="8149564499626272569">USB-კაბელიანი ტელეფონის მეშვეობით დადასტურება</translation>
 <translation id="8149870652370242480">შენახული პაროლები თქვენს ტელეფონზე რომ გამოიყენოთ, ჩამოტვირთეთ iOS-ისთვის განკუთვნილი Chrome და შედით თქვენს Google ანგარიშში.</translation>
+<translation id="8151057139207656239">ანაწყობის დეტალები დაკოპირდა</translation>
 <translation id="815114315010033526">სანაცვლოდ QR კოდის გამოყენება</translation>
 <translation id="8151638057146502721">კონფიგურირება</translation>
 <translation id="8154790740888707867">ფაილი არ არის</translation>

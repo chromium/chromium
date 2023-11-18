@@ -803,7 +803,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5221339005270097309">Comprobando contraseñas…</translation>
 <translation id="5226568866393490213">Ignorar advertencia</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
-<translation id="5232485538978018676">Iniciar sesión con una cuenta gestionada</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado en tu cuenta de Google: {email}.}other{Marcadores guardados en tu cuenta de Google: {email}.}}</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5235389474593199952">Ocultar Historial</translation>

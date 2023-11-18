@@ -1057,6 +1057,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3154506275960390542">Kjo faqe përfshin një formular që mund të mos paraqitet në mënyrë të sigurt. Të dhënat që dërgon mund të shihen nga të tjerët ndërkohë që po transmetohen ose mund të modifikohen nga një sulmues për të ndryshuar atë që merr serveri.</translation>
 <translation id="3154987252551138431">Ndodhi një gabim gjatë përdorimit të "Ndarjes në afërsi"</translation>
 <translation id="315504272643575312">Llogaria jote menaxhohet nga <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Rinis Chromium</translation>
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158539265159265653">Disku</translation>
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
@@ -3454,7 +3455,6 @@ Detaje shtesë:
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
 <translation id="7934414805353235750"><ph name="URL" /> dëshiron të luajë përmbajtje të mbrojtur. Identiteti i pajisjes sate do të verifikohet nga Google.</translation>
 <translation id="7935318582918952113">Distiluesi i DOM-it</translation>
-<translation id="7936775433939783906">Verifiko që je ti që Google Chrome të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="7937163678541954811">CVC-ja e kësaj karte do të enkriptohet dhe do të ruhet në pajisjen tënde për përfundim më të shpejtë të blerjes</translation>
 <translation id="7937554595067888181">Skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certifikata e serverit nuk është ende e vlefshme.</translation>
@@ -3531,7 +3531,6 @@ Detaje shtesë:
 <translation id="8058009102480785916">Prodhimi ushqimor</translation>
 <translation id="8058603697124206642">Nuk kërkohet</translation>
 <translation id="8063875539456488183">Gjej dhe gjurmo çmimet</translation>
-<translation id="8064892030280197386">të verifikojë që je ti që të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="8066225060526005217">Menaxhohen nga cilësimet e kukive</translation>
 <translation id="8067872629359326442">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="8070439594494267500">Ikona e aplikacionit</translation>
@@ -3954,6 +3953,7 @@ Detaje shtesë:
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="890493561996401738">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
+<translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8918062451146297192">Kodi CVC për kartën virtuale</translation>
 <translation id="8919740778133505789">Makina sportive</translation>
 <translation id="8919895429178014996">Fshih të gjithë artikujt</translation>

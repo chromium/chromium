@@ -209,6 +209,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4677944499843243528">Beste Chromium prozesu bat (<ph name="PROCESS_ID" />) beste ordenagailu batean (<ph name="HOST_NAME" />) profila erabiltzen ari dela dirudi. Chromium-ek profila blokeatu du honda ez dadin. Ziur badakizu ez dela beste inongo prozesurik profila erabiltzen ari, profila desblokea dezakezu eta Chromium berrabiarazi.</translation>
 <translation id="4680828127924988555">Utzi instalazioa bertan behera</translation>
 <translation id="4708774505295300557">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chromium-en ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chromium erabiltzaile bat.</translation>
+<translation id="4724676981607797757">Instalazioak huts egin du, protokoloa onartu ez delako.</translation>
 <translation id="4746050847053251315">Chromium-etik irten nahi duzu hala ere?</translation>
 <translation id="4748217263233248895">Chromium-en segurtasun-eguneratze berezi bat aplikatu berri da. Berrabiarazi gailua, eta fitxak leheneratuko dizkizugu.</translation>
 <translation id="4765210420921718862">Iritziz aldatzen bazara, joan Chromium-en ezarpenetara. Iragarkiak eskaintzeko darabilgun modua aplikatu bitartean egiten dira probak; beraz, aldaketak ez dituzu berehala ikusiko.</translation>
@@ -279,6 +280,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6145820983052037069">Aldatu Chromium-eko profila hemen</translation>
 <translation id="615103374448673771">Cookieak onartzen badituzu, baliteke Chromium-ek haiek erabiltzea orriak aurrez kargatzeko</translation>
 <translation id="6175304430031192654">Zure ezarpenen arabera, baliteke Chromium-ek cookieak eta oraingo URLa ere bidaltzea</translation>
+<translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
 <translation id="6183079672144801177">Ziurtatu Chromium-eko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="6212496753309875659">Ordenagailuak Chromium arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Chromium eta saiatu berriro.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Orain exekutatuko da Chromium berriro}=1{1 segundo barru exekutatuko da Chromium berriro}other{# segundo barru exekutatuko da Chromium berriro}}</translation>
@@ -463,5 +465,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="942598560705308788">Chromium-ek kudeatutako ziurtagiriak</translation>
 <translation id="965162752251293939">Nor erabiltzen ari da Chromium?</translation>
 <translation id="967427899662692980">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>
+<translation id="983803489796659991">Instalazioak huts egin du, eguneratze-zerbitzariak aplikaziorako hash-daturik ez duelako.</translation>
 <translation id="985602178874221306">Chromium egileak</translation>
 </translationbundle>

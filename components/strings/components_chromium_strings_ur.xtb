@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="130631256467250065">اپنا آلہ اگلی بار دوبارہ شروع کرنے پر آپ کی تبدیلیاں مؤثر ہوں گی۔</translation>
-<translation id="1555506416658437797">ادائیگی کے طریقوں میں ترمیم کریں۔</translation>
 <translation id="275588974610408078">‏Chromium میں کریش رپورٹنگ دستیاب نہیں ہے۔</translation>
 <translation id="3064346599913645280">‏آپ ایک محفوظ Chromium صفحہ دیکھ رہے ہیں</translation>
 <translation id="3255926992597692024">‏ادائیگی کے طریقوں پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Chromium کوشش کر رہا ہے۔</translation>
@@ -30,7 +29,6 @@
           <ph name="PROXIES_TITLE" />
           پر جائیں اور یقینی بنائیں کہ آپ کی کنفیگریشن
           "کوئی پراکسی نہیں" یا "ڈائریکٹ" پر سیٹ ہے۔</translation>
-<translation id="585620188971323280">ادائیگی کے طریقوں کو پُر کرنے کے لیے ترتیبات میں ترمیم کریں۔</translation>
 <translation id="6549378540556750549">‏Chromium کو دوسرے <ph name="BEGIN_LINK_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_OSS" /> کے ذریعے بھی ممکن بنایا گیا ہے۔</translation>
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="7681937895330411637">‏Chromium کو <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> اوپن سورس پروجیکٹ کے ذریعے ممکن بنایا گیا ہے۔</translation>

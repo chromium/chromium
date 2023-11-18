@@ -802,7 +802,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5221339005270097309">Verificando contraseñas…</translation>
 <translation id="5226568866393490213">Descartar advertencia</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
-<translation id="5232485538978018676">Acceder con una cuenta administrada</translation>
 <translation id="5234094073825090254">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google, {email}.}other{Se guardaron los favoritos en tu Cuenta de Google, {email}.}}</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5235389474593199952">Ocultar Historial</translation>

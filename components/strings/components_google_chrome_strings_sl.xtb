@@ -3,7 +3,6 @@
 <translationbundle lang="sl">
 <translation id="1016765312371154165">Chrome se ni pravilno zaustavil.</translation>
 <translation id="130631256467250065">Spremembe bodo uveljavljene pri naslednjem vnovičnem zagonu naprave.</translation>
-<translation id="1555506416658437797">urediti plačilna sredstva.</translation>
 <translation id="1635457557763038537">Spremembe bodo začele veljati ob naslednjem zagonu Chroma.</translation>
 <translation id="2399868464369312507">Google Chrome poskuša urediti plačilna sredstva.</translation>
 <translation id="2447485272386224171">Chrome omogočajo odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> in druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromu dostop do
         omrežja.</translation>
 <translation id="5005121315113832363">To stran je blokiral Chrome.</translation>
-<translation id="585620188971323280">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
 <translation id="6011049234605203654">Odprite
           Chromov meni &gt;
           <ph name="SETTINGS_TITLE" />

@@ -1057,6 +1057,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3154506275960390542">Bu sayfada güvenli şekilde gönderilemeyecek bir form bulunmaktadır. Gönderdiğiniz veriler, aktarım sırasında başkaları tarafından görüntülenebilir veya bir saldırgan tarafından sunucunun alacağı verileri değiştirmek amacıyla kullanılabilir.</translation>
 <translation id="3154987252551138431">Yakındakilerle Paylaş özelliği kullanılırken bir sorun oluştu</translation>
 <translation id="315504272643575312">Hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
+<translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
@@ -3455,7 +3456,6 @@ Ek ayrıntılar:
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
 <translation id="7934414805353235750"><ph name="URL" />, korumalı içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanacak.</translation>
 <translation id="7935318582918952113">DOM Ayrıştırıcı</translation>
-<translation id="7936775433939783906">Google Chrome'un, ödeme bilgilerinizi doldurabilmesi için kimliğinizi doğrulayın.</translation>
 <translation id="7937163678541954811">Daha hızlı ödeme için bu kartın CVC'si şifrelenip cihazınıza kaydedilir</translation>
 <translation id="7937554595067888181">Süre sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sunucunun sertifikası henüz geçerli değil.</translation>
@@ -3532,7 +3532,6 @@ Ek ayrıntılar:
 <translation id="8058009102480785916">Gıda üretimi</translation>
 <translation id="8058603697124206642">Gerekli değil</translation>
 <translation id="8063875539456488183">Fiyatı kaydet ve takip et</translation>
-<translation id="8064892030280197386">Ödeme bilgilerinizin doldurulması için kimliğinizi doğrulayın.</translation>
 <translation id="8066225060526005217">Çerez ayarları tarafından yönetiliyor</translation>
 <translation id="8067872629359326442">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium yardım edebilir. Şifrenizi değiştirmek ve hesabınızın risk altında olabileceğini Google'a bildirmek için Hesabı Koru'yu tıklayın.</translation>
 <translation id="8070439594494267500">Uygulama simgesi</translation>
@@ -3956,6 +3955,7 @@ Ek ayrıntılar:
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="890493561996401738">Öneriyi Kaldır düğmesi, kaldırmak için Enter tuşuna basın, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
+<translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8918062451146297192">Sanal kartın CVC'si</translation>
 <translation id="8919740778133505789">Spor Otomobiller</translation>
 <translation id="8919895429178014996">Tüm öğeleri gizleyin</translation>

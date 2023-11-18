@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Cette page inclut un formulaire qui pourrait ne pas être soumis en toute sécurité. Les données que vous envoyez peuvent être consultées par d'autres personnes pendant leur transfert ou pourraient être modifiées par un pirate informatique afin de changer ce que le serveur reçoit.</translation>
 <translation id="3154987252551138431">Un problème est survenu lors de l'utilisation du partage à proximité</translation>
 <translation id="315504272643575312">Votre compte est géré par <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Relancer Chromium</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
 <translation id="3162559335345991374">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
@@ -3455,7 +3456,6 @@ Détails supplémentaires :
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Vérifiez qu'il s'agit bien de vous afin que Google Chrome puisse remplir vos infos de paiement.</translation>
 <translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour un paiement plus rapide</translation>
 <translation id="7937554595067888181">Expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
@@ -3532,7 +3532,6 @@ Détails supplémentaires :
 <translation id="8058009102480785916">Production alimentaire</translation>
 <translation id="8058603697124206642">Non requis</translation>
 <translation id="8063875539456488183">Enregistrer et suivre le prix</translation>
-<translation id="8064892030280197386">vérifiez qu'il s'agit bien de vous afin qu'il puisse remplir vos informations de paiement.</translation>
 <translation id="8066225060526005217">Géré par les paramètres des témoins</translation>
 <translation id="8067872629359326442">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="8070439594494267500">Icône de l'application</translation>
@@ -3955,6 +3954,7 @@ Détails supplémentaires :
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="890493561996401738">Bouton Supprimer la suggestion, appuyez sur Entrée pour supprimer, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 po</translation>
+<translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8918062451146297192">Code CVC pour carte virtuelle</translation>
 <translation id="8919740778133505789">Voitures de sport</translation>
 <translation id="8919895429178014996">Masquer tous les éléments</translation>

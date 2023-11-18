@@ -1057,6 +1057,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3154506275960390542">See leht sisaldab vormi, mille esitamine ei pruugi olla turvaline. Teised võivad andmete edastamisel neid vaadata või ründaja võib serverile saadetavaid andmeid muuta.</translation>
 <translation id="3154987252551138431">Midagi läks funktsiooni Läheduses jagamine kasutamisel valesti</translation>
 <translation id="315504272643575312">Teie kontot haldab <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Chromiumi taaskäivitamine</translation>
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3158539265159265653">Ketas</translation>
 <translation id="3162559335345991374">WiFi-võrk, mida kasutate, võib nõuda sisselogimislehe külastamist.</translation>
@@ -3455,7 +3456,6 @@ Lisateave:
 <translation id="79338296614623784">Sisestage kehtiv telefoninumber</translation>
 <translation id="7934414805353235750"><ph name="URL" /> soovib esitada kaitstud sisu. Google kontrollib teie seadme identiteeti.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Kinnitage oma isik, et Google Chrome saaks teie makseteabe sisestada.</translation>
 <translation id="7937163678541954811">Selle kaardi CVC krüpteeritakse ja salvestatakse teie seadmesse, et saaksite kiiremini maksta</translation>
 <translation id="7937554595067888181">Aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serveri sertifikaat ei kehti veel.</translation>
@@ -3532,7 +3532,6 @@ Lisateave:
 <translation id="8058009102480785916">Toiduainetööstus</translation>
 <translation id="8058603697124206642">Ei ole nõutav</translation>
 <translation id="8063875539456488183">Hinna salvestamine ja jälgimine</translation>
-<translation id="8064892030280197386">teie isikut kinnitada, et teie makseteave sisestada.</translation>
 <translation id="8066225060526005217">Haldavad küpsisefailide seaded</translation>
 <translation id="8067872629359326442">Sisestasite äsja oma parooli petturlikule saidile. Chromium saab teid aidata. Oma parooli muutmiseks ja Google'i teavitamiseks sellest, et teie konto võib olla ohus, klõpsake valikul Konto kaitsmine.</translation>
 <translation id="8070439594494267500">Rakenduse ikoon</translation>
@@ -3955,6 +3954,7 @@ Lisateave:
 <translation id="8903921497873541725">Suurendab</translation>
 <translation id="890493561996401738">Soovituse eemaldamise nupp, vajutage eemaldamiseks sisestusklahvi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tolli</translation>
+<translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8918062451146297192">CVC virtuaalkaardi jaoks</translation>
 <translation id="8919740778133505789">Sportautod</translation>
 <translation id="8919895429178014996">Kõigi üksuste peitmine</translation>

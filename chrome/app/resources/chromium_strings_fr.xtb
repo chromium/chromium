@@ -208,6 +208,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="4677944499843243528">Le profil semble être utilisé dans le cadre d'un autre processus Chromium (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Ce profil a été verrouillé de sorte qu'il ne soit pas endommagé. Si vous êtes sûr que le profil n'est utilisé dans le cadre d'aucun autre processus, vous pouvez le déverrouiller et relancer Chromium.</translation>
 <translation id="4680828127924988555">Annuler l'installation</translation>
 <translation id="4708774505295300557">Un utilisateur s'est récemment connecté à Chromium sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chromium pour séparer vos informations.</translation>
+<translation id="4724676981607797757">Échec de l'installation en raison d'une erreur de protocole non compatible.</translation>
 <translation id="4746050847053251315">Quitter Chromium quand même ?</translation>
 <translation id="4748217263233248895">Une mise à jour spéciale de sécurité pour Chromium vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
 <translation id="4765210420921718862">Vous pouvez modifier vos options à tout moment dans les paramètres Chromium. Les tests sont menés parallèlement à la façon dont les annonces sont actuellement diffusées. Vous ne constaterez donc pas de changements dans l'immédiat.</translation>
@@ -278,6 +279,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6145820983052037069">Vous pouvez passer d'un profil Chromium à un autre ici</translation>
 <translation id="615103374448673771">Si vous autorisez les cookies, Chromium peut les utiliser pour le préchargement</translation>
 <translation id="6175304430031192654">Selon vos paramètres, Chromium peut aussi envoyer des cookies et votre URL actuelle</translation>
+<translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
@@ -463,5 +465,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="942598560705308788">Certificats gérés par Chromium</translation>
 <translation id="965162752251293939">Qui utilise Chromium ?</translation>
 <translation id="967427899662692980">Renforcer la sécurité de Chromium</translation>
+<translation id="983803489796659991">Échec de l'installation, car le serveur de mise à jour ne dispose d'aucune donnée de hachage pour l'application.</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
 </translationbundle>

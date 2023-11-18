@@ -733,6 +733,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4856841893565072365">I-Smart Sort ang Menu Bar</translation>
 <translation id="4860895144060829044">Tawagan</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="4883824756452868502">Mag-detect ng Mga Unit</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
 <translation id="4894963374040315706">Binibigyang-daan ka nitong makapaghanap gamit ang iyong boses</translation>
 <translation id="489903206070130262">Iyong Huling Nakabukas na Tab</translation>
@@ -802,7 +803,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5221339005270097309">Sinusuri ang password…</translation>
 <translation id="5226568866393490213">I-dismiss ang Babala</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
-<translation id="5232485538978018676">Mag-sign in sa Pinapamahalaang Account</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark ang na-save sa iyong Google Account na {email}.}one{Bookmark ang na-save sa iyong Google Account na {email}.}other{na Bookmark ang na-save sa iyong Google Account na {email}.}}</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5235389474593199952">Itago ang History</translation>
@@ -856,8 +856,10 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5551897871312988470">Mag-alok na I-translate</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="555749644339804659">Sinusuri ang password…</translation>
+<translation id="5559567453458728487">Mag-convert ng mga unit ng pagsukat na makikita sa web</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5572684875078967866">Storage ng Impormasyon</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Subaybayan ang Package na Ito}one{Subaybayan ang Lahat ng Package}other{Subaybayan ang Lahat ng Package}}</translation>
 <translation id="5597915316964418992">Buksan ang Grid ng Tab</translation>
 <translation id="560322036295180549">Na-off ng iyong organisasyon</translation>
 <translation id="5614553682702429503">I-save ang password?</translation>
@@ -1120,6 +1122,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6781260999953472352">I-on ang Pag-sync?</translation>
 <translation id="6781405765516175232">Para sa mga opsyon sa ruta, i-tap ang “Kumuha ng Mga Direksyon.”</translation>
 <translation id="6785453220513215166">Nagpapadala ng ulat sa pag-crash...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Huwag Subaybayan ang Package na Ito}one{Huwag Subaybayan ang Lahat ng Package}other{Huwag Subaybayan ang Lahat ng Package}}</translation>
 <translation id="6790502149545262384">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
 <translation id="6797885426782475225">Paghahanap Gamit ang Boses</translation>
 <translation id="6800349425672670802">Maa-access mo ang lahat ng iyong nakabukas na tab sa Tab Switcher.</translation>

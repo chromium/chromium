@@ -3,7 +3,6 @@
 <translationbundle lang="et">
 <translation id="1016765312371154165">Chrome ei sulgunud õigesti.</translation>
 <translation id="130631256467250065">Muudatused jõustuvad järgmine kord, kui seadme taaskäivitate.</translation>
-<translation id="1555506416658437797">muuta makseviise.</translation>
 <translation id="1635457557763038537">Teie muudatused jõustuvad järgmisel korral, kui käivitate Chrome'i uuesti.</translation>
 <translation id="2399868464369312507">Google Chrome üritab muuta makseviise.</translation>
 <translation id="2447485272386224171">Chrome'i aluseks on avatud lähtekoodiga projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ja muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">Lubage Chrome'i juurdepääs võrgule tulemüüri või viirusetõrje
          seadetes.</translation>
 <translation id="5005121315113832363">Chrome blokeeris selle lehe</translation>
-<translation id="585620188971323280">muuta makseviiside sisestamise seadeid.</translation>
 <translation id="6011049234605203654">Minge
           Chrome'i menüüsse &gt;
           <ph name="SETTINGS_TITLE" />

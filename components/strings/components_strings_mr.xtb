@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">या पेजवर एक फॉर्म आहे जो कदाचित सुरक्षितपणे सबमिट होणार नाही. तुम्ही पाठविलेला डेटा प्रवासादरम्यान इतर पाहू शकतात किंवा सर्व्हर प्राप्त करत असलेल्या आक्रमणकर्त्याद्वारे सुधारित केले जाऊ शकते.</translation>
 <translation id="3154987252551138431">Nearby सह शेअरिंग वापरताना काहीतरी चूक झाली</translation>
 <translation id="315504272643575312">तुमचे खाते <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
+<translation id="3155163173539279776">Chromium पुन्हा लाँच करा</translation>
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">तुम्ही वापरत असलेल्या वाय-फाय च्या लॉग इन पेजला तुम्हाला भेट देण्याची आवश्यकता असू शकते.</translation>
@@ -3455,7 +3456,6 @@
 <translation id="79338296614623784">वैध फोन नंबर एंटर करा</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ला संरक्षित आशय सुरू करायचा आहे. तुमच्या डिव्हाइसची ओळख Google द्वारे पडताळली जाईल</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
-<translation id="7936775433939783906">हे तुम्हीच आहात याची पडताळणी करा, जेणेकरून Google Chrome ला तुमची पेमेंट माहिती भरता येईल.</translation>
 <translation id="7937163678541954811">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउट करण्यासाठी तुमच्या डिव्हाइसवर सेव्ह केला जाईल</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
 <translation id="7938958445268990899">सर्व्हरचे सर्टिफिकेट अद्याप वैध नाही.</translation>
@@ -3532,7 +3532,6 @@
 <translation id="8058009102480785916">खाद्यपदार्थाचे उत्पादन</translation>
 <translation id="8058603697124206642">आवश्‍यक नाही</translation>
 <translation id="8063875539456488183">किंमत सेव्ह करून तिचा माग ठेवा</translation>
-<translation id="8064892030280197386">हे तुम्हीच आहात याची पडताळणी करा, जेणेकरून त्याला तुमची पेमेंट माहिती भरता येईल.</translation>
 <translation id="8066225060526005217">कुकी सेटिंग्जद्वारे व्यवस्थापित</translation>
 <translation id="8067872629359326442">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला आहे. Chromium मदत करू शकते. तुमचा पासवर्ड बदलण्यासाठी आणि तुमच्या खात्याला धोका असल्याचे Google ला सूचित करण्यासाठी, खाते संरक्षित करा वर क्लिक करा.</translation>
 <translation id="8070439594494267500">अ‍ॅपचा आयकन</translation>
@@ -3955,6 +3954,7 @@
 <translation id="8903921497873541725">झूम इन करा</translation>
 <translation id="890493561996401738">सूचना बटण काढा, काढण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इंच</translation>
+<translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8918062451146297192">व्हर्च्युअल कार्डसाठी CVC</translation>
 <translation id="8919740778133505789">स्पोर्ट्स कार</translation>
 <translation id="8919895429178014996">सर्व आयटम लपवा</translation>

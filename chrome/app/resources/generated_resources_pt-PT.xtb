@@ -1844,6 +1844,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de série de dispositivo e componentes</translation>
 <translation id="2406153734066939945">Eliminar este perfil e os respetivos dados?</translation>
+<translation id="2407671304279211586">Selecionar fornecedor DNS</translation>
 <translation id="2408018932941436077">A guardar o cartão…</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2409268599591722235">Vamos lá</translation>
@@ -2676,6 +2677,7 @@ Quer pará-lo?</translation>
 <translation id="3021065318976393105">Estando a usar a bateria</translation>
 <translation id="3021066826692793094">Borboleta</translation>
 <translation id="3021678814754966447">&amp;Ver Origem da Moldura</translation>
+<translation id="3021902017511220299">Falha ao analisar. Esta ação foi bloqueada pelo seu administrador.</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não vai ser guardado em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendido.</translation>
 <translation id="3023464535986383522">Selecionar para falar</translation>
@@ -9048,6 +9050,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="811994229154425014">Premir Espaço duas vezes para inserir ponto final</translation>
 <translation id="8120505434908124087">Instalar perfil eSIM</translation>
 <translation id="8121750884985440809">Está atualmente a transmitir o ecrã</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Deslocar para trás</translation>
 <translation id="8124313775439841391">ONC gerido</translation>
@@ -9083,6 +9086,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8148760431881541277">Limitar início de sessão</translation>
 <translation id="8149564499626272569">Validar através do telemóvel com um cabo USB</translation>
 <translation id="8149870652370242480">Para usar as suas palavras-passe guardadas no telemóvel, transfira o Chrome para iOS e inicie sessão na sua Conta Google.</translation>
+<translation id="8151057139207656239">Detalhes da compilação copiados</translation>
 <translation id="815114315010033526">Usar código QR em alternativa</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sem ficheiro</translation>

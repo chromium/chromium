@@ -1057,6 +1057,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3154506275960390542">Az oldal olyan űrlapot tartalmaz, amely esetében előfordulhat, hogy küldése nem biztonságosan történik. Az elküldött adatokat továbbítás közben mások is megtekinthetik, illetve támadók módosíthatják, hogy a szerver mást kapjon helyettük.</translation>
 <translation id="3154987252551138431">Hiba történt a Közeli megosztás funkció használata közben</translation>
 <translation id="315504272643575312">Az Ön fiókkezelője: <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">A Chromium újraindítása</translation>
 <translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="3158539265159265653">Lemez</translation>
 <translation id="3162559335345991374">Az Ön által használt Wi-Fi-hálózat megkövetelheti bejelentkezési oldalának felkeresését.</translation>
@@ -3453,7 +3454,6 @@ További részletek:
 <translation id="79338296614623784">Érvényes telefonszámot adjon meg</translation>
 <translation id="7934414805353235750">A(z) <ph name="URL" /> védett tartalmat szeretne lejátszani. A Google ellenőrzi az eszköz azonosító adatait.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Igazolja személyazonosságát, hogy a Google Chrome kitölthesse a fizetési adatait.</translation>
 <translation id="7937163678541954811">A rendszer titkosítja, és az eszközre menti a kártya CVC-kódját a gyorsabb fizetés érdekében</translation>
 <translation id="7937554595067888181">Lejárat dátuma: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">A szerver tanúsítványa még nem érvényes.</translation>
@@ -3530,7 +3530,6 @@ További részletek:
 <translation id="8058009102480785916">Élelmiszergyártás</translation>
 <translation id="8058603697124206642">Nem kötelező</translation>
 <translation id="8063875539456488183">Ár mentése és nyomon követése</translation>
-<translation id="8064892030280197386">ellenőrizni az Ön személyazonosságát, hogy kitölthesse a fizetési adatokat.</translation>
 <translation id="8066225060526005217">A cookie-beállítások kezelik</translation>
 <translation id="8067872629359326442">Megtévesztő webhelyen adta meg jelszavát. A Chromium segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
 <translation id="8070439594494267500">Alkalmazásikon</translation>
@@ -3954,6 +3953,7 @@ További részletek:
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 hüvelyk</translation>
+<translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8918062451146297192">CVC virtuális kártyához</translation>
 <translation id="8919740778133505789">Sportkocsik</translation>
 <translation id="8919895429178014996">Összes elem elrejtése</translation>

@@ -733,6 +733,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4856841893565072365">Thanh trình đơn sắp xếp thông minh</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="4883824756452868502">Phát hiện đơn vị</translation>
 <translation id="488785315393301722">Hiển thị chi tiết</translation>
 <translation id="4894963374040315706">Quyền này cho phép bạn tìm kiếm bằng giọng nói</translation>
 <translation id="489903206070130262">Thẻ bạn mở gần đây nhất</translation>
@@ -802,7 +803,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5221339005270097309">Đang kiểm tra mật khẩu…</translation>
 <translation id="5226568866393490213">Đóng cảnh báo</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
-<translation id="5232485538978018676">Đăng nhập bằng Tài khoản được quản lý</translation>
 <translation id="5234094073825090254">{count,plural, =1{Đã lưu dấu trang vào Tài khoản Google {email} của bạn.}other{Đã lưu dấu trang vào Tài khoản Google {email} của bạn.}}</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5235389474593199952">Ẩn tuỳ chọn Nhật ký</translation>
@@ -856,8 +856,10 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5551897871312988470">Đề xuất dịch</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="555749644339804659">Đang kiểm tra mật khẩu…</translation>
+<translation id="5559567453458728487">Chuyển đổi đơn vị đo lường có trên web</translation>
 <translation id="556042886152191864">Nút</translation>
 <translation id="5572684875078967866">Lưu trữ thông tin</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Theo dõi gói hàng này}other{Theo dõi tất cả các gói hàng}}</translation>
 <translation id="5597915316964418992">Mở lưới thẻ</translation>
 <translation id="560322036295180549">Do tổ chức của bạn tắt</translation>
 <translation id="5614553682702429503">Lưu mật khẩu?</translation>
@@ -1120,6 +1122,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6781260999953472352">Bật tính năng đồng bộ hoá?</translation>
 <translation id="6781405765516175232">Để biết các lựa chọn về tuyến đường, hãy nhấn vào "Xem đường đi".</translation>
 <translation id="6785453220513215166">Đang gửi báo cáo lỗi...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Bỏ theo dõi gói hàng này}other{Bỏ theo dõi tất cả các gói hàng}}</translation>
 <translation id="6790502149545262384">Bạn sẽ sớm thấy các tin bài của <ph name="CHANNEL_NAME" /> khi mở một thẻ mới.</translation>
 <translation id="6797885426782475225">Tìm kiếm bằng giọng nói</translation>
 <translation id="6800349425672670802">Bạn có thể truy cập vào tất cả các thẻ đang mở nhờ Trình chuyển đổi thẻ.</translation>

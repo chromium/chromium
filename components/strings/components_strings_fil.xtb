@@ -1057,6 +1057,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3154506275960390542">Naglalaman ang page na ito ng isang form na maaaring hindi secure na maisusumite. Maaaring makita ng iba ang data na iyong ipapadala habang ipinapadala ito o maaaring mabago ng isang nang-aatake upang baguhin kung ano ang matatanggap ng server.</translation>
 <translation id="3154987252551138431">Nagkaproblema habang ginagamit ang Nearby Share</translation>
 <translation id="315504272643575312">Pinapamahalaan ng <ph name="MANAGER" /> ang iyong account.</translation>
+<translation id="3155163173539279776">Muling ilunsad ang Chromium</translation>
 <translation id="3157931365184549694">Ipanumbalik</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Maaaring hilingin ng Wi-Fi na ginagamit mo na bisitahin mo ang page nito sa pag-login.</translation>
@@ -3455,7 +3456,6 @@ Mga karagdagang detalye:
 <translation id="79338296614623784">Maglagay ng wastong numero ng telepono</translation>
 <translation id="7934414805353235750">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-veify ng Google ang pagkakakilanlan ng iyong device.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">I-verify na ikaw ito para mapunan ng Google Chrome ang iyong impormasyon sa pagbabayad.</translation>
 <translation id="7937163678541954811">Ie-encypt at ise-save sa iyong device ang CVC ng card na ito para sa mas mabilis na pag-checkout</translation>
 <translation id="7937554595067888181">Mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Wala pang bisa ang certificate ng server.</translation>
@@ -3532,7 +3532,6 @@ Mga karagdagang detalye:
 <translation id="8058009102480785916">Paggawa ng pagkain</translation>
 <translation id="8058603697124206642">Hindi kinakailangan</translation>
 <translation id="8063875539456488183">I-save at subaybayan ang presyo</translation>
-<translation id="8064892030280197386">i-verify na ikaw ito para mapunan nito ang impormasyon mo sa pagbabayad.</translation>
 <translation id="8066225060526005217">Pinapamahalaan ang mga setting ng cookie</translation>
 <translation id="8067872629359326442">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chromium. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
 <translation id="8070439594494267500">Icon ng app</translation>
@@ -3955,6 +3954,7 @@ Mga karagdagang detalye:
 <translation id="8903921497873541725">Mag-zoom in</translation>
 <translation id="890493561996401738">Button na Alisin ang Suhestyon, pindutin ang Enter para alisin, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8914504000324227558">Muling ilunsad ang Chrome</translation>
 <translation id="8918062451146297192">CVC para sa virtual card</translation>
 <translation id="8919740778133505789">Mga Sports Car</translation>
 <translation id="8919895429178014996">I-hide ang lahat ng item</translation>

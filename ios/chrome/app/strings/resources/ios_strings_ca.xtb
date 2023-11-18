@@ -803,7 +803,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5221339005270097309">Comprovant contrasenyes…</translation>
 <translation id="5226568866393490213">Ignora l'advertiment</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
-<translation id="5232485538978018676">Inicia la sessió amb un compte gestionat</translation>
 <translation id="5234094073825090254">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google ({email}).}other{Les adreces d'interès s'han desat al teu Compte de Google ({email}).}}</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5235389474593199952">Amaga Historial</translation>

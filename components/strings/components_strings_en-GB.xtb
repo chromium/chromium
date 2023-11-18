@@ -1057,6 +1057,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3154506275960390542">This page includes a form that may not submit securely. Data that you send can be viewed by others while in transit or could be modified by an attacker to change what the server receives.</translation>
 <translation id="3154987252551138431">Something went wrong while using Nearby Share</translation>
 <translation id="315504272643575312">Your account is managed by <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
@@ -3455,7 +3456,6 @@ Additional details:
 <translation id="79338296614623784">Enter a valid phone number</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wants to play protected content. Your device’s identity will be verified by Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Verify it's you so Google Chrome can fill in your payment info.</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
@@ -3532,7 +3532,6 @@ Additional details:
 <translation id="8058009102480785916">Food production</translation>
 <translation id="8058603697124206642">Not required</translation>
 <translation id="8063875539456488183">Save and track price</translation>
-<translation id="8064892030280197386">verify it's you so it can fill in your payment info.</translation>
 <translation id="8066225060526005217">Managed by cookies settings</translation>
 <translation id="8067872629359326442">You just entered your password on a deceptive site. Chromium can help. To change your password and notify Google that your account may be at risk, click 'Protect account'.</translation>
 <translation id="8070439594494267500">App icon</translation>
@@ -3955,6 +3954,7 @@ Additional details:
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="890493561996401738">Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8918062451146297192">CVC for virtual card</translation>
 <translation id="8919740778133505789">Sports Cars</translation>
 <translation id="8919895429178014996">Hide all items</translation>

@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Pagina include un formular care este posibil să nu fie trimis în siguranță. Alți utilizatori pot vedea datele trimise în timpul transferului sau acestea ar putea fi modificate de un atacator pentru a schimba conținutul primit de server.</translation>
 <translation id="3154987252551138431">A apărut o eroare în timpul folosirii Trimiterii în apropiere</translation>
 <translation id="315504272643575312">Contul tău este administrat de <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Reporniți Chromium</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Rețeaua Wi-Fi pe care o folosești poate solicita accesarea paginii de conectare.</translation>
@@ -3455,7 +3456,6 @@ Detalii suplimentare:
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vrea să redea conținut protejat. Google va verifica identitatea dispozitivului tău.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Confirmă-ți identitatea pentru ca Google Chrome să-ți completeze informațiile de plată.</translation>
 <translation id="7937163678541954811">Codul CVC al acestui card va fi criptat și salvat pe dispozitivul tău pentru finalizarea mai rapidă a achiziției</translation>
 <translation id="7937554595067888181">Expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certificatul serverului nu este încă valid.</translation>
@@ -3532,7 +3532,6 @@ Detalii suplimentare:
 <translation id="8058009102480785916">Producția de alimente</translation>
 <translation id="8058603697124206642">Nu este obligatoriu</translation>
 <translation id="8063875539456488183">Salvează și urmărește prețul</translation>
-<translation id="8064892030280197386">confirmă-ți identitatea pentru a completa informațiile de plată.</translation>
 <translation id="8066225060526005217">Gestionată de setările pentru cookie-uri</translation>
 <translation id="8067872629359326442">Ai introdus parola pe un site înșelător. Chromium te poate ajuta. Ca să schimbi parola și să anunți Google că respectivul cont poate fi în pericol, dă clic pe Protejează contul.</translation>
 <translation id="8070439594494267500">Pictograma aplicației</translation>
@@ -3956,6 +3955,7 @@ Detalii suplimentare:
 <translation id="8903921497873541725">Mărește</translation>
 <translation id="890493561996401738">Butonul Elimină sugestia, apasă pe Enter pentru a elimina, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8918062451146297192">CVC pentru cardul virtual</translation>
 <translation id="8919740778133505789">Mașini sport</translation>
 <translation id="8919895429178014996">Ascunde toate elementele</translation>

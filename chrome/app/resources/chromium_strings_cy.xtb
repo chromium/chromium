@@ -209,6 +209,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4677944499843243528">Mae'n ymddangos bod y proffil yn cael ei ddefnyddio gan broses Chromium arall (<ph name="PROCESS_ID" />) ar gyfrifiadur arall (<ph name="HOST_NAME" />). Mae Chromium wedi cloi'r proffil fel nad yw'n cael ei lygru. Os ydych yn siŵr nad oes unrhyw brosesau eraill yn defnyddio'r proffil hwn, gallwch ddatgloi'r proffil ac ail-lansio Chromium.</translation>
 <translation id="4680828127924988555">Canslo Gosod</translation>
 <translation id="4708774505295300557">Gwnaeth rhywun fewngofnodi i Chromium ar y cyfrifiadur hwn fel <ph name="ACCOUNT_EMAIL_LAST" /> yn flaenorol. Crëwch ddefnyddiwr Chromium newydd i gadw'ch gwybodaeth ar wahân.</translation>
+<translation id="4724676981607797757">Methodd y gosodiad oherwydd gwall protocol na chefnogir.</translation>
 <translation id="4746050847053251315">Gadael Chromium beth bynnag?</translation>
 <translation id="4748217263233248895">Cymhwyswyd diweddariad diogelwch arbennig ar gyfer Chromium yn unig. Ailgychwynnwch nawr a byddwn yn adfer eich tabiau.</translation>
 <translation id="4765210420921718862">Gallwch newid eich meddwl ar unrhyw bryd yng ngosodiadau Chromium. Mae'r profion yn rhedeg ochr yn ochr â'r ffordd bresennol o gyflwyno hysbysebion, felly ni fyddwch yn gweld newidiadau ar unwaith.</translation>
@@ -279,6 +280,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6145820983052037069">Gallwch newid rhwng proffiliau Chromium yma</translation>
 <translation id="615103374448673771">Os ydych yn caniatáu cwcis, gall Chromium eu defnyddio ar gyfer rhaglwytho</translation>
 <translation id="6175304430031192654">Yn dibynnu ar eich gosodiadau, mae'n bosib y bydd Chromium hefyd yn anfon cwcis a'ch URL presennol</translation>
+<translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6183079672144801177">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="6212496753309875659">Mae gan y cyfrifiadur hwn fersiwn fwy diweddar o Chromium eisoes. Os nad yw'r feddalwedd yn gweithio, dadosodwch Chromium a rhowch gynnig arall arni.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Bydd Chromium yn ail-lansio nawr}=1{Bydd Chromium yn ail-lansio mewn 1 eiliad}two{Bydd Chromium yn ail-lansio mewn # eiliad}few{Bydd Chromium yn ail-lansio mewn # eiliad}many{Bydd Chromium yn ail-lansio mewn # eiliad}other{Bydd Chromium yn ail-lansio mewn # eiliad}}</translation>
@@ -464,5 +466,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="942598560705308788">Tystysgrifau a reolir gan Chromium</translation>
 <translation id="965162752251293939">Pwy sy'n defnyddio Chromium?</translation>
 <translation id="967427899662692980">Cael diogelwch cryfaf Chromium</translation>
+<translation id="983803489796659991">Methodd y gosodiad oherwydd nad oes gan y gweinydd diweddaru unrhyw ddata hash ar gyfer yr ap.</translation>
 <translation id="985602178874221306">Awduron Chromium</translation>
 </translationbundle>

@@ -805,7 +805,6 @@
 <translation id="5221339005270097309">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="5226568866393490213">إغلاق التحذير</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
-<translation id="5232485538978018676">تسجيل الدخول باستخدام حساب مُدار</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5235389474593199952">إخفاء السجل</translation>

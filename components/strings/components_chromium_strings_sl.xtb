@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="130631256467250065">Spremembe bodo uveljavljene pri naslednjem vnovičnem zagonu naprave.</translation>
-<translation id="1555506416658437797">urediti plačilna sredstva.</translation>
 <translation id="275588974610408078">Poročanje o zrušitvah ni na voljo v Chromiumu.</translation>
 <translation id="3064346599913645280">Ogledujete si varno stran Chromiuma</translation>
 <translation id="3255926992597692024">Chromium poskuša spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
@@ -30,7 +29,6 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           in poskrbite, da je konfiguracija nastavljena na »brez namestniškega strežnika« ali »neposredno«.</translation>
-<translation id="585620188971323280">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
 <translation id="6549378540556750549">Chromium omogoča tudi druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Spremembe bodo začele veljati ob naslednjem zagonu Chromiuma.</translation>
 <translation id="7681937895330411637">Chromium omogoča odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>

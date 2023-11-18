@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Бул барактагы формалар корголбогон болушу мүмкүн. Дайындарды өткөрүү учурунда аларды башкалар көрүп же серверге жеткенче, чабуулчулар өзгөртүп коюшу мүмкүн.</translation>
 <translation id="3154987252551138431">Nearby Share функциясын колдонууда бир жерден ката кетти</translation>
 <translation id="315504272643575312">Аккаунтуңуз <ph name="MANAGER" /> тарабынан башкарылууда.</translation>
+<translation id="3155163173539279776">Chromium'ду кайра ишке киргизүү</translation>
 <translation id="3157931365184549694">Калыбына келтирүү</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Сиз колдонуп жаткан Wi-Fi башкы кирүү барагына өтүшүңүздү талап кылышы мүмкүн.</translation>
@@ -3454,7 +3455,6 @@
 <translation id="79338296614623784">Жарактуу телефон номерин киргизиңиз</translation>
 <translation id="7934414805353235750"><ph name="URL" /> корголгон мазмунду ойноткону жатат. Түзмөгүңүздүн аныктыгы Google аркылуу текшерилет.</translation>
 <translation id="7935318582918952113">DOM дистиллери</translation>
-<translation id="7936775433939783906">Google Chrome төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="7937163678541954811">Бул картанын CVC коду шифрленип, тезирээк төлөө үчүн түзмөгүңүздө сакталат</translation>
 <translation id="7937554595067888181">Мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="7938958445268990899">Сервердин тастыктамасы али жарактуу эмес.</translation>
@@ -3531,7 +3531,6 @@
 <translation id="8058009102480785916">Тамак-аш өндүрүү</translation>
 <translation id="8058603697124206642">Талап кылынбайт</translation>
 <translation id="8063875539456488183">Сактап, баасына көз салуу</translation>
-<translation id="8064892030280197386">төлөм маалыматын толтуруу үчүн өзүңүздү ырастоого аракет кылып жатат.</translation>
 <translation id="8066225060526005217">Cookie параметрлери тарабынан тескелет</translation>
 <translation id="8067872629359326442">Сырсөзүңүздү жаңы эле адаштыруучу сайтта киргиздиңиз. Chromium жардам берет. Сырсөзүңүздү өзгөртүү жана аккаунтуңуздун коопсуздугу коркунучта экенин Google'га кабарлоо үчүн "Аккаунттун коопсуздугун коргоо" баскычын басыңыз.</translation>
 <translation id="8070439594494267500">Колдонмонун сүрөтчөсү</translation>
@@ -3954,6 +3953,7 @@
 <translation id="8903921497873541725">Чоңойтуу</translation>
 <translation id="890493561996401738">"Сунушту өчүрүү" баскычы. Өчүрүү үчүн "Enter" баскычын басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
+<translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>
 <translation id="8918062451146297192">Виртуалдык картанын CVC коду</translation>
 <translation id="8919740778133505789">Спорт унаалары</translation>
 <translation id="8919895429178014996">Бардык элементтерди жашыруу</translation>

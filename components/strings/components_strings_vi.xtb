@@ -1057,6 +1057,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3154506275960390542">Trang này bao gồm biểu mẫu có thể được gửi không an toàn. Dữ liệu bạn gửi có thể bị người khác xem trong khi chuyển tuyến hoặc có thể bị kẻ tấn công sửa đổi nhằm thay đổi thông tin mà máy chủ nhận được.</translation>
 <translation id="3154987252551138431">Đã xảy ra sự cố khi dùng tính năng Chia sẻ lân cận</translation>
 <translation id="315504272643575312">Tài khoản của bạn do <ph name="MANAGER" /> quản lý.</translation>
+<translation id="3155163173539279776">Chạy lại Chromium</translation>
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158539265159265653">Đĩa</translation>
 <translation id="3162559335345991374">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
@@ -3455,7 +3456,6 @@ Thông tin chi tiết bổ sung:
 <translation id="79338296614623784">Nhập số điện thoại hợp lệ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh thiết bị của bạn sẽ được Google xác minh.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Xác minh danh tính của bạn để Google Chrome có thể giúp bạn điền thông tin thanh toán.</translation>
 <translation id="7937163678541954811">CVC của thẻ này sẽ được mã hoá và lưu vào thiết bị của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="7937554595067888181">Hết hạn vào <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
@@ -3532,7 +3532,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8058009102480785916">Sản xuất thực phẩm</translation>
 <translation id="8058603697124206642">Không yêu cầu</translation>
 <translation id="8063875539456488183">Lưu và theo dõi giá</translation>
-<translation id="8064892030280197386">xác minh danh tính của bạn để có thể điền thông tin thanh toán cho bạn.</translation>
 <translation id="8066225060526005217">Được quản lý theo chế độ cài đặt cookie</translation>
 <translation id="8067872629359326442">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chromium có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
 <translation id="8070439594494267500">Biểu tượng ứng dụng</translation>
@@ -3956,6 +3955,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="890493561996401738">Nút Xóa đề xuất, nhấn Enter để xóa, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inch</translation>
+<translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8918062451146297192">CVC của thẻ ảo</translation>
 <translation id="8919740778133505789">Xe thể thao</translation>
 <translation id="8919895429178014996">Ẩn tất cả các mục</translation>

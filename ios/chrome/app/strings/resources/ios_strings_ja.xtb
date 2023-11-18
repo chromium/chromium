@@ -803,7 +803,6 @@
 <translation id="5221339005270097309">パスワードを確認しています...</translation>
 <translation id="5226568866393490213">警告を閉じる</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
-<translation id="5232485538978018676">管理対象アカウントでログインする</translation>
 <translation id="5234094073825090254">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました。}other{Google アカウント（{email}）にブックマークを保存しました。}}</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5235389474593199952">[履歴] を非表示にする</translation>

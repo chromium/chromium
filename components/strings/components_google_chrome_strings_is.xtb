@@ -3,7 +3,6 @@
 <translationbundle lang="is">
 <translation id="1016765312371154165">Chrome lokaðist ekki á réttan hátt.</translation>
 <translation id="130631256467250065">Breytingarnar taka gildi næst þegar þú endurræsir tækið.</translation>
-<translation id="1555506416658437797">breyta greiðslumátum.</translation>
 <translation id="1635457557763038537">Breytingarnar taka gildi næst þegar þú endurræsir Chrome.</translation>
 <translation id="2399868464369312507">Google Chrome er að reyna að breyta greiðslumátum.</translation>
 <translation id="2447485272386224171">Opna kóðaverkefnið <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annar <ph name="BEGIN_LINK_OSS" />opinn hugbúnaður<ph name="END_LINK_OSS" /> gerir Chrome mögulegt.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
            vírusvarnarstillingunum.</translation>
 <translation id="5005121315113832363">Chrome setti þessa síðu á bannlista</translation>
-<translation id="585620188971323280">breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="6011049234605203654">Farðu í
           valmynd Chrome &gt;
           <ph name="SETTINGS_TITLE" />

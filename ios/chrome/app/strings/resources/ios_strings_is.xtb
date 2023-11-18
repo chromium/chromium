@@ -733,6 +733,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4856841893565072365">Valmyndarstika snjallflokkunar</translation>
 <translation id="4860895144060829044">Hringja</translation>
 <translation id="4881695831933465202">Opna</translation>
+<translation id="4883824756452868502">Greina einingar</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
 <translation id="4894963374040315706">Með þessu móti geturðu notað röddina til að leita</translation>
 <translation id="489903206070130262">Síðasti opni flipi</translation>
@@ -802,7 +803,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5221339005270097309">Athugar aðgangsorð…</translation>
 <translation id="5226568866393490213">Hunsa viðvörun</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
-<translation id="5232485538978018676">Skráðu þig inn með stýrðum reikningi</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum, {email}}one{Bókamerki voru vistuð á Google-reikningnum þínum, {email}}other{Bókamerki voru vistuð á Google-reikningnum þínum, {email}}}</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5235389474593199952">Fela „Ferill“</translation>
@@ -856,8 +856,10 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5551897871312988470">Bjóðast til að þýða</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="555749644339804659">Athugar aðgangsorð…</translation>
+<translation id="5559567453458728487">Umbreyta mælieiningum sem fundust á vefnum</translation>
 <translation id="556042886152191864">Hnappur</translation>
 <translation id="5572684875078967866">Upplýsingageymsla</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Rekja þennan pakka}one{Rekja alla pakka}other{Rekja alla pakka}}</translation>
 <translation id="5597915316964418992">Opna flipayfirlit</translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
@@ -1120,6 +1122,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6781260999953472352">Kveikja á samstillingu?</translation>
 <translation id="6781405765516175232">Ýttu á „Fá leiðarlýsingu“ til að fá upplýsingar um leið.</translation>
 <translation id="6785453220513215166">Sendir hrunskýrslu...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Hætta að rekja þennan pakka}one{Hætta að rekja alla pakka}other{Hætta að rekja alla pakka}}</translation>
 <translation id="6790502149545262384">Fljótlega sérðu fréttir frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
 <translation id="6797885426782475225">Raddleit</translation>
 <translation id="6800349425672670802">Þú getur séð alla opna flipa í flipavali.</translation>

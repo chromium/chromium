@@ -234,6 +234,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4633000520311261472">I wneud Chrome yn fwy diogel, gwnaethom analluogi rhai estyniadau nad ydynt wedi'u rhestru yn <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac mae'n bosib ei bod wedi'u hychwanegu heb i chi wybod.</translation>
 <translation id="4680828127924988555">Canslo Gosod</translation>
 <translation id="469553575393225953">Gall estyniadau, apiau a themâu o ffynonellau anhysbys niweidio'ch dyfais. Mae Chrome yn argymell eu gosod o Chrome Web Store yn unig</translation>
+<translation id="4724676981607797757">Methodd y gosodiad oherwydd gwall protocol na chefnogir.</translation>
 <translation id="4728575227883772061">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Google Chrome yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4747730611090640388">Gall Chrome amcangyfrif eich diddordebau.  Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chrome weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -319,6 +320,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6157638032135951407">Mae eich sefydliad yn dileu data Chrome pan na chaiff ei ddefnyddio am <ph name="TIMEOUT_DURATION" />. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="624230925347970731">Bydd Chrome yn cau yn fuan</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
@@ -495,6 +497,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="940313311831216333">I gael mynediad at eich holl bethau Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen.</translation>
 <translation id="943390475793766444">Mae Chrome yn argymell sganio'r ffeil hon oherwydd y gallai fod yn beryglus.</translation>
 <translation id="963650557422347554">Pan fydd ymlaen, bydd Chrome yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo.</translation>
+<translation id="983803489796659991">Methodd y gosodiad oherwydd nad oes gan y gweinydd diweddaru unrhyw ddata hash ar gyfer yr ap.</translation>
 <translation id="989369509083708165">Google Chrome yw eich porwr diofyn</translation>
 <translation id="989816563149873169">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chrome</translation>
 </translationbundle>

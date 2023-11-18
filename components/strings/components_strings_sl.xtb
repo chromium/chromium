@@ -1057,6 +1057,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3154506275960390542">Na tej strani je tudi obrazec, ki morda ne bo poslan varno. Podatke, ki jih pošljete, si lahko med prenosom ogledujejo drugi, ali pa jih lahko spremeni morebitni napadalec, tako da strežnik prejme spremenjene podatke.</translation>
 <translation id="3154987252551138431">Med uporabo deljenja v bližini je prišlo do napake.</translation>
 <translation id="315504272643575312">Vaš račun upravlja <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Znova zaženite Chromium</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
@@ -3455,7 +3456,6 @@ Dodatne podrobnosti:
 <translation id="79338296614623784">Vnesite veljavno telefonsko številko</translation>
 <translation id="7934414805353235750"><ph name="URL" /> želi predvajati zaščiteno vsebino. Google bo preveril identiteto vaše naprave.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Potrdite, da ste to vi, da bo Google Chrome lahko vnesel podatke za plačilo.</translation>
 <translation id="7937163678541954811">Koda CVC te kartice bo šifrirana in shranjena v vaši napravi zaradi hitrejšega zaključka nakupa</translation>
 <translation id="7937554595067888181">Poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Potrdilo strežnika še ni veljavno.</translation>
@@ -3532,7 +3532,6 @@ Dodatne podrobnosti:
 <translation id="8058009102480785916">Pridelava živil</translation>
 <translation id="8058603697124206642">Ni zahtevano</translation>
 <translation id="8063875539456488183">Shranite in spremljajte ceno</translation>
-<translation id="8064892030280197386">preveriti, ali ste to res vi, da bo lahko vnesel podatke za plačilo.</translation>
 <translation id="8066225060526005217">Upravljajo nastavitve piškotkov</translation>
 <translation id="8067872629359326442">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium lahko pomaga. Če želite spremeniti geslo in obvestiti Google, da je vaš račun morda ogrožen, kliknite »Zaščita računa«.</translation>
 <translation id="8070439594494267500">Ikona aplikacije</translation>
@@ -3955,6 +3954,7 @@ Dodatne podrobnosti:
 <translation id="8903921497873541725">Povečaj</translation>
 <translation id="890493561996401738">Gumb za odstranitev predloga, pritisnite Enter za odstranitev <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 palcev</translation>
+<translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8918062451146297192">CVC za navidezno kartico</translation>
 <translation id="8919740778133505789">Športni avtomobili</translation>
 <translation id="8919895429178014996">Skrij vse elemente</translation>

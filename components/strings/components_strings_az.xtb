@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Bu səhifədə təhlükəsiz şəkildə göndərilməyən forma var. Göndərdiyiniz data keçid zamanı digərləri tərəfindən görülə bilər və ya serverin əldə etdiyi məlumatları dəyişmək üçün hücumçu tərəfindən dəyişdirilə bilər.</translation>
 <translation id="3154987252551138431">Yaxınlıqda Paylaşım istifadə edərkən xəta baş verdi</translation>
 <translation id="315504272643575312">Hesabınızı <ph name="MANAGER" /> idarə edir.</translation>
+<translation id="3155163173539279776">Chromium'u yenidən başladın</translation>
 <translation id="3157931365184549694">Bərpa edin</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">İstifadə etdiyiniz Wi-Fi login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
@@ -3451,7 +3452,6 @@
 <translation id="79338296614623784">Düzgün telefon nömrəsi daxil edin</translation>
 <translation id="7934414805353235750"><ph name="URL" /> qorunan kontenti oxutmaq istəyir. Cihazın kimliyi Google tərəfindən doğrulanacaq.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Google Chrome-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
 <translation id="7937163678541954811">Bu kartın CVC-si şifrələnəcək və sürətli ödəmə üçün cihazda yadda saxlanacaq</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
 <translation id="7938958445268990899">Server sertifikatı hələ etibarlı deyil.</translation>
@@ -3528,7 +3528,6 @@
 <translation id="8058009102480785916">Qida istehsalı</translation>
 <translation id="8058603697124206642">Tələb olunmur</translation>
 <translation id="8063875539456488183">Qiyməti yadda saxlayın və izləyin</translation>
-<translation id="8064892030280197386">ödəniş məlumatlarını doldurmaq üçün kimliyinizi yoxlayır.</translation>
 <translation id="8066225060526005217">Kuki ayarları ilə idarə olunur</translation>
 <translation id="8067872629359326442">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium yardım edə bilər. Parolunuzu dəyişmək və Google'a hesabınızın təhlükədə ola biləcəyini bildirmək üçün "Hesabı Qoruyun" seçiminə toxunun.</translation>
 <translation id="8070439594494267500">Tətbiq ikonası</translation>
@@ -3951,6 +3950,7 @@
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="890493561996401738">Təklifi Silmə düyməsi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> təklifini silmək üçün Enter düyməsinə basın</translation>
 <translation id="8910898109640902752">8 x 10 düym</translation>
+<translation id="8914504000324227558">Chrome'u yenidən başladın</translation>
 <translation id="8918062451146297192">Virtual kart üçün CVC</translation>
 <translation id="8919740778133505789">İdman avtomobilləri</translation>
 <translation id="8919895429178014996">Bütün elementləri gizlədin</translation>

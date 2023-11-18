@@ -1058,6 +1058,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3154506275960390542">Halaman ini berisi formulir yang mungkin tidak dikirim dengan aman. Data yang Anda kirim dapat dilihat oleh orang lain saat transit atau dapat diubah oleh penyerang untuk mengubah data yang akan diterima server.</translation>
 <translation id="3154987252551138431">Terjadi error saat menggunakan Berbagi Langsung</translation>
 <translation id="315504272643575312">Akun Anda dikelola oleh <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Luncurkan ulang Chromium</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Wi-Fi yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuknya.</translation>
@@ -3453,7 +3454,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="79338296614623784">Masukkan nomor telepon yang valid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google.</translation>
 <translation id="7935318582918952113">Penyaring DOM</translation>
-<translation id="7936775433939783906">Verifikasi diri Anda agar Google Chrome dapat mengisi info pembayaran.</translation>
 <translation id="7937163678541954811">CVC kartu ini akan dienkripsi dan disimpan ke perangkat Anda untuk checkout yang lebih cepat</translation>
 <translation id="7937554595067888181">Masa berlaku habis pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sertifikat server belum valid.</translation>
@@ -3530,7 +3530,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8058009102480785916">Produksi makanan</translation>
 <translation id="8058603697124206642">Tidak perlu</translation>
 <translation id="8063875539456488183">Simpan dan pantau harga</translation>
-<translation id="8064892030280197386">memverifikasi diri Anda agar dapat mengisi info pembayaran.</translation>
 <translation id="8066225060526005217">Dikelola oleh setelan cookie</translation>
 <translation id="8067872629359326442">Anda baru saja memasukkan sandi ke situs penipuan. Chromium dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
 <translation id="8070439594494267500">Ikon aplikasi</translation>
@@ -3951,6 +3950,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8903921497873541725">Perbesar</translation>
 <translation id="890493561996401738">Hapus tombol Saran, tekan Enter untuk menghapus, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inci (20 x 25 cm)</translation>
+<translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8918062451146297192">CVC untuk kartu virtual</translation>
 <translation id="8919740778133505789">Mobil Sport</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>

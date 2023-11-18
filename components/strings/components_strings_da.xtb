@@ -1057,6 +1057,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3154506275960390542">Denne side indeholder en formular, der muligvis ikke kan indsendes sikkert. Dine indsendte data kan ses af andre eller kan blive ændret af en hacker, så serveren, du sender til, modtager forkerte oplysninger.</translation>
 <translation id="3154987252551138431">Der opstod en fejl ved anvendelsen af Deling tæt på</translation>
 <translation id="315504272643575312">Din konto administreres af <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Genstart Chromium</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
@@ -3455,7 +3456,6 @@ Yderligere oplysninger:
 <translation id="79338296614623784">Angiv et gyldigt telefonnummer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vil afspille beskyttet indhold. Din enheds identitet verificeres af Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Verificer din identitet, så Google Chrome kan udfylde dine betalingsoplysninger.</translation>
 <translation id="7937163678541954811">Kortets CVC krypteres og gemmes på din enhed, så du kan betale hurtigere</translation>
 <translation id="7937554595067888181">Udløber <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serverens certifikatet er endnu ikke gyldigt.</translation>
@@ -3532,7 +3532,6 @@ Yderligere oplysninger:
 <translation id="8058009102480785916">Levnedsmiddelproduktion</translation>
 <translation id="8058603697124206642">Ikke påkrævet</translation>
 <translation id="8063875539456488183">Gem og overvåg pris</translation>
-<translation id="8064892030280197386">verificer din identitet, så dine betalingsoplysninger kan udfyldes.</translation>
 <translation id="8066225060526005217">Administreres via cookieindstillinger</translation>
 <translation id="8067872629359326442">Du har lige angivet din adgangskode på et vildledende website. Chromium kan hjælpe. Klik på Beskyt konto for at ændre din adgangskode og underrette Google om, at din konto muligvis er kompromitteret.</translation>
 <translation id="8070439594494267500">Appikon</translation>
@@ -3956,6 +3955,7 @@ Yderligere oplysninger:
 <translation id="8903921497873541725">Zoom ind</translation>
 <translation id="890493561996401738">Knappen Fjern forslag. Tryk på Enter for at fjerne, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tommer</translation>
+<translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8918062451146297192">CVC til virtuelt kort</translation>
 <translation id="8919740778133505789">Sportsvogne</translation>
 <translation id="8919895429178014996">Skjul alle elementer</translation>

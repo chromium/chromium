@@ -1057,6 +1057,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3154506275960390542">Es posible que un formulario de esta página no se envíe de forma segura. Otros usuarios pueden ver los datos que envías mientras estén en circulación y un atacante podría modificar lo que recibe el servidor.</translation>
 <translation id="3154987252551138431">No se ha podido usar Compartir con Nearby</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> gestiona tu cuenta.</translation>
+<translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">La red Wi-Fi que estás utilizando puede requerir que accedas a su página de inicio de sesión.</translation>
@@ -3052,6 +3053,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o a una versión posterior.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Para enviar este archivo usando <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}other{Para enviar estos archivos usando <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}}</translation>
 <translation id="7160999678034985039">Guarda tu trabajo e inicia la actualización cuando tengas todo listo.</translation>
 <translation id="7163295244162773898">{0,plural, =1{¿Copiar archivo confidencial?}other{¿Copiar archivos confidenciales?}}</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
@@ -3454,7 +3456,6 @@ Más información:
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> quiere reproducir contenido protegido. Google verificará la identidad de tu dispositivo.</translation>
 <translation id="7935318582918952113">Extractor de DOM</translation>
-<translation id="7936775433939783906">Verifica tu identidad para que Google Chrome pueda rellenar tus datos para pagos.</translation>
 <translation id="7937163678541954811">El CVC de esta tarjeta se cifrará y se guardará en tu dispositivo para tramitar las compras más rápido</translation>
 <translation id="7937554595067888181">Fecha de caducidad: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Aún no es válido el certificado de servidor.</translation>
@@ -3531,7 +3532,6 @@ Más información:
 <translation id="8058009102480785916">Producción alimentaria</translation>
 <translation id="8058603697124206642">No es necesario</translation>
 <translation id="8063875539456488183">Guardar y seguir precio</translation>
-<translation id="8064892030280197386">verificar tu identidad para poder rellenar tus datos de pago.</translation>
 <translation id="8066225060526005217">Se gestiona mediante la configuración de cookies</translation>
 <translation id="8067872629359326442">Acabas de introducir tu contraseña en un sitio web engañoso. Chromium puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
 <translation id="8070439594494267500">Icono de la aplicación</translation>
@@ -3954,6 +3954,7 @@ Más información:
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="890493561996401738">Botón Eliminar sugerencia, pulsa Intro para eliminar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 pulgadas</translation>
+<translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8918062451146297192">CVC de la tarjeta virtual</translation>
 <translation id="8919740778133505789">Coches deportivos</translation>
 <translation id="8919895429178014996">Ocultar todos los elementos</translation>

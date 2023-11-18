@@ -1682,6 +1682,13 @@
 <translation id="7893503627044934815">ଏହି ଫାଇଲଟି ଦେଖାଯାଉ ବୋଲି ଚାହୁଁ ନାହିଁ</translation>
 <translation id="7895348134893321514">ଟୋଟ୍</translation>
 <translation id="7897375687985782769">ଆପଣ ସ୍କ୍ରିନ୍‍ର ଘୂର୍ଣ୍ଣନ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍ ଦବାଇଛନ୍ତି। ଆପଣ କ'ଣ ସ୍କ୍ରିନ୍‍କୁ ଘୂରାଇବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="7897626842031123113">ସ୍ଥିତି ଟ୍ରେ, ସମୟ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱାପ କରନ୍ତୁ</translation>
 <translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
 <translation id="7902625623987030061">ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ଛୁଅଁନ୍ତୁ</translation>

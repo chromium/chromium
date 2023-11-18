@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1178581264944972037">Прыпыніць</translation>
+<translation id="1921351128855867012">Пераматаць уперад на наступную колькасць секунд: <ph name="NUMBER_OF_SECONDS" /></translation>
+<translation id="3807208219231826020">Кіраваць прайграваннем</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="4431240646217225907">Вылучэнне тэксту і аўтаматычная прагортка</translation>
 <translation id="4654641641922242357">Прайгравальнік "Агучыць гэту старонку".</translation>
+<translation id="4872475766448853257">Пераматаць назад на наступную колькасць секунд: <ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="5234971936051226002">Прайгравальнік "Агучыць гэту старонку" згорнуты.</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
@@ -14,5 +17,7 @@
 <translation id="6846298663435243399">Ідзе загрузка…</translation>
 <translation id="7587250070160020374">Зараз прайграецца ў Chrome</translation>
 <translation id="8136852699834914183">Прайграванне на гэтай старонцы недаступнае.</translation>
+<translation id="8264989794233974275">Павялічыць або паменшыць хуткасць, прымяніўшы наступны множнік: <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="8407011429883244666">Закрыць прайгравальнік.</translation>
 <translation id="8953618380150219653">Прайгравальнік "Агучыць гэту старонку" адкрыты на ўсю вышыню.</translation>
 </translationbundle>

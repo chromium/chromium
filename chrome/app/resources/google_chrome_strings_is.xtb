@@ -233,6 +233,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4633000520311261472">Til að auka öryggi Chrome höfum við gert óvirkar einhverjar viðbætur sem ekki eru í <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitundar.</translation>
 <translation id="4680828127924988555">Hætta við uppsetningu</translation>
 <translation id="469553575393225953">Viðbætur, forrit og þemu frá óþekktum uppruna geta skaðað tækið þitt. Chrome mælir með að sækja slíkar skrár aðeins í Vefverslun Chrome</translation>
+<translation id="4724676981607797757">Uppsetning mistókst vegna villu sem tengist óstuddri samskiptareglu.</translation>
 <translation id="4728575227883772061">Uppsetning mistókst vegna ótilgreindrar villu. Ef Google Chrome er í gangi eins og er skaltu loka því og reyna aftur.</translation>
 <translation id="4747730611090640388">Chrome getur áætlað áhugasvið þín.  Seinna getur vefsvæði sem þú opnar beðið Chrome um að sýna áhugasvið þín til að hægt sé að sérsníða auglýsingarnar sem þú sérð.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-inn)</translation>
@@ -318,6 +319,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6157638032135951407">Fyrirtækið þitt eyðir Chrome-gögnum þegar þau eru ekki notuð í <ph name="TIMEOUT_DURATION" />. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
+<translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6235018212288296708">Regla á innleið til að láta Google Chrome leyfa mDNS-umferð.</translation>
 <translation id="624230925347970731">Chrome lokast bráðum</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
@@ -494,6 +496,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="940313311831216333">Til að fá aðgang að Chrome efninu þínu í öllum tækjum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="943390475793766444">Chrome mælir með að skanna þessa skrá þar sem hún gæti verið hættuleg.</translation>
 <translation id="963650557422347554">Þegar kveikt er á minnissparnaði dregur Chrome úr rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif á borð við mjúkflettingu og rammatíðni myndskeiða.</translation>
+<translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>
 <translation id="989369509083708165">Google Chrome er sjálfgefinn vafri</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> getur skipt á milli Chrome prófíla</translation>
 </translationbundle>

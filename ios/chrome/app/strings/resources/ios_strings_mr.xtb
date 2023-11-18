@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">मेनू बार स्‍मार्टरीत्या क्रमाने लावा</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4883824756452868502">युनिट डिटेक्ट करा</translation>
 <translation id="488785315393301722">तपशील दर्शवा</translation>
 <translation id="4894963374040315706">हे तुम्हाला तुमचा आवाज वापरून शोधू देते</translation>
 <translation id="489903206070130262">तुमचा शेवटचा उघडलेला टॅब</translation>
@@ -802,7 +803,6 @@
 <translation id="5221339005270097309">पासवर्ड तपासत आहे…</translation>
 <translation id="5226568866393490213">चेतावणी डिसमिस करा</translation>
 <translation id="5228579091201413441">सिंक सुरू करा</translation>
-<translation id="5232485538978018676">व्यवस्थापित केलेल्या खाते यासह साइन इन करा</translation>
 <translation id="5234094073825090254">{count,plural, =1{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केला आहे.}other{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केले आहेत.}}</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5235389474593199952">इतिहास लपवा</translation>
@@ -856,8 +856,10 @@
 <translation id="5551897871312988470">भाषांतर उपलब्ध करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="555749644339804659">पासवर्ड तपासत आहे…</translation>
+<translation id="5559567453458728487">वेबवर आढळलेल्या मापनाच्या युनिटचे रूपांतर करा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5572684875078967866">माहितीचे स्टोरेज</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{हे पॅकेज ट्रॅक करा}other{सर्व पॅकेज ट्रॅक करा}}</translation>
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
@@ -1121,6 +1123,7 @@
 <translation id="6781260999953472352">सिंक सुरू करायचे आहे का?</translation>
 <translation id="6781405765516175232">मार्गासंबंधित पर्यायांसाठी, “दिशानिर्देश मिळवा” वर टॅप करा.</translation>
 <translation id="6785453220513215166">क्रॅश अहवाल पाठवत आहे...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{हे पॅकेज ट्रॅक करणे रद्द करा}other{सर्व पॅकेज ट्रॅक करणे रद्द करा}}</translation>
 <translation id="6790502149545262384">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="CHANNEL_NAME" /> वरील स्टोरी दिसतील.</translation>
 <translation id="6797885426782475225">व्हॉइस शोध</translation>
 <translation id="6800349425672670802">तुम्ही टॅब स्विचर मधून तुमचे सर्व उघडे असलेले टॅब अ‍ॅक्सेस करू शकता.</translation>

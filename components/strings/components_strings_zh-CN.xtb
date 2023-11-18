@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">此页包含一个可能无法安全提交的表单。他人可能会在传输过程中查看您所发送的数据；攻击者也可能会修改这些数据，从而改变服务器收到的内容。</translation>
 <translation id="3154987252551138431">使用“附近分享”功能时出了点问题</translation>
 <translation id="315504272643575312">您的账号由 <ph name="MANAGER" /> 管理。</translation>
+<translation id="3155163173539279776">重新启动 Chromium</translation>
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
@@ -3450,7 +3451,6 @@
 <translation id="79338296614623784">请输入有效的电话号码</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保护的内容。Google 将对您的设备进行身份验证。</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">验证您的身份，以便 Google Chrome 能填写您的付款信息。</translation>
 <translation id="7937163678541954811">此卡的银行卡验证码 (CVC) 将会被加密并保存到您的设备上，以便您更快捷地结账</translation>
 <translation id="7937554595067888181">到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">服务器的证书尚未生效。</translation>
@@ -3527,7 +3527,6 @@
 <translation id="8058009102480785916">食品生产</translation>
 <translation id="8058603697124206642">无需征求同意</translation>
 <translation id="8063875539456488183">保存并跟踪价格</translation>
-<translation id="8064892030280197386">验证您的身份，以便填写您的付款信息。</translation>
 <translation id="8066225060526005217">通过 Cookie 设置管理</translation>
 <translation id="8067872629359326442">您刚刚在一个诈骗网站中输入了密码。Chromium 可以为您提供帮助。若要更改密码并让 Google 知晓您的账号可能处于危险状态，请点击“保护账号”。</translation>
 <translation id="8070439594494267500">应用图标</translation>
@@ -3951,6 +3950,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">“移除建议”按钮，按 Enter 键即可移除“<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />”</translation>
 <translation id="8910898109640902752">8 x 10 英寸</translation>
+<translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8918062451146297192">虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="8919740778133505789">跑车</translation>
 <translation id="8919895429178014996">隐藏所有项</translation>

@@ -1057,6 +1057,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3154506275960390542">Aquesta pàgina inclou un formulari que pot ser que no s'enviï de manera segura. La resta d'usuaris poden veure les dades que enviïs mentre estiguin en trànsit o un atacant podria modificar-les per canviar el contingut que rep el servidor.</translation>
 <translation id="3154987252551138431">S'ha produït un error en utilitzar Compartició Nearby</translation>
 <translation id="315504272643575312">El teu compte està gestionat per <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Torna a iniciar Chromium</translation>
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
@@ -3455,7 +3456,6 @@ Detalls addicionals:
 <translation id="79338296614623784">Introdueix un número de telèfon vàlid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vol reproduir contingut protegit. Google verificarà la identitat del teu dispositiu.</translation>
 <translation id="7935318582918952113">Destil·lador DOM</translation>
-<translation id="7936775433939783906">Verifica la teva identitat perquè Google Chrome pugui emplenar la informació de pagament.</translation>
 <translation id="7937163678541954811">El CVC d'aquesta targeta s'encriptarà i es desarà al teu dispositiu per tramitar les compres més ràpidament</translation>
 <translation id="7937554595067888181">Data de caducitat: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">El certificat del servidor encara no és vàlid.</translation>
@@ -3532,7 +3532,6 @@ Detalls addicionals:
 <translation id="8058009102480785916">Producció alimentària</translation>
 <translation id="8058603697124206642">no és obligatori</translation>
 <translation id="8063875539456488183">Desa el preu i fes-ne un seguiment</translation>
-<translation id="8064892030280197386">verificar la teva identitat per poder emplenar la informació de pagament.</translation>
 <translation id="8066225060526005217">Gestionat per la configuració de galetes</translation>
 <translation id="8067872629359326442">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="8070439594494267500">Icona de l'aplicació</translation>
@@ -3955,6 +3954,7 @@ Detalls addicionals:
 <translation id="8903921497873541725">Amplia</translation>
 <translation id="890493561996401738">Botó Suprimeix el suggeriment, prem Retorn per suprimir, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 polzades</translation>
+<translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8918062451146297192">CVC de la targeta virtual</translation>
 <translation id="8919740778133505789">Cotxes esportius</translation>
 <translation id="8919895429178014996">Amaga tots els elements</translation>

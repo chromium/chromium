@@ -1057,6 +1057,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3154506275960390542">Šajā lapā ir veidlapa, ko, iespējams, nevar droši iesniegt. Kamēr šie dati tiek pārsūtīti, tos var aplūkot citi, un uzbrucējs tos varētu pārveidot, lai mainītu datus, ko saņem serveris.</translation>
 <translation id="3154987252551138431">Izmantojot funkciju “Kopīgošana tuvumā”, radās kļūda</translation>
 <translation id="315504272643575312">Jūsu kontu pārvalda <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Restartēt Chromium</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158539265159265653">Disks</translation>
 <translation id="3162559335345991374">Iespējams, izmantotajā Wi-Fi tīklā tiks pieprasīts apmeklēt pieteikšanās lapu.</translation>
@@ -3454,7 +3455,6 @@ Papildu informācija:
 <translation id="79338296614623784">Ievadiet derīgu tālruņa numuru</translation>
 <translation id="7934414805353235750">Vietne <ph name="URL" /> vēlas atskaņot aizsargātu saturu. Google verificēs jūsu ierīces identitāti.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Verificējiet savu identitāti, lai Google Chrome varētu ievadīt maksājuma informāciju.</translation>
 <translation id="7937163678541954811">Šīs kartes CVC tiks šifrēts un saglabāts jūsu ierīcē ātrākiem norēķiniem.</translation>
 <translation id="7937554595067888181">Derīguma termiņš: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Servera sertifikāts vēl nav apstiprināts.</translation>
@@ -3531,7 +3531,6 @@ Papildu informācija:
 <translation id="8058009102480785916">Pārtikas rūpniecība</translation>
 <translation id="8058603697124206642">nav nepieciešama</translation>
 <translation id="8063875539456488183">Saglabāt un sekot cenai</translation>
-<translation id="8064892030280197386">verificēt jūsu identitāti, lai varētu ievadīt jūsu maksājumu informāciju.</translation>
 <translation id="8066225060526005217">Tiek pārvaldīta sīkfailu iestatījumos</translation>
 <translation id="8067872629359326442">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium var palīdzēt. Lai mainītu paroli un paziņotu uzņēmumam Google, ka jūsu konts, iespējams, ir apdraudēts, noklikšķiniet uz pogas Aizsargāt kontu.</translation>
 <translation id="8070439594494267500">Lietotnes ikona</translation>
@@ -3955,6 +3954,7 @@ Papildu informācija:
 <translation id="8903921497873541725">Tuvināt</translation>
 <translation id="890493561996401738">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 collas</translation>
+<translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>
 <translation id="8918062451146297192">Virtuālās kartes CVC</translation>
 <translation id="8919740778133505789">Sporta automašīnas</translation>
 <translation id="8919895429178014996">Paslēpt visus vienumus</translation>

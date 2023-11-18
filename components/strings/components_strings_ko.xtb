@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">이 페이지에 포함된 양식은 안전하게 제출되지 않을 수 있습니다. 전송되는 데이터는 전송 중에 다른 사람이 볼 수 있으며 서버에서 수신하는 데이터를 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="3154987252551138431">Nearby Share를 사용하는 중에 문제가 발생했습니다.</translation>
 <translation id="315504272643575312">내 계정은 <ph name="MANAGER" />에서 관리합니다.</translation>
+<translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158539265159265653">디스크</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
@@ -3454,7 +3455,6 @@
 <translation id="79338296614623784">올바른 전화번호를 입력하세요.</translation>
 <translation id="7934414805353235750"><ph name="URL" />에서 보호된 콘텐츠를 재생하려고 합니다. Google에서 기기의 ID를 인증해야 합니다.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Chrome에서 결제 정보를 입력할 수 있도록 본인임을 인증하세요.</translation>
 <translation id="7937163678541954811">더 빠른 결제를 위해 이 카드의 CVC가 암호화되고 기기에 저장됩니다.</translation>
 <translation id="7937554595067888181">만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">서버 인증서가 유효하지 않습니다.</translation>
@@ -3531,7 +3531,6 @@
 <translation id="8058009102480785916">식품 생산</translation>
 <translation id="8058603697124206642">필요하지 않음</translation>
 <translation id="8063875539456488183">가격 저장 및 추적</translation>
-<translation id="8064892030280197386">본인 인증을 해야 결제 정보를 입력할 수 있습니다.</translation>
 <translation id="8066225060526005217">쿠키 설정에서 관리</translation>
 <translation id="8067872629359326442">사기성 사이트에 비밀번호를 입력했습니다. Chromium이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="8070439594494267500">앱 아이콘</translation>
@@ -3954,6 +3953,7 @@
 <translation id="8903921497873541725">확대</translation>
 <translation id="890493561996401738">추천 삭제 버튼, Enter 키를 눌러 삭제, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10인치</translation>
+<translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8918062451146297192">가상 카드용 CVC</translation>
 <translation id="8919740778133505789">스포츠카</translation>
 <translation id="8919895429178014996">모든 항목 숨기기</translation>

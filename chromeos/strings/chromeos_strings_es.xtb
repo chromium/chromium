@@ -30,6 +30,7 @@
 <translation id="1175951029573070619">Ni buena ni mala (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
+<translation id="1195784767091936222">Activar modo Oscuro automático</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pausar</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -278,6 +279,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">El dispositivo está conectado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{¿Quitar página?}=1{¿Quitar página {PAGE_NUMBER}?}other{¿Quitar página {PAGE_NUMBER}?}}</translation>
+<translation id="3136905423678675159">¿Activar modo Oscuro automático?</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3156846309055100599">Escaneando página <ph name="PAGE_NUMBER" />...</translation>
@@ -357,6 +359,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
 <translation id="3748026146096797577">No conectado</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
+<translation id="3754384069690464321">Para obtener los mejores resultados con este fondo de pantalla, activa el modo Oscuro automático. Puedes volver a cambiar este ajuste en la aplicación en cualquier momento.</translation>
 <translation id="3771294271822695279">Archivos de vídeo</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="380097101658023925">controles RGB</translation>
@@ -437,7 +440,6 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pulsada</translation>
 <translation id="4354430579665871434">tecla</translation>
-<translation id="435692326371619097">Gestiona los ajustes de APN de la red. Los APN establecen una conexión entre una red móvil e Internet. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Restablecer todas las combinaciones de teclas</translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
 <translation id="4378551569595875038">Conectando...</translation>

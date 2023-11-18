@@ -733,6 +733,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4856841893565072365">Barra de menu com ordenação inteligente</translation>
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4883824756452868502">Detetar unidades</translation>
 <translation id="488785315393301722">Mostrar Detalhes</translation>
 <translation id="4894963374040315706">Isto permite-lhe pesquisar com a sua voz</translation>
 <translation id="489903206070130262">O seu último separador aberto</translation>
@@ -802,7 +803,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5221339005270097309">A verificar palav.-passe…</translation>
 <translation id="5226568866393490213">Ignorar aviso</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
-<translation id="5232485538978018676">Inicie sessão com uma conta gerida</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado na sua Conta Google, {email}.}other{Marcadores guardados na sua Conta Google, {email}.}}</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5235389474593199952">Ocultar Histórico</translation>
@@ -856,8 +856,10 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5551897871312988470">Propor tradução</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="555749644339804659">A verificar palav.-passe…</translation>
+<translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5572684875078967866">Armazenamento de informações</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Acompanhar esta embalagem}other{Acompanhar todas as embalagens}}</translation>
 <translation id="5597915316964418992">Abra a grelha de separadores</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
@@ -1120,6 +1122,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6781405765516175232">Para obter as opções do trajeto, toque em "Receber direções".</translation>
 <translation id="6785453220513215166">A enviar relatório de falha...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Desativar acompanhamento desta embalagem}other{Desativar acompanhamento de todas as embalagens}}</translation>
 <translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
 <translation id="6800349425672670802">Pode aceder a todos os separadores abertos a partir do Comutador de separadores.</translation>

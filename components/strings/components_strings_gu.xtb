@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">આ પેજમાં એક ફોર્મ છે, જે કદાચ સુરક્ષિત રીતે સબમિટ નહીં થાય. જે ડેટા તમે મોકલો તેને પરિવહન દરમિયાન અન્ય લોકો જોઈ શકશે અથવા સર્વર જે મેળવે, તે બદલવા માટે હુમલાખોર ફેરફાર કરી શકશે.</translation>
 <translation id="3154987252551138431">નજીકના શેરની સુવિધાનો ઉપયોગ કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે.</translation>
+<translation id="3155163173539279776">Chromium ને ફરીથી લોંચ કરો</translation>
 <translation id="3157931365184549694">રિસ્ટોર કરો</translation>
 <translation id="3158539265159265653">ડિસ્ક</translation>
 <translation id="3162559335345991374">તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇને તેના લોગિન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
@@ -3455,7 +3456,6 @@
 <translation id="79338296614623784">એક માન્ય ફોન નંબર દાખલ કરો</translation>
 <translation id="7934414805353235750"><ph name="URL" /> સુરક્ષિત કન્ટેન્ટ ચલાવવા માગે છે. Google દ્વારા તમારા ડિવાઇસની ઓળખ ચકાસવામાં આવશે.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">આ તમે જ છો તેની ચકાસણી કરો, જેથી Google Chrome તમારી ચુકવણીની માહિતી ભરી શકે.</translation>
 <translation id="7937163678541954811">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા ડિવાઇસ પર સાચવવામાં આવશે</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="7938958445268990899">સર્વરનું પ્રમાણપત્ર હજી માન્ય નથી.</translation>
@@ -3532,7 +3532,6 @@
 <translation id="8058009102480785916">ખાદ્ય ઉત્પાદન</translation>
 <translation id="8058603697124206642">આવશ્યક નથી</translation>
 <translation id="8063875539456488183">સાચવો અને કિંમત ટ્રૅક કરો</translation>
-<translation id="8064892030280197386">આ તમે જ છો તેની ચકાસણી કરો, જેથી તે ચુકવણી માટેની તમારી માહિતી ભરી શકે.</translation>
 <translation id="8066225060526005217">કુકીનાં સેટિંગ દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="8067872629359326442">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chromium સહાય કરી શકે છે. તમારો પાસવર્ડ બદલવા માટે અને Googleને એ જાણ કરવા માટે કે તમારું એકાઉન્ટ જોખમમાં હોઈ શકે છે, એકાઉન્ટ સુરક્ષિત કરો પર ક્લિક કરો.</translation>
 <translation id="8070439594494267500">ઍપનું આઇકન</translation>
@@ -3955,6 +3954,7 @@
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
 <translation id="890493561996401738">સૂચન કાઢી નાખો બટન, આ કાઢી નાખવા માટે Enter દબાવો, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ઇંચ</translation>
+<translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8918062451146297192">વર્ચ્યુઅલ કાર્ડ માટે CVC | કાર્ડ ચકાસણી કોડ (CVC)</translation>
 <translation id="8919740778133505789">સ્પોર્ટ કાર</translation>
 <translation id="8919895429178014996">બધી આઇટમો છુપાવો</translation>

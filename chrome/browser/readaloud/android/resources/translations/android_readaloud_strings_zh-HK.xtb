@@ -3,11 +3,11 @@
 <translationbundle lang="zh-HK">
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1921351128855867012">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
-<translation id="3807208219231826020">拖曳播放</translation>
+<translation id="3807208219231826020">拖曳時間軸播放</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="4431240646217225907">突顯文字和自動捲動</translation>
 <translation id="4654641641922242357">「朗讀此頁面內容」播放器。</translation>
-<translation id="4872475766448853257">倒轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
+<translation id="4872475766448853257">倒播 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="5234971936051226002">「朗讀此頁面內容」播放器已經縮到最細。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -17,7 +17,7 @@
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="7587250070160020374">Chrome 正在播放</translation>
 <translation id="8136852699834914183">無法播放此頁面的內容。</translation>
-<translation id="8264989794233974275">加快/減慢 <ph name="PLAYBACK_SPEED" /> 倍速度。</translation>
-<translation id="8407011429883244666">關閉播放器。</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> 倍加/減速。</translation>
+<translation id="8407011429883244666">閂播放器。</translation>
 <translation id="8953618380150219653">「朗讀此頁面內容」播放器宜家顯示喺成個畫面。</translation>
 </translationbundle>

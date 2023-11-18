@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">ይህ ገፅ ደህንነቱ አስተማማኝ ባልሆነ መንገድ ላይገባ የሚችል ቅጽ ያካትታል። እርስዎ የሚልኩት ውሂብ በሽግግር ላይ እያለ በሌሎች ሊታይ ወይም አገልጋዩ የሚቀበለውን ለመለወጥ በአጥቂ ሊቀየር ይችላል።</translation>
 <translation id="3154987252551138431">አቅራቢያ አጋራን ሲጠቀሙ የሆነ ችግር ተፈጥሯል</translation>
 <translation id="315504272643575312">የእርስዎ መለያ በ<ph name="MANAGER" /> ነው የሚተዳደረው።</translation>
+<translation id="3155163173539279776">Chromiumን ዳግም አስጀምር</translation>
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3158539265159265653">ዲስክ</translation>
 <translation id="3162559335345991374">እየተጠቀሙ ያሉት Wi-Fi በመለያ መግቢያ ገጹን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
@@ -3454,7 +3455,6 @@
 <translation id="79338296614623784">የሚሰራ ስልክ ቁጥር ያስገቡ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> የተጠበቀ ይዘትን ማጫወት ይፈልጋል። የመሣሪያዎ ማንነት በGoogle ይረጋገጣል።</translation>
 <translation id="7935318582918952113">የDOM ማጣሪያ</translation>
-<translation id="7936775433939783906">Google Chrome የክፍያ መረጃዎን መሙላት እንዲችል እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="7937163678541954811">የዚህ ካርድ የካርድ ማረጋገጫ ኮድ ለበለጠ ፈጣን ክፍያ ማጠናቀቅ ይመሰጠር እና በመሣሪያዎ ላይ ይቀመጣል</translation>
 <translation id="7937554595067888181">በ<ph name="EXPIRATION_DATE_ABBR" /> ላይ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="7938958445268990899">የአገልጋይ እውቅና ማረጋገጫ ገና አልጸናም።</translation>
@@ -3531,7 +3531,6 @@
 <translation id="8058009102480785916">የምግብ ማምረት</translation>
 <translation id="8058603697124206642">አያስፈልግም</translation>
 <translation id="8063875539456488183">ያስቀምጡ እና ዋጋ ይከታተሉ</translation>
-<translation id="8064892030280197386">የእርስዎን የክፍያ መረጃ እንዲያስገባ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="8066225060526005217">በኩኪዎች ቅንብሮች የሚተዳደር</translation>
 <translation id="8067872629359326442">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chromium ሊያግዝ ይችላል። የእርስዎን የይለፍ ቃል ለመለወጥ እና የእርስዎ መለያ ስጋት ውስጥ እንዳለ ለGoogle ለማሳወቅ፣ መለያን ከጥቃት ተከላከል የሚለው ላይ ጠቅ ያድርጉ።</translation>
 <translation id="8070439594494267500">የመተግበሪያ አዶ</translation>
@@ -3955,6 +3954,7 @@
 <translation id="8903921497873541725">አጉላ</translation>
 <translation id="890493561996401738">የአስተያየት ጥቆማ አስወግድ አዝራር፣ ለማስወገድ አስገባን ይጫኑ፣ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ኢንች</translation>
+<translation id="8914504000324227558">Chromeን ዳግም አስጀምር</translation>
 <translation id="8918062451146297192">ካርድ ማረጋገጫ ኮድ ለምናባዊ ካርድ</translation>
 <translation id="8919740778133505789">የስፖርት መኪናዎች</translation>
 <translation id="8919895429178014996">ሁሉንም ንጥሎች ደብቅ</translation>

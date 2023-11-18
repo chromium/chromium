@@ -1057,6 +1057,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3154506275960390542">Tällä sivulla on taulukko, jota ei ehkä voi lähettää turvallisesti. Muut voivat nähdä lähettämäsi tiedot siirron aikana tai hyökkääjä voi muuttaa niitä, ennen kuin ne saapuvat palvelimelle.</translation>
 <translation id="3154987252551138431">Jotain meni pieleen käytettäessä lähijakamista</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> ylläpitää tiliäsi.</translation>
+<translation id="3155163173539279776">Käynnistä Chromium uudelleen</translation>
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158539265159265653">Levy</translation>
 <translation id="3162559335345991374">Käyttämäsi Wi-Fi saattaa edellyttää kirjautumista.</translation>
@@ -3456,7 +3457,6 @@ Lisätietoja:
 <translation id="79338296614623784">Anna kelvollinen puhelinnumero.</translation>
 <translation id="7934414805353235750"><ph name="URL" /> yrittää toistaa suojattua sisältöä. Google vahvistaa laitteesi tunnistetiedot.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Vahvista henkilöllisyytesi, jotta Google Chrome voi täyttää maksutietosi.</translation>
 <translation id="7937163678541954811">Kortin CVC-koodi salataan ja tallennetaan laitteellesi nopeampaa maksamista varten</translation>
 <translation id="7937554595067888181">Vanhenee <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Palvelimen varmenne ei ole vielä voimassa.</translation>
@@ -3533,7 +3533,6 @@ Lisätietoja:
 <translation id="8058009102480785916">Elintarviketuotanto</translation>
 <translation id="8058603697124206642">Ei vaadita</translation>
 <translation id="8063875539456488183">Tallenna ja seuraa hintoja</translation>
-<translation id="8064892030280197386">vahvistaa henkilöllisyytesi, jotta se voi täyttää maksutietosi.</translation>
 <translation id="8066225060526005217">Evästeasetusten ylläpitämä</translation>
 <translation id="8067872629359326442">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium voi auttaa. Valitse Suojaa tili, niin voit vaihtaa salasanasi ja Googlelle ilmoitetaan tilin mahdollisesta vaarantumisesta.</translation>
 <translation id="8070439594494267500">Sovelluskuvake</translation>
@@ -3957,6 +3956,7 @@ Lisätietoja:
 <translation id="8903921497873541725">Lähennä</translation>
 <translation id="890493561996401738">Ehdotuksen poistopainike, poista painamalla Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tuumaa</translation>
+<translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8918062451146297192">Virtuaalikortin CVC</translation>
 <translation id="8919740778133505789">Urheiluautot</translation>
 <translation id="8919895429178014996">Piilota kaikki kohteet</translation>

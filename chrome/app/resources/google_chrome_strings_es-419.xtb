@@ -230,6 +230,7 @@
 <translation id="4633000520311261472">Para que Chrome sea más seguro, inhabilitamos algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
 <translation id="4680828127924988555">Cancelar la instalación</translation>
 <translation id="469553575393225953">Extensiones, apps y temas de fuentes desconocidas que pueden dañar tu dispositivo. Chrome recomienda que los instales únicamente desde Chrome Web Store</translation>
+<translation id="4724676981607797757">No se pudo completar la instalación debido a un error de protocolo no compatible.</translation>
 <translation id="4728575227883772061">No se pudo completar la instalación debido a un error no identificado. Si Google Chrome se está ejecutando en este momento, ciérrelo e intente nuevamente.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
@@ -311,6 +312,7 @@
 <translation id="6157638032135951407">Tu organización borra los datos de Chrome cuando no se usan durante <ph name="TIMEOUT_DURATION" />. Esto puede incluir el historial, los datos de Autocompletar y las descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Versión Beta de Google Chrome</translation>
+<translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
 <translation id="6235018212288296708">Regla de entrada para que Google Chrome permita el tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará pronto</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
@@ -487,6 +489,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="940313311831216333">A fin de ver tu contenido de Chrome en todos tus dispositivos, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="943390475793766444">Chrome recomienda analizar el archivo porque puede ser peligroso.</translation>
 <translation id="963650557422347554">Cuando está activado, Chrome limita la actividad en segundo plano y los efectos visuales, como el desplazamiento suave y las velocidades de fotogramas de video a fin de conservar la batería.</translation>
+<translation id="983803489796659991">No se pudo completar la instalación porque el servidor de actualización no tiene ningún dato hash para la aplicación.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permite alternar de un perfil de Chrome a otro</translation>
 </translationbundle>

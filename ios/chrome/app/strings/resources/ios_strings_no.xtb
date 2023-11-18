@@ -733,6 +733,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4856841893565072365">Menylinje for smart sortering</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4883824756452868502">Registrer enheter</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
 <translation id="4894963374040315706">Dette gjør at du kan søke ved bruk av stemmen</translation>
 <translation id="489903206070130262">Den siste åpne fanen din</translation>
@@ -802,7 +803,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5221339005270097309">Sjekker passord …</translation>
 <translation id="5226568866393490213">Avvis varsel</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
-<translation id="5232485538978018676">Logg på med administrert konto</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bokmerket er lagret i Google-kontoen din ({email}).}other{Bokmerkene er lagret i Google-kontoen din ({email}).}}</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5235389474593199952">Skjul loggen</translation>
@@ -856,8 +856,10 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5551897871312988470">Tilby å oversette</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="555749644339804659">Sjekker passord …</translation>
+<translation id="5559567453458728487">Konverter måleenheter som blir funnet på nettet</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5572684875078967866">Informasjonslagring</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Spor denne pakken}other{Spor alle pakker}}</translation>
 <translation id="5597915316964418992">Åpne fanerutenettet</translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
@@ -1120,6 +1122,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6781260999953472352">Vil du slå på synkronisering?</translation>
 <translation id="6781405765516175232">For å se rutealternativer, trykk på «Få veibeskrivelse».</translation>
 <translation id="6785453220513215166">Sender krasjrapport …</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Slutt å spore denne pakken}other{Slutt å spore alle pakker}}</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6797885426782475225">Talesøk</translation>
 <translation id="6800349425672670802">Du får tilgang til alle de åpne fanene dine med fanevelgeren.</translation>

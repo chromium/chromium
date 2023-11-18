@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="130631256467250065">तपाईंले अर्को पटक तपाईंको यन्त्रलाई पुन: सुरु गर्दा तपाईंका परिवर्तनहरू प्रभावकारी हुनेछन्।</translation>
-<translation id="1555506416658437797">भुक्तानी विधिहरू सम्पादन गर्नुहोस्।</translation>
 <translation id="275588974610408078">क्र्यास रिपोर्टिङ Chromium मा उपलब्ध छैन।</translation>
 <translation id="3064346599913645280">तपाईं एउटा सुरक्षित Chromium पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="3255926992597692024">Chromium ले भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउन खोज्दै छ।</translation>
@@ -30,7 +29,6 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           र तपाइँको विन्यास "प्रोक्सी छैन" वand make sure your configuration is set to "no proxy" or "direct."</translation>
-<translation id="585620188971323280">भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउनुहोस्।</translation>
 <translation id="6549378540556750549">Chromium बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
 <translation id="6613594504749178791">तपाईंले अर्को पटक Chromium लाई पुन: लन्च गर्दा तपाईंका परिवर्तनहरू प्रभावमा आउनेछन्।</translation>
 <translation id="7681937895330411637">Chromium बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>

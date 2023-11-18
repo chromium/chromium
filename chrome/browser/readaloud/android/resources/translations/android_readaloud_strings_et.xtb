@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1178581264944972037">Peata</translation>
+<translation id="1921351128855867012">Keri <ph name="NUMBER_OF_SECONDS" /> sekundit edasi</translation>
+<translation id="3807208219231826020">Taasesituse kerimine</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="4431240646217225907">Teksti ja automaatse kerimise esile tõstmine</translation>
 <translation id="4654641641922242357">Pleier „Kuula seda lehte“.</translation>
+<translation id="4872475766448853257">Keri <ph name="NUMBER_OF_SECONDS" /> sekundit tagasi</translation>
 <translation id="5234971936051226002">Pleier „Kuula seda lehte“ on minimeeritud.</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="6315170314923504164">Hääl</translation>
@@ -14,5 +17,7 @@
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="7587250070160020374">Chrome hetkel mängimas</translation>
 <translation id="8136852699834914183">Selle lehe jaoks pole taasesitus saadaval.</translation>
+<translation id="8264989794233974275">Kiiruse <ph name="PLAYBACK_SPEED" />× suurendamine/vähendamine.</translation>
+<translation id="8407011429883244666">Pleieri sulgemine.</translation>
 <translation id="8953618380150219653">Pleier „Kuula seda lehte“ on avatud täiskõrgusel.</translation>
 </translationbundle>

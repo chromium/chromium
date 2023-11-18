@@ -1057,6 +1057,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3154506275960390542">Orri honetan dagoen inprimaki bat agian ez da bidaliko segurtasunez. Datuak bidean dauden bitartean beste pertsona batzuek ikus ditzakete eta erasotzaileek aldatu egin ditzakete zerbitzariak beste zerbait jaso dezan.</translation>
 <translation id="3154987252551138431">Arazo bat izan da Nearby Share erabiltzean</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> domeinuak kudeatzen du kontua.</translation>
+<translation id="3155163173539279776">Berrabiarazi Chromium</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158539265159265653">Diskoa</translation>
 <translation id="3162559335345991374">Baliteke darabilzun Wi-Fi konexioaren saio-hasierako orrira joan behar izatea.</translation>
@@ -3450,7 +3451,6 @@ Xehetasun gehiago:
 <translation id="79338296614623784">Idatzi balio duen telefono-zenbaki bat</translation>
 <translation id="7934414805353235750"><ph name="URL" /> webguneak eduki babestua erreproduzitu nahi du. Google-k zure gailuaren identitatea egiaztatuko du.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Egiaztatu zu zarela Google Chrome-k zure ordainketa-informazioa betetzeko.</translation>
 <translation id="7937163678541954811">Txartel honen CVCa enkriptatuko da, eta gailuan gordeko, azkarrago ordaintzeko</translation>
 <translation id="7937554595067888181">Iraungitze-data: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Zerbitzariaren ziurtagiriak ez du oraindik balio.</translation>
@@ -3527,7 +3527,6 @@ Xehetasun gehiago:
 <translation id="8058009102480785916">Elikagaien ekoizpena</translation>
 <translation id="8058603697124206642">Ez da beharrezkoa</translation>
 <translation id="8063875539456488183">Gorde eta egin prezioaren jarraipena</translation>
-<translation id="8064892030280197386">zu zaren egiaztatu nahi du, zure ordainketa-informazioa betetzeko.</translation>
 <translation id="8066225060526005217">Cookieen ezarpenen arabera kudeatzen da</translation>
 <translation id="8067872629359326442">Webgune engainagarri batean idatzi duzu pasahitza. Chromium-ek lagundu egin diezazuke. Pasahitza aldatzeko eta Google-ri agian kontua arriskuan dagoela jakinarazteko, egin klik Babestu kontua botoian.</translation>
 <translation id="8070439594494267500">Aplikazioaren ikonoa</translation>
@@ -3950,6 +3949,7 @@ Xehetasun gehiago:
 <translation id="8903921497873541725">Handitu</translation>
 <translation id="890493561996401738">"Kendu iradokizuna" botoia, sakatu Sartu kentzeko, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 in</translation>
+<translation id="8914504000324227558">Berrabiarazi Chrome</translation>
 <translation id="8918062451146297192">Txartel birtualaren CVCa</translation>
 <translation id="8919740778133505789">Kiroletako autoak</translation>
 <translation id="8919895429178014996">Ezkutatu elementu guztiak</translation>

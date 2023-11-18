@@ -802,7 +802,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5221339005270097309">Vérif. des mots de passe…</translation>
 <translation id="5226568866393490213">Ignorer l'avertissement</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
-<translation id="5232485538978018676">Se connecter avec un compte géré</translation>
 <translation id="5234094073825090254">{count,plural, =1{Favori enregistré dans votre compte Google ({email}).}one{Favori enregistré dans votre compte Google ({email}).}other{Favoris enregistrés dans votre compte Google ({email}).}}</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5235389474593199952">Masquer l'historique</translation>

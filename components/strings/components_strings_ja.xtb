@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">このページのフォームは安全に送信されない可能性があります。送信中にデータが他者に閲覧されたり、悪意のあるユーザーによりデータが変更されてサーバーに別の内容が届いたりする可能性があります。</translation>
 <translation id="3154987252551138431">ニアバイシェアの使用中に問題が発生しました</translation>
 <translation id="315504272643575312">あなたのアカウントは <ph name="MANAGER" /> によって管理されています。</translation>
+<translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158539265159265653">ディスク</translation>
 <translation id="3162559335345991374">ご利用の Wi-Fi ネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
@@ -3456,7 +3457,6 @@
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
 <translation id="7934414805353235750"><ph name="URL" /> から、保護されたコンテンツの再生許可を求められています。デバイスの識別情報が Google により確認されます。</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Google Chrome でお支払い情報を入力できるよう、本人確認を行ってください。</translation>
 <translation id="7937163678541954811">すばやく決済できるように、このカードの CVC は暗号化されて、お使いのデバイスに保存されます</translation>
 <translation id="7937554595067888181">有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="7938958445268990899">サーバーの証明書が有効になっていません。</translation>
@@ -3533,7 +3533,6 @@
 <translation id="8058009102480785916">食品産業</translation>
 <translation id="8058603697124206642">任意</translation>
 <translation id="8063875539456488183">保存して価格をトラッキング</translation>
-<translation id="8064892030280197386">お支払い情報を入力するため、本人確認を行います。</translation>
 <translation id="8066225060526005217">Cookie の設定によって管理されています</translation>
 <translation id="8067872629359326442">偽のサイトでパスワードを入力しました。Chromium を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
 <translation id="8070439594494267500">アプリのアイコン</translation>
@@ -3957,6 +3956,7 @@
 <translation id="8903921497873541725">拡大する</translation>
 <translation id="890493561996401738">候補を削除するボタンです。Enter キーを押すと <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> を削除します</translation>
 <translation id="8910898109640902752">8x10 インチ</translation>
+<translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8918062451146297192">仮想カードの CVC</translation>
 <translation id="8919740778133505789">スポーツカー</translation>
 <translation id="8919895429178014996">すべてのアイテムを非表示にする</translation>

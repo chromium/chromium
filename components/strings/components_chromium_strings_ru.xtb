@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="130631256467250065">Изменения вступят в силу после перезагрузки устройства.</translation>
-<translation id="1555506416658437797">изменить способы оплаты.</translation>
 <translation id="275588974610408078">В Chromium отсутствует функция отчета об ошибках.</translation>
 <translation id="3064346599913645280">Вы просматриваете безопасную страницу Chromium</translation>
 <translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
@@ -30,7 +29,6 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           и убедитесь, что в конфигурации отключено использование прокси-сервера или выбрано непосредственное подключение.</translation>
-<translation id="585620188971323280">изменить настройки заполнения способов оплаты.</translation>
 <translation id="6549378540556750549">Chromium также работает благодаря <ph name="BEGIN_LINK_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Изменения вступят в силу при следующем входе в Chromium.</translation>
 <translation id="7681937895330411637">Chromium создан на основе проекта <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> с открытым исходным кодом.</translation>

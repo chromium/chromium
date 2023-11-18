@@ -803,7 +803,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5221339005270097309">Provjera lozinki…</translation>
 <translation id="5226568866393490213">Odbaci upozorenje</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
-<translation id="5232485538978018676">Prijavite se pomoću upravljanog računa</translation>
 <translation id="5234094073825090254">{count,plural, =1{Oznaka je sačuvana na Google račun {email}.}one{Oznake su sačuvane na Google račun {email}.}few{Oznake su sačuvane na Google račun {email}.}other{Oznake su sačuvane na Google račun {email}.}}</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5235389474593199952">Sakrij historiju</translation>
@@ -857,7 +856,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5551897871312988470">Ponudi prijevod</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555749644339804659">Provjera lozinki…</translation>
-<translation id="5559567453458728487">Preračunajte mjerne jedinice pronađene na webu</translation>
+<translation id="5559567453458728487">Pretvorite mjerne jedinice pronađene na webu</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5572684875078967866">Pohrana informacija</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Prati ovaj paket}one{Prati sve pakete}few{Prati sve pakete}other{Prati sve pakete}}</translation>
@@ -1123,7 +1122,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6781260999953472352">Uključiti sinhronizaciju?</translation>
 <translation id="6781405765516175232">Za opcije rute dodirnite "Preuzmi smjernice".</translation>
 <translation id="6785453220513215166">Slanje izvještaja o padovima aplikacije...</translation>
-<translation id="6788698206356268539">{COUNT,plural, =1{Zaustavi praćenje ovog paketa}one{Zaustavi praćenje svih paketa}few{Zaustavi praćenje svih paketa}other{Zaustavi praćenje svih paketa}}</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Prestani pratiti ovaj paket}one{Prestani pratiti sve pakete}few{Prestani pratiti sve pakete}other{Prestani pratiti sve pakete}}</translation>
 <translation id="6790502149545262384">Uskoro ćete vidjeti priče s kanala <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="6797885426782475225">Glasovno pretraživanje</translation>
 <translation id="6800349425672670802">Možete pristupiti svim otvorenim karticama putem Prebacivača kartica.</translation>

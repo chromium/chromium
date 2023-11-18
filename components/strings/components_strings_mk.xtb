@@ -1057,6 +1057,7 @@
 <translation id="3154506275960390542">Формуларот што го содржи страницава може да не се испрати безбедно. При преносот, податоците што ги испраќате може да ги гледаат други лица или да ги менува напаѓач за да го измени она што треба да го добие серверот.</translation>
 <translation id="3154987252551138431">Нешто тргна наопаку при користењето на „Споделување во близина“</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> управува со вашата сметка.</translation>
+<translation id="3155163173539279776">Рестартирајте го Chromium</translation>
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Wi-Fi што го користите може да бара да ја посетите страницата за најавување.</translation>
@@ -3455,7 +3456,6 @@
 <translation id="79338296614623784">Внесете важечки телефонски број</translation>
 <translation id="7934414805353235750"><ph name="URL" /> сака да пушти заштитени содржини. Google ќе го потврди идентитетот на вашиот уред.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Потврдете го вашиот идентитет за да може Google Chrome да ги пополни вашите податоци за плаќање.</translation>
 <translation id="7937163678541954811">За побрзо плаќање, CVC на картичкава ќе се шифрира и зачува на вашиот уред</translation>
 <translation id="7937554595067888181">Истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификатот на серверот сѐ уште не е важечки.</translation>
@@ -3532,7 +3532,6 @@
 <translation id="8058009102480785916">Производство на храна</translation>
 <translation id="8058603697124206642">Незадолжително</translation>
 <translation id="8063875539456488183">Зачувај и следи ја цената</translation>
-<translation id="8064892030280197386">да го потврди вашиот идентитет за да може да ги пополни вашите податоци за плаќање.</translation>
 <translation id="8066225060526005217">Управувано со поставките за колачиња</translation>
 <translation id="8067872629359326442">Тукушто ја внесовте својата лозинка на измамнички сајт. Chromium може да помогне. За да ја смените лозинката и да го известите Google дека е можно вашата сметка да е изложена на ризик, кликнете „Заштити ја сметката“.</translation>
 <translation id="8070439594494267500">Икона на апликацијата</translation>
@@ -3955,6 +3954,7 @@
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="890493561996401738">Копче за отстранување предлог, притиснете Enter за да отстраните, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8918062451146297192">CVC за виртуелна картичка</translation>
 <translation id="8919740778133505789">Спортски автомобили</translation>
 <translation id="8919895429178014996">Скриј ги сите ставки</translation>

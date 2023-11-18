@@ -1058,6 +1058,7 @@
 <translation id="3154506275960390542">اس صفحے میں ایسا فارم شامل ہے جو ممکن ہے بہ حفاظت جمع نہ ہو۔ دوسرے لوگ ٹرانزٹ کے دوران آپ کی جانب سے بھیجا جانے والا ڈیٹا دیکھ سکتے ہیں یا سرور کو موصول ہونے والے ڈیٹا میں کسی حملہ آور کے ذریعے ترمیم کی جا سکتی ہے۔</translation>
 <translation id="3154987252551138431">قریبی آلات کے ساتھ اشتراک کرتے وقت کچھ غلط ہو گیا</translation>
 <translation id="315504272643575312">آپ کا اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>
+<translation id="3155163173539279776">‏Chromium کو دوبارہ شروع کریں</translation>
 <translation id="3157931365184549694">بحال کریں</translation>
 <translation id="3158539265159265653">ڈسک</translation>
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
@@ -3458,7 +3459,6 @@
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کی توثیق کرے گا۔</translation>
 <translation id="7935318582918952113">‏DOM ڈسٹلر</translation>
-<translation id="7936775433939783906">‏تصدیق کریں کہ یہ آپ ہی ہیں تاکہ Google Chrome آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
 <translation id="7937163678541954811">‏اس کارڈ کے CVC کو مرموز کیا جائے گا اور تیز چیک آؤٹ کے لیے آپ کے آلے میں محفوظ کیا جائے گا</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> کو میعاد ختم ہو جائے گی</translation>
 <translation id="7938958445268990899">سرور کا سرٹیفکیٹ ابھی تک درست نہیں ہے۔</translation>
@@ -3535,7 +3535,6 @@
 <translation id="8058009102480785916">غذا کی تیاری</translation>
 <translation id="8058603697124206642">غیر مطلوب</translation>
 <translation id="8063875539456488183">قیمت محفوظ کریں اور ٹریک کریں</translation>
-<translation id="8064892030280197386">تصدیق کریں کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
 <translation id="8066225060526005217">کوکیز کی ترتیبات کے زیر انتظآم</translation>
 <translation id="8067872629359326442">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
 <translation id="8070439594494267500">ایپ آئیکن</translation>
@@ -3958,6 +3957,7 @@
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="890493561996401738">‏تجویز کا بٹن ہٹائیں، ہٹانے کے لیے Enter دبائیں، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‏x 10 ‏8 انچ</translation>
+<translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8918062451146297192">‏CVC برائے ورچوئل کارڈ</translation>
 <translation id="8919740778133505789">اسپورٹس کاریں</translation>
 <translation id="8919895429178014996">تمام آئٹمز چھپائیں</translation>

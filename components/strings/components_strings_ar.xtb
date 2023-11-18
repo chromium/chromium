@@ -1058,6 +1058,7 @@
 <translation id="3154506275960390542">تتضمّن هذه الصفحة نموذجًا قد لا يتم إرساله بصورة آمنة، ويستطيع الآخرون مشاهدة البيانات التي ترسلها أثناء نقلها، كما يستطيع أي مهاجم تعديلها لتغيير ما يتلقاه الخادم.</translation>
 <translation id="3154987252551138431">حدث خطأ أثناء استخدام ميزة "المشاركة عن قرب".</translation>
 <translation id="315504272643575312">يدير <ph name="MANAGER" /> حسابك.</translation>
+<translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
 <translation id="3157931365184549694">استعادة</translation>
 <translation id="3158539265159265653">القرص</translation>
 <translation id="3162559335345991374">‏قد يتطلب Wi-Fi الذي تستخدمه زيارة صفحة تسجيل الدخول.</translation>
@@ -3459,7 +3460,6 @@
 <translation id="79338296614623784">أدخِل رقم هاتف صحيحًا</translation>
 <translation id="7934414805353235750">‏يريد عنوان <ph name="URL" /> تشغيل محتوى محمٍ، لذلك ستتحقَّق Google من هوية جهازك.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">‏يجب إثبات هويتك حتى يتمكّن Google Chrome من ملء معلومات الدفع.</translation>
 <translation id="7937163678541954811">‏سيتم تشفير رمز التحقق من هذه البطاقة (CVC) وحفظه في جهازك للدفع بشكل أسرع.</translation>
 <translation id="7937554595067888181">تنتهي الصلاحية في <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">شهادة الخادم ليست صالحة بعد.</translation>
@@ -3536,7 +3536,6 @@
 <translation id="8058009102480785916">إنتاج غذائي</translation>
 <translation id="8058603697124206642">غير مطلوبة</translation>
 <translation id="8063875539456488183">حفظ السعر وتتبُّعه</translation>
-<translation id="8064892030280197386">إثبات هويتك لملء معلومات الدفع.</translation>
 <translation id="8066225060526005217">مُدارة بواسطة إعدادات ملفات تعريف الارتباط</translation>
 <translation id="8067872629359326442">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chromium مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
 <translation id="8070439594494267500">رمز التطبيق</translation>
@@ -3962,6 +3961,7 @@
 <translation id="8903921497873541725">تكبير</translation>
 <translation id="890493561996401738">‏إزالة زر "الاقتراحات"، اضغط على مفتاح Enter لإزالة، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‫8 × 10 بوصة</translation>
+<translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8918062451146297192">‏رمز التحقق من البطاقة (CVC) للبطاقة الافتراضية</translation>
 <translation id="8919740778133505789">سيارات رياضية</translation>
 <translation id="8919895429178014996">إخفاء جميع العناصر</translation>

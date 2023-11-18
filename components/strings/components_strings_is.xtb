@@ -1057,6 +1057,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3154506275960390542">Á þessari síðu er eyðublað sem gæti verið sent á óöruggan máta. Gögn sem þú sendir kunna að vera skoðuð af öðrum meðan á sendingu stendur eða tölvuþrjótur gæti breytt því sem þjónninn móttekur.</translation>
 <translation id="3154987252551138431">Eitthvað fór úrskeiðis við notkun nærdeilingar</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> hefur umsjón með reikningnum þínum.</translation>
+<translation id="3155163173539279776">Endurræsa Chromium</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158539265159265653">Diskur</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
@@ -3455,7 +3456,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="79338296614623784">Færðu inn gilt símanúmer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vill spila varið efni. Auðkenni tækisins verður staðfest af Google.</translation>
 <translation id="7935318582918952113">DOM-sundurgreining</translation>
-<translation id="7936775433939783906">Staðfestu hver þú ert svo Google Chrome geti fyllt út greiðsluupplýsingarnar þínar.</translation>
 <translation id="7937163678541954811">CVC-númer þessa korts verður dulkóðað og vistað í tækinu til að flýta fyrir greiðslu</translation>
 <translation id="7937554595067888181">Rennur út <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Vottorð netþjónsins er ekki gilt enn.</translation>
@@ -3532,7 +3532,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8058009102480785916">Matvælaframleiðsla</translation>
 <translation id="8058603697124206642">Ekki áskilið</translation>
 <translation id="8063875539456488183">Vista og fylgjast með verði</translation>
-<translation id="8064892030280197386">staðfesta hver þú ert svo hægt sé að fylla út greiðsluupplýsingar.</translation>
 <translation id="8066225060526005217">Stjórnað af fótsporastillingum</translation>
 <translation id="8067872629359326442">Þú varst að slá aðgangsorðið þitt inn á villandi vefsvæði. Chromium getur aðstoðað. Smelltu á „Vernda reikning“ til að breyta lykilorðinu þínu og láta Google vita að reikningurinn þinn sé hugsanlega í hættu.</translation>
 <translation id="8070439594494267500">Forritstákn</translation>
@@ -3955,6 +3954,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8903921497873541725">Auka aðdrátt</translation>
 <translation id="890493561996401738">Hnappur til að fjarlægja tillögu, ýttu á færslulykilinn til að fjarlægja, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 to.</translation>
+<translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8918062451146297192">CVC-númer fyrir sýndarkort</translation>
 <translation id="8919740778133505789">Sportbílar</translation>
 <translation id="8919895429178014996">Fela öll atriði</translation>

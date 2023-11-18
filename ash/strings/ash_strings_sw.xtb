@@ -1684,6 +1684,13 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7893503627044934815">Sitaki faili hii ionyeshwe</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Umebofya mikato ya kibodi ya kuzungusha skrini. Ungependa kuzungusha skrini?</translation>
+<translation id="7897626842031123113">Trei ya hali, saa <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Badilisha madirisha</translation>
 <translation id="7901405293566323524">Kitovu cha Simu</translation>
 <translation id="7902625623987030061">Gusa kitambua alama ya kidole</translation>

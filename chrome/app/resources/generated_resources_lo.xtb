@@ -2690,6 +2690,7 @@
 <translation id="3021065318976393105">ໃນເວລາໃຊ້ແບັດເຕີຣີ</translation>
 <translation id="3021066826692793094">ແມງກະເບື້ອ</translation>
 <translation id="3021678814754966447">ເບິ່ງແຫຼ່ງທີ່ມາຂອບ</translation>
+<translation id="3021902017511220299">ສະແກນບໍ່ສຳເລັດ. ການກະທຳນີ້ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> ຈະຖືກລຶບອອກຈາກ Chromebook ນີ້ ແລະ ຈະບໍ່ຖືກບັນທຶກໄວ້ໃນ <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">ບໍ່ເຂົ້າໃຈສິ່ງນັ້ນ.</translation>
 <translation id="3023464535986383522">ເລືອກເພື່ອເວົ້າ</translation>
@@ -9057,6 +9058,7 @@
 <translation id="811994229154425014">ແຕະປຸ່ມຍະຫວ່າງສອງຄັ້ງເພື່ອພິມໝາຍຈຸດ</translation>
 <translation id="8120505434908124087">ຕິດຕັ້ງໂປຣໄຟລ໌ eSIM</translation>
 <translation id="8121750884985440809">ປັດຈຸບັນທ່ານກຳລັງສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານ</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ດອກໄມ້ສີເຫຼືອງ ແລະ ສີຂາວ</translation>
 <translation id="8123975449645947908">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="8124313775439841391">ONC ຈັດ​ການ​ແລ້ວ</translation>
@@ -9092,6 +9094,7 @@
 <translation id="8148760431881541277">ຈຳກັດການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8149564499626272569">ຢັ້ງຢືນຜ່ານໂທລະສັບຂອງທ່ານດ້ວຍສາຍ USB</translation>
 <translation id="8149870652370242480">ເພື່ອໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ໂທລະສັບຂອງທ່ານ, ດາວໂຫຼດ Chrome ສຳລັບ iOS ແລະ ເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="8151057139207656239">ສຳເນົາລາຍລະອຽດການກໍ່ສ້າງແລ້ວ</translation>
 <translation id="815114315010033526">ໃຊ້ລະຫັດ QR ແທນ</translation>
 <translation id="8151638057146502721">ປັບ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="8154790740888707867">ບໍ່​ມີ​ໄຟລ​໌</translation>
