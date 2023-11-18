@@ -162,6 +162,7 @@ export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';
 export {TimezoneSubpageElement} from './date_time_page/timezone_subpage.js';
+export {CustomizeButtonDropdownItemElement} from './device_page/customize_button_dropdown_item.js';
 export {CustomizeButtonRowElement} from './device_page/customize_button_row.js';
 export {CustomizeButtonsSubsectionElement} from './device_page/customize_buttons_subsection.js';
 export {SettingsCustomizeMouseButtonsSubpageElement} from './device_page/customize_mouse_buttons_subpage.js';

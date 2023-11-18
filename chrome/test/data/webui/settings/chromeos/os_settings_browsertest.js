@@ -229,6 +229,10 @@ TEST_F(
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
  [
+   'DevicePageCustomizeButtonDropdownItem',
+   'device_page/customize_button_dropdown_item_test.js'
+ ],
+ [
    'DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js', {
      enabled: [
        'ash::features::kPeripheralCustomization',
