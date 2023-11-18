@@ -5930,7 +5930,8 @@ void NavigationRequest::CommitPageActivation() {
                                                                   : nullptr);
           rfh->GetAssociatedLocalFrame()
               ->SetNavigationApiHistoryEntriesForRestore(
-                  std::move(entry_arrays));
+                  std::move(entry_arrays),
+                  blink::mojom::NavigationApiEntryRestoreReason::kBFCache);
           return RenderFrameHost::FrameIterationAction::kContinue;
         });
 
@@ -6021,6 +6022,33 @@ void NavigationRequest::CommitPageActivation() {
     // the commit_params.
     stored_page->SetViewTransitionState(
         std::exchange(commit_params_->view_transition_state, {}));
+
+    // Update navigation API entries. A prerendered page has only a single
+    // history entry, but now it has access to a full back/forward list.
+    rfh->ForEachRenderFrameHostWithAction([this, &stored_page](
+                                              RenderFrameHostImpl* rfh) {
+      // Currently, prerender activation only happens for DIFFERENT_DOCUMENT
+      // navigations. If that ever changes, `reason` calculation will need to be
+      // updated (and new NavigationApiEntryRestoreReason values added).
+      DCHECK_EQ(common_params_->navigation_type,
+                blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
+      blink::mojom::NavigationApiEntryRestoreReason reason =
+          common_params_->should_replace_current_entry
+              ? blink::mojom::NavigationApiEntryRestoreReason::
+                    kPrerenderActivationReplace
+              : blink::mojom::NavigationApiEntryRestoreReason::
+                    kPrerenderActivationPush;
+      // |this| is given as a parameter to
+      // GetNavigationApiHistoryEntryVectors() only for the frame being
+      // committed (i.e., the top frame).
+      auto entry_arrays =
+          rfh->frame_tree()->controller().GetNavigationApiHistoryEntryVectors(
+              rfh->frame_tree_node(),
+              stored_page->render_frame_host() == rfh ? this : nullptr);
+      rfh->GetAssociatedLocalFrame()->SetNavigationApiHistoryEntriesForRestore(
+          std::move(entry_arrays), reason);
+      return RenderFrameHost::FrameIterationAction::kContinue;
+    });
 
     // Move the StoredPage into RenderFrameHostManager, in
     // preparation for committing. This entry may be used for prerendering.

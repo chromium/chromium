@@ -1138,8 +1138,10 @@ void LocalFrameMojoHandler::GetOpenGraphMetadata(
 }
 
 void LocalFrameMojoHandler::SetNavigationApiHistoryEntriesForRestore(
-    mojom::blink::NavigationApiHistoryEntryArraysPtr entry_arrays) {
-  frame_->DomWindow()->navigation()->SetEntriesForRestore(entry_arrays);
+    mojom::blink::NavigationApiHistoryEntryArraysPtr entry_arrays,
+    mojom::blink::NavigationApiEntryRestoreReason restore_reason) {
+  frame_->DomWindow()->navigation()->SetEntriesForRestore(entry_arrays,
+                                                          restore_reason);
 }
 
 void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(

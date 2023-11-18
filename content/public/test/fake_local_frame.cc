@@ -186,7 +186,8 @@ void FakeLocalFrame::GetOpenGraphMetadata(
     base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) {}
 
 void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
-    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
+    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays,
+    blink::mojom::NavigationApiEntryRestoreReason restore_reason) {}
 
 void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
     const std::vector<std::string>& keys) {}

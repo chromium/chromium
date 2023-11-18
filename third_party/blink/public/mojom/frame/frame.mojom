@@ -177,6 +177,12 @@ enum FrameOwnerElementType {
   kFencedframe
 };
 
+enum NavigationApiEntryRestoreReason {
+  kBFCache,
+  kPrerenderActivationPush,
+  kPrerenderActivationReplace
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -1080,7 +1086,8 @@ interface LocalFrame {
   // to this frame, and that subset may have changed while the page was in
   // bfcache.
   SetNavigationApiHistoryEntriesForRestore(
-      NavigationApiHistoryEntryArrays entry_arrays);
+      NavigationApiHistoryEntryArrays entry_arrays,
+      NavigationApiEntryRestoreReason restore_reason);
 
   // Updates navigation.entries() when entries are disposed from the session
   // history.

@@ -141,7 +141,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetOpenGraphMetadata(
       base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) override;
   void SetNavigationApiHistoryEntriesForRestore(
-      blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) override;
+      blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays,
+      blink::mojom::NavigationApiEntryRestoreReason restore_reason) override;
   void NotifyNavigationApiOfDisposedEntries(
       const std::vector<std::string>& keys) override;
   void TraverseCancelled(const std::string& navigation_api_key,

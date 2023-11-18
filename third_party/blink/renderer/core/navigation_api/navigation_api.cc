@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_transition.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -127,8 +128,10 @@ void NavigationApi::UpdateActivation(HistoryItem* previous_item,
       previous_history_entry = MakeEntryFromItem(*previous_item);
     }
   }
-  activation_->Update(currentEntry(), previous_history_entry,
-                      DetermineNavigationType(load_type));
+  String navigation_type = window_->GetFrame()->GetPage()->IsPrerendering()
+                               ? "push"
+                               : DetermineNavigationType(load_type);
+  activation_->Update(currentEntry(), previous_history_entry, navigation_type);
 }
 
 NavigationHistoryEntry* NavigationApi::GetExistingEntryFor(const String& key,
@@ -304,7 +307,8 @@ void FireDisposeEventsAsync(
 }
 
 void NavigationApi::SetEntriesForRestore(
-    const mojom::blink::NavigationApiHistoryEntryArraysPtr& entry_arrays) {
+    const mojom::blink::NavigationApiHistoryEntryArraysPtr& entry_arrays,
+    mojom::blink::NavigationApiEntryRestoreReason restore_reason) {
   // If this window HasEntriesAndEventsDisabled(), we shouldn't attempt to
   // restore anything.
   if (HasEntriesAndEventsDisabled())
@@ -325,9 +329,27 @@ void NavigationApi::SetEntriesForRestore(
       base::checked_cast<wtf_size_t>(entry_arrays->back_entries.size());
   keys_to_indices_.clear();
   PopulateKeySet();
+
+  String navigation_type;
+  switch (restore_reason) {
+    case mojom::blink::NavigationApiEntryRestoreReason::kBFCache:
+      navigation_type = "traverse";
+      break;
+    case mojom::blink::NavigationApiEntryRestoreReason::
+        kPrerenderActivationPush:
+      navigation_type = "push";
+      break;
+    case mojom::blink::NavigationApiEntryRestoreReason::
+        kPrerenderActivationReplace:
+      navigation_type = "replace";
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
   activation_->Update(currentEntry(),
                       GetEntryForRestore(entry_arrays->previous_entry),
-                      "traverse");
+                      navigation_type);
 
   // |new_entries| now contains the previous entries_. Find the ones that are no
   // longer in entries_ so they can be disposed.

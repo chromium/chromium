@@ -53,7 +53,8 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
                               HistoryItem* previous_entry);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
   void SetEntriesForRestore(
-      const mojom::blink::NavigationApiHistoryEntryArraysPtr&);
+      const mojom::blink::NavigationApiHistoryEntryArraysPtr&,
+      mojom::blink::NavigationApiEntryRestoreReason);
 
   // The entries indicated by |keys| have been removed from the session history
   // in the browser process and should be disposed. In many cases, this won't

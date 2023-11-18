@@ -62,6 +62,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -4696,23 +4697,36 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
 
   // If the previous entry is within the block of contiguous entries being
   // provided, then report it as the `previous_entry`.
-  if (GetLastCommittedEntryIndex() != -1 &&
-      GetLastCommittedEntryIndex() >= backmost_index &&
-      GetLastCommittedEntryIndex() <= forwardmost_index) {
-    if (auto* frame_entry = GetLastCommittedEntry()->GetFrameEntry(node)) {
-      url::Origin frame_entry_origin =
-          frame_entry->committed_origin().value_or(url::Origin::Resolve(
-              frame_entry->url(),
-              frame_entry->initiator_origin().value_or(url::Origin())));
-      // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
-      // once we can be sure that entries with the same ISN will never be
-      // cross-origin.
-      if (pending_origin.IsSameOriginWith(frame_entry_origin)) {
-        entry_arrays->previous_entry = ToNavigationApiHistoryEntry(
-            frame_entry, pending_document_sequence_number);
-      }
+  FrameNavigationEntry* previous_entry = nullptr;
+  if (frame_tree_->is_prerendering()) {
+    int initiator_id = PrerenderHost::GetFromFrameTreeNode(*node)
+                           .initiator_frame_tree_node_id();
+    if (initiator_id != RenderFrameHost::kNoFrameTreeNodeId) {
+      auto* initiator_node = FrameTreeNode::GloballyFindByID(initiator_id);
+      previous_entry = initiator_node->frame_tree()
+                           .controller()
+                           .GetLastCommittedEntry()
+                           ->GetFrameEntry(initiator_node);
+    }
+  } else if (GetLastCommittedEntryIndex() != -1 &&
+             GetLastCommittedEntryIndex() >= backmost_index &&
+             GetLastCommittedEntryIndex() <= forwardmost_index) {
+    previous_entry = GetLastCommittedEntry()->GetFrameEntry(node);
+  }
+  if (previous_entry) {
+    url::Origin previous_entry_origin =
+        previous_entry->committed_origin().value_or(url::Origin::Resolve(
+            previous_entry->url(),
+            previous_entry->initiator_origin().value_or(url::Origin())));
+    // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
+    // once we can be sure that entries with the same ISN will never be
+    // cross-origin.
+    if (pending_origin.IsSameOriginWith(previous_entry_origin)) {
+      entry_arrays->previous_entry = ToNavigationApiHistoryEntry(
+          previous_entry, pending_document_sequence_number);
     }
   }
+
   return entry_arrays;
 }
 

@@ -195,7 +195,8 @@ class LocalFrameMojoHandler
   void GetOpenGraphMetadata(GetOpenGraphMetadataCallback callback) final;
 
   void SetNavigationApiHistoryEntriesForRestore(
-      mojom::blink::NavigationApiHistoryEntryArraysPtr) final;
+      mojom::blink::NavigationApiHistoryEntryArraysPtr,
+      mojom::blink::NavigationApiEntryRestoreReason) final;
   void NotifyNavigationApiOfDisposedEntries(
       const WTF::Vector<WTF::String>&) final;
   void TraverseCancelled(const String& navigation_api_key,
