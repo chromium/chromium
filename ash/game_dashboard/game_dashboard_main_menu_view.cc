@@ -30,10 +30,15 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -60,6 +65,11 @@ constexpr int kMainMenuFixedWidth = 416;
 constexpr float kBackgroundRadius = 12;
 // Corner radius for the detail row container.
 constexpr int kDetailRowCornerRadius = 16;
+
+// For setup button pulse animation.
+constexpr int kSetupPulseExtraHalfSize = 32;
+constexpr int kSetupPulseTimes = 3;
+constexpr base::TimeDelta kSetupPulseDuration = base::Seconds(2);
 
 // Creates an individual Game Dashboard Tile.
 std::unique_ptr<FeatureTile> CreateFeatureTile(
@@ -666,6 +676,10 @@ void GameDashboardMainMenuView::VisibilityChanged(views::View* starting_from,
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(*flags, ArcGameControlsFlag::kMenu,
                                        /*enable_flag=*/is_visible));
+
+  if (is_visible) {
+    MaybePerformPulseAnimation(/*pulse_count=*/0);
+  }
 }
 
 void GameDashboardMainMenuView::UpdateRecordGameTile(
@@ -690,6 +704,63 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
   }
   record_game_tile_->SetSubLabelVisibility(is_recording_game_window);
   record_game_tile_->SetToggled(is_recording_game_window);
+}
+
+void GameDashboardMainMenuView::MaybePerformPulseAnimation(int pulse_count) {
+  if (!game_controls_setup_button_) {
+    return;
+  }
+
+  // Destroy the pulse layer if it pulses after `kSetupPulseTimes` times.
+  if (pulse_count >= kSetupPulseTimes) {
+    gc_setup_button_pulse_layer_.reset();
+    return;
+  }
+
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  // Initiate pulse layer if it starts to pulse for the first time.
+  if (pulse_count == 0) {
+    gc_setup_button_pulse_layer_ =
+        std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+    widget->GetLayer()->Add(gc_setup_button_pulse_layer_.get());
+    gc_setup_button_pulse_layer_->SetColor(widget->GetColorProvider()->GetColor(
+        cros_tokens::kCrosSysHighlightText));
+  }
+
+  DCHECK(gc_setup_button_pulse_layer_);
+
+  // Initial setup button bounds in its widget coordinate.
+  const auto setup_bounds = game_controls_setup_button_->ConvertRectToWidget(
+      game_controls_setup_button_->bounds());
+
+  // Set initial properties.
+  const float initial_corner_radius = setup_bounds.height() / 2.0f;
+  gc_setup_button_pulse_layer_->SetBounds(setup_bounds);
+  gc_setup_button_pulse_layer_->SetOpacity(1.0f);
+  gc_setup_button_pulse_layer_->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(initial_corner_radius));
+
+  // Animate to target bounds, opacity and rounded corner radius.
+  auto target_bounds = setup_bounds;
+  target_bounds.Outset(kSetupPulseExtraHalfSize);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&GameDashboardMainMenuView::MaybePerformPulseAnimation,
+                         base::Unretained(this), pulse_count + 1))
+      .Once()
+      .SetDuration(kSetupPulseDuration)
+      .SetBounds(gc_setup_button_pulse_layer_.get(), target_bounds,
+                 gfx::Tween::ACCEL_0_40_DECEL_100)
+      .SetOpacity(gc_setup_button_pulse_layer_.get(), 0.0f,
+                  gfx::Tween::ACCEL_0_80_DECEL_80)
+      .SetRoundedCorners(gc_setup_button_pulse_layer_.get(),
+                         gfx::RoundedCornersF(initial_corner_radius +
+                                              kSetupPulseExtraHalfSize),
+                         gfx::Tween::ACCEL_0_40_DECEL_100);
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

@@ -118,6 +118,9 @@ class ASH_EXPORT GameDashboardMainMenuView
   // the default UI.
   void UpdateRecordGameTile(bool is_recording_game_window);
 
+  // Performs pulse animation if `game_controls_setup_button_` exists.
+  void MaybePerformPulseAnimation(int pulse_count);
+
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 
@@ -138,6 +141,9 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Setup button to configure Game Controls for the current game window.
   raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
+
+  // Layer for setup button pulse animation.
+  std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
 
   // Hint switch to toggle the Game Controls feature.
   raw_ptr<Switch> game_controls_feature_switch_ = nullptr;
