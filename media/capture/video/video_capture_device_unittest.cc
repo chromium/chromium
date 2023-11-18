@@ -287,17 +287,7 @@ class VideoCaptureDeviceTest
         local_gpu_memory_buffer_manager_.get());
     if (media::ShouldUseCrosCameraService() &&
         !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      CameraHalDispatcherImpl::GetInstance()->Start(base::DoNothing(),
-                                                    base::DoNothing());
-      // Since the callback is posted to the main task, it might introduce
-      // issues when destroying the main task runner while the callback hasn't
-      // been triggered. Since we don't do sensor related check in video capture
-      // tests, it should be okay to simply disable sensor code path for
-      // testing.
-      // If the sensor initialization becomes a part of the camera
-      // initialization in the future, we should include the check for sensors
-      // in the test codes instead of simply disabling it.
-      CameraHalDispatcherImpl::GetInstance()->DisableSensorForTesting();
+      CameraHalDispatcherImpl::GetInstance()->Start();
     }
 #endif
     video_capture_device_factory_ = CreateVideoCaptureDeviceFactory(

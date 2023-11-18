@@ -1495,11 +1495,7 @@ MediaStreamManager::MediaStreamManager(
     if (media::ShouldUseCrosCameraService()) {
       media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
           GpuMemoryBufferManagerSingleton::GetInstance());
-      media::CameraHalDispatcherImpl::GetInstance()->Start(
-          base::BindRepeating(
-              &VideoCaptureDependencies::CreateJpegDecodeAccelerator),
-          base::BindRepeating(
-              &VideoCaptureDependencies::CreateJpegEncodeAccelerator));
+      media::CameraHalDispatcherImpl::GetInstance()->Start();
       media::JpegAcceleratorProviderImpl::GetInstance()->Start(
           base::BindRepeating(
               &VideoCaptureDependencies::CreateJpegDecodeAccelerator),

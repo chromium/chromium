@@ -53,11 +53,6 @@ class CameraEffectsController;
 
 namespace media {
 
-using MojoJpegEncodeAcceleratorFactoryCB = base::RepeatingCallback<void(
-    mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>)>;
-using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
-    mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>)>;
-
 class CAPTURE_EXPORT CameraClientObserver {
  public:
   CameraClientObserver(cros::mojom::CameraClientType type,
@@ -139,7 +134,8 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
 // See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
-      public cros::mojom::CrosCameraServiceObserver {
+      public cros::mojom::CrosCameraServiceObserver,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
   using CameraEffectsControllerCallback =
       base::RepeatingCallback<void(cros::mojom::EffectsConfigPtr,
@@ -153,8 +149,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   CameraHalDispatcherImpl(const CameraHalDispatcherImpl&) = delete;
   CameraHalDispatcherImpl& operator=(const CameraHalDispatcherImpl&) = delete;
 
-  bool Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
-             MojoJpegEncodeAcceleratorFactoryCB jea_factory);
+  bool Start();
 
   void AddClientObserver(CameraClientObserver* observer,
                          base::OnceCallback<void(int32_t)> result_callback);
@@ -201,7 +196,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   // Gets the current camera software privacy switch state.
   void GetCameraSWPrivacySwitchState(
-      cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+      cros::mojom::CrosCameraService::GetCameraSWPrivacySwitchStateCallback
           callback);
 
   // Sets the camera software privacy switch state.
@@ -216,36 +211,12 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Called by CameraHalDispatcher.
   void AddCameraIdToDeviceIdEntry(int camera_id, const std::string& device_id);
 
-  // Used when running capture unittests to avoid running sensor related path.
-  void DisableSensorForTesting();
-
   // CameraHalDispatcher implementations.
-  void RegisterServer(
-      mojo::PendingRemote<cros::mojom::CameraHalServer> server) final;
-  void RegisterServerWithToken(
-      mojo::PendingRemote<cros::mojom::CameraHalServer> server,
-      const base::UnguessableToken& token,
-      RegisterServerWithTokenCallback callback) final;
-  void RegisterClient(
-      mojo::PendingRemote<cros::mojom::CameraHalClient> client) final;
   void RegisterClientWithToken(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
       cros::mojom::CameraClientType type,
       const base::UnguessableToken& auth_token,
       RegisterClientWithTokenCallback callback) final;
-  void GetMjpegDecodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
-          jda_receiver) final;
-  void GetJpegEncodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
-          jea_receiver) final;
-  void RegisterSensorClientWithToken(
-      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
-      const base::UnguessableToken& auth_token,
-      RegisterSensorClientWithTokenCallback callback) final;
-  void BindServiceToMojoServiceManager(
-      const std::string& service_name,
-      mojo::ScopedMessagePipeHandle receiver) final;
 
   // CameraHalServerCallbacks implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
@@ -262,7 +233,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   void SetAutoFramingState(cros::mojom::CameraAutoFramingState state);
   void GetAutoFramingSupported(
-      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
+      cros::mojom::CrosCameraService::GetAutoFramingSupportedCallback callback);
 
   // This function needs to be called first before `SetCameraEffects`.
   void SetCameraEffectsControllerCallback(
@@ -293,7 +264,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
 
   void GetCameraSWPrivacySwitchStateOnProxyThread(
-      cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+      cros::mojom::CrosCameraService::GetCameraSWPrivacySwitchStateCallback
           callback);
 
   void SetCameraSWPrivacySwitchStateOnProxyThread(
@@ -329,20 +300,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       base::UnguessableToken token,
       RegisterClientWithTokenCallback callback);
 
-  void RegisterSensorClientWithTokenOnProxyThread(
-      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
-      const base::UnguessableToken& auth_token,
-      RegisterSensorClientWithTokenCallback callback);
-
-  void RegisterSensorClientWithTokenOnUIThread(
-      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
-      const base::UnguessableToken& auth_token,
-      RegisterSensorClientWithTokenCallback callback);
-
   void SetAutoFramingStateOnProxyThread(
       cros::mojom::CameraAutoFramingState state);
   void GetAutoFramingSupportedOnProxyThread(
-      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
+      cros::mojom::CrosCameraService::GetAutoFramingSupportedCallback callback);
 
   // Calls the `camera_hal_server_` to set the camera effects.
   void SetCameraEffectsOnProxyThread(cros::mojom::EffectsConfigPtr config,
@@ -379,6 +340,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   bool IsServiceLoopRunning();
   void SetServiceLoopStatus(bool is_running);
 
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
+
   base::Lock service_loop_status_lock_;
   bool is_service_loop_running_ GUARDED_BY(service_loop_status_lock_);
 
@@ -400,10 +366,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   std::set<CameraClientObserver*> client_observers_;
 
-  MojoMjpegDecodeAcceleratorFactoryCB jda_factory_;
-
-  MojoJpegEncodeAcceleratorFactoryCB jea_factory_;
-
   TokenManager token_manager_;
 
   base::Lock opened_camera_id_map_lock_;
@@ -423,7 +385,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
       cros::mojom::CameraAutoFramingState::OFF;
 
-  cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback
+  cros::mojom::CrosCameraService::GetAutoFramingSupportedCallback
       auto_framing_supported_callback_;
 
   // Records current successfully set camera effects.
@@ -439,7 +401,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   scoped_refptr<base::ObserverListThreadSafe<CameraEffectObserver>>
       camera_effect_observers_;
 
-  bool sensor_enabled_ = true;
   std::map<CameraClientObserver*, std::unique_ptr<CameraClientObserver>>
       mojo_client_observers_;
 
@@ -449,6 +410,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::Lock camera_id_to_device_id_lock_;
   base::flat_map<int32_t, std::string> camera_id_to_device_id_
       GUARDED_BY(camera_id_to_device_id_lock_);
+
+  // Receiver for mojo service manager service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
 
   std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
 
