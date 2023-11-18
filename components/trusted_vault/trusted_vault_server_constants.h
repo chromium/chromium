@@ -42,7 +42,7 @@ enum class SecurityDomainId {
 };
 
 inline constexpr auto kAllSecurityDomainIdValues =
-    base::MakeFixedFlatSetSorted<SecurityDomainId>(
+    base::MakeFixedFlatSet<SecurityDomainId>(
         {SecurityDomainId::kChromeSync, SecurityDomainId::kPasskeys});
 static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
                   kAllSecurityDomainIdValues.size() - 1,

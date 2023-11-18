@@ -32,7 +32,7 @@ base::FilePath GetPathWithEnvironmentFallback(int key) {
   }
 
   static constexpr auto kKeyToVariable =
-      base::MakeFixedFlatMapSorted<int, std::wstring_view>(
+      base::MakeFixedFlatMap<int, std::wstring_view>(
           {{base::DIR_PROGRAM_FILES, L"PROGRAMFILES"},
            {base::DIR_PROGRAM_FILESX86, L"PROGRAMFILES(X86)"},
            {base::DIR_LOCAL_APP_DATA, L"LOCALAPPDATA"}});

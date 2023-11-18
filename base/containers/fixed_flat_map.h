@@ -95,10 +95,11 @@ using fixed_flat_map = base::
 // input automatically.
 //
 // Example usage:
-//   constexpr auto kMap = base::MakeFixedFlatMapSorted<std::string_view, int>(
-//       {{"bar", 2}, {"baz", 3}, {"foo", 1}});
+//   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
+//       base::sorted_unique, {{"bar", 2}, {"baz", 3}, {"foo", 1}});
 template <class Key, class Mapped, size_t N, class Compare = std::less<>>
-constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapSorted(
+constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
+    sorted_unique_t,
     std::pair<Key, Mapped> (&&data)[N],
     const Compare& comp = Compare()) {
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
@@ -115,7 +116,7 @@ constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapSorted(
 // of keys and values. Requires that the passed in `data` contains unique keys.
 //
 // Large inputs will run into compiler limits, e.g. "constexpr evaluation hit
-// maximum step limit". In that case, use `MakeFixedFlatMapSorted()`.
+// maximum step limit". In that case, use `MakeFixedFlatMap(sorted_unique)`.
 //
 // Example usage:
 //   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
@@ -127,7 +128,7 @@ constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
   typename FixedFlatMap::value_compare value_comp{comp};
   std::sort(data, data + N, value_comp);
-  return MakeFixedFlatMapSorted(std::move(data), comp);
+  return MakeFixedFlatMap(sorted_unique, std::move(data), comp);
 }
 
 }  // namespace base

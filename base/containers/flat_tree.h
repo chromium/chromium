@@ -26,7 +26,7 @@ namespace base {
 struct sorted_unique_t {
   constexpr explicit sorted_unique_t() = default;
 };
-extern sorted_unique_t sorted_unique;
+inline constexpr sorted_unique_t sorted_unique;
 
 namespace internal {
 
