@@ -75,10 +75,21 @@ class IbanManager : public SingleFieldFormFiller,
     FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
 
-  // Sends suggestions for |ibans| to the |query_handler|'s handler for display
+  // Sends suggestions for `ibans` to the `query_handler`'s handler for display
   // in the associated Autofill popup.
-  void SendIbanSuggestions(const std::vector<Iban*>& ibans,
-                           const QueryHandler& query_handler);
+  void SendIbanSuggestions(const QueryHandler& query_handler,
+                           std::vector<const Iban*>& ibans);
+
+  // Filter out IBAN-based suggestions based on the following criteria:
+  // For local IBANs: Filter out the IBAN value which does not starts with the
+  // provided `field_value`.
+  // For server IBANs: Filter out IBAN suggestion if any of the following
+  // conditions are satisfied:
+  // 1. If the IBAN's `prefix` is absent and the length of the `field_value` is
+  // less than `kFieldLengthLimitOnServerIbanSuggestion` characters.
+  // 2. If the IBAN's prefix is present and prefix matches the `field_value`.
+  void FilterIbansToSuggest(const std::u16string& field_value,
+                            std::vector<const Iban*>& ibans);
 
   const raw_ptr<PersonalDataManager> personal_data_manager_;
 

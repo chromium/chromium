@@ -15,6 +15,12 @@
 
 namespace autofill {
 
+namespace {
+
+constexpr int kFieldLengthLimitOnServerIbanSuggestion = 6;
+
+}  // namespace
+
 IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
     : personal_data_manager_(personal_data_manager) {}
 
@@ -39,7 +45,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  std::vector<Iban*> ibans = personal_data_manager_->GetLocalIbans();
+  std::vector<const Iban*> ibans = personal_data_manager_->GetIbansToSuggest();
   if (ibans.empty()) {
     return false;
   }
@@ -67,10 +73,16 @@ bool IbanManager::OnGetSingleFieldSuggestions(
                                 const Iban* iban0, const Iban* iban1) {
     return iban0->HasGreaterRankingThan(iban1, comparison_time);
   });
-  SendIbanSuggestions(ibans, QueryHandler(field.global_id(), trigger_source,
-                                          field.value, handler));
+  SendIbanSuggestions(
+      QueryHandler(field.global_id(), trigger_source, field.value, handler),
+      ibans);
 
   return true;
+}
+
+void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                                  PopupItemId popup_item_id) {
+  uma_recorder_.OnIbanSuggestionSelected();
 }
 
 base::WeakPtr<IbanManager> IbanManager::GetWeakPtr() {
@@ -104,51 +116,51 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
       most_recent_suggestions_shown_field_global_id_;
 }
 
-void IbanManager::SendIbanSuggestions(const std::vector<Iban*>& ibans,
-                                      const QueryHandler& query_handler) {
+void IbanManager::SendIbanSuggestions(const QueryHandler& query_handler,
+                                      std::vector<const Iban*>& ibans) {
   if (!query_handler.handler_) {
     // Either the handler has been destroyed, or it is invalid.
     return;
   }
 
+  const std::u16string& field_value = query_handler.prefix_;
+
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
-  // Note: this |prefix_| is actually the value of form and we are comparing
-  // the value with the full IBAN value. However, once we land
-  // MASKED_SERVER_IBANs and Chrome doesn't know the whole value, we'll have
-  // check 'prefix'(E.g., the first ~5 characters).
-  if (base::Contains(ibans, query_handler.prefix_, &Iban::value)) {
-    // Return empty suggestions to query handler. This will result in no
-    // suggestions being displayed.
-    query_handler.handler_->OnSuggestionsReturned(
-        query_handler.field_id_, query_handler.trigger_source_, {});
+  if (!field_value.empty() &&
+      base::Contains(ibans, query_handler.prefix_, &Iban::value)) {
     return;
   }
 
-  // Only return IBAN-based suggestions whose prefix match `prefix_`.
-  std::vector<const Iban*> suggested_ibans;
-  suggested_ibans.reserve(ibans.size());
-  for (const auto* iban : ibans) {
-    if (base::StartsWith(iban->value(), query_handler.prefix_)) {
-      suggested_ibans.push_back(iban);
-    }
-  }
+  FilterIbansToSuggest(field_value, ibans);
 
-  if (suggested_ibans.empty()) {
+  if (ibans.empty()) {
     return;
   }
 
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
       query_handler.field_id_, query_handler.trigger_source_,
-      AutofillSuggestionGenerator::GetSuggestionsForIbans(suggested_ibans));
+      AutofillSuggestionGenerator::GetSuggestionsForIbans(ibans));
 
   uma_recorder_.OnIbanSuggestionsShown(query_handler.field_id_);
 }
 
-void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                                  PopupItemId popup_item_id) {
-  uma_recorder_.OnIbanSuggestionSelected();
+void IbanManager::FilterIbansToSuggest(const std::u16string& field_value,
+                                       std::vector<const Iban*>& ibans) {
+  std::erase_if(ibans, [&](const Iban* iban) {
+    if (iban->record_type() == Iban::kLocalIban) {
+      return !base::StartsWith(iban->value(), field_value);
+    } else {
+      CHECK_EQ(iban->record_type(), Iban::kServerIban);
+      if (iban->prefix().empty()) {
+        return field_value.length() >= kFieldLengthLimitOnServerIbanSuggestion;
+      } else {
+        return !(iban->prefix().starts_with(field_value) ||
+                 field_value.starts_with(iban->prefix()));
+      }
+    }
+  });
 }
 
 }  // namespace autofill
