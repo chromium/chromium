@@ -7207,6 +7207,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION" translateable="false" desc="The message shown to notify a user that the graphics tablet is customizable in settings.">
         <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your graphics tablet in Settings.
       </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON" translateable="false" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
+        Open Settings
+      </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click
       </message>

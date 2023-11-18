@@ -272,6 +272,19 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowPeripheralSettingsOnCustomizationNotificationButtonClick) {
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  message_center()->ClickOnNotificationButton(
+      "peripheral_customization_mouse_1", /*button_index=*/0);
+  EXPECT_EQ(GetSystemTrayClient()->show_mouse_settings_count(), 1);
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  message_center()->ClickOnNotificationButton(
+      "peripheral_customization_graphics_tablet_2", /*button_index=*/0);
+  EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
+}
+
 // TODO(b/279503977): Add test that verifies behavior of clicking on the
 // "Learn more" button.
 TEST_F(InputDeviceSettingsNotificationControllerTest,
