@@ -41233,7 +41233,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "eve-public/R121-15674.0.0",
+        "cros_img": "eve-public/R121-15681.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -41254,7 +41254,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "octopus-public/R121-15674.0.0",
+        "cros_img": "octopus-public/R121-15681.0.0",
         "name": "lacros_all_tast_tests OCTOPUS_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41297,7 +41297,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R121-15674.0.0",
+        "cros_img": "trogdor-public/R121-15681.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41360,7 +41360,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R121-15674.0.0",
+        "cros_img": "trogdor-public/R121-15681.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
