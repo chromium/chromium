@@ -2772,6 +2772,10 @@ void SpdySession::OnDataFrameHeader(spdy::SpdyStreamId stream_id,
                                     bool fin) {
   CHECK(in_io_loop_);
 
+  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA, [&] {
+    return NetLogSpdyDataParams(stream_id, length, fin);
+  });
+
   auto it = active_streams_.find(stream_id);
 
   // By the time data comes in, the stream may already be inactive.
@@ -2790,10 +2794,6 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
                                     size_t len) {
   CHECK(in_io_loop_);
   DCHECK_LT(len, 1u << 24);
-
-  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA, [&] {
-    return NetLogSpdyDataParams(stream_id, len, false);
-  });
 
   // Build the buffer as early as possible so that we go through the
   // session flow control checks and update
@@ -2828,10 +2828,6 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
 
 void SpdySession::OnStreamEnd(spdy::SpdyStreamId stream_id) {
   CHECK(in_io_loop_);
-  // TODO(https://crbug.com/1502838): Log END_STREAM on corresponding frames,
-  // instead of as an extra fictional DATA frame.
-  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA,
-                    [&] { return NetLogSpdyDataParams(stream_id, 0, true); });
 
   auto it = active_streams_.find(stream_id);
   // By the time data comes in, the stream may already be inactive.

@@ -3511,18 +3511,17 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   ASSERT_TRUE((*header_list)[4].is_string());
   EXPECT_EQ("user-agent: Chrome", (*header_list)[4].GetString());
 
+  // Incoming HEADERS frame is logged as HTTP2_SESSION_RECV_HEADERS.
   pos = ExpectLogContainsSomewhere(entries, 0,
                                    NetLogEventType::HTTP2_SESSION_RECV_HEADERS,
                                    NetLogEventPhase::NONE);
   ASSERT_TRUE(entries[pos].HasParams());
+  // END_STREAM is not set on the HEADERS frame, so `fin` is false.
   absl::optional<bool> fin = entries[pos].params.FindBool("fin");
   ASSERT_TRUE(fin.has_value());
   EXPECT_FALSE(*fin);
 
-  // DATA frame with END_STREAM is logged as two HTTP2_SESSION_RECV_DATA events:
-  //     the first with `fin == false`,
-  //     the second with `length = 0` and `fin = true`.
-  // TODO(https://crbug.com/1502838): Log only a single event.
+  // Incoming DATA frame is logged as HTTP2_SESSION_RECV_DATA.
   pos = ExpectLogContainsSomewhere(entries, 0,
                                    NetLogEventType::HTTP2_SESSION_RECV_DATA,
                                    NetLogEventPhase::NONE);
@@ -3530,17 +3529,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   absl::optional<int> size = entries[pos].params.FindInt("size");
   ASSERT_TRUE(size.has_value());
   EXPECT_EQ(static_cast<int>(strlen("hello!")), *size);
-  fin = entries[pos].params.FindBool("fin");
-  ASSERT_TRUE(fin.has_value());
-  EXPECT_FALSE(*fin);
-
-  pos = ExpectLogContainsSomewhereAfter(
-      entries, pos + 1, NetLogEventType::HTTP2_SESSION_RECV_DATA,
-      NetLogEventPhase::NONE);
-  ASSERT_TRUE(entries[pos].HasParams());
-  size = entries[pos].params.FindInt("size");
-  ASSERT_TRUE(size.has_value());
-  EXPECT_EQ(0, *size);
+  // END_STREAM is set on the DATA frame, so `fin` is true.
   fin = entries[pos].params.FindBool("fin");
   ASSERT_TRUE(fin.has_value());
   EXPECT_TRUE(*fin);
@@ -3570,29 +3559,20 @@ TEST_P(SpdyNetworkTransactionTest, NetLogForResponseWithNoBody) {
   EXPECT_EQ("HTTP/1.1 200", out.status_line);
   EXPECT_EQ("", out.response_data);
 
-  // Incoming HEADERS frame has END_STREAM (fin) flag set,
-  // and there is no incoming DATA frame.
+  // Incoming HEADERS frame is logged as HTTP2_SESSION_RECV_HEADERS.
   auto entries = net_log_observer.GetEntries();
   int pos = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::HTTP2_SESSION_RECV_HEADERS,
       NetLogEventPhase::NONE);
   ASSERT_TRUE(entries[pos].HasParams());
+  // END_STREAM is set on the HEADERS frame, so `fin` is true.
   absl::optional<bool> fin = entries[pos].params.FindBool("fin");
   ASSERT_TRUE(fin.has_value());
   EXPECT_TRUE(*fin);
 
-  // TODO(https://crbug.com/1502838):
-  // No DATA frame received, this event should not be logged.
-  pos = ExpectLogContainsSomewhereAfter(
-      entries, pos + 1, NetLogEventType::HTTP2_SESSION_RECV_DATA,
-      NetLogEventPhase::NONE);
-  ASSERT_TRUE(entries[pos].HasParams());
-  absl::optional<int> size = entries[pos].params.FindInt("size");
-  ASSERT_TRUE(size.has_value());
-  EXPECT_EQ(0, *size);
-  fin = entries[pos].params.FindBool("fin");
-  ASSERT_TRUE(fin.has_value());
-  EXPECT_TRUE(*fin);
+  // No DATA frame is received.
+  EXPECT_FALSE(LogContainsEntryWithTypeAfter(
+      entries, 0, NetLogEventType::HTTP2_SESSION_RECV_DATA));
 }
 
 // Since we buffer the IO from the stream to the renderer, this test verifies
