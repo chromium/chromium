@@ -12,7 +12,7 @@
     display: table;
   }
 
-  #remappingActionIronDropdown {
+  #selectDropdown {
     height: 20px;
   }
 
@@ -22,10 +22,10 @@
     width: 168px;
   }
 </style>
-<div tabindex="0" id="remappingActionIronDropdown"
+<div tabindex="0" id="selectDropdown"
     class="md-select"
     on-click="showDropdownMenu_">
-    [[selectedItem.name]]
+    [[label_]]
 </div>
 <iron-dropdown opened="[[shouldShowDropdownMenu_]]"
     no-cancel-on-outside-click>

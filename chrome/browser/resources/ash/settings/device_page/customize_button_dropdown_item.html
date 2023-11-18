@@ -10,6 +10,7 @@
     background-color: var(--cros-highlight-color-hover);
   }
 </style>
-<div id="container">
+<div id="container" hidden="[[option.hidden]]"
+    class="option-item" on-click="onDropdownItemSelected_">
   [[option.name]]
 </div>

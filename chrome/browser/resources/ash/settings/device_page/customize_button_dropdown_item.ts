@@ -17,6 +17,8 @@ import {getTemplate} from './customize_button_dropdown_item.html.js';
  * customize the remapped button.
  */
 
+export type DropdownItemSelectEvent = CustomEvent<{value: number | string}>;
+
 export interface DropdownMenuOption {
   name: string;
   value: number|string;
@@ -41,6 +43,16 @@ export class CustomizeButtonDropdownItemElement extends PolymerElement {
   }
 
   option: DropdownMenuOption;
+
+  private onDropdownItemSelected_(): void {
+    this.dispatchEvent(new CustomEvent('customize-button-dropdown-selected', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        value: this.option.value,
+      },
+    }));
+  }
 }
 
 declare global {
