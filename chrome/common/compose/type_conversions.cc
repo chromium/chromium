@@ -58,3 +58,15 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
       return compose::mojom::ComposeStatus::kNotSuccessful;
   }
 }
+
+optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
+    compose::mojom::UserFeedback feedback) {
+  switch (feedback) {
+    case compose::mojom::UserFeedback::kUserFeedBackPositive:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+    case compose::mojom::UserFeedback::kUserFeedBackNegative:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+    default:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  }
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote, ComposeState, OpenMetadata, StyleModifiers} from './compose.mojom-webui.js';
+import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
@@ -12,6 +12,7 @@ export interface ComposeApiProxy {
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeSettings(): void;
+  setUserFeedback(reason: UserFeedback): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
   showUi(): void;
@@ -78,6 +79,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   showUi() {
     this.composeClientPageHandler.showUI();
+  }
+
+  setUserFeedback(reason: UserFeedback) {
+    this.composeSessionPageHandler.setUserFeedback(reason);
   }
 
   undo(): Promise<(ComposeState | null)> {

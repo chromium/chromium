@@ -91,6 +91,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // "settings" link is clicked in the consent dialog.
   void OpenComposeSettings() override;
 
+  // Saves the user feedback supplied form the UI to include in quality logs.
+  void SetUserFeedback(compose::mojom::UserFeedback feedback) override;
+
   // Non-ComposeSessionPageHandler Methods
 
   // Notifies the session that a new dialog is opening and starts refreshing

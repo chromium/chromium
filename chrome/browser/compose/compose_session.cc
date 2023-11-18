@@ -329,6 +329,26 @@ void ComposeSession::OpenBugReportingLink() {
       /* is_renderer_initiated= */ false));
 }
 
+void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
+  optimization_guide::proto::UserFeedback user_feedback =
+      OptimizationFeedbackFromComposeFeedback(feedback);
+
+  if (modeling_log_entry_) {
+    optimization_guide::proto::ComposeQuality* quality =
+        modeling_log_entry_.get()
+            ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
+    if (quality) {
+      quality->set_user_feedback(user_feedback);
+      auto* optimization_guide_keyed_service =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+      // TODO(b/311798158): manage lifecycle to maintain modeling_log_entry_.
+      optimization_guide_keyed_service->UploadModelQualityLogs(
+          std::move(modeling_log_entry_));
+    }
+  }
+}
+
 void ComposeSession::InitializeWithText(
     const std::optional<std::string>& text) {
   dialog_shown_count_ += 1;

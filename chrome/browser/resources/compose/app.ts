@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, Tone} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -431,10 +431,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
       e: CustomEvent<{value: CrFeedbackOption}>) {
     switch (e.detail.value) {
       case CrFeedbackOption.UNSPECIFIED:
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackUnspecified);
+        return;
       case CrFeedbackOption.THUMBS_UP:
-        // TODO(b/308355619): Save state and call handler.
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackPositive);
         return;
       case CrFeedbackOption.THUMBS_DOWN:
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackNegative);
         this.apiProxy_.openBugReportingLink();
         return;
     }

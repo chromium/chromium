@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -34,6 +34,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       'openBugReportingLink',
       'requestInitialState',
       'saveWebuiState',
+      'setUserFeedback',
       'undo',
     ]);
   }
@@ -81,6 +82,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
 
   saveWebuiState(state: string) {
     this.methodCalled('saveWebuiState', state);
+  }
+
+  setUserFeedback(feedback: UserFeedback) {
+    this.methodCalled('setUserFeedback', feedback);
   }
 
   setInitialState(state: Partial<ComposeState>, input?: string) {
@@ -564,5 +569,7 @@ suite('ComposeApp', () => {
       detail: {value: CrFeedbackOption.THUMBS_DOWN},
     }));
     await testProxy.whenCalled('openBugReportingLink');
+    const args = await testProxy.whenCalled('setUserFeedback');
+    assertEquals(args.reason, args.UserFeedback);
   });
 });
