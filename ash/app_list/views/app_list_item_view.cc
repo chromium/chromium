@@ -156,67 +156,6 @@ constexpr int kNewInstallDotPadding = 4;
 // icons.
 constexpr size_t kMaxItemCounterCount = 100u;
 
-class IconBackgroundLayer : public ui::LayerOwner {
- public:
-  explicit IconBackgroundLayer(views::View* icon_view)
-      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
-        icon_view_(icon_view) {
-    layer()->SetName("icon_background_layer");
-    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
-  }
-
-  IconBackgroundLayer(const IconBackgroundLayer&) = delete;
-  IconBackgroundLayer& operator=(const IconBackgroundLayer) = delete;
-
-  ~IconBackgroundLayer() override {
-    icon_view_->RemoveLayerFromRegions(layer());
-  }
-
-  // ui::LayerOwner:
-  std::unique_ptr<ui::Layer> RecreateLayer() override {
-    std::unique_ptr<ui::Layer> old_layer = ui::LayerOwner::RecreateLayer();
-
-    icon_view_->RemoveLayerFromRegionsKeepInLayerTree(old_layer.get());
-    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
-    return old_layer;
-  }
-
- private:
-  const raw_ptr<views::View, ExperimentalAsh> icon_view_;
-};
-
-// The class clips the provided folder icon image.
-class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
- public:
-  ClippedFolderIconImageSource(const gfx::Size& size,
-                               const gfx::ImageSkia& image)
-      : gfx::CanvasImageSource(size), image_(image) {}
-
-  ClippedFolderIconImageSource(const ClippedFolderIconImageSource&) = delete;
-  ClippedFolderIconImageSource& operator=(const ClippedFolderIconImageSource&) =
-      delete;
-
-  ~ClippedFolderIconImageSource() override = default;
-
-  void Draw(gfx::Canvas* canvas) override {
-    // Draw the unclipped icon on the center of the canvas with a circular mask.
-    SkPath circular_mask;
-    circular_mask.addCircle(SkFloatToScalar(size_.width() / 2),
-                            SkFloatToScalar(size_.height() / 2),
-                            SkIntToScalar(size_.width() / 2));
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    canvas->DrawImageInPath(image_, (size_.width() - image_.size().width()) / 2,
-                            (size_.height() - image_.size().height()) / 2,
-                            circular_mask, flags);
-  }
-
- private:
-  const gfx::ImageSkia image_;
-};
-
 // Draws a circular background for a promise icon view.
 class PromiseIconBackground : public views::Background {
  public:
@@ -339,6 +278,8 @@ class AppListItemView::FolderIconView : public views::View,
         jelly_style_(chromeos::features::IsJellyEnabled()),
         config_(config),
         icon_scale_(icon_scale) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     folder_item_->item_list()->AddObserver(this);
   }
   FolderIconView(const FolderIconView&) = delete;
@@ -352,7 +293,10 @@ class AppListItemView::FolderIconView : public views::View,
 
   void ResetFolderItem() { folder_item_ = nullptr; }
   void UpdateAppListConfig(const AppListConfig* config) { config_ = config; }
-  void SetIconScale(float scale) { icon_scale_ = scale; }
+  void SetIconScale(float scale) {
+    icon_scale_ = scale;
+    SchedulePaint();
+  }
 
   AppListItem* GetDraggedItem() const {
     return folder_item_ ? folder_item_->item_list()->FindItem(dragged_item_id_)
@@ -383,7 +327,8 @@ class AppListItemView::FolderIconView : public views::View,
   gfx::ImageSkia CreateDragImage() {
     const views::Widget* widget = GetWidget();
     const float scale = widget->GetCompositor()->device_scale_factor();
-    const gfx::Rect paint_bounds(gfx::ScaleToCeiledSize(size(), scale));
+    const gfx::Rect paint_bounds(gfx::ScaleToCeiledSize(
+        config_->folder_icon_size(), kDragDropAppIconScale * scale));
     const bool is_pixel_canvas = widget->GetCompositor()->is_pixel_canvas();
     SkBitmap bitmap;
     bitmap.allocN32Pixels(paint_bounds.width(), paint_bounds.height());
@@ -401,13 +346,19 @@ class AppListItemView::FolderIconView : public views::View,
     background_circle.setAntiAlias(true);
 
     gfx::Point center = paint_bounds.CenterPoint();
-    canvas.drawCircle(center.x(), center.y(),
-                      config_->icon_visible_dimension() / 2, background_circle);
+    canvas.drawCircle(
+        center.x(), center.y(),
+        config_->icon_visible_dimension() * kDragDropAppIconScale * scale / 2,
+        background_circle);
 
     auto list = base::MakeRefCounted<cc::DisplayItemList>();
     ui::PaintContext context(list.get(), scale, paint_bounds, is_pixel_canvas);
-
-    Paint(views::PaintInfo::CreateRootPaintInfo(context, paint_bounds.size()));
+    {
+      base::AutoReset<float> forced_icon_scale(&icon_scale_,
+                                               kDragDropAppIconScale);
+      Paint(
+          views::PaintInfo::CreateRootPaintInfo(context, paint_bounds.size()));
+    }
     list->Finalize();
     list->Raster(&canvas, nullptr);
 
@@ -521,9 +472,9 @@ class AppListItemView::FolderIconView : public views::View,
   }
 
   std::vector<gfx::Rect> GetTopIconsBounds(size_t num_items) {
-    gfx::Rect unclipped_icon_bounds(config_->unclipped_icon_size());
-    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
-        *config_, unclipped_icon_bounds, num_items);
+    gfx::Rect folder_icon_bounds(config_->folder_icon_size());
+    std::vector<gfx::Rect> top_icon_bounds =
+        FolderImage::GetTopIconsBounds(*config_, folder_icon_bounds, num_items);
 
     if (icon_scale_ == 1) {
       return top_icon_bounds;
@@ -647,6 +598,12 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
     title->SetEnabledColorId(kColorAshTextColorPrimary);
   }
 
+  icon_background_ = AddChildView(std::make_unique<views::View>());
+  icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  icon_background_->layer()->SetFillsBoundsOpaquely(false);
+  icon_background_->SetCanProcessEventsWithinSubtree(false);
+  icon_background_->SetVisible(is_folder_);
+
   if (use_item_icon_) {
     // If the item icon is used, set the icon in ImageView and paint the view.
     if (chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
@@ -658,7 +615,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
     icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
     if (has_host_badge_) {
-      SetHostBadgeIcon(item_weak_->GetHostBadgeIcon(), true);
+      SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
     }
   } else {
     // Refreshed folder icons are painted on FolderIconView directly instead of
@@ -669,9 +626,6 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   }
 
   if (is_folder_) {
-    // Draw the background as part of the icon view.
-    EnsureIconBackgroundLayer();
-
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
@@ -740,12 +694,12 @@ AppListItemView::~AppListItemView() {
     item_weak_->RemoveObserver(this);
   }
   StopObservingImplicitAnimations();
-  icon_background_layer_.reset();
 }
 
 void AppListItemView::UpdateIconView(bool update_item_icon) {
   if (!use_item_icon_) {
-    folder_icon_->SchedulePaint();
+    folder_icon_->SetIconScale(icon_scale_);
+    Layout();
     return;
   }
 
@@ -776,6 +730,12 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
   }
 
   SetIcon(image_icon);
+
+  if (update_item_icon) {
+    SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
+  } else {
+    SetHostBadgeIcon(host_badge_icon_image_);
+  }
 }
 
 bool AppListItemView::ShouldUseFallbackIconImageModel() const {
@@ -807,7 +767,7 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
     return;
   }
 
-  gfx::Size icon_bounds = is_folder_ ? app_list_config_->unclipped_icon_size()
+  gfx::Size icon_bounds = is_folder_ ? app_list_config_->folder_icon_size()
                                      : app_list_config_->grid_icon_size();
 
   icon_bounds = gfx::ScaleToRoundedSize(icon_bounds,
@@ -825,15 +785,16 @@ bool AppListItemView::HasPromiseIconPlaceholder() {
          item_weak_->GetMetadata()->is_placeholder_icon;
 }
 
-void AppListItemView::SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon,
-                                       bool update_host_badge_icon) {
+void AppListItemView::SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon) {
   // This function is only used when AppListItem host icons are used for
   // painting.
   CHECK(use_item_icon_);
 
   // Clear host badge icon and bail out if host badge icon is empty.
   if (host_badge_icon.isNull()) {
-    host_badge_icon_view_->SetImage(nullptr);
+    if (host_badge_icon_view_) {
+      host_badge_icon_view_->SetImage(nullptr);
+    }
     host_badge_icon_image_ = gfx::ImageSkia();
     has_host_badge_ = false;
     return;
@@ -937,34 +898,27 @@ void AppListItemView::ScaleIconImmediatly(float scale_factor) {
 }
 
 void AppListItemView::UpdateBackgroundLayerBounds() {
-  auto* background_layer = GetIconBackgroundLayer();
-  if (!background_layer || GetIconView()->bounds().IsEmpty()) {
-    return;
-  }
+  gfx::Rect background_bounds = GetIconView()->bounds();
 
-  gfx::Rect background_bounds = GetIconView()->layer()->bounds();
-
-  if (is_folder_) {
-    // The folder icon already has the same size as its background layer.
-    background_layer->SetBounds(background_bounds);
-    return;
-  }
-
-  // Set the background layer size of the app icon to `unclipped_icon_dimension`
-  // for the clip rect animation.
+  // Set icon bounds to it's max possible size - the background view will be
+  // clipped to the required size as the background extended state gets updated.
+  // This lets extended state animations run by updating the background layer
+  // clip rect only (without having to change the icon background bounds at
+  // different times depending on whether the background is shrinking or
+  // expanding).
   int outset_from_icon =
-      (app_list_config_->unclipped_icon_dimension() * icon_scale_ -
+      (app_list_config_->icon_extended_background_dimension() * icon_scale_ -
        background_bounds.width()) /
       2;
   background_bounds.Outset(outset_from_icon);
-  background_layer->SetBounds(background_bounds);
+  icon_background_->SetBoundsRect(background_bounds);
 
   // Note that the background size should initially be the folder icon size
   // instead of the grid icon size. This is because the app icon has a
   // transparent ring around the visible icon which makes it look smaller.
   background_bounds.ClampToCenteredSize(gfx::ScaleToRoundedSize(
       app_list_config_->icon_visible_size(), icon_scale_));
-  background_layer->SetRoundedCornerRadius(
+  icon_background_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(background_bounds.width() / 2));
 }
 
@@ -1020,20 +974,20 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   }
 
   EnsureLayer();
-  if (!is_folder_) {
-    if (scale_up) {
-      icon_scale_ = kDragDropAppIconScale;
-      UpdateIconView(false);
-      layer()->SetTransform(gfx::GetScaleTransform(
-          GetContentsBounds().CenterPoint(), 1 / kDragDropAppIconScale));
-    } else if (drag_state_ != DragState::kNone) {
-      // If a drag view has been created for this icon, the item transition to
-      // target bounds is handled by the apps grid view bounds animator. At the
-      // end of that animation, the layer will be destroyed, causing the
-      // animation observer to get canceled. For this case, we need to scale
-      // down the icon immediately, with no animation.
-      ScaleIconImmediatly(1.0f);
-    }
+
+  if (scale_up) {
+    icon_scale_ = kDragDropAppIconScale;
+    UpdateIconView(false);
+    const gfx::Transform scale_transform = gfx::GetScaleTransform(
+        GetIconView()->bounds().CenterPoint(), 1 / kDragDropAppIconScale);
+    layer()->SetTransform(scale_transform);
+  } else if (drag_state_ != DragState::kNone) {
+    // If a drag view has been created for this icon, the item transition to
+    // target bounds is handled by the apps grid view bounds animator. At the
+    // end of that animation, the layer will be destroyed, causing the
+    // animation observer to get canceled. For this case, we need to scale
+    // down the icon immediately, with no animation.
+    ScaleIconImmediatly(1.0f);
   }
 
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
@@ -1043,18 +997,9 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
                             ? gfx::Tween::ACCEL_20_DECEL_100
                             : gfx::Tween::EASE_OUT_2);
   if (scale_up) {
-    if (is_folder_) {
-      const gfx::Rect bounds(layer()->bounds().size());
-      gfx::Transform transform =
-          gfx::GetScaleTransform(bounds.CenterPoint(), kDragDropAppIconScale);
-      layer()->SetTransform(transform);
-    } else {
-      layer()->SetTransform(gfx::Transform());
-    }
+    layer()->SetTransform(gfx::Transform());
   } else {
-    if (is_folder_) {
-      layer()->SetTransform(gfx::Transform());
-    } else if (drag_state_ == DragState::kNone) {
+    if (drag_state_ == DragState::kNone) {
       // To avoid poor quality icons, update icon image with the correct scale
       // after the transform animation is completed.
       settings.AddObserver(this);
@@ -1419,9 +1364,8 @@ void AppListItemView::Layout() {
 
   views::FocusRing::Get(this)->Layout();
 
-  const gfx::Size icon_size = is_folder_
-                                  ? app_list_config_->unclipped_icon_size()
-                                  : app_list_config_->grid_icon_size();
+  const gfx::Size icon_size = is_folder_ ? app_list_config_->folder_icon_size()
+                                         : app_list_config_->grid_icon_size();
 
   const gfx::Rect icon_bounds = GetIconBoundsForTargetViewBounds(
       app_list_config_, rect,
@@ -1500,7 +1444,9 @@ void AppListItemView::Layout() {
   const float indicator_size =
       icon_bounds.width() * kNotificationIndicatorWidthRatio;
   const float indicator_padding =
-      icon_bounds.width() * kNotificationIndicatorPaddingRatio;
+      is_folder_ ? 0
+                 : std::round(icon_bounds.width() *
+                              kNotificationIndicatorPaddingRatio);
 
   const float indicator_x =
       icon_bounds.right() - indicator_size - indicator_padding;
@@ -1536,8 +1482,8 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   // Reset all states if we are already dragging, and avoid triggering a button
   // mouse release event.
-  if (ui_state_ == UI_STATE_DRAGGING &&
-      drag_state_ == DragState::kInitialized) {
+  if (drag_state_ == DragState::kInitialized &&
+      ui_state_ == UI_STATE_DRAGGING) {
     SetMouseDragging(false);
     drag_state_ = DragState::kNone;
     return;
@@ -1550,14 +1496,15 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
     return;
   }
 
+  SetMouseDragging(false);
+
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
     // Cancel drag timer set when the mouse was pressed, to prevent the app
     // item from entering dragged state.
     mouse_drag_timer_.Stop();
+    drag_state_ = DragState::kNone;
     return;
   }
-
-  SetMouseDragging(false);
 
   // EndDrag may delete |this|.
   grid_delegate_->EndDrag(/*cancel=*/false);
@@ -1636,7 +1583,7 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
   }
 
   if (item_weak_) {
-    data->provider().SetDragImage(GetIconImage(), press_pt.OffsetFromOrigin());
+    data->provider().SetDragImage(GetDragImage(), press_pt.OffsetFromOrigin());
     const DraggableAppType app_type = is_folder_
                                           ? DraggableAppType::kFolderAppGridItem
                                           : DraggableAppType::kAppGridItem;
@@ -1774,8 +1721,8 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_layer_) {
-      icon_background_layer_->layer()->SetColor(
+    if (icon_background_) {
+      icon_background_->layer()->SetColor(
           GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     }
   }
@@ -2037,17 +1984,12 @@ gfx::Rect AppListItemView::GetIconBoundsInScreen() const {
   return icon_bounds;
 }
 
-gfx::ImageSkia AppListItemView::GetIconImage() const {
-  if (!use_item_icon_) {
+gfx::ImageSkia AppListItemView::GetDragImage() const {
+  if (is_folder_) {
     return folder_icon_->CreateDragImage();
   }
 
-  if (!is_folder_) {
-    return icon_->GetImage();
-  }
-
-  return gfx::CanvasImageSource::MakeImageSkia<ClippedFolderIconImageSource>(
-      app_list_config_->icon_visible_size(), icon_->GetImage());
+  return icon_->GetImage();
 }
 
 void AppListItemView::SetIconVisible(bool visible) {
@@ -2076,8 +2018,7 @@ gfx::Rect AppListItemView::GetIconBoundsForTargetViewBounds(
     const gfx::Size& icon_size,
     const float icon_scale) {
   gfx::Rect rect(target_bounds);
-  rect.Inset(gfx::Insets::TLBR(
-      0, 0, config->grid_icon_bottom_padding() * icon_scale, 0));
+  rect.Inset(gfx::Insets::TLBR(0, 0, config->grid_icon_bottom_padding(), 0));
   rect.ClampToCenteredSize(icon_size);
   return rect;
 }
@@ -2131,7 +2072,7 @@ void AppListItemView::ItemNameChanged() {
 
 void AppListItemView::ItemHostBadgeIconChanged() {
   DCHECK(item_weak_);
-  SetHostBadgeIcon(item_weak_->GetHostBadgeIcon(), true);
+  SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
 }
 
 void AppListItemView::ItemBadgeVisibilityChanged() {
@@ -2271,9 +2212,11 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   }
 
   is_icon_extended_ = extend_icon;
-  EnsureIconBackgroundLayer();
+  icon_background_->SetVisible(true);
+  GetIconView()->SetPaintToLayer();
+  GetIconView()->layer()->SetFillsBoundsOpaquely(false);
   base::AutoReset<bool> auto_reset(&setting_up_icon_animation_, true);
-  ui::Layer* background_layer = GetIconBackgroundLayer();
+  ui::Layer* const background_layer = GetIconBackgroundLayer();
   DCHECK(background_layer);
 
   views::AnimationBuilder builder;
@@ -2289,8 +2232,9 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
       .Once();
 
   UpdateBackgroundLayerBounds();
-  const int width = extend_icon ? app_list_config_->unclipped_icon_dimension()
-                                : app_list_config_->icon_visible_dimension();
+  const int width = extend_icon
+                        ? app_list_config_->icon_extended_background_dimension()
+                        : app_list_config_->icon_visible_dimension();
   gfx::Rect clip_rect(background_layer->size());
   clip_rect.ClampToCenteredSize(
       ScaleToRoundedSize(gfx::Size(width, width), icon_scale_));
@@ -2314,18 +2258,6 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   }
 }
 
-void AppListItemView::EnsureIconBackgroundLayer() {
-  if (icon_background_layer_) {
-    return;
-  }
-
-  icon_background_layer_ = std::make_unique<IconBackgroundLayer>(GetIconView());
-  if (GetColorProvider()) {
-    icon_background_layer_->layer()->SetColor(
-        GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
-  }
-}
-
 ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
   if (!chromeos::features::IsJellyEnabled()) {
     return kColorAshControlBackgroundColorInactive;
@@ -2344,15 +2276,16 @@ ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
   if (!setting_up_icon_animation_ && !extend_icon && !is_folder_) {
-    icon_background_layer_.reset();
+    icon_background_->SetVisible(false);
+    GetIconView()->DestroyLayer();
   }
 }
 
 ui::Layer* AppListItemView::GetIconBackgroundLayer() {
-  if (!icon_background_layer_) {
+  if (!icon_background_) {
     return nullptr;
   }
-  return icon_background_layer_->layer();
+  return icon_background_->layer();
 }
 
 bool AppListItemView::AlwaysPaintsToLayer() {

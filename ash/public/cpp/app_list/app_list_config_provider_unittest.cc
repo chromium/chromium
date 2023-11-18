@@ -49,24 +49,24 @@ void SanityCheckGridTileDimensions(AppListConfig* config, int error_margin) {
   // Icon should fit in the tile width.
   EXPECT_LE(config->grid_icon_dimension(), config->grid_tile_width());
 
-  const int folder_unclipped_icon_top =
+  const int folder_icon_top =
       (config->grid_tile_height() - config->grid_icon_bottom_padding() -
-       config->unclipped_icon_dimension()) /
+       config->folder_icon_dimension()) /
       2;
   // The app list folder icon top should be within the tile bounds.
-  EXPECT_GE(folder_unclipped_icon_top, 0);
+  EXPECT_GE(folder_icon_top, 0);
 
   // Unclipped folder icon should not overlap with title.
-  const int folder_unclipped_icon_bottom =
-      folder_unclipped_icon_top + config->unclipped_icon_dimension();
-  EXPECT_LE(folder_unclipped_icon_bottom, title_top + error_margin);
+  const int folder_icon_bottom =
+      folder_icon_top + config->folder_icon_dimension();
+  EXPECT_LE(folder_icon_bottom, title_top + error_margin);
 
   // Unclipped folder icon should fit within available height.
-  EXPECT_LE(folder_unclipped_icon_bottom,
+  EXPECT_LE(folder_icon_bottom,
             config->grid_tile_height() - config->grid_icon_bottom_padding());
 
   // Unclipped folder icon should fit into tile width.
-  EXPECT_LE(config->unclipped_icon_dimension(), config->grid_tile_width());
+  EXPECT_LE(config->folder_icon_dimension(), config->grid_tile_width());
 }
 
 class TestAppListConfigProviderObserver

@@ -1863,7 +1863,8 @@ TEST_P(AppsGridViewFolderIconRefreshTest, AppIconExtendState) {
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(const_cast<ui::Layer*>(icon_background_layer));
   EXPECT_FALSE(extended_app->is_icon_extended_for_test());
-  EXPECT_FALSE(extended_app->icon_background_layer_for_test());
+  ASSERT_TRUE(extended_app->icon_background_layer_for_test());
+  EXPECT_FALSE(extended_app->icon_background_layer_for_test()->IsVisible());
   EndDrag();
 }
 
@@ -1891,6 +1892,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
   EXPECT_TRUE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 
   // Quickly move the dragged app out and back to the folder. Make sure the
   // background layer is not recreated.
@@ -1899,6 +1901,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 1 /*steps*/);
   EXPECT_TRUE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 
   // Release the drag.
   EndDrag();
@@ -1906,6 +1909,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   animation_waiter.Wait(const_cast<ui::Layer*>(background_layer));
   EXPECT_FALSE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 }
 
 TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {

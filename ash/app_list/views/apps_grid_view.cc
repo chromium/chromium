@@ -1868,7 +1868,9 @@ void AppsGridView::AnimateDragIconToTargetPosition(
       // Get icon bounds in the drag view coordinates.
       drag_icon_drop_bounds = AppListItemView::GetIconBoundsForTargetViewBounds(
           app_list_config_, drag_view_ideal_bounds,
-          app_list_config_->grid_icon_size(), 1.0f);
+          drag_item->is_folder() ? app_list_config_->folder_icon_size()
+                                 : app_list_config_->grid_icon_size(),
+          1.0f);
 
       break;
     }
@@ -2112,7 +2114,7 @@ gfx::Rect AppsGridView::GetTargetIconRectInFolder(
   const gfx::Rect icon_ideal_bounds =
       folder_item_view->GetIconBoundsForTargetViewBounds(
           app_list_config_, view_ideal_bounds,
-          folder_item_view->GetIconImage().size(), /*icon_scale=*/1.0f);
+          folder_item_view->GetDragImage().size(), /*icon_scale=*/1.0f);
   AppListFolderItem* folder_item = folder_item_view->item()->AsFolderItem();
   return folder_item->GetTargetIconRectInFolderForItem(
       *app_list_config_, drag_item, icon_ideal_bounds);
@@ -2721,10 +2723,10 @@ void AppsGridView::StartDragAndDropHostDrag() {
   // circle.
   const gfx::Size shadow_size = is_folder
                                     ? app_list_config_->icon_visible_size()
-                                    : drag_view_->GetIconImage().size();
+                                    : drag_view_->GetDragImage().size();
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-      drag_view_->GetIconImage(), location_in_screen,
+      drag_view_->GetDragImage(), location_in_screen,
       location_in_screen - icon_location_in_screen,
       is_folder ? kDragAndDropProxyScale : 1.0f, is_folder, shadow_size);
   drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);

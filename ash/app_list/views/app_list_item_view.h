@@ -180,8 +180,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void SetItemAccessibleName(const std::u16string& name);
 
-  void SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon,
-                        bool update_host_badge_icon);
+  void SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon);
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -213,7 +212,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   gfx::Rect GetIconBoundsInScreen() const;
 
   // Returns the image of icon.
-  gfx::ImageSkia GetIconImage() const;
+  gfx::ImageSkia GetDragImage() const;
 
   // Sets the icon's visibility.
   void SetIconVisible(bool visible);
@@ -327,10 +326,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void reset_has_pending_row_change() { has_pending_row_change_ = false; }
 
   const ui::Layer* icon_background_layer_for_test() const {
-    if (!icon_background_layer_) {
+    if (!icon_background_) {
       return nullptr;
     }
-    return icon_background_layer_->layer();
+    return icon_background_->layer();
   }
   bool is_icon_extended_for_test() const { return is_icon_extended_; }
   bool is_promise_app() const { return is_promise_app_; }
@@ -457,9 +456,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // `animate` specifies if the visual update should be animated or not.
   void SetBackgroundExtendedState(bool extend_icon, bool animate);
 
-  // Ensures that the layer where the icon background is painted on is created.
-  void EnsureIconBackgroundLayer();
-
   // Returns the color ID for the app list item background, if the background
   // needs to be shown.
   ui::ColorId GetBackgroundLayerColorId() const;
@@ -530,7 +526,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // The background layer added under the `icon_` layer to paint the background
   // of the icon.
-  std::unique_ptr<ui::LayerOwner> icon_background_layer_;
+  raw_ptr<views::View, ExperimentalAsh> icon_background_ = nullptr;
 
   // Draws a dot next to the title for newly installed apps.
   raw_ptr<views::View, ExperimentalAsh> new_install_dot_ = nullptr;

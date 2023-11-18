@@ -116,13 +116,12 @@ gfx::FontList ItemCounterFontInFolderIcon(ash::AppListConfigType type) {
   return ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(details);
 }
 
-// See "App drag over folder" in go/cros-launcher-spec.
-int UnclippedIconDimensionForType(ash::AppListConfigType type) {
+int FolderIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kRegular:
-      return 76;
+      return 68;
     case ash::AppListConfigType::kDense:
-      return 56;
+      return 50;
   }
 }
 
@@ -132,6 +131,15 @@ int IconVisibleDimensionForType(ash::AppListConfigType type) {
       return 60;
     case ash::AppListConfigType::kDense:
       return 44;
+  }
+}
+
+int IconExtendedBackgroundDimension(ash::AppListConfigType type) {
+  switch (type) {
+    case ash::AppListConfigType::kRegular:
+      return 76;
+    case ash::AppListConfigType::kDense:
+      return 56;
   }
 }
 
@@ -201,10 +209,12 @@ AppListConfig::AppListConfig(AppListConfigType type)
       app_title_max_line_height_(AppTitleMaxLineHeightForType(type)),
       app_title_font_(AppTitleFontForType(type)),
       item_counter_in_folder_icon_font_(ItemCounterFontInFolderIcon(type)),
-      folder_bubble_radius_(UnclippedIconDimensionForType(type) / 2),
+      folder_bubble_radius_(IconExtendedBackgroundDimension(type) / 2),
       icon_visible_dimension_(IconVisibleDimensionForType(type)),
-      unclipped_icon_dimension_(UnclippedIconDimensionForType(type)),
+      folder_icon_dimension_(FolderIconDimensionForType(type)),
       folder_icon_radius_(IconVisibleDimensionForType(type) / 2),
+      icon_extended_background_dimension_(
+          IconExtendedBackgroundDimension(type)),
       icon_extended_background_radius_(IconExtendedBackgroundRadius(type)),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
@@ -234,9 +244,11 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       folder_bubble_radius_(Scale(base_config.folder_bubble_radius_, scale_x)),
       icon_visible_dimension_(
           Scale(base_config.icon_visible_dimension_, scale_x)),
-      unclipped_icon_dimension_(
-          Scale(base_config.unclipped_icon_dimension_, scale_x)),
+      folder_icon_dimension_(
+          Scale(base_config.folder_icon_dimension_, scale_x)),
       folder_icon_radius_(Scale(base_config.folder_icon_radius_, scale_x)),
+      icon_extended_background_dimension_(
+          Scale(base_config.icon_extended_background_dimension_, scale_x)),
       icon_extended_background_radius_(
           Scale(base_config.icon_extended_background_radius_, scale_x)),
 

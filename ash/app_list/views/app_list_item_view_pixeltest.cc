@@ -141,8 +141,6 @@ class AppListItemViewPixelTest
                      ->GetWidgetForTesting();
   }
 
-  size_t GetRevisionNumber() { return 5; }
-
   bool use_drag_drop_refactor() const { return std::get<0>(GetParam()); }
   bool use_folder_icon_refresh() const { return std::get<1>(GetParam()); }
   bool use_tablet_mode() const { return std::get<2>(GetParam()); }
@@ -197,7 +195,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/8, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/9, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
@@ -234,7 +232,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/9, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.
@@ -276,15 +274,13 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     folder_list.push_back(GetItemViewAt(i));
   }
 
-  const size_t revision_number = GetRevisionNumber();
-
   auto verify_folder_widget =
       [&](int number_of_items) {
         std::string filename =
             base::NumberToString(number_of_items) + "_items_folder";
         EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
             base::JoinString({GenerateScreenshotName(), filename}, "."),
-            revision_number, GetDraggedWidget()));
+            /*revision_number=*/6, GetDraggedWidget()));
       };
 
   for (size_t i = 0; i < max_items_in_folder; ++i) {
