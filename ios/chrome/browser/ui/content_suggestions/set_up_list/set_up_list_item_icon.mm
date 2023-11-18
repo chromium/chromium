@@ -301,6 +301,11 @@ UIView* IconInSquare(NSString* symbol,
                  : IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
                                 kBlue500Color);
     }
+    case SetUpListItemType::kContentNotification: {
+      return _inSquare
+                 ? IconInSquare(kBellSymbol, NO, kPink500Color)
+                 : IconInCircle(kBellSymbol, _compactLayout, kPink500Color);
+    }
     case SetUpListItemType::kAllSet: {
       return IconForSymbol(
           kCheckmarkSealFillSymbol, _compactLayout,

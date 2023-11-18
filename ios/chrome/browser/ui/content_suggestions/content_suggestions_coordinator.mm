@@ -638,6 +638,9 @@
       case SetUpListItemType::kAutofill:
         [weakSelf showCredentialProviderPromo];
         break;
+      case SetUpListItemType::kContentNotification:
+        // TODO(b/311068390): handle notification opt-in
+        break;
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
         // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
