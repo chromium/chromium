@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <concepts>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -18,7 +19,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/contiguous_iterator.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 
@@ -81,9 +81,9 @@ using IteratorHasConvertibleReferenceType =
     IsLegalDataConversion<std::remove_reference_t<iter_reference_t<Iter>>, T>;
 
 template <typename Iter, typename T>
-using EnableIfCompatibleContiguousIterator = std::enable_if_t<
-    std::conjunction_v<IsContiguousIterator<Iter>,
-                       IteratorHasConvertibleReferenceType<Iter, T>>>;
+using EnableIfCompatibleContiguousIterator =
+    std::enable_if_t<std::contiguous_iterator<Iter> &&
+                     IteratorHasConvertibleReferenceType<Iter, T>::value>;
 
 template <typename Container, typename T>
 using ContainerHasConvertibleData = IsLegalDataConversion<
