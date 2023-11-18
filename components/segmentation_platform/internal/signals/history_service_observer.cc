@@ -20,14 +20,17 @@ namespace segmentation_platform {
 HistoryServiceObserver::HistoryServiceObserver(
     history::HistoryService* history_service,
     StorageService* storage_service,
+    const std::string& profile_id,
     base::RepeatingClosure models_refresh_callback)
     : storage_service_(storage_service),
       url_signal_handler_(
           storage_service->ukm_data_manager()->GetOrCreateUrlHandler()),
       models_refresh_callback_(models_refresh_callback),
+      profile_id_(profile_id),
       history_delegate_(
           std::make_unique<HistoryDelegateImpl>(history_service,
-                                                url_signal_handler_)) {
+                                                url_signal_handler_,
+                                                profile_id)) {
   history_observation_.Observe(history_service);
 }
 HistoryServiceObserver::HistoryServiceObserver()
@@ -39,7 +42,7 @@ void HistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
-  url_signal_handler_->OnHistoryVisit(url_row.url());
+  url_signal_handler_->OnHistoryVisit(url_row.url(), profile_id_);
   history_delegate_->OnUrlAdded(url_row.url());
 }
 

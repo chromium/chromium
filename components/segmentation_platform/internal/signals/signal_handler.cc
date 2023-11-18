@@ -21,6 +21,7 @@ void SignalHandler::Initialize(
     StorageService* storage_service,
     history::HistoryService* history_service,
     const base::flat_set<proto::SegmentId>& segment_ids,
+    const std::string& profile_id,
     base::RepeatingClosure models_refresh_callback) {
   user_action_signal_handler_ = std::make_unique<UserActionSignalHandler>(
       storage_service->signal_database());
@@ -36,7 +37,8 @@ void SignalHandler::Initialize(
       // If UKM engine is enabled and history service is not available, then we
       // would write metrics without URLs to the database, which is OK.
       history_service_observer_ = std::make_unique<HistoryServiceObserver>(
-          history_service, storage_service, models_refresh_callback);
+          history_service, storage_service, profile_id,
+          models_refresh_callback);
     }
   }
 

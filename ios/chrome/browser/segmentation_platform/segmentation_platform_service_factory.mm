@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 
 #import "base/feature_list.h"
+#import "base/hash/hash.h"
 #import "base/scoped_observation.h"
 #import "base/supports_user_data.h"
 #import "base/task/sequenced_task_runner.h"
@@ -125,7 +126,8 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-
+  params->profile_id = params->profile_id =
+      base::NumberToString(base::PersistentHash(profile_path.value()));
   params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;

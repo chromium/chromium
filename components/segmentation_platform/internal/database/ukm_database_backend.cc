@@ -179,7 +179,8 @@ void UkmDatabaseBackend::StoreUkmEntry(ukm::mojom::UkmEntryPtr entry) {
 
 void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
                                                const GURL& url,
-                                               bool is_validated) {
+                                               bool is_validated,
+                                               const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {
     return;
@@ -192,7 +193,7 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
 
   if (!url_table_.IsUrlInTable(url_id)) {
     if (is_validated) {
-      url_table_.WriteUrl(url, url_id, base::Time::Now());
+      url_table_.WriteUrl(url, url_id, base::Time::Now(), profile_id);
       // Remove from list so we don't add the URL again to table later.
       urls_not_validated_.erase(url_id);
     } else {
@@ -209,7 +210,8 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
   TrackChangesInTransaction(2);  // 2 updates above.
 }
 
-void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
+void UkmDatabaseBackend::OnUrlValidated(const GURL& url,
+                                        const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {
     return;
@@ -218,7 +220,7 @@ void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
   UrlId url_id = UkmUrlTable::GenerateUrlId(url);
   // Write URL to table only if it's needed and it's not already added.
   if (urls_not_validated_.count(url_id) && SanityCheckUrl(url, url_id)) {
-    url_table_.WriteUrl(url, url_id, base::Time::Now());
+    url_table_.WriteUrl(url, url_id, base::Time::Now(), profile_id);
     urls_not_validated_.erase(url_id);
   }
   TrackChangesInTransaction(1);

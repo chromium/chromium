@@ -177,7 +177,7 @@ TEST_F(UkmDatabaseBackendTest, UrlIdsForEntries) {
   ExpectEntriesWithUrlId(backend_->db(), UrlId(), 3);
 
   // Updating URL should update metrics with the URL ID.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
   ExpectEntriesWithUrlId(backend_->db(), kUrlId1, 3);
 
   // Adding more entries with source ID1 should use the existing URL ID.
@@ -185,7 +185,7 @@ TEST_F(UkmDatabaseBackendTest, UrlIdsForEntries) {
   ExpectEntriesWithUrlId(backend_->db(), kUrlId1, 6);
 
   // Updating URL for source ID2, then adding entries, should use the URL ID.
-  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl2, false);
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl2, false, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry3));
   ExpectEntriesWithUrlId(backend_->db(), kUrlId1, 6);
   ExpectEntriesWithUrlId(backend_->db(), kUrlId2, 3);
@@ -216,8 +216,8 @@ TEST_F(UkmDatabaseBackendTest, UpdateSourceUrl) {
   ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
 
   // Add 2 entries with associated source URLs.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   ExpectEntriesWithUrlId(backend_->db(), kUrlId1, 3);
@@ -226,11 +226,11 @@ TEST_F(UkmDatabaseBackendTest, UpdateSourceUrl) {
   EXPECT_TRUE(backend_->has_transaction_for_testing());
 
   // Updating existing URL should replace existing entries with new URL ID.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl2, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl2, false, /*profile_id*/ "");
   ExpectEntriesWithUrlId(backend_->db(), kUrlId2, 6);
 
   // Updating source URL again should those entries with the new URL ID.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl3, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl3, false, /*profile_id*/ "");
   ExpectEntriesWithUrlId(backend_->db(), kUrlId3, 3);
   ExpectEntriesWithUrlId(backend_->db(), kUrlId2, 3);
 
@@ -246,15 +246,15 @@ TEST_F(UkmDatabaseBackendTest, ValidatedUrl) {
   const ukm::SourceId kSourceId1 = 30;
 
   // Adding non-validated URL should not write to db.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
   EXPECT_FALSE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
 
   // Adding validated URL should write to db.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true, /*profile_id*/ "");
   EXPECT_TRUE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
 
   // Adding URL as non-validated again will not remove from db.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
   EXPECT_TRUE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
 
   EXPECT_TRUE(backend_->has_transaction_for_testing());
@@ -269,17 +269,17 @@ TEST_F(UkmDatabaseBackendTest, UrlValidation) {
   const ukm::SourceId kSourceId2 = 20;
 
   // Adding not-validated URL then validating it, should add URL to table.
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
   EXPECT_FALSE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
-  backend_->OnUrlValidated(kUrl1);
+  backend_->OnUrlValidated(kUrl1, /*profile_id*/ "");
   EXPECT_TRUE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
 
   // Validating URL then adding URL with not-validated flag should not add to
   // table.
-  backend_->OnUrlValidated(kUrl2);
+  backend_->OnUrlValidated(kUrl2, /*profile_id*/ "");
   test_util::AssertUrlsInTable(backend_->db(),
                                {UrlMatcher{.url_id = kUrlId1, .url = kUrl1}});
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false, /*profile_id*/ "");
   EXPECT_FALSE(backend_->url_table_for_testing().IsUrlInTable(kUrlId2));
 
   EXPECT_TRUE(backend_->has_transaction_for_testing());
@@ -301,15 +301,15 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
   ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
 
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
-  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, false, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
   backend_->StoreUkmEntry(std::move(entry4));
-  backend_->OnUrlValidated(kUrl1);
-  backend_->OnUrlValidated(kUrl2);
+  backend_->OnUrlValidated(kUrl1, /*profile_id*/ "");
+  backend_->OnUrlValidated(kUrl2, /*profile_id*/ "");
 
   test_util::AssertUrlsInTable(backend_->db(),
                                {UrlMatcher{.url_id = kUrlId1, .url = kUrl1},
@@ -388,10 +388,10 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrlsCommitsImmediately) {
   ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry(kSourceId1);
   ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
 
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
-  backend_->OnUrlValidated(kUrl1);
-  backend_->OnUrlValidated(kUrl2);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false, /*profile_id*/ "");
+  backend_->OnUrlValidated(kUrl1, /*profile_id*/ "");
+  backend_->OnUrlValidated(kUrl2, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
 
@@ -432,9 +432,9 @@ TEST_F(UkmDatabaseBackendTest, DeleteAllUrls) {
   // Delete on empty database does not crash.
   backend_->RemoveUrls({}, /*all_urls=*/true);
 
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
-  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, false);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, false, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
@@ -488,11 +488,11 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
   ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
 
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
-  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true);
-  backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true);
-  backend_->UpdateUrlForUkmSource(kSourceId5, kUrl4, true);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId5, kUrl4, true, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
@@ -527,11 +527,11 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
   ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
   ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
 
-  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true, /*profile_id*/ "");
   base::Time after1 = base::Time::Now();
-  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
-  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true);
-  backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true, /*profile_id*/ "");
+  backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true, /*profile_id*/ "");
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
@@ -634,9 +634,9 @@ class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
 
 TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   const GURL kUrl1("https://www.url1.com");
-  backend_->OnUrlValidated(kUrl1);
+  backend_->OnUrlValidated(kUrl1, /*profile_id*/ "");
   backend_->StoreUkmEntry(GetSampleUkmEntry());
-  backend_->UpdateUrlForUkmSource(10, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(10, kUrl1, true, /*profile_id*/ "");
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/false);
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
   backend_->DeleteEntriesOlderThan(base::Time() - base::Seconds(10));

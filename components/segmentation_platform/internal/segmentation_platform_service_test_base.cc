@@ -85,6 +85,7 @@ constexpr char kTestSegmentationKey1[] = "test_key1";
 constexpr char kTestSegmentationKey2[] = "test_key2";
 constexpr char kTestSegmentationKey3[] = "test_key3";
 constexpr char kTestSegmentationKey4[] = "test_key4";
+constexpr char kTestProfileId[] = "test_id";
 
 SegmentationPlatformServiceTestBase::SegmentationPlatformServiceTestBase() {
   device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
@@ -129,6 +130,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
       &pref_service_, base::DoNothing());
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
+  params->profile_id = kTestProfileId;
   params->storage_service = std::move(storage_service);
   params->model_provider = std::move(model_provider_factory);
   params->profile_prefs = &pref_service_;

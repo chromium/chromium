@@ -28,7 +28,8 @@ namespace segmentation_platform {
 class HistoryDelegateImpl : public UrlSignalHandler::HistoryDelegate {
  public:
   HistoryDelegateImpl(history::HistoryService* history_service,
-                      UrlSignalHandler* url_signal_handler);
+                      UrlSignalHandler* url_signal_handler,
+                      const std::string& profile_id);
 
   ~HistoryDelegateImpl() override;
   HistoryDelegateImpl(const HistoryDelegateImpl&) = delete;
@@ -43,6 +44,9 @@ class HistoryDelegateImpl : public UrlSignalHandler::HistoryDelegate {
   bool FastCheckUrl(const GURL& url) override;
   void FindUrlInHistory(const GURL& url,
                         UrlSignalHandler::FindCallback callback) override;
+  const std::string& profile_id() override;
+
+  // Getters.
 
  private:
   void OnHistoryQueryResult(UrlId url_id,
@@ -54,6 +58,9 @@ class HistoryDelegateImpl : public UrlSignalHandler::HistoryDelegate {
   // The task tracker for the HistoryService callbacks, destroyed after
   // observer is unregistered.
   base::CancelableTaskTracker task_tracker_;
+
+  // ProfileId associated with the current profile.
+  const std::string profile_id_;
 
   base::ScopedObservation<UrlSignalHandler, UrlSignalHandler::HistoryDelegate>
       ukm_db_observation_{this};

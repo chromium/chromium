@@ -26,6 +26,7 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
  public:
   HistoryServiceObserver(history::HistoryService* history_service,
                          StorageService* storage_service,
+                         const std::string& profile_id,
                          base::RepeatingClosure models_refresh_callback);
   // For tests.
   HistoryServiceObserver();
@@ -59,6 +60,7 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
   base::RepeatingClosure models_refresh_callback_;
   std::unique_ptr<base::CancelableOnceClosure> posted_model_refresh_task_;
 
+  const std::string profile_id_;
   std::unique_ptr<HistoryDelegateImpl> history_delegate_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
