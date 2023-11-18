@@ -26,7 +26,7 @@ Please follow these steps to update libvpx source code:
 
    Use the generated commit message for the roll.
 
-2. Generate .gni and config files.
+2. Generate .gni and config files:
 
      cd third_party/libvpx
      ./generate_gni.sh
@@ -36,6 +36,8 @@ Please follow these steps to update libvpx source code:
 3. Amend the commit created by the first step:
 
      git commit -a --amend
+
+   Add `Bug: b:308446709` to the commit message.
 
 4. Upload the change to Gerrit:
 
