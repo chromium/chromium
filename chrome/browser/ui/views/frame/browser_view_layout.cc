@@ -532,8 +532,12 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
       web_app_frame_toolbar_->LayoutInContainer(toolbar_bounds);
 
   if (web_app_window_title_) {
-    delegate_->LayoutWebAppWindowTitle(window_title_bounds,
-                                       *web_app_window_title_);
+    if (delegate_->ShouldDrawTabStrip()) {
+      web_app_window_title_->SetVisible(false);
+    } else {
+      delegate_->LayoutWebAppWindowTitle(window_title_bounds,
+                                         *web_app_window_title_);
+    }
   }
 
   return toolbar_bounds.bottom();
