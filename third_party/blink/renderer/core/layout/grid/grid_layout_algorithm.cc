@@ -1543,9 +1543,26 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
             : SubgriddedItemData(grid_item, sizing_subtree.LayoutData(),
                                  writing_mode);
 
-    const auto space = CreateConstraintSpaceForLayout(
-        *subgridded_item, subgridded_item.ParentLayoutData(),
-        std::move(subgrid_layout_subtree));
+    LayoutUnit inline_offset, block_offset;
+    LogicalSize containing_grid_area_size = {
+        ComputeGridItemAvailableSize(
+            *subgridded_item, subgridded_item.ParentLayoutData().Columns(),
+            &inline_offset),
+        ComputeGridItemAvailableSize(*subgridded_item,
+                                     subgridded_item.ParentLayoutData().Rows(),
+                                     &block_offset)};
+    // TODO(kschmi) : Add a cache slot parameter to
+    //  `CreateConstraintSpaceForLayout` to avoid variables above.
+    const auto space =
+        RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()
+            ? CreateConstraintSpace(
+                  NGCacheSlot::kMeasure, *subgridded_item,
+                  containing_grid_area_size,
+                  /* fixed_available_size */ {kIndefiniteSize, kIndefiniteSize},
+                  std::move(subgrid_layout_subtree))
+            : CreateConstraintSpaceForLayout(*subgridded_item,
+                                             subgridded_item.ParentLayoutData(),
+                                             std::move(subgrid_layout_subtree));
 
     // Skip this item if we aren't able to resolve our inline size.
     const auto& item_style = grid_item.node.Style();
@@ -3198,7 +3215,6 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
 
   if (opt_layout_subtree) {
     DCHECK(grid_item.IsSubgrid());
-    DCHECK_EQ(cache_slot, NGCacheSlot::kLayout);
     DCHECK(!opt_layout_subtree.HasUnresolvedGeometry());
     builder.SetGridLayoutSubtree(std::move(opt_layout_subtree));
   }
