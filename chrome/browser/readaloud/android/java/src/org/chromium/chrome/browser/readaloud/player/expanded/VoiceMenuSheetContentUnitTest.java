@@ -63,13 +63,15 @@ public class VoiceMenuSheetContentUnitTest {
         mModel =
                 new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
                         .with(PlayerProperties.INTERACTION_HANDLER, mInteractionHandler)
+                        .with(
+                                PlayerProperties.VOICES_LIST,
+                                List.of(
+                                        new PlaybackVoice("en", "a", "description a"),
+                                        new PlaybackVoice("en", "b", "description b"),
+                                        new PlaybackVoice("en", "c", "description c")))
+                        .with(PlayerProperties.SELECTED_VOICE_ID, "a")
                         .build();
         mContent = new VoiceMenuSheetContent(mActivity, mParent, mBottomSheetController, mModel);
-        mContent.setVoices(
-                List.of(
-                        new PlaybackVoice("en", "a", "description a"),
-                        new PlaybackVoice("en", "b", "description b"),
-                        new PlaybackVoice("en", "c", "description c")));
         mMenu = (Menu) mContent.getContentView();
     }
 
@@ -106,6 +108,9 @@ public class VoiceMenuSheetContentUnitTest {
 
     @Test
     public void testSetVoiceSelection() {
+        // Initial setting from setUp()
+        assertTrue(getRadioButton(mMenu.getItem(0)).isChecked());
+
         mContent.setVoiceSelection("b");
         assertFalse(getRadioButton(mMenu.getItem(0)).isChecked());
         assertTrue(getRadioButton(mMenu.getItem(1)).isChecked());

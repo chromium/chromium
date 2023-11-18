@@ -47,6 +47,15 @@ public class ExpandedPlayerViewBinder {
             content.setHighlightingEnabled(model.get(PlayerProperties.HIGHLIGHTING_ENABLED));
         } else if (key == PlayerProperties.HIGHLIGHTING_SUPPORTED) {
             content.setHighlightingSupported(model.get(PlayerProperties.HIGHLIGHTING_SUPPORTED));
+        } else if (key == PlayerProperties.VOICES_LIST) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu().setVoices(model.get(PlayerProperties.VOICES_LIST));
+            }
+        } else if (key == PlayerProperties.SELECTED_VOICE_ID) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu()
+                        .setVoiceSelection(model.get(PlayerProperties.SELECTED_VOICE_ID));
+            }
         }
     }
 }

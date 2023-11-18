@@ -487,7 +487,7 @@ public class ReadAloudControllerUnitTest {
 
         // Stop playback
         mController.stopPlayback();
-        verify(mPlayerCoordinator).addObserver(eq(mController));
+        verify(mPlayerCoordinator).removeObserver(eq(mController));
         verify(mPlayback).release();
 
         reset(mPlayerCoordinator);
@@ -612,5 +612,46 @@ public class ReadAloudControllerUnitTest {
 
         mController.setHighlighterMode(1);
         verify(mHighlighter, times(2)).handleTabReloaded(mTab);
+    }
+
+    @Test
+    public void testSetVoiceAndRestartPlayback() {
+        // Voices setup
+        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID", "description");
+        doReturn(List.of(oldVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+
+        // First play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        // Verify the original voice list.
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
+        List<PlaybackVoice> gotVoices = mPlaybackArgsCaptor.getValue().getVoices();
+        assertEquals(1, gotVoices.size());
+        assertEquals("OLD VOICE ID", gotVoices.get(0).getVoiceId());
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+
+        reset(mPlaybackHooks);
+
+        // Set the new voice.
+        var newVoice = new PlaybackVoice("lang", "NEW VOICE ID", "description");
+        doReturn(List.of(newVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+        mController.setVoiceOverrideAndApplyToPlayback(newVoice);
+
+        // Pref is updated.
+        verify(mReadAloudPrefsNatives).setVoice(eq(mPrefService), eq("lang"), eq("NEW VOICE ID"));
+
+        // Playback is stopped.
+        verify(mPlayerCoordinator).removeObserver(eq(mController));
+        verify(mPlayback).release();
+
+        // Playback starts again with new voice.
+        // TODO: update this test when playback position is restored
+        verify(mPlaybackHooks, times(1)).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        gotVoices = mPlaybackArgsCaptor.getValue().getVoices();
+        assertEquals(1, gotVoices.size());
+        assertEquals("NEW VOICE ID", gotVoices.get(0).getVoiceId());
     }
 }

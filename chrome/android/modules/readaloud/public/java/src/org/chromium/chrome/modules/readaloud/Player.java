@@ -16,7 +16,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.List;
-import java.util.Map;
 
 /** This interface represents Read Aloud player UI. */
 public interface Player {
@@ -36,15 +35,13 @@ public interface Player {
         ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();
         /** Returns the supplier for the current language's selected voice. */
         ObservableSupplier<String> getVoiceIdSupplier();
-        /** Returns the mapping of language to current user-selected voice. */
-        Map<String, String> getVoiceOverrides();
 
         /**
-         * Called when the user selects a voice in the voice settings menu.
-         * Saves the new choice for the given language and continues playback from the
-         * same position.
+         * Called when the user selects a voice in the voice settings menu. Saves the new choice for
+         * the given language and continues playback from the same position.
          */
-        void setVoiceOverride(PlaybackVoice voice);
+        void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice);
+
         /** Play a short example of the specified voice. */
         void previewVoice(PlaybackVoice voice);
         /** Navigate to the tab associated with the current playback */

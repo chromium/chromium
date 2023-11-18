@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -44,10 +45,13 @@ import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
+
+import java.util.List;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -135,6 +139,10 @@ public class PlayerCoordinatorUnitTest {
         doReturn(Mockito.mock(BrowserControlsSizer.class))
                 .when(mDelegate)
                 .getBrowserControlsSizer();
+        doReturn(new ObservableSupplierImpl<List<PlaybackVoice>>())
+                .when(mDelegate)
+                .getCurrentLanguageVoicesSupplier();
+        doReturn(new ObservableSupplierImpl<String>()).when(mDelegate).getVoiceIdSupplier();
 
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 

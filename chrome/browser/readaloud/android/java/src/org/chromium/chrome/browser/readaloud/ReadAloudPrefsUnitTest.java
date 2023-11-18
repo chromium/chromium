@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.readaloud;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -59,13 +58,7 @@ public class ReadAloudPrefsUnitTest {
 
     @Test
     public void testGetVoice() {
-        doAnswer(
-                        invocation -> {
-                            ((Map<String, String>) invocation.getArguments()[1]).put("en", "voice");
-                            return null;
-                        })
-                .when(mNativeMock)
-                .getVoices(any(), any());
+        MockPrefServiceHelper.setVoices(mNativeMock, Map.of("en", "voice"));
 
         Map<String, String> voices = ReadAloudPrefs.getVoices(mPrefService);
         assertEquals(1, voices.size());

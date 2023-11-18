@@ -7,6 +7,7 @@ package org.chromium.chrome.modules.readaloud;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+
 /**
  * Encapsulates information about the playback tha's requested.
  */
@@ -52,6 +53,18 @@ public class PlaybackArgs {
         @Nullable
         public String getDescription() {
             return mDescription;
+        }
+
+        @Override
+        public String toString() {
+            return "PlaybackVoice{"
+                    + "language="
+                    + mLanguage
+                    + " id="
+                    + mVoiceId
+                    + " description="
+                    + mDescription
+                    + "}";
         }
     }
 
@@ -109,4 +122,29 @@ public class PlaybackArgs {
   public long getDateModifiedMsSinceEpoch() {
     return mDateModifiedMsSinceEpoch;
   }
+
+    // Override toString() to help with debug logging.
+    @Override
+    public String toString() {
+        String voicesString = "";
+        for (PlaybackVoice voice : mVoices) {
+            voicesString += "\t\t" + voice + "\n";
+        }
+
+        return "PlaybackArgs{\n"
+                + "\t"
+                + (mIsSourceUrl ? "url=" : "text=")
+                + mSource
+                + "\n"
+                + "\tlanguage="
+                + mLanguage
+                + "\n"
+                + "\tvoices={\n"
+                + voicesString
+                + "\t}\n"
+                + "\tdateModifiedMs="
+                + mDateModifiedMsSinceEpoch
+                + "\n"
+                + "}";
+    }
 }

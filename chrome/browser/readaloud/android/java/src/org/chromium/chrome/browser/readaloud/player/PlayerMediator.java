@@ -20,6 +20,9 @@ import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+import java.util.Map;
+
 /** Mediator class in charge of updating player UI property model. */
 class PlayerMediator implements InteractionHandler {
     private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
@@ -70,12 +73,18 @@ class PlayerMediator implements InteractionHandler {
         mDelegate = delegate;
         mModel = model;
         mModel.set(PlayerProperties.INTERACTION_HANDLER, this);
+
+        mDelegate.getCurrentLanguageVoicesSupplier().addObserver(this::setVoices);
+        mDelegate.getVoiceIdSupplier().addObserver(this::setVoice);
     }
 
     void destroy() {
         if (mPlayback != null) {
             mPlayback.removeListener(mPlaybackListener);
         }
+
+        mDelegate.getVoiceIdSupplier().removeObserver(this::setVoice);
+        mDelegate.getCurrentLanguageVoicesSupplier().removeObserver(this::setVoices);
     }
 
     void setPlayback(@Nullable Playback playback) {
@@ -144,9 +153,7 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onVoiceSelected(PlaybackVoice voice) {
-        // TODO request playback with new voice
-        ReadAloudPrefs.setVoice(
-                mDelegate.getPrefService(), voice.getLanguage(), voice.getVoiceId());
+        mDelegate.setVoiceOverrideAndApplyToPlayback(voice);
     }
 
     @Override
@@ -195,5 +202,30 @@ class PlayerMediator implements InteractionHandler {
         } else {
             mPlayback.seekRelative(nanos);
         }
+    }
+
+    private void setVoices(List<PlaybackVoice> voices) {
+        assert voices != null;
+        assert !voices.isEmpty();
+
+        mModel.set(PlayerProperties.VOICES_LIST, voices);
+
+        // Ensure voice selection for current language is reflected in UI.
+        PlaybackVoice topVoice = voices.get(0);
+        String currentLanguage = topVoice.getLanguage();
+
+        // Use first voice if there's no voice preference for the language.
+        String voiceId = topVoice.getVoiceId();
+        Map<String, String> voicePrefs = ReadAloudPrefs.getVoices(mDelegate.getPrefService());
+        if (voicePrefs.containsKey(currentLanguage)) {
+            voiceId = voicePrefs.get(currentLanguage);
+        }
+        mModel.set(PlayerProperties.SELECTED_VOICE_ID, voiceId);
+    }
+
+    private void setVoice(String voiceId) {
+        assert voiceId != null;
+
+        mModel.set(PlayerProperties.SELECTED_VOICE_ID, voiceId);
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
@@ -26,10 +27,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.expanded.OptionsMenuSheetContent.Item;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /** Unit tests for {@link OptionsMenuSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -67,6 +72,11 @@ public class OptionsMenuSheetContentUnitTest {
 
     @Test
     public void testClickVoiceMenu() {
+        doReturn(List.of(new PlaybackVoice("en", "a", "description")))
+                .when(mModel)
+                .get(eq(PlayerProperties.VOICES_LIST));
+        doReturn("a").when(mModel).get(eq(PlayerProperties.SELECTED_VOICE_ID));
+
         assertNull(mContent.getVoiceMenu());
 
         ((Menu) mContent.getContentView())

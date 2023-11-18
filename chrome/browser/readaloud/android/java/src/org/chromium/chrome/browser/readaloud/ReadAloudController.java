@@ -85,6 +85,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     // Whether or not to highlight the page. Change will only have effect if
     // isHighlightingSupported() returns true.
     private final ObservableSupplierImpl<Boolean> mHighlightingEnabled;
+    // Voices to show in voice selection menu.
+    private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
+    // Selected voice ID.
+    private final ObservableSupplierImpl<String> mSelectedVoiceId;
 
     /**
      * Kicks of readability check on a page load iff: the url is valid, no previous result is
@@ -123,6 +127,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                     mPlayback.addListener(ReadAloudController.this);
                     mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
                     mPlayback.play();
+                    updateVoiceMenu(playback.getMetadata().languageCode());
                 }
 
                 @Override
@@ -144,6 +149,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
         mBottomSheetController = bottomSheetController;
+        mCurrentLanguageVoices = new ObservableSupplierImpl<>();
+        mSelectedVoiceId = new ObservableSupplierImpl<>();
         mBrowserControlsSizer = browserControlsSizer;
         mLayoutManager = layoutManager;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
@@ -272,6 +279,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                             mPlaybackHooks.getPlaybackVoiceList(
                                     ReadAloudPrefs.getVoices(getPrefService())),
                             /* dateModifiedMsSinceEpoch= */ 0);
+            Log.d(TAG, "Creating playback with args: %s", args);
             mPlaybackHooks.createPlayback(args, mPlaybackCallback);
 
             // Notify player UI that playback is happening soon.
@@ -431,6 +439,14 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         return language;
     }
 
+    private void updateVoiceMenu(@Nullable String language) {
+        if (language == null) {
+            return;
+        }
+        mCurrentLanguageVoices.set(mPlaybackHooks.getVoicesFor(language));
+        mSelectedVoiceId.set(ReadAloudPrefs.getVoices(getPrefService()).get(language));
+    }
+
     // Player.Delegate
     @Override
     public BottomSheetController getBottomSheetController() {
@@ -465,25 +481,23 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     @Override
     public ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
-        // TODO: implement
-        return new ObservableSupplierImpl<List<PlaybackVoice>>();
+        return mCurrentLanguageVoices;
     }
 
     @Override
     public ObservableSupplier<String> getVoiceIdSupplier() {
-        // TODO: implement
-        return new ObservableSupplierImpl<String>();
+        return mSelectedVoiceId;
     }
 
     @Override
-    public Map<String, String> getVoiceOverrides() {
-        // TODO: implement
-        return new HashMap<String, String>();
-    }
+    public void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice) {
+        ReadAloudPrefs.setVoice(getPrefService(), voice.getLanguage(), voice.getVoiceId());
+        mSelectedVoiceId.set(voice.getVoiceId());
 
-    @Override
-    public void setVoiceOverride(PlaybackVoice voice) {
-        // TODO: implement
+        // TODO: don't dismiss player, and restart from close to same place
+        Tab currentTab = mCurrentlyPlayingTab;
+        stopPlayback();
+        playTab(currentTab);
     }
 
     @Override
