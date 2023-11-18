@@ -7415,9 +7415,8 @@
                         "encoding-quality-region-search": "45",
                         "lens-homepage-url": "https://lens.google.com/v3/",
                         "lens-html-redirect-fix": "false",
-                        "use-jpeg-region-search": "false",
-                        "use-webp-image-search": "true",
-                        "use-webp-region-search": "true"
+                        "use-jpeg-for-image-search": "false",
+                        "use-webp-for-image-search": "true"
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations",
@@ -7431,9 +7430,8 @@
                         "encoding-quality-region-search": "90",
                         "lens-homepage-url": "https://lens.google.com/v3/",
                         "lens-html-redirect-fix": "false",
-                        "use-jpeg-region-search": "false",
-                        "use-webp-image-search": "true",
-                        "use-webp-region-search": "true"
+                        "use-jpeg-for-image-search": "false",
+                        "use-webp-for-image-search": "true"
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations",
@@ -7449,9 +7447,8 @@
                         "encoding-quality-region-search": "40",
                         "lens-homepage-url": "https://lens.google.com/v3/",
                         "lens-html-redirect-fix": "false",
-                        "use-jpeg-region-search": "true",
-                        "use-webp-image-search": "false",
-                        "use-webp-region-search": "false"
+                        "use-jpeg-for-image-search": "true",
+                        "use-webp-for-image-search": "false"
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations",
@@ -7465,9 +7462,8 @@
                         "encoding-quality-region-search": "90",
                         "lens-homepage-url": "https://lens.google.com/v3/",
                         "lens-html-redirect-fix": "false",
-                        "use-jpeg-region-search": "true",
-                        "use-webp-image-search": "false",
-                        "use-webp-region-search": "false"
+                        "use-jpeg-for-image-search": "true",
+                        "use-webp-for-image-search": "false"
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations",
@@ -7479,9 +7475,8 @@
                     "params": {
                         "encoding-quality-image-search": "40",
                         "encoding-quality-region-search": "40",
-                        "use-jpeg-region-search": "true",
-                        "use-webp-image-search": "false",
-                        "use-webp-region-search": "false"
+                        "use-jpeg-for-image-search": "true",
+                        "use-webp-for-image-search": "false"
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations"

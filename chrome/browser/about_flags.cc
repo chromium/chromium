@@ -3197,9 +3197,8 @@ const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
 };
 
 constexpr FeatureEntry::FeatureParam kLensFormatOptimizationWebp[] = {
-    {"use-webp-image-search", "true"},
-    {"use-webp-region-search", "true"},
-    {"use-jpeg-region-search", "false"}};
+    {"use-webp-for-image-search", "true"},
+    {"use-jpeg-for-image-search", "false"}};
 constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
     {"use Webp", kLensFormatOptimizationWebp,
      std::size(kLensFormatOptimizationWebp), nullptr},

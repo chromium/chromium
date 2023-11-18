@@ -136,13 +136,13 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
     lens::mojom::ImageFormat& image_format) {
   std::vector<unsigned char> data;
   // TODO(crbug/1486044): Encode off the main thread.
-  if (lens::features::IsWebpForRegionSearchEnabled() &&
+  if (lens::features::IsWebpForImageSearchEnabled() &&
       gfx::WebpCodec::Encode(image.AsBitmap(),
                              lens::features::GetEncodingQualityWebp(), &data)) {
     content_type = "image/webp";
     image_format = lens::mojom::ImageFormat::WEBP;
     return data;
-  } else if (lens::features::IsJpegForRegionSearchEnabled() &&
+  } else if (lens::features::IsJpegForImageSearchEnabled() &&
              gfx::JPEGCodec::Encode(image.AsBitmap(),
                                     lens::features::GetEncodingQualityJpeg(),
                                     &data)) {

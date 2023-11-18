@@ -172,8 +172,8 @@ TEST(CoreTabHelperUnitTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       lens::features::kLensImageFormatOptimizations,
-      {{"use-webp-region-search", "true"},
-       {"use-jpeg-region-search", "false"}});
+      {{"use-webp-for-image-search", "true"},
+       {"use-jpeg-for-image-search", "false"}});
   gfx::Image image = gfx::test::CreateImage(100, 100);
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
@@ -191,8 +191,8 @@ TEST(CoreTabHelperUnitTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       lens::features::kLensImageFormatOptimizations,
-      {{"use-webp-region-search", "true"},
-       {"use-jpeg-region-search", "false"}});
+      {{"use-webp-for-image-search", "true"},
+       {"use-jpeg-for-image-search", "false"}});
   gfx::Image image = gfx::test::CreateImage(0, 0);  // Encoding 0x0 will fail
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
@@ -209,8 +209,8 @@ TEST(CoreTabHelperUnitTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       lens::features::kLensImageFormatOptimizations,
-      {{"use-webp-region-search", "false"},
-       {"use-jpeg-region-search", "true"}});
+      {{"use-webp-for-image-search", "false"},
+       {"use-jpeg-for-image-search", "true"}});
   gfx::Image image = gfx::test::CreateImage(100, 100);
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
@@ -228,8 +228,8 @@ TEST(CoreTabHelperUnitTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       lens::features::kLensImageFormatOptimizations,
-      {{"use-webp-region-search", "false"},
-       {"use-jpeg-region-search", "true"}});
+      {{"use-webp-for-image-search", "false"},
+       {"use-jpeg-for-image-search", "true"}});
   gfx::Image image = gfx::test::CreateImage(0, 0);  // Encoding 0x0 will fail
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
