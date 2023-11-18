@@ -188,12 +188,16 @@ std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AutofillTable* table = GetAutofillTable();
+  // Check if we have data to delete.
+  if (table->GetAllServerCvcs().size() == 0) {
+    return;
+  }
   // For this data type, we want to delete all the data (not just the metadata)
   // when the type is disabled!
   // Note- This only clears the data from the local database and doesn't trigger
   // a `REMOVE` call to the Chrome Sync server.
-  if (AutofillTable* table = GetAutofillTable();
-      !table || !table->ClearServerCvcs()) {
+  if (!table || !table->ClearServerCvcs()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete wallet credential data from the table."});
   }

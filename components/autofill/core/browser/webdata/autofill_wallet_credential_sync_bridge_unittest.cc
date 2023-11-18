@@ -416,6 +416,25 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
 }
 
+// Test to verify no deletion APIs are triggered in `ApplyDisableSyncChanges`
+// when there is no server CVC data to delete.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       ApplyDisableSyncChanges_NoServerCvcPresent) {
+  EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
+
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+
+  EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+  EXPECT_FALSE(bridge()->change_processor()->GetError().has_value());
+}
+
 // Test to get all the server cvc data for a user which is filtered on the list
 // of `instrument_id` provided.
 TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
