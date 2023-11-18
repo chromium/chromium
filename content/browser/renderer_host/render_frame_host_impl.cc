@@ -3370,6 +3370,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
       params->interface_broker.InitWithNewPipeAndPassReceiver());
 
   params->routing_id = routing_id_;
+  params->is_for_nested_main_frame =
+      is_main_frame() &&
+      render_view_host_->ViewWidgetType() != mojom::ViewWidgetType::kTopLevel;
   params->previous_frame_token = previous_frame_token;
   params->opener_frame_token = opener_frame_token;
   params->parent_frame_token = parent_frame_token;

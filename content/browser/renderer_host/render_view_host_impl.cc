@@ -552,22 +552,10 @@ bool RenderViewHostImpl::CreateRenderView(
     }
   }
 
-  bool is_portal = frame_tree_->delegate()->IsPortal();
-  bool is_guest_view = delegate_->IsGuest();
-  bool is_fenced_frame = frame_tree_->is_fenced_frame();
-
-  if (is_fenced_frame) {
-    params->type = mojom::ViewWidgetType::kFencedFrame;
-
+  params->type = ViewWidgetType();
+  if (params->type == mojom::ViewWidgetType::kFencedFrame) {
     params->fenced_frame_mode =
         frame_tree_->root()->GetDeprecatedFencedFrameMode();
-  } else if (is_portal) {
-    DCHECK(!is_guest_view);
-    params->type = mojom::ViewWidgetType::kPortal;
-  } else if (is_guest_view) {
-    params->type = mojom::ViewWidgetType::kGuestView;
-  } else {
-    params->type = mojom::ViewWidgetType::kTopLevel;
   }
 
   // Send the current page's browsing context group to the renderer. It is
@@ -1009,6 +997,29 @@ void RenderViewHostImpl::WriteIntoTrace(
 
 base::SafeRef<RenderViewHostImpl> RenderViewHostImpl::GetSafeRef() {
   return weak_factory_.GetSafeRef();
+}
+
+mojom::ViewWidgetType RenderViewHostImpl::ViewWidgetType() {
+  if (view_widget_type_) {
+    return *view_widget_type_;
+  }
+
+  bool is_portal = frame_tree_->delegate()->IsPortal();
+  bool is_guest_view = delegate_->IsGuest();
+  bool is_fenced_frame = frame_tree_->is_fenced_frame();
+
+  if (is_fenced_frame) {
+    view_widget_type_ = mojom::ViewWidgetType::kFencedFrame;
+  } else if (is_portal) {
+    DCHECK(!is_guest_view);
+    view_widget_type_ = mojom::ViewWidgetType::kPortal;
+  } else if (is_guest_view) {
+    view_widget_type_ = mojom::ViewWidgetType::kGuestView;
+  } else {
+    view_widget_type_ = mojom::ViewWidgetType::kTopLevel;
+  }
+
+  return *view_widget_type_;
 }
 
 }  // namespace content
