@@ -1242,6 +1242,7 @@ chromium-metrics-reviews@google.com.
       label="Video Conference Tray Camera And Microphone Use While Disabled"/>
   <int value="20" label="Multitask Menu Clamshell"/>
   <int value="21" label="Multitask Menu Tablet"/>
+  <int value="22" label="Capture Mode Education Shortcut Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

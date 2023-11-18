@@ -196,7 +196,7 @@ enum class NotificationCatalogName {
 
 // A living catalog that registers system nudges.
 // Current values should not be renumbered or removed. Please keep in sync with
-// "NudgeCatalogName" in tools/metrics/histograms/enums.xml.
+// "NudgeCatalogName" in tools/metrics/histograms/metadata/ash/enums.xml.
 // To deprecate comment out the entry.
 // Please call `SystemNudgeController::MaybeRecordNudgeAction()` (old nudges) or
 // `AnchoredNudgeManager::Get()->MaybeRecordNudgeAction()` when the nudge's
@@ -224,7 +224,8 @@ enum class NudgeCatalogName {
   kVideoConferenceTrayCameraMicrophoneUseWhileDisabled = 19,
   kMultitaskMenuClamshell = 20,
   kMultitaskMenuTablet = 21,
-  kMaxValue = kMultitaskMenuTablet
+  kCaptureModeEducationShortcutNudge = 22,
+  kMaxValue = kCaptureModeEducationShortcutNudge
 };
 
 // A living catalog that registers toasts.

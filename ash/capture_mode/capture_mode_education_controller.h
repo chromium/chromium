@@ -5,6 +5,12 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_EDUCATION_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_EDUCATION_CONTROLLER_H_
 
+#include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
+#include "base/time/clock.h"
+
+class PrefRegistrySimple;
+
 namespace ash {
 
 // Controller for showing the different forms of user education for Screen
@@ -17,7 +23,7 @@ namespace ash {
 //  - Arm 3: Settings Nudge. A system nudge anchored to the quick settings
 //    button in the shelf, with text alerting users to the Screen Capture tile
 //    in the quick settings menu.
-class CaptureModeEducationController {
+class ASH_EXPORT CaptureModeEducationController {
  public:
   CaptureModeEducationController();
   CaptureModeEducationController(const CaptureModeEducationController&) =
@@ -25,6 +31,9 @@ class CaptureModeEducationController {
   CaptureModeEducationController& operator=(
       const CaptureModeEducationController&) = delete;
   ~CaptureModeEducationController();
+
+  // Registers prefs related to user education show count and time last shown.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns true if the feature flag 'kCaptureModeEducation' is enabled and
   // the associated param is 'kShortcutNudge';
@@ -37,6 +46,26 @@ class CaptureModeEducationController {
   // Returns true if the feature flag 'kCaptureModeEducation' is enabled and
   // the associated param is 'kSettingsNudge';
   static bool IsArm3SettingsNudgeEnabled();
+
+  // If a form of user education has already been shown 3 times or once in the
+  // past 24 hours, returns. Otherwise, shows the appropriate form of user
+  // education based on the enabled arm/feature param.
+  void MaybeShowEducation();
+
+ private:
+  friend class CaptureModeEducationControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(CaptureModeEducationControllerTest,
+                           NudgeAppearsOnAcceleratorPressed);
+
+  // Used to control the clock in a test setting.
+  static void SetOverrideClockForTesting(base::Clock* test_clock);
+
+  // Shows Arm 1, an unanchored system nudge indicating the keyboard shortcut to
+  // take a screenshot.
+  void ShowShortcutNudge();
+
+  // If set to true, ignores the 3 times/24 hours show limit for testing.
+  bool skip_prefs_for_test_ = false;
 };
 
 }  // namespace ash

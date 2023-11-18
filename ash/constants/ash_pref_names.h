@@ -1916,6 +1916,16 @@ inline constexpr char kTouchpadDefaultSettings[] =
 inline constexpr char kExtendedFkeysModifier[] =
     "ash.settings.extended_fkeys_modifier";
 
+// An integer pref that counts the number of times we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationShownCount[] =
+    "ash.capture_mode.capture_mode_education_shown_count";
+
+// A time pref that tracks the most recent instance when we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationLastShown[] =
+    "ash.capture_mode.capture_mode_education_last_shown";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

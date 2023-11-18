@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -80,6 +81,10 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Duration used for nudges that are meant to persist until the user interacts
   // with them.
   static constexpr base::TimeDelta kNudgeLongDuration = base::Minutes(30);
+
+  // If `shown_nudges_` contains `nudge_id`, returns the associated nudge.
+  // Otherwise, returns nullptr.
+  AnchoredNudge* GetNudgeIfShown(const std::string& nudge_id) const;
 
   // Resets the registry map that records the time a nudge was last shown.
   void ResetNudgeRegistryForTesting();

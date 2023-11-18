@@ -213,6 +213,9 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
           .SizeToFit(label_width)
           .Build());
 
+  // TODO(b/302368860): Add support for a view to display keyboard shortcuts in
+  // the same style as the launcher and the new keyboard shortcut app.
+
   // Return early if there are no buttons.
   if (nudge_data.primary_button_text.empty()) {
     CHECK(nudge_data.secondary_button_text.empty());
