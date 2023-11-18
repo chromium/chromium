@@ -541,8 +541,7 @@
   },
   "runtime.getContexts": {
     "min_manifest_version": 3,
-    "contexts": ["blessed_extension"],
-    "feature_flag": "ApiRuntimeGetContexts"
+    "contexts": ["blessed_extension"]
   },
   "runtime.getURL": {
     "contexts": [
