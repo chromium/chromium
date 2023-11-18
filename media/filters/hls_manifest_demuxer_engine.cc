@@ -642,17 +642,8 @@ void HlsManifestDemuxerEngine::OnPlaylistContainerDetermined(
 
   host_->SetSequenceMode(parse_info.role, true);
 
-  auto m_rendition = HlsRendition::CreateRendition(
+  auto rendition = HlsRendition::CreateRendition(
       host_, this, parse_info.role, std::move(playlist), parse_info.uri);
-
-  if (!m_rendition.has_value()) {
-    std::move(parse_complete_cb)
-        .Run({DEMUXER_ERROR_COULD_NOT_PARSE,
-              std::move(m_rendition).error().AddHere()});
-    return;
-  }
-
-  auto rendition = std::move(m_rendition).value();
 
   if (parse_info.role == kPrimary) {
     auto duration_or_live = rendition->GetDuration();

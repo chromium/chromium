@@ -38,18 +38,16 @@ absl::optional<base::TimeDelta> GetPlaylistDuration(
 HlsRenditionHost::~HlsRenditionHost() = default;
 
 // Static
-HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>>
-HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
-                              HlsRenditionHost* rendition_host,
-                              std::string role,
-                              scoped_refptr<hls::MediaPlaylist> playlist,
-                              GURL uri) {
-  std::unique_ptr<HlsRendition> rendition;
+std::unique_ptr<HlsRendition> HlsRendition::CreateRendition(
+    ManifestDemuxerEngineHost* engine_host,
+    HlsRenditionHost* rendition_host,
+    std::string role,
+    scoped_refptr<hls::MediaPlaylist> playlist,
+    GURL uri) {
   auto duration = GetPlaylistDuration(playlist.get());
-  rendition = std::make_unique<HlsRenditionImpl>(
+  return std::make_unique<HlsRenditionImpl>(
       engine_host, rendition_host, std::move(role), std::move(playlist),
       duration, std::move(uri));
-  return rendition;
 }
 
 }  // namespace media

@@ -23,11 +23,11 @@ HlsRenditionImpl::~HlsRenditionImpl() {
 }
 
 HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
-                                 HlsRenditionHost* rendition_host,
-                                 std::string role,
-                                 scoped_refptr<hls::MediaPlaylist> playlist,
-                                 std::optional<base::TimeDelta> duration,
-                                 GURL media_playlist_uri)
+                                   HlsRenditionHost* rendition_host,
+                                   std::string role,
+                                   scoped_refptr<hls::MediaPlaylist> playlist,
+                                   std::optional<base::TimeDelta> duration,
+                                   GURL media_playlist_uri)
     : engine_host_(engine_host),
       rendition_host_(rendition_host),
       segments_(std::make_unique<hls::SegmentStream>(
@@ -181,7 +181,7 @@ void HlsRenditionImpl::CheckState(
 }
 
 void HlsRenditionImpl::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
-                                        base::TimeDelta media_time) {
+                                         base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Live content should fetch an update if the segment queue is exhausted.
   if (IsLive() && segments_->Exhausted()) {
@@ -200,7 +200,7 @@ void HlsRenditionImpl::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
 }
 
 void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
-                                           base::TimeDelta delay) {
+                                            base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
@@ -249,7 +249,7 @@ base::TimeDelta HlsRenditionImpl::GetIdealBufferSize() const {
 }
 
 ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
-      base::TimeDelta seek_time) {
+    base::TimeDelta seek_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
@@ -346,10 +346,10 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
 }
 
 void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
-                                    base::TimeDelta required_time,
-                                    base::TimeDelta parse_end,
-                                    base::TimeTicks net_req_start,
-                                    HlsDataSourceProvider::ReadResult result) {
+                                     base::TimeDelta required_time,
+                                     base::TimeDelta parse_end,
+                                     base::TimeTicks net_req_start,
+                                     HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_stopped_for_shutdown_) {
     std::move(cb).Run();

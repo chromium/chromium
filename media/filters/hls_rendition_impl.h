@@ -20,11 +20,11 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // to access the chunk demuxer, and |engine_| is needed to make network
   // requests.
   HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
-                  HlsRenditionHost* rendition_host,
-                  std::string role,
-                  scoped_refptr<hls::MediaPlaylist> playlist,
-                  std::optional<base::TimeDelta> duration,
-                  GURL media_playlist_uri);
+                   HlsRenditionHost* rendition_host,
+                   std::string role,
+                   scoped_refptr<hls::MediaPlaylist> playlist,
+                   std::optional<base::TimeDelta> duration,
+                   GURL media_playlist_uri);
 
   // `HlsRendition` implementation
   absl::optional<base::TimeDelta> GetDuration() override;

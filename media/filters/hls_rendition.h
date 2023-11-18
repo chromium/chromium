@@ -73,7 +73,7 @@ class MEDIA_EXPORT HlsRendition {
   // Update playlist because we've adapted to a network or resolution change.
   virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) = 0;
 
-  static HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>> CreateRendition(
+  static std::unique_ptr<HlsRendition> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,
       HlsRenditionHost* rendition_host,
       std::string role,

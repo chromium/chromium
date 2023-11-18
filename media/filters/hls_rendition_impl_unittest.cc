@@ -88,8 +88,8 @@ class HlsRenditionImplUnittest : public testing::Test {
     auto playlist = std::move(parsed).value();
     auto duration = playlist->GetComputedDuration();
     return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
-                                             "test", std::move(playlist),
-                                             duration, uri);
+                                              "test", std::move(playlist),
+                                              duration, uri);
   }
 
   std::unique_ptr<HlsRenditionImpl> MakeLiveRendition(
@@ -102,8 +102,8 @@ class HlsRenditionImplUnittest : public testing::Test {
       return nullptr;
     }
     return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
-                                             "test", std::move(parsed).value(),
-                                             absl::nullopt, uri);
+                                              "test", std::move(parsed).value(),
+                                              absl::nullopt, uri);
   }
 
   MOCK_METHOD(void, CheckStateComplete, (base::TimeDelta delay), ());
