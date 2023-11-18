@@ -13,4 +13,12 @@ dictionary VideoFrameCopyToOptions {
   // of each plane to be specified. If unspecified, the planes will be tightly
   // packed. It is invalid to specify planes that overlap.
   sequence<PlaneLayout> layout;
+
+  // The format to convert VideoFrame's pixel data to.
+  // `layout` must agree with `format` in number of planes.
+  [RuntimeEnabled=WebCodecsCopyToRGB]
+  VideoPixelFormat format;
+
+  [RuntimeEnabled=WebCodecsCopyToRGB]
+  PredefinedColorSpace colorSpace; //  "srgb" or "display-p3"
 };

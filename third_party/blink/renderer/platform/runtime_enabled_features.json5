@@ -4093,6 +4093,10 @@
       status: "experimental",
     },
     {
+      name: "WebCodecsCopyToRGB",
+      status: "experimental",
+    },
+    {
       name: "WebCryptoCurve25519",
       status: "experimental",
       base_feature: "none",

@@ -1450,6 +1450,7 @@ _CONFIG = [
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
             'cc::kNumYUVPlanes',
+            'cc::SkiaPaintCanvas',
             'cc::YUVIndex',
             'cc::YUVSubsampling',
             'gpu::kNullSurfaceHandle',

@@ -72,6 +72,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'source_type':
           source_type
       }])
+      yield ('WebCodecs_convertToRGB_' + source_type, 'convert-to-rgb.html', [{
+          'source_type':
+          source_type
+      }])
 
   @classmethod
   def GenerateAudioTests(cls) -> ct.TestGenerator:
@@ -229,6 +233,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-fake-ui-for-media-stream',
         '--enable-blink-features=SharedArrayBuffer',
         cba.ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT,
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
