@@ -8,6 +8,7 @@
 #include <cstring>
 #include <limits>
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -99,6 +100,7 @@ void InflateTransformer::Inflate(const uint8_t* start,
                                  IsFinished finished,
                                  TransformStreamDefaultController* controller,
                                  ExceptionState& exception_state) {
+  TRACE_EVENT("blink,devtools.timeline", "DecompressionStream Inflate");
   if (reached_end_ && length != 0) {
     // zlib will ignore data after the end of the stream, so we have to
     // explicitly throw an error.
