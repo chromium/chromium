@@ -140,6 +140,8 @@ void SendFeedback(content::BrowserContext* browser_context,
       feedback_info.autofill_metadata) {
     feedback_data->set_autofill_metadata(*feedback_info.autofill_metadata);
   }
+  feedback_data->set_is_offensive_or_unsafe(
+      feedback_info.is_offensive_or_unsafe);
 
   // Note that the blob_uuids are generated in
   // renderer/resources/feedback_private_custom_bindings.js

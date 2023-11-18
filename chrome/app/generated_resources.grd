@@ -9944,6 +9944,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_FEEDBACK_FREE_TEXT_LABEL" desc="Label of the text box where users can describe a problem they are having">
           Describe the issue in detail
         </message>
+        <message name="IDS_FEEDBACK_FREE_TEXT_AI_LABEL" desc="Label of the text box where users can describe a problem they are having for AI">
+          Describe the issue in detail. Feedback will be sent to Google for human review and may be used for improving or developing Google products and services.
+        </message>
         <message name="IDS_FEEDBACK_REPORT_URL_LABEL" desc="Label showing the URL that will be reported">
           URL
         </message>
@@ -10018,6 +10021,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_FEEDBACK_NO_DESCRIPTION" desc="Message shown when no text is entered before hitting send feedback">
           Please describe the problem before sending feedback.
+        </message>
+        <message name="IDS_FEEDBACK_OFFENSIVE_CHECKBOX_LABEL" desc="Checkbox label for whether offensive or unsafe content is reported">
+          Report offensive/unsafe.
         </message>
         <message name="IDS_FEEDBACK_SEND_REPORT" desc="Text for OK button of the send feedback dialog">
           Send

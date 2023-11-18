@@ -25749,6 +25749,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="34" label="Cookie Controls"/>
   <int value="35" label="Game Dashboard"/>
   <int value="36" label="OOBE or Login screen"/>
+  <int value="37" label="AI"/>
 </enum>
 
 <!-- Keep elements in sync with components/feed/core/feed_logging_metrics.cc and

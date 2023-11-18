@@ -30,7 +30,10 @@ namespace feedbackPrivate {
     sadTabCrash,
 
     // Flow for internal Google users.
-    googleInternal
+    googleInternal,
+
+    // Flow for AI features.
+    ai
   };
 
   dictionary FeedbackInfo {
@@ -111,6 +114,9 @@ namespace feedbackPrivate {
     // Whether or not |autofillMetadata| should be included in the feedback
     // report.
     boolean? sendAutofillMetadata;
+
+    // Whether or not the content is offensive or unsafe.
+    boolean? isOffensiveOrUnsafe;
   };
 
   // Possible statuses that can result from sending feedback.

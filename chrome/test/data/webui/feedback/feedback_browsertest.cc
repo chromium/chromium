@@ -23,16 +23,29 @@ class WebContentsObserver : public content::WebContentsObserver {
 class FeedbackBrowserTest : public WebUIMochaBrowserTest {
  protected:
   FeedbackBrowserTest() { set_test_loader_host(chrome::kChromeUIFeedbackHost); }
+
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    // Register a WebContentsObserver to inject some code that allows the tests
+    // to
+    // perform setup steps before the prod code runs.
+    // TODO(dpapad): Remove this if/when this page is migrated to use Web
+    // Components.
+    content::WebContents* web_contents =
+        chrome_test_utils::GetActiveWebContents(this);
+    injection_observer_ = std::make_unique<WebContentsObserver>(web_contents);
+  }
+
+ private:
+  std::unique_ptr<WebContentsObserver> injection_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, Feedback) {
-  // Register a WebContentsObserver to inject some code that allows the tests to
-  // perform setup steps before the prod code runs.
-  // TODO(dpapad): Remove this if/when this page is migrated to use Web
-  // Components.
-  content::WebContents* web_contents =
-      chrome_test_utils::GetActiveWebContents(this);
-  WebContentsObserver injection_observer(web_contents);
+  RunTestWithoutTestLoader("feedback/feedback_test.js",
+                           "runMochaSuite('FeedbackTest')");
+}
 
-  RunTestWithoutTestLoader("feedback/feedback_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, AIFeedback) {
+  RunTestWithoutTestLoader("feedback/feedback_test.js",
+                           "runMochaSuite('AIFeedbackTest')");
 }

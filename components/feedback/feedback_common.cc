@@ -56,6 +56,8 @@ constexpr char kTargetDeviceIdTypeKey[] = "target_device_id_type";
 constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
+
 // Determine if the given feedback value is small enough to not need to
 // be compressed.
 bool BelowCompressionThreshold(const std::string& content) {
@@ -212,6 +214,11 @@ void FeedbackCommon::PrepareReport(
                     kTargetDeviceIdTypeMacAddressValue);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (is_offensive_or_unsafe_.has_value()) {
+    AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
+                    is_offensive_or_unsafe_.value() ? "true" : "false");
+  }
 }
 
 void FeedbackCommon::RedactDescription(redaction::RedactionTool& redactor) {

@@ -202,6 +202,8 @@ feedback_private::FeedbackFlow GetFeedbackFlowFromSource(
       return feedback_private::FeedbackFlow::kSadTabCrash;
     case kFeedbackSourceAutofillContextMenu:
       return feedback_private::FeedbackFlow::kGoogleInternal;
+    case kFeedbackSourceAI:
+      return feedback_private::FeedbackFlow::kAi;
     default:
       return feedback_private::FeedbackFlow::kRegular;
   }

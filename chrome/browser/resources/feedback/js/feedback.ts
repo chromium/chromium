@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../strings.m.js';
 // <if expr="chromeos_ash">
 import './jelly_colors.js';
 
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FeedbackBrowserProxy, FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
@@ -43,6 +45,7 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   sendHistograms: undefined,
   systemInformation: [],
   useSystemWindowFrame: false,
+  isOffensiveOrUnsafe: undefined,
 };
 
 
@@ -454,6 +457,11 @@ function sendReport(): boolean {
     },
   ];
 
+  if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI) {
+    feedbackInfo.isOffensiveOrUnsafe =
+        getRequiredElement<HTMLInputElement>('offensive-checkbox').checked;
+  }
+
   feedbackInfo.description = textarea.value;
   feedbackInfo.pageUrl =
       getRequiredElement<HTMLInputElement>('page-url-text').value;
@@ -626,6 +634,15 @@ function initialize() {
           feedbackInfo.pageUrl;
     }
 
+    const isAiFlow: boolean =
+        feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI;
+
+    if (isAiFlow) {
+      getRequiredElement('free-form-text').textContent =
+          loadTimeData.getString('freeFormTextAi');
+      getRequiredElement('offensive-container').hidden = false;
+    }
+
     const whenScreenshotUpdated = takeScreenshot().then(function(
         screenshotCanvas) {
       // We've taken our screenshot, show the feedback page without any
@@ -661,25 +678,27 @@ function initialize() {
       });
     });
 
-    const whenEmailUpdated = browserProxy.getUserEmail().then(function(email) {
-      // Never add an empty option.
-      if (!email) {
-        return;
-      }
-      const optionElement = document.createElement('option');
-      optionElement.value = email;
-      optionElement.text = email;
-      optionElement.selected = true;
-      // Make sure the "Report anonymously" option comes last.
-      getRequiredElement('user-email-drop-down')
-          .insertBefore(optionElement,
-                        getRequiredElement('anonymous-user-option'));
+    const whenEmailUpdated = isAiFlow ?
+        Promise.resolve() :
+        browserProxy.getUserEmail().then(function(email) {
+          // Never add an empty option.
+          if (!email) {
+            return;
+          }
+          const optionElement = document.createElement('option');
+          optionElement.value = email;
+          optionElement.text = email;
+          optionElement.selected = true;
+          // Make sure the "Report anonymously" option comes last.
+          getRequiredElement('user-email-drop-down')
+              .insertBefore(
+                  optionElement, getRequiredElement('anonymous-user-option'));
 
-      // Now we can unhide the user email section:
-      getRequiredElement('user-email').hidden = false;
-      // Only show email consent checkbox when an email address exists.
-      getRequiredElement('consent-container').hidden = false;
-    });
+          // Now we can unhide the user email section:
+          getRequiredElement('user-email').hidden = false;
+          // Only show email consent checkbox when an email address exists.
+          getRequiredElement('consent-container').hidden = false;
+        });
 
     // An extension called us with an attached file.
     if (feedbackInfo.attachedFile) {
