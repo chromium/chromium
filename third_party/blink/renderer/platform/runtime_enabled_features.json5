@@ -2228,6 +2228,7 @@
       name: "MachineLearningNeuralNetwork",
       status: {
         "Win": "experimental",
+        "Mac": "experimental",
         "Linux": "experimental",
         "default": "test"
       },
