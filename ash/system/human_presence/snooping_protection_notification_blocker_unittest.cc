@@ -487,29 +487,6 @@ TEST_F(SnoopingProtectionNotificationBlockerTest,
   }
 }
 
-// Test that message center is visible when click "Show" button.
-TEST_F(SnoopingProtectionNotificationBlockerTest, ShowButtonClicked) {
-  // TODO(b/305075031) clean up after the flag is removed.
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-  SetBlockerPref(true);
-
-  // Simulate snooper presence.
-  hps::HpsResultProto state;
-  state.set_value(hps::HpsResult::POSITIVE);
-  controller_->OnHpsNotifyChanged(state);
-
-  AddNotification("notification-1", u"notifier-1");
-  AddNotification("notification-2", u"notifier-2");
-
-  EXPECT_TRUE(HasInfoNotification());
-
-  // Click on show button.
-  SimulateClick(/*button_index=*/0);
-  EXPECT_TRUE(GetPrimaryNotificationCenterTray()->IsBubbleShown());
-}
-
 // Test that message center is visible when click Settings button.
 TEST_F(SnoopingProtectionNotificationBlockerTest, SettingsButtonClicked) {
   SetBlockerPref(true);
