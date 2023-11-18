@@ -118,7 +118,7 @@ TaskAnnotator::TaskAnnotator() = default;
 TaskAnnotator::~TaskAnnotator() = default;
 
 void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
-                                  PendingTask* pending_task) {
+                                  TaskMetadata* pending_task) {
   DCHECK(pending_task);
   TRACE_EVENT_INSTANT(
       "toplevel.flow", trace_event_name,
@@ -231,7 +231,7 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   debug::Alias(&task_backtrace);
 }
 
-uint64_t TaskAnnotator::GetTaskTraceID(const PendingTask& task) const {
+uint64_t TaskAnnotator::GetTaskTraceID(const TaskMetadata& task) const {
   return (static_cast<uint64_t>(task.sequence_num) << 32) |
          ((static_cast<uint64_t>(reinterpret_cast<intptr_t>(this)) << 32) >>
           32);
@@ -266,7 +266,7 @@ void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
   if (!*flow_enabled)
     return;
 
-  perfetto::TerminatingFlow::ProcessScoped(GetTaskTraceID(task))(ctx);
+  perfetto::Flow::ProcessScoped(GetTaskTraceID(task))(ctx);
 }
 
 // static

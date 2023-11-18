@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/post_job.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/task.h"
@@ -45,6 +46,9 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
       scoped_refptr<internal::JobTaskSource> task_source) {
     return JobHandle(std::move(task_source));
   }
+
+  // Called before the task source is enqueued to initialize task metadata.
+  void WillEnqueue(int sequence_num, TaskAnnotator& annotator);
 
   // Notifies this task source that max concurrency was increased, and the
   // number of worker should be adjusted.
@@ -192,7 +196,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   RunStatus WillRunTask() override;
   Task TakeTask(TaskSource::Transaction* transaction) override;
-  Task Clear(TaskSource::Transaction* transaction) override;
+  absl::optional<Task> Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
   bool WillReEnqueue(TimeTicks now,
                      TaskSource::Transaction* transaction) override;
@@ -213,13 +217,14 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
   std::atomic<uint32_t> assigned_task_ids_{0};
 
-  const Location from_here_;
   RepeatingCallback<size_t(size_t)> max_concurrency_callback_;
 
   // Worker task set by the job owner.
   RepeatingCallback<void(JobDelegate*)> worker_task_;
   // Task returned from TakeTask(), that calls |worker_task_| internally.
   RepeatingClosure primary_task_;
+
+  TaskMetadata task_metadata_;
 
   const TimeTicks ready_time_;
   raw_ptr<PooledTaskRunnerDelegate, LeakedDanglingUntriaged> delegate_;

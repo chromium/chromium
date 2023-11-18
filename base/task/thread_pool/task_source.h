@@ -227,7 +227,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // The implementation needs to support this being called multiple times;
   // unless it guarantees never to hand-out multiple RegisteredTaskSources that
   // are concurrently ready.
-  virtual Task Clear(TaskSource::Transaction* transaction) = 0;
+  virtual absl::optional<Task> Clear(TaskSource::Transaction* transaction) = 0;
 
   // Sets TaskSource priority to |priority|.
   void UpdatePriority(TaskPriority priority);
@@ -324,7 +324,8 @@ class BASE_EXPORT RegisteredTaskSource {
   // Returns a task that clears this TaskSource to make it empty. |transaction|
   // is optional and should only be provided if this operation is already part
   // of a transaction.
-  [[nodiscard]] Task Clear(TaskSource::Transaction* transaction = nullptr);
+  [[nodiscard]] absl::optional<Task> Clear(
+      TaskSource::Transaction* transaction = nullptr);
 
  private:
   friend class TaskTracker;
