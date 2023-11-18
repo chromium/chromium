@@ -8,13 +8,14 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './help_resources_icons.js';
+import './help_resources_icons.html.js';
 import './os_feedback_shared.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './file_attachment.html.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 import {AttachedFile, FeedbackAppPreSubmitAction} from './os_feedback_ui.mojom-webui.js';
 
@@ -41,7 +42,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

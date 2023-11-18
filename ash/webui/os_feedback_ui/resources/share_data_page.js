@@ -10,13 +10,14 @@ import './file_attachment.js';
 import './os_feedback_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
 import {FeedbackFlowState} from './feedback_flow.js';
 import {showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 import {FeedbackAppPreSubmitAction, FeedbackContext, Report} from './os_feedback_ui.mojom-webui.js';
+import {getTemplate} from './share_data_page.html.js';
 
 /**
  * @fileoverview
@@ -38,7 +39,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

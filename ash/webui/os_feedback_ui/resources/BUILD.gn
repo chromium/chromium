@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -23,7 +23,6 @@ foreach(f, css_files) {
 }
 
 web_component_files = [
-  "help_resources_icons.js",
   "confirmation_page.js",
   "feedback_flow.js",
   "file_attachment.js",
@@ -31,6 +30,14 @@ web_component_files = [
   "search_page.js",
   "share_data_page.js",
 ]
+
+html_files = [ "help_resources_icons.html" ]
+html_wrapper_files = [ "help_resources_icons.html.js" ]
+foreach(f, web_component_files) {
+  file_name = string_replace(f, ".js", ".html")
+  html_files += [ file_name ]
+  html_wrapper_files += [ file_name + ".js" ]
+}
 
 generate_grd("build_grd") {
   input_files = [
@@ -49,10 +56,12 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
+    ":preprocess",
     ":preprocess_generated",
     ":preprocess_mojo",
   ]
   manifest_files = [
+    "$target_gen_dir/manifest_preprocess.json",
     "$target_gen_dir/$preprocessed_gen_manifest",
     "$target_gen_dir/$preprocessed_mojo_manifest",
   ]
@@ -60,15 +69,22 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/manifest_preprocess.json"
+  in_files = web_component_files
+}
+
 preprocess_if_expr("preprocess_generated") {
   deps = [
     ":css_wrapper_files",
-    ":web_components",
+    ":html_wrapper_files",
   ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
-  in_files = css_wrapper_files + web_component_files
+  in_files = css_wrapper_files + html_wrapper_files
 }
 
 preprocess_if_expr("preprocess_mojo") {
@@ -79,13 +95,14 @@ preprocess_if_expr("preprocess_mojo") {
   in_files = [ "os_feedback_ui.mojom-webui.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
-}
-
 css_to_wrapper("css_wrapper_files") {
   use_js = true
   in_files = css_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  use_js = true
+  in_files = html_files
 }
 
 copy("copy_webui_mojo") {

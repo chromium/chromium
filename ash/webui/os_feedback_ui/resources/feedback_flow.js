@@ -12,8 +12,9 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './feedback_flow.html.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
@@ -173,7 +174,7 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

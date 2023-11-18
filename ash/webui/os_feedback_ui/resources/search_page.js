@@ -4,12 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './help_content.js';
-import './help_resources_icons.js';
+import './help_resources_icons.html.js';
 import './os_feedback_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {btRegEx, buildWordMatcher, FeedbackFlowState} from './feedback_flow.js';
 import {HelpContentList, SearchResult} from './feedback_types.js';
@@ -17,6 +17,7 @@ import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils
 import {getHelpContentProvider} from './mojo_interface_provider.js';
 import {FeedbackContext, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
 import {domainQuestions, questionnaireBegin} from './questionnaire.js';
+import {getTemplate} from './search_page.html.js';
 
 /**
  * The minimum number of characters added or deleted to start a new search for
@@ -130,7 +131,7 @@ export class SearchPageElement extends SearchPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
