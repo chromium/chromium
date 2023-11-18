@@ -17,7 +17,7 @@ import {getTemplate} from './customize_button_dropdown_item.html.js';
  * customize the remapped button.
  */
 
-interface DropdownMenuOption {
+export interface DropdownMenuOption {
   name: string;
   value: number|string;
   hidden?: boolean;

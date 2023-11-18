@@ -1,0 +1,40 @@
+<style include="md-select settings-shared input-device-settings-shared">
+  iron-list {
+    max-height: 50vh;
+    width: 200px;
+  }
+
+  #menuContainer {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-radius: 2px;
+    box-shadow: var(--cr-elevation-3);
+    outline: 1px solid var(--cros-separator-color);
+    display: table;
+  }
+
+  #remappingActionIronDropdown {
+    height: 20px;
+  }
+
+  .md-select {
+    background-position-x: 175px;
+    padding: 8px 16px;
+    width: 168px;
+  }
+</style>
+<div tabindex="0" id="remappingActionIronDropdown"
+    class="md-select"
+    on-click="showDropdownMenu_">
+    [[selectedItem.name]]
+</div>
+<iron-dropdown opened="[[shouldShowDropdownMenu_]]"
+    no-cancel-on-outside-click>
+  <div id="menuContainer" slot="dropdown-content">
+    <iron-list items="[[menu]]">
+      <template>
+        <customize-button-dropdown-item option="[[item]]">
+        </customize-button-dropdown-item>
+      </template>
+    </iron-list>
+  </div>
+</iron-dropdown>

@@ -84,6 +84,7 @@ build_webui("build") {
     "device_page/audio.ts",
     "device_page/customize_button_dropdown_item.ts",
     "device_page/customize_button_row.ts",
+    "device_page/customize_button_select.ts",
     "device_page/customize_buttons_subsection.ts",
     "device_page/customize_mouse_buttons_subpage.ts",
     "device_page/customize_pen_buttons_subpage.ts",

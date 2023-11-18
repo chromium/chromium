@@ -241,6 +241,10 @@ TEST_F(
    }
  ],
  [
+   'DevicePageCustomizeButtonSelect',
+   'device_page/customize_button_select_test.js'
+ ],
+ [
    'DevicePageCustomizeButtonsSubsection',
    'device_page/customize_buttons_subsection_test.js', {
      enabled: [
