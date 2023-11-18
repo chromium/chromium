@@ -284,11 +284,11 @@
           <label class="category-item" on-click="onComboboxCategoryClick_">
             [[item.category]]
             <iron-icon icon="[[
-                getCategoryIcon_(item.category, expandedCategories_.*)]]">
+                getCategoryIcon_(index, expandedCategories_.*)]]">
             </iron-icon>
           </label>
           <template is="dom-if" restamp if="[[
-              isCategoryExpanded_(item.category, expandedCategories_.*)]]">
+              isCategoryExpanded_(index, expandedCategories_.*)]]">
             <template is="dom-repeat" items="[[item.labels]]">
               <div class="dropdown-item" role="option" value="[[item]]">
                 <iron-icon icon="cr:check"></iron-icon>

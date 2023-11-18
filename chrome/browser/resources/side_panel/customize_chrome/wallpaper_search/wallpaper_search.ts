@@ -123,7 +123,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private emptyResultContainers_: number[] = [];
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
-  private expandedCategories_: {[category: string]: boolean} = {};
+  private expandedCategories_: {[categoryIndex: number]: boolean} = {};
   private history_: WallpaperSearchResult[];
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
@@ -232,10 +232,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private expandCategoryForDescriptorA_(label: string) {
-    const categoryGroup = this.descriptors_?.descriptorA.find(
+    if (!this.descriptors_) {
+      return;
+    }
+    const categoryGroupIndex = this.descriptors_.descriptorA.findIndex(
         group => group.labels.includes(label));
-    if (categoryGroup) {
-      this.set(`expandedCategories_.${categoryGroup.category}`, true);
+    if (categoryGroupIndex >= 0) {
+      this.set(`expandedCategories_.${categoryGroupIndex}`, true);
     }
   }
 
@@ -291,9 +294,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
-  private getCategoryIcon_(category: string): string {
-    return this.expandedCategories_[category] ? 'cr:expand-less' :
-                                                'cr:expand-more';
+  private getCategoryIcon_(categoryIndex: number): string {
+    return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
+                                                     'cr:expand-more';
   }
 
   private isBackgroundSelected_(id: Token): boolean {
@@ -304,8 +307,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
-  private isCategoryExpanded_(category: string): boolean {
-    return this.expandedCategories_[category];
+  private isCategoryExpanded_(categoryIndex: number): boolean {
+    return this.expandedCategories_[categoryIndex];
   }
 
   private isColorSelected_(defaultColor: string): boolean {
@@ -321,9 +324,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private onComboboxCategoryClick_(e: DomRepeatEvent<DescriptorA>) {
-    const category = e.model.item.category;
-    this.set(
-        `expandedCategories_.${category}`, !this.expandedCategories_[category]);
+    const index = e.model.index;
+    this.set(`expandedCategories_.${index}`, !this.expandedCategories_[index]);
   }
 
   private onCustomColorClick_() {
