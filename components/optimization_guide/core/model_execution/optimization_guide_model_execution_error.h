@@ -55,6 +55,9 @@ class OptimizationGuideModelExecutionError {
   // retried.
   bool transient() const;
 
+  // Returns whether model quality log entry should be added for the error.
+  bool ShouldLogModelQuality() const;
+
  private:
   explicit OptimizationGuideModelExecutionError(ModelExecutionError error);
 
