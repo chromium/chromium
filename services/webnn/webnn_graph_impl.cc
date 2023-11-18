@@ -423,17 +423,64 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateElementWiseBinaryDataTypes(
+    const mojom::Operand* lhs,
+    const mojom::Operand* rhs,
+    const mojom::Operand* output,
+    const mojom::ElementWiseBinaryPtr& operation) {
+  if (lhs->data_type != rhs->data_type) {
+    // The input types don't match.
+    return false;
+  }
+
+  switch (operation->kind) {
+    case mojom::ElementWiseBinary::Kind::kSub:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kAdd:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kMul:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kDiv:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kMax:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kMin:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kPow: {
+      if (output->data_type != lhs->data_type) {
+        // For arithmetic operations, the input and output data type must match.
+        return false;
+      }
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kEqual:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kGreater:
+      [[fallthrough]];
+    case mojom::ElementWiseBinary::Kind::kLesser: {
+      if (output->data_type != mojom::Operand::DataType::kUint8) {
+        // For logical operations, the output data type must be uint8.
+        return false;
+      }
+      break;
+    }
+  }
+
+  return true;
+}
+
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
                                const mojom::ElementWiseBinaryPtr& operation) {
   auto* a = GetMojoOperand(id_to_operand_map, operation->lhs_operand);
   auto* b = GetMojoOperand(id_to_operand_map, operation->rhs_operand);
   auto* output = GetMojoOperand(id_to_operand_map, operation->output_operand);
+
   if (!a || !b || !output || output == a || output == b) {
     // The elementWise binary operator is invalid.
     return false;
   }
-  if (a->data_type != b->data_type || output->data_type != a->data_type) {
-    // The input types don't match.
+
+  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
     return false;
   }
 

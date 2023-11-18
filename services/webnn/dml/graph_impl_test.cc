@@ -768,12 +768,15 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConvTranspose2d) {
   }
 }
 
-template <typename T>
+// I is the type of the inputs, both of which must be the same.
+// O is the type of the output, which by default is the same as the input.
+// Logical operators, however, have uint8_t (bool) as outputs.
+template <typename I, typename O = I>
 struct ElementWiseBinaryTester {
-  OperandInfo<T> lhs;
-  OperandInfo<T> rhs;
+  OperandInfo<I> lhs;
+  OperandInfo<I> rhs;
   mojom::ElementWiseBinary::Kind kind;
-  OperandInfo<float> output;
+  OperandInfo<O> output;
   void Test() {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -794,9 +797,7 @@ struct ElementWiseBinaryTester {
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
-    VerifyFloatDataIsEqual(
-        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-        output.values);
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
   }
 };
 
@@ -1050,6 +1051,104 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {-1, 0, 1, 2, 3, 4}}}
+        .Test();
+  }
+  // Test building and computing a DML graph with single operator equal.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {6, 5, 3, 4, 2, 1}},
+        .kind = mojom::ElementWiseBinary::Kind::kEqual,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 0, 1, 1, 0, 0}}}
+        .Test();
+  }
+
+  // Test building and computing a DML graph with single operator equal using
+  // broadcasting.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 1},
+                .values = {2}},
+        .kind = mojom::ElementWiseBinary::Kind::kEqual,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 1, 0, 0, 0, 0}}}
+        .Test();
+  }
+
+  // Test building and computing a DML graph with single operator greater.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {6, 5, 3, 4, 2, 1}},
+        .kind = mojom::ElementWiseBinary::Kind::kGreater,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 0, 0, 0, 1, 1}}}
+        .Test();
+  }
+
+  // Test building and computing a DML graph with single operator greater using
+  // broadcasting.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 1},
+                .values = {2}},
+        .kind = mojom::ElementWiseBinary::Kind::kGreater,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 0, 1, 1, 1, 1}}}
+        .Test();
+  }
+
+  // Test building and computing a DML graph with single operator lesser.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {6, 5, 3, 4, 2, 1}},
+        .kind = mojom::ElementWiseBinary::Kind::kLesser,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 1, 0, 0, 0, 0}}}
+        .Test();
+  }
+
+  // Test building and computing a DML graph with single operator lesser using
+  // broadcasting.
+  {
+    ElementWiseBinaryTester<float, uint8_t>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 1},
+                .values = {2}},
+        .kind = mojom::ElementWiseBinary::Kind::kLesser,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 0, 0, 0, 0, 0}}}
         .Test();
   }
 }
