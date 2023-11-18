@@ -6,9 +6,7 @@
 #define NET_TEST_CERT_BUILDER_H_
 
 #include <map>
-#include <memory>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -45,24 +43,6 @@ class Input;
 // dependent on ordering.
 class CertBuilder {
  public:
-  // Parameters for creating an embedded SignedCertificateTimestamp.
-  struct SctConfig {
-    SctConfig();
-    SctConfig(std::string log_id,
-              bssl::UniquePtr<EVP_PKEY> log_key,
-              base::Time timestamp);
-    SctConfig(const SctConfig&);
-    SctConfig(SctConfig&&);
-    ~SctConfig();
-    SctConfig& operator=(const SctConfig&);
-    SctConfig& operator=(SctConfig&&);
-
-    std::string log_id;
-    // Only EC keys are supported currently.
-    bssl::UniquePtr<EVP_PKEY> log_key;
-    base::Time timestamp;
-  };
-
   // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
   // a template. If |issuer| is null then the generated certificate will be
   // self-signed. Otherwise, it will be signed using |issuer|.
@@ -285,10 +265,6 @@ class CertBuilder {
   void SetSerialNumber(uint64_t serial_number);
   void SetRandomSerialNumber();
 
-  // Sets the configuration that will be used to generate a
-  // SignedCertificateTimestampList extension in the certificate.
-  void SetSctConfig(std::vector<CertBuilder::SctConfig> sct_configs);
-
   // Sets the private key for the generated certificate to an EC key. If a key
   // was already set, it will be replaced.
   void GenerateECKey();
@@ -404,9 +380,6 @@ class CertBuilder {
   void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
                            std::string* out);
 
-  void BuildSctListExtension(const std::string& pre_tbs_certificate,
-                             std::string* out);
-
   void GenerateCertificate();
 
   struct ExtensionValue {
@@ -423,8 +396,6 @@ class CertBuilder {
   std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;
   int default_pkey_id_ = EVP_PKEY_EC;
-
-  std::vector<SctConfig> sct_configs_;
 
   std::map<std::string, ExtensionValue> extensions_;
 
