@@ -4,8 +4,15 @@
 
 #include "net/test/cert_builder.h"
 
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +21,11 @@
 #include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
+#include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/ct_objects_extractor.h"
+#include "net/cert/ct_serialization.h"
+#include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -110,6 +121,29 @@ std::vector<uint8_t> FinishCBBToVector(CBB* cbb) {
 }
 
 }  // namespace
+
+CertBuilder::SctConfig::SctConfig() = default;
+CertBuilder::SctConfig::SctConfig(std::string log_id,
+                                  bssl::UniquePtr<EVP_PKEY> log_key,
+                                  base::Time timestamp)
+    : log_id(std::move(log_id)),
+      log_key(std::move(log_key)),
+      timestamp(timestamp) {}
+CertBuilder::SctConfig::SctConfig(const SctConfig& other)
+    : SctConfig(other.log_id,
+                bssl::UpRef(other.log_key.get()),
+                other.timestamp) {}
+CertBuilder::SctConfig::SctConfig(SctConfig&&) = default;
+CertBuilder::SctConfig::~SctConfig() = default;
+CertBuilder::SctConfig& CertBuilder::SctConfig::operator=(
+    const SctConfig& other) {
+  log_id = other.log_id;
+  log_key = bssl::UpRef(other.log_key.get());
+  timestamp = other.timestamp;
+  return *this;
+}
+CertBuilder::SctConfig& CertBuilder::SctConfig::operator=(SctConfig&&) =
+    default;
 
 CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert, CertBuilder* issuer)
     : CertBuilder(orig_cert, issuer, /*unique_subject_key_identifier=*/true) {}
@@ -914,6 +948,12 @@ void CertBuilder::SetRandomSerialNumber() {
   Invalidate();
 }
 
+void CertBuilder::SetSctConfig(
+    std::vector<CertBuilder::SctConfig> sct_configs) {
+  sct_configs_ = std::move(sct_configs);
+  Invalidate();
+}
+
 CRYPTO_BUFFER* CertBuilder::GetCertBuffer() {
   if (!cert_)
     GenerateCertificate();
@@ -1266,6 +1306,61 @@ void CertBuilder::BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
   *out = FinishCBB(cbb.get());
 }
 
+void CertBuilder::BuildSctListExtension(const std::string& pre_tbs_certificate,
+                                        std::string* out) {
+  std::vector<std::string> encoded_scts;
+  for (const SctConfig& sct_config : sct_configs_) {
+    ct::SignedEntryData entry;
+    entry.type = ct::SignedEntryData::LOG_ENTRY_TYPE_PRECERT;
+    bssl::ScopedCBB issuer_spki_cbb;
+    ASSERT_TRUE(CBB_init(issuer_spki_cbb.get(), 32));
+    ASSERT_TRUE(
+        EVP_marshal_public_key(issuer_spki_cbb.get(), issuer_->GetKey()));
+    crypto::SHA256HashString(FinishCBB(issuer_spki_cbb.get()),
+                             entry.issuer_key_hash.data,
+                             sizeof(entry.issuer_key_hash.data));
+    entry.tbs_certificate = pre_tbs_certificate;
+
+    std::string serialized_log_entry;
+    std::string serialized_data;
+    ASSERT_TRUE(ct::EncodeSignedEntry(entry, &serialized_log_entry));
+    ASSERT_TRUE(ct::EncodeV1SCTSignedData(sct_config.timestamp,
+                                          serialized_log_entry,
+                                          /*extensions=*/"", &serialized_data));
+
+    scoped_refptr<ct::SignedCertificateTimestamp> sct =
+        base::MakeRefCounted<ct::SignedCertificateTimestamp>();
+    sct->log_id = sct_config.log_id;
+    sct->timestamp = sct_config.timestamp;
+    sct->signature.hash_algorithm = ct::DigitallySigned::HASH_ALGO_SHA256;
+    sct->signature.signature_algorithm = ct::DigitallySigned::SIG_ALGO_ECDSA;
+
+    bssl::ScopedCBB sct_signature_cbb;
+    ASSERT_TRUE(CBB_init(sct_signature_cbb.get(), 0));
+    ASSERT_TRUE(SignData(bssl::SignatureAlgorithm::kEcdsaSha256,
+                         serialized_data, sct_config.log_key.get(),
+                         sct_signature_cbb.get()));
+    sct->signature.signature_data = FinishCBB(sct_signature_cbb.get());
+
+    sct->origin = ct::SignedCertificateTimestamp::SCT_EMBEDDED;
+
+    std::string encoded_sct;
+    ASSERT_TRUE(ct::EncodeSignedCertificateTimestamp(sct, &encoded_sct));
+    encoded_scts.push_back(std::move(encoded_sct));
+  }
+  std::string encoded_sct_list;
+  ASSERT_TRUE(ct::EncodeSCTListForTesting(encoded_scts, &encoded_sct_list));
+
+  bssl::ScopedCBB sct_extension_cbb;
+  ASSERT_TRUE(CBB_init(sct_extension_cbb.get(), 32));
+  ASSERT_TRUE(CBB_add_asn1_octet_string(
+      sct_extension_cbb.get(),
+      reinterpret_cast<const uint8_t*>(encoded_sct_list.data()),
+      encoded_sct_list.size()));
+
+  *out = FinishCBB(sct_extension_cbb.get());
+}
+
 void CertBuilder::GenerateCertificate() {
   ASSERT_FALSE(cert_);
 
@@ -1286,6 +1381,16 @@ void CertBuilder::GenerateCertificate() {
           ? tbs_signature_algorithm_tlv_
           : SignatureAlgorithmToDer(*signature_algorithm);
   ASSERT_FALSE(tbs_signature_algorithm_tlv.empty());
+
+  if (!sct_configs_.empty()) {
+    EraseExtension(bssl::der::Input(ct::kEmbeddedSCTOid));
+    std::string pre_tbs_certificate;
+    BuildTBSCertificate(tbs_signature_algorithm_tlv, &pre_tbs_certificate);
+    std::string sct_extension;
+    BuildSctListExtension(pre_tbs_certificate, &sct_extension);
+    SetExtension(bssl::der::Input(ct::kEmbeddedSCTOid), sct_extension,
+                 /*critical=*/false);
+  }
 
   std::string tbs_cert;
   BuildTBSCertificate(tbs_signature_algorithm_tlv, &tbs_cert);

@@ -29,6 +29,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
@@ -312,6 +313,9 @@ class EmbeddedTestServer {
 
     // A list of key usages to include in the leaf keyUsage extension.
     std::vector<bssl::KeyUsageBit> key_usages;
+
+    // Generate embedded SCTList in the certificate for the specified logs.
+    std::vector<CertBuilder::SctConfig> embedded_scts;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(
