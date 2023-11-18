@@ -379,6 +379,29 @@ export const getKeyDisplay = (keyOrIcon: string): string => {
 };
 
 /**
+ * Translate a numpadKey code to a display string.
+ */
+export const getNumpadKeyDisplay = (code: string): string => {
+  // For "NumpadEnter", it is the same as "enter" key.
+  if (code === 'NumpadEnter') {
+    return 'enter';
+  }
+  // Map of special numpad key codes to their display symbols.
+  const numpadKeyMap: {[code: string]: string} = {
+    'NumpadAdd': '+',
+    'NumpadDecimal': '.',
+    'NumpadDivide': '/',
+    'NumpadMultiply': '*',
+    'NumpadSubtract': '-',
+  };
+
+  // Return the formatted string, using the map for special keys,
+  // or stripping 'Numpad' for numeric keys.
+  const numpadKey = numpadKeyMap[code] || code.replace('Numpad', '');
+  return `numpad ${numpadKey}`.toLowerCase();
+};
+
+/**
  * @returns the Aria label for the standard accelerators.
  */
 export const getAriaLabelForStandardAccelerators =
@@ -445,6 +468,11 @@ export const getModifiersFromKeyboardEvent = (e: KeyboardEvent): Modifier => {
 };
 
 export const getKeyDisplayFromKeyboardEvent = (e: KeyboardEvent): string => {
+  // Handle numpad keys:
+  if (e.code.startsWith('Numpad')) {
+    return getNumpadKeyDisplay(e.code);
+  }
+
   switch (e.code) {
     case 'Space':  // Space key: e.key: ' ', e.code: 'Space', set keyDisplay
       // to be 'space' text.

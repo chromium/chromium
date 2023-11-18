@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getNumpadKeyDisplay, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -263,5 +263,14 @@ suite('shortcutUtilsTest', function() {
 
     assertTrue(areAcceleratorsEqual(accelerator1, accelerator2));
     assertFalse(areAcceleratorsEqual(accelerator1, accelerator3));
+  });
+
+  test('getNumpadKeyDisplay', async () => {
+    assertEquals('numpad 0', getNumpadKeyDisplay('Numpad0'));
+    assertEquals('numpad 9', getNumpadKeyDisplay('Numpad9'));
+    assertEquals('numpad +', getNumpadKeyDisplay('NumpadAdd'));
+    assertEquals('numpad /', getNumpadKeyDisplay('NumpadDivide'));
+    assertEquals('numpad .', getNumpadKeyDisplay('NumpadDecimal'));
+    assertEquals('enter', getNumpadKeyDisplay('NumpadEnter'));
   });
 });
