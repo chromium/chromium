@@ -8,6 +8,7 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/util/process_version.gni")
 import("//third_party/fuchsia-gn-sdk/src/build_id_dir.gni")
 import("//third_party/fuchsia-gn-sdk/src/cipd.gni")
@@ -421,14 +422,18 @@ group("web_engine_archives_with_tests") {
 group("cipd") {
   testonly = true  # Some archives are testonly.
   deps = [
-    ":chrome${_archive_suffix}",
-    ":chrome_debug_symbols",
     ":web_engine_archives_with_tests",
 
     # Symbols are not uploaded for the following.
     ":chromedriver${_archive_suffix}",
     ":web_engine_debug_symbols",
   ]
+  if (!optimize_for_size) {
+    deps += [
+      ":chrome${_archive_suffix}",
+      ":chrome_debug_symbols",
+    ]
+  }
   visibility = []  # Required to replace the file default.
   visibility = [ "//:gn_all" ]
 }
