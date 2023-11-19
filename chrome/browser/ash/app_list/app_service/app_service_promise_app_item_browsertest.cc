@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
   ASSERT_TRUE(item);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(), "waiting…");
+  ASSERT_EQ(item->name(), "Waiting…");
   ASSERT_EQ(item->accessible_name(), "Long Name, waiting");
 
   // Update the promise app in the promise app registry cache.
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
   // Promise app item should have updated fields.
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(), "installing…");
+  EXPECT_EQ(item->name(), "Installing…");
   ASSERT_EQ(item->accessible_name(), "Long Name, installing");
 }
 
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   // icon in the positions indicated by the sync data.
   ash::AppListItem* launcher_item = GetAppListItem(package_id.ToString());
   ASSERT_TRUE(launcher_item);
-  EXPECT_EQ(launcher_item->name(), "waiting…");
+  EXPECT_EQ(launcher_item->name(), "Waiting…");
   EXPECT_EQ(launcher_item->progress(), 0);
   EXPECT_EQ(launcher_item->position(), launcher_ordinal);
   EXPECT_TRUE(IsItemPinned(package_id.ToString()));
@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
   // Confirm the promise icon fields.
   launcher_item = GetAppListItem(package_id.ToString());
-  EXPECT_EQ(launcher_item->name(), "installing…");
+  EXPECT_EQ(launcher_item->name(), "Installing…");
   EXPECT_FLOAT_EQ(launcher_item->progress(), 0.2f);
   EXPECT_EQ(launcher_item->position(), launcher_ordinal);
   EXPECT_TRUE(IsItemPinned(package_id.ToString()));
