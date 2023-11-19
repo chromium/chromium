@@ -733,6 +733,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4856841893565072365">Menijska vrstica za pametno razvrščanje</translation>
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4881695831933465202">Odpri</translation>
+<translation id="4883824756452868502">Zaznavanje enot</translation>
 <translation id="488785315393301722">Pokaži podrobnosti</translation>
 <translation id="4894963374040315706">To vam omogoča iskanje z glasom.</translation>
 <translation id="489903206070130262">Zadnji odprti zavihek</translation>
@@ -855,8 +856,10 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Ponudi prevajanje</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="555749644339804659">Preverjanje gesel …</translation>
+<translation id="5559567453458728487">Pretvorba merskih enot, najdenih v spletu</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5572684875078967866">Količina podatkov</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Sledi temu paketu}one{Sledi vsem paketom}two{Sledi vsem paketom}few{Sledi vsem paketom}other{Sledi vsem paketom}}</translation>
 <translation id="5597915316964418992">Odprite mrežo zavihkov</translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
@@ -1119,6 +1122,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6781260999953472352">Želite vklopiti sinhronizacijo?</translation>
 <translation id="6781405765516175232">Če želite možnosti poti, se dotaknite možnosti »Get Directions« (Navodila za pot).</translation>
 <translation id="6785453220513215166">Pošiljanje poročila o zrušitvi ...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Prekliči sledenje temu paketu}one{Prekliči sledenje vsem paketom}two{Prekliči sledenje vsem paketom}few{Prekliči sledenje vsem paketom}other{Prekliči sledenje vsem paketom}}</translation>
 <translation id="6790502149545262384">Kmalu bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
 <translation id="6797885426782475225">Glasovno iskanje</translation>
 <translation id="6800349425672670802">Do vseh odprtih zavihkov lahko dostopate s preklopom med zavihki.</translation>

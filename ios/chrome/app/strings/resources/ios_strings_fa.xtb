@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">نوار منو مرتب‌سازی هوشمند</translation>
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="4883824756452868502">شناسایی واحدها</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="4894963374040315706">با این اجازه می‌توانید با صدایتان جستجو کنید</translation>
 <translation id="489903206070130262">آخرین برگه باز</translation>
@@ -855,8 +856,10 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5551897871312988470">پیشنهاد برای ترجمه</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="555749644339804659">درحال بررسی گذرواژه‌ها…</translation>
+<translation id="5559567453458728487">تبدیل واحدهای اندازه‌گیری پیداشده در وب</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5572684875078967866">ذخیره‌سازی اطلاعات</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{پیگیری این بسته}one{پیگیری همه بسته‌ها}other{پیگیری همه بسته‌ها}}</translation>
 <translation id="5597915316964418992">باز کردن شبکه برگه</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -1119,6 +1122,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6781260999953472352">«همگام‌سازی» روشن شود؟</translation>
 <translation id="6781405765516175232">برای گزینه‌های مسیر، روی «دریافت مسیر» ضربه بزنید.</translation>
 <translation id="6785453220513215166">در حال ارسال گزارش خرابی...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{لغو پیگیری این بسته}one{لغو پیگیری همه بسته‌ها}other{لغو پیگیری همه بسته‌ها}}</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6797885426782475225">جستجوی گفتاری</translation>
 <translation id="6800349425672670802">از «تعویض‌کننده برگه» می‌توانید به همه برگه‌های باز خود دسترسی داشته باشید.</translation>
