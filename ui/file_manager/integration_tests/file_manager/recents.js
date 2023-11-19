@@ -509,6 +509,8 @@ testcase.recentsNested = async () => {
   // Check: The directory should be highlighted in the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('C');
+  // Focus on the tree first before using the ":focus" selector below.
+  await directoryTree.focusTree();
   await directoryTree.waitForFocusedItemByLabel('C');
 };
 

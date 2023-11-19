@@ -19,10 +19,12 @@ import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
+import {keepLatest} from '../../lib/concurrency_models.js';
 import type {FileKey} from '../file_key.js';
-import {getEntry, getFileData, getStore} from '../store.js';
+import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
 import {hasDlpDisabledFiles} from './current_directory.js';
+import {updateNavigationEntry} from './navigation.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey} from './volumes.js';
 
 /**
@@ -570,7 +572,7 @@ export async function*
     if (fileData?.expanded) {
       for (const childEntry of childEntriesToReadDeeper) {
         for await (const action of readSubDirectories(
-            childEntry, /* recursive */ true)) {
+            childEntry, /* recursive= */ true)) {
           yield action;
         }
       }
@@ -679,3 +681,85 @@ export async function*
     yield action;
   }
 }
+
+/**
+ * Traverse each entry in the `pathEntryKeys`: if the entry doesn't exist in the
+ * store, read sub directories for its parent. After all entries exist in the
+ * store, expand all parent entries.
+ *
+ * @param pathEntryKeys An array of FileKey starts from ancestor to child, e.g.
+ *     [A, B, C] A is the parent entry of B, B is the parent entry of C.
+ */
+export async function*
+    traverseAndExpandPathEntriesInternal(pathEntryKeys: FileKey[]):
+        ActionsProducerGen {
+  if (pathEntryKeys.length === 0) {
+    return;
+  }
+  const childEntryKey = pathEntryKeys[pathEntryKeys.length - 1]!;
+  const state = getStore().getState();
+  const childEntryFileData = getFileData(state, childEntryKey);
+  if (!childEntryFileData) {
+    console.warn(`Can not find the child entry: ${childEntryKey}`);
+    return;
+  }
+  const volume = getVolume(state, childEntryFileData);
+  if (!volume) {
+    console.warn(
+        `Can not find the volume root for the child entry: ${childEntryKey}`);
+    return;
+  }
+  const volumeEntry = getEntry(state, volume.rootKey!);
+  if (!volumeEntry) {
+    console.warn(`Can not find the volume root entry: ${volume.rootKey}`);
+    return;
+  }
+
+  for (let i = 1; i < pathEntryKeys.length; i++) {
+    // We need to getStore() for each loop because the below `yield action` will
+    // add new entries to the store.
+    const state = getStore().getState();
+    const currentEntryKey = pathEntryKeys[i]!;
+    const parentEntryKey = pathEntryKeys[i - 1]!;
+    const parentEntry = getEntry(state, parentEntryKey)!;
+    const parentFileData = getFileData(state, parentEntryKey)!;
+    const fileData = getFileData(state, currentEntryKey);
+    // Read sub directories if the child entry doesn't exist or it's not in
+    // parent entry's children.
+    if (!fileData || !parentFileData.children.includes(currentEntryKey)) {
+      let foundCurrentEntry = false;
+      for await (const action of readSubDirectories(parentEntry)) {
+        yield action;
+        const childEntries: Array<Entry|FilesAppEntry> =
+            action?.payload.entries || [];
+        foundCurrentEntry =
+            !!childEntries.find(entry => entry.toURL() === currentEntryKey);
+        if (foundCurrentEntry) {
+          break;
+        }
+      }
+      if (!foundCurrentEntry) {
+        console.warn(`Failed to find entry "${
+            currentEntryKey}" from its parent "${parentEntryKey}"`);
+        return;
+      }
+    }
+  }
+  // Now all entries on `pathEntryKeys` are found, we can expand all of them
+  // now. Note: if any entry on the path can't be found, we don't expand
+  // anything because we don't want to expand half-way, e.g. if `pathEntryKeys =
+  // [entryA, entryB, entryC]` but somehow entryB doesn't exist, we don't want
+  // to expand `entryA`.
+  for (let i = 0; i < pathEntryKeys.length - 1; i++) {
+    yield updateNavigationEntry({key: pathEntryKeys[i]!, expanded: true});
+  }
+}
+
+/**
+ * `traverseAndExpandPathEntries` is mainly used to traverse and expand the
+ * `pathComponent` for current directory, if concurrent requests happen (e.g.
+ * current directory changes too quickly while we are still resolving the
+ * previous one), we just ditch the previous request and only keep the latest.
+ */
+export const traverseAndExpandPathEntries =
+    keepLatest(traverseAndExpandPathEntriesInternal);

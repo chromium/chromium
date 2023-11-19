@@ -12,14 +12,14 @@ import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {AndroidApp, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
+import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
 import {Menu} from '../foreground/js/ui/menu.js';
-import {convertEntryToFileData, readSubDirectories} from '../state/ducks/all_entries.js';
+import {convertEntryToFileData, readSubDirectories, traverseAndExpandPathEntries} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
@@ -97,6 +97,16 @@ export class DirectoryTreeContainer {
    */
   private shouldFocusOnNextSelectedItem_: boolean = false;
 
+  /**
+   * When current directory changes, if the corresponding tree item has not been
+   * rendered yet, an asynchronous read-sub-directory action will be dispatched
+   * to read the children until we could find the item. During this asynchronous
+   * process, the current directory might change again (either manually by user
+   * or other operations), we need this variable to see if we need to trigger
+   * another read-sub-directories call or not.
+   */
+  private entryKeyToSelect_: FileKey|null = null;
+
   private store_: Store;
 
   /**
@@ -168,23 +178,13 @@ export class DirectoryTreeContainer {
 
     const {navigation: {roots}, androidApps, currentDirectory} = state;
 
-    // When current directory changes in the store, select the corresponding
-    // navigation item.
+    // When current directory changes in the store, and the selected item in the
+    // tree is different from that, select the corresponding navigation item.
+    const selectedItemKey = this.tree.selectedItem?.dataset['navigationKey'];
     if (currentDirectory?.key &&
-        currentDirectory.status === PropStatus.SUCCESS) {
-      const element =
-          this.getNavigationDataFromKey_(currentDirectory.key)?.element;
-      if (element && !element.selected) {
-        element.selected = true;
-        if (this.shouldFocusOnNextSelectedItem_) {
-          this.shouldFocusOnNextSelectedItem_ = false;
-          this.tree.focusedItem = element;
-          // Wait for the selected change finishes (e.g. expand all its parents)
-          // before we can focus on the element below.
-          await element.updateComplete;
-          element.focus();
-        }
-      }
+        currentDirectory.status === PropStatus.SUCCESS &&
+        currentDirectory.key !== selectedItemKey) {
+      await this.selectCurrentDirectoryItem_(currentDirectory);
     }
 
     // When navigation roots data changes in the store, re-render all navigation
@@ -367,6 +367,7 @@ export class DirectoryTreeContainer {
     // when refactoring the command part.
     (element as any).entry = fileData.entry;
 
+    element.expanded = fileData.expanded;
     element.label = fileData.label;
     if (navigationRoot) {
       element.separator = navigationRoot.separator;
@@ -604,10 +605,6 @@ export class DirectoryTreeContainer {
     if (isMyFilesEntry(entry)) {
       element.mayHaveChildren = true;
       element.expanded = true;
-      this.store_.dispatch(updateNavigationEntry({
-        key: entry.toURL(),
-        expanded: true,
-      }));
       return;
     }
     if (fileData.shouldDelayLoadingChildren) {
@@ -1161,5 +1158,49 @@ export class DirectoryTreeContainer {
     const {currentDirectory} = this.store_.getState();
     return currentDirectory?.key === navigationKey &&
         currentDirectory.status === PropStatus.SUCCESS;
+  }
+
+  private async selectCurrentDirectoryItem_(currentDirectory: CurrentDirectory):
+      Promise<void> {
+    const currentDirectoryKey = currentDirectory.key;
+    const navigationData = this.getNavigationDataFromKey_(currentDirectoryKey);
+    if (navigationData) {
+      const element = navigationData.element;
+      if (element && !element.selected) {
+        // Reset entryKeyToSelect_ because we already find the element which
+        // represents current directory.
+        this.entryKeyToSelect_ = null;
+        element.selected = true;
+        if (this.shouldFocusOnNextSelectedItem_) {
+          this.shouldFocusOnNextSelectedItem_ = false;
+          this.tree.focusedItem = element;
+          // Wait for the selected change finishes (e.g. expand all its parents)
+          // before we can focus on the element below.
+          await element.updateComplete;
+          element.focus();
+        }
+      }
+      return;
+    }
+    // The item which represents the current directory can not be found in the
+    // tree, we need to read sub directory from the root recursively until we
+    // find the targeted current directory.
+
+    if (this.entryKeyToSelect_ === currentDirectoryKey) {
+      // Do nothing because we already started a reading call to find this exact
+      // same "current directory" (see logic below.)
+      return;
+    }
+
+    // Set the selected item to null before scanning for the target directory,
+    // if we couldn't find the target directory after scanning (e.g. "Go to
+    // file location" for Play files in recent view b/265101238), nothing
+    // should be selected in the tree.
+    this.tree.selectedItem = null;
+
+    this.entryKeyToSelect_ = currentDirectoryKey;
+    const pathEntryKeys =
+        currentDirectory.pathComponents.map(pathComponent => pathComponent.key);
+    this.store_.dispatch(traverseAndExpandPathEntries(pathEntryKeys));
   }
 }

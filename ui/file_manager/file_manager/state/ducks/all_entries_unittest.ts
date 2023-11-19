@@ -15,7 +15,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {addChildEntries} from '../ducks/all_entries.js';
+import {addChildEntries, traverseAndExpandPathEntriesInternal} from '../ducks/all_entries.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';
 
@@ -37,13 +37,15 @@ export function setUp() {
                    .getCurrentProfileVolumeInfo(
                        VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
       MockFileSystem;
-  fileSystem.populate([
-    '/dir-1/',
-    '/dir-2/sub-dir/',
-    '/dir-2/file-1.txt',
-    '/dir-2/file-2.txt',
-    '/dir-3/',
-  ]);
+  fileSystem.populate(
+      [
+        '/dir-1/',
+        '/dir-2/sub-dir/',
+        '/dir-2/file-1.txt',
+        '/dir-2/file-2.txt',
+        '/dir-3/',
+      ],
+      /* opt_clear= */ true);
 }
 
 /** Generate MyFiles entry with fake entry list. */
@@ -269,12 +271,14 @@ export async function testAddChildEntries(done: () => void) {
   const initialState = getEmptyState();
 
   // Add parent/children entries to the store.
-  fileSystem.populate([
-    '/a/',
-    '/a/1/',
-    '/a/2/',
-    '/a/2/b/',
-  ]);
+  fileSystem.populate(
+      [
+        '/a/',
+        '/a/1/',
+        '/a/2/',
+        '/a/2/b/',
+      ],
+      /* opt_clear= */ true);
   const aEntry = fileSystem.entries['/a']!;
   initialState.allEntries[aEntry.toURL()] = convertEntryToFileData(aEntry);
   // Make sure aEntry won't be cleared.
@@ -521,12 +525,14 @@ export async function testReadSubDirectories(done: () => void) {
   const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
-  fakeFs.populate([
-    '/Downloads/',
-    '/Downloads/c/',
-    '/Downloads/b.txt',
-    '/Downloads/a/',
-  ]);
+  fakeFs.populate(
+      [
+        '/Downloads/',
+        '/Downloads/c/',
+        '/Downloads/b.txt',
+        '/Downloads/a/',
+      ],
+      /* opt_clear= */ true);
   const downloadsEntry = fakeFs.entries['/Downloads']!;
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
@@ -565,13 +571,15 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
-  fakeFs.populate([
-    '/Downloads/',
-    '/Downloads/a/',
-    '/Downloads/b/',
-    '/Downloads/a/111/',
-    '/Downloads/b/222/',
-  ]);
+  fakeFs.populate(
+      [
+        '/Downloads/',
+        '/Downloads/a/',
+        '/Downloads/b/',
+        '/Downloads/a/111/',
+        '/Downloads/b/222/',
+      ],
+      /* opt_clear= */ true);
   const downloadsEntry = fakeFs.entries['/Downloads']!;
   const bDirEntry = fakeFs.entries['/Downloads/b']!;
   // The entry to be read should be in the store before reading.
@@ -624,9 +632,11 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
 
   // Populate a fake file entry in the file system.
   const fakeFs = new MockFileSystem('fake-fs');
-  fakeFs.populate([
-    '/a.txt',
-  ]);
+  fakeFs.populate(
+      [
+        '/a.txt',
+      ],
+      /* opt_clear= */ true);
 
   // Check reading non directory entry will do nothing.
   store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!));
@@ -685,11 +695,13 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   driveRootEntryList.addEntry(sharedWithMeEntry);
   driveRootEntryList.addEntry(offlineEntry);
   // Add child entries.
-  driveFs.populate([
-    '/root/a/',
-    '/root/b.txt',
-    '/Computers/c.txt',
-  ]);
+  driveFs.populate(
+      [
+        '/root/a/',
+        '/root/b.txt',
+        '/Computers/c.txt',
+      ],
+      /* opt_clear= */ true);
   // Drive root entry list needs to be in the store before reading.
   const fakeDriveEntryFileData = convertEntryToFileData(driveRootEntryList);
   initialState.allEntries[driveRootEntryList.toURL()] = fakeDriveEntryFileData;
@@ -717,6 +729,148 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
     offlineEntry.toURL(),
   ];
   // /root children won't be read.
+
+  await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/**
+ * Tests that traverse path entries will read entries for each parent and
+ * expand them if the child entry could be found.
+ */
+export async function testTraverseAndExpandPathEntriesFound(
+    done: VoidCallback) {
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  // Populate some fake entries.
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  fakeFs.populate(
+      [
+        '/a/',
+        '/a/b/',
+        '/a/b/c/',
+      ],
+      /* opt_clear= */ true);
+  const volumeRootEntry = fakeFs.entries['/']!;
+  const dirA = fakeFs.entries['/a']!;
+  const dirB = fakeFs.entries['/a/b']!;
+  const dirC = fakeFs.entries['/a/b/c']!;
+
+  // Put the volume root and the last child entry in the store.
+  const volumeRootEntryFileData = convertEntryToFileData(volumeRootEntry);
+  initialState.allEntries[volumeRootEntry.toURL()] = volumeRootEntryFileData;
+  initialState.volumes[downloadsVolumeInfo.volumeId] =
+      convertVolumeInfoAndMetadataToVolume(
+          downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
+  const dirCEntryFileData = convertEntryToFileData(dirC);
+  initialState.allEntries[dirC.toURL()] = dirCEntryFileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch action producer to traverse on the entry path.
+  store.dispatch(traverseAndExpandPathEntriesInternal([
+    volumeRootEntry.toURL(),
+    dirA.toURL(),
+    dirB.toURL(),
+    dirC.toURL(),
+  ]));
+
+  // Expect dirA and dirB will be in the store and expanded.
+  const want: State['allEntries'] = {
+    [volumeRootEntry.toURL()]: {
+      ...volumeRootEntryFileData,
+      expanded: true,
+      children: [dirA.toURL()],
+    },
+    [dirA.toURL()]: {
+      ...convertEntryToFileData(dirA),
+      expanded: true,
+      children: [dirB.toURL()],
+    },
+    [dirB.toURL()]: {
+      ...convertEntryToFileData(dirB),
+      expanded: true,
+      children: [dirC.toURL()],
+    },
+    [dirC.toURL()]: {
+      ...convertEntryToFileData(dirC),
+      expanded: false,
+      children: [],
+    },
+  };
+
+  await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/**
+ * Tests that traverse path entries will read entries for each parent, it
+ * won't expand any parent entry if the child entry can not be found.
+ */
+export async function testTraverseAndExpandPathEntriesNotFound(
+    done: VoidCallback) {
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  // Populate some fake entries.
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  fakeFs.populate(
+      [
+        '/a/',
+        '/a/b/',
+        '/a/b/c/',
+      ],
+      /* opt_clear= */ true);
+  const volumeRootEntry = fakeFs.entries['/']!;
+  const dirA = fakeFs.entries['/a']!;
+  const dirB = fakeFs.entries['/a/b']!;
+  const dirC = fakeFs.entries['/a/b/c']!;
+
+  // Put the volume root and the last child entry in the store.
+  const volumeRootEntryFileData = convertEntryToFileData(volumeRootEntry);
+  initialState.allEntries[volumeRootEntry.toURL()] = volumeRootEntryFileData;
+  initialState.volumes[downloadsVolumeInfo.volumeId] =
+      convertVolumeInfoAndMetadataToVolume(
+          downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
+  const dirCEntryFileData = convertEntryToFileData(dirC);
+  initialState.allEntries[dirC.toURL()] = dirCEntryFileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch action producer to traverse on the entry path.
+  store.dispatch(traverseAndExpandPathEntriesInternal([
+    volumeRootEntry.toURL(),
+    dirA.toURL(),
+    'not-exist-url',
+    dirC.toURL(),
+  ]));
+
+  // Expect dirA and dirB will be in the store but no entry is expanded.
+  const want: State['allEntries'] = {
+    [volumeRootEntry.toURL()]: {
+      ...volumeRootEntryFileData,
+      expanded: false,
+      children: [dirA.toURL()],
+    },
+    [dirA.toURL()]: {
+      ...convertEntryToFileData(dirA),
+      expanded: false,
+      children: [dirB.toURL()],
+    },
+    [dirB.toURL()]: {
+      ...convertEntryToFileData(dirB),
+      expanded: false,
+      // dirB's children is not being read because read stops when non-exist-url
+      // is encountered.
+      children: [],
+    },
+    // dirC is cleared because it's not referenced by any other entries.
+  };
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
 

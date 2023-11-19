@@ -1891,17 +1891,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        // TODO(b/307657164): enable the test
-        // TestCase("recentsNested").NewDirectoryTree(),
+        TestCase("recentsNested").NewDirectoryTree(),
         TestCase("recentsFilterResetToAll").NewDirectoryTree(),
         TestCase("recentsA11yMessages")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
         TestCase("recentsReadOnlyHidden").NewDirectoryTree(),
-        // TestCase("recentsAllowDeletion").EnableArc().NewDirectoryTree(),
-        // TestCase("recentsAllowMultipleFilesDeletion")
-        //     .EnableArc()
-        //     .NewDirectoryTree(),
+        TestCase("recentsAllowDeletion").EnableArc().NewDirectoryTree(),
+        TestCase("recentsAllowMultipleFilesDeletion")
+            .EnableArc()
+            .NewDirectoryTree(),
         TestCase("recentsAllowRename")
             .EnableArc()
             .NewDirectoryTree()
@@ -1909,7 +1908,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNoRenameForPlayFiles").EnableArc().NewDirectoryTree(),
         TestCase("recentsAllowCutForDownloads").NewDirectoryTree(),
         TestCase("recentsAllowCutForDrive").NewDirectoryTree(),
-        // TestCase("recentsAllowCutForPlayFiles").EnableArc().NewDirectoryTree(),
+        TestCase("recentsAllowCutForPlayFiles").EnableArc().NewDirectoryTree(),
         TestCase("recentsTimePeriodHeadings").NewDirectoryTree(),
         TestCase("recentsEmptyFolderMessage").NewDirectoryTree(),
         TestCase("recentsEmptyFolderMessageAfterDeletion").NewDirectoryTree(),
