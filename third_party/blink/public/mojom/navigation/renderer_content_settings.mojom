@@ -11,5 +11,4 @@ struct RendererContentSettings {
   bool allow_image;
   bool allow_popup;
   bool allow_mixed_content;
-  bool allow_auto_dark;
 };

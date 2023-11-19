@@ -33,7 +33,7 @@ mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
   // components/content_settings/core/browser/content_settings_registry.cc.
   return mojom::RendererContentSettings::New(
       /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
-      /*allow_mixed_content=*/false, /*allow_auto_dark=*/true);
+      /*allow_mixed_content=*/false);
 }
 
 }  // namespace blink

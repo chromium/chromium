@@ -424,12 +424,7 @@ void WebContentsHandler::ReadyToCommitNavigation(
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::POPUPS) ==
       CONTENT_SETTING_ALLOW;
-#if BUILDFLAG(IS_ANDROID)
-  content_settings->allow_auto_dark =
-      map_->GetContentSetting(primary_url, secondary_url,
-                              ContentSettingsType::AUTO_DARK_WEB_CONTENT) ==
-      CONTENT_SETTING_ALLOW;
-#else
+#if !BUILDFLAG(IS_ANDROID)
   content_settings->allow_image =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::IMAGES) ==

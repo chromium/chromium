@@ -84,7 +84,6 @@ class ContentSettingsAgentImpl
   bool AllowScript(bool enabled_per_settings) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;
-  bool AllowAutoDarkWebContent(bool enabled_per_settings) override;
   bool AllowReadFromClipboard(bool default_value) override;
   bool AllowWriteToClipboard(bool default_value) override;
   bool AllowMutationEvents(bool default_value) override;
