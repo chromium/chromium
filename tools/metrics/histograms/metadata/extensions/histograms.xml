@@ -118,21 +118,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExtensionContentVerifyJob.TimeSpentUS" units="microseconds"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The time taken in computation (hashing actual bytes read and comparing
-    against expected computed hashes values) during an extension resource load.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
     units="Extension Count" expires_after="2024-03-31">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -395,17 +380,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-02-01 to 2022-09-22; data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ContentVerification.ReadContentHashTime" units="ms"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Time spent by ContentVerifier for a request to create a ContentHash
-    instance. Recorded during an extension load completion or during an on
-    demand content verification that was triggered by ContentVerifyJob.
   </summary>
 </histogram>
 
@@ -1548,15 +1522,6 @@ chromium-metrics-reviews@google.com.
     &quot;user profiles&quot; (profiles where people can install extensions,
     specifically profiles that can have non-component extensions installed).
     Grouped by enabled/disabled state.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ExternalJsonCount" units="units"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of extensions referenced in the external extensions source at path
-    chrome::DIR_EXTERNAL_EXTENSIONS.
   </summary>
 </histogram>
 
@@ -3964,14 +3929,6 @@ chromium-metrics-reviews@google.com.
 
     Replaced Extensions.SandboxUnpackFailureReason because the enum values were
     not in sync with the C++ enums.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.SandboxUnpackHashCheck" enum="BooleanValidHashSum"
-    expires_after="M85">
-  <owner>achuith@chromium.org</owner>
-  <summary>
-    Whether a CRX file hash sum was the same as in an updater manifest.
   </summary>
 </histogram>
 

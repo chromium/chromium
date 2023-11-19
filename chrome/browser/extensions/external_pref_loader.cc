@@ -299,9 +299,6 @@ void ExternalPrefLoader::LoadOnFileThread() {
     ReadStandaloneExtensionPrefFiles(prefs);
   }
 
-  if (base_path_id_ == chrome::DIR_EXTERNAL_EXTENSIONS)
-    UMA_HISTOGRAM_COUNTS_100("Extensions.ExternalJsonCount", prefs.size());
-
   // If we have any records to process, then we must have
   // read at least one .json file.  If so, then we should have
   // set |base_path_|.

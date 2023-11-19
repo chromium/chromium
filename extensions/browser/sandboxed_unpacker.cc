@@ -953,8 +953,6 @@ bool SandboxedUnpacker::ValidateSignature(
 
   switch (result) {
     case crx_file::VerifierResult::OK_FULL: {
-      if (!expected_hash.empty())
-        UMA_HISTOGRAM_BOOLEAN("Extensions.SandboxUnpackHashCheck", true);
       return true;
     }
     case crx_file::VerifierResult::OK_DELTA:
@@ -989,7 +987,6 @@ bool SandboxedUnpacker::ValidateSignature(
       // We should never get this result unless we had specifically asked for
       // verification of the crx file's hash.
       CHECK(!expected_hash.empty());
-      UMA_HISTOGRAM_BOOLEAN("Extensions.SandboxUnpackHashCheck", false);
       FailWithPackageError(
           SandboxedUnpackerFailureReason::CRX_HASH_VERIFICATION_FAILED);
       break;
