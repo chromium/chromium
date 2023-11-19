@@ -90,7 +90,7 @@ FrameContext FrameContext::FromFrameNode(const FrameNode* node) {
   auto* node_impl = FrameNodeImpl::FromNode(node);
   CHECK(node_impl->process_node());
   content::GlobalRenderFrameHostId global_id(
-      node_impl->process_node()->GetRenderProcessId().GetUnsafeValue(),
+      node_impl->process_node()->GetRenderProcessHostId().GetUnsafeValue(),
       node_impl->render_frame_id());
   CHECK(IsValidId(global_id));
   return FrameContext(global_id, node_impl->GetWeakPtr());

@@ -140,11 +140,11 @@ ProcessContext ProcessContext::FromProcessNode(const ProcessNode* node) {
       id = BrowserProcessTag{};
       break;
     case content::PROCESS_TYPE_RENDERER:
-      id = node_impl->render_process_host_proxy().render_process_host_id();
+      id = node_impl->GetRenderProcessHostId();
       CHECK(!absl::get<RenderProcessHostId>(id).is_null());
       break;
     default:
-      id = node_impl->browser_child_process_host_proxy()
+      id = node_impl->GetBrowserChildProcessHostProxy()
                .browser_child_process_host_id();
       CHECK(!absl::get<BrowserChildProcessHostId>(id).is_null());
       break;

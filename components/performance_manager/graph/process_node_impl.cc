@@ -198,12 +198,13 @@ absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
 
 const std::string& ProcessNodeImpl::GetMetricsName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return metrics_name();
+  return metrics_name_;
 }
 
 bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return main_thread_task_load_is_low();
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return main_thread_task_load_is_low_.value();
 }
 
 uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
@@ -217,15 +218,13 @@ uint64_t ProcessNodeImpl::GetResidentSetKb() const {
 }
 
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetRenderProcessId();
+  return GetRenderProcessHostProxy().render_process_host_id();
 }
 
 const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
     const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return render_process_host_proxy();
+  return absl::get<RenderProcessHostProxy>(child_process_host_proxy_);
 }
 
 const BrowserChildProcessHostProxy&
@@ -233,18 +232,30 @@ ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
   DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
-  return browser_child_process_host_proxy();
+  return absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
 }
 
 base::TaskPriority ProcessNodeImpl::GetPriority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority();
+  return priority_.value();
 }
 
 ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return hosted_content_types();
+  return hosted_content_types_;
+}
+
+const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return frame_nodes_;
+}
+
+const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return worker_nodes_;
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
@@ -276,37 +287,6 @@ void ProcessNodeImpl::SetProcess(base::Process process,
 
   base::ProcessId pid = process.Pid();
   SetProcessImpl(std::move(process), pid, launch_time);
-}
-
-const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return frame_nodes_;
-}
-
-const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return worker_nodes_;
-}
-
-PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-
-  PageNodeImpl* page_node = nullptr;
-  for (auto* frame_node : frame_nodes_) {
-    if (!page_node)
-      page_node = frame_node->page_node();
-    if (page_node != frame_node->page_node())
-      return nullptr;
-  }
-  return page_node;
-}
-
-RenderProcessHostId ProcessNodeImpl::GetRenderProcessId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_process_host_proxy().render_process_host_id();
 }
 
 void ProcessNodeImpl::AddFrame(FrameNodeImpl* frame_node) {

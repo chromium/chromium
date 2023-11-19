@@ -42,9 +42,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
       browsing_instance_id_(browsing_instance_id),
       site_instance_id_(site_instance_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
-          process_node->render_process_host_proxy()
-              .render_process_host_id()
-              .value(),
+          process_node->GetRenderProcessHostId().value(),
           render_frame_id)) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
@@ -666,7 +664,7 @@ void FrameNodeImpl::OnJoiningGraph() {
   DCHECK(GetWeakPtr().get());
 
   // Enable querying this node using process and frame routing ids.
-  graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessId(),
+  graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                   render_frame_id_, this);
 
   // Notify the initializing observers.
@@ -704,7 +702,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   graph()->NotifyFrameNodeTearingDown(this);
 
   // Disable querying this node using process and frame routing ids.
-  graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessId(),
+  graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                     render_frame_id_, this);
 }
 

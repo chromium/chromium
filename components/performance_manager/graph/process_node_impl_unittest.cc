@@ -92,30 +92,6 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_EQ(0U, process_node->GetResidentSetKb());
 }
 
-TEST_F(ProcessNodeImplTest, GetPageNodeIfExclusive) {
-  {
-    MockSinglePageInSingleProcessGraph g(graph());
-    EXPECT_EQ(g.page.get(), g.process.get()->GetPageNodeIfExclusive());
-  }
-
-  {
-    MockSinglePageWithMultipleProcessesGraph g(graph());
-    EXPECT_EQ(g.page.get(), g.process.get()->GetPageNodeIfExclusive());
-  }
-
-  {
-    MockMultiplePagesInSingleProcessGraph g(graph());
-    EXPECT_FALSE(g.process.get()->GetPageNodeIfExclusive());
-  }
-
-  {
-    MockMultiplePagesWithMultipleProcessesGraph g(graph());
-    EXPECT_FALSE(g.process.get()->GetPageNodeIfExclusive());
-    EXPECT_EQ(g.other_page.get(),
-              g.other_process.get()->GetPageNodeIfExclusive());
-  }
-}
-
 namespace {
 
 class LenientMockObserver : public ProcessNodeImpl::Observer {
@@ -177,7 +153,7 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   // This call does nothing as the priority is always at LOWEST.
-  EXPECT_EQ(base::TaskPriority::LOWEST, process_node->priority());
+  EXPECT_EQ(base::TaskPriority::LOWEST, process_node->GetPriority());
   process_node->set_priority(base::TaskPriority::LOWEST);
 
   // This call should fire a notification.
@@ -239,14 +215,16 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   auto child_frame_node = CreateFrameNodeAutoId(
       process_node.get(), page_node.get(), main_frame_node.get());
 
-  // Simply test that the public interface impls yield the same result as their
-  // private counterpart.
 
   const std::string kMetricsName("TestUtilityProcess");
   process_node->SetProcessMetricsName(kMetricsName);
-  EXPECT_EQ(process_node->metrics_name(), kMetricsName);
-  EXPECT_EQ(process_node->metrics_name(),
-            public_process_node->GetMetricsName());
+  EXPECT_EQ(process_node->GetMetricsName(), kMetricsName);
+
+  process_node->SetMainThreadTaskLoadIsLow(true);
+  EXPECT_TRUE(process_node->GetMainThreadTaskLoadIsLow());
+
+  // For properties returning nodes, simply test that the public interface impls
+  //  yield the same result as their private counterpart.
 
   const auto& frame_nodes = process_node->frame_nodes();
   auto public_frame_nodes = public_process_node->GetFrameNodes();
@@ -263,10 +241,6 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
         return true;
       });
   EXPECT_EQ(public_frame_nodes, visited_frame_nodes);
-
-  process_node->SetMainThreadTaskLoadIsLow(true);
-  EXPECT_EQ(process_node->main_thread_task_load_is_low(),
-            public_process_node->GetMainThreadTaskLoadIsLow());
 }
 
 namespace {

@@ -166,11 +166,11 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
     ret.Set("exit_status", impl->GetExitStatus().value());
   }
 
-  if (!impl->metrics_name().empty()) {
-    ret.Set("metrics_name", impl->metrics_name());
+  if (!impl->GetMetricsName().empty()) {
+    ret.Set("metrics_name", impl->GetMetricsName());
   }
 
-  ret.Set("priority", base::TaskPriorityToString(impl->priority()));
+  ret.Set("priority", base::TaskPriorityToString(impl->GetPriority()));
 
   if (impl->GetPrivateFootprintKb()) {
     ret.Set("private_footprint_kb",
@@ -193,17 +193,16 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   if (impl->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
     // Renderer-only properties.
-    ret.Set("render_process_id", impl->GetRenderProcessId().value());
+    ret.Set("render_process_id", impl->GetRenderProcessHostId().value());
 
-    ret.Set("main_thread_task_load_is_low",
-            impl->main_thread_task_load_is_low());
+    ret.Set("main_thread_task_load_is_low", impl->GetMainThreadTaskLoadIsLow());
 
     ret.Set("hosted_content_types",
-            HostedProcessTypesToString(impl->hosted_content_types()));
+            HostedProcessTypesToString(impl->GetHostedContentTypes()));
   } else if (impl->GetProcessType() != content::PROCESS_TYPE_BROWSER) {
     // Non-renderer child process properties.
     ret.Set("browser_child_process_host_id",
-            impl->browser_child_process_host_proxy()
+            impl->GetBrowserChildProcessHostProxy()
                 .browser_child_process_host_id()
                 .value());
   }

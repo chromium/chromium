@@ -78,13 +78,13 @@ TEST_F(FrameNodeImplTest, GetFrameNodeById) {
   auto frame_a2 = CreateFrameNodeAutoId(process_a.get(), page.get());
   auto frame_b1 = CreateFrameNodeAutoId(process_b.get(), page.get());
 
-  EXPECT_EQ(graph()->GetFrameNodeById(process_a->GetRenderProcessId(),
+  EXPECT_EQ(graph()->GetFrameNodeById(process_a->GetRenderProcessHostId(),
                                       frame_a1->render_frame_id()),
             frame_a1.get());
-  EXPECT_EQ(graph()->GetFrameNodeById(process_a->GetRenderProcessId(),
+  EXPECT_EQ(graph()->GetFrameNodeById(process_a->GetRenderProcessHostId(),
                                       frame_a2->render_frame_id()),
             frame_a2.get());
-  EXPECT_EQ(graph()->GetFrameNodeById(process_b->GetRenderProcessId(),
+  EXPECT_EQ(graph()->GetFrameNodeById(process_b->GetRenderProcessHostId(),
                                       frame_b1->render_frame_id()),
             frame_b1.get());
 }
