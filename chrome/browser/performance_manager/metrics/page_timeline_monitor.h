@@ -266,7 +266,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   std::unique_ptr<CpuProbe> system_cpu_probe_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<CpuProbe> delayed_system_cpu_probe_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.
   base::WeakPtrFactory<PageTimelineMonitor> weak_factory_{this};
