@@ -197,10 +197,10 @@ const GURL& PageNodeImpl::GetMainFrameUrl() const {
 uint64_t PageNodeImpl::EstimateMainFramePrivateFootprintSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint64_t total = 0;
-  FrameNodeImpl* main_frame_node = GetMainFrameNodeImpl();
-  if (main_frame_node) {
+  FrameNodeImpl* main_frame = main_frame_node();
+  if (main_frame) {
     performance_manager::GraphImplOperations::VisitFrameAndChildrenPreOrder(
-        main_frame_node, [&total](FrameNodeImpl* frame_node) {
+        main_frame, [&total](FrameNodeImpl* frame_node) {
           total += frame_node->GetPrivateFootprintKbEstimate();
           return true;
         });
@@ -389,7 +389,18 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
     observer->OnMainFrameDocumentChanged(this);
 }
 
-FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
+FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return opener_frame_node_;
+}
+
+FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
+  return embedder_frame_node_;
+}
+
+FrameNodeImpl* PageNodeImpl::main_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (main_frame_nodes_.empty())
     return nullptr;
@@ -404,17 +415,6 @@ FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
 
   // Otherwise, return any old main frame node.
   return *main_frame_nodes_.begin();
-}
-
-FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return opener_frame_node_;
-}
-
-FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
-  return embedder_frame_node_;
 }
 
 PageNode::LoadingState PageNodeImpl::loading_state() const {
@@ -614,7 +614,7 @@ const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
 }
 
 const FrameNode* PageNodeImpl::GetMainFrameNode() const {
-  return GetMainFrameNodeImpl();
+  return main_frame_node();
 }
 
 bool PageNodeImpl::VisitMainFrameNodes(const FrameNodeVisitor& visitor) const {

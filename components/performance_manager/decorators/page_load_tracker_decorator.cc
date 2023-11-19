@@ -357,7 +357,7 @@ void PageLoadTrackerDecorator::TransitionToLoadedAndIdle(
 // static
 bool PageLoadTrackerDecorator::IsIdling(const PageNodeImpl* page_node) {
   // Get the frame node for the main frame associated with this page.
-  const FrameNodeImpl* main_frame_node = page_node->GetMainFrameNodeImpl();
+  const FrameNodeImpl* main_frame_node = page_node->main_frame_node();
   if (!main_frame_node)
     return false;
 

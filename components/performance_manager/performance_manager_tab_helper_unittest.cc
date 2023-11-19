@@ -125,7 +125,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     EXPECT_EQ(4u, GraphImplOperations::GetFrameNodes(page).size());
     ASSERT_EQ(1u, page->main_frame_nodes().size());
 
-    auto* main_frame = page->GetMainFrameNodeImpl();
+    auto* main_frame = page->main_frame_node();
     EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
     EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
 

@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
             EXPECT_TRUE(page_node);
 
             static_cast<PageNodeImpl*>(page_node.get())
-                ->GetMainFrameNodeImpl()
+                ->main_frame_node()
                 ->SetLifecycleState(mojom::LifecycleState::kFrozen);
 
             mechanism::PageDiscarder discarder;
