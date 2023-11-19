@@ -54,8 +54,6 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
       kWorkerType, process.get(), kTestBrowserContextId, kTestWorkerToken);
 
   // Test private interface.
-  EXPECT_EQ(worker_impl->browser_context_id(), kTestBrowserContextId);
-  EXPECT_EQ(worker_impl->worker_type(), kWorkerType);
   EXPECT_EQ(worker_impl->process_node(), process.get());
 
   // Test public interface.

@@ -44,12 +44,12 @@ WorkerNodeImpl::~WorkerNodeImpl() {
 
 WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_type();
+  return worker_type_;
 }
 
 const std::string& WorkerNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id();
+  return browser_context_id_;
 }
 
 const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
@@ -112,7 +112,7 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
     case WorkerType::kDedicated:
       // Nested dedicated workers are only available from other dedicated
       // workers in Chrome.
-      DCHECK_EQ(worker_node->worker_type(), WorkerType::kDedicated);
+      DCHECK_EQ(worker_node->GetWorkerType(), WorkerType::kDedicated);
       break;
     case WorkerType::kShared:
       // Nested shared workers are not available in Chrome.
@@ -120,7 +120,7 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
       break;
     case WorkerType::kService:
       // A service worker may not control another service worker.
-      DCHECK_NE(worker_node->worker_type(), WorkerType::kService);
+      DCHECK_NE(worker_node->GetWorkerType(), WorkerType::kService);
       break;
   }
 
@@ -168,16 +168,6 @@ void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {
 
   for (auto* observer : GetObservers())
     observer->OnFinalResponseURLDetermined(this);
-}
-
-const std::string& WorkerNodeImpl::browser_context_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id_;
-}
-
-WorkerNode::WorkerType WorkerNodeImpl::worker_type() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_type_;
 }
 
 ProcessNodeImpl* WorkerNodeImpl::process_node() const {

@@ -71,8 +71,6 @@ class WorkerNodeImpl
   void OnFinalResponseURLDetermined(const GURL& url);
 
   // Getters for const properties.
-  const std::string& browser_context_id() const;
-  WorkerType worker_type() const;
   ProcessNodeImpl* process_node() const;
 
   // Getters for non-const properties. These are not thread safe.
