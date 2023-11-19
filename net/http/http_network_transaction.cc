@@ -981,9 +981,19 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   if (!proxy_info_.is_direct()) {
     type = TransportType::kProxied;
   }
+
+  bool is_issued_by_known_root = false;
+  if (IsSecureRequest()) {
+    SSLInfo ssl_info;
+    CHECK(stream_);
+    stream_->GetSSLInfo(&ssl_info);
+    is_issued_by_known_root = ssl_info.is_issued_by_known_root;
+  }
+
   return connected_callback_.Run(
       TransportInfo(type, remote_endpoint_,
-                    std::string{stream_->GetAcceptChViaAlps()}),
+                    std::string{stream_->GetAcceptChViaAlps()},
+                    is_issued_by_known_root),
       base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
                      base::Unretained(this)));
 }

@@ -163,11 +163,10 @@ bool HttpBasicStream::GetAlternativeService(
 }
 
 void HttpBasicStream::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!state_.connection()->socket()) {
+  if (!state_.connection()->socket() ||
+      !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
     ssl_info->Reset();
-    return;
   }
-  parser()->GetSSLInfo(ssl_info);
 }
 
 void HttpBasicStream::GetSSLCertRequestInfo(

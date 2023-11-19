@@ -2182,7 +2182,9 @@ class URLLoaderFakeTransportInfoTest
   static net::TransportInfo FakeTransportInfo(
       const URLLoaderFakeTransportInfoTestParams& params) {
     return net::TransportInfo(params.transport_type,
-                              FakeEndpoint(params.endpoint_address_space), "");
+                              FakeEndpoint(params.endpoint_address_space),
+                              /*accept_ch_frame_arg=*/"",
+                              /*cert_is_issued_by_known_root=*/false);
   }
 };
 

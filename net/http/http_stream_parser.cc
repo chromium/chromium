@@ -1137,13 +1137,6 @@ void HttpStreamParser::OnConnectionClose() {
   stream_socket_ = nullptr;
 }
 
-void HttpStreamParser::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!request_->url.SchemeIsCryptographic() ||
-      !stream_socket_->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
-  }
-}
-
 void HttpStreamParser::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) {
   cert_request_info->Reset();

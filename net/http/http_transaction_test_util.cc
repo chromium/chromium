@@ -45,7 +45,9 @@ static MockTransactionMap mock_transactions;
 
 TransportInfo DefaultTransportInfo() {
   return TransportInfo(TransportType::kDirect,
-                       IPEndPoint(IPAddress::IPv4Localhost(), 80), "");
+                       IPEndPoint(IPAddress::IPv4Localhost(), 80),
+                       /*accept_ch_frame_arg=*/"",
+                       /*cert_is_issued_by_known_root=*/false);
 }
 
 //-----------------------------------------------------------------------------
