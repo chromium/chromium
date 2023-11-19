@@ -8,10 +8,9 @@ option optimize_for = LITE_RUNTIME;
 package manta.proto;
 
 enum FeatureName {
-  reserved 1 to 4;
-  reserved 6 to 300, 303;
+  reserved 1 to 299;
 
-  IMAGE_TEST = 5;
+  CHROMEOS_VC_BACKGROUNDS = 300;
   CHROMEOS_WALLPAPER = 301;
   TEXT_TEST = 302;
 }
