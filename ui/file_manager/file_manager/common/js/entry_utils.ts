@@ -863,14 +863,9 @@ export function getODFSMetadataQueryEntry(odfsVolumeInfo: VolumeInfo) {
  */
 export function isInteractiveVolume(volumeInfo: VolumeInfo) {
   const state = getStore().getState();
-  const volumes = state.volumes;
-  if (!volumes) {
-    console.error('Expected volumes to exist in the store.');
-    return true;
-  }
-  const volume = volumes[volumeInfo.volumeId];
+  const volume = state.volumes[volumeInfo.volumeId];
   if (!volume) {
-    console.error('Expected volume to be in the store.');
+    console.warn('Expected volume to be in the store.');
     return true;
   }
   return volume.isInteractive;
