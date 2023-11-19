@@ -61,7 +61,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     CHECK(cached_cpu_measurements_.empty());
-    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>(graph);
+    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>();
     return;
   }
 

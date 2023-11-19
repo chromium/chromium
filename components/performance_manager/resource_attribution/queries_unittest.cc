@@ -12,11 +12,14 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
-#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -31,6 +34,8 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/resource_attribution/gmock_matchers.h"
+#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +50,7 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
+using ::testing::ElementsAre;
 using QueryParams = internal::QueryParams;
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
@@ -57,18 +63,26 @@ class LenientMockQueryResultObserver : public QueryResultObserver {
 using MockQueryResultObserver =
     ::testing::StrictMock<LenientMockQueryResultObserver>;
 
-// Test QueryBuilder using mock graphs.
-using ResourceAttrQueryBuilderTest = GraphTestHarness;
+using ResourceAttrQueriesTest = GraphTestHarness;
 
-// Test ScopedResourceUsageQuery with PerformanceManagerTestHarness to test its
-// interactions on the PM sequence.
-class ResourceAttrScopedQueryTest : public PerformanceManagerTestHarness {
+// Tests that interact with the QueryScheduler use PerformanceManagerTestHarness
+// to test its interactions on the PM sequence.
+class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
  protected:
   using Super = PerformanceManagerTestHarness;
+
+  ResourceAttrQueriesPMTest()
+      : Super(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
+
+    RunInGraph([&](Graph* graph) {
+      graph_ = graph;
+      CPUMeasurementDelegate::SetDelegateFactoryForTesting(graph,
+                                                           &delegate_factory_);
+    });
 
     // Navigate to an initial page.
     SetContents(CreateTestWebContents());
@@ -76,17 +90,40 @@ class ResourceAttrScopedQueryTest : public PerformanceManagerTestHarness {
         content::NavigationSimulator::NavigateAndCommitFromBrowser(
             web_contents(), GURL("https://a.com/"));
     ASSERT_TRUE(rfh);
-    main_frame_context = FrameContext::FromRenderFrameHost(rfh);
-    ASSERT_TRUE(main_frame_context.has_value());
+    main_frame_context_ = FrameContext::FromRenderFrameHost(rfh);
+    ASSERT_TRUE(main_frame_context_.has_value());
   }
 
+  void TearDown() override {
+    graph_ = nullptr;
+    Super::TearDown();
+  }
+
+  void TearDownGraph() {
+    graph_ = nullptr;
+    Super::TearDownNow();
+  }
+
+  Graph* graph() { return graph_.get(); }
+
   // A ResourceContext for the main frame.
-  absl::optional<FrameContext> main_frame_context;
+  ResourceContext main_frame_context() const {
+    return main_frame_context_.value();
+  }
+
+ private:
+  raw_ptr<Graph> graph_ = nullptr;
+
+  absl::optional<FrameContext> main_frame_context_;
+
+  // This must be deleted after TearDown() so that it outlives the
+  // CPUMeasurementMonitor.
+  SimulatedCPUMeasurementDelegateFactory delegate_factory_;
 };
 
 }  // namespace
 
-TEST_F(ResourceAttrQueryBuilderTest, Params) {
+TEST_F(ResourceAttrQueriesTest, QueryBuilderParams) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   QueryBuilder builder;
@@ -133,7 +170,7 @@ TEST_F(ResourceAttrQueryBuilderTest, Params) {
   EXPECT_EQ(*scoped_query.GetParamsForTesting(), expected_params);
 }
 
-TEST_F(ResourceAttrQueryBuilderTest, Clone) {
+TEST_F(ResourceAttrQueriesTest, QueryBuilderClone) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   QueryBuilder builder;
   builder.AddResourceContext(mock_graph.page->GetResourceContext())
@@ -162,7 +199,48 @@ TEST_F(ResourceAttrQueryBuilderTest, Clone) {
             expected_cloned_contexts);
 }
 
-TEST_F(ResourceAttrScopedQueryTest, AddRemoveScopedQuery) {
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilderQueryOnce) {
+  base::RunLoop run_loop;
+  QueryBuilder()
+      .AddResourceContext(main_frame_context())
+      .AddResourceType(ResourceType::kCPUTime)
+      .QueryOnce(base::BindLambdaForTesting([](const QueryResultMap& results) {
+                   // CPU measurements need to cover a period of time, so
+                   // without a scoped query to start the monitoring period
+                   // there will be no results. This just tests that the query
+                   // request and empty result are delivered to and from the
+                   // scheduler.
+                   EXPECT_TRUE(results.empty());
+                 }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilderQueryOnceWithTaskRunner) {
+  auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  base::RunLoop run_loop;
+  auto expect_empty_on_main_thread =
+      [main_thread_task_runner,
+       quit_closure = run_loop.QuitClosure()](const QueryResultMap& results) {
+        EXPECT_TRUE(results.empty());
+        EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
+        std::move(quit_closure).Run();
+      };
+
+  // Create the query on the graph sequence, but tell it to run the result
+  // callback on the main thread.
+  RunInGraph([&] {
+    QueryBuilder()
+        .AddResourceContext(main_frame_context())
+        .AddResourceType(ResourceType::kCPUTime)
+        .QueryOnce(base::BindLambdaForTesting(expect_empty_on_main_thread),
+                   main_thread_task_runner);
+  });
+
+  // Block the main thread until the result is received.
+  run_loop.Run();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
   QueryScheduler* scheduler = nullptr;
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
@@ -174,6 +252,7 @@ TEST_F(ResourceAttrScopedQueryTest, AddRemoveScopedQuery) {
 
   absl::optional<ScopedResourceUsageQuery> scoped_query =
       QueryBuilder()
+          .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
           .CreateScopedQuery();
   RunInGraph([&] {
@@ -185,7 +264,7 @@ TEST_F(ResourceAttrScopedQueryTest, AddRemoveScopedQuery) {
   });
 }
 
-TEST_F(ResourceAttrScopedQueryTest, Movable) {
+TEST_F(ResourceAttrQueriesPMTest, ScopedQueryIsMovable) {
   QueryScheduler* scheduler = nullptr;
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
@@ -199,6 +278,7 @@ TEST_F(ResourceAttrScopedQueryTest, Movable) {
   {
     ScopedResourceUsageQuery inner_query =
         QueryBuilder()
+            .AddResourceContext(main_frame_context())
             .AddResourceType(ResourceType::kCPUTime)
             .CreateScopedQuery();
     RunInGraph([&] {
@@ -232,79 +312,100 @@ TEST_F(ResourceAttrScopedQueryTest, Movable) {
   });
 }
 
-TEST_F(ResourceAttrScopedQueryTest, Observers) {
+TEST_F(ResourceAttrQueriesPMTest, Observers) {
   ScopedResourceUsageQuery scoped_query =
       QueryBuilder()
-          .AddResourceContext(main_frame_context.value())
+          .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
           .CreateScopedQuery();
 
-  const QueryResultMap test_results{
-      {main_frame_context.value(),
-       {CPUTimeResult{.cumulative_cpu = base::Minutes(1)}}},
-  };
+  // Allow some time to pass to measure.
+  task_environment()->FastForwardBy(base::Minutes(1));
 
   // Safely do nothing when no observers are registered.
-  Graph* graph_ptr = nullptr;
-  RunInGraph([&](Graph* graph) {
-    graph_ptr = graph;
-    // TODO(crbug.com/1471683): QueryScheduler should be notifying the
-    // observers.
-    scoped_query.observer_list_->Notify(
-        FROM_HERE, &QueryResultObserver::OnResourceUsageUpdated, test_results);
-  });
-  ASSERT_TRUE(graph_ptr);
+  scoped_query.QueryOnce();
+  // Post an empty task to the graph sequence to give time for the query to run
+  // there. Nothing should happen.
+  RunInGraph([] {});
 
   // Observer can be notified from the graph sequence when installed on any
   // thread.
   MockQueryResultObserver main_thread_observer;
-  MockQueryResultObserver graph_sequence_observer;
   scoped_query.AddObserver(&main_thread_observer);
-  RunInGraph([&] { scoped_query.AddObserver(&graph_sequence_observer); });
+  auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
 
-  auto check_graph_sequence = [&](bool expect_on_graph_sequence) {
-#if DCHECK_IS_ON()
-    EXPECT_EQ(graph_ptr->IsOnGraphSequence(), expect_on_graph_sequence);
-#endif
-  };
-
-  // Quit the RunLoop when both observers receive results.
-  base::RunLoop run_loop;
-  auto quit_closure = base::BarrierClosure(2, run_loop.QuitClosure());
-  EXPECT_CALL(main_thread_observer, OnResourceUsageUpdated(test_results))
-      .WillOnce([&] {
-        check_graph_sequence(false);
-        quit_closure.Run();
-      });
-  EXPECT_CALL(graph_sequence_observer, OnResourceUsageUpdated(test_results))
-      .WillOnce([&] {
-        check_graph_sequence(true);
-        quit_closure.Run();
-      });
-
+  MockQueryResultObserver graph_sequence_observer;
+  scoped_refptr<base::SequencedTaskRunner> graph_sequence_task_runner;
   RunInGraph([&] {
-    scoped_query.observer_list_->Notify(
-        FROM_HERE, &QueryResultObserver::OnResourceUsageUpdated, test_results);
+    scoped_query.AddObserver(&graph_sequence_observer);
+    graph_sequence_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   });
 
-  // Wait for all notifications.
+  // Quit the RunLoop when both observers receive results. Expect each result to
+  // contain a single ResourceContext with a CPUTimeResult.
+  base::RunLoop run_loop;
+  auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+  EXPECT_CALL(
+      main_thread_observer,
+      OnResourceUsageUpdated(ElementsAre(
+          QueryResultMapEntryMatches<CPUTimeResult>(main_frame_context()))))
+      .WillOnce([&] {
+        EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
+        barrier_closure.Run();
+      });
+  EXPECT_CALL(
+      graph_sequence_observer,
+      OnResourceUsageUpdated(ElementsAre(
+          QueryResultMapEntryMatches<CPUTimeResult>(main_frame_context()))))
+      .WillOnce([&] {
+        EXPECT_TRUE(graph_sequence_task_runner->RunsTasksInCurrentSequence());
+        barrier_closure.Run();
+      });
+  scoped_query.QueryOnce();
   run_loop.Run();
 }
 
-TEST_F(ResourceAttrScopedQueryTest, GraphTeardown) {
+TEST_F(ResourceAttrQueriesPMTest, GraphTeardown) {
   // ScopedResourceUsageQuery registers with the QueryScheduler on creation and
   // unregisters on destruction. Make sure it's safe for it to outlive the
   // scheduler, which is deleted during graph teardown.
   absl::optional<ScopedResourceUsageQuery> scoped_query =
       QueryBuilder()
-          .AddResourceContext(main_frame_context.value())
+          .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
           .CreateScopedQuery();
+  MockQueryResultObserver observer;
+  scoped_query->AddObserver(&observer);
 
-  TearDownNow();
+  TearDownGraph();
 
-  // The test passes as long as this doesn't crash.
+  // The test passes as long as these don't crash. `observer` should not be
+  // notified (StrictMock will test this).
+  scoped_query->QueryOnce();
   scoped_query.reset();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, ScopedQueryAndQueryOnce) {
+  QueryBuilder builder;
+  builder.AddResourceContext(main_frame_context())
+      .AddResourceType(ResourceType::kCPUTime);
+
+  // Create a scoped query to start the CPU monitor.
+  auto scoped_query = builder.Clone().CreateScopedQuery();
+
+  // Allow some time to pass to measure.
+  task_environment()->FastForwardBy(base::Minutes(1));
+
+  base::RunLoop run_loop;
+  builder.Clone().QueryOnce(
+      base::BindLambdaForTesting([&](const QueryResultMap& results) {
+        // QueryOnce should get measurements that were collected for
+        // `scoped_query`.
+        EXPECT_THAT(results,
+                    ElementsAre(QueryResultMapEntryMatches<CPUTimeResult>(
+                        main_frame_context())));
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 }  // namespace performance_manager::resource_attribution
