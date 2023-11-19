@@ -615,36 +615,39 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
   // Saving files with a harmless extension should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.txt"), HandleType::kFile,
-                UserAction::kSave),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.txt"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAllowed);
   // Saving files with a dangerous extension should show a prompt.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kSave),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAbort);
   // Files with a dangerous extension from no user action should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kNone),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kNone),
+      SensitiveDirectoryResult::kAllowed);
   // Opening files with a dangerous extension should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kOpen),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kOpen),
+      SensitiveDirectoryResult::kAllowed);
   // Opening files with a dangerous compound extension should show a prompt.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.txt.swf"),
-                HandleType::kFile, UserAction::kSave),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.txt.swf"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAbort);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
