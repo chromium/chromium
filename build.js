@@ -31,7 +31,7 @@ spawnChecked("git", [
   "--add",
   "safe.directory",
   __dirname,
-]);
+], { stdio: "inherit" });
 
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
@@ -46,9 +46,16 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   console.log(`Downloading driver...`);
   let driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
   let downloadArchive = driverArchive;
-  if (process.env.DRIVER_REVISION) {
+  let driverRevisionOverride = process.env.DRIVER_REVISION;
+  if (driverRevisionOverride) {
+    if (driverRevisionOverride.length < 12) {
+      throw new Error(
+        `Invalid DRIVER_REVISION was "${driverRevisionOverride}" but must have a length of at least 12`
+      );
+    }
+    driverRevisionOverride = driverRevisionOverride.substring(0, 12);
     downloadArchive = `${currentPlatform()}-recordreplay-${
-      process.env.DRIVER_REVISION
+      driverRevisionOverride
     }${archSuffix}.tgz`;
   }
   spawnChecked(
@@ -60,7 +67,7 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
     ],
     { stdio: "inherit" }
   );
-  spawnChecked("tar", ["xf", driverArchive]);
+  spawnChecked("tar", ["xf", driverArchive], { stdio: "inherit" });
   fs.unlinkSync(driverArchive);
 }
 
@@ -116,36 +123,28 @@ const useGoma = !process.env.NO_GOMA;
 const goma_ctl = currentPlatform() == "windows" ? "goma_ctl.bat" : "goma_ctl";
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
-  spawnChecked(goma_ctl, ["ensure_start"], {
-    stdio: "inherit",
-  });
+  spawnChecked(goma_ctl, ["ensure_start"], { stdio: "inherit" });
 }
 
 // ensure that build configuration is written with correct paths
 const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
-spawnChecked(gn, ["gen", outdir], {
-  stdio: "inherit",
-});
+spawnChecked(gn, ["gen", outdir], { stdio: "inherit" });
 
 console.log(`Building...`);
 const autoninja =
   currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
-spawnChecked(autoninja, ["-C", outdir, "chrome"], {
-  stdio: "inherit",
-});
+spawnChecked(autoninja, ["-C", outdir, "chrome"], { stdio: "inherit" });
 
 console.log(`Build finished.`);
 
 function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
-  console.error("$" + prettyCmd);
+  console.error("$ " + prettyCmd);
 
   const rv = spawnSync(cmd, args, options);
 
   if (rv.status != 0 || rv.error) {
     console.error(`Process failed: err=${rv.error || ""}, signal=${rv.signal || ""}`);
-    console.log(rv.stdout && rv.stdout.toString() || "");
-    console.error(rv.stderr && rv.stderr.toString() || "");
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 
@@ -172,7 +171,7 @@ function driverExtension() {
 /**
  * @returns {string} "YYYYMMDD" format of UTC timestamp of given revision.
  */
-function getRevisionDate(revision = "HEAD", spawnOptions) {
+function getRevisionDate(revision = "HEAD", spawnOptions = undefined) {
   const dateString = spawnChecked(
     "git",
     ["show", revision, "--pretty=%cd", "--date=iso-strict", "--no-patch"],
