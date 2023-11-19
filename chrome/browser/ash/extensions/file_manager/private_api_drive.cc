@@ -663,6 +663,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
 
 void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
     absl::optional<base::Value::List> results) {
+  using api::file_manager_private::SearchDriveResponse;
   if (!results) {
     UmaEmitSearchOutcome(
         false, !is_offline_,
@@ -672,14 +673,18 @@ void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
     return;
   }
 
-  api::file_manager_private::SearchDriveResponse response;
+  SearchDriveResponse response;
   // Search queries are capped at 100 of items anyway and pagination is
   // never actually used, so no need to fill this.
   response.next_feed = "";
+  response.entries.reserve(results.value().size());
   for (const auto& e : results.value()) {
-    auto& entry = response.entries.emplace_back();
-    api::file_manager_private::SearchDriveResponse::EntriesType::Populate(
-        e, entry);
+    auto entry = SearchDriveResponse::EntriesType::FromValue(e);
+    if (!entry) {
+      LOG(ERROR) << "Failed to convert entry: " << e.DebugString();
+      continue;
+    }
+    response.entries.push_back(std::move(entry.value()));
   }
 
   UmaEmitSearchOutcome(
