@@ -33,36 +33,30 @@ class CORE_EXPORT IntersectionObservation final
     // root bounds (i.e., size of the top document's viewport) should be
     // included in any IntersectionObserverEntry objects created by Compute().
     kReportImplicitRootBounds = 1 << 0,
-    // If this bit is set, we need to update frames' viewport intersection.
-    // This flag is used in Frame/FrameView only. It doesn't matter to
-    // intersection observations in the current local frame tree, while
-    // viewport intersection of the current frame can trigger intersection
-    // observation updates in child remote frames.
-    kFrameViewportIntersectionNeedsUpdate = 1 << 1,
     // If this bit is set, and observer_->RootIsImplicit() is false, then
     // Compute() should update the observation.
-    kExplicitRootObserversNeedUpdate = 1 << 2,
+    kExplicitRootObserversNeedUpdate = 1 << 1,
     // If this bit is set, and observer_->RootIsImplicit() is true, then
     // Compute() should update the observation.
-    kImplicitRootObserversNeedUpdate = 1 << 3,
+    kImplicitRootObserversNeedUpdate = 1 << 2,
     // If this bit is set, it indicates that at least one LocalFrameView
     // ancestor is detached from the LayoutObject tree of its parent. Usually,
     // this is unnecessary -- if an ancestor FrameView is detached, then all
     // descendant frames are detached. There is, however, at least one exception
     // to this rule; see crbug.com/749737 for details.
-    kAncestorFrameIsDetachedFromLayout = 1 << 4,
+    kAncestorFrameIsDetachedFromLayout = 1 << 3,
     // If this bit is set, then the observer.delay parameter is ignored; i.e.,
     // the computation will run even if the previous run happened within the
     // delay parameter.
-    kIgnoreDelay = 1 << 5,
+    kIgnoreDelay = 1 << 4,
     // If this bit is set, we can skip tracking the sticky frame during
     // UpdateViewportIntersectionsForSubtree.
-    kCanSkipStickyFrameTracking = 1 << 6,
+    kCanSkipStickyFrameTracking = 1 << 5,
     // If this bit is set, we only process intersection observations that
     // require post-layout delivery.
-    kPostLayoutDeliveryOnly = 1 << 7,
+    kPostLayoutDeliveryOnly = 1 << 6,
     // If this is set, the overflow clip edge is used.
-    kUseOverflowClipEdge = 1 << 8,
+    kUseOverflowClipEdge = 1 << 7,
   };
 
   IntersectionObservation(IntersectionObserver&, Element&);
@@ -73,6 +67,7 @@ class CORE_EXPORT IntersectionObservation final
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
   int64_t ComputeIntersection(
       unsigned flags,
+      gfx::Vector2dF accumulated_scroll_delta_since_last_update,
       absl::optional<base::TimeTicks>& monotonic_time,
       absl::optional<IntersectionGeometry::RootGeometry>& root_geometry);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;

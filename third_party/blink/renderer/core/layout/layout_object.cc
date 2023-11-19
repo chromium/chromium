@@ -1624,8 +1624,8 @@ void LayoutObject::DeprecatedInvalidateIntersectionObserverCachedRects() {
 
 void LayoutObject::InvalidateIntersectionObserverCachedRects() {
   NOT_DESTROYED();
-  if (GetNode() && GetNode()->IsElementNode()) {
-    if (auto* data = To<Element>(GetNode())->IntersectionObserverData()) {
+  if (const auto* element = DynamicTo<Element>(GetNode())) {
+    if (auto* data = element->IntersectionObserverData()) {
       data->InvalidateCachedRects();
     }
   }
@@ -4579,6 +4579,7 @@ void LayoutObject::SetShouldDoFullPaintInvalidation(
   DCHECK(IsLayoutFullPaintInvalidationReason(reason));
   SetShouldCheckForPaintInvalidation();
   SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
+  InvalidateIntersectionObserverCachedRects();
 }
 
 void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChange(

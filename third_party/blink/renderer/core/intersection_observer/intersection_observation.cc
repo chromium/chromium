@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 
+#include "base/debug/stack_trace.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+
+#define CHECK_SKIPPED_UPDATE_ON_SCROLL DCHECK_IS_ON()
 
 namespace blink {
 
@@ -36,9 +39,12 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
+    gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     absl::optional<base::TimeTicks>& monotonic_time,
     absl::optional<IntersectionGeometry::RootGeometry>& root_geometry) {
   DCHECK(Observer());
+  cached_rects_.min_scroll_delta_to_update -=
+      accumulated_scroll_delta_since_last_update;
   if (compute_flags &
       (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
                                    : kExplicitRootObserversNeedUpdate)) {
@@ -52,11 +58,35 @@ int64_t IntersectionObservation::ComputeIntersection(
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return 0;
 
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+  std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
+#endif
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      cached_rects_.valid && cached_rects_.min_scroll_delta_to_update.x() > 0 &&
+      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+    cached_rects_backup.emplace(cached_rects_);
+#else
+    return 0;
+#endif
+  }
+
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
       observer_->root(), *Target(), observer_->RootMargin(),
       observer_->thresholds(), observer_->TargetMargin(),
       observer_->ScrollMargin(), geometry_flags, root_geometry, &cached_rects_);
+
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+  if (cached_rects_backup) {
+    // A skipped update on scroll should generate the same result.
+    cached_rects_ = cached_rects_backup.value();
+    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex());
+    CHECK_EQ(last_is_visible_, geometry.IsVisible());
+    return 0;
+  }
+#endif
+
   ProcessIntersectionGeometry(geometry, timestamp);
   last_run_time_ = timestamp;
   needs_update_ = false;

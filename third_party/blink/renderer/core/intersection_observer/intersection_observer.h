@@ -172,13 +172,14 @@ class CORE_EXPORT IntersectionObserver final
   Vector<Length> TargetMargin() const {
     return margin_target_ == kApplyMarginToTarget ? margin_ : Vector<Length>();
   }
-  bool HasRootMargin() const;
 
   Vector<Length> ScrollMargin() const { return scroll_margin_; }
 
   // Returns the number of IntersectionObservations that recomputed geometry.
-  int64_t ComputeIntersections(unsigned flags,
-                               absl::optional<base::TimeTicks>& monotonic_time);
+  int64_t ComputeIntersections(
+      unsigned flags,
+      absl::optional<base::TimeTicks>& monotonic_time,
+      gfx::Vector2dF accumulated_scroll_delta_since_last_update);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
 
   bool IsInternal() const;
@@ -225,6 +226,7 @@ class CORE_EXPORT IntersectionObserver final
   Vector<Length> margin_;
   Vector<Length> scroll_margin_;
   MarginTarget margin_target_;
+  gfx::Vector2dF accumulated_scroll_delta_since_last_update_;
   unsigned root_is_implicit_ : 1;
   unsigned track_visibility_ : 1;
   unsigned track_fraction_of_root_ : 1;

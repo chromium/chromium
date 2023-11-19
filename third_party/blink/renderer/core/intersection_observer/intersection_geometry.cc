@@ -222,7 +222,7 @@ IntersectionGeometry::IntersectionGeometry(
   }
 
   RootAndTarget root_and_target(root_node, target_element,
-                                !scroll_margin.empty());
+                                !target_margin.empty(), !scroll_margin.empty());
   UpdateShouldUseCachedRects(root_and_target, cached_rects);
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
@@ -241,10 +241,11 @@ IntersectionGeometry::IntersectionGeometry(
 IntersectionGeometry::RootAndTarget::RootAndTarget(
     const Node* root_node,
     const Element& target_element,
+    bool has_target_margin,
     bool has_scroll_margin)
     : target(GetTargetLayoutObject(target_element)),
       root(target ? GetRootLayoutObject(root_node) : nullptr) {
-  ComputeRelationship(!root_node, has_scroll_margin);
+  ComputeRelationship(!root_node, has_target_margin, has_scroll_margin);
 }
 
 bool IsAllowedLayoutObjectType(const LayoutObject& target) {
@@ -294,6 +295,7 @@ const LayoutObject* IntersectionGeometry::RootAndTarget::GetRootLayoutObject(
 
 void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     bool root_is_implicit,
+    bool has_target_margin,
     bool has_scroll_margin) {
   if (!root || !target || root == target) {
     relationship = kInvalid;
@@ -329,9 +331,9 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
       relationship = kInvalid;
       return;
     }
-    if (container != root && container->HasNonVisibleOverflow() &&
-        // Non-scrollable scrollers are ignored.
-        To<LayoutBox>(container)->HasLayoutOverflow()) {
+    if (container != root && container->ShouldClipOverflowAlongEitherAxis() &&
+        // Clippers that don't actually clip anything are ignored.
+        (To<LayoutBox>(container)->HasLayoutOverflow() || has_target_margin)) {
       has_intermediate_clippers = true;
     }
     if (container != root && has_scroll_margin &&
@@ -340,7 +342,7 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     }
   }
   if (has_intermediate_clippers) {
-    relationship = kScrollableWithIntermediateClippers;
+    relationship = kHasIntermediateClippers;
   } else if (root->IsScrollContainer() &&
              To<LayoutBox>(root)->HasLayoutOverflow()) {
     relationship = kScrollableByRootOnly;
@@ -588,11 +590,10 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     root_rect_ = PhysicalRect::EnclosingRect(root_float_rect);
   }
 
-  min_scroll_delta_to_update_ = ComputeMinScrollDeltaToUpdate(
-      root_and_target, target_to_document_transform,
-      root_geometry.root_to_document_transform, thresholds, scroll_margin);
   if (cached_rects) {
-    cached_rects->min_scroll_delta_to_update = min_scroll_delta_to_update_;
+    cached_rects->min_scroll_delta_to_update = ComputeMinScrollDeltaToUpdate(
+        root_and_target, target_to_document_transform,
+        root_geometry.root_to_document_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
   }
 }
@@ -808,7 +809,7 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
       }
       if (target_rect_.Contains(root_rect_) &&
           root_and_target.relationship ==
-              RootAndTarget::kScrollableWithIntermediateClippers) {
+              RootAndTarget::kHasIntermediateClippers) {
         // When target_rect_ fully contains root_rect_, whether the intersection
         // rect fully covers root_rect_ depends on intermediate clips, so there
         // is no minimum scroll delta.
@@ -823,7 +824,7 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
       }
       if (root_rect_.Contains(target_rect_) &&
           root_and_target.relationship ==
-              RootAndTarget::kScrollableWithIntermediateClippers) {
+              RootAndTarget::kHasIntermediateClippers) {
         // When root_rect_ fully contains target_rect_, whether target_rect_
         // is fully visible depends on intermediate clips, so there is no
         // minimum scroll delta.
@@ -846,7 +847,7 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
   if (root_rect_.IntersectsInclusively(target_rect_) &&
       (thresholds.size() != 1 || thresholds[0] > kMinimumThreshold ||
        root_and_target.relationship ==
-           RootAndTarget::kScrollableWithIntermediateClippers ||
+           RootAndTarget::kHasIntermediateClippers ||
        IsForFrameViewportIntersection())) {
     return gfx::Vector2dF();
   }

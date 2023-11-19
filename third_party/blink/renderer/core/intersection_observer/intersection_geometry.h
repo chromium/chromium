@@ -73,8 +73,10 @@ class CORE_EXPORT IntersectionGeometry {
     // Target rect mapped up to the root's space, with intermediate clips
     // applied, but without applying the root's clip or scroll offset.
     PhysicalRect unscrolled_unclipped_intersection_rect;
-    // We only need to update intersection geometry on future scroll if
-    // the scroll delta >= this value in either direction.
+    // This is calculated basically based on the distance between the root rect
+    // and the target rect, when it's applicable. On each scroll, we subtract
+    // the absolute scroll delta from it, and only need to update intersection
+    // geometry if it becomes <= 0 along either axis.
     gfx::Vector2dF min_scroll_delta_to_update;
     // True iff unscrolled_unclipped_intersection_rect actually intersects the
     // root, as defined by edge-inclusive intersection rules.
@@ -139,10 +141,6 @@ class CORE_EXPORT IntersectionGeometry {
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 
-  gfx::Vector2dF MinScrollDeltaToUpdate() const {
-    return min_scroll_delta_to_update_;
-  }
-
   bool CanUseCachedRectsForTesting() const { return ShouldUseCachedRects(); }
 
  private:
@@ -158,6 +156,7 @@ class CORE_EXPORT IntersectionGeometry {
    public:
     RootAndTarget(const Node* root_node,
                   const Element& target_element,
+                  bool has_target_margin,
                   bool has_scroll_margin);
     const LayoutObject* target;
     const LayoutObject* root;
@@ -165,14 +164,15 @@ class CORE_EXPORT IntersectionGeometry {
       kInvalid,
       // The target is in a sub-frame of the implicit root.
       kTargetInSubFrame,
-      // The target can't be scrolled in the root by any scroller.
+      // There are intermediate clippers (scroll containers or not) between the
+      // root and the target. The target is likely to be scrollable in root.
+      kHasIntermediateClippers,
+      // The target can't be scrolled in the root by any scroller, without any
+      // intermediate clippers.
       kNotScrollable,
       // The target can be scrolled in the root by the root only, without any
-      // intermediate clippers (scroll containers or not).
+      // intermediate clippers.
       kScrollableByRootOnly,
-      // The target can be scrolled in the root, with intermediate clippers
-      // (scroll containers or not).
-      kScrollableWithIntermediateClippers,
     };
     Relationship relationship = kInvalid;
     // This is used only when relationship is kScrollable*.
@@ -182,7 +182,9 @@ class CORE_EXPORT IntersectionGeometry {
 
    private:
     const LayoutObject* GetRootLayoutObject(const Node* root_node) const;
-    void ComputeRelationship(bool root_is_implicit, bool has_scroll_margin);
+    void ComputeRelationship(bool root_is_implicit,
+                             bool has_target_margin,
+                             bool has_scroll_margin);
   };
 
   void UpdateShouldUseCachedRects(const RootAndTarget& root_and_target,
@@ -226,7 +228,6 @@ class CORE_EXPORT IntersectionGeometry {
   PhysicalRect intersection_rect_;
   PhysicalRect unclipped_intersection_rect_;
   PhysicalRect root_rect_;
-  gfx::Vector2dF min_scroll_delta_to_update_;
   unsigned flags_;
   double intersection_ratio_ = 0;
   wtf_size_t threshold_index_ = 0;

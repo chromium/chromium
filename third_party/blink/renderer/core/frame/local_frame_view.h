@@ -215,16 +215,11 @@ class CORE_EXPORT LocalFrameView final
   enum IntersectionObservationState {
     // The next painting frame does not need an intersection observation.
     kNotNeeded = 0,
-    // The next painting frame only needs to update frame viewport intersection,
-    // not intersection observations. Note that intersection observations in
-    // child remote frames happen during the parent frame's viewport
-    // intersection update, with kDesired or kRequired set on the child frames.
-    kFrameViewportIntersectionOnly = 1,
     // The next painting frame needs an intersection observation.
-    kDesired = 2,
+    kDesired = 1,
     // The next painting frame must be generated up to intersection observation
     // (even if frame is throttled).
-    kRequired = 3
+    kRequired = 2
   };
 
   // Sets the internal IntersectionObservationState to the max of the
@@ -242,10 +237,6 @@ class CORE_EXPORT LocalFrameView final
   unsigned GetIntersectionObservationFlags(unsigned parent_flags) const;
 
   void ForceUpdateViewportIntersections();
-
-  gfx::Vector2dF MinScrollDeltaToUpdateIntersectionForTesting() const {
-    return min_scroll_delta_to_update_intersection_;
-  }
 
   void SetPaintArtifactCompositorNeedsUpdate();
 
@@ -956,7 +947,7 @@ class CORE_EXPORT LocalFrameView final
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);
 
-  IntersectionUpdateResult UpdateViewportIntersectionsForSubtree(
+  bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       absl::optional<base::TimeTicks>& monotonic_time) override;
   void DeliverSynchronousIntersectionObservations();
@@ -1112,7 +1103,6 @@ class CORE_EXPORT LocalFrameView final
 #endif
 
   IntersectionObservationState intersection_observation_state_;
-  gfx::Vector2dF min_scroll_delta_to_update_intersection_;
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
 
   mojom::blink::ViewportIntersectionState last_intersection_state_;
