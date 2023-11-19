@@ -129,4 +129,6 @@ struct ParsedHeaders {
   // The parsed value of the Observe-Browsing-Topics header. See:
   // https://patcg-individual-drafts.github.io/topics/#the-observe-browsing-topics-http-response-header-header
   bool observe_browsing_topics;
+
+  // Please update `CheckParsedHeadersEquals` after adding new fields.
 };

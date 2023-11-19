@@ -392,8 +392,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   // because the two parsing results mismatch in this expected way.
   network::mojom::ParsedHeadersPtr adjusted_lhs = lhs->Clone();
   if (rhs->client_hints_ignored_due_to_clear_site_data_header) {
-    DCHECK(!rhs->accept_ch);
-    DCHECK(!rhs->critical_ch);
+    CHECK(!rhs->accept_ch);
+    CHECK(!rhs->critical_ch);
     adjusted_lhs->accept_ch = absl::nullopt;
     adjusted_lhs->critical_ch = absl::nullopt;
     adjusted_lhs->client_hints_ignored_due_to_clear_site_data_header = true;
@@ -401,29 +401,31 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   if (mojo::Equals(adjusted_lhs, rhs)) {
     return;
   }
-  DCHECK(mojo::Equals(adjusted_lhs->content_security_policy,
-                      rhs->content_security_policy));
-  DCHECK(mojo::Equals(adjusted_lhs->allow_csp_from, rhs->allow_csp_from));
-  DCHECK(mojo::Equals(adjusted_lhs->cross_origin_embedder_policy,
-                      rhs->cross_origin_embedder_policy));
-  DCHECK(mojo::Equals(adjusted_lhs->cross_origin_opener_policy,
-                      rhs->cross_origin_opener_policy));
-  DCHECK(mojo::Equals(adjusted_lhs->origin_agent_cluster,
-                      rhs->origin_agent_cluster));
-  DCHECK(mojo::Equals(adjusted_lhs->accept_ch, rhs->accept_ch));
-  DCHECK(mojo::Equals(adjusted_lhs->critical_ch, rhs->critical_ch));
+  CHECK(mojo::Equals(adjusted_lhs->content_security_policy,
+                     rhs->content_security_policy));
+  CHECK(mojo::Equals(adjusted_lhs->allow_csp_from, rhs->allow_csp_from));
+  CHECK(mojo::Equals(adjusted_lhs->cross_origin_embedder_policy,
+                     rhs->cross_origin_embedder_policy));
+  CHECK(mojo::Equals(adjusted_lhs->cross_origin_opener_policy,
+                     rhs->cross_origin_opener_policy));
+  CHECK(mojo::Equals(adjusted_lhs->origin_agent_cluster,
+                     rhs->origin_agent_cluster));
+  CHECK(mojo::Equals(adjusted_lhs->accept_ch, rhs->accept_ch));
+  CHECK(mojo::Equals(adjusted_lhs->critical_ch, rhs->critical_ch));
   DCHECK_EQ(adjusted_lhs->xfo, rhs->xfo);
-  DCHECK(mojo::Equals(adjusted_lhs->link_headers, rhs->link_headers));
-  DCHECK(mojo::Equals(adjusted_lhs->supports_loading_mode,
-                      rhs->supports_loading_mode));
-  DCHECK(mojo::Equals(adjusted_lhs->timing_allow_origin,
-                      rhs->timing_allow_origin));
-  DCHECK(mojo::Equals(adjusted_lhs->reporting_endpoints,
-                      rhs->reporting_endpoints));
-  DCHECK(mojo::Equals(adjusted_lhs->variants_headers, rhs->variants_headers));
-  DCHECK(mojo::Equals(adjusted_lhs->content_language, rhs->content_language));
-  DCHECK(mojo::Equals(adjusted_lhs->no_vary_search_with_parse_error,
-                      rhs->no_vary_search_with_parse_error));
+  CHECK(mojo::Equals(adjusted_lhs->link_headers, rhs->link_headers));
+  CHECK(mojo::Equals(adjusted_lhs->timing_allow_origin,
+                     rhs->timing_allow_origin));
+  CHECK(mojo::Equals(adjusted_lhs->supports_loading_mode,
+                     rhs->supports_loading_mode));
+  CHECK(mojo::Equals(adjusted_lhs->reporting_endpoints,
+                     rhs->reporting_endpoints));
+  CHECK(mojo::Equals(adjusted_lhs->variants_headers, rhs->variants_headers));
+  CHECK(mojo::Equals(adjusted_lhs->content_language, rhs->content_language));
+  CHECK(mojo::Equals(adjusted_lhs->no_vary_search_with_parse_error,
+                     rhs->no_vary_search_with_parse_error));
+  CHECK(mojo::Equals(adjusted_lhs->observe_browsing_topics,
+                     rhs->observe_browsing_topics));
   NOTREACHED() << "The parsed headers don't match, but we don't know which "
                   "field does not match. Please add a DCHECK before this one "
                   "checking for the missing field.";
