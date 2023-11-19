@@ -6,10 +6,10 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
-PASS (self.embedFrame1.document.getElementById('plugin').postMessage) != undefined is true
-PASS (self.embedFrame2.document.getElementById('plugin').postMessage) == undefined is true
-PASS (self.objectFrame1.document.getElementById('plugin').postMessage) != undefined is true
-PASS (self.objectFrame2.document.getElementById('plugin').postMessage) == undefined is true
+PASS (self.embedFrame1.document.getElementById('plugin').loaded) != undefined is true
+PASS (self.embedFrame2.document.getElementById('plugin').loaded) == undefined is true
+PASS (self.objectFrame1.document.getElementById('plugin').loaded) != undefined is true
+PASS (self.objectFrame2.document.getElementById('plugin').loaded) == undefined is true
 PASS successfullyParsed is true
 
 TEST COMPLETE

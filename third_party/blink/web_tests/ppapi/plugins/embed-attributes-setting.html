@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function print(message, color)
+{
+    var paragraph = document.createElement("div");
+    paragraph.appendChild(document.createTextNode(message));
+    paragraph.style.fontFamily = "monospace";
+    if (color)
+        paragraph.style.color = color;
+    document.getElementById("console").appendChild(paragraph);
+}
+
+function write(s)
+{
+    document.getElementById('pre').appendChild(document.createTextNode(s));
+}
+
+function shouldBe(a, b)
+{
+    var evalA = eval(a);
+    if (evalA == b)
+        print("PASS: " + a + " should be " + b + " and is.", "green");
+    else
+        print("FAIL: " + a + " should be " + b + " but instead is " + evalA + ".", "red");
+}
+
+var embed;
+
+function test()
+{
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    embed = document.getElementById('embed');
+    print("[Embed is element specified in markup]");
+
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
+    embed.align = 1;
+    embed.height = 1;
+    embed.name = 1;
+    embed.width = 1;
+    embed.type = 1; // setting the type attribute should not effect the plugin once loaded
+
+    shouldBe("embed.getAttribute('align')", 1);
+    shouldBe("embed.getAttribute('height')", 1);
+    shouldBe("embed.getAttribute('name')", 1);
+    shouldBe("embed.getAttribute('width')", 1);
+    shouldBe("embed.getAttribute('type')", 1);
+    shouldBe("typeof embed.postMessage", "function");
+
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
+    print("----------");
+
+    embed = document.createElement('embed');
+    print("[Embed is dynamically created element with only type specified]");
+
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
+    embed.style.visibility = "hidden";
+    embed.type = "application/x-blink-test-plugin";
+    document.body.appendChild(embed);
+    shouldBe("typeof embed.postMessage", "function");
+
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+}
+</script>
+</head>
+
+<body onload="test();">
+
+<hr>
+<div id='console'></div>
+
+<embed style="visibility: hidden" type="application/x-blink-test-plugin" id='embed'></embed>
+
+</body>
+</html>

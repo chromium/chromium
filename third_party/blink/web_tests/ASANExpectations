@@ -21,7 +21,7 @@ crbug.com/145940 [ Linux ] plugins/iframe-shims.html [ Skip ]
 # ==17332== ERROR: AddressSanitizer: heap-use-after-free on address 0x7f48e8a05a58
 # WRITE of size 1 at 0x7f48e8a05a58 thread T0
 #    #0 0x7f48eb06f7c5 in DocumentOpenInDestroyStream::NPP_DestroyStream
-crbug.com/166932 [ Linux ] plugins/embed-attributes-setting.html [ Skip ]
+crbug.com/166932 [ Linux ] ppapi/plugins/embed-attributes-setting.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-style.html [ Skip ]
 
 # Stack use-after-return detection

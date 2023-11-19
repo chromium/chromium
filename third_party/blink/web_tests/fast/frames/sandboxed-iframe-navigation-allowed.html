@@ -11,11 +11,11 @@ if (window.testRunner) {
 function childFrameWasNavigated()
 {
     // Check that the child frame was unable to load a plugin, since its parent is sandboxed.
-    shouldBeTrue("(self.sandboxedFrame.frameWithPlugin.document.getElementById('plugin').postMessage) == undefined");
+    shouldBeTrue("(self.sandboxedFrame.frameWithPlugin.document.getElementById('plugin').loaded) == undefined");
     
     // Check a non-sandboxed frame as well, to ensure that the plugin is disabled by sandboxing
     // and not some other failure
-    shouldBeTrue("(self.frameWithPlugin.document.getElementById('plugin').postMessage) != undefined");
+    shouldBeTrue("(self.frameWithPlugin.document.getElementById('plugin').loaded) != undefined");
 
     // When the child frame (grandchild of the main window) has been navigated,
     // make the sandboxed frame navigate itself
