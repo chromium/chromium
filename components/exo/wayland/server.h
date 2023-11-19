@@ -14,9 +14,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/scoped_wl.h"
-#include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 struct wl_resource;
 struct wl_client;
@@ -44,7 +46,7 @@ class WaylandWatcher;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
 // requests are dispatched into the given Exosphere display.
-class Server : public display::DisplayObserver {
+class Server : public display::DisplayManagerObserver {
  public:
   using ServerGetter = base::RepeatingCallback<Server*(wl_display*)>;
   using StartCallback = base::OnceCallback<void(bool)>;
@@ -94,9 +96,9 @@ class Server : public display::DisplayObserver {
   // Send all buffered events to the clients.
   void Flush();
 
-  // Overridden from display::DisplayObserver:
-  void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  // display::DisplayManagerObserver:
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
 
@@ -129,7 +131,6 @@ class Server : public display::DisplayObserver {
   base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>> outputs_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;
   std::unique_ptr<WaylandSeat> seat_data_;
-  display::ScopedDisplayObserver display_observer_{this};
   std::unique_ptr<wayland::WaylandWatcher> wayland_watcher_;
   std::unique_ptr<WaylandDmabufFeedbackManager> wayland_feedback_manager_;
 
@@ -140,6 +141,10 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<UiControls> ui_controls_holder_;
   std::unique_ptr<ClientTracker> client_tracker_;
+
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 };
 
 }  // namespace wayland
