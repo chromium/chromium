@@ -159,6 +159,7 @@ ci_builder(
         ),
     ),
     builderless = False,
+    ssd = True,
 )
 
 ci_builder(
