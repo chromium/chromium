@@ -68,6 +68,9 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 
   // Starts on the primary page.
   ShowPrimaryPage();
+
+  bubble_delegate->SetInitiallyFocusedView(
+      primary_view_->GetInitiallyFocusedView());
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {

@@ -89,6 +89,9 @@ class DownloadBubbleRowView : public views::View,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  // Returns the transparent button that is activated when the row is clicked.
+  views::Button* transparent_button() { return transparent_button_; }
+
   const std::u16string& GetSecondaryLabelTextForTesting();
 
   DownloadUIModel* model() { return info_->model(); }

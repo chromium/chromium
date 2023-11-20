@@ -129,6 +129,10 @@ END_METADATA
 
 }  // namespace
 
+views::View* DownloadDialogView::GetInitiallyFocusedView() {
+  return close_button_;
+}
+
 void DownloadDialogView::CloseBubble() {
   if (navigation_handler_) {
     navigation_handler_->CloseDialog(
@@ -163,7 +167,7 @@ void DownloadDialogView::AddHeader() {
     title->SetTextStyle(views::style::STYLE_HEADLINE_4);
   }
 
-  auto* close_button =
+  close_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadDialogView::CloseBubble,
                               base::Unretained(this)),
@@ -171,14 +175,14 @@ void DownloadDialogView::AddHeader() {
               ? vector_icons::kCloseChromeRefreshIcon
               : vector_icons::kCloseRoundedIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-  InstallCircleHighlightPathGenerator(close_button);
-  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-  close_button->SetProperty(views::kCrossAxisAlignmentKey,
-                            views::LayoutAlignment::kStart);
+  InstallCircleHighlightPathGenerator(close_button_);
+  close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                             views::LayoutAlignment::kStart);
   if (features::IsChromeRefresh2023()) {
     // Remove the extra padding of ImageButton that causes the right padding of
     // the title row to appear larger than the left padding.
-    close_button->SetBorder(nullptr);
+    close_button_->SetBorder(nullptr);
   }
 }
 

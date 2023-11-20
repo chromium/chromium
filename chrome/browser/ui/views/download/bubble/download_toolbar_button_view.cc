@@ -64,6 +64,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -574,6 +575,7 @@ void DownloadToolbarButtonView::OnBubbleClosing() {
   immersive_revealed_lock_.reset();
   bubble_delegate_ = nullptr;
   bubble_contents_ = nullptr;
+  bubble_closer_.reset();
 }
 
 std::unique_ptr<DownloadBubbleNavigationHandler::CloseOnDeactivatePin>
@@ -651,6 +653,12 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
 
   if (ShouldShowBubbleAsInactive()) {
     bubble_delegate_->GetWidget()->ShowInactive();
+    bubble_closer_ = std::make_unique<BubbleCloser>(this);
+    bubble_delegate_->GetWidget()
+        ->GetRootView()
+        ->GetViewAccessibility()
+        .AnnounceText(
+            l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
   } else {
     bubble_delegate_->GetWidget()->Show();
   }
@@ -677,6 +685,32 @@ void DownloadToolbarButtonView::OnBrowserSetLastActive(Browser* browser) {
     content::GetUIThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&views::Widget::Activate,
                                   bubble_delegate_->GetWidget()->GetWeakPtr()));
+  }
+}
+
+DownloadToolbarButtonView::BubbleCloser::BubbleCloser(
+    DownloadToolbarButtonView* toolbar_button)
+    : toolbar_button_(toolbar_button) {
+  CHECK(toolbar_button_);
+  if (toolbar_button->GetWidget() &&
+      toolbar_button->GetWidget()->GetNativeWindow()) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, toolbar_button->GetWidget()->GetNativeWindow(),
+        {ui::ET_MOUSE_PRESSED, ui::ET_KEY_PRESSED, ui::ET_TOUCH_PRESSED});
+  }
+}
+
+DownloadToolbarButtonView::BubbleCloser::~BubbleCloser() = default;
+
+void DownloadToolbarButtonView::BubbleCloser::OnEvent(const ui::Event& event) {
+  CHECK(event_monitor_);
+  if (event.IsKeyEvent() && event.AsKeyEvent()->key_code() != ui::VKEY_ESCAPE) {
+    return;
+  }
+
+  if (toolbar_button_->IsShowingDetails()) {
+    toolbar_button_->HideDetails();
+    // `this` will be deleted.
   }
 }
 
@@ -767,7 +801,9 @@ bool DownloadToolbarButtonView::ShouldShowBubbleAsInactive() const {
     }
   }
 
-  return false;
+  // The partial view shows up without user interaction, so it should not
+  // steal focus from the web contents.
+  return is_primary_partial_view_;
 }
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {

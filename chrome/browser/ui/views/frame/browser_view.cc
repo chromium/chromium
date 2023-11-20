@@ -2459,20 +2459,23 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   // TODO: this fixes crbug.com/1042010 and crbug.com/1052676, but a more
   // general solution should be desirable to find any bubbles anchored in the
   // views hierarchy.
-  if (toolbar_ && toolbar_->app_menu_button()) {
-    views::DialogDelegate* bubble =
-        toolbar_->app_menu_button()->GetProperty(views::kAnchoredDialogKey);
-    if ((!bubble || user_education::HelpBubbleView::IsHelpBubble(bubble)) &&
-        GetLocationBarView())
-      bubble = GetLocationBarView()->GetProperty(views::kAnchoredDialogKey);
-    if ((!bubble || user_education::HelpBubbleView::IsHelpBubble(bubble)) &&
-        toolbar_button_provider_ &&
-        toolbar_button_provider_->GetAvatarToolbarButton()) {
-      bubble = toolbar_button_provider_->GetAvatarToolbarButton()->GetProperty(
-          views::kAnchoredDialogKey);
+  if (toolbar_) {
+    views::DialogDelegate* bubble = nullptr;
+    for (auto* view : std::initializer_list<views::View*>{
+             toolbar_->app_menu_button(), GetLocationBarView(),
+             toolbar_button_provider_->GetAvatarToolbarButton(),
+             toolbar_button_provider_->GetDownloadButton()}) {
+      if (view) {
+        if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
+            dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
+          bubble = dialog;
+          break;
+        }
+      }
     }
 
-    if (bubble && !user_education::HelpBubbleView::IsHelpBubble(bubble)) {
+    if (bubble) {
+      CHECK(!user_education::HelpBubbleView::IsHelpBubble(bubble));
       View* focusable = bubble->GetInitiallyFocusedView();
 
       // A PermissionPromptBubbleView will explicitly return nullptr due to

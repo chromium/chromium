@@ -138,6 +138,14 @@ DownloadBubbleRowView* DownloadBubblePrimaryView::GetRow(
   return row_list_view_->GetRow(id);
 }
 
+views::View* DownloadBubblePrimaryView::GetInitiallyFocusedView() {
+  if (row_list_view_->children().empty()) {
+    return nullptr;
+  }
+  return static_cast<DownloadBubbleRowView*>(row_list_view_->children().front())
+      ->transparent_button();
+}
+
 DownloadBubbleRowView* DownloadBubblePrimaryView::GetRowForTesting(
     size_t index) {
   return static_cast<DownloadBubbleRowView*>(row_list_view_->children()[index]);

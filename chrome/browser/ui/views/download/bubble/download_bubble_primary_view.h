@@ -24,6 +24,7 @@ struct ContentId;
 
 namespace views {
 class ScrollView;
+class View;
 }  // namespace views
 
 // Base class for either type of primary view (partial or main). Consists of
@@ -42,6 +43,10 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   // Gets the row view with the given id. Returns nullptr if not found.
   DownloadBubbleRowView* GetRow(const offline_items_collection::ContentId& id);
+
+  // The view to focus first when the bubble is created. By default, returns
+  // the transparent button (main button) of the first row in the row list.
+  virtual views::View* GetInitiallyFocusedView();
 
   // Gets the row view at the given index.
   DownloadBubbleRowView* GetRowForTesting(size_t index);

@@ -106,6 +106,7 @@ class DownloadBubbleTransparentButton : public views::Button {
       : Button(callback), row_view_(row_view) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetInstallFocusRingOnFocus(false);
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
   ~DownloadBubbleTransparentButton() override = default;
 

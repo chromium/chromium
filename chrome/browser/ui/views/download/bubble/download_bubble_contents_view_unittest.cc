@@ -151,8 +151,6 @@ class DownloadBubbleContentsViewTest
     bubble_delegate_ = bubble_delegate.get();
     navigation_handler_ =
         std::make_unique<MockDownloadBubbleNavigationHandler>();
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-    bubble_delegate_->GetWidget()->Show();
     bubble_controller_ =
         std::make_unique<DownloadBubbleUIController>(browser_.get());
 
@@ -163,6 +161,11 @@ class DownloadBubbleContentsViewTest
         navigation_handler_->GetWeakPtr(), IsPrimaryPartialView(),
         std::make_unique<DownloadBubbleContentsViewInfo>(GetModels()),
         bubble_delegate_);
+    // The contents view has to be set up before the bubble is shown, because it
+    // sets initially focused view on the delegate (which cannot be set after
+    // the widget is shown).
+    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+    bubble_delegate_->GetWidget()->Show();
   }
 
   void SetUpMockTrustSafetySentimentSurveys() {

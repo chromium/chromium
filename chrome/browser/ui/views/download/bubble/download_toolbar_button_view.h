@@ -17,6 +17,7 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace gfx {
@@ -25,6 +26,10 @@ class RenderText;
 
 namespace offline_items_collection {
 struct ContentId;
+}
+
+namespace views {
+class EventMonitor;
 }
 
 class Browser;
@@ -145,6 +150,32 @@ class DownloadToolbarButtonView : public ToolbarButton,
       std::unique_ptr<DownloadBubbleUIController> bubble_controller);
 
  private:
+  // Closes the bubble when it detects an event such as a mouse click, escape
+  // key press, etc., which indicates the user's intent to close the bubble.
+  // This is needed when the bubble is inactive (shown with ShowInactive)
+  // because the normal close-on-deactivate mechanism doesn't work from an
+  // already-inactive state. This is created by the DownloadToolbarButtonView
+  // when the bubble is shown with ShowInactive, and is destroyed when the
+  // bubble is closed.
+  // TODO(crbug.com/1503082): Factor out common logic copied from translate
+  // bubble.
+  class BubbleCloser : public ui::EventObserver {
+   public:
+    explicit BubbleCloser(DownloadToolbarButtonView* toolbar_button);
+
+    BubbleCloser(const BubbleCloser& other) = delete;
+    BubbleCloser& operator=(const BubbleCloser& other) = delete;
+
+    ~BubbleCloser() override;
+
+    // ui::EventObserver:
+    void OnEvent(const ui::Event& event) override;
+
+   private:
+    raw_ptr<DownloadToolbarButtonView> toolbar_button_ = nullptr;  // Owns this.
+    std::unique_ptr<views::EventMonitor> event_monitor_;
+  };
+
   // Max download count to show in the badge. Any higher number of downloads
   // results in a placeholder ("9+").
   static constexpr int kMaxDownloadCountDisplayed = 9;
@@ -255,6 +286,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Used for holding the top views visible while the download bubble is showing
   // in immersive mode on ChromeOS and Mac.
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;
+
+  std::unique_ptr<BubbleCloser> bubble_closer_;
 
   base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };
