@@ -4076,6 +4076,7 @@ enum WebFeature {
   kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess = 4737,
   kIframeAdAuctionHeadersAttribute = 4738,
   kAutoSpeculationRulesOptedOut = 4739,
+  kOverrideFlashEmbedwithHTML = 4740,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
