@@ -70,6 +70,8 @@ message ComposePageMetadata {
   // The innerText of the page the input field is on. This is temporary. We do
   // not intend to send inner text in the long run.
   string page_inner_text = 3;
+  // The offset into the inner text of the selected input field.
+  uint64 page_inner_text_offset = 4;
 }
 
 // The final status of the feature.
@@ -148,4 +150,8 @@ message ComposeQuality {
   // How much was the text modified before commit only valid iff
   // final_status = INSERTED.
   int64 edit_distance = 5;
+  // A unique ID for each compose session.
+  int64 session_id = 6;
+  // Was this request generated via an edit action.
+  bool was_generated_via_edit = 7;
 }
