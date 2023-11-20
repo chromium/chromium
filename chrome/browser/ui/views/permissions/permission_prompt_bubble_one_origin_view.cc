@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -129,6 +131,23 @@ absl::optional<std::u16string> GetExtraText(
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+std::optional<MediaCoordinator::ViewType> ComputePreviewType(
+    bool has_camera_request,
+    bool has_mic_request) {
+  if (has_camera_request && has_mic_request) {
+    return MediaCoordinator::ViewType::kBoth;
+  }
+  if (has_camera_request) {
+    return MediaCoordinator::ViewType::kCameraOnly;
+  }
+  if (has_mic_request) {
+    return MediaCoordinator::ViewType::kMicOnly;
+  }
+  return std::nullopt;
+}
+#endif
+
 }  // namespace
 
 PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
@@ -149,15 +168,33 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
               PermissionPromptBaseView::GetUrlIdentity(browser, *delegate).name,
               GetVisibleRequests(*delegate.get())),
           GetExtraText(*delegate.get())) {
+  bool has_camera_request = false;
+  bool has_mic_request = false;
   std::vector<permissions::PermissionRequest*> visible_requests =
       GetVisibleRequests(*delegate.get());
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
+    if (visible_requests[i]->request_type() ==
+        permissions::RequestType::kCameraStream) {
+      has_camera_request = true;
+    } else if (visible_requests[i]->request_type() ==
+               permissions::RequestType::kMicStream) {
+      has_mic_request = true;
+    }
   }
+  MaybeAddMediaPreview(has_camera_request, has_mic_request,
+                       visible_requests.size());
 }
 
 PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
+
+void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
+    views::View* child) {
+  if (GetBubbleFrameView()) {
+    SizeToContents();
+  }
+}
 
 void PermissionPromptBubbleOneOriginView::AddRequestLine(
     permissions::PermissionRequest* request,
@@ -192,4 +229,23 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
     line_container->SetProperty(
         views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
   }
+}
+
+void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
+    bool has_camera_request,
+    bool has_mic_request,
+    size_t index) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
+    return;
+  }
+
+  auto view_type = ComputePreviewType(has_camera_request, has_mic_request);
+  if (!view_type) {
+    return;
+  }
+
+  media_preview_coordinator_.emplace(view_type.value(), *this, index,
+                                     /*is_subsection=*/false);
+#endif
 }
