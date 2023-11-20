@@ -34,7 +34,6 @@
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/util/file.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
