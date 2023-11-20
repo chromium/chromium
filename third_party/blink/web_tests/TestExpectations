@@ -1546,13 +1546,11 @@ crbug.com/1488371 virtual/deprecate-unload/http/tests/security/isolatedWorld/con
 crbug.com/1488371 virtual/deprecate-unload/http/tests/security/window-events-clear-domain.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/security/window-events-clear-port.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/security/window-events-pass.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/sendbeacon/beacon-detached-no-crash.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/frame-load-cancelled-abort.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/frame-unload-abort-crash.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xhr-onunload.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xmlhttprequest-unload-sync-handler-attached-from-parent.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xmlhttprequest-unload-sync.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/battery-status/no-leak-on-detached-use.https.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/navigating-across-documents/navigate-to-unparseable-url.html [ Skip Failure Timeout ]
@@ -1592,7 +1590,6 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreen
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/geolocation-api/disconnected-frame-permission-denied.https.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/geolocation-api/disconnected-frame.https.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/presentation/presentation-receiver-terminate-connection.https.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html [ Skip Failure Timeout ]
 
 # ========== End of Unload deprecation pending
 
