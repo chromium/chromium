@@ -5895,15 +5895,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IncompatibleApplicationsPage.AddedPostCrash"
-    enum="BooleanShown" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records whether the user was automatically shown the
-    chrome://settings/incompatibleApplications page following a Chrome crash.
-  </summary>
-</histogram>
-
 <histogram name="IncompatibleApplicationsPage.NumApplications"
     units="applications" expires_after="M85">
   <owner>pmonette@chromium.org</owner>
