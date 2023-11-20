@@ -26,6 +26,7 @@ export enum PromoCardId {
   WEB_PASSWORD_MANAGER = 'passwords_on_web_promo',
   SHORTCUT = 'password_shortcut_promo',
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
+  RELAUNCH_CHROME = 'relaunch_chrome_promo',
 }
 
 /**
@@ -39,8 +40,9 @@ enum PromoCardMetricId {
   UNUSED_WEB_PASSWORD_MANAGER = 1,
   SHORTCUT = 2,
   UNUSED_ACCESS_ON_ANY_DEVICE = 3,
+  RELAUNCH_CHROME = 4,
   // Must be last.
-  COUNT = 4,
+  COUNT = 5,
 }
 
 function recordPromoCardAction(card: PromoCardMetricId) {
@@ -110,6 +112,10 @@ export class PromoCardElement extends PolymerElement {
       case PromoCardId.SHORTCUT:
         PasswordManagerImpl.getInstance().showAddShortcutDialog();
         recordPromoCardAction(PromoCardMetricId.SHORTCUT);
+        break;
+      case PromoCardId.RELAUNCH_CHROME:
+        chrome.send('restartBrowser');
+        recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
         break;
       default:
         assertNotReached();
