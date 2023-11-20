@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../../common/js/dialog_type.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {FilesAppEntry} from '../files_app_entry_interfaces.js';
+
+/**
+ * List of dialog types.
+ *
+ * Keep this in sync with FileManagerDialog::GetDialogTypeAsString, except
+ * FULL_PAGE which is specific to this code.
+ * @enum {string}
+ */
+export const DialogType = {
+  SELECT_FOLDER: 'folder',
+  SELECT_UPLOAD_FOLDER: 'upload-folder',
+  SELECT_SAVEAS_FILE: 'saveas-file',
+  SELECT_OPEN_FILE: 'open-file',
+  SELECT_OPEN_MULTI_FILE: 'open-multi-file',
+  FULL_PAGE: 'full-page',
+};
 
 /**
  * @enum {string}

@@ -4,7 +4,7 @@
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
-import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
+import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
@@ -13,6 +13,7 @@ import {getEntryLabel, str} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';

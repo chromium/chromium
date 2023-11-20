@@ -5,10 +5,9 @@
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
-import {DialogType} from '../common/js/dialog_type.js';
 import {Crostini} from '../externs/background/crostini.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileKey, PropStatus, State} from '../externs/ts/state.js';
+import {DialogType, FileKey, PropStatus, State} from '../externs/ts/state.js';
 import type {VolumeInfo} from '../externs/volume_info.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.js';
 import {FakeFileSelectionHandler} from '../foreground/js/fake_file_selection_handler.js';

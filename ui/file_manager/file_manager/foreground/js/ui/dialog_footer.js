@@ -4,10 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {DialogType} from '../../../common/js/dialog_type.js';
 import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {getFileTypeForName} from '../../../common/js/file_types_base.js';
 import {str} from '../../../common/js/translations.js';
+import {DialogType} from '../../../externs/ts/state.js';
 import {FileListModel} from '../file_list_model.js';
 
 /**

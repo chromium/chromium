@@ -6,7 +6,6 @@ import '../../elements/icons.html.js';
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
-import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
@@ -17,6 +16,7 @@ import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js'
 import {DirectoryTreeContainer} from '../../../containers/directory_tree_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
+import {DialogType} from '../../../externs/ts/state.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';

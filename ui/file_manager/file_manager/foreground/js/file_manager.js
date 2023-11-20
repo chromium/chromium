@@ -19,7 +19,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
-import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
+import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
@@ -39,7 +39,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {ForegroundWindow} from '../../externs/foreground_window.js';
-import {PropStatus} from '../../externs/ts/state.js';
+import {DialogType, PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';

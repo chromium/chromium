@@ -5,9 +5,9 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {saveAppState, updateAppState} from '../../common/js/app_util.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
+import {DialogType} from '../../externs/ts/state.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from './file_list_model.js';

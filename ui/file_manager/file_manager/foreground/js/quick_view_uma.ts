@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';

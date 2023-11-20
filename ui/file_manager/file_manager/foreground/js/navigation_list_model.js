@@ -5,13 +5,13 @@
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {DialogType} from '../../common/js/dialog_type.js';
 import {isOneDrive} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isArcVmEnabled, isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 

@@ -12,13 +12,14 @@ import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeop
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {isModal} from '../../common/js/dialog_type.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';

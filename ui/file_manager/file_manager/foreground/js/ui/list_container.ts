@@ -5,8 +5,8 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
+import {DialogType} from '../../../externs/ts/state.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 

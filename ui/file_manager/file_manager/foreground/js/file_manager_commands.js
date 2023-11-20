@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
-import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {entriesToURLs, isFakeEntry, isInteractiveVolume, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -21,7 +21,7 @@ import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {State} from '../../externs/ts/state.js';
+import {DialogType, State} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {readSubDirectories} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';

@@ -7,7 +7,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {fakeDriveVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
@@ -17,6 +16,7 @@ import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {DialogType} from '../../externs/ts/state.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
 import {constants} from './constants.js';

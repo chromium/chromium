@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {getParentEntry} from '../../common/js/api.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
@@ -13,7 +12,7 @@ import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, EntryType, FileData, State, Volume, VolumeMap} from '../../externs/ts/state.js';
+import {CurrentDirectory, DialogType, EntryType, FileData, State, Volume, VolumeMap} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';

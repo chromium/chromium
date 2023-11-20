@@ -10,11 +10,11 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {decorate} from '../../common/js/ui.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesToast} from '../elements/files_toast.js';
 
