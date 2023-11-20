@@ -10,7 +10,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
-#import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 
@@ -70,21 +69,16 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   if (!showing_native_content && web_state_->CanTakeSnapshot()) {
     // Take the snapshot using the optimized WKWebView snapshotting API for
     // pages loaded in the web view when the WebState snapshot API is available.
-    [snapshot_generator_ updateWebViewSnapshotWithCompletion:callback];
+    [snapshot_generator_ updateWKWebViewSnapshotWithCompletion:callback];
     return;
   }
   // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
   // unavailable.
-  UIImage* image = [snapshot_generator_ updateSnapshot];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (callback) {
-      callback(image);
-    }
-  });
+  [snapshot_generator_ updateUIViewSnapshotWithCompletion:callback];
 }
 
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
-  return [snapshot_generator_ generateSnapshotWithOverlays:NO];
+  return [snapshot_generator_ generateUIViewSnapshot];
 }
 
 void SnapshotTabHelper::RemoveSnapshot() {

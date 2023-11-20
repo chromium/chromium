@@ -16,12 +16,18 @@ class WebState;
 }
 
 // A class that takes care of creating, storing and returning snapshots of a
-// tab's web page.
+// tab's web page. This lives on the UI thread.
 @interface SnapshotGenerator : NSObject
 
 // Weak reference to the snapshot storage which is used to store and retrieve
 // snapshots for the WebState associated with this SnapshotGenerator.
 @property(nonatomic, weak) SnapshotStorage* snapshotStorage;
+
+// The SnapshotGenerator delegate.
+@property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
+
+// The snapshot ID.
+@property(nonatomic, readonly) SnapshotID snapshotID;
 
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -38,21 +44,19 @@ class WebState;
 // `callback` will be called with nil.
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback;
 
-// Generates a new snapshot, updates the snapshot storage, and returns the new
-// snapshot image.
-- (UIImage*)updateSnapshot;
+// Asynchronously generates a new snapshot with WebKit-based snapshot API,
+// updates the snapshot storage, and runs `callback` with the new snapshot
+// image. It is an error to call this method if the web state is showing
+// anything other (e.g., native content) than a web view.
+- (void)updateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
-// Asynchronously generates a new snapshot, updates the snapshot storage, and
-// runs `callback` with the new snapshot image. It is an error to call this
-// method if the web state is showing anything other (e.g., native content) than
-// a web view.
-- (void)updateWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
+// Generates a new snapshot with UIKit-based snapshot API, updates the snapshot
+// storage, and runs `callback` with the new snapshot image.
+- (void)updateUIViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
-// Generates a new snapshot and returns the new snapshot image. This does not
-// update the snapshot storage. If `shouldAddOverlay` is YES, overlays (e.g.,
-// infobars, the download manager, and sad tab view) are also captured in the
-// snapshot image.
-- (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay;
+// Generates and returns a new snapshot image with UIKit-based snapshot API.
+// This does not update the snapshot storage.
+- (UIImage*)generateUIViewSnapshot;
 
 // Hints that the snapshot will likely be saved to disk when the application is
 // backgrounded.  The snapshot is then saved in memory, so it does not need to
@@ -65,12 +69,6 @@ class WebState;
 
 // Requests deletion of the current page snapshot from disk and memory.
 - (void)removeSnapshot;
-
-// The SnapshotGenerator delegate.
-@property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
-
-// The snapshot ID.
-@property(nonatomic, readonly) SnapshotID snapshotID;
 
 @end
 
