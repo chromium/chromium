@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
-    enum="BooleanSuccess" expires_after="2023-12-01">
+    enum="BooleanSuccess" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallTime"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchFailureError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -437,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionDetected3"
-    enum="ExtensionPolicyReinstallReason" expires_after="2023-12-01">
+    enum="ExtensionPolicyReinstallReason" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -455,14 +455,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionResolved" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
-    Fires when we've successfully resinstalled a corrupt enterprise policy
+    Fires when we've successfully reinstalled a corrupt enterprise policy
     force-installed extension, with a value indicating how long it took
     end-to-end to complete the reinstall (including download time).
   </summary>
@@ -1381,7 +1381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheCount" units="units"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1392,7 +1392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1847,7 +1847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1875,7 +1875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledStage2"
-    enum="ExtensionInstallationStage" expires_after="2023-12-01">
+    enum="ExtensionInstallationStage" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -4735,7 +4735,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
-    enum="ManifestInvalidError" expires_after="2023-12-01">
+    enum="ManifestInvalidError" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
