@@ -344,9 +344,6 @@ SkBitmap ImageOperations::Resize(const SkPixmap& source,
            ((RESIZE_FIRST_ALGORITHM_METHOD <= method) &&
             (method <= RESIZE_LAST_ALGORITHM_METHOD)));
 
-  // Time how long this takes to see if it's a problem for users.
-  base::TimeTicks resize_start = base::TimeTicks::Now();
-
   // If the size of source or destination is 0, i.e. 0x0, 0xN or Nx0, just
   // return empty.
   if (source.width() < 1 || source.height() < 1 ||
@@ -386,9 +383,6 @@ SkBitmap ImageOperations::Resize(const SkPixmap& source,
                  static_cast<int>(result.rowBytes()),
                  static_cast<unsigned char*>(result.getPixels()),
                  true);
-
-  base::TimeDelta delta = base::TimeTicks::Now() - resize_start;
-  UMA_HISTOGRAM_TIMES("Image.ResampleMS", delta);
 
   return result;
 }

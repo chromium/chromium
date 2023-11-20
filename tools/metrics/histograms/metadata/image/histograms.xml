@@ -87,15 +87,6 @@ chromium-metrics-reviews@google.com.
       summary="Images fetched and used to render Web Notes templates."/>
 </variants>
 
-<histogram name="Image.ResampleMS" units="?" expires_after="M79">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Time it takes to do high-quality image resampling for images that are
-    resized. Non-resized images and ones our heuristic decides can be done
-    &quot;badly&quot; are not counted.
-  </summary>
-</histogram>
-
 <histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
     enum="BooleanCacheHit" expires_after="2024-03-17">
   <owner>dtseng@chromium.org</owner>
