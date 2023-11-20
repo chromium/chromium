@@ -957,6 +957,12 @@
       status: "stable",
     },
     {
+      // Tracked as an experiment to help Search quantify
+      // performance improvements.
+      name: "CSSMPCImprovements",
+      status: "stable",
+    },
+    {
       // Support nested selectors that start with idents.
       name: "CSSNestingIdent",
       status: "stable",
