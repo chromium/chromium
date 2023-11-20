@@ -604,13 +604,31 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
 }
 
-// Tests that when the manual fallback entry for the unclassified fields is
-// selected, suggestions are not triggered.
-IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
-                       UnclassifiedFormShown_ManualFallbackOptionsAreNoOps) {
+// Tests that when the address manual fallback entry for the unclassified fields
+// is selected, suggestions are not triggered.
+IN_PROC_BROWSER_TEST_F(
+    UnclassifiedFieldsTest,
+    UnclassifiedFormShown_AddressFallbackTriggersSuggestion) {
   AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  // Expect that when the entry is selected, suggestions are not triggered.
+  EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+}
+
+// Tests that when the payments manual fallback entry for the unclassified
+// fields is selected, suggestions are triggered with correct field global id
+// and suggestions trigger source.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       UnclassifiedFormShown_PaymentsFallbackTriggersFallback) {
   AddCreditCard(test::GetCreditCard());
-  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
@@ -618,9 +636,12 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 
   // Expect that when the entry is selected, suggestions are triggered from that
   // field.
-  EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
-  autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form.fields[0].unique_renderer_id},
+          AutofillSuggestionTriggerSource::kManualFallbackPayments));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
 }
