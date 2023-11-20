@@ -20,8 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * The mediator class in the MVC architecture of the add-to-homescreen component. The C++
- * counterpart of this class calls various Java set methods ({@link #setIcon},
- * {@link #setWebAppInfo}, {@link #setWebAppInfoWithIcon}, and {@link #setNativeAppInfo}) when more
+ * counterpart of this class calls various Java set methods ({@link #setIcon}, {@link
+ * #setWebAppInfo}, {@link #setWebAppInfoWithIcon}, and {@link #setNativeAppInfo}) when more
  * information about the app is available. These methods modify the model that lives on the Java
  * side.
  */
@@ -41,8 +41,8 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     void startForAppMenu(@NonNull WebContents webContents, @StringRes int titleId) {
         if (mNativeAddToHomescreenMediator == 0) return;
 
-        AddToHomescreenMediatorJni.get().startForAppMenu(
-                mNativeAddToHomescreenMediator, webContents, titleId);
+        AddToHomescreenMediatorJni.get()
+                .startForAppMenu(mNativeAddToHomescreenMediator, webContents, titleId);
     }
 
     @CalledByNative
@@ -70,7 +70,8 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         mModel.set(AddToHomescreenProperties.TYPE, AppType.NATIVE);
         mModel.set(AddToHomescreenProperties.NATIVE_APP_RATING, nativeAppData.rating());
         mModel.set(AddToHomescreenProperties.CAN_SUBMIT, true);
-        mModel.set(AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT,
+        mModel.set(
+                AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT,
                 nativeAppData.installButtonText());
     }
 
@@ -118,11 +119,18 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     @NativeMethods
     interface Natives {
         long initialize(AddToHomescreenMediator instance);
-        void startForAppMenu(long nativeAddToHomescreenMediator, WebContents webContents,
+
+        void startForAppMenu(
+                long nativeAddToHomescreenMediator,
+                WebContents webContents,
                 @StringRes int titleId);
+
         void addToHomescreen(long nativeAddToHomescreenMediator, String title);
+
         void onNativeDetailsShown(long nativeAddToHomescreenMediator);
+
         void onUiDismissed(long nativeAddToHomescreenMediator);
+
         void destroy(long nativeAddToHomescreenMediator);
     }
 }

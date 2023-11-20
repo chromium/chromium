@@ -28,9 +28,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
-/**
- * Contains utilities for Web Apps and homescreen shortcuts.
- */
+/** Contains utilities for Web Apps and homescreen shortcuts. */
 public class WebappsUtils {
     private static final String TAG = "WebappsUtils";
 
@@ -44,8 +42,9 @@ public class WebappsUtils {
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
-     * @param title          Title of the shortcut.
-     * @param icon           Image that represents the shortcut.
+     *
+     * @param title Title of the shortcut.
+     * @param icon Image that represents the shortcut.
      * @param shortcutIntent Intent to fire when the shortcut is activated.
      * @return Intent for the shortcut.
      */
@@ -59,6 +58,7 @@ public class WebappsUtils {
 
     /**
      * Request Android to add a shortcut to the home screen.
+     *
      * @param id The generated GUID of the shortcut.
      * @param title Title of the shortcut.
      * @param icon Image that represents the shortcut.
@@ -86,28 +86,30 @@ public class WebappsUtils {
             Log.e(TAG, "Failed to find an icon for " + title + ", not adding.");
             return;
         }
-        Icon icon = isMaskableIcon ? Icon.createWithAdaptiveBitmap(bitmap)
-                                   : Icon.createWithBitmap(bitmap);
+        Icon icon =
+                isMaskableIcon
+                        ? Icon.createWithAdaptiveBitmap(bitmap)
+                        : Icon.createWithBitmap(bitmap);
 
-        ShortcutInfo shortcutInfo = new ShortcutInfo.Builder(context, id)
-                                            .setShortLabel(title)
-                                            .setLongLabel(title)
-                                            .setIcon(icon)
-                                            .setIntent(shortcutIntent)
-                                            .build();
+        ShortcutInfo shortcutInfo =
+                new ShortcutInfo.Builder(context, id)
+                        .setShortLabel(title)
+                        .setLongLabel(title)
+                        .setIcon(icon)
+                        .setIntent(shortcutIntent)
+                        .build();
         try {
             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
             shortcutManager.requestPinShortcut(shortcutInfo, null);
         } catch (IllegalStateException e) {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Could not create pinned shortcut: device is locked, or "
                             + "activity is backgrounded.");
         }
     }
 
-    /**
-     * Show toast to alert user that the shortcut was added to the home screen.
-     */
+    /** Show toast to alert user that the shortcut was added to the home screen. */
     private static void showAddedToHomescreenToast(final String title) {
         Context applicationContext = ContextUtils.getApplicationContext();
         String toastText = applicationContext.getString(R.string.added_to_homescreen, title);
@@ -138,6 +140,7 @@ public class WebappsUtils {
 
     /**
      * Utility method to check if a shortcut can be added to the home screen.
+     *
      * @return if a shortcut can be added to the home screen under the current profile.
      */
     @SuppressLint("WrongConstant")
@@ -182,6 +185,7 @@ public class WebappsUtils {
 
     /**
      * Override whether shortcuts are considered supported for testing.
+     *
      * @param supported Whether shortcuts are supported. Pass null to reset.
      */
     public static void setAddToHomeIntentSupportedForTesting(Boolean supported) {

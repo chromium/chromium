@@ -24,9 +24,7 @@ import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappsIconUtils;
 
-/**
- * An ambient infobar to tell the user that the current site they are visiting is a PWA.
- */
+/** An ambient infobar to tell the user that the current site they are visiting is a PWA. */
 @JNINamespace("webapps")
 public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnClickListener {
     private String mMessageText;
@@ -83,15 +81,16 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
     public void onClick(View v) {
         if (getNativeInfoBarPtr() == 0 || mIsHiding) return;
 
-        InstallableAmbientBadgeInfoBarJni.get().addToHomescreen(
-                getNativeInfoBarPtr(), InstallableAmbientBadgeInfoBar.this);
+        InstallableAmbientBadgeInfoBarJni.get()
+                .addToHomescreen(getNativeInfoBarPtr(), InstallableAmbientBadgeInfoBar.this);
     }
 
     /**
      * Creates the infobar.
-     * @param iconDrawableId    Drawable ID corresponding to the icon that the infobar will show.
-     * @param iconBitmap        Bitmap of the icon to display in the infobar.
-     * @param messageText       String to display
+     *
+     * @param iconDrawableId Drawable ID corresponding to the icon that the infobar will show.
+     * @param iconBitmap Bitmap of the icon to display in the infobar.
+     * @param messageText String to display
      */
     private InstallableAmbientBadgeInfoBar(
             int iconDrawableId, Bitmap iconBitmap, String messageText, String url) {
