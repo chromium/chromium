@@ -35,10 +35,12 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
           ->toolbar_button_provider()
           ->GetAvatarToolbarButton();
 
-  // Do not show avatar bubble if there is no avatar menu button or the bubble
-  // is already showing.
-  if (!avatar_toolbar_button || IsShowing())
+  // Do not show avatar bubble if there is no avatar menu button, the button is
+  // disabled or the bubble is already showing.
+  if (!avatar_toolbar_button || !avatar_toolbar_button->GetEnabled() ||
+      IsShowing()) {
     return;
+  }
 
   auto& browser = GetBrowser();
   signin_ui_util::RecordProfileMenuViewShown(browser.profile());

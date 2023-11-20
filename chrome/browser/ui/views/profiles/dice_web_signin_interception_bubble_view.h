@@ -97,6 +97,10 @@ class DiceWebSigninInterceptionBubbleView
     ScopedHandle& operator=(const ScopedHandle&) = delete;
     ScopedHandle(const ScopedHandle&) = delete;
 
+    DiceWebSigninInterceptionBubbleView* GetBubbleViewForTesting() {
+      return bubble_.get();
+    }
+
    private:
     base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_;
   };
