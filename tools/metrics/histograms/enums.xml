@@ -8102,6 +8102,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="32" label="CertificateRevoked"/>
   <int value="64" label="InvalidFallbackCRL"/>
   <int value="128" label="CertificateRevokedByFallbackCRL"/>
+  <int value="256" label="CertificateAcceptedByFallbackCRL"/>
 </enum>
 
 <enum name="CastNonceStatus">
