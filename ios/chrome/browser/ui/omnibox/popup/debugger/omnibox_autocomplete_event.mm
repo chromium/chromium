@@ -5,8 +5,28 @@
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event.h"
 
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
+
+namespace {
+
+/// Copy autocomplete matches into a NSArray.
+template <class Iterable>
+NSArray<AutocompleteMatchFormatter*>* ExtractAutocompleteMatches(
+    const Iterable& matches) {
+  NSMutableArray<AutocompleteMatchFormatter*>* mutableArray =
+      [[NSMutableArray alloc] init];
+  for (const auto& match : matches) {
+    AutocompleteMatchFormatter* matchFormatter =
+        [[AutocompleteMatchFormatter alloc] initWithMatch:match];
+    [mutableArray addObject:matchFormatter];
+  }
+  return mutableArray;
+}
+
+}  // namespace
 
 @implementation OmniboxAutocompleteEvent {
   /// Whether all sync and async providers from the autocomplete controller are
@@ -14,6 +34,10 @@
   BOOL _autocompleteControllerAsyncPassDone;
   /// Whether all sync providers from the autocomplete controller are done.
   BOOL _autocompleteControllerSyncPassDone;
+  /// List of the autocomplete matches from the AutocompleteResult.
+  NSArray<AutocompleteMatchFormatter*>* _matches;
+  /// List of autocomplete matches from the ShortcutsProvider.
+  NSArray<AutocompleteMatchFormatter*>* _shortcutsMatches;
 }
 
 - (OmniboxAutocompleteEvent*)initWithAutocompleteController:
@@ -24,12 +48,32 @@
     _autocompleteControllerAsyncPassDone = controller->done();
     _autocompleteControllerSyncPassDone = controller->sync_pass_done();
 
-    self.matches = [[NSMutableArray alloc] init];
-    for (auto acm : controller->result()) {
-      AutocompleteMatchFormatter* matcher =
-          [[AutocompleteMatchFormatter alloc] initWithMatch:acm];
-      [self.matches addObject:matcher];
+    // Extract matches.
+    _matches = ExtractAutocompleteMatches(controller->result());
+
+    // Adding shortcuts suggestions for debugging purposes. Future provider may
+    // be added with a way to filter the list of providers to avoid scrolling.
+    for (const auto& provider : controller->providers()) {
+      switch (provider->type()) {
+        case AutocompleteProvider::TYPE_SHORTCUTS:
+          _shortcutsMatches = ExtractAutocompleteMatches(provider->matches());
+          break;
+        default:
+          break;
+      }
     }
+
+    // Create groups.
+    NSMutableArray<AutocompleteMatchGroup*>* groups =
+        [[NSMutableArray alloc] init];
+    [groups addObject:[AutocompleteMatchGroup groupWithTitle:nil
+                                                     matches:_matches]];
+    if (_shortcutsMatches.count) {
+      [groups
+          addObject:[AutocompleteMatchGroup groupWithTitle:@"Shortcuts"
+                                                   matches:_shortcutsMatches]];
+    }
+    _matchGroups = groups;
   }
   return self;
 }

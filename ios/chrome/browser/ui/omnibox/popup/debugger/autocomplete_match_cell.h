@@ -15,7 +15,8 @@ extern NSString* const kAutocompleteMatchCellReuseIdentifier;
 @interface AutocompleteMatchCell : UITableViewCell
 
 - (void)setupWithAutocompleteMatchFormatter:
-    (AutocompleteMatchFormatter*)matchFormatter;
+            (AutocompleteMatchFormatter*)matchFormatter
+                           showProviderType:(BOOL)shouldShowProviderType;
 
 @end
 

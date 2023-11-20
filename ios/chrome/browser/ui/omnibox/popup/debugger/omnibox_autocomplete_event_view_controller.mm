@@ -17,9 +17,18 @@
          forCellReuseIdentifier:kAutocompleteMatchCellReuseIdentifier];
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return self.event.matchGroups.count;
+}
+
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return self.event.matches.count;
+  return self.event.matchGroups[section].matches.count;
+}
+
+- (NSString*)tableView:(UITableView*)tableView
+    titleForHeaderInSection:(NSInteger)section {
+  return self.event.matchGroups[section].title;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -27,9 +36,11 @@
   AutocompleteMatchCell* cell = [tableView
       dequeueReusableCellWithIdentifier:kAutocompleteMatchCellReuseIdentifier];
 
-  AutocompleteMatchFormatter* matchFormatter =
-      self.event.matches[indexPath.row];
-  [cell setupWithAutocompleteMatchFormatter:matchFormatter];
+  AutocompleteMatchGroup* group = self.event.matchGroups[indexPath.section];
+
+  AutocompleteMatchFormatter* matchFormatter = group.matches[indexPath.row];
+  [cell setupWithAutocompleteMatchFormatter:matchFormatter
+                           showProviderType:!group.title.length];
 
   return cell;
 }

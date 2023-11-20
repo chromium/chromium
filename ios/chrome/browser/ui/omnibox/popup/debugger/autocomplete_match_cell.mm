@@ -134,11 +134,14 @@ const CGFloat kContentViewVerticalPadding = 00.0;
 }
 
 - (void)setupWithAutocompleteMatchFormatter:
-    (AutocompleteMatchFormatter*)matchFormatter {
+            (AutocompleteMatchFormatter*)matchFormatter
+                           showProviderType:(BOOL)shouldShowProviderType {
   const AutocompleteMatch& match = matchFormatter.autocompleteMatch;
 
   _providerTypeLabel.text = base::SysUTF8ToNSString(
       AutocompleteProvider::TypeToString(match.provider->type()));
+  _providerTypeLabel.hidden = !shouldShowProviderType;
+
   _matchTypeLabel.text =
       base::SysUTF8ToNSString(AutocompleteMatchType::ToString(match.type));
   _textLabel.attributedText = matchFormatter.text;

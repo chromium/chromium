@@ -6,6 +6,8 @@ source_set("debugger") {
   sources = [
     "autocomplete_match_cell.h",
     "autocomplete_match_cell.mm",
+    "autocomplete_match_group.h",
+    "autocomplete_match_group.mm",
     "omnibox_autocomplete_event.h",
     "omnibox_autocomplete_event.mm",
     "omnibox_autocomplete_event_view_controller.h",
