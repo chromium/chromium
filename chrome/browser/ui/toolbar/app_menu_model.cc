@@ -144,6 +144,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -710,9 +711,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (!features::IsExtensionMenuInRootAppMenu()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
-  AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
-                         kPerformanceMenuItem);
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceControlsSidePanel)) {
+    AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                           kPerformanceMenuItem);
+  }
   if (chrome::CanOpenTaskManager())
     AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1698,6 +1702,13 @@ void AppMenuModel::Build() {
       }
     }
 
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPerformanceControlsSidePanel)) {
+      AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+      SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                             kPerformanceMenuItem);
+    }
+
     AddItemWithStringId(IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE);
 
     CreateFindAndEditSubMenu();
@@ -1707,6 +1718,13 @@ void AppMenuModel::Build() {
     AddSubMenuWithStringId(IDC_SAVE_AND_SHARE_MENU, IDS_SAVE_AND_SHARE_MENU,
                            sub_menus_.back().get());
   } else {
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPerformanceControlsSidePanel)) {
+      AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+      SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                             kPerformanceMenuItem);
+    }
+
     if (media_router::MediaRouterEnabled(browser()->profile())) {
       AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
     }
@@ -1850,6 +1868,7 @@ void AppMenuModel::Build() {
                    kKeyOpenChromeRefreshIcon);
     SetCommandIcon(this, IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
     SetCommandIcon(this, IDC_OPTIONS, kSettingsMenuIcon);
+    SetCommandIcon(this, IDC_PERFORMANCE, kPerformanceIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     SetCommandIcon(this, IDC_HELP_MENU, kHelpMenuIcon);
     SetCommandIcon(this, IDC_SHOW_SEARCH_COMPANION,

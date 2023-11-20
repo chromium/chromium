@@ -367,9 +367,24 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
+  ASSERT_TRUE(toolModel.GetIndexOfCommandId(IDC_PERFORMANCE));
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kChromeRefresh2023,
+                            performance_manager::features::
+                                kPerformanceControlsSidePanel},
+      /*disabled_features=*/{});
+  AppMenuModel model(this, browser());
+  model.Init();
+  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_PERFORMANCE));
+  size_t performance_index = model.GetIndexOfCommandId(IDC_PERFORMANCE).value();
+  EXPECT_TRUE(model.IsEnabledAt(performance_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
