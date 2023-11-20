@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
@@ -50,19 +49,6 @@ public class WebApkDataProvider {
     public static void setWebappInfoForTesting(WebappInfo webappInfo) {
         sWebappInfoForTesting = webappInfo;
         ResettersForTesting.register(() -> sWebappInfoForTesting = null);
-    }
-
-    /**
-     * Converts a color value to a hex string.
-     *
-     * @param color The color to convert.
-     * @return The RGB values of the color, as string presented in hex (prefixed with #). For
-     *     example: '#FF0000' (for red).
-     */
-    private static String colorToHexString(@ColorInt long color) {
-        return String.format(
-                "#%02X%02X%02X",
-                (((color) >> 16) & 0xFF), (((color) >> 8) & 0xFF), (((color) >> 0) & 0xFF));
     }
 
     public static WebappInfo getPartialWebappInfo(String url) {
