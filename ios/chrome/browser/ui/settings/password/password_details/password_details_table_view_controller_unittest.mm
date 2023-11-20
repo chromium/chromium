@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -205,7 +206,8 @@ class PasswordDetailsTableViewControllerTest
   PasswordDetailsTableViewControllerTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::
-                                  kIOSPasswordAuthOnEntryV2},
+                                  kIOSPasswordAuthOnEntryV2,
+                              kEnableUIEditMenuInteraction},
         /*disabled_features=*/{});
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
@@ -370,9 +372,18 @@ class PasswordDetailsTableViewControllerTest
 
     [password_details tableView:password_details.tableView
         didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    UIMenuController* menu = [UIMenuController sharedMenuController];
-    EXPECT_EQ(1u, menu.menuItems.count);
-    [password_details copyPasswordDetails:menu];
+
+    if (@available(iOS 16, *)) {
+      [password_details
+          copyPasswordDetailsHelper:PasswordDetailsItemTypeWebsite];
+    }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+    else {
+      UIMenuController* menu = [UIMenuController sharedMenuController];
+      EXPECT_EQ(1u, menu.menuItems.count);
+      [password_details copyPasswordDetails:menu];
+    }
+#endif
 
     UIPasteboard* general_pasteboard = [UIPasteboard generalPasteboard];
     EXPECT_NSEQ(expected_pasteboard, general_pasteboard.string);
@@ -803,11 +814,17 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
 
   [password_details tableView:password_details.tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  EXPECT_EQ(1u, menu.menuItems.count);
-  [password_details copyPasswordDetails:menu];
-
+  if (@available(iOS 16, *)) {
+    [password_details
+        copyPasswordDetailsHelper:PasswordDetailsItemTypeUsername];
+  }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    EXPECT_EQ(1u, menu.menuItems.count);
+    [password_details copyPasswordDetails:menu];
+  }
+#endif
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   EXPECT_NSEQ(@"test@egmail.com", generalPasteboard.string);
   EXPECT_NSEQ(
@@ -828,10 +845,17 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
 
   [password_details tableView:password_details.tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
-
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  EXPECT_EQ(1u, menu.menuItems.count);
-  [password_details copyPasswordDetails:menu];
+  if (@available(iOS 16, *)) {
+    [password_details
+        copyPasswordDetailsHelper:PasswordDetailsItemTypePassword];
+  }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    EXPECT_EQ(1u, menu.menuItems.count);
+    [password_details copyPasswordDetails:menu];
+  }
+#endif
 
   EXPECT_TRUE(handler().passwordCopiedByUserCalled);
 
@@ -849,10 +873,16 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
   PasswordDetailsTableViewController* password_details =
       base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
           controller());
-
-  // When no menu controller is passed, there's no way of knowing which field
-  // should be copied to the pasteboard and thus copying should fail.
-  [password_details copyPasswordDetails:nil];
+  if (@available(iOS 16, *)) {
+    [password_details copyPasswordDetailsHelper:NSIntegerMax];
+  }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
+    // When no menu controller is passed, there's no way of knowing which field
+    // should be copied to the pasteboard and thus copying should fail.
+    [password_details copyPasswordDetails:nil];
+  }
+#endif
 
   EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
