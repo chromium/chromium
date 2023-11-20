@@ -65,6 +65,7 @@ public class LocationBarLayout extends FrameLayout {
     private final boolean mIsSurfacePolishEnabled;
     private int mStatusIconAndUrlBarOffsetForSurfacePolish;
     private int mUrlActionContainerEndMargin;
+    private boolean mIsUrlFocusChangeInProgress;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -231,15 +232,31 @@ public class LocationBarLayout extends FrameLayout {
             if (childView.getVisibility() != GONE) {
                 LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
                 if (childView == mUrlBar) {
+                    boolean urlBarLaidOutAtFocusedWidth;
                     if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
                             && (mUrlFocusPercentage > 0.0f || mUrlBar.hasFocus())) {
                         // Set a margin that places the url bar in its final, focused position.
                         // During animation this will be compensated against using translation of
                         // decreasing magnitude to avoid a jump.
                         startMargin += getFocusedStatusViewSpacingDelta();
-                        mUrlBarLaidOutAtFocusedWidth = true;
+                        urlBarLaidOutAtFocusedWidth = true;
                     } else {
-                        mUrlBarLaidOutAtFocusedWidth = false;
+                        urlBarLaidOutAtFocusedWidth = false;
+                    }
+
+                    // The behavior of setUrlFocusChangePercent() depends on the value of
+                    // mUrlBarLaidOutAtFocusedWidth. We don't control the timing of external calls
+                    // to setUrlFocusChangePercent() since it's driven by an animation. To avoid
+                    // getting into a stale state, we call setUrlFocusChangePercent() again whenever
+                    // the value of mUrlBarLaidOutAtFocusedWidth changes.
+                    if (mNativeInitialized && 
+                           urlBarLaidOutAtFocusedWidth != mUrlBarLaidOutAtFocusedWidth) {
+                        mUrlBarLaidOutAtFocusedWidth = urlBarLaidOutAtFocusedWidth;
+                        setUrlFocusChangePercent(
+                                mUrlFocusPercentage,
+                                mUrlFocusPercentage,
+                                mUrlFocusPercentage,
+                                mIsUrlFocusChangeInProgress);
                     }
 
                     MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
@@ -395,6 +412,7 @@ public class LocationBarLayout extends FrameLayout {
             float startSurfaceScrollFraction,
             float urlFocusChangeFraction,
             boolean isUrlFocusChangeInProgress) {
+        mIsUrlFocusChangeInProgress = isUrlFocusChangeInProgress;
         mUrlFocusPercentage =
                 getMaxValue(
                         ntpSearchBoxScrollFraction,

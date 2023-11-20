@@ -717,10 +717,7 @@ class LocationBarMediator
         if (mIsTablet) {
             float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
             mLocationBarLayout.setUrlFocusChangePercent(
-                    urlFocusChangeFraction,
-                    urlFocusChangeFraction,
-                    urlFocusChangeFraction,
-                    mIsUrlFocusChangeInProgress);
+                    urlFocusChangeFraction, urlFocusChangeFraction, urlFocusChangeFraction, false);
             mLocationBarLayout.updateLayoutParams(
                     MeasureSpec.makeMeasureSpec(
                             mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));
