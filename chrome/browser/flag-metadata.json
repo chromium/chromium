@@ -1273,22 +1273,22 @@
   {
     "name": "contextual-page-actions",
     "owners": [ "shaktisahu@google.com", "salg@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "contextual-page-actions-reader-mode",
     "owners": [ "shaktisahu@google.com", "salg@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "contextual-page-actions-share-model",
     "owners": [ "haileywang@google.com", "ssid@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "contextual-page-actions-with-price-tracking",
     "owners": [ "shaktisahu@google.com", "salg@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "contextual-search-debug",
