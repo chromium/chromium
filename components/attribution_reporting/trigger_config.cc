@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -43,6 +42,15 @@ constexpr char kTriggerDataMatchingModulus[] = "modulus";
 
 // https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
 constexpr uint8_t kMaxTriggerDataPerSource = 32;
+
+constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
+  switch (source_type) {
+    case SourceType::kNavigation:
+      return 8;
+    case SourceType::kEvent:
+      return 2;
+  }
+}
 
 // If `dict` contains a valid "trigger_data" field, writes the resulting keys
 // into `trigger_data_indices` using `spec_index` as the value.

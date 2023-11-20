@@ -17,13 +17,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
-class EventReportWindows;
 class MaxEventLevelReports;
 class TriggerSpecs;
 }
 
 namespace content {
 
+// TODO(apaseltiner): Use `uint8_t` as the type of both fields here, as the
+// trigger data *index* is guaranteed to be < 32 and the window index is
+// guaranteed to be < 5.
 struct FakeEventLevelReport {
   uint32_t trigger_data;
   int window_index;
@@ -77,7 +79,7 @@ CONTENT_EXPORT absl::uint128 GetNumStates(
     attribution_reporting::MaxEventLevelReports);
 
 // Determines the randomized response flip probability for the given API
-// configuration, and performs randomized response on that otutput space.
+// configuration, and performs randomized response on that output space.
 //
 // Returns `absl::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
@@ -144,9 +146,10 @@ CONTENT_EXPORT double ComputeChannelCapacity(absl::uint128 num_states,
 // 2. For all other stars, count the number of bars that precede them. Each
 //    star represents a report where the reporting window and trigger data is
 //    uniquely determined by that number.
+//
+// `CHECK()`s `TriggerSpecs::SingleSharedSpec()`.
 CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    int trigger_data_cardinality,
-    const attribution_reporting::EventReportWindows&,
+    const attribution_reporting::TriggerSpecs&,
     int max_event_level_reports,
     int64_t random_stars_and_bars_sequence_index);
 

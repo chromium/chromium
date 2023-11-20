@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <iterator>
 #include <map>
 #include <tuple>
 #include <utility>
@@ -437,15 +438,20 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 }
 
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    int trigger_data_cardinality,
-    const attribution_reporting::EventReportWindows& event_report_windows,
+    const attribution_reporting::TriggerSpecs& specs,
     int max_reports,
     int64_t random_stars_and_bars_sequence_index) {
+  const attribution_reporting::TriggerSpec* single_spec =
+      specs.SingleSharedSpec();
+  CHECK(single_spec);
+
+  const int trigger_data_cardinality = specs.size();
+
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(
           /*num_stars=*/max_reports,
           /*num_bars=*/trigger_data_cardinality *
-              event_report_windows.end_times().size(),
+              single_spec->event_report_windows().end_times().size(),
           /*sequence_index=*/random_stars_and_bars_sequence_index));
 
   std::vector<FakeEventLevelReport> fake_reports;
@@ -462,12 +468,16 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 
     auto result = std::div(num_bars - 1, trigger_data_cardinality);
 
-    const int trigger_data = result.rem;
-    DCHECK_GE(trigger_data, 0);
-    DCHECK_LT(trigger_data, trigger_data_cardinality);
+    const int trigger_data_index = result.rem;
+    DCHECK_GE(trigger_data_index, 0);
+    DCHECK_LT(trigger_data_index, trigger_data_cardinality);
 
-    fake_reports.push_back({.trigger_data = static_cast<uint32_t>(trigger_data),
-                            .window_index = result.quot});
+    fake_reports.push_back({
+        .trigger_data =
+            std::next(specs.trigger_data_indices().begin(), trigger_data_index)
+                ->first,
+        .window_index = result.quot,
+    });
   }
   DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_reports));
   return fake_reports;
@@ -489,15 +499,12 @@ RandomizedResponseData DoRandomizedResponseWithCache(
     // spec if all of the specs have the same # of windows and reports. We can
     // consider further optimizing if it's useful. The existing code will cover
     // the default specs for navigation / event sources.
-    const attribution_reporting::TriggerSpec* single_spec =
-        specs.SingleSharedSpec();
     const absl::uint128 sequence_index = RandGenerator(num_states);
     DCHECK_GE(sequence_index, 0);
     DCHECK_LT(sequence_index, kMaxNumCombinations);
-    fake_reports = single_spec
+    fake_reports = specs.SingleSharedSpec()
                        ? internal::GetFakeReportsForSequenceIndex(
-                             /*trigger_data_cardinality=*/specs.size(),
-                             single_spec->event_report_windows(), max_reports,
+                             specs, max_reports,
                              base::checked_cast<int64_t>(
                                  absl::Uint128Low64(sequence_index)))
                        : internal::GetFakeReportsForSequenceIndex(
