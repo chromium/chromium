@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_SHELL_SURFACE_H_
 #define COMPONENTS_EXO_SHELL_SURFACE_H_
 
+#include <optional>
+
 #include "ash/focus_cycler.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
@@ -49,13 +51,14 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // The size is a hint, in the sense that the client is free to ignore it if
   // it doesn't resize, pick a smaller size (to satisfy aspect ratio or resize
   // in steps of NxM pixels).
-  using ConfigureCallback =
-      base::RepeatingCallback<uint32_t(const gfx::Rect& bounds,
-                                       chromeos::WindowStateType state_type,
-                                       bool resizing,
-                                       bool activated,
-                                       const gfx::Vector2d& origin_offset,
-                                       float raster_scale)>;
+  using ConfigureCallback = base::RepeatingCallback<uint32_t(
+      const gfx::Rect& bounds,
+      chromeos::WindowStateType state_type,
+      bool resizing,
+      bool activated,
+      const gfx::Vector2d& origin_offset,
+      float raster_scale,
+      std::optional<chromeos::WindowStateType> restore_state_type)>;
   using OriginChangeCallback =
       base::RepeatingCallback<void(const gfx::Point& origin)>;
   using RotateFocusCallback =

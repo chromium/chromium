@@ -4,6 +4,8 @@
 
 #include "components/exo/shell_surface.h"
 
+#include <optional>
+
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/scoped_animation_disabler.h"
@@ -919,15 +921,18 @@ void ShellSurface::Configure(bool ends_drag) {
 
   if (!configure_callback_.is_null()) {
     if (window_state) {
-      serial = configure_callback_.Run(GetClientBoundsInScreen(widget_),
-                                       window_state->GetStateType(),
-                                       IsResizing(), widget_->IsActive(),
-                                       origin_offset, pending_raster_scale_);
+      auto restore_state_type = std::optional<chromeos::WindowStateType>{
+          window_state->GetRestoreWindowState()};
+      serial = configure_callback_.Run(
+          GetClientBoundsInScreen(widget_), window_state->GetStateType(),
+          IsResizing(), widget_->IsActive(), origin_offset,
+          pending_raster_scale_, restore_state_type);
     } else {
       auto state = chromeos::ToWindowStateType(initial_show_state_);
       gfx::Rect bounds = GetInitialBoundsForState(state);
-      serial = configure_callback_.Run(bounds, state, false, false,
-                                       origin_offset, pending_raster_scale_);
+      serial =
+          configure_callback_.Run(bounds, state, false, false, origin_offset,
+                                  pending_raster_scale_, std::nullopt);
     }
   }
 

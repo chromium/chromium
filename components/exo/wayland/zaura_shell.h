@@ -166,7 +166,8 @@ class AuraToplevel {
                    chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated,
-                   float raster_scale);
+                   float raster_scale,
+                   std::optional<chromeos::WindowStateType> restore_state_type);
   virtual void OnOriginChange(const gfx::Point& origin);
   void OnOverviewChange(bool in_overview);
   void SetDecoration(SurfaceFrameType type);
