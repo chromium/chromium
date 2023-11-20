@@ -89,6 +89,11 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   void OnDriveIntegrationServiceDestroyed() override;
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
 
+  // Remove stale entries from path_to_sync_state_. Entries are considered stale
+  // when they haven't been updated in the last period given by
+  // kSyncStateStaleThreshold.
+  void ClearStaleSyncStates();
+
   virtual std::set<GURL> GetEventListenerURLs(
       const std::string& event_name) = 0;
 
@@ -128,6 +133,12 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 
   std::map<std::string, drivefs::SyncState> path_to_sync_state_;
+
+  // Timer to ensure no stale entries from path_to_sync_state_ have been left
+  // behind by cleaning those that haven't been updated in a period given by
+  // kSyncStateStaleThreshold. The timer fires kSyncStateStaleCheckInterval
+  // after any entry in path_to_sync_state_ is set.
+  base::RetainingOneShotTimer stale_sync_state_cleanup_timer_;
 
   base::WeakPtrFactory<DriveFsEventRouter> weak_ptr_factory_{this};
 };

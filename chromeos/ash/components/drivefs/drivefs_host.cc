@@ -25,11 +25,29 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace drivefs {
+
 namespace {
 
 constexpr char kDataPath[] = "GCache/v2";
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& os, const drivefs::SyncStatus& status) {
+  switch (status) {
+    case SyncStatus::kNotFound:
+      return os << "not_found";
+    case SyncStatus::kCompleted:
+      return os << "completed";
+    case SyncStatus::kQueued:
+      return os << "queued";
+    case SyncStatus::kInProgress:
+      return os << "in_progress";
+    case SyncStatus::kError:
+      return os << "error";
+    default:
+      return os << "unknown";
+  }
+}
 
 std::unique_ptr<DriveFsBootstrapListener>
 DriveFsHost::Delegate::CreateMojoListener() {

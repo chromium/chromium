@@ -335,20 +335,6 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     mojo::FusePipes(std::move(pending_delegate_receiver_), std::move(delegate));
   }
 
-  SyncState InProgress(const std::string path_str = "",
-                       const float progress = 0) {
-    return {SyncStatus::kInProgress, progress, mount_path_.Append(path_str)};
-  }
-  SyncState Error(const std::string path_str = "", const float progress = 0) {
-    return {SyncStatus::kError, progress, mount_path_.Append(path_str)};
-  }
-  SyncState NotFound(const std::string path_str = "") {
-    return {SyncStatus::kNotFound, 0, mount_path_.Append(path_str)};
-  }
-  SyncState Moved(const std::string path_str = "") {
-    return {SyncStatus::kMoved, 0, mount_path_.Append(path_str)};
-  }
-
   base::FilePath profile_path_;
   base::test::TaskEnvironment task_environment_;
   AccountId account_id_;

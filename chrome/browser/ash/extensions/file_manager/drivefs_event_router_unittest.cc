@@ -12,7 +12,9 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-shared.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -32,12 +34,6 @@ using file_manager_private::FileWatchEvent;
 using testing::_;
 
 namespace {
-
-constexpr auto kInProgress = drivefs::mojom::ItemEvent::State::kInProgress;
-constexpr auto kQueued = drivefs::mojom::ItemEvent::State::kQueued;
-
-constexpr auto kPin = drivefs::mojom::ItemEventReason::kPin;
-constexpr auto kTransfer = drivefs::mojom::ItemEventReason::kTransfer;
 
 class ValueMatcher : public testing::MatcherInterface<const base::Value&> {
  public:
@@ -152,21 +148,13 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
 class DriveFsEventRouterTest : public testing::Test {
  public:
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  protected:
   void Unmount() { event_router_.OnUnmounted(); }
   TestDriveFsEventRouter event_router_;
 };
-
-inline void AddEvent(std::vector<drivefs::mojom::ItemEventPtr>& events,
-                     drivefs::mojom::ItemEventReason reason,
-                     int64_t id,
-                     std::string path,
-                     drivefs::mojom::ItemEvent::State state,
-                     int64_t bytes_transferred,
-                     int64_t bytes_to_transfer) {
-  events.emplace_back(absl::in_place, id, id, path, state, bytes_transferred,
-                      bytes_to_transfer, reason);
-}
 
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   FileWatchEvent event;
@@ -413,16 +401,28 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_NoListeners) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_Basic) {
-  EXPECT_CALL(event_router_, BroadcastEventForIndividualFilesImpl).Times(0);
+TEST_F(DriveFsEventRouterTest, StaleSyncStatusesCleaned) {
+  const base::FilePath path("/test");
 
-  drivefs::mojom::SyncingStatus syncing_status;
-  auto& events = syncing_status.item_events;
-  AddEvent(events, kTransfer, 1, "a", kInProgress, 50, 100);
-  AddEvent(events, kTransfer, 2, "b", kQueued, 0, 100);
-  AddEvent(events, kPin, 3, "c", kInProgress, 25, 40);
-  AddEvent(events, kPin, 4, "d", kQueued, 0, 40);
-  event_router_.OnSyncingStatusUpdate(syncing_status);
+  drivefs::mojom::ProgressEvent syncing_status;
+  syncing_status.progress = 50;
+  syncing_status.file_path = path;
+  event_router_.OnItemProgress(syncing_status);
+
+  auto sync_status = event_router_.GetDriveSyncStateForPath(path);
+  EXPECT_EQ(sync_status.status, drivefs::SyncStatus::kInProgress);
+
+  // 60s is less than the threshold of 90s where entries are considered stale.
+  task_environment.FastForwardBy(base::Seconds(50));
+
+  sync_status = event_router_.GetDriveSyncStateForPath(path);
+  EXPECT_EQ(sync_status.status, drivefs::SyncStatus::kInProgress);
+
+  // 60s + 60s = 120s is enough time for the entry to be considered stale.
+  task_environment.FastForwardBy(base::Seconds(50));
+
+  sync_status = event_router_.GetDriveSyncStateForPath(path);
+  EXPECT_EQ(sync_status.status, drivefs::SyncStatus::kNotFound);
 }
 
 }  // namespace

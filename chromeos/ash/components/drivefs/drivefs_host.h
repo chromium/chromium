@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
@@ -46,18 +47,19 @@ class DriveFsBootstrapListener;
 
 enum class SyncStatus {
   kNotFound,
-  kMoved,
   kCompleted,
   kQueued,
   kInProgress,
   kError,
 };
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& os, const SyncStatus& status);
 
 struct SyncState {
   SyncStatus status;
   float progress;  // Range: 0 to 1.
   base::FilePath path;
+  base::Time last_updated;
 
   friend std::ostream& operator<<(std::ostream& os, const SyncState& state) {
     return os << "('" << state.path << "', " << state.status << ", "
