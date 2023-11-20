@@ -2182,7 +2182,8 @@ const char kLegacyTechReportTopLevelUrlDescription[] =
     "When a legacy technology report is triggered and uploaded for enterprise "
     "users. By default, the URL of the report won't be same as the one in the "
     "Omnibox if the event is detected in a sub-frame. Enable this flag will "
-    "allow browser trace back to the top level URL instead.";
+    "allow browser trace back to the top level URL instead and populate the "
+    "Frame URL in the `frame_url` field on the API.";
 
 const char kLensCameraAssistedSearchName[] =
     "Google Lens in Omnibox and New Tab Page";

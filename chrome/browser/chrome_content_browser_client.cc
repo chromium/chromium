@@ -7081,6 +7081,7 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
     content::RenderFrameHost* render_frame_host,
     const std::string type,
     const GURL& url,
+    const GURL& frame_url,
     const std::string& filename,
     uint64_t line,
     uint64_t column) {
@@ -7093,7 +7094,7 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
     return;
   }
   enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile)
-      ->ReportEvent(type, url, filename, line, column);
+      ->ReportEvent(type, url, frame_url, filename, line, column);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {

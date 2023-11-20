@@ -30,6 +30,7 @@ constexpr base::Time::Exploded kTestDateInMidnight = {.year = 2023,
 
 constexpr char kType[] = "type";
 constexpr char kUrl[] = "https://www.example.com/path";
+constexpr char kFrameUrl[] = "https://www.frame.com/something";
 constexpr char kMatchedUrl[] = "www.example.com";
 constexpr char kFileName[] = "filename.js";
 constexpr uint64_t kLine = 10;
@@ -53,6 +54,7 @@ TEST_F(LegacyTechGeneratorTest, Test) {
       /*type=*/kType,
       /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
+      /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
       /*filename=*/kFileName,
       /*line=*/kLine,
@@ -65,6 +67,7 @@ TEST_F(LegacyTechGeneratorTest, Test) {
 
   EXPECT_EQ(kType, report->feature_id());
   EXPECT_EQ(kUrl, report->url());
+  EXPECT_EQ(kFrameUrl, report->frame_url());
   EXPECT_EQ(kMatchedUrl, report->allowlisted_url_match());
   EXPECT_EQ(kFileName, report->filename());
   EXPECT_EQ(kColumn, report->column());
@@ -93,6 +96,7 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
       /*type=*/kType,
       /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
+      /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
       /*filename=*/kFileName,
       /*line=*/kLine,
@@ -129,6 +133,7 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
       /*type=*/kType,
       /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
+      /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
       /*filename=*/kFileName,
       /*line=*/kLine,

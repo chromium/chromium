@@ -51,6 +51,7 @@ class LegacyTechReportGenerator {
         const std::string& type,
         const base::Time& timestamp,
         const GURL& url,
+        const GURL& frame_url,
         const std::string& matched_url,
         const std::string& filename,
         uint64_t line,
@@ -67,6 +68,7 @@ class LegacyTechReportGenerator {
     std::string type;
     base::Time timestamp;
     GURL url;
+    GURL frame_url;
     std::string matched_url;
     std::string filename;
     uint64_t line;

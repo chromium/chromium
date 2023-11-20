@@ -38,6 +38,7 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     const std::string& type,
     const base::Time& timestamp,
     const GURL& url,
+    const GURL& frame_url,
     const std::string& matched_url,
     const std::string& filename,
     uint64_t line,
@@ -46,6 +47,7 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     : type(type),
       timestamp(timestamp),
       url(url),
+      frame_url(frame_url),
       matched_url(matched_url),
       filename(filename),
       line(line),
@@ -75,6 +77,7 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
   report->set_event_timestamp_millis(
       legacy_tech_data.timestamp.UTCMidnight().InMillisecondsSinceUnixEpoch());
   report->set_url(legacy_tech_data.url.spec());
+  report->set_frame_url(legacy_tech_data.frame_url.spec());
   report->set_allowlisted_url_match(legacy_tech_data.matched_url);
   report->set_filename(legacy_tech_data.filename);
   report->set_column(legacy_tech_data.column);

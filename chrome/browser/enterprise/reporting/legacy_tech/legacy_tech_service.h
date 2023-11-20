@@ -27,6 +27,7 @@ class LegacyTechService : public KeyedService {
 
   void ReportEvent(const std::string& type,
                    const GURL& url,
+                   const GURL& frame_url,
                    const std::string& filename,
                    uint64_t line,
                    uint64_t column) const;

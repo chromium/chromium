@@ -25,6 +25,17 @@ using ::testing::Eq;
 
 namespace enterprise_reporting {
 
+namespace {
+
+constexpr char kType[] = "type";
+constexpr char kUrl[] = "https://example.com";
+constexpr char kFrameUrl[] = "https://subdomain.frame.com/something";
+constexpr char kFileName[] = "filename";
+constexpr uint64_t kLine = 10;
+constexpr uint64_t kColumn = 42;
+
+}  // namespace
+
 class LegacyTechServiceTest : public ::testing::Test {
  public:
   LegacyTechServiceTest() = default;
@@ -57,34 +68,32 @@ class LegacyTechServiceTest : public ::testing::Test {
 TEST_F(LegacyTechServiceTest, Disabled) {
   EXPECT_CALL(mock_trigger_, Run(_)).Times(0);
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
-      "type", GURL("https://example.com"), "filename",
-      /*line=*/10, /*column=*/42);
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
 }
 
 TEST_F(LegacyTechServiceTest, NoMatched) {
   EXPECT_CALL(mock_trigger_, Run(_)).Times(0);
   SetPolicy({"www.example.com"});
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
-      "type", GURL("https://example.com"), "filename",
-      /*line=*/10, /*column=*/42);
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
 }
 
 TEST_F(LegacyTechServiceTest, MatchedAndUpload) {
   LegacyTechReportGenerator::LegacyTechData expected_data = {
-      /*type=*/"type",
+      kType,
       /*timestamp=*/base::Time::Now(),
-      /*url=*/GURL("https://example.com"),
+      GURL(kUrl),
+      GURL(kFrameUrl),
       /*matched_url=*/"example.com",
-      /*filename=*/"filename",
-      /*line=*/10,
-      /*column=*/42,
+      kFileName,
+      kLine,
+      kColumn,
       /*cookie_issue_details=*/std::nullopt};
 
   EXPECT_CALL(mock_trigger_, Run(Eq(std::ref(expected_data)))).Times(1);
   SetPolicy({"example.com"});
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
-      "type", GURL("https://example.com"), "filename",
-      /*line=*/10, /*column=*/42);
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
 }
 
 TEST_F(LegacyTechServiceTest, DelayedInitialization) {
@@ -94,11 +103,65 @@ TEST_F(LegacyTechServiceTest, DelayedInitialization) {
   EXPECT_CALL(mock_trigger_, Run(_)).Times(0);
   SetPolicy({"example.com"});
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
-      "type", GURL("https://example.com"), "filename",
-      /*line=*/10, /*column=*/42);
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
   ::testing::Mock::VerifyAndClearExpectations(&mock_trigger_);
 
-  EXPECT_CALL(mock_trigger_, Run(_)).Times(1);
+  LegacyTechReportGenerator::LegacyTechData expected_data = {
+      kType,
+      /*timestamp=*/base::Time::Now(),
+      GURL(kUrl),
+      GURL(kFrameUrl),
+      /*matched_url=*/"example.com",
+      kFileName,
+      kLine,
+      kColumn,
+      /*cookie_issue_details=*/std::nullopt};
+
+  EXPECT_CALL(mock_trigger_, Run(Eq(std::ref(expected_data)))).Times(1);
+  LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
+      mock_trigger_.Get());
+}
+
+TEST_F(LegacyTechServiceTest, MatchedAndUploadWithFrameUrl) {
+  LegacyTechReportGenerator::LegacyTechData expected_data = {
+      kType,
+      /*timestamp=*/base::Time::Now(),
+      GURL(kUrl),
+      GURL(kFrameUrl),
+      /*matched_url=*/"frame.com",
+      kFileName,
+      kLine,
+      kColumn,
+      /*cookie_issue_details=*/std::nullopt};
+
+  EXPECT_CALL(mock_trigger_, Run(Eq(std::ref(expected_data)))).Times(1);
+  SetPolicy({"frame.com"});
+  LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
+}
+
+TEST_F(LegacyTechServiceTest, DelayedInitializationWithFrameUrl) {
+  LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
+      base::RepeatingCallback<void(
+          LegacyTechReportGenerator::LegacyTechData)>());
+  EXPECT_CALL(mock_trigger_, Run(_)).Times(0);
+  SetPolicy({"frame.com"});
+  LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
+      kType, GURL(kUrl), GURL(kFrameUrl), kFileName, kLine, kColumn);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_trigger_);
+
+  LegacyTechReportGenerator::LegacyTechData expected_data = {
+      kType,
+      /*timestamp=*/base::Time::Now(),
+      GURL(kUrl),
+      GURL(kFrameUrl),
+      /*matched_url=*/"frame.com",
+      kFileName,
+      kLine,
+      kColumn,
+      /*cookie_issue_details=*/std::nullopt};
+
+  EXPECT_CALL(mock_trigger_, Run(Eq(std::ref(expected_data)))).Times(1);
   LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
       mock_trigger_.Get());
 }

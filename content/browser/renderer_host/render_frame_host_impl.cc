@@ -8457,12 +8457,19 @@ void RenderFrameHostImpl::CreateNewWindow(
 void RenderFrameHostImpl::SendLegacyTechEvent(
     const std::string& type,
     blink::mojom::LegacyTechEventCodeLocationPtr code_location) {
-  GetContentClient()->browser()->ReportLegacyTechEvent(
-      this, type,
-      base::FeatureList::IsEnabled(features::kLegacyTechReportTopLevelUrl)
-          ? GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL()
-          : GetLastCommittedURL(),
-      code_location->filename, code_location->line, code_location->column);
+  if (base::FeatureList::IsEnabled(features::kLegacyTechReportTopLevelUrl)) {
+    GetContentClient()->browser()->ReportLegacyTechEvent(
+        this, type,
+        /*url=*/GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL(),
+        /*frame_url=*/GetLastCommittedURL(), code_location->filename,
+        code_location->line, code_location->column);
+  } else {
+    GetContentClient()->browser()->ReportLegacyTechEvent(
+        this, type,
+        /*url=*/GetLastCommittedURL(),
+        /*frame_url=*/GURL(""), code_location->filename, code_location->line,
+        code_location->column);
+  }
 }
 
 void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(

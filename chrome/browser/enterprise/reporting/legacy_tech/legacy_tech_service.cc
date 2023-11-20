@@ -25,6 +25,7 @@ LegacyTechService::~LegacyTechService() = default;
 
 void LegacyTechService::ReportEvent(const std::string& type,
                                     const GURL& url,
+                                    const GURL& frame_url,
                                     const std::string& filename,
                                     uint64_t line,
                                     uint64_t column) const {
@@ -32,6 +33,14 @@ void LegacyTechService::ReportEvent(const std::string& type,
   VLOG(2) << "Get report for URL " << url
           << (matched_url ? " that matches a policy."
                           : " without matching any policies.");
+
+  if (!matched_url) {
+    matched_url = url_matcher_.GetMatchedURL(frame_url);
+    VLOG(2) << "Get report for Frame URL " << url
+            << (matched_url ? " that matches a policy."
+                            : " without matching any policies.");
+  }
+
   if (!matched_url) {
     return;
   }
@@ -40,6 +49,7 @@ void LegacyTechService::ReportEvent(const std::string& type,
       type,
       /*timestamp=*/base::Time::Now(),
       url,
+      frame_url,
       *matched_url,
       filename,
       line,
