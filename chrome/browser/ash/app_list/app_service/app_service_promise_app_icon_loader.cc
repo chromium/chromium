@@ -62,7 +62,7 @@ void AppServicePromiseAppIconLoader::FetchImage(const std::string& id) {
     return;
   }
   CallLoadIcon(apps::PackageId::FromString(id).value(),
-               apps::IconEffects::kCrOsStandardIcon);
+               apps::IconEffects::kCrOsStandardMask);
 }
 
 void AppServicePromiseAppIconLoader::ClearImage(const std::string& id) {
