@@ -95,7 +95,7 @@ JSONReader::Result DecodeJSONInRust(const base::StringPiece& json,
       .allow_x_escapes = (options & base::JSON_ALLOW_X_ESCAPES) != 0,
       .max_depth = max_depth,
   };
-  const serde_json_lenient::Functions functions = {
+  static constexpr serde_json_lenient::Functions functions = {
       .list_append_none_fn = ListAppendNone,
       .list_append_bool_fn = ListAppendValue<bool>,
       .list_append_i32_fn = ListAppendValue<int32_t>,

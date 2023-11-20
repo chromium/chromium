@@ -60,7 +60,7 @@ mod ffi {
         fn decode_json(
             json: &[u8],
             options: &JsonOptions,
-            functions: &Functions,
+            functions: &'static Functions,
             ctx: Pin<&mut ContextPointer>,
             error: Pin<&mut DecodeError>,
         ) -> bool;
@@ -122,7 +122,7 @@ pub type ContextPointer = ffi::ContextPointer;
 pub fn decode_json(
     json: &[u8],
     options: &JsonOptions,
-    functions: &Functions,
+    functions: &'static Functions,
     // TODO(danakj): Use std::ptr::NonNull when the binding generator supports it.
     ctx: Pin<&mut ContextPointer>,
     // TODO(danakj): Return `Result<(), DecodeError>` once the binding generator supports it.
