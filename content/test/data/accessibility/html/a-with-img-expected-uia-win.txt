@@ -4,9 +4,9 @@ Document
 ++++++Image Name='Link'
 ++++++Text Name=' with image at start.' IsControlElement=false
 ++++Text Name=' '
-++++Hyperlink Name='Link with image in the middle.'
+++++Hyperlink Name='Link with bullet image in the middle.'
 ++++++Text Name='Link with ' IsControlElement=false
-++++++Image Name='image. To get missing image descriptions, open the context menu.'
+++++++Image Name='bullet image'
 ++++++Text Name=' in the middle.' IsControlElement=false
 ++++Text Name=' '
 ++++Hyperlink Name='Link with broken in the middle.'
@@ -14,6 +14,6 @@ Document
 ++++++Image Name='broken'
 ++++++Text Name=' in the middle.' IsControlElement=false
 ++++Text Name=' '
-++++Hyperlink Name='Link with image at the end'
+++++Hyperlink Name='Link with image at the end, it's a bullet'
 ++++++Text Name='Link with image at the ' IsControlElement=false
-++++++Image Name='end'
+++++++Image Name='end, it's a bullet'

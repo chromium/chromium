@@ -1616,13 +1616,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("a-with-before.html"));
 }
 
-// TODO(crbug.com/1479326): Fix flaky test on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityAWithImg DISABLED_AccessibilityAWithImg
-#else
-#define MAYBE_AccessibilityAWithImg AccessibilityAWithImg
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityAWithImg) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithImg) {
   RunHtmlTest(FILE_PATH_LITERAL("a-with-img.html"));
 }
 
