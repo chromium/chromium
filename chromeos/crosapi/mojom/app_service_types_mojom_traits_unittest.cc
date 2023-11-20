@@ -68,6 +68,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->handles_intents = true;
 
   input->is_platform_app = true;
+  input->allow_close = true;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -129,6 +130,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_TRUE(output->handles_intents.value());
 
   EXPECT_TRUE(output->is_platform_app.value());
+  EXPECT_TRUE(output->allow_close.value());
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -158,6 +160,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->is_platform_app = absl::nullopt;
   input->app_size_in_bytes = absl::nullopt;
   input->data_size_in_bytes = absl::nullopt;
+  input->allow_close = absl::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -195,6 +198,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->allow_uninstall);
   EXPECT_TRUE(output->handles_intents);
   EXPECT_FALSE(output->is_platform_app.has_value());
+  EXPECT_FALSE(output->allow_close.has_value());
 }
 
 // Test that serialization and deserialization works with updating app type.

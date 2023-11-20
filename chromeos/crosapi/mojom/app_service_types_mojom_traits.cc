@@ -159,6 +159,13 @@ StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::data_size_in_bytes(
   return r->data_size_in_bytes;
 }
 
+// static
+crosapi::mojom::OptionalBool
+StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::allow_close(
+    const apps::AppPtr& r) {
+  return ConvertOptionalBoolToMojomOptionalBool(r->allow_close);
+}
+
 bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     crosapi::mojom::AppDataView data,
     apps::AppPtr* out) {
@@ -282,6 +289,11 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
 
   absl::optional<uint64_t> data_size_in_bytes = data.data_size_in_bytes();
 
+  crosapi::mojom::OptionalBool allow_close;
+  if (!data.ReadAllowClose(&allow_close)) {
+    return false;
+  }
+
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
@@ -323,6 +335,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
       ConvertMojomOptionalBoolToOptionalBool(is_platform_app);
   app->app_size_in_bytes = app_size_in_bytes;
   app->data_size_in_bytes = data_size_in_bytes;
+  app->allow_close = ConvertMojomOptionalBoolToOptionalBool(allow_close);
   *out = std::move(app);
   return true;
 }

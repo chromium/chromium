@@ -190,10 +190,8 @@ void WebAppsCrosapi::GetMenuModel(
     }
   }
 
-  if (menu_type == MenuType::kShelf) {
-    if (proxy_->InstanceRegistry().ContainsAppId(app_id)) {
-      AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-    }
+  if (ShouldAddCloseItem(app_id, menu_type, proxy_->profile())) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
   if (can_use_uninstall) {

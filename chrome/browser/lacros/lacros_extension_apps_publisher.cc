@@ -340,6 +340,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
                             !policy->MustRemainInstalled(extension, nullptr));
 
+    app->allow_close = true;
+
     // Add file_handlers for either of the following:
     //   a) Chrome Apps and quickoffice.
     //   b) Web File Handlers or file_browser_handler for Extensions.

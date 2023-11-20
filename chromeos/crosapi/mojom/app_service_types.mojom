@@ -112,6 +112,10 @@ struct App {
   // The amount of storage (in bytes) used by the app's data.
   [MinVersion=21]
   uint64? data_size_in_bytes@31;
+
+  [MinVersion=22]
+  // Whether the app publisher allows the app to be closed.
+  OptionalBool allow_close@32;
 };
 
 // The types of apps available in the registry.

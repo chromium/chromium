@@ -124,6 +124,8 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static absl::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
 
+  static crosapi::mojom::OptionalBool allow_close(const apps::AppPtr& r);
+
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 
