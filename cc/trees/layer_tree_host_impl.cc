@@ -2946,13 +2946,10 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   raster_caps_.can_use_msaa =
       !context_caps.msaa_is_slow && !context_caps.avoid_stencil_buffers;
 
-  // Note this uses compositor context capabilities instead of worker since
-  // relevant capabilities are not set by raster decoder.
   raster_caps_.tile_format =
       settings_.use_rgba_4444
           ? viz::SinglePlaneFormat::kRGBA_4444
-          : viz::PlatformColor::BestSupportedRenderBufferFormat(
-                context_provider->ContextCapabilities());
+          : viz::PlatformColor::BestSupportedRenderBufferFormat(context_caps);
 
   if (raster_caps_.tile_overlay_candidate) {
     raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
