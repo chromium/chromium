@@ -96,16 +96,12 @@ class LanguagePackManagerTest : public testing::Test {
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
 
-    manager_ = LanguagePackManager::GetInstance();
     ResetPackResult();
 
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override {
-    manager_->ResetForTesting();
-    DlcserviceClient::Shutdown();
-  }
+  void TearDown() override { DlcserviceClient::Shutdown(); }
 
   void InstallTestCallback(const PackResult& pack_result) {
     pack_result_ = pack_result;
@@ -124,7 +120,6 @@ class LanguagePackManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<LanguagePackManager, ExperimentalAsh> manager_;
   PackResult pack_result_;
   raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
       dlcservice_client_;
@@ -387,6 +382,8 @@ TEST_F(LanguagePackManagerTest, RemovePackCallbackTest) {
 }
 
 TEST_F(LanguagePackManagerTest, InstallObserverTest) {
+  LanguagePackManager manager;
+
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
   const DlcState dlc_state = CreateInstalledState();
@@ -396,7 +393,7 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
   // Add an Observer and expect it to be notified.
-  manager_->AddObserver(&observer);
+  manager.AddObserver(&observer);
   EXPECT_CALL(observer, OnPackStateChanged(_))
       .With(
           FieldsAre(AllOf(Field(&PackResult::feature_id, kHandwritingFeatureId),
@@ -408,13 +405,15 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
 }
 
 TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
+  LanguagePackManager manager;
+
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
   const DlcState dlc_state = CreateInstalledState();
   MockObserver observer;
 
   // Add an Observer and expect it to be notified.
-  manager_->AddObserver(&observer);
+  manager.AddObserver(&observer);
   EXPECT_CALL(observer, OnPackStateChanged(_))
       .With(
           FieldsAre(AllOf(Field(&PackResult::feature_id, kHandwritingFeatureId),
@@ -423,7 +422,7 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
   // Remove the Observer and there should be no more notifications.
-  manager_->RemoveObserver(&observer);
+  manager.RemoveObserver(&observer);
   EXPECT_CALL(observer, OnPackStateChanged(_)).Times(0);
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 

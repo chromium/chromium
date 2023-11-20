@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -182,9 +181,17 @@ class LanguagePackManager : public DlcserviceClient::Observer {
     virtual void OnPackStateChanged(const PackResult& pack_result) = 0;
   };
 
+  // Do not use unless in tests.
+  // Only one `LanguagePackManager` can be instantiated at any time.
+  // Use `GetInstance()` instead to obtain the currently instantiated instance,
+  // likely instantiated by `Initialise()`.
+  LanguagePackManager();
+
   // Disallow copy and assign.
   LanguagePackManager(const LanguagePackManager&) = delete;
   LanguagePackManager& operator=(const LanguagePackManager&) = delete;
+
+  ~LanguagePackManager() override;
 
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
@@ -235,20 +242,33 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  // Testing only: called to free up resources since this object should never
-  // be destroyed.
-  void ResetForTesting();
+  // Initialises the global instance. This is typically called from
+  // ash_dbus_helper.h's `InitializeDBus()`, which is called from
+  // `ChromeMainDelegate::PostEarlyInitialization()`.
+  // Cannot be called multiple times - `GetInstance()` must return `nullptr`
+  // before this static method is called.
+  // Requires the global `DlcserviceClient` to be initialised.
+  // Do not use this in tests, instantiate a test-local `LanguagePackManager`
+  // instead.
+  static void Initialise();
 
-  // Returns the global instance..
+  // Shuts down the global instance. This is typically called from
+  // ash_dbus_helper.h's `ShutdownDBus()`, which is called from
+  // `ChromeBrowserMainPartsAsh::PostDestroyThreads()`.
+  // Cannot be called multiple times - `GetInstance()` must return a non-null
+  // pointer before this static method is called.
+  // The global `DlcserviceClient` at the time of initialisation must still
+  // exist when this is called.
+  // Do not use this in tests, the destructor of the test-local
+  // `LanguagePackManager` will correctly unset the currently instantiated
+  // instance.
+  static void Shutdown();
+
+  // Returns the currently instantiated instance. This is typically the global
+  // instance, but may be a test-local `LanguagePackManager` during tests.
   static LanguagePackManager* GetInstance();
 
  private:
-  friend base::NoDestructor<LanguagePackManager>;
-
-  // This class should be accessed only via GetInstance();
-  LanguagePackManager();
-  ~LanguagePackManager() override;
-
   // Retrieves the list of installed DLCs and updates Packs accordingly.
   // This function should be called when LPM initializes and then each time
   // Prefs change.

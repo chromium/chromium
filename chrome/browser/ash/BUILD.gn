@@ -4086,6 +4086,7 @@ source_set("ash") {
     "//chromeos/ash/components/early_prefs:writer",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/login/hibernate:hibernate_manager",
     "//chromeos/ash/components/mojo_service_manager",

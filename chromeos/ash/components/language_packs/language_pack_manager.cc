@@ -30,6 +30,8 @@ using ::ash::input_method::InputMethodManager;
 namespace ash::language_packs {
 namespace {
 
+LanguagePackManager* g_instance = nullptr;
+
 const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
   // Map of all features and corresponding Base Pack DLC IDs.
   static const base::NoDestructor<base::flat_map<std::string, std::string>>
@@ -493,19 +495,33 @@ void LanguagePackManager::OnDlcStateChanged(
 }
 
 LanguagePackManager::LanguagePackManager() {
+  CHECK(!g_instance);
+  g_instance = this;
   obs_.Observe(DlcserviceClient::Get());
 }
 
-LanguagePackManager::~LanguagePackManager() {}
+LanguagePackManager::~LanguagePackManager() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
-void LanguagePackManager::ResetForTesting() {
-  observers_.Clear();
+void LanguagePackManager::Initialise() {
+  // Heap-allocates an instance, which is then set in `g_instance` in the
+  // constructor.
+  // This instance will be cleaned up in `Shutdown()`.
+  // Calling this while `g_instance` is set will result in a `CHECK` failure
+  // instead of a memory leak.
+  new LanguagePackManager();
+}
+
+void LanguagePackManager::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
 }
 
 // static
 LanguagePackManager* LanguagePackManager::GetInstance() {
-  static base::NoDestructor<LanguagePackManager> instance;
-  return instance.get();
+  return g_instance;
 }
 
 }  // namespace ash::language_packs
