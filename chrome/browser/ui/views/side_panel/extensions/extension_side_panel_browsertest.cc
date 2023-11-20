@@ -1321,6 +1321,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       CloseSidePanelButtonVisibleWhenExtensionsSidePanelOpen) {
+  ExtensionTestMessageListener default_path_listener("default_path");
+
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+
+  // Check if ActionItem is created.
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  actions::ActionItem* action_item =
+      GetActionItemForExtension(extension.get(), browser_actions);
+  EXPECT_EQ(action_item->GetText(), base::UTF8ToUTF16(extension->short_name()));
+  EXPECT_FALSE(action_item->GetImage().IsEmpty());
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  SidePanelEntry* extension_entry =
+      global_registry()->GetEntryForKey(extension_key);
+  ASSERT_TRUE(extension_entry);
+
+  // The key for the extension should be registered, but the side panel isn't
+  // shown yet and the close side panel button is not visible.
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_FALSE(GetExtensionsToolbarContainer()
+                   ->GetCloseSidePanelButtonForTesting()
+                   ->GetVisible());
+
+  side_panel_coordinator()->Show(extension_key);
+
+  // Wait until the view in the side panel is active by listening for the
+  // message sent from the view's script. Verify the close side panel button is
+  // visible.
+  ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_TRUE(GetExtensionsToolbarContainer()
+                  ->GetCloseSidePanelButtonForTesting()
+                  ->GetVisible());
+
+  // Now unload the extension. The key should no longer exist in the global
+  // registry and the side panel should close as a result and the close side
+  // panel button should not be visible.
+  UnloadExtension(extension->id());
+  EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_FALSE(GetExtensionsToolbarContainer()
+                   ->GetCloseSidePanelButtonForTesting()
+                   ->GetVisible());
+}
+
 class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
  public:
   ExtensionOpenSidePanelBrowserTest()

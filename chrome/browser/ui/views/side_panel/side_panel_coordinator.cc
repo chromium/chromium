@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -1065,7 +1066,8 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
   CHECK(toolbar_container);
 
   if (key.id() == SidePanelEntryId::kExtension) {
-    // TODO(b/303064829): Handle extensions pop out and highlighting.
+    browser_view_->toolbar()->extensions_container()->UpdateSidePanelState(
+        is_active);
   } else {
     absl::optional<actions::ActionId> action_id =
         SidePanelEntryIdToActionId(key.id());
