@@ -306,11 +306,14 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
   // Figure out what type of process this is.
   const char* type = nullptr;
   for (int i = 0; i < *pargc; i++) {
-    if (!strncmp((*pargv)[i], "--type=", 7)) {
+    if (!type && !strncmp((*pargv)[i], "--type=", 7)) {
       type = (*pargv)[i] + 7;
     }
     if (!strcmp((*pargv)[i], "--record-replay-for-recording")) {
       for_recording_flag = true;
+    }
+    if (!strcmp((*pargv)[i], "--pdf-renderer")) {
+      return false;
     }
   }
 
