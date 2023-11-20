@@ -72,9 +72,10 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     // Clear the old data if needed.
     if (old_snap_container_data) {
       snap_container.SetNeedsPaintPropertyUpdate();
-      scrollable_area->SetSnapContainerData(absl::nullopt);
-      scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+      scrollable_area->SetSnapChangingTargetData(absl::nullopt);
       scrollable_area->SetSnappedTargetData(absl::nullopt);
+      scrollable_area->EnqueueSnapChangedEvent();
+      scrollable_area->SetSnapContainerData(absl::nullopt);
     }
     return false;
   }

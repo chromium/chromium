@@ -5799,6 +5799,15 @@ void Document::EnqueueSnapChangedEvent(Node* target,
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
 }
 
+void Document::EnqueueSnapChangingEvent(
+    Node* target,
+    HeapVector<Member<Node>>& snap_targets) {
+  Event* snapchanging_event =
+      SnapEvent::Create(event_type_names::kSnapchanging, snap_targets);
+  snapchanging_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
+}
+
 void Document::EnqueueResizeEvent() {
   Event* event = Event::Create(event_type_names::kResize);
   event->SetTarget(domWindow());

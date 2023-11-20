@@ -1922,6 +1922,7 @@ interface Document : Node
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2143,6 +2144,7 @@ interface Document : Node
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -3714,6 +3716,7 @@ interface HTMLElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -3850,6 +3853,7 @@ interface HTMLElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -5778,6 +5782,7 @@ interface MathMLElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -5890,6 +5895,7 @@ interface MathMLElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -8126,6 +8132,7 @@ interface SVGElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -8240,6 +8247,7 @@ interface SVGElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -12602,6 +12610,7 @@ namespace console
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -12831,6 +12840,7 @@ namespace console
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onstorage
     setter onsubmit

@@ -1462,6 +1462,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueVisualViewportScrollEvent();
   void EnqueueVisualViewportResizeEvent();
   void EnqueueSnapChangedEvent(Node* target, HeapVector<Member<Node>>& targets);
+  void EnqueueSnapChangingEvent(Node* target,
+                                HeapVector<Member<Node>>& targets);
 
   void DispatchEventsForPrinting();
 

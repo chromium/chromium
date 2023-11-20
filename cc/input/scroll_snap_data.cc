@@ -855,6 +855,8 @@ gfx::RectF SnapContainerData::snapport() const {
 
 SnappedTargetData::SnappedTargetData() = default;
 SnappedTargetData::SnappedTargetData(const SnappedTargetData& other) = default;
+SnappedTargetData::SnappedTargetData(const std::set<ElementId>& ids)
+    : snapped_target_ids_(std::move(ids)) {}
 SnappedTargetData::~SnappedTargetData() = default;
 
 std::ostream& operator<<(std::ostream& ostream, const SnapAreaData& area_data) {

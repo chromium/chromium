@@ -83,6 +83,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   absl::optional<cc::SnapContainerData> snap_container_data_;
   absl::optional<cc::SnappedTargetData> snapped_target_data_;
+  absl::optional<cc::SnappedTargetData> snapchanging_target_data_;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -544,6 +545,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
       absl::optional<cc::SnappedTargetData> data) override;
   const cc::SnappedTargetData* GetSnappedTargetData() const override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
+
+  const cc::SnappedTargetData* GetSnapChangingTargetData() const override;
+  void SetSnapChangingTargetData(
+      absl::optional<cc::SnappedTargetData>) override;
+  void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+      const gfx::PointF&) override;
 
   void DisposeImpl() override;
 

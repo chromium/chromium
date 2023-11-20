@@ -225,6 +225,7 @@ class CC_EXPORT SnappedTargetData {
  public:
   SnappedTargetData();
   SnappedTargetData(const SnappedTargetData&);
+  explicit SnappedTargetData(const std::set<ElementId>& ids);
   ~SnappedTargetData();
   const std::set<ElementId>& GetSnappedTargetIds() const {
     return snapped_target_ids_;

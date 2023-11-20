@@ -252,6 +252,7 @@ void PageAnimator::ServiceScriptedAnimations(
     active_controllers[i]->DispatchEvents(WTF::BindRepeating([](Event* event) {
       return event->type() == event_type_names::kScroll ||
              event->type() == event_type_names::kSnapchanged ||
+             event->type() == event_type_names::kSnapchanging ||
              event->type() == event_type_names::kScrollend;
     }));
   });

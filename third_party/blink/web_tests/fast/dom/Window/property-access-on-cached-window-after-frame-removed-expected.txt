@@ -156,6 +156,7 @@ PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
 PASS childWindow.onslotchange is null
 PASS childWindow.onsnapchanged is null
+PASS childWindow.onsnapchanging is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

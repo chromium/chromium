@@ -746,4 +746,15 @@ void RootFrameViewport::UpdateSnappedTargetsAndEnqueueSnapChanged() {
   LayoutViewport().UpdateSnappedTargetsAndEnqueueSnapChanged();
 }
 
+void RootFrameViewport::SetSnapChangingTargetData(
+    absl::optional<cc::SnappedTargetData> data) {
+  LayoutViewport().SetSnapChangingTargetData(data);
+}
+
+void RootFrameViewport::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+    const gfx::PointF& scroll_offset) {
+  LayoutViewport().UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+      scroll_offset);
+}
+
 }  // namespace blink
