@@ -1,6 +1,0 @@
-Tests that framework blackboxing skips instant pauses (e.g. breakpoints on console.assert(), setTimeout(), etc.) if they happen entirely inside the framework.
-
-Set timer for test function.
-Call stack:
-    0) stop (frameworks-skip-break-program.js:34)
-
