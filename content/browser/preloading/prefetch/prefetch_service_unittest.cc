@@ -2374,7 +2374,8 @@ class PrefetchServiceLimitedPrefetchesTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"max_srp_prefetches", "2"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPrefetchNewLimits});
   }
 };
 
@@ -5301,7 +5302,7 @@ class PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest
           }},
          // For this test class we need to enable kPrefetchNoVarySearch.
          {network::features::kPrefetchNoVarySearch, {}}},
-        {});
+        {::features::kPrefetchNewLimits});
   }
 };
 

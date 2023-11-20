@@ -57,12 +57,7 @@ class TestPrefetchService : public PrefetchService {
     ASSERT_TRUE(prefetches_[index]);
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
     prefetches_.erase(prefetches_.begin() + index);
-    PreloadingDecider::GetForCurrentDocument(
-        RenderFrameHost::FromID(
-            prefetch_container->GetReferringRenderFrameHostId()))
-        ->OnPreloadDiscarded({prefetch_container->GetURL(),
-                              blink::mojom::SpeculationAction::kPrefetch});
-    ResetPrefetch(std::move(prefetch_container));
+    ResetPrefetch(prefetch_container);
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
@@ -792,9 +787,6 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
 // Tests that candidate removal causes a prefetch to be destroyed, and that
 // a reinserted candidate with the same url is re-processed.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -844,9 +836,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
 // Tests that candidate removal works correctly for non-eager candidates, and
 // that a non-eager candidate is reprocessed correctly after re-insertion.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -908,9 +897,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
 // URL.
 TEST_F(PreloadingDeciderTest,
        ProcessCandidates_SecondCandidateWithSameUrlKeepsPrefetchAlive) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);

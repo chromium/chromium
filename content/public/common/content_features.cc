@@ -673,7 +673,7 @@ BASE_FEATURE(kPersistentOriginTrials,
 // separates eager and non-eager prefetches, and allows for evictions.
 BASE_FEATURE(kPrefetchNewLimits,
              "PrefetchNewLimits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
