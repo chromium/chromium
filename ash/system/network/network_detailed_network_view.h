@@ -7,11 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_view.h"
-#include "ash/system/network/network_list_mobile_header_view_impl.h"
+#include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_tether_hosts_header_view.h"
-#include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"

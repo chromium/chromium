@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 
 #include <memory>
 
@@ -29,10 +29,9 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    std::unique_ptr<NetworkListWifiHeaderViewImpl>
-        network_list_wifi_header_view =
-            std::make_unique<NetworkListWifiHeaderViewImpl>(
-                &fake_network_list_network_header_delegate_);
+    std::unique_ptr<NetworkListWifiHeaderView> network_list_wifi_header_view =
+        std::make_unique<NetworkListWifiHeaderView>(
+            &fake_network_list_network_header_delegate_);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -71,7 +70,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListWifiHeaderViewImpl, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged | ExperimentalAsh>
       network_list_wifi_header_view_;
 };
 
