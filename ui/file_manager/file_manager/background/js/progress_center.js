@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncQueue} from '../../common/js/async_util.js';
-import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {str} from '../../common/js/translations.js';
-import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
 
@@ -22,14 +18,6 @@ export class ProgressCenterImpl {
      * @private @const @type {!Array<!ProgressCenterItem>}
      */
     this.items_ = [];
-
-    /**
-     * Map of progress ID and notification ID.
-     * @private @const @type {!ProgressCenterImpl.Notifications_}
-     */
-    this.notifications_ = new ProgressCenterImpl.Notifications_(
-        this.requestCancel.bind(this),
-        this.onNotificationDismissed_.bind(this));
 
     /**
      * List of panel UI managed by the progress center.
@@ -87,9 +75,6 @@ export class ProgressCenterImpl {
       // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.panels_[i].updateItem(item);
     }
-
-    // Update notifications.
-    this.notifications_.updateItem(item, !this.panels_.length);
   }
 
   /**
@@ -100,18 +85,6 @@ export class ProgressCenterImpl {
     const item = this.getItemById(id);
     if (item && item.cancelCallback) {
       item.cancelCallback();
-    }
-  }
-
-  /**
-   * Called when notification is dismissed.
-   * @param {string} id Item id.
-   * @private
-   */
-  onNotificationDismissed_(id) {
-    const item = this.getItemById(id);
-    if (item && item.state === ProgressItemState.ERROR) {
-      this.dismissErrorItem_(id);
     }
   }
 
@@ -160,16 +133,6 @@ export class ProgressCenterImpl {
     // @ts-ignore: error TS2339: Property 'cancelCallback' does not exist on
     // type 'ProgressCenterPanelInterface'.
     panel.cancelCallback = null;
-
-    // If there is no panel, show the notifications.
-    if (this.panels_.length) {
-      return;
-    }
-    for (let i = 0; i < this.items_.length; i++) {
-      // @ts-ignore: error TS2345: Argument of type 'ProgressCenterItem |
-      // undefined' is not assignable to parameter of type 'ProgressCenterItem'.
-      this.notifications_.updateItem(this.items_[i], true);
-    }
   }
 
   /**
@@ -208,8 +171,6 @@ export class ProgressCenterImpl {
     if (index > -1) {
       this.items_.splice(index, 1);
     }
-
-    this.notifications_.dismissErrorItem(id);
 
     for (let i = 0; i < this.panels_.length; i++) {
       // @ts-ignore: error TS2532: Object is possibly 'undefined'.
@@ -419,181 +380,3 @@ export class ProgressCenterImpl {
     return item;
   }
 }
-
-/**
- * Notifications created by progress center.
- * @private
- */
-// @ts-ignore: error TS2341: Property 'Notifications_' is private and only
-// accessible within class 'ProgressCenterImpl'.
-ProgressCenterImpl.Notifications_ = class {
-  /**
-   * @param {function(string):void} cancelCallback Callback to notify the
-   *     progress center of cancel operation.
-   * @param {function(string):void} dismissCallback Callback to notify the
-   *     progress center that a notification is dismissed.
-   */
-  constructor(cancelCallback, dismissCallback) {
-    /**
-     * ID set of notifications that is progressing now.
-     * @private
-     * @const @type {Record<string,
-     * ProgressCenterImpl.Notifications_.NotificationState_>}
-     */
-    this.ids_ = {};
-
-    /**
-     * Async queue.
-     * @private @const @type {AsyncQueue}
-     */
-    this.queue_ = new AsyncQueue();
-
-    /**
-     * Callback to notify the progress center of cancel operation.
-     * @private @const @type {function(string):void}
-     */
-    this.cancelCallback_ = cancelCallback;
-
-    /**
-     * Callback to notify the progress center that a notification is dismissed.
-     * @private @type {function(string):void}
-     */
-    this.dismissCallback_ = dismissCallback;
-
-    notifications.onButtonClicked.addListener(this.onButtonClicked_.bind(this));
-    notifications.onClosed.addListener(this.onClosed_.bind(this));
-  }
-
-  /**
-   * Updates the notification according to the item.
-   * @param {ProgressCenterItem} item Item to contain new information.
-   * @param {boolean} newItemAcceptable Whether to accept new item or not.
-   */
-  updateItem(item, newItemAcceptable) {
-    const NotificationState =
-        // @ts-ignore: error TS2341: Property 'Notifications_' is private and
-        // only accessible within class 'ProgressCenterImpl'.
-        ProgressCenterImpl.Notifications_.NotificationState_;
-    const newlyAdded = !(item.id in this.ids_);
-
-    // If new item is not acceptable, just return.
-    if (newlyAdded && !newItemAcceptable) {
-      return;
-    }
-
-    // Update the ID map and return if we does not show a notification for the
-    // item.
-    if (item.state === ProgressItemState.PROGRESSING ||
-        item.state === ProgressItemState.ERROR) {
-      if (newlyAdded) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
-        this.ids_[item.id] = NotificationState.VISIBLE;
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
-      } else if (this.ids_[item.id] === NotificationState.DISMISSED) {
-        return;
-      }
-    } else {
-      // This notification is no longer tracked.
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
-      const previousState = this.ids_[item.id];
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
-      delete this.ids_[item.id];
-      // Clear notifications for complete or canceled items.
-      if (item.state === ProgressItemState.CANCELED ||
-          item.state === ProgressItemState.COMPLETED) {
-        if (previousState === NotificationState.VISIBLE) {
-          this.queue_.run(proceed => {
-            notifications.clear(item.id, proceed);
-          });
-        }
-        return;
-      }
-    }
-
-    // Create/update the notification with the item.
-    this.queue_.run(proceed => {
-      const params = {
-        title: str('FILEMANAGER_APP_NAME'),
-        iconUrl: getFilesAppIconURL().toString(),
-        type: item.state === ProgressItemState.PROGRESSING ? 'progress' :
-                                                             'basic',
-        message: item.message,
-        buttons: item.cancelable ? [{title: str('CANCEL_LABEL')}] : undefined,
-        progress: item.state === ProgressItemState.PROGRESSING ?
-            item.progressRateInPercent :
-            undefined,
-        priority: (item.state === ProgressItemState.ERROR || !item.quiet) ? 0 :
-                                                                            -1,
-      };
-
-      if (newlyAdded) {
-        notifications.create(item.id, params, proceed);
-      } else {
-        notifications.update(item.id, params, proceed);
-      }
-    });
-  }
-
-  /**
-   * Dismisses error item.
-   * @param {string} id Item ID.
-   */
-  dismissErrorItem(id) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
-    if (!this.ids_[id]) {
-      return;
-    }
-
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
-    delete this.ids_[id];
-
-    this.queue_.run(proceed => {
-      notifications.clear(id, proceed);
-    });
-  }
-
-  /**
-   * Handles cancel button click.
-   * @param {string} id Item ID.
-   * @private
-   */
-  onButtonClicked_(id) {
-    if (id in this.ids_) {
-      this.cancelCallback_(id);
-    }
-  }
-
-  /**
-   * Handles notification close.
-   * @param {string} id Item ID.
-   * @private
-   */
-  onClosed_(id) {
-    if (id in this.ids_) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
-      this.ids_[id] =
-          // @ts-ignore: error TS2341: Property 'Notifications_' is private and
-          // only accessible within class 'ProgressCenterImpl'.
-          ProgressCenterImpl.Notifications_.NotificationState_.DISMISSED;
-      this.dismissCallback_(id);
-    }
-  }
-};
-
-/**
- * State of notification.
- * @private @const @enum {string}
- */
-// @ts-ignore: error TS2341: Property 'Notifications_' is private and only
-// accessible within class 'ProgressCenterImpl'.
-ProgressCenterImpl.Notifications_.NotificationState_ = {
-  VISIBLE: 'visible',
-  DISMISSED: 'dismissed',
-};
