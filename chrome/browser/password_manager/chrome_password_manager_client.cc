@@ -39,15 +39,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -785,15 +783,9 @@ ChromePasswordManagerClient::GetHttpAuthManager() {
 
 autofill::AutofillDownloadManager*
 ChromePasswordManagerClient::GetAutofillDownloadManager() {
-  autofill::ContentAutofillDriverFactory* factory =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents());
-  if (factory) {
-    autofill::ContentAutofillDriver* driver =
-        factory->DriverForFrame(web_contents()->GetPrimaryMainFrame());
-    // |driver| can be NULL if the tab is being closed.
-    if (driver) {
-      return driver->GetAutofillManager().download_manager();
-    }
+  if (auto* client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents())) {
+    return client->GetDownloadManager();
   }
   return nullptr;
 }
