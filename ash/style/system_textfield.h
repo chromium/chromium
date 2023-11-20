@@ -64,6 +64,9 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void OnBlur() override;
 
  private:
+  // An event handler to handle the events outside the textfield.
+  class EventHandler;
+
   // Called when the enabled state is changed.
   void OnEnabledStateChanged();
   // Update custom color ID.
@@ -76,6 +79,8 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void UpdateBackground();
 
   Type type_;
+  std::unique_ptr<EventHandler> event_handler_;
+
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
   // Indicates if the textfield should show focus ring.
