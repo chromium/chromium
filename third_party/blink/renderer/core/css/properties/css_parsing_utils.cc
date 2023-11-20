@@ -76,6 +76,8 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
@@ -1931,6 +1933,26 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
       ResolveColor(colors_to_compare_against[highest_contrast_index]));
 }
 
+namespace {
+
+bool SystemAccentColorAllowed(const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled()) {
+    if (const auto* document = context.GetDocument()) {
+      if (document->GetPage()->GetChromeClient().IsSVGImageChromeClient()) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
+
 CSSValue* ConsumeColor(CSSParserTokenRange& range,
                        const CSSParserContext& context,
                        bool accept_quirky_colors,
@@ -1947,7 +1969,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
 
   CSSValueID id = range.Peek().Id();
   if ((id == CSSValueID::kAccentcolor || id == CSSValueID::kAccentcolortext) &&
-      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+      !SystemAccentColorAllowed(context)) {
     return nullptr;
   }
   if (StyleColor::IsColorKeyword(id)) {
