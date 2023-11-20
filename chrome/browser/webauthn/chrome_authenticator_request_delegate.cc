@@ -337,10 +337,16 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
 
   // Chrome disables platform authenticators is Guest sessions. They may be
   // available (behind an additional interstitial) in Incognito mode.
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  auto* browser_context = render_frame_host->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile->IsGuestSession()) {
     return false;
+  }
+
+  // The cloud enclave authenticator counts as a UVPA, regardless of what the
+  // underlying platform offers.
+  if (IsEnclaveAuthenticatorAvailable(browser_context)) {
+    return true;
   }
 
   return absl::nullopt;
@@ -397,6 +403,20 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
       ->GetRegisterCallback(window);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    content::BrowserContext* browser_context) {
+  // `browser_context` is currently unused but will be needed to look up
+  // whether the current profile/device is registered with the authenticator.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enclave service authenticators are not needed for Chrome OS.
+  return false;
+#else
+  // TODO(https://crbug.com/1459620): This also has to be conditional on device
+  // registration with the enclave, when implemented.
+  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+#endif
+}
 
 // ---------------------------------------------------------------------
 // ChromeAuthenticatorRequestDelegate
@@ -618,9 +638,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
+
+  is_enclave_authenticator_available_ = is_enclave_authenticator_available;
+  dialog_model_->set_is_enclave_authenticator_available(
+      is_enclave_authenticator_available);
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
@@ -743,7 +768,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (non_extension_cablev2_enabled || cablev2_extension_provided ||
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+      is_enclave_authenticator_available_) {
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
@@ -790,7 +815,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
-  if (EnclaveAuthenticatorAvailable() &&
+  if (is_enclave_authenticator_available_ &&
       request_type == device::FidoRequestType::kGetAssertion) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
@@ -880,7 +905,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      (can_use_synced_phone_passkeys_ || EnclaveAuthenticatorAvailable()) &&
+      (can_use_synced_phone_passkeys_ || is_enclave_authenticator_available_) &&
       !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
@@ -1102,7 +1127,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
-  device::AuthenticatorType type = EnclaveAuthenticatorAvailable()
+  device::AuthenticatorType type = is_enclave_authenticator_available_
                                        ? device::AuthenticatorType::kEnclave
                                        : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
@@ -1130,17 +1155,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->SetEnclavePasskeys(std::move(passkeys));
-}
-
-bool ChromeAuthenticatorRequestDelegate::EnclaveAuthenticatorAvailable() {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Enclave service authenticators are not needed for Chrome OS.
-  return false;
-#else
-  // TODO(https://crbug.com/1459620): This also has to be conditional on device
-  // registration with the enclave, when implemented.
-  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-#endif
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -9161,6 +9161,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         device::FidoRequestType request_type,
         absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
         base::span<const device::CableDiscoveryData> pairings_from_extension,
+        bool is_enclave_authenticator_available,
         device::FidoDiscoveryFactory* fido_discovery_factory) override {
       // nswindow must be set for the iCloud Keychain authenticator to be
       // discovered.

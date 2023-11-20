@@ -96,6 +96,11 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
   return nullptr;
 }
 
+bool WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    BrowserContext* browser_context) {
+  return false;
+}
+
 #if BUILDFLAG(IS_MAC)
 absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
@@ -153,6 +158,7 @@ void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
 
 void AuthenticatorRequestClientDelegate::SelectAccount(

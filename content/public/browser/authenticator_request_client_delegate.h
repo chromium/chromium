@@ -132,6 +132,9 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
+  // Returns true when the cloud enclave authenticator is available for use.
+  virtual bool IsEnclaveAuthenticatorAvailable(BrowserContext* browser_context);
+
 #if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
 
@@ -276,6 +279,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // be functional and |pairings_from_extension| contains any caBLEv1 pairings
   // that have been provided in an extension to the WebAuthn get() call.
   //
+  // When `is_enclave_authenticator_available` is true, the embedder will
+  // provide a cloud enclave authenticator option.
+  //
   // Other FidoDiscoveryFactory fields (e.g. the `LAContextDropbox`) can also be
   // configured by this function.
   virtual void ConfigureDiscoveries(
@@ -285,6 +291,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
+      bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);
 
   // SelectAccount is called to allow the embedder to select between one or more
