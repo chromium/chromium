@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1058,9 +1057,6 @@ void CacheStorage::CreateCacheDidCreateCache(
                          "CacheStorage::CreateCacheDidCreateCache",
                          TRACE_ID_GLOBAL(trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-
-  UMA_HISTOGRAM_BOOLEAN("ServiceWorkerCache.CreateCacheStorageResult",
-                        static_cast<bool>(cache));
 
   if (status != CacheStorageError::kSuccess) {
     std::move(callback).Run(CacheStorageCacheHandle(), status);

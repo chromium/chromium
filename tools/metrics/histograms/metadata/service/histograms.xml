@@ -1746,15 +1746,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ServiceWorkerCache.CreateCacheStorageResult"
-    enum="BooleanCreated" expires_after="M77">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Whether a new ServiceWorkerCacheStorage and its directory were successfully
-    created on disk.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorkerCache.ErrorStorageType"
     enum="CacheStorageErrorStorageType" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
