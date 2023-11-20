@@ -174,9 +174,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
           views::BoxLayout::Orientation::kVertical));
   device_entry_views_container_->SetVisible(false);
 
-  if (entry_point_ ==
-          global_media_controls::GlobalMediaControlsEntryPoint::kPresentation ||
-      show_devices) {
+  if (show_devices) {
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));
