@@ -225,6 +225,9 @@ export class CustomizeButtonSelectElement extends
     } else if (optionValue !== this.selectedValue) {
       this.set('selectedValue', optionValue);
     }
+
+    // Close dropdown menu after selected.
+    this.shouldShowDropdownMenu_ = false;
   }
 
   private getSelectedLabel_(): string {
