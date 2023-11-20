@@ -93,7 +93,9 @@ suite('<customize-button-select>', () => {
     await flushTasks();
 
     assertEquals(getSelectedValue(), 'key combination');
-    assertEquals(select.get('label_'), 'ctrl + z');
+    assertTrue(select.get('remappedToKeyCombination_'));
+    assertEquals(select.get('label_'), 'Key combination');
+    assertDeepEquals(select.get('inputKeys_'), ['ctrl', '+', 'z']);
 
     // Switch to another button remapping.
     select.set(
@@ -103,7 +105,9 @@ suite('<customize-button-select>', () => {
     await flushTasks();
 
     assertEquals(getSelectedValue(), 'key combination');
-    assertEquals(select.get('label_'), 'ctrl + v');
+    assertTrue(select.get('remappedToKeyCombination_'));
+    assertEquals(select.get('label_'), 'Key combination');
+    assertDeepEquals(select.get('inputKeys_'), ['ctrl', '+', 'v']);
   });
 
   test('update dropdown will sent events', async () => {

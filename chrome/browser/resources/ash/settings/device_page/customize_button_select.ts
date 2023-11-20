@@ -5,11 +5,16 @@
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/icons.html.js';
 import './input_device_settings_shared.css.js';
 import './customize_button_dropdown_item.js';
 import '../settings_shared.css.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {LWIN_KEY, META_KEY} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {KeyToIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -56,24 +61,23 @@ const modifierBitMaskToString: Map<number, string> = new Map([
   [Modifier.META, 'meta'],
 ]);
 
-function concateKeyString(firstStr: string, secondStr: string): string {
-  return firstStr.length === 0 ? secondStr : firstStr.concat(` + ${secondStr}`);
-}
-
 /**
  * Converts a keyEvent to a string representing all the modifiers and the vkey.
  */
-function getKeyCombinationLabel(keyEvent: KeyEvent): string {
-  let combinationLabel = '';
+function getInputKeys(keyEvent: KeyEvent): string[] {
+  const inputKeysArray: string[] = [];
   modifierBitMaskToString.forEach((modifierName: string, bitValue: number) => {
     if ((keyEvent.modifiers & bitValue) !== 0) {
-      combinationLabel = concateKeyString(combinationLabel, modifierName);
+      inputKeysArray.push(modifierName, '+');
     }
   });
   if (keyEvent.keyDisplay !== undefined && keyEvent.keyDisplay.length !== 0) {
-    combinationLabel = concateKeyString(combinationLabel, keyEvent.keyDisplay);
+    inputKeysArray.push(keyEvent.keyDisplay);
+  } else {
+    // If no regular key to display, remove the extra '+'.
+    inputKeysArray.splice(inputKeysArray.length - 1, 1);
   }
-  return combinationLabel;
+  return inputKeysArray;
 }
 
 /**
@@ -138,6 +142,16 @@ export class CustomizeButtonSelectElement extends
         type: String,
         computed: 'getSelectedLabel_(selectedValue, menu.*)',
       },
+
+      inputKeys_: {
+        type: Array,
+        value: [],
+      },
+
+      remappedToKeyCombination_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -158,6 +172,8 @@ export class CustomizeButtonSelectElement extends
   private shouldShowDropdownMenu_: boolean;
   private label_: string;
   private buttonRemapping_: ButtonRemapping;
+  private inputKeys_: string[];
+  private remappedToKeyCombination_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -294,6 +310,8 @@ export class CustomizeButtonSelectElement extends
   }
 
   private initializeSelectedValue_(): void {
+    this.inputKeys_ = [];
+    this.remappedToKeyCombination_ = false;
     // For accelerator actions, the remappingAction.acceleratorAction value is
     // number.
     const acceleratorAction =
@@ -310,14 +328,8 @@ export class CustomizeButtonSelectElement extends
       this.setSelectedValue(
           ACCELERATOR_ACTION_PREFIX + acceleratorAction.toString());
     } else if (keyEvent) {
-      const keyCombinationLabel = getKeyCombinationLabel(keyEvent) ??
-          this.i18n('keyCombinationOptionLabel');
-
-      this.splice('menu', this.menu.length - 1, 1, {
-        value: KEY_COMBINATION_OPTION_VALUE,
-        name: keyCombinationLabel,
-        hidden: true,
-      });
+      this.inputKeys_ = getInputKeys(keyEvent);
+      this.remappedToKeyCombination_ = !!this.inputKeys_;
 
       this.setSelectedValue(KEY_COMBINATION_OPTION_VALUE);
     } else if (
@@ -385,6 +397,14 @@ export class CustomizeButtonSelectElement extends
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private getIconIdForKey_(key: string): string|null {
+    if (key === META_KEY || key === LWIN_KEY) {
+      return 'shortcut-input-keys:launcher';
+    }
+    const iconName = KeyToIconNameMap[key];
+    return iconName ? `shortcut-input-keys:${iconName}` : null;
   }
 }
 
