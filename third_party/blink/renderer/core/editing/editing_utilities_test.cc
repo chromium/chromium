@@ -1088,4 +1088,11 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
                                PositionMoveType::kBackwardDeletion));
 }
 
+// crbug.com/1503530
+TEST_F(EditingUtilitiesTest, IsRenderedAsNonInlineTableImageOrHR) {
+  SetBodyContent("<p id='target' hidden></p>");
+  IsRenderedAsNonInlineTableImageOrHR(GetElementById("target"));
+  // Pass if no crash.
+}
+
 }  // namespace blink
