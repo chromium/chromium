@@ -1235,6 +1235,10 @@ public class TabImpl implements Tab {
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
         if (isDetached()) return false;
+        // TODO(crbug/1503182): Remove the assert after determining why WebContents can be null.
+        WebContents webContents = getWebContents();
+        assert webContents != null;
+        if (webContents == null) return false;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
         NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
         if (nativePage != null) {
