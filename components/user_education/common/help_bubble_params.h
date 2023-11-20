@@ -89,6 +89,12 @@ struct HelpBubbleParams {
   std::u16string body_text;
   std::u16string screenreader_text;
 
+  // Whether the bubble should receive focus when it is shown. This is a
+  // behavioral hint; how it is actually implemented will depend on the bubble
+  // implementation (for example, bubbles attached to menu items cannot take
+  // focus for system activation reasons).
+  absl::optional<bool> focus_on_show_hint;
+
   // Additional message to be read to screen reader users to aid in
   // navigation.
   std::u16string keyboard_navigation_hint;

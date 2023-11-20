@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -229,6 +230,17 @@ class FeaturePromoSpecification {
   // Set the bubble arrow. Default is top-left.
   FeaturePromoSpecification& SetBubbleArrow(HelpBubbleArrow bubble_arrow);
 
+  // Overrides the default focus-on-show behavior for the bubble. By default
+  // bubbles with action buttons are focused to aid with accessibility. In
+  // unusual circumstances this allows the value to be overridden. However, it
+  // is almost always better to e.g. improve the promo trigger logic so it
+  // doesn't interrupt user workflow than it is to disable bubble auto-focus.
+  //
+  // You should document calls to this method with a reason and ideally a bug
+  // describing why the default a11y behavior needs to be overridden and what
+  // can be done to fix it.
+  FeaturePromoSpecification& OverrideFocusOnShow(bool focus_on_show);
+
   // Set the promo subtype. Setting the subtype to LegalNotice requires being on
   // an allowlist.
   FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
@@ -261,6 +273,9 @@ class FeaturePromoSpecification {
   int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
   HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
+  const absl::optional<bool>& focus_on_show_override() const {
+    return focus_on_show_override_;
+  }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
   const AcceleratorInfo& screen_reader_accelerator() const {
     return screen_reader_accelerator_;
@@ -344,6 +359,11 @@ class FeaturePromoSpecification {
 
   // Optional arrow pointing to the promo'd element. Defaults to top left.
   HelpBubbleArrow bubble_arrow_ = kDefaultBubbleArrow;
+
+  // Overrides the default focus-on-show behavior for a bubble, which is to
+  // focus bubbles with action buttons, but not bubbles that only have a close
+  // button.
+  absl::optional<bool> focus_on_show_override_;
 
   // Optional screen reader announcement that replaces bubble text when the
   // bubble is first announced.

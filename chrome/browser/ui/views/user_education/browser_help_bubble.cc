@@ -85,12 +85,13 @@ std::unique_ptr<user_education::HelpBubble>
 TabWebUIHelpBubbleFactoryBrowser::CreateBubble(
     ui::TrackedElement* element,
     user_education::HelpBubbleParams params) {
-  const bool has_buttons = !params.buttons.empty();
+  const bool focus =
+      params.focus_on_show_hint.value_or(!params.buttons.empty());
   auto result =
       HelpBubbleFactoryWebUI::CreateBubble(element, std::move(params));
 
-  // Bubbles with action buttons should start focused.
-  if (result && has_buttons) {
+  // Some bubbles should start focused.
+  if (result && focus) {
     // Assuming the help bubble is in the active web contents in a browser
     // window, in order to be consistent with other help bubbles, we should
     // ensure the contents pane is focused.

@@ -239,6 +239,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
+    bool focus_on_show) {
+  focus_on_show_override_ = focus_on_show;
+  return *this;
+}
+
 FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
     PromoSubtype promo_subtype) {
   CHECK(promo_type_ != PromoType::kUnspecified);

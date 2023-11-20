@@ -512,6 +512,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   if (spec.bubble_body_string_id())
     create_params.body_icon_alt_text = GetBodyIconAltText();
   create_params.arrow = spec.bubble_arrow();
+  create_params.focus_on_show_hint = spec.focus_on_show_override();
 
   // Critical promos don't time out.
   if (is_critical_promo) {

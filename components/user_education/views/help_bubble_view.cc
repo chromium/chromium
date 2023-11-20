@@ -884,7 +884,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   SizeToContents();
 
   // Most help bubbles with buttons take focus when they show.
-  bool show_active = !params.buttons.empty();
+  bool show_active =
+      params.focus_on_show_hint.value_or(!params.buttons.empty());
   if (auto* const anchor_bubble =
           anchor_widget()->widget_delegate()->AsBubbleDialogDelegate()) {
     // Make sure that if the help bubble is attaching to a dialog, the dialog

@@ -238,7 +238,9 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
-          .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)));
+          .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)
+          // See: crbug.com/1494923
+          .OverrideFocusOnShow(false)));
 
   // kIPHDesktopCustomizeChromeRefreshFeature:
   registry.RegisterFeature(std::move(
@@ -264,7 +266,9 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetCustomActionIsDefault(false)
-          .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)));
+          .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
+          // See: crbug.com/1494923
+          .OverrideFocusOnShow(false)));
 
   // kIPHDesktopNewTabPageModulesCustomizeFeature:
   registry.RegisterFeature(std::move(
@@ -274,7 +278,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_NTP_MODULES_CUSTOMIZE_IPH)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
-          .SetInAnyContext(true)));
+          .SetInAnyContext(true)
+          // See: crbug.com/1494923
+          .OverrideFocusOnShow(false)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
