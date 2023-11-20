@@ -4048,6 +4048,13 @@ enum WebFeature {
   kRubyElementWithDisplayBlockAndRt = 4708,
   kCSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
+  kThirdPartyCookieDeprecation_AllowByExplicitSetting = 4731,
+  kThirdPartyCookieDeprecation_AllowByGlobalSetting = 4732,
+  kThirdPartyCookieDeprecation_AllowBy3PCDMetadata = 4733,
+  kThirdPartyCookieDeprecation_AllowBy3PCD = 4734,
+  kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics = 4735,
+  kThirdPartyCookieDeprecation_AllowByStorageAccess = 4736,
+  kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess = 4737,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

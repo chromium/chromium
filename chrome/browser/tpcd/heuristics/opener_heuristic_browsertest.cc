@@ -526,6 +526,13 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
                 popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
             GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetThirdPartyCookieAllowMechanism(
+                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam().write_grant_enabled
+                ? content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics
+                : content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kNone);
 }
 
 IN_PROC_BROWSER_TEST_P(

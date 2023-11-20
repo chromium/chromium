@@ -1309,6 +1309,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism"
+    enum="ThirdPartyCookieAllowMechanism" expires_after="2024-07-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Record the different mechanisms to re-enable third party cookie access when
+    a third party accesses(read|change) cookies either via resource request
+    headers or document.cookie.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd"
     enum="Boolean" expires_after="2024-07-01">
   <owner>johnidel@chromium.org</owner>

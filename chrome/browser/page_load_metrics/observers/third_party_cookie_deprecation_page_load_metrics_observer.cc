@@ -5,9 +5,11 @@
 #include "chrome/browser/page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/web_contents.h"
@@ -17,6 +19,9 @@
 
 namespace {
 
+using ThirdPartyCookieAllowMechanism =
+    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
+
 bool IsSameSite(const GURL& url1, const GURL& url2) {
   return url1.SchemeIs(url2.scheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
@@ -24,13 +29,22 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+void ReportThirdPartyCookieAllowMechanismHistogram(
+    ThirdPartyCookieAllowMechanism result) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism",
+      result);
+}
+
 }  // namespace
 
 ThirdPartyCookieDeprecationMetricsObserver::
     ThirdPartyCookieDeprecationMetricsObserver(
         content::BrowserContext* context) {
-  experiment_manager_ = tpcd::experiment::ExperimentManagerImpl::GetForProfile(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+  experiment_manager_ =
+      tpcd::experiment::ExperimentManagerImpl::GetForProfile(profile);
+  cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
 }
 
 ThirdPartyCookieDeprecationMetricsObserver::
@@ -93,12 +107,69 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
       "PageLoad.Clients.ThirdPartyCookieAccessBlockedByExperiment",
       is_blocked_by_experiment);
 
+  // TODO(crbug.com/1494080): Consider whether need to use the real
+  // CookieSettingOverrides rather than default to none, this helps to
+  // evaluate third party cookies are allowed by the storage access API.
+  const ThirdPartyCookieAllowMechanism allow_mechanism =
+      cookie_settings_->GetThirdPartyCookieAllowMechanism(
+          url, first_party_url, net::CookieSettingOverrides());
+  if (allow_mechanism != ThirdPartyCookieAllowMechanism::kNone) {
+    ReportThirdPartyCookieAllowMechanismHistogram(allow_mechanism);
+  }
+
+  std::vector<blink::mojom::WebFeature> third_party_cookie_features;
   if (is_blocked_by_experiment) {
+    third_party_cookie_features.push_back(
+        blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
+
+    // Record the each allow mechanism feature usage when the 3PCD experiment is
+    // trying to block third party cookies.
+    switch (allow_mechanism) {
+      case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowByExplicitSetting);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowByGlobalSetting);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowBy3PCDMetadata);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowByStorageAccess);
+        break;
+      case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
+        third_party_cookie_features.push_back(
+            blink::mojom::WebFeature::
+                kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess);
+        break;
+      default:
+        // No feature usage recorded for unknow mechanism values.
+        break;
+    }
+  }
+
+  // Report the feature usage if there's anything to report.
+  if (third_party_cookie_features.size() > 0) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
         GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
-        std::vector<blink::mojom::WebFeature>{
-            blink::mojom::WebFeature::
-                kThirdPartyCookieAccessBlockByExperiment});
+        std::move(third_party_cookie_features));
   }
 }
 

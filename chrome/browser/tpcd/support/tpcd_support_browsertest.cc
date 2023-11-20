@@ -400,6 +400,10 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest, EnabledAfterMetaTagAppend) {
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
                                        nullptr),
             CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                kTrialEnabledSite, embedding_site, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
 
 }  // namespace tpcd::support
