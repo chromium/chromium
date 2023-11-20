@@ -1632,6 +1632,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowUserPolicyNotificationAtStartupIfNeededDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(policy::kShowUserPolicyNotificationAtStartupIfNeeded)},
+    {"tab-grid-compositional-layout",
+     flag_descriptions::kTabGridCompositionalLayoutName,
+     flag_descriptions::kTabGridCompositionalLayoutDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTabGridCompositionalLayout)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

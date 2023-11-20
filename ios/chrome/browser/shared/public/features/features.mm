@@ -290,6 +290,10 @@ BASE_FEATURE(kDynamicBackgroundColor,
              "DynamicBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridCompositionalLayout,
+             "TabGridCompositionalLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
              base::FEATURE_DISABLED_BY_DEFAULT);

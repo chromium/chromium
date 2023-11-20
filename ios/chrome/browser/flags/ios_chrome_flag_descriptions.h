@@ -895,6 +895,10 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableSessionSerializationOptimizationsName[];
 extern const char kEnableSessionSerializationOptimizationsDescription[];
 
+// Title and description for the tab grid new compositional layout.
+extern const char kTabGridCompositionalLayoutName[];
+extern const char kTabGridCompositionalLayoutDescription[];
+
 // Title and description for the tab grid refactoring flag.
 extern const char kTabGridRefactoringName[];
 extern const char kTabGridRefactoringDescription[];

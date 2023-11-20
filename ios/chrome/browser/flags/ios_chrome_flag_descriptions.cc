@@ -1018,10 +1018,16 @@ const char kEnableSessionSerializationOptimizationsDescription[] =
     "and the ability to load only the minimum amount of data when restoring "
     "the session from disk.";
 
+const char kTabGridCompositionalLayoutName[] =
+    "Enable tab grid with the new compositional layout";
+const char kTabGridCompositionalLayoutDescription[] =
+    "When enabled, the Tab Grid uses the new compositional layout. Items sizes "
+    "are different and more dynamic than before.";
+
 const char kTabGridRefactoringName[] = "Enable tab grid refactoring";
 const char kTabGridRefactoringDescription[] =
-    "When enabled, the Tab Grid use the refactored version, it should not have "
-    "any visual difference nor different feature with the legacy one.";
+    "When enabled, the Tab Grid uses the refactored version, it should not "
+    "have any visual difference nor different feature with the legacy one.";
 
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
