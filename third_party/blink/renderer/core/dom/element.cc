@@ -3182,7 +3182,8 @@ const ComputedStyle* Element::StyleForLayoutObject(
     style = context->AdjustElementStyle(style);
   }
 
-  if (style->DependsOnSizeContainerQueries()) {
+  // TODO(crbug.com/1502666): Descendants can also depend on position-fallback.
+  if (style->DependsOnSizeContainerQueries() || style->PositionFallback()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 

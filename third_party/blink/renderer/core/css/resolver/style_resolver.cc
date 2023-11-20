@@ -146,10 +146,10 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // position-fallback, we can fall back to the default behavior (in
   // CSSAnimations) of using the current style on Element as the old style.
   //
-  // TODO(futhark): We also need to check whether we are a descendant of an
-  // element with position-fallback to cover the case where the descendant
-  // explicitly inherits insets or other valid @try properties from the
-  // element with position-fallback.
+  // TODO(crbug.com/1502666): We also need to check whether we are a descendant
+  // of an element with position-fallback to cover the case where the descendant
+  // explicitly inherits insets or other valid @try properties from the element
+  // with position-fallback.
   return (style_recalc_context.container ||
           style_recalc_context.position_fallback ||
           (RuntimeEnabledFeatures::
