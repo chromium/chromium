@@ -40,8 +40,7 @@ absl::optional<int> GetAndClearInt(const std::string& shared_preference_key) {
     return absl::nullopt;
   }
 
-  bool result =
-      shared_prefs.ReadInt(shared_preference_key, /*default_value=*/0);
+  int result = shared_prefs.ReadInt(shared_preference_key, /*default_value=*/0);
   shared_prefs.RemoveKey(shared_preference_key);
   return result;
 }
