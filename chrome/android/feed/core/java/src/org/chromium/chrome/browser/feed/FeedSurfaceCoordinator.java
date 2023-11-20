@@ -518,9 +518,17 @@ public class FeedSurfaceCoordinator
             ntpHeader != null
                 && ChromeFeatureList.sSurfacePolish.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mMediator = new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mSectionHeaderModel,
-            getTabIdFromLaunchOrigin(launchOrigin), actionDelegate, optionsCoordinator,
-            useUiConfig ? mUiConfig : null);
+        mMediator =
+                new FeedSurfaceMediator(
+                        this,
+                        mActivity,
+                        snapScrollHelper,
+                        mSectionHeaderModel,
+                        getTabIdFromLaunchOrigin(launchOrigin),
+                        actionDelegate,
+                        optionsCoordinator,
+                        useUiConfig ? mUiConfig : null,
+                        profile);
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
