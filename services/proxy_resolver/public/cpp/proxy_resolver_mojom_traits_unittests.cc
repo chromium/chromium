@@ -22,11 +22,6 @@ TEST(ProxyInfo, SerializeAndDeserialize) {
   direct.UseDirect();
   infos.push_back(std::move(direct));
 
-  net::ProxyInfo single_proxy_server;
-  single_proxy_server.UseProxyServer(net::ProxyServer::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "foo1", 443));
-  infos.push_back(std::move(single_proxy_server));
-
   net::ProxyInfo single_proxy_chain;
   single_proxy_chain.UseProxyChain(net::ProxyChain::FromSchemeHostAndPort(
       net::ProxyServer::SCHEME_HTTPS, "foo1", 443));

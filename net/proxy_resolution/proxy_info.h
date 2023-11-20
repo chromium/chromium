@@ -45,10 +45,6 @@ class NET_EXPORT ProxyInfo {
   // It is OK to have LWS between entries.
   void UseNamedProxy(const std::string& proxy_uri_list);
 
-  // Sets the proxy list to a single entry, |proxy_server|.
-  // TODO(crbug.com/1491092): Remove this method, as it is only used in a test.
-  void UseProxyServer(const ProxyServer& proxy_server);
-
   // Sets the proxy list to a single entry, |proxy_chain|.
   void UseProxyChain(const ProxyChain& proxy_chain);
 

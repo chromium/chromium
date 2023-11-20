@@ -38,11 +38,6 @@ void ProxyInfo::UseNamedProxy(const std::string& proxy_uri_list) {
   proxy_list_.Set(proxy_uri_list);
 }
 
-void ProxyInfo::UseProxyServer(const ProxyServer& proxy_server) {
-  Reset();
-  proxy_list_.SetSingleProxyServer(proxy_server);
-}
-
 void ProxyInfo::UseProxyChain(const ProxyChain& proxy_chain) {
   Reset();
   proxy_list_.SetSingleProxyChain(proxy_chain);
