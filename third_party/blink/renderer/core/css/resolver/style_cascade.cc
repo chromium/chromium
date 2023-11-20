@@ -1091,8 +1091,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   builder.Append(value.CustomCSSText());
   builder.Append(")");
 
-  LOG(DFATAL) << builder.ToString();
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN() << builder.ToString();
   return cssvalue::CSSUnsetValue::Create();
 }
 
