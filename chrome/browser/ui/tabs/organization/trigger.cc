@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 
 namespace {
 
@@ -22,8 +23,6 @@ float MVPScoringFunction(const TabStripModel* const model) {
   }
   return num_tabs_not_in_group;
 }
-
-constexpr int kMinTabCount = 7;
 }  // namespace
 
 TabOrganizationTrigger::TabOrganizationTrigger(
@@ -51,14 +50,16 @@ TriggerScoringFunction GetDefaultTriggerScoringFunction() {
 }
 
 float GetDefaultTriggerScoreThreshold() {
-  return kMinTabCount;
+  return features::kTabOrganizationTriggerThreshold.Get();
 }
 
 std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
     std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
-      base::Hours(6), 2.0f, std::move(backoff_level_provider));
+      features::kTabOrganizationTriggerPeriod.Get(),
+      features::kTabOrganizationTriggerBackoffBase.Get(),
+      std::move(backoff_level_provider));
 }
 
 std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger(

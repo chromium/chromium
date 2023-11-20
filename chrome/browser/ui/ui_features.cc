@@ -238,6 +238,15 @@ bool IsTabOrganization() {
          base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
+const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
+    &kTabOrganization, "trigger_period", base::Hours(6)};
+
+const base::FeatureParam<double> kTabOrganizationTriggerBackoffBase{
+    &kTabOrganization, "backoff_base", 2.0};
+
+const base::FeatureParam<double> kTabOrganizationTriggerThreshold{
+    &kTabOrganization, "trigger_threshold", 7.0};
+
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
