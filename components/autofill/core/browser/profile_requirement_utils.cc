@@ -110,6 +110,42 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
   return address_import_requirements;
 }
 
+bool ValidateNonEmptyValues(const AutofillProfile& profile,
+                            LogBuffer* log_buffer) {
+  // Returns false if `profile` has invalid information for `type`.
+  auto ValidateAndLog = [&](ServerFieldType type,
+                            AddressImportRequirement valid,
+                            AddressImportRequirement invalid) {
+    if (profile.IsPresentButInvalid(type)) {
+      autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
+      LOG_AF(log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Invalid " << FieldTypeToStringView(type) << "."
+                         << CTag{};
+      return false;
+    } else {
+      autofill_metrics::LogAddressFormImportRequirementMetric(valid);
+      return true;
+    }
+  };
+
+  // Reject profiles with invalid `EMAIL_ADDRESS`, `ADDRESS_HOME_STATE` or
+  // `ADDRESS_HOME_ZIP` entries and collect metrics on their validity.
+  bool all_requirements_satisfied = ValidateAndLog(
+      EMAIL_ADDRESS, AddressImportRequirement::kEmailValidRequirementFulfilled,
+      AddressImportRequirement::kEmailValidRequirementViolated);
+
+  all_requirements_satisfied &=
+      ValidateAndLog(ADDRESS_HOME_STATE,
+                     AddressImportRequirement::kStateValidRequirementFulfilled,
+                     AddressImportRequirement::kStateValidRequirementViolated);
+
+  all_requirements_satisfied &= ValidateAndLog(
+      ADDRESS_HOME_ZIP, AddressImportRequirement::kZipValidRequirementFulfilled,
+      AddressImportRequirement::kZipValidRequirementViolated);
+
+  return all_requirements_satisfied;
+}
+
 bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   const std::vector<std::string>& country_codes =
       autofill::CountryDataMap::GetInstance()->country_codes();

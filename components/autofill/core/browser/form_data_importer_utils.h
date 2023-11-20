@@ -106,11 +106,6 @@ class TimestampedSameOriginQueue {
   const size_t max_size_;
 };
 
-// Checks suitability of an an import candidate `profile` by validating some
-// of the profiles values.
-bool IsValidLearnableProfile(const AutofillProfile& profile,
-                             LogBuffer* import_log_buffer);
-
 // Tries to infer the country `profile` is from, which can be useful to
 // verify whether the data is sensible. Returns a two-letter ISO country code
 // by considering, in decreasing order of priority:

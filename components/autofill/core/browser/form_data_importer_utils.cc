@@ -5,12 +5,8 @@
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -18,9 +14,6 @@
 namespace autofill {
 
 namespace {
-
-using AddressImportRequirement =
-    autofill_metrics::AddressProfileImportRequirementMetric;
 
 bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
                                 const history::DeletionInfo& deletion_info) {
@@ -34,42 +27,6 @@ bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
 }
 
 }  // anonymous namespace
-
-bool IsValidLearnableProfile(const AutofillProfile& profile,
-                             LogBuffer* import_log_buffer) {
-  // Returns false if `profile` has invalid information for `type`.
-  auto ValidateAndLog = [&](ServerFieldType type,
-                            AddressImportRequirement valid,
-                            AddressImportRequirement invalid) {
-    if (profile.IsPresentButInvalid(type)) {
-      autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
-      LOG_AF(import_log_buffer)
-          << LogMessage::kImportAddressProfileFromFormFailed << "Invalid "
-          << FieldTypeToStringView(type) << "." << CTag{};
-      return false;
-    } else {
-      autofill_metrics::LogAddressFormImportRequirementMetric(valid);
-      return true;
-    }
-  };
-
-  // Reject profiles with invalid `EMAIL_ADDRESS`, `ADDRESS_HOME_STATE` or
-  // `ADDRESS_HOME_ZIP` entries and collect metrics on their validity.
-  bool all_requirements_satisfied = ValidateAndLog(
-      EMAIL_ADDRESS, AddressImportRequirement::kEmailValidRequirementFulfilled,
-      AddressImportRequirement::kEmailValidRequirementViolated);
-
-  all_requirements_satisfied &=
-      ValidateAndLog(ADDRESS_HOME_STATE,
-                     AddressImportRequirement::kStateValidRequirementFulfilled,
-                     AddressImportRequirement::kStateValidRequirementViolated);
-
-  all_requirements_satisfied &= ValidateAndLog(
-      ADDRESS_HOME_ZIP, AddressImportRequirement::kZipValidRequirementFulfilled,
-      AddressImportRequirement::kZipValidRequirementViolated);
-
-  return all_requirements_satisfied;
-}
 
 std::string GetPredictedCountryCode(
     const AutofillProfile& profile,

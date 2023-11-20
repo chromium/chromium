@@ -599,9 +599,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   bool finalized_import = candidate_profile.FinalizeAfterImport();
 
   // Reject the profile if the validation requirements are not met.
-  // `IsValidLearnableProfile()` goes first to collect metrics.
+  // `ValidateNonEmptyValues()` goes first to collect metrics.
   bool has_invalid_information =
-      !IsValidLearnableProfile(candidate_profile, import_log_buffer) ||
+      !ValidateNonEmptyValues(candidate_profile, import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types;
 
   // Profiles with valid information qualify for multi-step imports.
