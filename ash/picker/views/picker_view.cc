@@ -67,7 +67,10 @@ views::UniqueWidgetPtr PickerView::CreateWidget() {
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
 
-  return std::make_unique<views::Widget>(std::move(params));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
+  widget->SetVisibilityAnimationTransition(
+      views::Widget::VisibilityTransition::ANIMATE_HIDE);
+  return widget;
 }
 
 std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
