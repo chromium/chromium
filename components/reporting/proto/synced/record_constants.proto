@@ -103,6 +103,10 @@ enum Destination {
   // |CROS_SECURITY_USER| is for events that are occurring from user actions.
   CROS_SECURITY_USER = 28;
 
+  // |KIOSK_HEARTBEAT_EVENTS| is for events from Kiosk/MGS devices that write
+  // heartbeats to dds based on the telemetry pipeline using ERP
+  KIOSK_HEARTBEAT_EVENTS = 29;
+
   reserved 8;
 }
 
