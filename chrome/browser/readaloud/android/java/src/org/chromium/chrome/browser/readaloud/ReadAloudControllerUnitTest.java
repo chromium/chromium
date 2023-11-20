@@ -511,6 +511,8 @@ public class ReadAloudControllerUnitTest {
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
         mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
         verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
+        // Checks that the pref is read to set up highlighter state
+        verify(mPrefService).hasPrefPath(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH));
 
         // trigger highlights
         mController.onPhraseChanged(mPhraseTiming);
@@ -520,6 +522,8 @@ public class ReadAloudControllerUnitTest {
 
         // now disable highlighting - we should not trigger highlights anymore
         mController.getHighlightingEnabledSupplier().set(false);
+        // Pref is updated.
+        verify(mPrefService).setBoolean(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH), eq(false));
         mController.onPhraseChanged(mPhraseTiming);
         verify(mHighlighter, times(1))
                 .highlightText(eq(mGlobalRenderFrameHostId), eq(mTab), eq(mPhraseTiming));

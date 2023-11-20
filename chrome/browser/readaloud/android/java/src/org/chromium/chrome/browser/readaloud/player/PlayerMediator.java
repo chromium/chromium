@@ -99,7 +99,7 @@ class PlayerMediator implements InteractionHandler {
             onSpeedChange(ReadAloudPrefs.getSpeed(mDelegate.getPrefService()));
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_ENABLED,
-                    ReadAloudPrefs.isHighlightingEnabled(mDelegate.getPrefService()));
+                    mDelegate.getHighlightingEnabledSupplier().get());
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
         }
@@ -161,7 +161,6 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onHighlightingChange(boolean enabled) {
-        ReadAloudPrefs.setHighlightingEnabled(mDelegate.getPrefService(), enabled);
         mDelegate.getHighlightingEnabledSupplier().set(enabled);
     }
 

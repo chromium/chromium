@@ -122,7 +122,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
                     mHighlightingEnabled.addObserver(
                             ReadAloudController.this::onHighlightingEnabledChanged);
-                    mHighlightingEnabled.set(isHighlightingSupported());
+                    mHighlightingEnabled.set(
+                            ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
                     mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
@@ -363,9 +364,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     /** Update the page highlighting setting. */
     private void onHighlightingEnabledChanged(boolean enabled) {
-        if (!isHighlightingSupported()) {
-            return;
-        }
+        ReadAloudPrefs.setHighlightingEnabled(getPrefService(), enabled);
         if (!enabled) {
             // clear highlighting
             maybeClearHighlights();

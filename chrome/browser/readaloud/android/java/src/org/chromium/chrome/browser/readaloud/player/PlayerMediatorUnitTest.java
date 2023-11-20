@@ -37,7 +37,6 @@ import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -63,7 +62,7 @@ public class PlayerMediatorUnitTest {
 
     private ObservableSupplierImpl<List<PlaybackVoice>> mVoicesSupplier;
     private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
-
+    private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
 
     private PropertyModel mModel;
@@ -123,14 +122,14 @@ public class PlayerMediatorUnitTest {
         mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a", "description")));
         mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
         mSelectedVoiceIdSupplier.set("a");
+        mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
+        mHighlightingEnabledSupplier.set(true);
         mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mPrefsNative);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();
 
         doReturn(true).when(mDelegate).isHighlightingSupported();
-        doReturn(new ObservableSupplierImpl<Boolean>())
-                .when(mDelegate)
-                .getHighlightingEnabledSupplier();
+        doReturn(mHighlightingEnabledSupplier).when(mDelegate).getHighlightingEnabledSupplier();
         doReturn(mVoicesSupplier).when(mDelegate).getCurrentLanguageVoicesSupplier();
         doReturn(mSelectedVoiceIdSupplier).when(mDelegate).getVoiceIdSupplier();
         doReturn(mMockPrefServiceHelper.getPrefService()).when(mDelegate).getPrefService();
@@ -308,13 +307,13 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testOnHighlightingChanged() {
-        mMediator.onHighlightingChange(false);
+        assertTrue(mHighlightingEnabledSupplier.get());
 
-        PrefService prefs = mDelegate.getPrefService();
-        assertFalse(ReadAloudPrefs.isHighlightingEnabled(prefs));
+        mMediator.onHighlightingChange(false);
+        assertFalse(mHighlightingEnabledSupplier.get());
 
         mMediator.onHighlightingChange(true);
-        assertTrue(ReadAloudPrefs.isHighlightingEnabled(prefs));
+        assertTrue(mHighlightingEnabledSupplier.get());
     }
 
     @Test

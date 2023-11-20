@@ -21,8 +21,7 @@ public class ReadAloudPrefs {
     // Keep these names in sync with those in //chrome/common/pref_names.h.
     private static final String PREF_PATH_PREFIX = "readaloud";
     private static final String SPEED_PATH = PREF_PATH_PREFIX + ".speed";
-    private static final String HIGHLIGHTING_ENABLED_PATH =
-            PREF_PATH_PREFIX + ".highlighting_enabled";
+    static final String HIGHLIGHTING_ENABLED_PATH = PREF_PATH_PREFIX + ".highlighting_enabled";
 
     private static final float DEFAULT_SPEED = 1f;
     private static final boolean DEFAULT_HIGHLIGHTING_ENABLED = true;
