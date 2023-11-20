@@ -122,6 +122,8 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
 @Batch(PER_CLASS)
+// Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
+@DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";

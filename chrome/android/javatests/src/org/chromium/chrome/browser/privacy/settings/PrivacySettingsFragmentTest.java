@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -68,6 +69,8 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
+// Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PrivacySettingsFragmentTest {
     // Index of the Privacy Sandbox row entry in the settings list.
     public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;

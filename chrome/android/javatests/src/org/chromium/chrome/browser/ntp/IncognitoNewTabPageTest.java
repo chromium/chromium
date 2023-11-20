@@ -46,7 +46,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.INCOGNITO_NTP_REVAMP})
+@DisableFeatures({
+    ChromeFeatureList.INCOGNITO_NTP_REVAMP,
+    ChromeFeatureList.TRACKING_PROTECTION_3PCD
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @ClassRule

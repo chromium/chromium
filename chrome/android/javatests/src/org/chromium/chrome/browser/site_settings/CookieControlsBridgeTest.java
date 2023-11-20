@@ -22,6 +22,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -165,7 +166,10 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisableFeatures({
+        PageInfoFeatures.USER_BYPASS_UI_NAME,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD
+    })
     public void testCookieBridgeWithTPCookiesDisabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -199,7 +203,10 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisableFeatures({
+        PageInfoFeatures.USER_BYPASS_UI_NAME,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD
+    })
     public void testCookieBridgeWith3PCookiesEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -234,7 +241,10 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisableFeatures({
+        PageInfoFeatures.USER_BYPASS_UI_NAME,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD
+    })
     public void testCookieBridgeWithChangingAllowedCookiesCount() throws Exception {
         int currentCallCount = mCallbackHelper.getCallCount();
 
@@ -269,7 +279,10 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisableFeatures({
+        PageInfoFeatures.USER_BYPASS_UI_NAME,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD
+    })
     public void testCookieBridgeWithChangingBlockedCookiesCount() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -313,7 +326,10 @@ public class CookieControlsBridgeTest {
     /** Test blocked cookies works with CookieControlsMode.INCOGNITO_ONLY. */
     @Test
     @SmallTest
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisableFeatures({
+        PageInfoFeatures.USER_BYPASS_UI_NAME,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD
+    })
     public void testCookieBridgeWithIncognitoSetting() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

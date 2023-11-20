@@ -17,12 +17,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
@@ -95,6 +97,7 @@ public class CookieControlsServiceBridgeTest {
     /** Test changing the bridge triggers callback for correct toggle state. */
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieSettingsCheckedChanges() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
         final String url = mTestServer.getURL("/chrome/test/data/android/cookie.html");
@@ -142,6 +145,7 @@ public class CookieControlsServiceBridgeTest {
     /** Test the ability to set the cookie controls mode pref through the bridge. */
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithTPCookiesDisabled() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
         final String url = mTestServer.getURL("/chrome/test/data/android/cookie.html");
