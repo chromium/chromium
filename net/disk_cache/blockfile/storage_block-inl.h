@@ -36,10 +36,10 @@ void StorageBlock<T>::CopyFrom(StorageBlock<T>* other) {
   DCHECK(!modified_);
   DCHECK(!other->modified_);
   Discard();
-  *Data() = *other->Data();
-  file_ = other->file_;
   address_ = other->address_;
   extended_ = other->extended_;
+  file_ = other->file_;
+  *Data() = *other->Data();
 }
 
 template<typename T> void* StorageBlock<T>::buffer() const {
