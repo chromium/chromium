@@ -167,9 +167,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // connectivity.
   void PerformInstallESim(const dbus::ObjectPath& euicc_path);
 
-  void OnRefreshProfileList(
-      const dbus::ObjectPath& euicc_path,
-      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnConfigureESimService(absl::optional<dbus::ObjectPath> service_path);
   void OnInhibitedForRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
@@ -196,7 +193,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
 
   base::Value::Dict GetNewShillProperties();
   const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
-  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
+  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile(
+      const std::string& iccid);
+  // Return absl::nullopt if no or empty iccid is found in the policy ONC.
+  absl::optional<std::string> GetIccidFromPolicyONC();
   bool HasNonCellularInternetConnectivity();
   InstallRetryReason HermesResponseStatusToRetryReason(
       HermesResponseStatus status) const;
@@ -220,11 +220,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
 
   bool is_installing_ = false;
 
-  // While Hermes is the source of truth for the EUICC state, Chrome maintains a
-  // cache of the installed eSIM profiles. To ensure we properly detect when a
-  // profile has already been installed for a particular request we force a
-  // refresh of the profile cache before each installation.
-  bool need_refresh_profile_list_ = true;
   base::circular_deque<std::unique_ptr<InstallPolicyESimRequest>>
       remaining_install_requests_;
 

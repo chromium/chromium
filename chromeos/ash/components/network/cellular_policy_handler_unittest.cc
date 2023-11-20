@@ -222,8 +222,6 @@ class CellularPolicyHandlerTest : public testing::Test {
   void InstallProfile(const base::Value::Dict& onc_config) {
     cellular_policy_handler()->InstallESim(onc_config);
     base::RunLoop().RunUntilIdle();
-
-    FastForwardRefreshDelay();
   }
 
   HermesProfileClient::Properties* FindProfileProperties(
@@ -530,8 +528,6 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   CompleteShillServiceAutoConnect(*onc_config);
 
-  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
-            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
@@ -594,8 +590,6 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   CompleteShillServiceAutoConnect(*onc_config);
 
-  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
-            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
@@ -633,10 +627,6 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
-
-  // Queue a success result for the call to refresh the profile list.
-  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
-      HermesResponseStatus::kSuccess);
 
   // Queue a failure result for the SM-DS scan itself.
   HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
@@ -684,8 +674,6 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   CellularInhibitorObserver cellular_inhibitor_observer;
   InstallProfile(*onc_config);
 
-  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
-            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
@@ -980,9 +968,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   const std::string* iccid = properties->FindString(shill::kIccidProperty);
   EXPECT_TRUE(iccid && *iccid == kTestProfileIccid0);
 
-  cellular_policy_handler()->InstallESim(*onc_config);
-
-  FastForwardRefreshDelay();
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
 
@@ -1077,9 +1063,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           base::StringPrintf(kCellularPolicyPattern, base::RandUint64(), "{}"));
   ASSERT_TRUE(onc_config.has_value());
 
-  cellular_policy_handler()->InstallESim(*onc_config);
-
-  FastForwardRefreshDelay();
+  InstallProfile(*onc_config);
 
   CheckHistogramState(expected_state);
 }

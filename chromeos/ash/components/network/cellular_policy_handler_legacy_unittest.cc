@@ -219,7 +219,6 @@ class CellularPolicyHandlerLegacyTest : public testing::Test {
         chromeos::onc::ReadDictionaryFromJson(onc_json);
     ASSERT_TRUE(policy.has_value());
     cellular_policy_handler_->InstallESim(activation_code, *policy);
-    FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 
     if (!expect_install_success) {
