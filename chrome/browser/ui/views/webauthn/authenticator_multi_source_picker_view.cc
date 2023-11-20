@@ -72,12 +72,14 @@ AuthenticatorMultiSourcePickerView::AuthenticatorMultiSourcePickerView(
     primary_passkeys_control_ = primary_list.second;
   }
 
-  std::pair<std::unique_ptr<views::View>, HoverListView*> secondary_list =
-      CreatePasskeyList(secondary_passkeys_label,
-                        model->secondary_passkey_indices(),
-                        model->dialog_model()->mechanisms());
-  AddChildView(std::move(secondary_list.first));
-  secondary_passkeys_control_ = secondary_list.second;
+  if (!model->secondary_passkey_indices().empty()) {
+    std::pair<std::unique_ptr<views::View>, HoverListView*> secondary_list =
+        CreatePasskeyList(secondary_passkeys_label,
+                          model->secondary_passkey_indices(),
+                          model->dialog_model()->mechanisms());
+    AddChildView(std::move(secondary_list.first));
+    secondary_passkeys_control_ = secondary_list.second;
+  }
 }
 
 AuthenticatorMultiSourcePickerView::~AuthenticatorMultiSourcePickerView() =
@@ -88,5 +90,7 @@ void AuthenticatorMultiSourcePickerView::RequestFocus() {
     primary_passkeys_control_->RequestFocus();
     return;
   }
-  secondary_passkeys_control_->RequestFocus();
+  if (secondary_passkeys_control_) {
+    secondary_passkeys_control_->RequestFocus();
+  }
 }

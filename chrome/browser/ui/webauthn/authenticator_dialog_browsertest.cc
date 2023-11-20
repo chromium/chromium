@@ -629,6 +629,13 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           std::move(local_cred1),
           std::move(local_cred2),
       };
+    } else if (name == "local_no_other_devices") {
+      transport_availability.recognized_credentials = {
+          std::move(local_cred1),
+          std::move(local_cred2),
+      };
+      transport_availability.available_transports = {
+          device::FidoTransportProtocol::kInternal};
     } else if (name == "phone_only") {
       transport_availability.recognized_credentials = {
           std::move(phone_cred1),
@@ -708,6 +715,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_local_only) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_local_no_other_devices) {
   ShowAndVerifyUi();
 }
 
