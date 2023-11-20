@@ -4392,6 +4392,8 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_mac.h",
       "views/frame/immersive_mode_controller_mac.mm",
       "views/frame/native_browser_frame_factory_mac.mm",
+      "views/passwords/password_relaunch_chrome_view.cc",
+      "views/passwords/password_relaunch_chrome_view.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
       "webui/help/version_updater_mac.h",

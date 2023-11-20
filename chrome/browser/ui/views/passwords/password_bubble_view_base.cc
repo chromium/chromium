@@ -84,7 +84,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   password_manager::ui::State model_state =
       PasswordsModelDelegateFromWebContents(web_contents)->GetState();
   if (model_state == password_manager::ui::MANAGE_STATE) {
-      view = new ManagePasswordsView(web_contents, anchor_view);
+    view = new ManagePasswordsView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::AUTO_SIGNIN_STATE) {
     view = new PasswordAutoSignInView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::SAVE_CONFIRMATION_STATE ||

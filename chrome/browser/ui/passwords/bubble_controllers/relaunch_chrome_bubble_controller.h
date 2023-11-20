@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 
 // This controller manages the relaunch Chrome bubble, which is shown while
@@ -30,7 +31,10 @@ class RelaunchChromeBubbleController : public PasswordBubbleControllerBase {
 
  private:
   // PasswordBubbleControllerBase:
-  void ReportInteractions() override {}
+  void ReportInteractions() override;
+
+  password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
+      password_manager::metrics_util::NO_DIRECT_INTERACTION;
 
   raw_ptr<PrefService> prefs_;
 };

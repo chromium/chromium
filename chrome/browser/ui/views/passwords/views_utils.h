@@ -101,4 +101,7 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
     ui::ImageModel primary_account_avatar,
     bool is_using_account_store);
 
+// Creates a view with PasswordManager icon and a `title` string.
+std::unique_ptr<views::View> CreateTitleView(const std::u16string& title);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_

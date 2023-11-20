@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/relaunch_chrome_bubble_controller.h"
 
+#include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
+namespace pwm_prefs = password_manager::prefs;
 
 namespace {
 constexpr int kMaxNumberOfTimesBubbleIsShown = 3;
@@ -27,7 +31,7 @@ RelaunchChromeBubbleController::RelaunchChromeBubbleController(
     PrefService* prefs)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          password_manager::metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE),
+          metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE),
       prefs_(prefs) {}
 
 RelaunchChromeBubbleController::~RelaunchChromeBubbleController() {
@@ -68,13 +72,27 @@ std::u16string RelaunchChromeBubbleController::GetNoThanksButtonText() const {
 }
 
 void RelaunchChromeBubbleController::OnAccepted() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   delegate_->RelaunchChrome();
 }
 
 void RelaunchChromeBubbleController::OnCanceled() {
+  if (prefs_->GetInteger(pwm_prefs::kRelaunchChromeBubbleDismissedCounter) <
+      kMaxNumberOfTimesBubbleIsShown) {
+    dismissal_reason_ = metrics_util::CLICKED_CANCEL;
+  } else {
+    dismissal_reason_ = metrics_util::CLICKED_NEVER;
+  }
+
   prefs_->SetInteger(
-      password_manager::prefs::kRelaunchChromeBubbleDismissedCounter,
-      prefs_->GetInteger(
-          password_manager::prefs::kRelaunchChromeBubbleDismissedCounter) +
-          1);
+      pwm_prefs::kRelaunchChromeBubbleDismissedCounter,
+      prefs_->GetInteger(pwm_prefs::kRelaunchChromeBubbleDismissedCounter) + 1);
+}
+
+void RelaunchChromeBubbleController::ReportInteractions() {
+  password_manager::metrics_util::LogGeneralUIDismissalReason(
+      dismissal_reason_);
+  base::UmaHistogramBoolean(
+      "PasswordBubble.RelaunchChromeBubble.RestartButtonInBubbleClicked",
+      dismissal_reason_ == metrics_util::CLICKED_ACCEPT);
 }

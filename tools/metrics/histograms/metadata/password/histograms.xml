@@ -278,6 +278,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordBubble.RelaunchChromeBubble.RestartButtonInBubbleClicked"
+    enum="BooleanYesNo" expires_after="M133">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the user restarted Chrome from the RelaunchChrome bubble to fix the
+    keychain issue.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased"
     enum="GeneratedPasswordAlteredLengthIncreased" expires_after="2024-03-24">
   <owner>kolos@chromium.org</owner>
