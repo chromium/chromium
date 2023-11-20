@@ -4715,8 +4715,9 @@ void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
         // test finishes so ensure the transition moves out of rendering
         // blocked state.
         if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-          if (auto* transition =
-                  ViewTransitionUtils::GetTransition(*document)) {
+          if (ViewTransition* transition =
+                  ViewTransitionUtils::GetTransition(*document);
+              transition && transition->IsForNavigationOnNewDocument()) {
             transition->ActivateFromSnapshot();
           }
         }

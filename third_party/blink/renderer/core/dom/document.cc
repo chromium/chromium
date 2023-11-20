@@ -9276,10 +9276,7 @@ void Document::EnqueuePageRevealEvent() {
   CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
   CHECK(dom_window_);
 
-  DOMViewTransition* dom_view_transition =
-      ViewTransitionUtils::GetTransitionScriptDelegate(*this);
-  auto* page_reveal_event =
-      MakeGarbageCollected<PageRevealEvent>(dom_view_transition);
+  auto* page_reveal_event = MakeGarbageCollected<PageRevealEvent>();
   page_reveal_event->SetTarget(dom_window_);
   page_reveal_event->SetCurrentTarget(dom_window_);
   EnqueueAnimationFrameEvent(page_reveal_event);

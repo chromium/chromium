@@ -892,10 +892,10 @@ void ViewTransition::ResumeRendering() {
 }
 
 void ViewTransition::ActivateFromSnapshot() {
+  CHECK(IsForNavigationOnNewDocument());
+
   if (state_ != State::kWaitForRenderBlock)
     return;
-
-  CHECK(IsForNavigationOnNewDocument());
 
   // This function implies that rendering has started. If we were waiting
   // for render-blocking resources to be loaded, they must have been fetched (or

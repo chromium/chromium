@@ -191,14 +191,6 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
         ->GetLocalFrameHostRemote()
         .OnViewTransitionOptInChanged(cross_document_opt_in);
   }
-
-  if (cross_document_opt_in_ ==
-          mojom::blink::ViewTransitionSameOriginOptIn::kDisabled &&
-      transition_ && !transition_->IsCreatedViaScriptAPI()) {
-    transition_->SkipTransition();
-    DCHECK(!transition_)
-        << "SkipTransition() should finish existing |transition_|";
-  }
 }
 
 // static
@@ -332,19 +324,29 @@ void ViewTransitionSupplement::WillInsertBody() {
   // TODO(https://crbug.com/1463966): This is probably a bit of a heavy hammer.
   // In the long term, we probably don't want to make this decision at
   // WillInsertBody or, if we do, we could look specifically for
-  // @view-transition rather than all rules.
+  // @view-transition rather than all rules. Note: the opt-in is checked below
+  // from dispatching the pagereveal event during the first update-the-rendering
+  // steps.
   document->GetStyleEngine().UpdateActiveStyle();
+}
 
-  // If the opt-in is enabled, then there's nothing to do in this function.
-  if (cross_document_opt_in_ ==
-      mojom::blink::ViewTransitionSameOriginOptIn::kEnabled) {
-    return;
+DOMViewTransition*
+ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
+  if (!transition_ || !transition_->IsForNavigationOnNewDocument()) {
+    return nullptr;
   }
 
-  // Since we don't have an opt-in, skip a navigation transition if it exists.
-  transition_->SkipTransition();
-  DCHECK(!transition_)
-      << "SkipTransition() should finish existing |transition_|";
+  if (cross_document_opt_in_ ==
+      mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {
+    transition_->SkipTransition();
+    CHECK(!ViewTransitionUtils::GetTransition(*GetSupplementable()));
+    return nullptr;
+  }
+
+  // TODO(https://crbug.com/1502628): This is where types from the used
+  // @view-transition should be applied.
+
+  return transition_->GetScriptDelegate();
 }
 
 }  // namespace blink
