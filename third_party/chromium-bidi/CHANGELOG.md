@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.0...chromium-bidi-v0.5.1) (2023-11-20)
+
+
+### Features
+
+* export `MapperOptions` TS type ([#1575](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1575)) ([57c009b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/57c009b9a082dbda33464a6c888b74cc785f1b18))
+
 ## [0.5.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.34...chromium-bidi-v0.5.0) (2023-11-17)
 
 
