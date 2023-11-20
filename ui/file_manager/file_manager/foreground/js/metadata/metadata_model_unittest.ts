@@ -4,7 +4,6 @@
 
 import {assertEquals, assertThrows} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {reportPromise} from '../../../common/js/test_error_reporting.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {MetadataItem, MetadataKey} from './metadata_item.js';
@@ -86,102 +85,76 @@ function getProperty<K extends MetadataKey>(
   return result[property];
 }
 
-export function testMetadataModelBasic(callback: () => void) {
+export async function testMetadataModelBasic(done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
-  reportPromise(
-      model.get([entryA, entryB], ['thumbnailUrl']).then(results => {
-        assertEquals(1, provider.requestCount);
-        assertEquals(
-            'filesystem://A:thumbnailUrl',
-            getProperty(results[0], 'thumbnailUrl'));
-        assertEquals(
-            'filesystem://B:thumbnailUrl',
-            getProperty(results[1], 'thumbnailUrl'));
-      }),
-      callback);
+  const results = await model.get([entryA, entryB], ['thumbnailUrl']);
+  assertEquals(1, provider.requestCount);
+  assertEquals(
+      'filesystem://A:thumbnailUrl', getProperty(results[0], 'thumbnailUrl'));
+  assertEquals(
+      'filesystem://B:thumbnailUrl', getProperty(results[1], 'thumbnailUrl'));
+  done();
 }
 
-export function testMetadataModelRequestForCachedProperty(
-    callback: () => void) {
+export async function testMetadataModelRequestForCachedProperty(
+    done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
-  reportPromise(
-      model.get([entryA, entryB], ['thumbnailUrl'])
-          .then(() => {
-            // All the results should be cached here.
-            return model.get([entryA, entryB], ['thumbnailUrl']);
-          })
-          .then(results => {
-            assertEquals(1, provider.requestCount);
-            assertEquals(
-                'filesystem://A:thumbnailUrl',
-                getProperty(results[0], 'thumbnailUrl'));
-            assertEquals(
-                'filesystem://B:thumbnailUrl',
-                getProperty(results[1], 'thumbnailUrl'));
-          }),
-      callback);
+  await model.get([entryA, entryB], ['thumbnailUrl']);
+  // All the results should be cached here.
+  const results = await model.get([entryA, entryB], ['thumbnailUrl']);
+  assertEquals(1, provider.requestCount);
+  assertEquals(
+      'filesystem://A:thumbnailUrl', getProperty(results[0], 'thumbnailUrl'));
+  assertEquals(
+      'filesystem://B:thumbnailUrl', getProperty(results[1], 'thumbnailUrl'));
+  done();
 }
 
-export function testMetadataModelRequestForCachedAndNonCachedProperty(
-    callback: () => void) {
+export async function testMetadataModelRequestForCachedAndNonCachedProperty(
+    done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
-  reportPromise(
-      model.get([entryA, entryB], ['mediaAlbum'])
-          .then(() => {
-            assertEquals(1, provider.requestCount);
-            // mediaArtist has not been cached here.
-            return model.get([entryA, entryB], ['mediaAlbum', 'mediaArtist']);
-          })
-          .then(results => {
-            assertEquals(2, provider.requestCount);
-            assertEquals(
-                'filesystem://A:mediaAlbum',
-                getProperty(results[0], 'mediaAlbum'));
-            assertEquals(
-                'filesystem://A:mediaArtist',
-                getProperty(results[0], 'mediaArtist'));
-            assertEquals(
-                'filesystem://B:mediaAlbum',
-                getProperty(results[1], 'mediaAlbum'));
-            assertEquals(
-                'filesystem://B:mediaArtist',
-                getProperty(results[1], 'mediaArtist'));
-          }),
-      callback);
+  await model.get([entryA, entryB], ['mediaAlbum']);
+  assertEquals(1, provider.requestCount);
+  // mediaArtist has not been cached here.
+  const results =
+      await model.get([entryA, entryB], ['mediaAlbum', 'mediaArtist']);
+  assertEquals(2, provider.requestCount);
+  assertEquals(
+      'filesystem://A:mediaAlbum', getProperty(results[0], 'mediaAlbum'));
+  assertEquals(
+      'filesystem://A:mediaArtist', getProperty(results[0], 'mediaArtist'));
+  assertEquals(
+      'filesystem://B:mediaAlbum', getProperty(results[1], 'mediaAlbum'));
+  assertEquals(
+      'filesystem://B:mediaArtist', getProperty(results[1], 'mediaArtist'));
+  done();
 }
 
-export function testMetadataModelRequestForCachedAndNonCachedEntry(
-    callback: () => void) {
+export async function testMetadataModelRequestForCachedAndNonCachedEntry(
+    done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
-  reportPromise(
-      model.get([entryA], ['thumbnailUrl'])
-          .then(() => {
-            assertEquals(1, provider.requestCount);
-            // entryB has not been cached here.
-            return model.get([entryA, entryB], ['thumbnailUrl']);
-          })
-          .then(results => {
-            assertEquals(2, provider.requestCount);
-            assertEquals(
-                'filesystem://A:thumbnailUrl',
-                getProperty(results[0], 'thumbnailUrl'));
-            assertEquals(
-                'filesystem://B:thumbnailUrl',
-                getProperty(results[1], 'thumbnailUrl'));
-          }),
-      callback);
+  await model.get([entryA], ['thumbnailUrl']);
+  assertEquals(1, provider.requestCount);
+  // entryB has not been cached here.
+  const results = await model.get([entryA, entryB], ['thumbnailUrl']);
+  assertEquals(2, provider.requestCount);
+  assertEquals(
+      'filesystem://A:thumbnailUrl', getProperty(results[0], 'thumbnailUrl'));
+  assertEquals(
+      'filesystem://B:thumbnailUrl', getProperty(results[1], 'thumbnailUrl'));
+  done();
 }
 
-export function testMetadataModelRequestBeforeCompletingPreviousRequest(
-    callback: () => void) {
+export async function testMetadataModelRequestBeforeCompletingPreviousRequest(
+    done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
@@ -189,63 +162,53 @@ export function testMetadataModelRequestBeforeCompletingPreviousRequest(
   assertEquals(1, provider.requestCount);
 
   // The result of first call has not been fetched yet.
-  reportPromise(
-      model.get([entryA], ['thumbnailUrl']).then(results => {
-        assertEquals(1, provider.requestCount);
-        assertEquals(
-            'filesystem://A:thumbnailUrl',
-            getProperty(results[0], 'thumbnailUrl'));
-      }),
-      callback);
+  const results = await model.get([entryA], ['thumbnailUrl']);
+  assertEquals(1, provider.requestCount);
+  assertEquals(
+      'filesystem://A:thumbnailUrl', getProperty(results[0], 'thumbnailUrl'));
+  done();
 }
 
-export function testMetadataModelNotUpdateCachedResultAfterRequest(
-    callback: () => void) {
+export async function testMetadataModelNotUpdateCachedResultAfterRequest(
+    done: VoidCallback) {
   const provider = new ManualTestMetadataProvider();
   const model = new MetadataModel(provider);
 
   const promise = model.get([entryA], ['mediaAlbum']);
   provider.callback[0]!([{mediaAlbum: 'album1'}]);
+  await promise;
 
-  reportPromise(
-      promise
-          .then(() => {
-            // 'mediaAlbum' is cached here.
-            const promise1 = model.get([entryA], ['mediaAlbum', 'mediaArtist']);
-            const promise2 = model.get([entryA], ['alternateUrl']);
-            // Returns alternateUrl.
-            provider.callback[2]!
-                ([{mediaAlbum: 'album2', alternateUrl: 'urlC'}]);
-            provider.callback[1]!([{mediaArtist: 'artistB'}]);
-            return Promise.all([promise1, promise2]);
-          })
-          .then(results => {
-            // The result should be cached value at the time when get was
-            // called.
-            assertEquals('album1', getProperty(results[0][0], 'mediaAlbum'));
-            assertEquals('artistB', getProperty(results[0][0], 'mediaArtist'));
-            assertEquals('urlC', getProperty(results[1][0], 'alternateUrl'));
-          }),
-      callback);
+  // 'mediaAlbum' is cached here.
+  const promise1 = model.get([entryA], ['mediaAlbum', 'mediaArtist']);
+  const promise2 = model.get([entryA], ['alternateUrl']);
+  // Returns alternateUrl.
+  provider.callback[2]!([{mediaAlbum: 'album2', alternateUrl: 'urlC'}]);
+  provider.callback[1]!([{mediaArtist: 'artistB'}]);
+  const results = await Promise.all([promise1, promise2]);
+
+  // The result should be cached value at the time when get was
+  // called.
+  assertEquals('album1', getProperty(results[0][0], 'mediaAlbum'));
+  assertEquals('artistB', getProperty(results[0][0], 'mediaArtist'));
+  assertEquals('urlC', getProperty(results[1][0], 'alternateUrl'));
+  done();
 }
 
-export function testMetadataModelGetCache(callback: () => void) {
+export async function testMetadataModelGetCache(done: VoidCallback) {
   const provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
   const promise = model.get([entryA], ['thumbnailUrl']);
-  const cache = model.getCache([entryA], ['thumbnailUrl']);
-  assertEquals(null, getProperty(cache[0], 'thumbnailUrl'));
+  const emptyCacheResult = model.getCache([entryA], ['thumbnailUrl']);
+  assertEquals(null, getProperty(emptyCacheResult[0], 'thumbnailUrl'));
 
-  reportPromise(
-      promise.then(() => {
-        const cache = model.getCache([entryA], ['thumbnailUrl']);
-        assertEquals(1, provider.requestCount);
-        assertEquals(
-            'filesystem://A:thumbnailUrl',
-            getProperty(cache[0], 'thumbnailUrl'));
-      }),
-      callback);
+  await promise;
+  const cachedResult = model.getCache([entryA], ['thumbnailUrl']);
+  assertEquals(1, provider.requestCount);
+  assertEquals(
+      'filesystem://A:thumbnailUrl',
+      getProperty(cachedResult[0], 'thumbnailUrl'));
+  done();
 }
 
 export function testMetadataModelUnknownProperty() {
@@ -257,14 +220,12 @@ export function testMetadataModelUnknownProperty() {
   });
 }
 
-export function testMetadataModelEmptyResult(callback: () => void) {
+export async function testMetadataModelEmptyResult(done: VoidCallback) {
   const provider = new TestEmptyMetadataProvider();
   const model = new MetadataModel(provider);
 
   // getImpl returns empty result.
-  reportPromise(
-      model.get([entryA], ['thumbnailUrl']).then(results => {
-        assertEquals(undefined, getProperty(results[0], 'thumbnailUrl'));
-      }),
-      callback);
+  const results = await model.get([entryA], ['thumbnailUrl']);
+  assertEquals(undefined, getProperty(results[0], 'thumbnailUrl'));
+  done();
 }
