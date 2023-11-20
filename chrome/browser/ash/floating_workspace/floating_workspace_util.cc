@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -26,9 +26,14 @@ namespace {
 
 PrefService* GetActiveUserPrefService() {
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
-  return active_user
-             ? ProfileHelper::Get()->GetProfileByUser(active_user)->GetPrefs()
-             : nullptr;
+  if (active_user) {
+    auto* browser_context =
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+    if (browser_context) {
+      return Profile::FromBrowserContext(browser_context)->GetPrefs();
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
