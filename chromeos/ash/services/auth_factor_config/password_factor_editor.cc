@@ -162,12 +162,13 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
                        mojom::ConfigureResult::kFatalError));
     return;
   }
+  bool new_password_local = label.value() == kCryptohomeLocalPasswordKeyLabel;
 
-  if (!IsLocalPassword(*password_factor)) {
+  if (IsLocalPassword(*password_factor) != new_password_local) {
     // TODO(b/290916811):  *Atomically* replace the Gaia password factor with
     // a local password factor.
-    LOG(ERROR) << "Current password is not local, will not replace with local "
-                  "password";
+    LOG(ERROR)
+        << "Switching between online and local password is not supported";
     auth_factor_config_->NotifyFactorObserversAfterFailure(
         auth_token, std::move(user_context),
         base::BindOnce(std::move(callback),
@@ -175,9 +176,11 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
     return;
   }
 
+  // Note that old online factors might have label "legacy-0" instead of
+  // "gaia", so we use password_factor->ref().label() here.
   auth_factor_editor_.ReplacePasswordFactor(
       std::move(user_context), cryptohome::RawPassword(new_password),
-      std::move(label),
+      password_factor->ref().label(),
       base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      auth_token));
