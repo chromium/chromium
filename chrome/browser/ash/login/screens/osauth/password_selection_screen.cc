@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/password_factor_editor.h"
 
@@ -124,6 +125,25 @@ void PasswordSelectionScreen::ProcessOptions() {
     LOG(WARNING) << "Login using Smartcard, no password should be set up";
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return;
+  }
+
+  // If user is going through recovery, detect which password need to be updated
+  // and return immediately.
+  if (context()->knowledge_factor_setup.auth_setup_flow ==
+      WizardContext::AuthChangeFlow::kRecovery) {
+    CHECK(auth_factors_config_.HasConfiguredFactor(
+        cryptohome::AuthFactorType::kPassword))
+        << "User need to have a password that should be updated";
+    if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
+            cryptohome::AuthFactorType::kPassword))) {
+      exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+      return;
+    } else {
+      CHECK(auth::IsGaiaPassword(*auth_factors_config_.FindFactorByType(
+          cryptohome::AuthFactorType::kPassword)));
+      exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+      return;
+    }
   }
 
   if (context()->skip_post_login_screens_for_tests) {
