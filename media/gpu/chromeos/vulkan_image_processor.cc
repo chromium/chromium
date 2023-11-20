@@ -175,7 +175,7 @@ class VulkanImageProcessor::VulkanTextureImage {
   ~VulkanTextureImage();
 
   static std::unique_ptr<VulkanTextureImage> Create(
-      std::unique_ptr<gpu::VulkanImage> image,
+      gpu::VulkanImage& image,
       const std::vector<VkFormat>& formats,
       const std::vector<gfx::Size>& sizes,
       const std::vector<VkImageAspectFlagBits>& aspects,
@@ -193,13 +193,13 @@ class VulkanImageProcessor::VulkanTextureImage {
       uint32_t dst_queue_family_index = VK_QUEUE_FAMILY_IGNORED);
 
  private:
-  VulkanTextureImage(std::unique_ptr<gpu::VulkanImage> image,
+  VulkanTextureImage(gpu::VulkanImage& image,
                      const std::vector<VkImageView>& image_views,
                      const std::vector<VkFramebuffer>& framebuffers,
                      VkImageLayout initial_layout,
                      VkDevice logical_device);
 
-  const std::unique_ptr<gpu::VulkanImage> image_;
+  const raw_ref<gpu::VulkanImage> image_;
   const std::vector<VkImageView> image_views_;
   const std::vector<VkFramebuffer> framebuffers_;
 
@@ -549,12 +549,12 @@ VulkanImageProcessor::VulkanDescriptorPool::Create(
 }
 
 VulkanImageProcessor::VulkanTextureImage::VulkanTextureImage(
-    std::unique_ptr<gpu::VulkanImage> image,
+    gpu::VulkanImage& image,
     const std::vector<VkImageView>& image_views,
     const std::vector<VkFramebuffer>& framebuffers,
     VkImageLayout initial_layout,
     VkDevice logical_device)
-    : image_(std::move(image)),
+    : image_(image),
       image_views_(image_views),
       framebuffers_(framebuffers),
       current_layout_(initial_layout),
@@ -568,8 +568,6 @@ VulkanImageProcessor::VulkanTextureImage::~VulkanTextureImage() {
   for (VkImageView image_view : image_views_) {
     vkDestroyImageView(logical_device_, image_view, nullptr);
   }
-
-  image_->Destroy();
 }
 
 VkImage VulkanImageProcessor::VulkanTextureImage::GetImage() {
@@ -604,7 +602,7 @@ void VulkanImageProcessor::VulkanTextureImage::TransitionImageLayout(
 
 std::unique_ptr<VulkanImageProcessor::VulkanTextureImage>
 VulkanImageProcessor::VulkanTextureImage::Create(
-    std::unique_ptr<gpu::VulkanImage> image,
+    gpu::VulkanImage& image,
     const std::vector<VkFormat>& formats,
     const std::vector<gfx::Size>& sizes,
     const std::vector<VkImageAspectFlagBits>& aspects,
@@ -618,7 +616,7 @@ VulkanImageProcessor::VulkanTextureImage::Create(
   for (size_t i = 0; i < formats.size(); i++) {
     VkImageViewCreateInfo view_info{};
     view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    view_info.image = image->image();
+    view_info.image = image.image();
     view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
     view_info.format = formats[i];
     view_info.subresourceRange.aspectMask = aspects[i];
@@ -660,7 +658,7 @@ VulkanImageProcessor::VulkanTextureImage::Create(
   }
 
   return base::WrapUnique(new VulkanTextureImage(
-      std::move(image), std::move(image_views), std::move(framebuffers),
+      image, std::move(image_views), std::move(framebuffers),
       is_framebuffer ? VK_IMAGE_LAYOUT_UNDEFINED
                      : VK_IMAGE_LAYOUT_PREINITIALIZED,
       logical_device));
@@ -737,8 +735,6 @@ VulkanImageProcessor::VulkanCommandPoolWrapper::Create(
 }
 
 VulkanImageProcessor::VulkanImageProcessor(
-    BackingCB input_backing_cb,
-    BackingCB output_backing_cb,
     std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
     std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
         vulkan_device_queue,
@@ -747,9 +743,7 @@ VulkanImageProcessor::VulkanImageProcessor(
     std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> render_pass,
     std::unique_ptr<VulkanImageProcessor::VulkanPipeline> pipeline,
     std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool> descriptor_pool)
-    : input_backing_cb_(input_backing_cb),
-      output_backing_cb_(output_backing_cb),
-      vulkan_implementation_(std::move(vulkan_implementation)),
+    : vulkan_implementation_(std::move(vulkan_implementation)),
       vulkan_device_queue_(std::move(vulkan_device_queue)),
       command_pool_(std::move(command_pool)),
       render_pass_(std::move(render_pass)),
@@ -764,9 +758,7 @@ VulkanImageProcessor::~VulkanImageProcessor() {
       ->PerformImmediateCleanup();
 }
 
-std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
-    BackingCB input_backing_cb,
-    BackingCB output_backing_cb) {
+std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   auto vulkan_implementation = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false, /*allow_protected_memory=*/false);
   vulkan_implementation->InitializeVulkanInstance(/*using_surface=*/false);
@@ -833,44 +825,29 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
   }
 
   return base::WrapUnique(new VulkanImageProcessor(
-      input_backing_cb, output_backing_cb, std::move(vulkan_implementation),
-      std::move(vulkan_device_queue), std::move(command_pool),
-      std::move(render_pass), std::move(pipeline), std::move(descriptor_pool)));
+      std::move(vulkan_implementation), std::move(vulkan_device_queue),
+      std::move(command_pool), std::move(render_pass), std::move(pipeline),
+      std::move(descriptor_pool)));
 }
 
-gpu::SemaphoreHandle VulkanImageProcessor::Process(
-    gpu::Mailbox in_mailbox,
-    const gfx::Size& input_coded_size,
-    const gfx::Size& input_visible_size,
-    ReleaseCB input_release_cb,
-    gpu::Mailbox out_mailbox,
-    const gfx::Size& output_coded_size,
-    const gfx::Size& output_visible_size,
-    absl::optional<gpu::SemaphoreHandle> in_semaphore_handle) {
-  auto in_gmb = input_backing_cb_.Run(in_mailbox);
-  auto out_gmb = output_backing_cb_.Run(out_mailbox);
-
-  // Import output_frame into vulkan.
-  auto out_image = vulkan_implementation_->CreateImageFromGpuMemoryHandle(
-      vulkan_device_queue_->GetVulkanDeviceQueue(), std::move(out_gmb),
-      output_coded_size, VK_FORMAT_B8G8R8A8_UNORM,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::BT709));
+void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
+                                   const gfx::Size& input_coded_size,
+                                   const gfx::Size& input_visible_size,
+                                   gpu::VulkanImage& out_image,
+                                   const gfx::Size& output_coded_size,
+                                   const gfx::Size& output_visible_size,
+                                   std::vector<VkSemaphore>& begin_semaphores,
+                                   std::vector<VkSemaphore>& end_semaphores) {
   auto out_texture = VulkanTextureImage::Create(
-      std::move(out_image), {VK_FORMAT_B8G8R8A8_UNORM}, {output_coded_size},
+      out_image, {VK_FORMAT_B8G8R8A8_UNORM}, {output_coded_size},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());
 
-  auto in_image = vulkan_implementation_->CreateImageFromGpuMemoryHandle(
-      vulkan_device_queue_->GetVulkanDeviceQueue(), std::move(in_gmb),
-      input_coded_size, VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::BT709));
   gfx::Size uv_plane_size = gfx::Size((input_coded_size.width() + 1) / 2,
                                       (input_coded_size.height() + 1) / 2);
   auto in_texture = VulkanTextureImage::Create(
-      std::move(in_image), {VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8_UNORM},
+      in_image, {VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8_UNORM},
       {input_coded_size, uv_plane_size},
       {VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT},
       /*is_framebuffer=*/false, render_pass_->Get(),
@@ -964,36 +941,25 @@ gpu::SemaphoreHandle VulkanImageProcessor::Process(
 
   auto* fence_helper =
       vulkan_device_queue_->GetVulkanDeviceQueue()->GetFenceHelper();
-  VkSemaphore out_semaphore = vulkan_implementation_->CreateExternalSemaphore(
-      vulkan_device_queue_->GetVulkanDevice());
-  if (in_semaphore_handle) {
-    VkSemaphore in_semaphore = vulkan_implementation_->ImportSemaphoreHandle(
-        vulkan_device_queue_->GetVulkanDevice(),
-        std::move(*in_semaphore_handle));
 
-    command_buf->Submit(1, &in_semaphore, 1, &out_semaphore);
-
-    fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
-        {out_semaphore, in_semaphore});
-  } else {
-    command_buf->Submit(0, nullptr, 1, &out_semaphore);
-
-    fence_helper->EnqueueSemaphoresCleanupForSubmittedWork({out_semaphore});
-  }
+  command_buf->Submit(begin_semaphores.size(), begin_semaphores.data(),
+                      end_semaphores.size(), end_semaphores.data());
 
   fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
       std::move(command_buf));
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
       [](std::unique_ptr<VulkanTextureImage> in_texture,
          std::unique_ptr<VulkanTextureImage> out_texture,
-         gpu::Mailbox in_mailbox, ReleaseCB input_release_cb,
-         gpu::VulkanDeviceQueue* device_queue,
-         bool device_lost) { std::move(input_release_cb).Run(in_mailbox); },
-      std::move(in_texture), std::move(out_texture), in_mailbox,
-      std::move(input_release_cb)));
+         gpu::VulkanDeviceQueue* device_queue, bool device_lost) {},
+      std::move(in_texture), std::move(out_texture)));
+}
 
-  return vulkan_implementation_->GetSemaphoreHandle(
-      vulkan_device_queue_->GetVulkanDevice(), out_semaphore);
+gpu::VulkanDeviceQueue* VulkanImageProcessor::GetVulkanDeviceQueue() {
+  return vulkan_device_queue_->GetVulkanDeviceQueue();
+}
+
+gpu::VulkanImplementation& VulkanImageProcessor::GetVulkanImplementation() {
+  return *vulkan_implementation_;
 }
 
 }  // namespace media

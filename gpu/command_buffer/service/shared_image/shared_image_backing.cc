@@ -240,6 +240,16 @@ SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> SharedImageBacking::ProduceVulkan(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  return nullptr;
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,

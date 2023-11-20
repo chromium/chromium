@@ -21,6 +21,10 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_fence.h"
 
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_fence_helper.h"
+#endif
+
 namespace gpu {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -990,5 +994,51 @@ VideoDecodeImageRepresentation::BeginScopedWriteAccess() {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<VideoDecodeImageRepresentation>(), this);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// VulkanImageRepresentation
+
+#if BUILDFLAG(ENABLE_VULKAN)
+VulkanImageRepresentation::VulkanImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    std::unique_ptr<gpu::VulkanImage> vulkan_image,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl)
+    : SharedImageRepresentation(manager, backing, tracker),
+      vulkan_image_(std::move(vulkan_image)),
+      vulkan_device_queue_(vulkan_device_queue),
+      vulkan_impl_(vulkan_impl) {}
+
+VulkanImageRepresentation::~VulkanImageRepresentation() {
+  vulkan_device_queue_->GetFenceHelper()
+      ->EnqueueVulkanObjectCleanupForSubmittedWork<gpu::VulkanImage>(
+          std::move(vulkan_image_));
+}
+
+VulkanImageRepresentation::ScopedAccess::ScopedAccess(
+    VulkanImageRepresentation* representation,
+    AccessMode access_mode,
+    std::vector<VkSemaphore> begin_semaphores,
+    VkSemaphore end_semaphore)
+    : ScopedAccessBase(representation, access_mode),
+      is_read_only_(access_mode == AccessMode::kRead),
+      begin_semaphores_(begin_semaphores),
+      end_semaphore_(end_semaphore) {}
+
+VulkanImageRepresentation::ScopedAccess::~ScopedAccess() {
+  representation()->EndScopedAccess(is_read_only_, end_semaphore_);
+
+  auto* fence_helper = representation()->vulkan_device_queue_->GetFenceHelper();
+  fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
+      std::move(begin_semaphores_));
+  fence_helper->EnqueueSemaphoreCleanupForSubmittedWork(end_semaphore_);
+}
+
+gpu::VulkanImage& VulkanImageRepresentation::ScopedAccess::GetVulkanImage() {
+  return *representation()->vulkan_image_;
+}
+#endif
 
 }  // namespace gpu

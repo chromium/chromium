@@ -23,30 +23,24 @@ namespace media {
 // An image processor using Vulkan to perform MM21 detiling.
 class MEDIA_GPU_EXPORT VulkanImageProcessor {
  public:
-  // Abstraction for the mapping from Mailbox to GpuMemoryBuffer.
-  using BackingCB =
-      base::RepeatingCallback<gfx::GpuMemoryBufferHandle(gpu::Mailbox&)>;
-  // Abstraction for the recycling of the input frame.
-  using ReleaseCB = base::OnceCallback<void(gpu::Mailbox&)>;
-
   VulkanImageProcessor(const VulkanImageProcessor&) = delete;
   VulkanImageProcessor& operator=(const VulkanImageProcessor&) = delete;
 
   ~VulkanImageProcessor();
 
-  static std::unique_ptr<VulkanImageProcessor> Create(
-      BackingCB input_backing_cb,
-      BackingCB output_backing_cb);
+  static std::unique_ptr<VulkanImageProcessor> Create();
 
-  gpu::SemaphoreHandle Process(
-      gpu::Mailbox in_mailbox,
-      const gfx::Size& input_coded_size,
-      const gfx::Size& input_visible_size,
-      ReleaseCB input_release_cb,
-      gpu::Mailbox out_mailbox,
-      const gfx::Size& output_coded_size,
-      const gfx::Size& output_visible_size,
-      absl::optional<gpu::SemaphoreHandle> in_semaphore_handle);
+  void Process(gpu::VulkanImage& in_image,
+               const gfx::Size& input_coded_size,
+               const gfx::Size& input_visible_size,
+               gpu::VulkanImage& out_image,
+               const gfx::Size& output_coded_size,
+               const gfx::Size& output_visible_size,
+               std::vector<VkSemaphore>& begin_semaphores,
+               std::vector<VkSemaphore>& end_sempahores);
+
+  gpu::VulkanDeviceQueue* GetVulkanDeviceQueue();
+  gpu::VulkanImplementation& GetVulkanImplementation();
 
  private:
   class VulkanRenderPass;
@@ -59,8 +53,6 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   class VulkanTextureImage;
 
   VulkanImageProcessor(
-      BackingCB input_backing_cb,
-      BackingCB output_backing_cb,
       std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
       std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
           vulkan_device_queue,
@@ -71,8 +63,6 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
       std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
           descriptor_pool);
 
-  BackingCB input_backing_cb_;
-  BackingCB output_backing_cb_;
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
       vulkan_device_queue_;

@@ -367,6 +367,28 @@ SharedImageManager::ProduceVideoDecode(VideoDecodeDevice device,
   return (*found)->ProduceVideoDecode(this, tracker, device);
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> SharedImageManager::ProduceVulkan(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceVulkanImage: Trying to produce vulkan"
+           "representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  return (*found)->ProduceVulkan(this, tracker, vulkan_device_queue,
+                                 vulkan_impl);
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,

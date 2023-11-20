@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -29,6 +30,16 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include <vulkan/vulkan_core.h>
+
+namespace gpu {
+class VulkanDeviceQueue;
+class VulkanImage;
+class VulkanImplementation;
+}  // namespace gpu
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/dc_layer_overlay_image.h"
@@ -1104,6 +1115,52 @@ class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
   virtual bool BeginWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// VulkanImageRepresentation
+
+#if BUILDFLAG(ENABLE_VULKAN)
+class GPU_GLES2_EXPORT VulkanImageRepresentation
+    : public SharedImageRepresentation {
+ public:
+  VulkanImageRepresentation(SharedImageManager* manager,
+                            SharedImageBacking* backing,
+                            MemoryTypeTracker* tracker,
+                            std::unique_ptr<gpu::VulkanImage> vulkan_image,
+                            gpu::VulkanDeviceQueue* vulkan_device_queue,
+                            gpu::VulkanImplementation& vulkan_impl);
+  ~VulkanImageRepresentation() override;
+
+  class ScopedAccess : public ScopedAccessBase<VulkanImageRepresentation> {
+   public:
+    ScopedAccess(VulkanImageRepresentation* representation,
+                 AccessMode access_mode,
+                 std::vector<VkSemaphore> begin_semaphores,
+                 VkSemaphore end_semaphore);
+    ~ScopedAccess();
+
+    gpu::VulkanImage& GetVulkanImage();
+
+   private:
+    bool is_read_only_;
+    std::vector<VkSemaphore> begin_semaphores_;
+    VkSemaphore end_semaphore_;
+  };
+
+  virtual std::unique_ptr<ScopedAccess> BeginScopedAccess(
+      AccessMode access_mode,
+      std::vector<VkSemaphore>& begin_semaphores,
+      std::vector<VkSemaphore>& end_semaphores) = 0;
+
+ protected:
+  virtual void EndScopedAccess(bool is_read_only,
+                               VkSemaphore end_semaphore) = 0;
+
+  std::unique_ptr<gpu::VulkanImage> vulkan_image_;
+  raw_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue_;
+  raw_ref<VulkanImplementation> vulkan_impl_;
+};
+#endif
 
 }  // namespace gpu
 

@@ -93,10 +93,19 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory) override;
 
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl) override;
+#endif
+
  private:
   friend class GLOzoneImageRepresentationShared;
   friend class DawnOzoneImageRepresentation;
   friend class SkiaVkOzoneImageRepresentation;
+  friend class VulkanOzoneImageRepresentation;
   class VaapiOzoneImageRepresentation;
   class OverlayOzoneImageRepresentation;
 

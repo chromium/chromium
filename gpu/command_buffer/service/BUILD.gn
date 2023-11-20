@@ -474,6 +474,8 @@ target(link_target_type, "gles2_sources") {
       sources += [
         "shared_image/skia_vk_ozone_image_representation.cc",
         "shared_image/skia_vk_ozone_image_representation.h",
+        "shared_image/vulkan_ozone_image_representation.cc",
+        "shared_image/vulkan_ozone_image_representation.h",
       ]
     }
 

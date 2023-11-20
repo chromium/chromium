@@ -21,6 +21,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -33,6 +34,12 @@
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
 #include <wrl/client.h>
+#endif
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
 namespace base {
@@ -66,6 +73,10 @@ class VideoDecodeImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
+
+#if BUILDFLAG(ENABLE_VULKAN)
+class VulkanImageRepresentation;
+#endif
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -295,6 +306,14 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VideoDecodeDevice device);
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  virtual std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   virtual std::unique_ptr<LegacyOverlayImageRepresentation>

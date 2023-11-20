@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/shared_image/skia_vk_ozone_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/vulkan_ozone_image_representation.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif  // BUILDFLAG(ENABLE_VULKAN)
@@ -459,6 +460,28 @@ std::unique_ptr<VaapiImageRepresentation> OzoneImageBacking::ProduceVASurface(
   return std::make_unique<OzoneImageBacking::VaapiOzoneImageRepresentation>(
       manager, this, tracker, vaapi_deps_.get());
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  auto vulkan_image = vulkan_impl.CreateImageFromGpuMemoryHandle(
+      vulkan_device_queue, GetGpuMemoryBufferHandle(), size(),
+      format().PrefersExternalSampler() ? ToVkFormatExternalSampler(format())
+                                        : ToVkFormatSinglePlanar(format()),
+      color_space());
+
+  if (!vulkan_image) {
+    return nullptr;
+  }
+
+  return std::make_unique<VulkanOzoneImageRepresentation>(
+      manager, this, tracker, std::move(vulkan_image), vulkan_device_queue,
+      vulkan_impl);
+}
+#endif
 
 bool OzoneImageBacking::VaSync() {
   if (has_pending_va_writes_)

@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/vulkan/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 namespace gfx {
@@ -102,6 +103,14 @@ class GPU_GLES2_EXPORT SharedImageManager
       VideoDecodeDevice device,
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
