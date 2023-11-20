@@ -178,6 +178,7 @@ class SavedDeskBrowserBuilder {
   SavedDeskBrowserBuilder& SetActiveTabIndex(int index);
   SavedDeskBrowserBuilder& SetUrls(std::vector<GURL> urls);
   SavedDeskBrowserBuilder& SetIsLacros(bool is_lacros);
+  SavedDeskBrowserBuilder& SetLacrosProfileId(uint64_t lacros_profile_id);
   SavedDeskBrowserBuilder& AddTabGroupBuilder(
       SavedDeskTabGroupBuilder tab_group);
 
@@ -194,6 +195,7 @@ class SavedDeskBrowserBuilder {
   std::vector<SavedDeskTabGroupBuilder> tab_group_builders_;
   absl::optional<int> active_tab_index_;
   absl::optional<int> first_non_pinned_tab_index_;
+  absl::optional<uint64_t> lacros_profile_id_;
   std::vector<GURL> urls_;
 };
 
@@ -267,6 +269,9 @@ class SavedDeskBuilder {
   SavedDeskBuilder& SetPolicyShouldLaunchOnStartup(
       bool should_launch_on_startup);
 
+  // Sets the optional lacros profile association.
+  SavedDeskBuilder& SetLacrosProfileId(uint64_t lacros_profile_id);
+
   // Adds an app window.
   SavedDeskBuilder& AddAppWindow(BuiltApp built_app);
 
@@ -286,6 +291,7 @@ class SavedDeskBuilder {
   base::Time updated_time_;
   base::Value policy_value_;
   bool policy_should_launch_on_startup_ = false;
+  absl::optional<uint64_t> lacros_profile_id_;
   std::vector<BuiltApp> built_apps_;
 };
 

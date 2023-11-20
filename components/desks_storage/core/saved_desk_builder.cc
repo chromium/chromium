@@ -253,6 +253,12 @@ SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetIsLacros(bool is_lacros) {
   return *this;
 }
 
+SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetLacrosProfileId(
+    uint64_t lacros_profile_id) {
+  lacros_profile_id_ = lacros_profile_id;
+  return *this;
+}
+
 SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetIsApp(bool is_app) {
   is_app_ = is_app;
   return *this;
@@ -277,6 +283,7 @@ BuiltApp SavedDeskBrowserBuilder::Build() {
       first_non_pinned_tab_index_;
   generic_app.launch_info->urls = urls_;
   generic_app.launch_info->app_type_browser = is_app_;
+  generic_app.launch_info->lacros_profile_id = lacros_profile_id_;
 
   for (auto& tab_group : tab_group_builders_) {
     SavedDeskTabGroupBuilder::TabGroupWithStatus built_group =
@@ -367,6 +374,9 @@ std::unique_ptr<ash::DeskTemplate> SavedDeskBuilder::Build() {
   if (has_updated_time_) {
     desk_template->set_updated_time(updated_time_);
   }
+  if (lacros_profile_id_) {
+    desk_template->set_lacros_profile_id(*lacros_profile_id_);
+  }
 
   auto restore_data = std::make_unique<app_restore::RestoreData>();
 
@@ -421,6 +431,12 @@ SavedDeskBuilder& SavedDeskBuilder::SetPolicyValue(const base::Value& value) {
 SavedDeskBuilder& SavedDeskBuilder::SetPolicyShouldLaunchOnStartup(
     bool should_launch_on_startup) {
   policy_should_launch_on_startup_ = should_launch_on_startup;
+  return *this;
+}
+
+SavedDeskBuilder& SavedDeskBuilder::SetLacrosProfileId(
+    uint64_t lacros_profile_id) {
+  lacros_profile_id_ = lacros_profile_id;
   return *this;
 }
 

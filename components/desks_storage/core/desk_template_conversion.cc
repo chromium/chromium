@@ -91,6 +91,7 @@ constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
 constexpr char kFirstNonPinnedTabIndex[] = "first_non_pinned_tab_index";
 constexpr char kIsAppTypeBrowser[] = "is_app";
+constexpr char kLacrosProfileId[] = "lacros_profile_id";
 constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerWindow[] = "LAUNCH_CONTAINER_WINDOW";
 constexpr char kLaunchContainerUnspecified[] = "LAUNCH_CONTAINER_UNSPECIFIED";
@@ -463,6 +464,14 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   std::string override_url;
   if (GetString(app, kOverrideUrl, &override_url)) {
     app_launch_info->override_url = GURL(override_url);
+  }
+
+  std::string lacros_profile_id_str;
+  if (GetString(app, kLacrosProfileId, &lacros_profile_id_str)) {
+    uint64_t lacros_profile_id = 0;
+    if (base::StringToUint64(lacros_profile_id_str, &lacros_profile_id)) {
+      app_launch_info->lacros_profile_id = lacros_profile_id;
+    }
   }
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
@@ -968,6 +977,11 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
 
   if (app->override_url.has_value()) {
     app_data.Set(kOverrideUrl, app->override_url->spec());
+  }
+
+  if (app->lacros_profile_id.has_value()) {
+    app_data.Set(kLacrosProfileId,
+                 base::NumberToString(app->lacros_profile_id.value()));
   }
 
   return base::Value(std::move(app_data));
@@ -2144,6 +2158,8 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
   } else if (!IsValidDeskTemplateType(desk_type_string)) {
     return base::unexpected(SavedDeskParseError::kInvalidDeskType);
   }
+  const ash::DeskTemplateType desk_type =
+      GetDeskTypeFromString(desk_type_string);
 
   // If policy template set auto launch bool.
   bool auto_launch_on_startup = false;
@@ -2158,13 +2174,21 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
   // templates after said policy templates are pushed to the device.
   if (auto* policy_value = value_dict.FindDict(kPolicy)) {
     desk_template = std::make_unique<ash::DeskTemplate>(
-        std::move(uuid), source, name, created_time,
-        GetDeskTypeFromString(desk_type_string), auto_launch_on_startup,
-        base::Value(policy_value->Clone()));
+        std::move(uuid), source, name, created_time, desk_type,
+        auto_launch_on_startup, base::Value(policy_value->Clone()));
   } else {
     desk_template = std::make_unique<ash::DeskTemplate>(
-        std::move(uuid), source, name, created_time,
-        GetDeskTypeFromString(desk_type_string));
+        std::move(uuid), source, name, created_time, desk_type);
+  }
+
+  if (desk_type == ash::DeskTemplateType::kSaveAndRecall) {
+    std::string lacros_profile_id_str;
+    if (GetString(value_dict, kLacrosProfileId, &lacros_profile_id_str)) {
+      uint64_t lacros_profile_id = 0;
+      if (base::StringToUint64(lacros_profile_id_str, &lacros_profile_id)) {
+        desk_template->set_lacros_profile_id(lacros_profile_id);
+      }
+    }
   }
 
   desk_template->set_updated_time(updated_time);
@@ -2184,7 +2208,11 @@ base::Value SerializeDeskTemplateAsBaseValue(
   desk_dict.Set(kUpdatedTime, base::TimeToValue(desk->GetLastUpdatedTime()));
   desk_dict.Set(kDeskType, SerializeDeskTypeAsString(desk->type()));
   desk_dict.Set(kAutoLaunchOnStartup, desk->should_launch_on_startup());
-
+  if (desk->type() == ash::DeskTemplateType::kSaveAndRecall &&
+      desk->lacros_profile_id()) {
+    desk_dict.Set(kLacrosProfileId,
+                  base::NumberToString(desk->lacros_profile_id()));
+  }
   desk_dict.Set(
       kDesk, ConvertRestoreDataToValue(desk->desk_restore_data(), app_cache));
 
