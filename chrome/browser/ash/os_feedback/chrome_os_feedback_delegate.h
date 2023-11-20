@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 class Profile;
+class PrefService;
 
 namespace extensions {
 class FeedbackService;
@@ -34,7 +35,14 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   ChromeOsFeedbackDelegate(const ChromeOsFeedbackDelegate&) = delete;
   ChromeOsFeedbackDelegate& operator=(const ChromeOsFeedbackDelegate&) = delete;
 
+  // Return true if the kUserFeedbackWithLowLevelDebugDataAllowed policy
+  // contains
+  // - "all" or
+  // - "wifi"
+  static bool IsWifiDebugLogsAllowed(const PrefService* prefs);
+
   static ChromeOsFeedbackDelegate CreateForTesting(Profile* profile);
+
   static ChromeOsFeedbackDelegate CreateForTesting(
       Profile* profile,
       scoped_refptr<extensions::FeedbackService> feedback_service);
