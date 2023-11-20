@@ -25,34 +25,38 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 AudioManagerIOS::AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory) {
-  audio_session_manager_ = std::make_unique<AudioSessionManagerIOS>();
+  AudioSessionManagerIOS::GetInstance().SetActive(true);
 }
 
-AudioManagerIOS::~AudioManagerIOS() = default;
+AudioManagerIOS::~AudioManagerIOS() {
+  AudioSessionManagerIOS::GetInstance().SetActive(false);
+}
 
 bool AudioManagerIOS::HasAudioOutputDevices() {
-  return audio_session_manager_->HasAudioHardware(/*is_input=*/false);
+  return AudioSessionManagerIOS::GetInstance().HasAudioHardware(
+      /*is_input=*/false);
 }
 
 bool AudioManagerIOS::HasAudioInputDevices() {
-  return audio_session_manager_->HasAudioHardware(/*is_input=*/true);
+  return AudioSessionManagerIOS::GetInstance().HasAudioHardware(
+      /*is_input=*/true);
 }
 
 void AudioManagerIOS::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  audio_session_manager_->GetAudioDeviceInfo(true, device_names);
+  AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(true, device_names);
 }
 
 void AudioManagerIOS::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  audio_session_manager_->GetAudioDeviceInfo(false, device_names);
+  AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(false, device_names);
 }
 
 AudioParameters AudioManagerIOS::GetInputStreamParameters(
     const std::string& input_device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  int sample_rate = audio_session_manager_->HardwareSampleRate();
+  int sample_rate = AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
   return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), sample_rate,
                          kDefaultInputBufferSize);
@@ -128,12 +132,12 @@ AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
 
 std::string AudioManagerIOS::GetDefaultInputDeviceID() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return audio_session_manager_->GetDefaultInputDeviceID();
+  return AudioSessionManagerIOS::GetInstance().GetDefaultInputDeviceID();
 }
 
 std::string AudioManagerIOS::GetDefaultOutputDeviceID() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return audio_session_manager_->GetDefaultOutputDeviceID();
+  return AudioSessionManagerIOS::GetInstance().GetDefaultOutputDeviceID();
 }
 
 bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
@@ -145,24 +149,44 @@ bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
   return true;
 }
 
+double AudioManagerIOS::HardwareSampleRate() {
+  return AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
+}
+
+double AudioManagerIOS::HardwareIOBufferDuration() {
+  return AudioSessionManagerIOS::GetInstance().HardwareIOBufferDuration();
+}
+
+double AudioManagerIOS::HardwareLatency(bool is_input) {
+  return AudioSessionManagerIOS::GetInstance().HardwareLatency(is_input);
+}
+
+long AudioManagerIOS::GetDeviceChannels(bool is_input) {
+  return AudioSessionManagerIOS::GetInstance().GetDeviceChannels(is_input);
+}
+
 float AudioManagerIOS::GetInputGain() {
-  return audio_session_manager_->GetInputGain();
+  return AudioSessionManagerIOS::GetInstance().GetInputGain();
 }
 
 bool AudioManagerIOS::SetInputGain(float volume) {
-  return audio_session_manager_->SetInputGain(volume);
+  return AudioSessionManagerIOS::GetInstance().SetInputGain(volume);
 }
 
 bool AudioManagerIOS::IsInputMuted() {
-  return audio_session_manager_->IsInputMuted();
+  return AudioSessionManagerIOS::GetInstance().IsInputMuted();
 }
 
-// private
+bool AudioManagerIOS::IsInputGainSettable() {
+  return AudioSessionManagerIOS::GetInstance().IsInputGainSettable();
+}
+
+// protected
 AudioParameters AudioManagerIOS::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  int sample_rate = audio_session_manager_->HardwareSampleRate();
+  int sample_rate = AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          ChannelLayoutConfig::Stereo(), sample_rate,
                          kDefaultInputBufferSize);
