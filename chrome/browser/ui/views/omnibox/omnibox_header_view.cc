@@ -177,16 +177,17 @@ void OmniboxHeaderView::UpdateUI() {
           ? omnibox::kArrowDownChromeRefreshIcon
           : omnibox::kChevronIcon,
       dip_size, icon_color);
-  const gfx::ImageSkia arrow_up =
+  const ui::ImageModel arrow_up =
       OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()
-          ? gfx::CreateVectorIcon(omnibox::kArrowUpChromeRefreshIcon, dip_size,
-                                  icon_color)
-          : gfx::ImageSkiaOperations::CreateRotatedImage(
-                arrow_down, SkBitmapOperations::ROTATION_180_CW);
+          ? ui::ImageModel::FromVectorIcon(omnibox::kArrowUpChromeRefreshIcon,
+                                           icon_color, dip_size)
+          : ui::ImageModel::FromImageSkia(
+                gfx::ImageSkiaOperations::CreateRotatedImage(
+                    arrow_down, SkBitmapOperations::ROTATION_180_CW));
 
   // The "untoggled" button state corresponds with the group being shown.
   // The button's action is therefore to Hide the group, when clicked.
-  header_toggle_button_->SetImage(views::Button::STATE_NORMAL, arrow_up);
+  header_toggle_button_->SetImageModel(views::Button::STATE_NORMAL, arrow_up);
   header_toggle_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON));
   header_toggle_button_->SetAccessibleName(l10n_util::GetStringFUTF16(

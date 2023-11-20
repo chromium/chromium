@@ -495,8 +495,9 @@ void ZoomBubbleView::OnImmersiveModeControllerDestroyed() {
 
 void ZoomBubbleView::OnExtensionIconImageChanged(
     extensions::IconImage* /* image */) {
-  image_button_->SetImage(views::Button::STATE_NORMAL,
-                          &extension_info_.icon_image->image_skia());
+  image_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(extension_info_.icon_image->image_skia()));
   image_button_->SchedulePaint();
 }
 

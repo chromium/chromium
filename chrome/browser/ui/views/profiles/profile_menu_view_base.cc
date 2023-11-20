@@ -277,7 +277,9 @@ class CircularImageButton : public views::ImageButton {
     }
     gfx::ImageSkia image =
         ImageForMenu(*icon_, shortcutIconToImageRatio, icon_color);
-    SetImage(views::Button::STATE_NORMAL, SizeImage(image, button_size_));
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromImageSkia(SizeImage(image, button_size_)));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
   }
 
