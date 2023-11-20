@@ -29,10 +29,6 @@ PasswordForm CreatePasswordForm(std::u16string username = u"username") {
   return form;
 }
 
-const PasswordNote kFirstNote(u"note 1", base::Time::Now());
-const PasswordNote kSecondNote(u"note 2", base::Time::Now() + base::Hours(1));
-const PasswordNote kThirdNote(u"note 3", base::Time::Now() + base::Hours(1));
-
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::SizeIs;
@@ -74,47 +70,57 @@ TEST_F(PasswordNotesTableTest,
        WithSameParentIdThereCanBeOnlyOneAndItsReplaced) {
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm()), SizeIs(1));
 
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kSecondNote));
+  const PasswordNote first_note(u"note 1", base::Time::Now()),
+      second_note(u"note 2", base::Time::Now() + base::Hours(1)),
+      third_note(u"note 3", base::Time::Now() + base::Hours(1));
+
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), second_note));
 
   EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
-              ElementsAre(kSecondNote));
+              ElementsAre(second_note));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(), SizeIs(1));
 
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kThirdNote));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), third_note));
 
   EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
-              ElementsAre(kThirdNote));
+              ElementsAre(third_note));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(), SizeIs(1));
 }
 
 TEST_F(PasswordNotesTableTest, ReloadingDatabasePersistsEntries) {
+  const PasswordNote first_note(u"note 1", base::Time::Now()),
+      second_note(u"note 2", base::Time::Now() + base::Hours(1));
+
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), kSecondNote));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
 
   ReloadDatabase();
 
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(),
               UnorderedElementsAre(
                   std::make_pair(FormPrimaryKey(1),
-                                 std::vector<PasswordNote>({kFirstNote})),
+                                 std::vector<PasswordNote>({first_note})),
                   std::make_pair(FormPrimaryKey(2),
-                                 std::vector<PasswordNote>({kSecondNote}))));
+                                 std::vector<PasswordNote>({second_note}))));
 }
 
 TEST_F(PasswordNotesTableTest, GetPasswordNotes) {
+  const PasswordNote first_note(u"note 1", base::Time::Now()),
+      second_note(u"note 2", base::Time::Now() + base::Hours(1));
+
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), kSecondNote));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
 
   EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
-              ElementsAre(kFirstNote));
+              ElementsAre(first_note));
 
   EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(2)),
-              ElementsAre(kSecondNote));
+              ElementsAre(second_note));
 }
 
 TEST_F(PasswordNotesTableTest, GetPasswordNotesWhenParentIdDoesntExist) {
@@ -122,31 +128,37 @@ TEST_F(PasswordNotesTableTest, GetPasswordNotesWhenParentIdDoesntExist) {
 }
 
 TEST_F(PasswordNotesTableTest, RemovePasswordNotes) {
+  const PasswordNote first_note(u"note 1", base::Time::Now()),
+      second_note(u"note 2", base::Time::Now() + base::Hours(1)),
+      third_note(u"note 3", base::Time::Now() + base::Hours(1));
+
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user3")), SizeIs(1));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), kSecondNote));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(3), kThirdNote));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(3), third_note));
 
   EXPECT_TRUE(table()->RemovePasswordNotes(FormPrimaryKey(2)));
 
   EXPECT_THAT(
       table()->GetAllPasswordNotesForTest(),
       ElementsAre(std::make_pair(FormPrimaryKey(1),
-                                 std::vector<PasswordNote>({kFirstNote})),
+                                 std::vector<PasswordNote>({first_note})),
                   std::make_pair(FormPrimaryKey(3),
-                                 std::vector<PasswordNote>({kThirdNote}))));
+                                 std::vector<PasswordNote>({third_note}))));
 }
 
 TEST_F(PasswordNotesTableTest, RemovePasswordNotesWithNonExistingKey) {
+  const PasswordNote first_note(u"note 1", base::Time::Now());
+
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
-  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
+  EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
 
   EXPECT_FALSE(table()->RemovePasswordNotes(FormPrimaryKey(1000)));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(),
               ElementsAre(std::make_pair(
-                  FormPrimaryKey(1), std::vector<PasswordNote>({kFirstNote}))));
+                  FormPrimaryKey(1), std::vector<PasswordNote>({first_note}))));
 }
 
 }  // namespace

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 
 namespace password_manager {
 

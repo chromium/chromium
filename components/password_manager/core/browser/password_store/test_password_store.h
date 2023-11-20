@@ -8,7 +8,7 @@
 #include <functional>
 
 #include "base/callback_list.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
