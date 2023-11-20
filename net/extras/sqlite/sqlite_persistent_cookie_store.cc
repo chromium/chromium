@@ -1369,7 +1369,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
               14, CookieSameSiteToDBCookieSameSite(po->cc().SameSite()));
           add_statement.BindInt(15, static_cast<int>(po->cc().SourceScheme()));
           add_statement.BindInt(16, po->cc().SourcePort());
-          add_statement.BindBool(17, po->cc().IsSameParty());
+          add_statement.BindBool(17, false /* is_same_party */);
           add_statement.BindTime(18, po->cc().LastUpdateDate());
           if (!add_statement.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";

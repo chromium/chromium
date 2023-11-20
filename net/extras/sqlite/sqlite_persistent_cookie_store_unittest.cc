@@ -989,53 +989,6 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteExtendedTreatedAsUnspecified) {
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookies[0]->SameSite());
 }
 
-TEST_F(SQLitePersistentCookieStoreTest, SamePartyIsPersistent) {
-  const char kDomain[] = "sessioncookie.com";
-  const char kNonSamePartyCookieName[] = "no_party";
-  const char kSamePartyCookieName[] = "party";
-  const char kCookieValue[] = "value";
-  const char kCookiePath[] = "/";
-
-  InitializeStore(false, true);
-
-  // Add a non-SameParty persistent cookie.
-  store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      kNonSamePartyCookieName, kCookieValue, kDomain, kCookiePath,
-      base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(), base::Time(),
-      /*secure=*/true, false, CookieSameSite::LAX_MODE,
-      COOKIE_PRIORITY_DEFAULT));
-
-  // Add a SameParty persistent cookie.
-  store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      kSamePartyCookieName, kCookieValue, kDomain, kCookiePath,
-      base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(), base::Time(),
-      /*secure=*/true, false, CookieSameSite::LAX_MODE,
-      COOKIE_PRIORITY_DEFAULT));
-
-  // Force the store to write its data to the disk.
-  DestroyStore();
-
-  // Create a store that loads session cookie and test that the SameParty
-  // attribute values are restored.
-  CanonicalCookieVector cookies;
-  CreateAndLoad(false, true, &cookies);
-  ASSERT_EQ(2U, cookies.size());
-
-  // Put the cookies into a map, by name, for comparison below.
-  std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
-    cookie_map[cookie->Name()] = cookie.get();
-
-  // Validate that each cookie has the correct SameParty.
-  ASSERT_EQ(1u, cookie_map.count(kNonSamePartyCookieName));
-  EXPECT_FALSE(cookie_map[kNonSamePartyCookieName]->IsSameParty());
-
-  ASSERT_EQ(1u, cookie_map.count(kSamePartyCookieName));
-  EXPECT_FALSE(cookie_map[kSamePartyCookieName]->IsSameParty());
-}
-
 TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
   const char kDomain[] = "sessioncookie.com";
   const char kCookieValue[] = "value";
@@ -1720,8 +1673,6 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
   // Note: These are all constructed with the default value of
   // is_source_scheme_secure, which is false, but that doesn't matter because
   // v11 doesn't store that info.
-  // Some of these are constructed with SameParty set to true, to test that in
-  // the DB migration, the is_same_party values are all defaulted to false.
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "example.com", "/", now, now, now, now, true /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
@@ -1790,7 +1741,7 @@ bool AddV15CookiesToDB(sql::Database* db) {
     statement.BindInt(14, static_cast<int>(cookie.Priority()));
     statement.BindInt(15, static_cast<int>(cookie.SourceScheme()));
     statement.BindInt(16, cookie.SourcePort());
-    statement.BindInt(17, cookie.IsSameParty());
+    statement.BindInt(17, false /* is_same_party */);
     if (!statement.Run())
       return false;
   }
@@ -1853,7 +1804,7 @@ bool AddV18CookiesToDB(sql::Database* db) {
     statement.BindInt(14, static_cast<int>(cookie.Priority()));
     statement.BindInt(15, static_cast<int>(cookie.SourceScheme()));
     statement.BindInt(16, cookie.SourcePort());
-    statement.BindInt(17, cookie.IsSameParty());
+    statement.BindInt(17, false /* is_same_party */);
     statement.BindTime(18, cookie.LastUpdateDate());
     if (!statement.Run()) {
       return false;
@@ -1878,7 +1829,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/", read_in_cookies[i]->Path());
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
@@ -1892,7 +1842,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
@@ -1906,7 +1855,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/", read_in_cookies[i]->Path());
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
@@ -1920,7 +1868,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/", read_in_cookies[i]->Path());
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
@@ -1934,7 +1881,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
@@ -1951,7 +1897,6 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("/", read_in_cookies[i]->Path());
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
-  EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());

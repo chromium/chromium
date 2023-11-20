@@ -232,7 +232,6 @@ class NET_EXPORT CanonicalCookie {
   bool IsHttpOnly() const { return httponly_; }
   CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }
-  bool IsSameParty() const { return false; }
   bool IsPartitioned() const { return partition_key_.has_value(); }
   const absl::optional<CookiePartitionKey>& PartitionKey() const {
     return partition_key_;

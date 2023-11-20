@@ -974,7 +974,7 @@ interface NetworkContext {
   // document's frame)), or a request origin when |role| is
   // RestrictedCookieManagerRole::NETWORK (a network request).
   //
-  // |isolation_info| contains info for SameSite and SameParty cookie queries.
+  // |isolation_info| contains info for SameSite cookie queries.
   // Must be fully populated.
   //
   // If |role| == SCRIPT, this interface can be safely handed out to a process

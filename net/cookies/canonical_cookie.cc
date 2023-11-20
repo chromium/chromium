@@ -1207,7 +1207,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   }
 
-  // Only apply SameSite-related warnings if SameParty is not in effect.
   ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
                                      IsSecure(),
                                      options.same_site_cookie_context(),
@@ -1381,7 +1380,6 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       break;
   }
 
-  // Only apply SameSite-related warnings if SameParty is not in effect.
   ApplySameSiteCookieWarningToStatus(
       SameSite(), access_result.effective_same_site, IsSecure(),
       options.same_site_cookie_context(), &access_result.status,

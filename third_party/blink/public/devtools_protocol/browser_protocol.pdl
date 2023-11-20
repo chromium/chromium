@@ -5827,7 +5827,7 @@ domain Network
       # Cookie Priority
       experimental CookiePriority priority
       # True if cookie is SameParty.
-      experimental boolean sameParty
+      experimental deprecated boolean sameParty
       # Cookie source scheme type.
       experimental CookieSourceScheme sourceScheme
       # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.

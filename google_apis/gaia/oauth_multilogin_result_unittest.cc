@@ -166,14 +166,6 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
                   Property(&CanonicalCookie::Priority,
                            Eq(net::CookiePriority::COOKIE_PRIORITY_HIGH))));
 
-  // SameParty is not set, so all these cookies should have IsSameParty() set
-  // to false (the default value).
-  EXPECT_THAT(result.cookies(),
-              ElementsAre(Property(&CanonicalCookie::IsSameParty, Eq(false)),
-                          Property(&CanonicalCookie::IsSameParty, Eq(false)),
-                          Property(&CanonicalCookie::IsSameParty, Eq(false)),
-                          Property(&CanonicalCookie::IsSameParty, Eq(false))));
-
   EXPECT_THAT(result.cookies()[0].CreationDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(now, 0.5));
   EXPECT_THAT(result.cookies()[0].LastAccessDate().InSecondsFSinceUnixEpoch(),

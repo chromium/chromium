@@ -55,7 +55,7 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastUpdateDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), i->IsSameParty(),
+        i->Priority(), /*sameParty=*/false,
         base::android::ConvertUTF8ToJavaString(env, pk),
         static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());

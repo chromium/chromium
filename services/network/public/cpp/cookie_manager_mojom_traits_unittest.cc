@@ -44,7 +44,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(original->IsHttpOnly(), copied.IsHttpOnly());
   EXPECT_EQ(original->SameSite(), copied.SameSite());
   EXPECT_EQ(original->Priority(), copied.Priority());
-  EXPECT_EQ(original->IsSameParty(), copied.IsSameParty());
   EXPECT_EQ(absl::nullopt, copied.PartitionKey());
   EXPECT_EQ(original->SourceScheme(), copied.SourceScheme());
   EXPECT_EQ(original->SourcePort(), copied.SourcePort());
@@ -142,7 +141,6 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
-  EXPECT_EQ(original.cookie.IsSameParty(), copied.cookie.IsSameParty());
   EXPECT_EQ(original.access_result.effective_same_site,
             copied.access_result.effective_same_site);
   EXPECT_EQ(original.access_result.status, copied.access_result.status);

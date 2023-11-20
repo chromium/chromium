@@ -444,7 +444,6 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_FALSE(cookies[0].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[0].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[0].Priority());
-  EXPECT_FALSE(cookies[0].IsSameParty());
 
   EXPECT_EQ("C", cookies[1].Name());
   EXPECT_EQ("D", cookies[1].Value());
@@ -459,7 +458,6 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_FALSE(cookies[1].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[1].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[1].Priority());
-  EXPECT_FALSE(cookies[1].IsSameParty());
 
   EXPECT_EQ("HttpOnly", cookies[2].Name());
   EXPECT_EQ("F", cookies[2].Value());
@@ -474,7 +472,6 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_TRUE(cookies[2].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[2].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[2].Priority());
-  EXPECT_FALSE(cookies[2].IsSameParty());
 
   EXPECT_EQ("Secure", cookies[3].Name());
   EXPECT_EQ("E", cookies[3].Value());
@@ -489,7 +486,6 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_FALSE(cookies[3].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::NO_RESTRICTION, cookies[3].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[3].Priority());
-  EXPECT_FALSE(cookies[3].IsSameParty());
 }
 
 TEST_F(CookieManagerTest, GetAllCookiesWithAccessSemantics) {

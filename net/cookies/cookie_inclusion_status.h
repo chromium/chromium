@@ -78,8 +78,7 @@ class NET_EXPORT CookieInclusionStatus {
     // Cookie was set with an invalid __Host- or __Secure- prefix.
     EXCLUDE_INVALID_PREFIX = 15,
     /// Cookie was set with an invalid Partitioned attribute, which is only
-    // valid if the cookie has a __Host- prefix and does not have the SameParty
-    // attribute.
+    // valid if the cookie has a __Host- prefix.
     EXCLUDE_INVALID_PARTITIONED = 16,
     // Cookie exceeded the name/value pair size limit.
     EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 17,
@@ -379,9 +378,7 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Returns true if the cookie was excluded because of user preferences.
   // HasOnlyExclusionReason(EXCLUDE_USER_PREFERENCES) will not return true for
-  // third-party cookies blocked in sites in the same First-Party Set (note:
-  // this is not the same as the cookie being blocked in a same-party context,
-  // which takes the entire ancestor chain into account). See
+  // third-party cookies blocked in sites in the same First-Party Set. See
   // https://crbug.com/1366868.
   bool ExcludedByUserPreferences() const;
 
