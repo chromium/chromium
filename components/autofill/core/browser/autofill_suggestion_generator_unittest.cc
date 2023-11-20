@@ -89,6 +89,7 @@ Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
       Field(&Suggestion::main_text,
             Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))),
       Field(&Suggestion::payload, payload),
+      Field(&Suggestion::icon, Suggestion::Icon::kNoIcon),
       Field(&Suggestion::field_by_field_filling_type_used,
             std::optional(field_by_field_filling_type_used)));
 }
@@ -1299,20 +1300,23 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
       absl::optional<ServerFieldTypeSet>(GetAddressFieldsForGroupFilling()),
-      NAME_FIRST);
+      NAME_FIRST, {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kFillFullName);
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kNoIcon);
 }
 
+// Note that only full form filling has an icon.
 TEST_F(
     AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, NAME_FIRST);
+      profile(), kAllServerFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kLocation);
 }
 
 // Fallback to full form (PopupItemId::kAddressEntry) when the last targeted

@@ -848,10 +848,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     // We add an icon to the address (profile) suggestion if there is more than
     // one profile related field in the form.
     if (contains_profile_related_fields) {
-      // TODO(crbug.com/1459990): Remove this hardcoding once the last filling
-      // granularity is available to this method. Filling granularies different
-      // than full form will not have an icon.
-      const bool fill_full_form = true;
+      const bool fill_full_form =
+          suggestions.back().popup_item_id == PopupItemId::kAddressEntry;
       if (base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
         suggestions.back().icon = fill_full_form ? Suggestion::Icon::kLocation
