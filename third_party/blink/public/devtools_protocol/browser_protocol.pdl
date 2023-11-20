@@ -8155,16 +8155,6 @@ domain Page
       # as an ad. Only sent if frame is labelled as an ad and id is available.
       optional AdScriptId adScriptId
 
-  # Returns all browser cookies for the page and all of its subframes. Depending
-  # on the backend support, will return detailed cookie information in the
-  # `cookies` field.
-  experimental deprecated command getCookies
-    # Use 'Network.getCookies' instead
-    redirect Network
-    returns
-      # Array of cookie objects.
-      array of Network.Cookie cookies
-
   # Returns present frame tree structure.
   command getFrameTree
     returns
