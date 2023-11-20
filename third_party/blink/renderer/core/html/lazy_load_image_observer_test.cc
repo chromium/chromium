@@ -678,8 +678,10 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
                                       "image/png");
 
   // Scroll down so that all the images in the iframe are near the viewport.
+  // TODO(crbug.com/1503290): Change this back to 250 once scroll margin is
+  // fixed to walk through same-origin iframes.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

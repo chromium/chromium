@@ -107,13 +107,20 @@ void MediaCustomControlsFullscreenDetector::Attach() {
       0.8,
       kMostlyFillViewportIntersectionThreshold};
   viewport_intersection_observer_ = IntersectionObserver::Create(
-      {}, thresholds, &(video_element_->GetDocument()),
+      /* (root) margin */ Vector<Length>(),
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ thresholds,
+      /* document */ &(video_element_->GetDocument()),
+      /* callback */
       WTF::BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
-      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      IntersectionObserver::kFractionOfRoot, 0, false, true);
+      /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+      /* semantics */ IntersectionObserver::kFractionOfRoot,
+      /* delay */ 0,
+      /* track_visibility */ false,
+      /* always report_root_bounds */ true);
   viewport_intersection_observer_->observe(&VideoElement());
 }
 

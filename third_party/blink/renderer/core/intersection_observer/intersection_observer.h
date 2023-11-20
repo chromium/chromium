@@ -107,6 +107,7 @@ class CORE_EXPORT IntersectionObserver final
   // should be used instead of the bounding box if appropriate.
   static IntersectionObserver* Create(
       const Vector<Length>& margin,
+      const Vector<Length>& scroll_margin,
       const Vector<float>& thresholds,
       Document* document,
       EventCallback callback,

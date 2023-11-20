@@ -200,10 +200,14 @@ void AutoplayPolicy::StartAutoplayMutedWhenVisible() {
     return;
 
   autoplay_intersection_observer_ = IntersectionObserver::Create(
-      {}, {IntersectionObserver::kMinimumThreshold}, &element_->GetDocument(),
+      /* (root) margin */ Vector<Length>(),
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ {IntersectionObserver::kMinimumThreshold},
+      /* document */ &element_->GetDocument(),
+      /* callback */
       WTF::BindRepeating(&AutoplayPolicy::OnIntersectionChangedForAutoplay,
                          WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver);
+      /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver);
   autoplay_intersection_observer_->observe(element_);
 }
 

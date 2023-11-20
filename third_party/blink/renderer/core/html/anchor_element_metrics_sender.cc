@@ -159,12 +159,18 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   DCHECK(clock_);
 
   intersection_observer_ = IntersectionObserver::Create(
-      {}, {INTERSECTION_RATIO_THRESHOLD}, &document,
+      /* (root) margin */ Vector<Length>(),
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ {INTERSECTION_RATIO_THRESHOLD},
+      /* document */ &document,
+      /* callback */
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
                          WrapWeakPersistent(this)),
+      /* ukm_metric_id */
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      IntersectionObserver::kFractionOfTarget, 100 /* delay in ms */);
+      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+      /* semantics */ IntersectionObserver::kFractionOfTarget,
+      /* delay */ 100);
 }
 
 void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {

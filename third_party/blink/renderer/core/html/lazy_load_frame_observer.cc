@@ -116,11 +116,16 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
       std::make_unique<LazyLoadRequestInfo>(resource_request, frame_load_type);
 
   lazy_load_intersection_observer_ = IntersectionObserver::Create(
-      {Length::Fixed(GetLazyFrameLoadingViewportDistanceThresholdPx(
-          element_->GetDocument()))},
-      {std::numeric_limits<float>::min()}, &element_->GetDocument(),
+      /* (root) margin */ {Length::Fixed(
+          GetLazyFrameLoadingViewportDistanceThresholdPx(
+              element_->GetDocument()))},
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ {std::numeric_limits<float>::min()},
+      /* document */ &element_->GetDocument(),
+      /* callback */
       WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
                          WrapWeakPersistent(this)),
+      /* ukm_metric_id */
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   lazy_load_intersection_observer_->observe(element_);

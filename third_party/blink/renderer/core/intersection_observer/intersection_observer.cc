@@ -324,6 +324,7 @@ IntersectionObserver* IntersectionObserver::Create(
 
 IntersectionObserver* IntersectionObserver::Create(
     const Vector<Length>& margin,
+    const Vector<Length>& scroll_margin,
     const Vector<float>& thresholds,
     Document* document,
     EventCallback callback,
@@ -342,10 +343,9 @@ IntersectionObserver* IntersectionObserver::Create(
           document->GetExecutionContext(), std::move(callback), ukm_metric_id,
           behavior, needs_initial_observation_with_detached_target);
   return MakeGarbageCollected<IntersectionObserver>(
-      *intersection_observer_delegate, nullptr, margin,
-      /* scroll_margin */ Vector<Length>(), thresholds, semantics, delay,
-      track_visibility, always_report_root_bounds, margin_target,
-      use_overflow_clip_edge);
+      *intersection_observer_delegate, nullptr, margin, scroll_margin,
+      thresholds, semantics, delay, track_visibility, always_report_root_bounds,
+      margin_target, use_overflow_clip_edge);
 }
 
 IntersectionObserver::IntersectionObserver(
