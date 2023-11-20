@@ -3677,7 +3677,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMap) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapMoveImage) {
+// TODO(crbug.com/1503567): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_ReusedMapMoveImage DISABLED_ReusedMapMoveImage
+#else
+#define MAYBE_ReusedMapMoveImage ReusedMapMoveImage
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_ReusedMapMoveImage) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-move-image.html"));
 }
 
