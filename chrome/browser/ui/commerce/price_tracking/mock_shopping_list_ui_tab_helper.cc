@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 
 #include "base/task/sequenced_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,17 +12,17 @@
 #include "ui/views/view.h"
 
 // static
-void MockCommerceUiTabHelper::CreateForWebContents(
+void MockShoppingListUiTabHelper::CreateForWebContents(
     content::WebContents* content) {
   content->SetUserData(
       UserDataKey(),
-      std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
+      std::make_unique<testing::NiceMock<MockShoppingListUiTabHelper>>(
           content));
 }
 
-MockCommerceUiTabHelper::MockCommerceUiTabHelper(
+MockShoppingListUiTabHelper::MockShoppingListUiTabHelper(
     content::WebContents* content)
-    : CommerceUiTabHelper(content, nullptr, nullptr, nullptr) {
+    : ShoppingListUiTabHelper(content, nullptr, nullptr, nullptr) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   valid_product_image_ = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
@@ -40,12 +40,12 @@ MockCommerceUiTabHelper::MockCommerceUiTabHelper(
   });
 }
 
-MockCommerceUiTabHelper::~MockCommerceUiTabHelper() = default;
+MockShoppingListUiTabHelper::~MockShoppingListUiTabHelper() = default;
 
-const gfx::Image& MockCommerceUiTabHelper::GetValidProductImage() {
+const gfx::Image& MockShoppingListUiTabHelper::GetValidProductImage() {
   return valid_product_image_;
 }
 
-const gfx::Image& MockCommerceUiTabHelper::GetInvalidProductImage() {
+const gfx::Image& MockShoppingListUiTabHelper::GetInvalidProductImage() {
   return empty_product_image_;
 }

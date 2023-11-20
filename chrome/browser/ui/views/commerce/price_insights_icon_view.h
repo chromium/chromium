@@ -60,7 +60,7 @@ class PriceInsightsIconView : public PageActionIconView {
   void MaybeShowPageActionLabel();
 
   // Gets the label type from the commerce tab helper. This is a proxy method
-  // for CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
+  // for ShoppingListUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
   PriceInsightsIconView::PriceInsightsIconLabelType GetLabelTypeForPage();
 
   // Update the label for the page action based on the last known label type.

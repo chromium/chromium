@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -66,24 +66,24 @@ absl::optional<ProductInfo> CreateProductInfo(
 
 }  // namespace
 
-class CommerceUiTabHelperTest : public testing::Test {
+class ShoppingListUiTabHelperTest : public testing::Test {
  public:
-  CommerceUiTabHelperTest()
+  ShoppingListUiTabHelperTest()
       : shopping_service_(std::make_unique<MockShoppingService>()),
         bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
         image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()) {}
 
-  CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
-  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) =
+  ShoppingListUiTabHelperTest(const ShoppingListUiTabHelperTest&) = delete;
+  ShoppingListUiTabHelperTest operator=(const ShoppingListUiTabHelperTest&) =
       delete;
-  ~CommerceUiTabHelperTest() override = default;
+  ~ShoppingListUiTabHelperTest() override = default;
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    CommerceUiTabHelper::CreateForWebContents(
+    ShoppingListUiTabHelper::CreateForWebContents(
         web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get());
-    tab_helper_ = CommerceUiTabHelper::FromWebContents(web_contents_.get());
+    tab_helper_ = ShoppingListUiTabHelper::FromWebContents(web_contents_.get());
   }
 
   void TestBody() override {}
@@ -91,7 +91,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   void TearDown() override {
     // Make sure the tab helper id destroyed before any of its dependencies are.
     tab_helper_ = nullptr;
-    web_contents_->RemoveUserData(CommerceUiTabHelper::UserDataKey());
+    web_contents_->RemoveUserData(ShoppingListUiTabHelper::UserDataKey());
   }
 
   void SetupImageFetcherForSimpleImage() {
@@ -148,7 +148,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<CommerceUiTabHelper> tab_helper_;
+  raw_ptr<ShoppingListUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
@@ -164,7 +164,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;
 };
 
-TEST_F(CommerceUiTabHelperTest, TestSubscriptionEventsUpdateState) {
+TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -196,7 +196,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionEventsUpdateState) {
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
@@ -222,7 +222,7 @@ TEST_F(CommerceUiTabHelperTest,
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
@@ -246,7 +246,7 @@ TEST_F(CommerceUiTabHelperTest,
 
 // A request to change the state of a subscription should be immediately
 // reflected in the accessor "IsPriceTracking".
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestSubscriptionChangeImmediatelySetsState) {
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
                      kClusterId, true);
@@ -284,7 +284,7 @@ TEST_F(CommerceUiTabHelperTest,
 }
 
 // Make sure unsubscribe without a bookmark for the current page is functional.
-TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
+TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
   // Intentionally create a bookmark with a URL different from the known
   // product URL but use the same cluster ID.
   AddProductBookmark(bookmark_model_.get(), u"title",
@@ -315,7 +315,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
 }
 
 // The following tests are for the chip experiment - chip delay variation.
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceTrackingIconAvailableAfterLoading) {
   base::test::ScopedFeatureList feature_list;
   EnableChipExperimentVariation(
@@ -342,7 +342,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_TRUE(tab_helper_->ShouldShowPriceTrackingIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceTrackingIconNotAvailableDuringLoading) {
   base::test::ScopedFeatureList feature_list;
   EnableChipExperimentVariation(
@@ -370,7 +370,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_FALSE(tab_helper_->ShouldShowPriceTrackingIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
+TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
   ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
                    ->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kShoppingInsights)));
@@ -395,7 +395,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
                       SidePanelEntry::Id::kShoppingInsights)));
 }
 
-TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
+TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
   ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
                    ->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kShoppingInsights)));
@@ -412,7 +412,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
                        SidePanelEntry::Id::kShoppingInsights)));
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
   shopping_service_->SetIsPriceInsightsEligible(true);
   shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
@@ -423,7 +423,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
   shopping_service_->SetIsPriceInsightsEligible(true);
 
@@ -437,7 +437,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceInsightsIconAvailableAfterLoading) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -465,7 +465,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_TRUE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_F(ShoppingListUiTabHelperTest,
        TestPriceInsightsIconNotAvailableDuringLoading) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

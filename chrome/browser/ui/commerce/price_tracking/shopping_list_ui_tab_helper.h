@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_COMMERCE_COMMERCE_UI_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_COMMERCE_COMMERCE_UI_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,16 +60,18 @@ enum class PageActionIconInteractionState {
   kMaxValue = kNotClickedExpanded
 };
 
-// This tab helper is used to update and maintain the state of UI for commerce
-// features.
-class CommerceUiTabHelper
+// This tab helper is used to update and maintain the state of the shopping list
+// and price tracking UI on desktop.
+// TODO(b:283833590): Rename this class since it serves for all shopping
+// features now.
+class ShoppingListUiTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<CommerceUiTabHelper>,
+      public content::WebContentsUserData<ShoppingListUiTabHelper>,
       public SubscriptionsObserver {
  public:
-  ~CommerceUiTabHelper() override;
-  CommerceUiTabHelper(const CommerceUiTabHelper& other) = delete;
-  CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) =
+  ~ShoppingListUiTabHelper() override;
+  ShoppingListUiTabHelper(const ShoppingListUiTabHelper& other) = delete;
+  ShoppingListUiTabHelper& operator=(const ShoppingListUiTabHelper& other) =
       delete;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -135,7 +137,7 @@ class CommerceUiTabHelper
   void OnPriceTrackingIconClicked();
 
  protected:
-  CommerceUiTabHelper(content::WebContents* contents,
+  ShoppingListUiTabHelper(content::WebContents* contents,
                           ShoppingService* shopping_service,
                           bookmarks::BookmarkModel* model,
                           image_fetcher::ImageFetcher* image_fetcher);
@@ -145,8 +147,8 @@ class CommerceUiTabHelper
   virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
  private:
-  friend class content::WebContentsUserData<CommerceUiTabHelper>;
-  friend class CommerceUiTabHelperTest;
+  friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
+  friend class ShoppingListUiTabHelperTest;
 
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<const ProductInfo>& info);
@@ -277,11 +279,11 @@ class CommerceUiTabHelper
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
       scoped_observation_{this};
 
-  base::WeakPtrFactory<CommerceUiTabHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ShoppingListUiTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace commerce
 
-#endif  // CHROME_BROWSER_UI_COMMERCE_COMMERCE_UI_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
