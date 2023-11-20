@@ -29,6 +29,8 @@ source_set("data_controls") {
     "prefs.h",
     "rule.cc",
     "rule.h",
+    "verdict.cc",
+    "verdict.h",
   ]
 
   deps = [
@@ -56,11 +58,13 @@ source_set("unit_tests") {
     "and_condition_unittest.cc",
     "attributes_condition_unittest.cc",
     "rule_unittest.cc",
+    "verdict_unittest.cc",
   ]
 
   deps = [
     ":data_controls",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
