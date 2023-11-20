@@ -43,6 +43,7 @@ The current status of existing standards and Abseil features is:
       * CRC32C library: Initially added to third_party Dec 5, 2022
       * Nullability annotation: Initially added to third_party Jun 21, 2023
       * Overload: Initially added to third_party Sep 27, 2023
+      * NoDestructor: Initially added to third_party Nov 15, 2023
 
 [TOC]
 
@@ -2799,6 +2800,30 @@ absl::AddLogSink(&custom_sink_to_capture_absl_logs);
 **Notes:**
 *** promo
 Overlaps and uses same macros names as `base/logging.h`.
+***
+
+### NoDestructor <sup>[tbd]</sup>
+
+```c++
+// Global or namespace scope.
+ABSL_CONST_INIT absl::NoDestructor<MyRegistry> reg{"foo", "bar", 8008};
+
+// Function scope.
+const std::string& MyString() {
+  static const absl::NoDestructor<std::string> x("foo");
+  return *x;
+}
+```
+
+**Description:** `absl::NoDestructor<T>` is a wrapper around an object of
+type T that behaves as an object of type T but never calls T's destructor.
+
+**Documentation:**
+[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_desctructor.h)
+
+**Notes:**
+*** promo
+Overlaps with `base::NoDestructor`.
 ***
 
 ### Nullability annotations <sup>[tbd]</sup>
