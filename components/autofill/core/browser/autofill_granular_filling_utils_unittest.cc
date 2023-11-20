@@ -43,12 +43,38 @@ TEST(
             ServerFieldTypeSet({NAME_FIRST}));
 }
 
+// The test below asserts that when the last targeted fields match
+// `AutofillFillingMethod::kGroupFilling`,
+// `GetTargetServerFieldsForTypeAndLastTargetedFields()` returns a set of fields
+// that match the group of the triggering field.
 TEST(
     AutofillGranularFillingUtilsTest,
-    GetTargetServerFieldsForTypeAndLastTargetedFields_AddressFieldsGroup_ReturnsTriggeringFieldTypeGroup) {
+    GetTargetServerFieldsForTypeAndLastTargetedFields_GroupFilling_ReturnsTriggeringFieldTypeGroup) {
+  //`FieldTypeGroup::kName` triggering field.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                GetAddressFieldsForGroupFilling(), NAME_FIRST),
+                GetAddressFieldsForGroupFilling(),
+                /*triggering_field_type=*/NAME_FIRST),
             GetServerFieldTypesOfGroup(FieldTypeGroup::kName));
+
+  //`FieldTypeGroup::kCompany` triggering field.
+  // Note that `FieldTypeGroup::kCompany` behaves the same as
+  // `FieldTypeGroup::kAddress`.
+  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
+                GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+                /*triggering_field_type=*/COMPANY_NAME),
+            GetAddressFieldsForGroupFilling());
+
+  //`FieldTypeGroup::kAddress` triggering field.
+  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
+                GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+                /*triggering_field_type=*/ADDRESS_HOME_LINE1),
+            GetAddressFieldsForGroupFilling());
+
+  //`FieldTypeGroup::kEmail` triggering field.
+  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
+                GetAddressFieldsForGroupFilling(),
+                /*triggering_field_type=*/EMAIL_ADDRESS),
+            GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail));
 }
 
 TEST(

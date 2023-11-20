@@ -16,12 +16,13 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
     case FieldTypeGroup::kName:
       return GetServerFieldTypesOfGroup(FieldTypeGroup::kName);
     case FieldTypeGroup::kAddress:
+    case FieldTypeGroup::kCompany:
       return GetAddressFieldsForGroupFilling();
     case FieldTypeGroup::kPhone:
       return GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
-    case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
+      return GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail);
+    case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kPasswordField:
     case FieldTypeGroup::kTransaction:
