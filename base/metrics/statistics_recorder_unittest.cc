@@ -103,8 +103,7 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     // Note: We can't clear |top_| in the locked block, because the
     // StatisticsRecorder destructor expects that the lock isn't already held.
     {
-      const StatisticsRecorder::SrAutoWriterLock auto_lock(
-          StatisticsRecorder::GetLock());
+      const AutoLock auto_lock(StatisticsRecorder::GetLock());
       statistics_recorder_.reset(StatisticsRecorder::top_);
       if (statistics_recorder_) {
         // Prevent releasing ranges in test to avoid dangling pointers in
@@ -118,8 +117,7 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
   }
 
   bool HasGlobalRecorder() {
-    const StatisticsRecorder::SrAutoReaderLock auto_lock(
-        StatisticsRecorder::GetLock());
+    const AutoLock auto_lock(StatisticsRecorder::GetLock());
     return StatisticsRecorder::top_ != nullptr;
   }
 

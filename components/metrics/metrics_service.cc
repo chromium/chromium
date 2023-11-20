@@ -167,9 +167,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
-// When removing the below header, also remove the friend declaration.
-#include "components/variations/synthetic_trial_registry.h"
-#include "components/variations/synthetic_trials.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -425,20 +422,6 @@ void MetricsService::InitializeMetricsRecordingState() {
 
   // Init() has to be called after LogCrash() in order for LogCrash() to work.
   delegating_provider_.Init();
-
-  // Register the synthetic trial for StatisticsRecorder. Done here instead of
-  // the usual place to make sure this covers all UMA-reporting platforms.
-  auto* synthetic_trial_registry = client_->GetSyntheticTrialRegistry();
-  if (synthetic_trial_registry) {  // Null in tests.
-    base::StringPiece group_name =
-        base::StatisticsRecorder::GetLockTrialGroup();
-    if (!group_name.empty()) {
-      synthetic_trial_registry->RegisterSyntheticFieldTrial(
-          variations::SyntheticTrialGroup(
-              "StatisticsRecorderRWLock", group_name,
-              variations::SyntheticTrialAnnotationMode::kCurrentLog));
-    }
-  }
 
   state_ = INITIALIZED;
 }

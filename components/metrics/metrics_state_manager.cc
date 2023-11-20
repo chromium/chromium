@@ -22,7 +22,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -198,11 +197,6 @@ class MetricsStateMetricsProvider : public MetricsProvider {
       LogClonedInstall();
     }
     log_normal_metric_state_.LogArtificialNonUniformity();
-#ifdef ARCH_CPU_64_BITS
-    base::UmaHistogramMediumTimes(
-        "UMA.StatisticsRecorder.LockWaitTime",
-        base::StatisticsRecorder::GetAndClearTotalWaitTime());
-#endif  // ARCH_CPU_64_BITS
   }
 
   // Set a random seed for the random number generator.

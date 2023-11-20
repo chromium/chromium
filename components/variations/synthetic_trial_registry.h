@@ -15,7 +15,6 @@
 #include "components/variations/synthetic_trials.h"
 
 namespace metrics {
-class MetricsService;
 class MetricsServiceAccessor;
 }  // namespace metrics
 
@@ -83,7 +82,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                                    OverrideMode mode);
 
  private:
-  friend metrics::MetricsService;
   friend metrics::MetricsServiceAccessor;
   friend FieldTrialsProvider;
   friend FieldTrialsProviderTest;
