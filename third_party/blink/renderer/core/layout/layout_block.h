@@ -34,8 +34,8 @@
 
 namespace blink {
 
+class BlockNode;
 struct PaintInfo;
-class NGBlockNode;
 
 typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
 typedef HeapHashMap<WeakMember<const LayoutBlock>,
@@ -297,7 +297,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   // This is necessary for now for interoperability between the old and new
   // layout code. Primarily for calling layoutPositionedObjects at the moment.
-  friend class NGBlockNode;
+  friend class BlockNode;
 };
 
 template <>

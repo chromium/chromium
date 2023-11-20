@@ -1789,7 +1789,7 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
                                  origin_bfc_block_offset};
 
   UnpositionedFloat unpositioned_float(
-      NGBlockNode(To<LayoutBox>(floating_object)),
+      BlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, space.AvailableSize(),
       space.PercentageResolutionSize(),
       space.ReplacedPercentageResolutionSize(), origin_bfc_offset, space,

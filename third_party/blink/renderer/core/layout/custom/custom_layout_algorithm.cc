@@ -196,7 +196,7 @@ void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
     container_builder_.AddOutOfFlowChildCandidate(
-        To<NGBlockNode>(*child), BorderScrollbarPadding().StartOffset());
+        To<BlockNode>(*child), BorderScrollbarPadding().StartOffset());
     *child = child->NextSibling();
   }
 }

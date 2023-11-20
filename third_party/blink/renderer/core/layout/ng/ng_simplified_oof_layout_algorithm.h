@@ -22,7 +22,7 @@ struct PhysicalFragmentLink;
 // previous |NGPhysicalFragment| and appends the OOF-positioned elements to the
 // |container_builder_|.
 class CORE_EXPORT SimplifiedOofLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:

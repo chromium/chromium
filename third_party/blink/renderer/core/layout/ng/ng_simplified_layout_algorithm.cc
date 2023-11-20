@@ -251,7 +251,7 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
 
     // Add the (potentially updated) layout result.
     const NGLayoutResult* result =
-        NGBlockNode(To<LayoutBox>(child_fragment.GetMutableLayoutObject()))
+        BlockNode(To<LayoutBox>(child_fragment.GetMutableLayoutObject()))
             .SimplifiedLayout(child_fragment);
 
     // The child may have failed "simplified" layout! (Due to adding/removing
@@ -281,7 +281,7 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     const auto* layer = child.GetLayoutBox()->Layer();
     LogicalStaticPosition position = layer->GetStaticPosition();
     container_builder_.AddOutOfFlowChildCandidate(
-        To<NGBlockNode>(child), position.offset, position.inline_edge,
+        To<BlockNode>(child), position.offset, position.inline_edge,
         position.block_edge);
   }
 

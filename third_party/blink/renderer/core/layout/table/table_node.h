@@ -13,10 +13,10 @@
 
 namespace blink {
 
-// Table specific extensions to NGBlockNode.
-class CORE_EXPORT TableNode final : public NGBlockNode {
+// Table specific extensions to BlockNode.
+class CORE_EXPORT TableNode final : public BlockNode {
  public:
-  explicit TableNode(LayoutBox* box) : NGBlockNode(box) {}
+  explicit TableNode(LayoutBox* box) : BlockNode(box) {}
 
   const BoxStrut& GetTableBordersStrut() const;
 

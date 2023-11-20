@@ -106,7 +106,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsListItem() const { return IsBlock() && box_->IsLayoutListItem(); }
   // Returns the list marker if |this.IsListItem()| with an outside list marker.
   // Otherwise |nullptr|.
-  NGBlockNode ListMarkerBlockNodeIfListItem() const;
+  BlockNode ListMarkerBlockNodeIfListItem() const;
   bool IsListMarker() const {
     return IsBlock() && box_->IsLayoutOutsideListMarker();
   }
@@ -213,7 +213,7 @@ class CORE_EXPORT LayoutInputNode {
   // Returns intrinsic sizing information for replaced elements.
   // ComputeReplacedSize can use it to compute actual replaced size.
   // Corresponds to Legacy's LayoutReplaced::IntrinsicSizingInfo.
-  // Use NGBlockNode::GetAspectRatio to get the aspect ratio.
+  // Use BlockNode::GetAspectRatio to get the aspect ratio.
   void IntrinsicSize(absl::optional<LayoutUnit>* computed_inline_size,
                      absl::optional<LayoutUnit>* computed_block_size) const;
 

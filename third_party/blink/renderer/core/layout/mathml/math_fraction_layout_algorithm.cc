@@ -125,11 +125,11 @@ MathFractionLayoutAlgorithm::MathFractionLayoutAlgorithm(
   container_builder_.SetIsMathMLFraction();
 }
 
-void MathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
-                                                 NGBlockNode* denominator) {
+void MathFractionLayoutAlgorithm::GatherChildren(BlockNode* numerator,
+                                                 BlockNode* denominator) {
   for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       container_builder_.AddOutOfFlowChildCandidate(
           block_child, BorderScrollbarPadding().StartOffset());
@@ -154,8 +154,8 @@ void MathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
 const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
-  NGBlockNode numerator = nullptr;
-  NGBlockNode denominator = nullptr;
+  BlockNode numerator = nullptr;
+  BlockNode denominator = nullptr;
   GatherChildren(&numerator, &denominator);
 
   const auto numerator_space = CreateConstraintSpaceForMathChild(
@@ -285,7 +285,7 @@ MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
 
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), GetConstraintSpace(), To<NGBlockNode>(child),
+        Style(), GetConstraintSpace(), To<BlockNode>(child),
         ChildAvailableSize().block_size);
 
     sizes.Encompass(child_result.sizes);

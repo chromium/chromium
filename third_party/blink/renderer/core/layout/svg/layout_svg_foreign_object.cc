@@ -146,7 +146,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   builder.SetAvailableSize(zoomed_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);
-  const auto* result = NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  const auto* result = BlockNode(this).Layout(builder.ToConstraintSpace());
 
   // Any propagated sticky-descendants may have invalid sticky-constraints.
   // Clear them now.

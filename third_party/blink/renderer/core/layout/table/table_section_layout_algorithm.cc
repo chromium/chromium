@@ -51,7 +51,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
                                       /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
-       NGBlockNode row = To<NGBlockNode>(entry.node);
+       BlockNode row = To<BlockNode>(entry.node);
        entry = child_iterator.NextChild()) {
     const auto* row_break_token = To<NGBlockBreakToken>(entry.token);
     wtf_size_t row_index = start_row_index + *entry.index;

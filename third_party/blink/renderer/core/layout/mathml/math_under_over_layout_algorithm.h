@@ -12,7 +12,7 @@
 namespace blink {
 
 class CORE_EXPORT MathUnderOverLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -23,9 +23,7 @@ class CORE_EXPORT MathUnderOverLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:
-  void GatherChildren(NGBlockNode* base,
-                      NGBlockNode* second,
-                      NGBlockNode* third);
+  void GatherChildren(BlockNode* base, BlockNode* second, BlockNode* third);
 };
 
 }  // namespace blink

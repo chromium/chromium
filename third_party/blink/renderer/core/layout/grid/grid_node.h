@@ -12,10 +12,10 @@
 
 namespace blink {
 
-// Grid specific extensions to NGBlockNode.
-class CORE_EXPORT GridNode final : public NGBlockNode {
+// Grid specific extensions to BlockNode.
+class CORE_EXPORT GridNode final : public BlockNode {
  public:
-  explicit GridNode(LayoutBox* box) : NGBlockNode(box) {
+  explicit GridNode(LayoutBox* box) : BlockNode(box) {
     DCHECK(box);
     DCHECK(box->IsLayoutGrid());
   }

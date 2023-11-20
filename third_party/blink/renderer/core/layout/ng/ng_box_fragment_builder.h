@@ -73,7 +73,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
         border_scrollbar_padding_.block_start;
     if (node_) {
       child_available_size_ = CalculateChildAvailableSize(
-          space_, To<NGBlockNode>(node_), size_, border_scrollbar_padding_);
+          space_, To<BlockNode>(node_), size_, border_scrollbar_padding_);
     }
   }
 
@@ -179,9 +179,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     DCHECK(initial_fragment_geometry_);
     return child_available_size_;
   }
-  const NGBlockNode& Node() {
+  const BlockNode& Node() {
     DCHECK(node_);
-    return To<NGBlockNode>(node_);
+    return To<BlockNode>(node_);
   }
 
   // Be sure to use the layout result that's relevant for propagation and block

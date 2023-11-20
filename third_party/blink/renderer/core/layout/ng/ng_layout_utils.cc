@@ -72,7 +72,7 @@ inline bool BlockLengthMayChange(const Length& length,
   return false;
 }
 
-bool BlockSizeMayChange(const NGBlockNode& node,
+bool BlockSizeMayChange(const BlockNode& node,
                         const NGConstraintSpace& new_space,
                         const NGConstraintSpace& old_space,
                         const NGLayoutResult& layout_result) {
@@ -115,7 +115,7 @@ bool BlockSizeMayChange(const NGBlockNode& node,
 // Return true if it's possible (but not necessarily guaranteed) that the new
 // constraint space will give a different size compared to the old one, when
 // computed style and child content remain unchanged.
-bool SizeMayChange(const NGBlockNode& node,
+bool SizeMayChange(const BlockNode& node,
                    const NGConstraintSpace& new_space,
                    const NGConstraintSpace& old_space,
                    const NGLayoutResult& layout_result) {
@@ -176,7 +176,7 @@ bool SizeMayChange(const NGBlockNode& node,
 //    have %-block-sizes).
 //  - |NGLayoutCacheStatus::kHit| otherwise.
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const FragmentGeometry& fragment_geometry,
     const NGLayoutResult& layout_result,
     const NGConstraintSpace& new_space,
@@ -418,7 +418,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 }
 
 bool IntrinsicSizeWillChange(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
@@ -446,7 +446,7 @@ bool IntrinsicSizeWillChange(
 }  // namespace
 
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,

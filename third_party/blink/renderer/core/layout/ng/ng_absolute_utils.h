@@ -15,8 +15,8 @@
 
 namespace blink {
 
+class BlockNode;
 class NGBoxFragmentBuilder;
-class NGBlockNode;
 class NGConstraintSpace;
 class NGLayoutResult;
 struct LogicalStaticPosition;
@@ -89,7 +89,7 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
 // final position of the out-of-flow node.
 // https://www.w3.org/TR/css-position-3/#inset-modified-containing-block
 CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& available_size,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
@@ -119,9 +119,9 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 // its required to correctly determine the min/max content sizes.
 
 // |replaced_size| should be set if and only if element is replaced element.
-// Will return true if |NGBlockNode::ComputeMinMaxSizes| was called.
+// Will return true if |BlockNode::ComputeMinMaxSizes| was called.
 CORE_EXPORT bool ComputeOofInlineDimensions(
-    const NGBlockNode&,
+    const BlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
     const InsetModifiedContainingBlock&,
@@ -134,7 +134,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 // If layout was performed to determine the position, this will be returned
 // otherwise it will return nullptr.
 CORE_EXPORT const NGLayoutResult* ComputeOofBlockDimensions(
-    const NGBlockNode&,
+    const BlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
     const InsetModifiedContainingBlock&,
@@ -145,7 +145,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOofBlockDimensions(
     LogicalOofDimensions* dimensions);
 
 CORE_EXPORT void AdjustOffsetForSplitInline(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGBoxFragmentBuilder* container_builder,
     LogicalOffset& offset);
 

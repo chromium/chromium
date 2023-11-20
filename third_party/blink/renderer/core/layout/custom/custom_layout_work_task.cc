@@ -137,8 +137,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
     builder.SetCustomLayoutData(std::move(constraint_data_));
   }
   auto space = builder.ToConstraintSpace();
-  auto* result =
-      To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
+  auto* result = To<BlockNode>(child).Layout(space, nullptr /* break_token */);
 
   LogicalBoxFragment fragment(
       parent_space.GetWritingDirection(),
@@ -164,7 +163,7 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
   const auto space = builder.ToConstraintSpace();
 
   MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
-      parent_style, To<NGBlockNode>(child), space);
+      parent_style, To<BlockNode>(child), space);
   resolver_->Resolve(MakeGarbageCollected<CustomIntrinsicSizes>(
       child_, token_, result.sizes.min_size, result.sizes.max_size));
 

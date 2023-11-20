@@ -14,13 +14,13 @@
 
 namespace blink {
 
-class NGBlockNode;
+class BlockNode;
 class NGBlockBreakToken;
 struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
 class CORE_EXPORT FlexLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -44,22 +44,22 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
-  Length GetUsedFlexBasis(const NGBlockNode& child) const;
+  Length GetUsedFlexBasis(const BlockNode& child) const;
   // This has an optional out parameter so that callers can avoid a subsequent
   // redundant call to GetUsedFlexBasis.
-  bool IsUsedFlexBasisDefinite(const NGBlockNode& child,
+  bool IsUsedFlexBasisDefinite(const BlockNode& child,
                                Length* flex_basis) const;
-  bool DoesItemCrossSizeComputeToAuto(const NGBlockNode& child) const;
-  bool IsItemCrossAxisLengthDefinite(const NGBlockNode& child,
+  bool DoesItemCrossSizeComputeToAuto(const BlockNode& child) const;
+  bool IsItemCrossAxisLengthDefinite(const BlockNode& child,
                                      const Length& length) const;
-  bool AspectRatioProvidesMainSize(const NGBlockNode& child) const;
-  bool DoesItemStretch(const NGBlockNode& child) const;
+  bool AspectRatioProvidesMainSize(const BlockNode& child) const;
+  bool DoesItemStretch(const BlockNode& child) const;
   // This checks for one of the scenarios where a flex-item box has a definite
   // size that would be indefinite if the box weren't a flex item.
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
-  bool WillChildCrossSizeBeContainerCrossSize(const NGBlockNode& child) const;
+  bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child) const;
   LayoutUnit AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-      const NGBlockNode& child,
+      const BlockNode& child,
       LayoutUnit main_size,
       const MinMaxSizes& cross_min_max,
       const BoxStrut& border_padding_in_child_writing_mode);
@@ -69,17 +69,17 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   NGConstraintSpace BuildSpaceForIntrinsicInlineSize(
-      const NGBlockNode& flex_item) const;
-  NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
+      const BlockNode& flex_item) const;
+  NGConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
-      const NGBlockNode& flex_item,
+      const BlockNode& flex_item,
       absl::optional<LayoutUnit> override_inline_size) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
   // layout pass for fragmentation. Both may be set at the same time.
   NGConstraintSpace BuildSpaceForLayout(
-      const NGBlockNode& flex_item_node,
+      const BlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
       absl::optional<LayoutUnit> override_inline_size = absl::nullopt,
       absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
@@ -106,7 +106,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
-  bool MainAxisIsInlineAxis(const NGBlockNode& child) const;
+  bool MainAxisIsInlineAxis(const BlockNode& child) const;
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
   void HandleOutOfFlowPositionedItems(

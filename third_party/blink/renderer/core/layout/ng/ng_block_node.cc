@@ -224,7 +224,7 @@ inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
 
 bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
                                       const MinMaxSizesFloatInput& float_input,
-                                      const NGBlockNode& node) {
+                                      const BlockNode& node) {
   // Obviously can't use the cache if our intrinsic logical widths are dirty.
   if (node.GetLayoutBox()->IntrinsicLogicalWidthsDirty())
     return false;
@@ -268,7 +268,7 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
 }
 
 absl::optional<LayoutUnit> ContentMinimumInlineSize(
-    const NGBlockNode& block_node,
+    const BlockNode& block_node,
     const BoxStrut& border_padding) {
   // Table layout is never allowed to go below the min-intrinsic size.
   if (block_node.IsTable())
@@ -315,7 +315,7 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
 
 }  // namespace
 
-const NGLayoutResult* NGBlockNode::Layout(
+const NGLayoutResult* BlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
@@ -569,7 +569,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   return layout_result;
 }
 
-const NGLayoutResult* NGBlockNode::SimplifiedLayout(
+const NGLayoutResult* BlockNode::SimplifiedLayout(
     const NGPhysicalFragment& previous_fragment) const {
   const NGLayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
@@ -622,7 +622,7 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
   return result;
 }
 
-const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
+const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token) const {
   // We read and write the physical fragments vector in LayoutBox here, which
@@ -677,7 +677,7 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
   return result;
 }
 
-void NGBlockNode::FinishRepeatableRoot() const {
+void BlockNode::FinishRepeatableRoot() const {
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
 
   // This is the last fragment. It won't be repeated again. We have already
@@ -707,7 +707,7 @@ void NGBlockNode::FinishRepeatableRoot() const {
   }
 }
 
-const NGLayoutResult* NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
+const NGLayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
     LogicalSize container_content_size) const {
   DCHECK(IsOutOfFlowPositioned());
 
@@ -754,7 +754,7 @@ const NGLayoutResult* NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
   return cached_layout_result;
 }
 
-void NGBlockNode::PrepareForLayout() const {
+void BlockNode::PrepareForLayout() const {
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (block && block->IsScrollContainer()) {
     DCHECK(block->GetScrollableArea());
@@ -768,7 +768,7 @@ void NGBlockNode::PrepareForLayout() const {
     To<LayoutListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 }
 
-void NGBlockNode::FinishLayout(
+void BlockNode::FinishLayout(
     LayoutBlockFlow* block_flow,
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
@@ -860,9 +860,9 @@ void NGBlockNode::FinishLayout(
   CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
 
-void NGBlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
-                                         const NGBlockBreakToken* break_token,
-                                         bool clear_trailing_results) const {
+void BlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
+                                       const NGBlockBreakToken* break_token,
+                                       bool clear_trailing_results) const {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   wtf_size_t fragment_idx = 0;
 
@@ -883,7 +883,7 @@ void NGBlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
     box_->ShrinkLayoutResults(fragment_idx + 1);
 }
 
-MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
+MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const MinMaxSizesType type,
     const NGConstraintSpace& constraint_space,
@@ -1052,7 +1052,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   return result;
 }
 
-LayoutInputNode NGBlockNode::NextSibling() const {
+LayoutInputNode BlockNode::NextSibling() const {
   LayoutObject* next_sibling = box_->NextSibling();
 
   // We may have some LayoutInline(s) still within the tree (due to treating
@@ -1070,10 +1070,10 @@ LayoutInputNode NGBlockNode::NextSibling() const {
   if (!next_sibling)
     return nullptr;
 
-  return NGBlockNode(To<LayoutBox>(next_sibling));
+  return BlockNode(To<LayoutBox>(next_sibling));
 }
 
-LayoutInputNode NGBlockNode::FirstChild() const {
+LayoutInputNode BlockNode::FirstChild() const {
   // If this layout is blocked by a display-lock, then we pretend this node has
   // no children.
   if (ChildLayoutBlockedByDisplayLock()) {
@@ -1081,12 +1081,12 @@ LayoutInputNode NGBlockNode::FirstChild() const {
   }
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (UNLIKELY(!block))
-    return NGBlockNode(box_->FirstChildBox());
+    return BlockNode(box_->FirstChildBox());
   auto* child = GetLayoutObjectForFirstChildNode(block);
   if (!child)
     return nullptr;
   if (!AreNGBlockFlowChildrenInline(block))
-    return NGBlockNode(To<LayoutBox>(child));
+    return BlockNode(To<LayoutBox>(child));
 
   InlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
@@ -1112,24 +1112,24 @@ LayoutInputNode NGBlockNode::FirstChild() const {
     return nullptr;
 
   DCHECK(child->IsFloatingOrOutOfFlowPositioned());
-  return NGBlockNode(To<LayoutBox>(child));
+  return BlockNode(To<LayoutBox>(child));
 }
 
-NGBlockNode NGBlockNode::GetRenderedLegend() const {
+BlockNode BlockNode::GetRenderedLegend() const {
   if (!IsFieldsetContainer())
     return nullptr;
-  return NGBlockNode(
+  return BlockNode(
       LayoutFieldset::FindInFlowLegend(*To<LayoutBlock>(box_.Get())));
 }
 
-NGBlockNode NGBlockNode::GetFieldsetContent() const {
+BlockNode BlockNode::GetFieldsetContent() const {
   if (!IsFieldsetContainer())
     return nullptr;
-  return NGBlockNode(
+  return BlockNode(
       To<LayoutFieldset>(box_.Get())->FindAnonymousFieldsetContentBox());
 }
 
-LayoutUnit NGBlockNode::EmptyLineBlockSize(
+LayoutUnit BlockNode::EmptyLineBlockSize(
     const NGBlockBreakToken* incoming_break_token) const {
   // Only return a line-height for the first fragment.
   if (IsBreakInside(incoming_break_token))
@@ -1137,12 +1137,12 @@ LayoutUnit NGBlockNode::EmptyLineBlockSize(
   return box_->LogicalHeightForEmptyLine();
 }
 
-String NGBlockNode::ToString() const {
-  return String::Format("NGBlockNode: %s",
+String BlockNode::ToString() const {
+  return String::Format("BlockNode: %s",
                         GetLayoutBox()->ToString().Ascii().c_str());
 }
 
-void NGBlockNode::CopyFragmentDataToLayoutBox(
+void BlockNode::CopyFragmentDataToLayoutBox(
     const NGConstraintSpace& constraint_space,
     const NGLayoutResult& layout_result,
     const NGBlockBreakToken* previous_break_token) const {
@@ -1216,7 +1216,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   }
 }
 
-void NGBlockNode::PlaceChildrenInLayoutBox(
+void BlockNode::PlaceChildrenInLayoutBox(
     const NGPhysicalBoxFragment& physical_fragment,
     const NGBlockBreakToken* previous_break_token,
     bool needs_invalidation_check) const {
@@ -1243,7 +1243,7 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
   }
 }
 
-void NGBlockNode::PlaceChildrenInFlowThread(
+void BlockNode::PlaceChildrenInFlowThread(
     LayoutMultiColumnFlowThread* flow_thread,
     const NGConstraintSpace& space,
     const NGPhysicalBoxFragment& physical_fragment,
@@ -1331,7 +1331,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 }
 
 // Copies data back to the legacy layout tree for a given child fragment.
-void NGBlockNode::CopyChildFragmentPosition(
+void BlockNode::CopyChildFragmentPosition(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const NGPhysicalBoxFragment& container_fragment,
@@ -1352,7 +1352,7 @@ void NGBlockNode::CopyChildFragmentPosition(
     layout_box->SetShouldCheckForPaintInvalidation();
 }
 
-void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
+void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
   auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutBox());
   DCHECK(block_flow && block_flow->MultiColumnFlowThread());
   MultiColumnFragmentainerGroup& last_group =
@@ -1362,7 +1362,7 @@ void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
   last_group.ExtendLogicalBottomInFlowThread(block_size);
 }
 
-void NGBlockNode::CopyFragmentItemsToLayoutBox(
+void BlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
     const FragmentItems& items,
     const NGBlockBreakToken* previous_break_token) const {
@@ -1416,7 +1416,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
   }
 }
 
-bool NGBlockNode::IsInlineFormattingContextRoot(
+bool BlockNode::IsInlineFormattingContextRoot(
     InlineNode* first_child_out) const {
   if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
     if (!AreNGBlockFlowChildrenInline(block))
@@ -1431,21 +1431,21 @@ bool NGBlockNode::IsInlineFormattingContextRoot(
   return false;
 }
 
-bool NGBlockNode::IsInlineLevel() const {
+bool BlockNode::IsInlineLevel() const {
   return GetLayoutBox()->IsInline();
 }
 
-bool NGBlockNode::IsAtomicInlineLevel() const {
+bool BlockNode::IsAtomicInlineLevel() const {
   // LayoutObject::IsAtomicInlineLevel() returns true for e.g., <img
   // style="display: block">. Check IsInline() as well.
   return GetLayoutBox()->IsAtomicInlineLevel() && GetLayoutBox()->IsInline();
 }
 
-bool NGBlockNode::IsInTopOrViewTransitionLayer() const {
+bool BlockNode::IsInTopOrViewTransitionLayer() const {
   return GetLayoutBox()->IsInTopOrViewTransitionLayer();
 }
 
-bool NGBlockNode::HasAspectRatio() const {
+bool BlockNode::HasAspectRatio() const {
   if (!Style().AspectRatio().IsAuto()) {
     DCHECK(!GetAspectRatio().IsEmpty());
     return true;
@@ -1461,7 +1461,7 @@ bool NGBlockNode::HasAspectRatio() const {
   return !GetAspectRatio().IsEmpty();
 }
 
-LogicalSize NGBlockNode::GetAspectRatio() const {
+LogicalSize BlockNode::GetAspectRatio() const {
   // The CSS parser will ensure that this will only be set if the feature
   // is enabled.
   const EAspectRatioType ar_type = Style().AspectRatio().GetType();
@@ -1487,7 +1487,7 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
   return LogicalSize();
 }
 
-absl::optional<gfx::Transform> NGBlockNode::GetTransformForChildFragment(
+absl::optional<gfx::Transform> BlockNode::GetTransformForChildFragment(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalSize size) const {
   const auto* child_layout_object = child_fragment.GetLayoutObject();
@@ -1519,28 +1519,28 @@ absl::optional<gfx::Transform> NGBlockNode::GetTransformForChildFragment(
   return transform;
 }
 
-bool NGBlockNode::HasNonVisibleBlockOverflow() const {
+bool BlockNode::HasNonVisibleBlockOverflow() const {
   OverflowClipAxes clip_axes = GetOverflowClipAxes();
   if (Style().IsHorizontalWritingMode())
     return clip_axes & kOverflowClipY;
   return clip_axes & kOverflowClipX;
 }
 
-bool NGBlockNode::IsCustomLayoutLoaded() const {
+bool BlockNode::IsCustomLayoutLoaded() const {
   return To<LayoutCustom>(box_.Get())->IsLoaded();
 }
 
-MathScriptType NGBlockNode::ScriptType() const {
+MathScriptType BlockNode::ScriptType() const {
   DCHECK(IsA<MathMLScriptsElement>(GetDOMNode()));
   return To<MathMLScriptsElement>(GetDOMNode())->GetScriptType();
 }
 
-bool NGBlockNode::HasIndex() const {
+bool BlockNode::HasIndex() const {
   DCHECK(IsA<MathMLRadicalElement>(GetDOMNode()));
   return To<MathMLRadicalElement>(GetDOMNode())->HasIndex();
 }
 
-const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
+const NGLayoutResult* BlockNode::LayoutAtomicInline(
     const NGConstraintSpace& parent_constraint_space,
     const ComputedStyle& parent_style,
     bool use_first_line_style,
@@ -1570,7 +1570,7 @@ const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
   return result;
 }
 
-const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
+const NGLayoutResult* BlockNode::RunSimplifiedLayout(
     const LayoutAlgorithmParams& params,
     const NGLayoutResult& previous_result) const {
   SimplifiedLayoutAlgorithm algorithm(params, previous_result);
@@ -1582,7 +1582,7 @@ const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
   return algorithm.Layout();
 }
 
-void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
+void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     const NGConstraintSpace& space,
     const NGPhysicalFragment& fragment) const {
   // Table-cells don't have margins, and aren't grid-items.
@@ -1615,7 +1615,7 @@ void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
 // Floats can optionally have a shape area, specified by "shape-outside". The
 // current shape machinery requires setting the size of the float after layout
 // in the parents writing mode.
-void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
+void BlockNode::UpdateShapeOutsideInfoIfNeeded(
     const NGLayoutResult& layout_result,
     const NGConstraintSpace& constraint_space) const {
   if (!box_->IsFloating() || !box_->GetShapeOutsideInfo())
@@ -1642,7 +1642,7 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
       constraint_space.PercentageResolutionInlineSize());
 }
 
-void NGBlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
+void BlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
   // We have no chance to unregister the inline size for the

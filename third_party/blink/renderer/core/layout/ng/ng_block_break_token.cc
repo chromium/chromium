@@ -34,7 +34,7 @@ NGBlockBreakToken* NGBlockBreakToken::Create(NGBoxFragmentBuilder* builder) {
       PassKey(), builder);
 }
 
-NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const NGBlockNode& node,
+NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const BlockNode& node,
                                                      unsigned sequence_number) {
   auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
   token->data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
@@ -44,7 +44,7 @@ NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const NGBlockNode& node,
 }
 
 NGBlockBreakToken* NGBlockBreakToken::CreateForBreakInRepeatedFragment(
-    const NGBlockNode& node,
+    const BlockNode& node,
     unsigned sequence_number,
     LayoutUnit consumed_block_size,
     bool is_at_block_end) {

@@ -125,7 +125,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
 }  // namespace
 
 GridItemData::GridItemData(
-    NGBlockNode node,
+    BlockNode node,
     const ComputedStyle& root_grid_style,
     FontBaseline parent_grid_font_baseline,
     bool parent_must_consider_grid_items_for_column_sizing,

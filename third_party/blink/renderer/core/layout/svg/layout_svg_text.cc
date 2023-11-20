@@ -245,7 +245,7 @@ void LayoutSVGText::UpdateLayout() {
       style.GetWritingMode(), style.GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
   builder.SetAvailableSize(LogicalSize());
-  NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  BlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
 

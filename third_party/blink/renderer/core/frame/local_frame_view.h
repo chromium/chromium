@@ -186,7 +186,7 @@ class CORE_EXPORT LocalFrameView final
 
   unsigned LayoutCountForTesting() const { return layout_count_for_testing_; }
   // Returns the number of block layout calls.
-  //  * It's incremented when NGBlockNode::Layout() is called with NeedsLayout()
+  //  * It's incremented when BlockNode::Layout() is called with NeedsLayout()
   //  * It can overflow. Do not use it in production.
   uint32_t BlockLayoutCountForTesting() const {
     return block_layout_count_for_testing_;

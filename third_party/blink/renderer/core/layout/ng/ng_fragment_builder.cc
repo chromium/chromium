@@ -15,7 +15,7 @@ namespace blink {
 
 namespace {
 
-bool IsInlineContainerForNode(const NGBlockNode& node,
+bool IsInlineContainerForNode(const BlockNode& node,
                               const LayoutObject* inline_container) {
   return inline_container && inline_container->IsLayoutInline() &&
          inline_container->CanContainOutOfFlowPositionedElement(
@@ -370,7 +370,7 @@ void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
 }
 
 void NGFragmentBuilder::AddOutOfFlowChildCandidate(
-    NGBlockNode child,
+    BlockNode child,
     const LogicalOffset& child_offset,
     LogicalStaticPosition::InlineEdge inline_edge,
     LogicalStaticPosition::BlockEdge block_edge) {
@@ -386,7 +386,7 @@ void NGFragmentBuilder::AddOutOfFlowChildCandidate(
 }
 
 void NGFragmentBuilder::AddOutOfFlowInlineChildCandidate(
-    NGBlockNode child,
+    BlockNode child,
     const LogicalOffset& child_offset,
     TextDirection inline_container_direction) {
   DCHECK(node_.IsInline() || layout_object_->IsLayoutInline());
@@ -425,7 +425,7 @@ void NGFragmentBuilder::SwapOutOfFlowPositionedCandidates(
 }
 
 void NGFragmentBuilder::AddMulticolWithPendingOOFs(
-    const NGBlockNode& multicol,
+    const BlockNode& multicol,
     MulticolWithPendingOofs<LogicalOffset>* multicol_info) {
   DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
   auto it = multicols_with_pending_oofs_.find(multicol.GetLayoutBox());
@@ -451,7 +451,7 @@ void NGFragmentBuilder::TransferOutOfFlowCandidates(
     LogicalOffset additional_offset,
     const MulticolWithPendingOofs<LogicalOffset>* multicol) {
   for (auto& candidate : oof_positioned_candidates_) {
-    NGBlockNode node = candidate.Node();
+    BlockNode node = candidate.Node();
     candidate.static_position.offset += additional_offset;
     if (multicol && multicol->fixedpos_containing_block.Fragment() &&
         node.Style().GetPosition() == EPosition::kFixed) {
@@ -524,7 +524,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
   // Collect the child's out of flow descendants.
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
   for (const auto& descendant : fragment.OutOfFlowPositionedDescendants()) {
-    NGBlockNode node = descendant.Node();
+    BlockNode node = descendant.Node();
     LogicalStaticPosition static_position =
         descendant.StaticPosition().ConvertToLogical(converter);
 
@@ -663,7 +663,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
       absl::optional<LayoutUnit> fixedpos_clipped_container_block_offset;
 
       AddMulticolWithPendingOOFs(
-          NGBlockNode(multicol.key),
+          BlockNode(multicol.key),
           MakeGarbageCollected<MulticolWithPendingOofs<LogicalOffset>>(
               multicol_offset,
               OofContainingBlock<LogicalOffset>(

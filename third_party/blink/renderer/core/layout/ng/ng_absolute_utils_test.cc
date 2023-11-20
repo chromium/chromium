@@ -93,7 +93,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
   }
 
   void ComputeOutOfFlowInlineDimensions(
-      const NGBlockNode& node,
+      const BlockNode& node,
       const NGConstraintSpace& space,
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
@@ -129,7 +129,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
   }
 
   void ComputeOutOfFlowBlockDimensions(
-      const NGBlockNode& node,
+      const BlockNode& node,
       const NGConstraintSpace& space,
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
@@ -172,7 +172,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
 };
 
 TEST_F(NGAbsoluteUtilsTest, Horizontal) {
-  NGBlockNode node(element_->GetLayoutBox());
+  BlockNode node(element_->GetLayoutBox());
   element_->SetInlineStyleProperty(CSSPropertyID::kContain, "size");
   element_->SetInlineStyleProperty(CSSPropertyID::kContainIntrinsicSize,
                                    "60px 4px");
@@ -336,7 +336,7 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
   element_->SetInlineStyleProperty(CSSPropertyID::kContainIntrinsicSize,
                                    "60px 4px");
 
-  NGBlockNode node(element_->GetLayoutBox());
+  BlockNode node(element_->GetLayoutBox());
 
   BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
                                 ComputePadding(ltr_space_, node.Style());
@@ -450,7 +450,7 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
 }
 
 TEST_F(NGAbsoluteUtilsTest, CenterStaticPosition) {
-  NGBlockNode node(element_->GetLayoutBox());
+  BlockNode node(element_->GetLayoutBox());
   LogicalStaticPosition static_position = {{LayoutUnit(150), LayoutUnit(200)},
                                            LogicalStaticPosition::kInlineCenter,
                                            LogicalStaticPosition::kBlockCenter};
@@ -490,7 +490,7 @@ TEST_F(NGAbsoluteUtilsTest, MinMax) {
   element_->SetInlineStyleProperty(CSSPropertyID::kMaxHeight, "150px");
   element_->SetInlineStyleProperty(CSSPropertyID::kContain, "size");
 
-  NGBlockNode node(element_->GetLayoutBox());
+  BlockNode node(element_->GetLayoutBox());
 
   BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
                                 ComputePadding(ltr_space_, node.Style());

@@ -44,20 +44,20 @@ absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
 }
 
 void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
-    NGBlockNode* content) const {
+    BlockNode* content) const {
   // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
   // empty or contains a single anonymous mrow child.
   if (LayoutInputNode child = Node().FirstChild()) {
     DCHECK(!child.NextSibling());
     DCHECK(!child.IsOutOfFlowPositioned());
-    *content = To<NGBlockNode>(child);
+    *content = To<BlockNode>(child);
   }
 }
 
 const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
-  NGBlockNode content = nullptr;
+  BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
   LayoutUnit content_ascent, content_descent;
   BoxStrut content_margins;
@@ -112,8 +112,7 @@ MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-
-  NGBlockNode content = nullptr;
+  BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(

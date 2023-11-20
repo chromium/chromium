@@ -76,7 +76,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
     return false;
   }
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   return first_section != grouped_children.end() &&
          (*first_section).GetLayoutBox() == section;
@@ -85,7 +85,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
 LayoutTableSection* LayoutTable::FirstSection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
     return To<LayoutTableSection>((*first_section).GetLayoutBox());
@@ -96,7 +96,7 @@ LayoutTableSection* LayoutTable::FirstSection() const {
 LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
     auto* section_object =
@@ -112,7 +112,7 @@ LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
 LayoutTableSection* LayoutTable::LastNonEmptySection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto last_section = --grouped_children.end();
   if (last_section != grouped_children.end()) {
     auto* section_object =
@@ -130,9 +130,9 @@ LayoutTableSection* LayoutTable::NextSection(
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   bool found = false;
-  for (NGBlockNode section : grouped_children) {
+  for (BlockNode section : grouped_children) {
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
       return To<LayoutTableSection>(section.GetLayoutBox());
@@ -149,11 +149,11 @@ LayoutTableSection* LayoutTable::PreviousSection(
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto stop = --grouped_children.begin();
   bool found = false;
   for (auto it = --grouped_children.end(); it != stop; --it) {
-    NGBlockNode section = *it;
+    BlockNode section = *it;
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
       return To<LayoutTableSection>(section.GetLayoutBox());

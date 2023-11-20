@@ -15,7 +15,7 @@
 namespace blink {
 
 class CORE_EXPORT MathTokenLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:

@@ -30,7 +30,7 @@ void RemoveClonedResults(LayoutBox& layout_box) {
 }
 
 void UpdateBreakTokens(LayoutBox& layout_box) {
-  NGBlockNode node(&layout_box);
+  BlockNode node(&layout_box);
   wtf_size_t sequence_number = 0;
   wtf_size_t fragment_count = layout_box.PhysicalFragmentCount();
 

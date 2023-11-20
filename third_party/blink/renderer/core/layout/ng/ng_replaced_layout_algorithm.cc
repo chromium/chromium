@@ -84,7 +84,7 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
     space_builder.SetIsFixedBlockSize(true);
 
     const NGLayoutResult* result =
-        To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
+        To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
     LogicalOffset offset =
         converter.ToLogical(new_rect.offset, result->PhysicalFragment().Size());
     container_builder_.AddResult(*result, offset);

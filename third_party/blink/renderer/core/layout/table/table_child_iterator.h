@@ -31,12 +31,12 @@ class CORE_EXPORT TableChildIterator {
     STACK_ALLOCATED();
 
    public:
-    Entry(NGBlockNode node,
+    Entry(BlockNode node,
           const NGBlockBreakToken* token,
           wtf_size_t section_index)
         : node(node), token(token), section_index(section_index) {}
 
-    const NGBlockNode GetNode() const { return node; }
+    const BlockNode GetNode() const { return node; }
     const NGBlockBreakToken* GetBreakToken() const { return token; }
     wtf_size_t GetSectionIndex() const {
       DCHECK(!node.IsTableCaption());
@@ -45,7 +45,7 @@ class CORE_EXPORT TableChildIterator {
     explicit operator bool() const { return !!node; }
 
    private:
-    NGBlockNode node;
+    BlockNode node;
     const NGBlockBreakToken* token;
     wtf_size_t section_index;
   };
@@ -55,7 +55,7 @@ class CORE_EXPORT TableChildIterator {
   Entry NextChild();
 
  private:
-  NGBlockNode CurrentChild() const;
+  BlockNode CurrentChild() const;
   void AdvanceChild();
 
   const TableGroupedChildren* grouped_children_;

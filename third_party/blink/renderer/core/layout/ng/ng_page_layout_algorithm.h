@@ -12,13 +12,13 @@
 
 namespace blink {
 
-class NGBlockNode;
+class BlockNode;
 class NGBlockBreakToken;
 class NGConstraintSpace;
 struct LogicalSize;
 
 class CORE_EXPORT PageLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:

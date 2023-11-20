@@ -23,7 +23,7 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
     kBlock  // Break before or inside a specified child block.
   };
 
-  explicit NGEarlyBreak(NGBlockNode block,
+  explicit NGEarlyBreak(BlockNode block,
                         NGBreakAppeal break_appeal,
                         const NGEarlyBreak* break_inside_child = nullptr)
       : box_(block.GetLayoutBox()),
@@ -37,9 +37,9 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
 
   BreakType Type() const { return static_cast<BreakType>(const_type_); }
   bool IsBreakBefore() const { return !break_inside_child_; }
-  NGBlockNode BlockNode() const {
+  BlockNode GetBlockNode() const {
     CHECK_EQ(const_type_, kBlock);
-    return NGBlockNode(box_);
+    return BlockNode(box_);
   }
   int LineNumber() const {
     DCHECK_EQ(const_type_, kLine);

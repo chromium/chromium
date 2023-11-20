@@ -19,7 +19,7 @@ namespace {
 // `LayoutTable::HasBackgroundForPaint`). Used to know whether the table
 // background should be invalidated when some column span changes.
 bool TableHasColumnsWithBackground(LayoutTable* table) {
-  TableGroupedChildren grouped_children(NGBlockNode(To<LayoutBox>(table)));
+  TableGroupedChildren grouped_children(BlockNode(To<LayoutBox>(table)));
   for (const auto& column : grouped_children.columns) {
     if (column.Style().HasBackground()) {
       return true;

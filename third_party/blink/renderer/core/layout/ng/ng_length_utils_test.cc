@@ -93,7 +93,7 @@ class NGLengthUtilsTest : public testing::Test {
 class NGLengthUtilsTestWithNode : public RenderingTest {
  public:
   LayoutUnit ComputeInlineSizeForFragment(
-      const NGBlockNode& node,
+      const BlockNode& node,
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       const MinMaxSizes& sizes = MinMaxSizes()) {
     BoxStrut border_padding = ComputeBorders(constraint_space, node) +
@@ -103,7 +103,7 @@ class NGLengthUtilsTestWithNode : public RenderingTest {
   }
 
   LayoutUnit ComputeBlockSizeForFragment(
-      const NGBlockNode& node,
+      const BlockNode& node,
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       LayoutUnit content_size = LayoutUnit(),
       absl::optional<LayoutUnit> inline_size = absl::nullopt) {
@@ -182,26 +182,26 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
                          .ToConstraintSpace();
 
   MinMaxSizes expected = sizes;
-  NGBlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
+  BlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = MinMaxSizes{LayoutUnit(150), LayoutUnit(150)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = sizes;
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = MinMaxSizes{LayoutUnit(430), LayoutUnit(440)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
   auto sizes_padding400 = sizes;
   sizes_padding400 += LayoutUnit(400);
   EXPECT_EQ(expected,
@@ -209,30 +209,30 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
                 WritingMode::kHorizontalTb, node, space, sizes_padding400));
 
   expected = MinMaxSizes{LayoutUnit(30), LayoutUnit(40)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = MinMaxSizes{LayoutUnit(30), LayoutUnit(35)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = MinMaxSizes{LayoutUnit(80), LayoutUnit(80)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 
   expected = MinMaxSizes{LayoutUnit(150), LayoutUnit(150)};
   auto sizes_padding50 = sizes;
   sizes_padding50 += LayoutUnit(50);
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
   EXPECT_EQ(expected,
             ComputeMinAndMaxContentContributionForTest(
                 WritingMode::kHorizontalTb, node, space, sizes_padding50));
 
   expected = MinMaxSizes{LayoutUnit(100), LayoutUnit(100)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
   EXPECT_EQ(expected,
             ComputeMinAndMaxContentContributionForTest(
                 WritingMode::kHorizontalTb, node, space, sizes_padding50));
@@ -240,13 +240,13 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
   // Content size should never be below zero, even with box-sizing: border-box
   // and a large padding...
   expected = MinMaxSizes{LayoutUnit(400), LayoutUnit(400)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
   EXPECT_EQ(expected,
             ComputeMinAndMaxContentContributionForTest(
                 WritingMode::kHorizontalTb, node, space, sizes_padding400));
 
   expected.min_size = expected.max_size = sizes.min_size + LayoutUnit(400);
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
   EXPECT_EQ(expected,
             ComputeMinAndMaxContentContributionForTest(
                 WritingMode::kHorizontalTb, node, space, sizes_padding400));
@@ -254,13 +254,13 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
   // Due to padding and box-sizing, width computes to 400px and max-width to
   // 440px, so the result is 400.
   expected = MinMaxSizes{LayoutUnit(400), LayoutUnit(400)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
   EXPECT_EQ(expected,
             ComputeMinAndMaxContentContributionForTest(
                 WritingMode::kHorizontalTb, node, space, sizes_padding400));
 
   expected = MinMaxSizes{LayoutUnit(40), LayoutUnit(40)};
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           WritingMode::kHorizontalTb, node, space, sizes));
 }
@@ -287,65 +287,65 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
 
   MinMaxSizes sizes = {LayoutUnit(30), LayoutUnit(40)};
 
-  NGBlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
+  BlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
   EXPECT_EQ(LayoutUnit(60), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
   EXPECT_EQ(LayoutUnit(200), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
   EXPECT_EQ(LayoutUnit(150), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
   EXPECT_EQ(LayoutUnit(200), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
   EXPECT_EQ(LayoutUnit(80), ComputeInlineSizeForFragment(node));
 
   NGConstraintSpace constraint_space =
       ConstructConstraintSpace(120, 120, true, true);
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
   EXPECT_EQ(LayoutUnit(120),
             ComputeInlineSizeForFragment(node, constraint_space));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
   EXPECT_EQ(LayoutUnit(160), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
   EXPECT_EQ(LayoutUnit(160), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
   EXPECT_EQ(LayoutUnit(180), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
   EXPECT_EQ(LayoutUnit(150), ComputeInlineSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
   EXPECT_EQ(LayoutUnit(100), ComputeInlineSizeForFragment(node));
 
   // Content size should never be below zero, even with box-sizing: border-box
   // and a large padding...
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
   EXPECT_EQ(LayoutUnit(400), ComputeInlineSizeForFragment(node));
   auto sizes_padding400 = sizes;
   sizes_padding400 += LayoutUnit(400);
 
   // ...and the same goes for fill-available with a large padding.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
   EXPECT_EQ(LayoutUnit(400), ComputeInlineSizeForFragment(node));
 
   constraint_space = ConstructConstraintSpace(120, 140);
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
   EXPECT_EQ(LayoutUnit(430), ComputeInlineSizeForFragment(
                                  node, constraint_space, sizes_padding400));
 
   //  Due to padding and box-sizing, width computes to 400px and max-width to
   //  440px, so the result is 400.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test15")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test15")));
   EXPECT_EQ(LayoutUnit(400), ComputeInlineSizeForFragment(
                                  node, constraint_space, sizes_padding400));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test16")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test16")));
   EXPECT_EQ(LayoutUnit(40),
             ComputeInlineSizeForFragment(node, constraint_space, sizes));
 }
@@ -370,69 +370,69 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
     <div id="test16" style="width:100px; aspect-ratio:2/1; padding-right:10px; padding-bottom:20px; box-sizing:border-box;"></div>
   )HTML");
 
-  NGBlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
+  BlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));
   EXPECT_EQ(LayoutUnit(90), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test2")));
   EXPECT_EQ(LayoutUnit(300), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test3")));
   EXPECT_EQ(LayoutUnit(150), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test4")));
   EXPECT_EQ(LayoutUnit(0), ComputeBlockSizeForFragment(node));
 
   NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300);
   EXPECT_EQ(LayoutUnit(120), ComputeBlockSizeForFragment(node, constraint_space,
                                                          LayoutUnit(120)));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test5")));
   EXPECT_EQ(LayoutUnit(70), ComputeBlockSizeForFragment(node));
 
   constraint_space = ConstructConstraintSpace(200, 200, true, true);
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test6")));
   EXPECT_EQ(LayoutUnit(200),
             ComputeBlockSizeForFragment(node, constraint_space));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test7")));
   EXPECT_EQ(LayoutUnit(240), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test8")));
   EXPECT_EQ(LayoutUnit(240), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test9")));
   EXPECT_EQ(LayoutUnit(280), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test10")));
   EXPECT_EQ(LayoutUnit(150), ComputeBlockSizeForFragment(node));
 
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test11")));
   EXPECT_EQ(LayoutUnit(100), ComputeBlockSizeForFragment(node));
 
   // Content size should never be below zero, even with box-sizing: border-box
   // and a large padding...
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test12")));
   EXPECT_EQ(LayoutUnit(400), ComputeBlockSizeForFragment(node));
 
   // ...and the same goes for fill-available with a large padding.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test13")));
   EXPECT_EQ(LayoutUnit(400), ComputeBlockSizeForFragment(node));
 
   // Now check aspect-ratio.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test14")));
   EXPECT_EQ(LayoutUnit(50), ComputeBlockSizeForFragment(
                                 node, ConstructConstraintSpace(200, 300),
                                 LayoutUnit(), LayoutUnit(100)));
 
   // Default box-sizing
   // Should be (100 - 10) / 2 + 20 = 65.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test15")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test15")));
   EXPECT_EQ(LayoutUnit(65), ComputeBlockSizeForFragment(
                                 node, ConstructConstraintSpace(200, 300),
                                 LayoutUnit(20), LayoutUnit(100)));
 
   // With box-sizing: border-box, should be 50.
-  node = NGBlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test16")));
+  node = BlockNode(To<LayoutBox>(GetLayoutObjectByElementId("test16")));
   EXPECT_EQ(LayoutUnit(50), ComputeBlockSizeForFragment(
                                 node, ConstructConstraintSpace(200, 300),
                                 LayoutUnit(20), LayoutUnit(100)));
@@ -443,7 +443,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestIndefinitePercentages) {
     <div id="test" style="min-height:20px; height:20%;"></div>
   )HTML");
 
-  NGBlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test")));
+  BlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test")));
   EXPECT_EQ(kIndefiniteSize,
             ComputeBlockSizeForFragment(node, ConstructConstraintSpace(200, -1),
                                         LayoutUnit(-1)));
@@ -467,7 +467,7 @@ span {
 }
 </style>
 <span><svg></svg></span>)HTML");
-  // Pass if no DCHECK failures in NGBlockNode::FinishLayout().
+  // Pass if no DCHECK failures in BlockNode::FinishLayout().
 }
 
 TEST_F(NGLengthUtilsTest, TestMargins) {

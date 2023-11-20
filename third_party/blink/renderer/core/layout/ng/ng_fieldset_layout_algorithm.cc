@@ -183,7 +183,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   LogicalSize adjusted_padding_box_size =
       ShrinkLogicalSize(border_box_size_, Borders());
 
-  NGBlockNode legend = Node().GetRenderedLegend();
+  BlockNode legend = Node().GetRenderedLegend();
   if (legend) {
     if (!IsBreakInside(BreakToken()))
       LayoutLegend(legend);
@@ -223,7 +223,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   // Proceed with normal fieldset children (excluding the rendered legend). They
   // all live inside an anonymous child box of the fieldset container.
   if (content_break_token || !has_seen_all_children) {
-    NGBlockNode fieldset_content = Node().GetFieldsetContent();
+    BlockNode fieldset_content = Node().GetFieldsetContent();
     DCHECK(fieldset_content);
     NGBreakStatus break_status =
         LayoutFieldsetContent(fieldset_content, content_break_token,
@@ -235,7 +235,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   return NGBreakStatus::kContinue;
 }
 
-void FieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
+void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
   // Lay out the legend. While the fieldset container normally ignores its
   // padding, the legend is laid out within what would have been the content
   // box had the fieldset been a regular block with no weirdness.
@@ -318,7 +318,7 @@ LayoutUnit FieldsetLayoutAlgorithm::ComputeLegendInlineOffset(
 }
 
 NGBreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
-    NGBlockNode& fieldset_content,
+    BlockNode& fieldset_content,
     const NGBlockBreakToken* content_break_token,
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
@@ -458,7 +458,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
     if (result_without_children)
       return *result_without_children;
   } else {
-    if (NGBlockNode legend = Node().GetRenderedLegend()) {
+    if (BlockNode legend = Node().GetRenderedLegend()) {
       NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
                                              legend,
                                              /* is_new_fc */ true);
@@ -479,7 +479,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
 
   // Size containment does not consider the content for sizing.
   if (!has_inline_size_containment) {
-    NGBlockNode content = Node().GetFieldsetContent();
+    BlockNode content = Node().GetFieldsetContent();
     DCHECK(content);
     NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
                                            content,
@@ -502,7 +502,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 const NGConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
-    NGBlockNode legend,
+    BlockNode legend,
     LogicalSize available_size,
     LogicalSize percentage_size) {
   NGConstraintSpaceBuilder builder(GetConstraintSpace(),
@@ -517,7 +517,7 @@ const NGConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
 
 const NGConstraintSpace
 FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
-    NGBlockNode fieldset_content,
+    BlockNode fieldset_content,
     LogicalSize padding_box_size,
     LayoutUnit block_offset) {
   DCHECK(fieldset_content.CreatesNewFormattingContext());

@@ -203,7 +203,7 @@ class CORE_EXPORT NGFragmentBuilder {
   //
   // See layout part for builder interaction.
   void AddOutOfFlowChildCandidate(
-      NGBlockNode,
+      BlockNode,
       const LogicalOffset& child_offset,
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
@@ -214,7 +214,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // |inline_container_direction| is the current text direction for determining
   // the correct static-position.
   void AddOutOfFlowInlineChildCandidate(
-      NGBlockNode,
+      BlockNode,
       const LogicalOffset& child_offset,
       TextDirection inline_container_direction);
 
@@ -234,7 +234,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // inner multicol in which their containing block resides. Thus, we need to
   // store such inner multicols for later use.
   void AddMulticolWithPendingOOFs(
-      const NGBlockNode& multicol,
+      const BlockNode& multicol,
       MulticolWithPendingOofs<LogicalOffset>* multicol_info =
           MakeGarbageCollected<MulticolWithPendingOofs<LogicalOffset>>());
 

@@ -546,7 +546,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
       OverflowClipAxes block_axis = GetWritingDirection().IsHorizontal()
                                         ? kOverflowClipY
                                         : kOverflowClipX;
-      if ((To<NGBlockNode>(node_).GetOverflowClipAxes() & block_axis) ||
+      if ((To<BlockNode>(node_).GetOverflowClipAxes() & block_axis) ||
           is_block_size_for_fragmentation_clamped_) {
         // If block-axis overflow is clipped, ignore child overflow and just use
         // the border-box size of the fragment itself. Also do this if the node

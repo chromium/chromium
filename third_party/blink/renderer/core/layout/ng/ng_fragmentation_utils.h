@@ -290,7 +290,7 @@ enum class NGBreakStatus {
 // fragmentation (kDisableFragmentation). kBrokeBefore is never returned here
 // (if we need a break before the node, that's something that will be determined
 // by the parent algorithm).
-NGBreakStatus FinishFragmentation(NGBlockNode node,
+NGBreakStatus FinishFragmentation(BlockNode node,
                                   const NGConstraintSpace&,
                                   LayoutUnit trailing_border_padding,
                                   LayoutUnit space_left,
@@ -424,7 +424,7 @@ bool MovePastBreakpoint(
 // details on |flex_column_break_info|.
 void UpdateEarlyBreakAtBlockChild(
     const NGConstraintSpace&,
-    NGBlockNode child,
+    BlockNode child,
     const NGLayoutResult&,
     NGBreakAppeal appeal_before,
     NGBoxFragmentBuilder*,
@@ -450,7 +450,7 @@ bool AttemptSoftBreak(
 // the node we're going to break before, return the early break inside. This can
 // then be passed to child layout, so that child layout eventually can tell
 // where to insert the break.
-const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+const NGEarlyBreak* EnterEarlyBreakInChild(const BlockNode& child,
                                            const NGEarlyBreak&);
 
 // Return true if this is the child that we had previously determined to break
@@ -463,12 +463,13 @@ bool IsEarlyBreakTarget(const NGEarlyBreak&,
 // return the remaining path if that's the case, nullptr otherwise.
 inline const NGColumnSpannerPath* FollowColumnSpannerPath(
     const NGColumnSpannerPath* path,
-    const NGBlockNode& child) {
+    const BlockNode& child) {
   if (!path)
     return nullptr;
   const NGColumnSpannerPath* next_step = path->Child();
-  if (next_step && next_step->BlockNode() == child)
+  if (next_step && next_step->GetBlockNode() == child) {
     return next_step;
+  }
   return nullptr;
 }
 
@@ -484,10 +485,10 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
 
 // Calculate the container builder and constraint space for a multicol.
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
-    const NGBlockNode& multicol,
+    const BlockNode& multicol,
     const NGConstraintSpace& space,
     const FragmentGeometry& fragment_geometry);
-NGConstraintSpace CreateConstraintSpaceForMulticol(const NGBlockNode& multicol);
+NGConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol);
 
 // Return the adjusted child margin to be applied at the end of a fragment.
 // Margins should collapse with the fragmentainer boundary. |block_offset| is

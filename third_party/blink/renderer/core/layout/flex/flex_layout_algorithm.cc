@@ -154,7 +154,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
 }
 
-bool FlexLayoutAlgorithm::MainAxisIsInlineAxis(const NGBlockNode& child) const {
+bool FlexLayoutAlgorithm::MainAxisIsInlineAxis(const BlockNode& child) const {
   return child.Style().IsHorizontalWritingMode() == is_horizontal_flow_;
 }
 
@@ -284,7 +284,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
       ShrinkLogicalSize(total_fragment_size, border_scrollbar_padding);
 
   for (LayoutBox* oof_child : oofs) {
-    NGBlockNode child(oof_child);
+    BlockNode child(oof_child);
 
     AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
     AxisEdge cross_axis_edge =
@@ -391,7 +391,7 @@ bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
   return ChildAvailableSize().block_size != kIndefiniteSize;
 }
 
-bool FlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
+bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
   // Note: Unresolvable % cross size doesn't count as auto for stretchability.
   // As discussed in https://github.com/w3c/csswg-drafts/issues/4312.
   if (!DoesItemCrossSizeComputeToAuto(child))
@@ -411,7 +411,7 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
 }
 
 bool FlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
-    const NGBlockNode& child,
+    const BlockNode& child,
     Length* out_flex_basis = nullptr) const {
   const Length& flex_basis = GetUsedFlexBasis(child);
   if (out_flex_basis)
@@ -425,7 +425,7 @@ bool FlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
 }
 
 bool FlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
-    const NGBlockNode& child,
+    const BlockNode& child,
     const Length& length) const {
   // We don't consider inline value of 'auto' for the cross-axis min/main/max
   // size to be definite. Block value of 'auto' is always indefinite.
@@ -437,7 +437,7 @@ bool FlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
 }
 
 bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
-    const NGBlockNode& child) const {
+    const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
   if (is_horizontal_flow_) {
     return child_style.UsedHeight().IsAuto();
@@ -446,7 +446,7 @@ bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
 }
 
 bool FlexLayoutAlgorithm::AspectRatioProvidesMainSize(
-    const NGBlockNode& child) const {
+    const BlockNode& child) const {
   const Length& cross_axis_length = is_horizontal_flow_
                                         ? child.Style().UsedHeight()
                                         : child.Style().UsedWidth();
@@ -456,13 +456,13 @@ bool FlexLayoutAlgorithm::AspectRatioProvidesMainSize(
 }
 
 bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
-    const NGBlockNode& child) const {
+    const BlockNode& child) const {
   return !algorithm_.IsMultiline() && is_cross_size_definite_ &&
          DoesItemStretch(child);
 }
 
 NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
-    const NGBlockNode& child) const {
+    const BlockNode& child) const {
   NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
                                          /* is_new_fc */ true);
   builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
@@ -475,7 +475,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
 }
 
 NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
-    const NGBlockNode& flex_item,
+    const BlockNode& flex_item,
     absl::optional<LayoutUnit> override_inline_size) const {
   const ComputedStyle& child_style = flex_item.Style();
   NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
@@ -515,7 +515,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
 }
 
 NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
-    const NGBlockNode& flex_item) const {
+    const BlockNode& flex_item) const {
   NGConstraintSpaceBuilder space_builder(
       GetConstraintSpace(), flex_item.Style().GetWritingDirection(),
       /* is_new_fc */ true);
@@ -530,7 +530,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
 }
 
 // This can return an indefinite Length.
-Length FlexLayoutAlgorithm::GetUsedFlexBasis(const NGBlockNode& child) const {
+Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
   const Length& specified_length_in_main_axis =
       is_horizontal_flow_ ? child_style.UsedWidth() : child_style.UsedHeight();
@@ -550,7 +550,7 @@ Length FlexLayoutAlgorithm::GetUsedFlexBasis(const NGBlockNode& child) const {
 }
 
 NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
-    const NGBlockNode& flex_item_node,
+    const BlockNode& flex_item_node,
     LayoutUnit item_main_axis_final_size,
     absl::optional<LayoutUnit> override_inline_size,
     absl::optional<LayoutUnit> line_cross_size_for_stretch,
@@ -663,7 +663,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
   bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
 
   FlexChildIterator iterator(Node());
-  for (NGBlockNode child = iterator.NextChild(); child;
+  for (BlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned()) {
       if (phase == Phase::kLayout) {
@@ -1037,7 +1037,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 }
 
 LayoutUnit FlexLayoutAlgorithm::AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-    const NGBlockNode& child,
+    const BlockNode& child,
     LayoutUnit main_axis_size,
     const MinMaxSizes& cross_min_max,
     const BoxStrut& border_padding_in_child_writing_mode) {
@@ -2200,7 +2200,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
 
   LayoutUnit largest_outer_min_content_contribution;
   for (const FlexItem& item : algorithm_.all_items_) {
-    const NGBlockNode& child = item.ng_input_node_;
+    const BlockNode& child = item.ng_input_node_;
 
     const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult min_max_content_contributions =
@@ -2309,7 +2309,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
 
   int number_of_items = 0;
   FlexChildIterator iterator(Node());
-  for (NGBlockNode child = iterator.NextChild(); child;
+  for (BlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned())
       continue;

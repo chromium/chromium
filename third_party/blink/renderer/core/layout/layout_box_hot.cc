@@ -151,7 +151,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     cache_status = NGLayoutCacheStatus::kCanReuseLines;
   }
 
-  NGBlockNode node(this);
+  BlockNode node(this);
   NGLayoutCacheStatus size_cache_status = CalculateSizeBasedLayoutCacheStatus(
       node, break_token, *cached_layout_result, new_space,
       initial_fragment_geometry);
@@ -518,7 +518,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   //
   // As a result, the cached layout result always needs to contain the previous
   // percentage resolution size in order for the first-tier cache to work.
-  // See |NGBlockNode::CachedLayoutResultForOutOfFlowPositioned|.
+  // See |BlockNode::CachedLayoutResultForOutOfFlowPositioned|.
   bool needs_cached_result_update =
       node.IsOutOfFlowPositioned() &&
       new_space.PercentageResolutionSize() !=

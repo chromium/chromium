@@ -43,7 +43,7 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
-  NGBlockNode node(block_flow);
+  BlockNode node(block_flow);
 
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       constraint_space, node, /* break_token */ nullptr);
@@ -69,7 +69,7 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
-  NGBlockNode node(block_flow);
+  BlockNode node(block_flow);
 
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(constraint_space, node,

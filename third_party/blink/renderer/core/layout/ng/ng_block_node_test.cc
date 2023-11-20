@@ -11,9 +11,9 @@
 namespace blink {
 namespace {
 
-using NGBlockNodeForTest = RenderingTest;
+using BlockNodeForTest = RenderingTest;
 
-TEST_F(NGBlockNodeForTest, IsFloatingForOutOfFlowFloating) {
+TEST_F(BlockNodeForTest, IsFloatingForOutOfFlowFloating) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -24,16 +24,16 @@ TEST_F(NGBlockNodeForTest, IsFloatingForOutOfFlowFloating) {
     </style>
     <div id=container></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   EXPECT_FALSE(container.IsFloating());
 }
 
-TEST_F(NGBlockNodeForTest, ChildInlineAndBlock) {
+TEST_F(BlockNodeForTest, ChildInlineAndBlock) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id=container>Hello!<div></div></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
   LayoutInputNode child2 = child1.NextSibling();
@@ -42,12 +42,12 @@ TEST_F(NGBlockNodeForTest, ChildInlineAndBlock) {
   EXPECT_EQ(child3, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildBlockAndInline) {
+TEST_F(BlockNodeForTest, ChildBlockAndInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id=container><div></div>Hello!</div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
   LayoutInputNode child2 = child1.NextSibling();
@@ -56,7 +56,7 @@ TEST_F(NGBlockNodeForTest, ChildBlockAndInline) {
   EXPECT_EQ(child3, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildFloatBeforeBlock) {
+TEST_F(BlockNodeForTest, ChildFloatBeforeBlock) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -64,7 +64,7 @@ TEST_F(NGBlockNodeForTest, ChildFloatBeforeBlock) {
     </style>
     <div id=container><float></float><div></div></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
   LayoutInputNode child2 = child1.NextSibling();
@@ -73,7 +73,7 @@ TEST_F(NGBlockNodeForTest, ChildFloatBeforeBlock) {
   EXPECT_EQ(child3, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildFloatBeforeInline) {
+TEST_F(BlockNodeForTest, ChildFloatBeforeInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -81,14 +81,14 @@ TEST_F(NGBlockNodeForTest, ChildFloatBeforeInline) {
     </style>
     <div id=container><float></float>Hello!</div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
   LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildFloatAfterInline) {
+TEST_F(BlockNodeForTest, ChildFloatAfterInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -96,14 +96,14 @@ TEST_F(NGBlockNodeForTest, ChildFloatAfterInline) {
     </style>
     <div id=container>Hello<float></float></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
   LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildFloatOnly) {
+TEST_F(BlockNodeForTest, ChildFloatOnly) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -111,14 +111,14 @@ TEST_F(NGBlockNodeForTest, ChildFloatOnly) {
     </style>
     <div id=container><float></float></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
   LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildFloatWithSpaces) {
+TEST_F(BlockNodeForTest, ChildFloatWithSpaces) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -128,14 +128,14 @@ TEST_F(NGBlockNodeForTest, ChildFloatWithSpaces) {
       <float></float>
     </div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
   LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildOofBeforeInline) {
+TEST_F(BlockNodeForTest, ChildOofBeforeInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -143,14 +143,14 @@ TEST_F(NGBlockNodeForTest, ChildOofBeforeInline) {
     </style>
     <div id=container><oof></oof>Hello!</div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
   LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, ChildOofAfterInline) {
+TEST_F(BlockNodeForTest, ChildOofAfterInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -158,7 +158,7 @@ TEST_F(NGBlockNodeForTest, ChildOofAfterInline) {
     </style>
     <div id=container>Hello!<oof></oof></div>
   )HTML");
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
   LayoutInputNode child2 = child1.NextSibling();
@@ -166,7 +166,7 @@ TEST_F(NGBlockNodeForTest, ChildOofAfterInline) {
 }
 
 // crbug.com/1107291
-TEST_F(NGBlockNodeForTest, MinContentForControls) {
+TEST_F(BlockNodeForTest, MinContentForControls) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex;">
       <select id="box1" style="border: solid 2px blue; flex: 0; width: 10%;">
@@ -186,7 +186,7 @@ TEST_F(NGBlockNodeForTest, MinContentForControls) {
                          .ToConstraintSpace();
 
   for (const auto* id : ids) {
-    NGBlockNode box(GetLayoutBoxByElementId(id));
+    BlockNode box(GetLayoutBoxByElementId(id));
     MinMaxSizes sizes = box.ComputeMinMaxSizes(WritingMode::kHorizontalTb,
                                                MinMaxSizesType::kContent, space)
                             .sizes;

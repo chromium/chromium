@@ -48,14 +48,14 @@ TableChildIterator::TableChildIterator(
 
 TableChildIterator::Entry TableChildIterator::NextChild() {
   const NGBlockBreakToken* current_child_break_token = nullptr;
-  NGBlockNode current_child(nullptr);
+  BlockNode current_child(nullptr);
 
   if (break_token_) {
     const auto& child_break_tokens = break_token_->ChildBreakTokens();
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
           To<NGBlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
-      current_child = To<NGBlockNode>(current_child_break_token->InputNode());
+      current_child = To<BlockNode>(current_child_break_token->InputNode());
 
       // Normally (for non-tables), when we're out of break tokens, we can
       // just proceed to the next sibling node, but we can't do this for
@@ -86,9 +86,9 @@ TableChildIterator::Entry TableChildIterator::NextChild() {
   return Entry(current_child, current_child_break_token, current_section_idx);
 }
 
-NGBlockNode TableChildIterator::CurrentChild() const {
+BlockNode TableChildIterator::CurrentChild() const {
   if (!grouped_children_)
-    return NGBlockNode(nullptr);  // We have nothing.
+    return BlockNode(nullptr);  // We have nothing.
 
   if (!section_iterator_) {
     // We're at a top caption, since we have no iterator yet.
@@ -110,7 +110,7 @@ NGBlockNode TableChildIterator::CurrentChild() const {
   }
 
   // We're done.
-  return NGBlockNode(nullptr);
+  return BlockNode(nullptr);
 }
 
 void TableChildIterator::AdvanceChild() {

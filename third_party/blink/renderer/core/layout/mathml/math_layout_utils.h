@@ -12,8 +12,8 @@
 
 namespace blink {
 
+class BlockNode;
 class LayoutInputNode;
-class NGBlockNode;
 class NGConstraintSpace;
 class SimpleFontData;
 struct LogicalSize;
@@ -22,7 +22,7 @@ struct MinMaxSizesResult;
 
 // Creates a new constraint space for the current child.
 NGConstraintSpace CreateConstraintSpaceForMathChild(
-    const NGBlockNode& parent_node,
+    const BlockNode& parent_node,
     const LogicalSize& child_available_size,
     const NGConstraintSpace& parent_constraint_space,
     const LayoutInputNode&,
@@ -35,15 +35,15 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
     const NGConstraintSpace& parent_constraint_space,
-    const NGBlockNode& child,
+    const BlockNode& child,
     LayoutUnit child_available_block_size);
 
-LayoutInputNode FirstChildInFlow(const NGBlockNode&);
-LayoutInputNode NextSiblingInFlow(const NGBlockNode&);
+LayoutInputNode FirstChildInFlow(const BlockNode&);
+LayoutInputNode NextSiblingInFlow(const BlockNode&);
 
-bool IsValidMathMLFraction(const NGBlockNode&);
-bool IsValidMathMLScript(const NGBlockNode&);
-bool IsValidMathMLRadical(const NGBlockNode&);
+bool IsValidMathMLFraction(const BlockNode&);
+bool IsValidMathMLScript(const BlockNode&);
+bool IsValidMathMLRadical(const BlockNode&);
 
 // https://w3c.github.io/mathml-core/#dfn-default-rule-thickness
 inline float RuleThicknessFallback(const ComputedStyle& style) {
@@ -96,9 +96,9 @@ RadicalVerticalParameters GetRadicalVerticalParameters(const ComputedStyle&,
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
                                                       UChar character);
 
-bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
-bool IsTextOnlyToken(const NGBlockNode& node);
-bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
+bool IsUnderOverLaidOutAsSubSup(const BlockNode& node);
+bool IsTextOnlyToken(const BlockNode& node);
+bool IsOperatorWithSpecialShaping(const BlockNode& node);
 
 LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
 
@@ -114,13 +114,13 @@ struct MathMLEmbellishedOperatorProperties {
   LayoutUnit rspace;
 };
 absl::optional<MathMLEmbellishedOperatorProperties>
-GetMathMLEmbellishedOperatorProperties(const NGBlockNode&);
+GetMathMLEmbellishedOperatorProperties(const BlockNode&);
 
-bool IsStretchyOperator(const NGBlockNode& node, bool stretch_axis_is_vertical);
-inline bool IsBlockAxisStretchyOperator(const NGBlockNode& node) {
+bool IsStretchyOperator(const BlockNode& node, bool stretch_axis_is_vertical);
+inline bool IsBlockAxisStretchyOperator(const BlockNode& node) {
   return IsStretchyOperator(node, true);
 }
-inline bool IsInlineAxisStretchyOperator(const NGBlockNode& node) {
+inline bool IsInlineAxisStretchyOperator(const BlockNode& node) {
   return IsStretchyOperator(node, false);
 }
 

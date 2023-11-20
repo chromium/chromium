@@ -26,7 +26,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
       const NGPhysicalBoxFragment&,
       bool has_block_fragmentation);
 
-  NGLayoutOverflowCalculator(const NGBlockNode&,
+  NGLayoutOverflowCalculator(const BlockNode&,
                              bool is_css_box,
                              bool has_block_fragmentation,
                              const PhysicalBoxStrut& borders,
@@ -78,7 +78,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
       layout_overflow_.UniteEvenIfEmpty(child_overflow);
   }
 
-  const NGBlockNode node_;
+  const BlockNode node_;
   const WritingDirectionMode writing_direction_;
   const bool is_scroll_container_;
   const bool is_view_;

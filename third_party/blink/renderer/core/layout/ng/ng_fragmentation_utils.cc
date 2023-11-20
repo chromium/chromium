@@ -465,7 +465,7 @@ bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder& builder) {
   return !builder.HasInflowChildBreakInside();
 }
 
-NGBreakStatus FinishFragmentation(NGBlockNode node,
+NGBreakStatus FinishFragmentation(BlockNode node,
                                   const NGConstraintSpace& space,
                                   LayoutUnit trailing_border_padding,
                                   LayoutUnit space_left,
@@ -1027,7 +1027,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // that we know what do to in order to honor orphans and widows, if at all
     // possible. We also only do this for non-row items since items in a row
     // will be parallel to one another.)
-    UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child), layout_result,
+    UpdateEarlyBreakAtBlockChild(space, To<BlockNode>(child), layout_result,
                                  appeal_before, builder,
                                  flex_column_break_info);
   }
@@ -1142,7 +1142,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
 void UpdateEarlyBreakAtBlockChild(
     const NGConstraintSpace& space,
-    NGBlockNode child,
+    BlockNode child,
     const NGLayoutResult& layout_result,
     NGBreakAppeal appeal_before,
     NGBoxFragmentBuilder* builder,
@@ -1243,11 +1243,12 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
   return true;
 }
 
-const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+const NGEarlyBreak* EnterEarlyBreakInChild(const BlockNode& child,
                                            const NGEarlyBreak& early_break) {
   if (early_break.Type() != NGEarlyBreak::kBlock ||
-      early_break.BlockNode() != child)
+      early_break.GetBlockNode() != child) {
     return nullptr;
+  }
 
   // If there's no break inside, we should already have broken before the child.
   DCHECK(early_break.BreakInside());
@@ -1261,7 +1262,7 @@ bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
     DCHECK(child.IsInline() || child.IsFlexItem());
     return early_break.LineNumber() == builder.LineCount();
   }
-  return early_break.IsBreakBefore() && early_break.BlockNode() == child;
+  return early_break.IsBreakBefore() && early_break.GetBlockNode() == child;
 }
 
 NGConstraintSpace CreateConstraintSpaceForFragmentainer(
@@ -1294,7 +1295,7 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
 }
 
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
-    const NGBlockNode& multicol,
+    const BlockNode& multicol,
     const NGConstraintSpace& space,
     const FragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
@@ -1307,8 +1308,7 @@ NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
   return multicol_container_builder;
 }
 
-NGConstraintSpace CreateConstraintSpaceForMulticol(
-    const NGBlockNode& multicol) {
+NGConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
   WritingDirectionMode writing_direction_mode =
       multicol.Style().GetWritingDirection();
   NGConstraintSpaceBuilder space_builder(

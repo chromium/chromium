@@ -42,7 +42,7 @@ struct LayoutAlgorithmParams {
 
  public:
   LayoutAlgorithmParams(
-      NGBlockNode node,
+      BlockNode node,
       const FragmentGeometry& fragment_geometry,
       const NGConstraintSpace& space,
       const NGBlockBreakToken* break_token = nullptr,
@@ -55,7 +55,7 @@ struct LayoutAlgorithmParams {
         early_break(early_break),
         additional_early_breaks(additional_early_breaks) {}
 
-  NGBlockNode node;
+  BlockNode node;
   const FragmentGeometry& fragment_geometry;
   const NGConstraintSpace& space;
   const NGBlockBreakToken* break_token;

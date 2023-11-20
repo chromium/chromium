@@ -232,7 +232,7 @@ namespace {
 template <typename MinMaxSizesFunc>
 MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     WritingMode parent_writing_mode,
-    const NGBlockNode& child,
+    const BlockNode& child,
     const NGConstraintSpace& space,
     const MinMaxSizesFunc& min_max_sizes_func) {
   const ComputedStyle& style = child.Style();
@@ -307,7 +307,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 // Currently this simply sets the correct override sizes for the replaced
 // element, and lets legacy layout do the result.
 MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
-    const NGBlockNode& child,
+    const BlockNode& child,
     const NGConstraintSpace& space) {
   const auto& child_style = child.Style();
   const BoxStrut border_padding =
@@ -348,7 +348,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
 
 MinMaxSizesResult ComputeMinAndMaxContentContribution(
     const ComputedStyle& parent_style,
-    const NGBlockNode& child,
+    const BlockNode& child,
     const NGConstraintSpace& space,
     const MinMaxSizesFloatInput float_input) {
   const auto& child_style = child.Style();
@@ -370,7 +370,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
 }
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
-    const NGBlockNode& child,
+    const BlockNode& child,
     const NGConstraintSpace& space) {
   DCHECK(child.CreatesNewFormattingContext());
 
@@ -390,7 +390,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
 
 MinMaxSizes ComputeMinAndMaxContentContributionForTest(
     WritingMode parent_writing_mode,
-    const NGBlockNode& child,
+    const BlockNode& child,
     const NGConstraintSpace& space,
     const MinMaxSizes& min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
@@ -427,7 +427,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
 
 LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const NGConstraintSpace& space,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const BoxStrut& border_padding,
     const MinMaxSizes& table_grid_min_max_sizes) {
   DCHECK(!space.IsFixedInlineSize());
@@ -654,7 +654,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
 namespace {
 
 // Returns the default natural size.
-LogicalSize ComputeDefaultNaturalSize(const NGBlockNode& node) {
+LogicalSize ComputeDefaultNaturalSize(const BlockNode& node) {
   const auto& style = node.Style();
   PhysicalSize natural_size(LayoutUnit(300), LayoutUnit(150));
   natural_size.Scale(style.EffectiveZoom());
@@ -673,7 +673,7 @@ LogicalSize ComputeDefaultNaturalSize(const NGBlockNode& node) {
 // use the default replaced size of 300x150 as a last resort).
 // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
 absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const BoxStrut& border_padding,
     const EBoxSizing box_sizing,
     const LogicalSize& aspect_ratio) {
@@ -719,7 +719,7 @@ absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
 // The main part of ComputeReplacedSize(). This function doesn't handle a
 // case of <svg> as the documentElement.
 LogicalSize ComputeReplacedSizeInternal(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGConstraintSpace& space,
     const BoxStrut& border_padding,
     absl::optional<LogicalSize> override_available_size,
@@ -995,7 +995,7 @@ LogicalSize ComputeReplacedSizeInternal(
 
 // Computes size for a replaced element.
 LogicalSize ComputeReplacedSize(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGConstraintSpace& space,
     const BoxStrut& border_padding,
     absl::optional<LogicalSize> override_available_size,
@@ -1159,7 +1159,7 @@ BoxStrut ComputeBordersInternal(const ComputedStyle& style) {
 }  // namespace
 
 BoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
-                        const NGBlockNode& node) {
+                        const BlockNode& node) {
   // If we are producing an anonymous fragment (e.g. a column), it has no
   // borders, padding or scrollbars. Using the ones from the container can only
   // cause trouble.
@@ -1219,7 +1219,7 @@ BoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
                                 percentage_resolution_size)};
 }
 
-BoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
+BoxStrut ComputeScrollbarsForNonAnonymous(const BlockNode& node) {
   const ComputedStyle& style = node.Style();
   if (!style.IsScrollContainer() && style.IsScrollbarGutterAuto())
     return BoxStrut();
@@ -1298,7 +1298,7 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
 // Calculates default content size for html and body elements in quirks mode.
 // Returns |kIndefiniteSize| in all other cases.
 LayoutUnit CalculateDefaultBlockSize(const NGConstraintSpace& space,
-                                     const NGBlockNode& node,
+                                     const BlockNode& node,
                                      const NGBlockBreakToken* break_token,
                                      const BoxStrut& border_scrollbar_padding) {
   // In quirks mode, html and body elements will completely fill the ICB, block
@@ -1314,7 +1314,7 @@ LayoutUnit CalculateDefaultBlockSize(const NGConstraintSpace& space,
 
 FragmentGeometry CalculateInitialFragmentGeometry(
     const NGConstraintSpace& space,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGBlockBreakToken* break_token,
     bool is_intrinsic) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -1340,7 +1340,7 @@ LogicalSize ShrinkLogicalSize(LogicalSize size, const BoxStrut& insets) {
 
 LogicalSize CalculateChildAvailableSize(
     const NGConstraintSpace& space,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize border_box_size,
     const BoxStrut& border_scrollbar_padding) {
   LogicalSize child_available_size =
@@ -1357,7 +1357,7 @@ namespace {
 // Implements the common part of the child percentage size calculation. Deals
 // with how percentages are propagated from parent to child in quirks mode.
 LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
-                                      const NGBlockNode node,
+                                      const BlockNode node,
                                       LogicalSize child_percentage_size,
                                       LayoutUnit parent_percentage_block_size) {
   // In quirks mode the percentage resolution height is passed from parent to
@@ -1374,7 +1374,7 @@ LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
 
 LogicalSize CalculateChildPercentageSize(
     const NGConstraintSpace& space,
-    const NGBlockNode node,
+    const BlockNode node,
     const LogicalSize child_available_size) {
   // Anonymous block or spaces should use the parent percent block-size.
   if (space.IsAnonymous() || node.IsAnonymousBlock()) {
@@ -1394,7 +1394,7 @@ LogicalSize CalculateChildPercentageSize(
 
 LogicalSize CalculateReplacedChildPercentageSize(
     const NGConstraintSpace& space,
-    const NGBlockNode node,
+    const BlockNode node,
     const LogicalSize child_available_size,
     const BoxStrut& border_scrollbar_padding,
     const BoxStrut& border_padding) {
@@ -1434,7 +1434,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
 
 LayoutUnit ClampIntrinsicBlockSize(
     const NGConstraintSpace& space,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
@@ -1482,7 +1482,7 @@ LayoutUnit ClampIntrinsicBlockSize(
 }
 
 absl::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const BoxStrut& border_scrollbar_padding) {
   MinMaxSizes sizes;
   sizes += border_scrollbar_padding.InlineSum();

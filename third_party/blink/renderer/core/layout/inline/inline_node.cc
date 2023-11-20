@@ -1890,7 +1890,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       LayoutObject* floating_object = item.GetLayoutObject();
       DCHECK(floating_object && floating_object->IsFloating());
 
-      NGBlockNode float_node(To<LayoutBox>(floating_object));
+      BlockNode float_node(To<LayoutBox>(floating_object));
 
       NGMinMaxConstraintSpaceBuilder builder(space, style, float_node,
                                              /* is_new_fc */ true);

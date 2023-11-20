@@ -209,7 +209,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
                               ExclusionSpace* exclusion_space) {
   DCHECK(unpositioned_float);
   const NGConstraintSpace& parent_space = unpositioned_float->parent_space;
-  NGBlockNode node = unpositioned_float->node;
+  BlockNode node = unpositioned_float->node;
   bool is_same_writing_mode =
       node.Style().GetWritingMode() == parent_space.GetWritingMode();
 

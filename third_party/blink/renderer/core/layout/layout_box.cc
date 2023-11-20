@@ -257,7 +257,7 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
       NGConstraintSpaceBuilder builder(mode, button_style.GetWritingDirection(),
                                        /* is_new_fc */ true);
       LayoutUnit max =
-          NGBlockNode(button_box)
+          BlockNode(button_box)
               .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
                                   builder.ToConstraintSpace())
               .sizes.max_size;
@@ -914,7 +914,7 @@ void LayoutBox::LayoutSubtreeRoot() {
   DCHECK(previous_result);
   auto space = previous_result->GetConstraintSpaceForCaching();
   DCHECK_EQ(space.GetWritingMode(), StyleRef().GetWritingMode());
-  const NGLayoutResult* result = NGBlockNode(this).Layout(space);
+  const NGLayoutResult* result = BlockNode(this).Layout(space);
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
   if (IsOutOfFlowPositioned()) {
@@ -3866,7 +3866,7 @@ void LayoutBox::AddCustomLayoutChildIfNeeded() {
     return;
 
   EnsureRareData().layout_child_ =
-      MakeGarbageCollected<CustomLayoutChild>(*definition, NGBlockNode(this));
+      MakeGarbageCollected<CustomLayoutChild>(*definition, BlockNode(this));
 }
 
 void LayoutBox::ClearCustomLayoutChild() {

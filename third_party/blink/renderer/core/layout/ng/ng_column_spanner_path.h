@@ -17,11 +17,11 @@ namespace blink {
 // a node is on the path between the multicol container and the spanner.
 class NGColumnSpannerPath : public GarbageCollected<NGColumnSpannerPath> {
  public:
-  explicit NGColumnSpannerPath(NGBlockNode block,
+  explicit NGColumnSpannerPath(BlockNode block,
                                const NGColumnSpannerPath* child = nullptr)
       : box_(block.GetLayoutBox()), child_(child) {}
 
-  NGBlockNode BlockNode() const { return NGBlockNode(box_); }
+  BlockNode GetBlockNode() const { return BlockNode(box_); }
   const NGColumnSpannerPath* Child() const { return child_.Get(); }
 
   void Trace(Visitor* visitor) const {

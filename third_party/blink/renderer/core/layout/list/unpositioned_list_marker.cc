@@ -17,7 +17,7 @@ namespace blink {
 UnpositionedListMarker::UnpositionedListMarker(LayoutOutsideListMarker* marker)
     : marker_layout_object_(marker) {}
 
-UnpositionedListMarker::UnpositionedListMarker(const NGBlockNode& node)
+UnpositionedListMarker::UnpositionedListMarker(const BlockNode& node)
     : UnpositionedListMarker(To<LayoutOutsideListMarker>(node.GetLayoutBox())) {
 }
 
@@ -41,7 +41,7 @@ const NGLayoutResult* UnpositionedListMarker::Layout(
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
   DCHECK(marker_layout_object_);
-  NGBlockNode marker_node(marker_layout_object_);
+  BlockNode marker_node(marker_layout_object_);
 
   // We need the first-line baseline from the list-marker, instead of the
   // typical atomic-inline baseline.

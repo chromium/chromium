@@ -12,8 +12,8 @@
 
 namespace blink {
 
+class BlockNode;
 class LogicalBoxFragment;
-class NGBlockNode;
 class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
 class TableBorders;
@@ -42,7 +42,7 @@ CellBlockSizeData ComputeCellBlockSize(
 // creating the constraint-space for table-cells as consistent as possible.
 void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
-    const NGBlockNode cell,
+    const BlockNode cell,
     const BoxStrut& cell_borders,
     const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
@@ -56,17 +56,17 @@ void SetupTableCellConstraintSpaceBuilder(
     NGConstraintSpaceBuilder*);
 
 wtf_size_t ComputeMaximumNonMergeableColumnCount(
-    const HeapVector<NGBlockNode>& columns,
+    const HeapVector<BlockNode>& columns,
     bool is_fixed_layout);
 
 scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
-    const NGBlockNode& table,
+    const BlockNode& table,
     const TableGroupedChildren&,
     const TableBorders& table_borders,
     const BoxStrut& border_padding);
 
 void ComputeSectionMinimumRowBlockSizes(
-    const NGBlockNode& section,
+    const BlockNode& section,
     const LayoutUnit cell_percentage_resolution_inline_size,
     const bool is_table_block_size_specified,
     const Vector<TableColumnLocation>& column_locations,
@@ -101,7 +101,7 @@ class ColspanCellTabulator {
   unsigned CurrentColumn() { return current_column_; }
   void StartRow();
   void FindNextFreeColumn();
-  void ProcessCell(const NGBlockNode& cell);
+  void ProcessCell(const BlockNode& cell);
   void EndRow();
 
   struct Cell {

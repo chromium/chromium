@@ -19,8 +19,8 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
-class NGBlockNode;
 struct BoxStrut;
 
 // When table has collapsed borders, computing borders for table parts is
@@ -61,7 +61,7 @@ struct BoxStrut;
 
 class TableBorders : public GarbageCollected<TableBorders> {
  public:
-  static const TableBorders* ComputeTableBorders(const NGBlockNode&);
+  static const TableBorders* ComputeTableBorders(const BlockNode&);
 
   TableBorders(const BoxStrut& table_border, const bool is_collapsed);
 
@@ -182,7 +182,7 @@ class TableBorders : public GarbageCollected<TableBorders> {
 
   const BoxStrut& TableBorder() const { return table_border_; }
 
-  BoxStrut CellBorder(const NGBlockNode& cell,
+  BoxStrut CellBorder(const BlockNode& cell,
                       wtf_size_t row,
                       wtf_size_t column,
                       wtf_size_t section,

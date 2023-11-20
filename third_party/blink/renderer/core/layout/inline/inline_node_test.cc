@@ -1588,7 +1588,7 @@ TEST_F(InlineNodeTest, InitialLetter) {
       sample.GetPseudoElement(kPseudoIdFirstLetter)->GetLayoutObject());
 
   EXPECT_TRUE(InlineNode(&block_flow).HasInitialLetterBox());
-  EXPECT_TRUE(NGBlockNode(&initial_letter_box).IsInitialLetterBox());
+  EXPECT_TRUE(BlockNode(&initial_letter_box).IsInitialLetterBox());
   EXPECT_TRUE(InlineNode(&initial_letter_box).IsInitialLetterBox());
   EXPECT_TRUE(initial_letter_box.GetPhysicalFragment(0)->IsInitialLetterBox());
 

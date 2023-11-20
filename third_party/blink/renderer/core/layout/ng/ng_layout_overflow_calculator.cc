@@ -24,7 +24,7 @@ namespace blink {
 PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
     const NGPhysicalBoxFragment& fragment,
     bool has_block_fragmentation) {
-  const NGBlockNode node(const_cast<LayoutBox*>(
+  const BlockNode node(const_cast<LayoutBox*>(
       To<LayoutBox>(fragment.GetSelfOrContainerLayoutObject())));
   DCHECK(!node.IsReplaced() || node.IsMedia());
 
@@ -73,7 +73,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
 }
 
 NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
-    const NGBlockNode& node,
+    const BlockNode& node,
     bool is_css_box,
     bool has_block_fragmentation,
     const PhysicalBoxStrut& borders,

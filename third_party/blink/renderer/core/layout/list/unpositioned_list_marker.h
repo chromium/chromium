@@ -17,10 +17,10 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
 class LayoutOutsideListMarker;
 class LayoutUnit;
-class NGBlockNode;
 class NGConstraintSpace;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
@@ -54,7 +54,7 @@ class CORE_EXPORT UnpositionedListMarker final {
  public:
   UnpositionedListMarker() : marker_layout_object_(nullptr) {}
   explicit UnpositionedListMarker(LayoutOutsideListMarker*);
-  explicit UnpositionedListMarker(const NGBlockNode&);
+  explicit UnpositionedListMarker(const BlockNode&);
 
   explicit operator bool() const { return marker_layout_object_ != nullptr; }
 

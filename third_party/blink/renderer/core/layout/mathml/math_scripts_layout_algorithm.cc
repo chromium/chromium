@@ -16,7 +16,7 @@ namespace {
 
 using MathConstants = OpenTypeMathSupport::MathConstants;
 
-static bool IsPrescriptDelimiter(const NGBlockNode& blockNode) {
+static bool IsPrescriptDelimiter(const BlockNode& blockNode) {
   auto* node = blockNode.GetDOMNode();
   return node && IsA<MathMLElement>(node) &&
          node->HasTagName(mathml_names::kMprescriptsTag);
@@ -94,9 +94,9 @@ MathScriptsLayoutAlgorithm::MathScriptsLayoutAlgorithm(
 }
 
 void MathScriptsLayoutAlgorithm::GatherChildren(
-    NGBlockNode* base,
+    BlockNode* base,
     HeapVector<SubSupPair>* sub_sup_pairs,
-    NGBlockNode* prescripts,
+    BlockNode* prescripts,
     unsigned* first_prescript_index,
     NGBoxFragmentBuilder* container_builder) const {
   auto script_type = Node().ScriptType();
@@ -104,7 +104,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
   sub_sup_pairs->resize(1);
   for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
@@ -267,7 +267,7 @@ MathScriptsLayoutAlgorithm::GetVerticalMetrics(
 }
 
 MathScriptsLayoutAlgorithm::ChildAndMetrics
-MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
+MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(BlockNode child) const {
   ChildAndMetrics child_and_metrics;
   auto constraint_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), GetConstraintSpace(), child);
@@ -291,8 +291,8 @@ MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
 const NGLayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
-  NGBlockNode base = nullptr;
-  NGBlockNode prescripts = nullptr;
+  BlockNode base = nullptr;
+  BlockNode prescripts = nullptr;
   wtf_size_t first_prescript_index = 0;
 
   HeapVector<SubSupPair> sub_sup_pairs;
@@ -421,8 +421,8 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  NGBlockNode base = nullptr;
-  NGBlockNode prescripts = nullptr;
+  BlockNode base = nullptr;
+  BlockNode prescripts = nullptr;
   unsigned first_prescript_index = 0;
 
   HeapVector<SubSupPair> sub_sup_pairs;
@@ -449,8 +449,8 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     case MathScriptType::kUnder:
     case MathScriptType::kOver:
     case MathScriptType::kSuper: {
-      const NGBlockNode sub = sub_sup_pairs[0].sub;
-      const NGBlockNode sup = sub_sup_pairs[0].sup;
+      const BlockNode sub = sub_sup_pairs[0].sub;
+      const BlockNode sup = sub_sup_pairs[0].sup;
       const auto first_post_script = sub ? sub : sup;
       const auto first_post_script_result =
           ComputeMinAndMaxContentContributionForMathChild(

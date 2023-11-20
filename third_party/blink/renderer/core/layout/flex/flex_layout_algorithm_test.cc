@@ -52,7 +52,7 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
-  NGBlockNode box(GetDocument().body()->GetLayoutBox());
+  BlockNode box(GetDocument().body()->GetLayoutBox());
 
   const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
   EXPECT_EQ(PhysicalSize(84, 22), fragment->Size());

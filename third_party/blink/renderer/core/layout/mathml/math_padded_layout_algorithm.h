@@ -12,7 +12,7 @@
 namespace blink {
 
 class CORE_EXPORT MathPaddedLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -28,7 +28,7 @@ class CORE_EXPORT MathPaddedLayoutAlgorithm
   absl::optional<LayoutUnit> RequestedAscent(LayoutUnit content_ascent) const;
   absl::optional<LayoutUnit> RequestedDescent(LayoutUnit content_descent) const;
 
-  void GetContentAsAnonymousMrow(NGBlockNode* content) const;
+  void GetContentAsAnonymousMrow(BlockNode* content) const;
 };
 
 }  // namespace blink

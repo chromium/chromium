@@ -699,7 +699,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   //
   // |out_cache_status| indicates what type of layout pass is required.
   //
-  // TODO(ikilpatrick): Move this function into NGBlockNode.
+  // TODO(ikilpatrick): Move this function into BlockNode.
   const NGLayoutResult* CachedLayoutResult(
       const NGConstraintSpace&,
       const NGBlockBreakToken*,

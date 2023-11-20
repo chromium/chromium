@@ -60,7 +60,7 @@ struct InflowChildData {
 // A class for general block layout (e.g. a <div> with no special style).
 // Lays out the children in sequence.
 class CORE_EXPORT BlockLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -164,9 +164,9 @@ class CORE_EXPORT BlockLayoutAlgorithm
       PreviousInflowPosition*,
       const InlineBreakToken** inline_break_token_out);
 
-  void HandleOutOfFlowPositioned(const PreviousInflowPosition&, NGBlockNode);
+  void HandleOutOfFlowPositioned(const PreviousInflowPosition&, BlockNode);
   void HandleFloat(const PreviousInflowPosition&,
-                   NGBlockNode,
+                   BlockNode,
                    const NGBlockBreakToken*);
 
   // This uses the NGLayoutOpporunityIterator to position the fragment.
@@ -366,14 +366,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // Layout |ruby_text_child| content, and decide the location of
   // |ruby_text_child|. This is called only if IsRubyText() returns true.
-  void HandleRubyText(NGBlockNode ruby_text_child);
+  void HandleRubyText(BlockNode ruby_text_child);
 
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
   // This function returns a new value for `PreviousInflowPosition::
   // logical_block_offset`.
   LayoutUnit HandleTextControlPlaceholder(
-      NGBlockNode placeholder,
+      BlockNode placeholder,
       const PreviousInflowPosition& previous_inflow_position);
   // A helper for HandleTextControlPlaceholder().
   // This function returns a new value for `PreviousInflowPosition::

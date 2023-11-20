@@ -358,7 +358,7 @@ TEST_F(InlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
 }
 
 // A block with inline children generates fragment tree as follows:
-// - A box fragment created by NGBlockNode
+// - A box fragment created by BlockNode
 //   - A wrapper box fragment created by InlineNode
 //     - Line box fragments.
 // This test verifies that borders/paddings are applied to the wrapper box.

@@ -20,10 +20,10 @@ class CORE_EXPORT FlexChildIterator {
   STACK_ALLOCATED();
 
  public:
-  FlexChildIterator(const NGBlockNode node);
+  FlexChildIterator(const BlockNode node);
 
   // Returns the next block node which should be laid out.
-  NGBlockNode NextChild() {
+  BlockNode NextChild() {
     DCHECK(position_ <= children_.size());
     if (position_ == children_.size())
       return nullptr;
@@ -34,10 +34,10 @@ class CORE_EXPORT FlexChildIterator {
     DISALLOW_NEW();
 
    public:
-    ChildWithOrder(NGBlockNode child, int order) : child(child), order(order) {}
+    ChildWithOrder(BlockNode child, int order) : child(child), order(order) {}
     void Trace(Visitor* visitor) const { visitor->Trace(child); }
 
-    NGBlockNode child;
+    BlockNode child;
     int order;
   };
 

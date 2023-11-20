@@ -17,7 +17,7 @@ namespace {
 class ColumnLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
-    NGBlockNode container(element->GetLayoutBox());
+    BlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -87,7 +87,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyMulticol) {
     </div>
   )HTML");
 
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -127,7 +127,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyBlock) {
     </div>
   )HTML");
 
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -176,7 +176,7 @@ TEST_F(ColumnLayoutAlgorithmTest, BlockInOneColumn) {
     </div>
   )HTML");
 
-  NGBlockNode container(GetLayoutBoxByElementId("container"));
+  BlockNode container(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -2748,7 +2748,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
 
   LayoutObject* layout_object = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(layout_object);
-  NGBlockNode node = NGBlockNode(To<LayoutBox>(layout_object));
+  BlockNode node = BlockNode(To<LayoutBox>(layout_object));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));

@@ -43,7 +43,7 @@ TableTypes::Caption ComputeCaptionConstraint(
     const TableGroupedChildren& grouped_children) {
   // Caption inline size constraints.
   TableTypes::Caption caption_min_max;
-  for (const NGBlockNode& caption : grouped_children.captions) {
+  for (const BlockNode& caption : grouped_children.captions) {
     // Caption %-block-sizes are treated as auto, as there isn't a reasonable
     // block-size to resolve against.
     NGMinMaxConstraintSpaceBuilder builder(table_space, table_style, caption,
@@ -63,7 +63,7 @@ TableTypes::Caption ComputeCaptionConstraint(
 NGConstraintSpace CreateCaptionConstraintSpace(
     const NGConstraintSpace& table_constraint_space,
     const ComputedStyle& table_style,
-    const NGBlockNode& caption,
+    const BlockNode& caption,
     LogicalSize available_size,
     absl::optional<LayoutUnit> block_offset = absl::nullopt) {
   NGConstraintSpaceBuilder builder(table_constraint_space,
@@ -94,7 +94,7 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
     const ComputedStyle& table_style,
     LayoutUnit table_inline_size,
     const NGConstraintSpace& caption_constraint_space,
-    const NGBlockNode& caption,
+    const BlockNode& caption,
     BoxStrut margins,
     const NGBlockBreakToken* break_token = nullptr,
     const NGEarlyBreak* early_break = nullptr) {
@@ -117,7 +117,7 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
 // percentages.
 BoxStrut ComputeCaptionMargins(
     const NGConstraintSpace& table_constraint_space,
-    const NGBlockNode& caption,
+    const BlockNode& caption,
     LayoutUnit table_border_box_inline_size,
     const NGBlockBreakToken* caption_break_token = nullptr) {
   BoxStrut margins =
@@ -137,7 +137,7 @@ void ComputeCaptionFragments(
       table_builder.GetConstraintSpace();
   const LayoutUnit table_inline_size = table_builder.InlineSize();
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
-  for (NGBlockNode caption : grouped_children.captions) {
+  for (BlockNode caption : grouped_children.captions) {
     BoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
                                              table_inline_size);
     NGConstraintSpace caption_constraint_space = CreateCaptionConstraintSpace(
@@ -992,7 +992,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   auto CreateSectionConstraintSpace = [&table_writing_direction,
                                        &section_available_inline_size,
                                        &constraint_space_data, &sections, this](
-                                          const NGBlockNode& section,
+                                          const BlockNode& section,
                                           LayoutUnit fragmentainer_block_offset,
                                           wtf_size_t section_index,
                                           LayoutUnit reserved_space,
@@ -1075,7 +1075,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
         GetConstraintSpace().FragmentainerBlockSize() / 4;
     TableChildIterator child_iterator(grouped_children, BreakToken());
     for (auto entry = child_iterator.NextChild();
-         NGBlockNode child = entry.GetNode();
+         BlockNode child = entry.GetNode();
          entry = child_iterator.NextChild()) {
       if (child != grouped_children.header && child != grouped_children.footer)
         continue;
@@ -1157,8 +1157,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   // Generate section fragments; and also caption fragments, if we need to
   // regenerate them (block fragmentation).
   for (auto entry = child_iterator.NextChild();
-       NGBlockNode child = entry.GetNode();
-       entry = child_iterator.NextChild()) {
+       BlockNode child = entry.GetNode(); entry = child_iterator.NextChild()) {
     DCHECK(child.IsTableCaption() || child.IsTableSection());
 
     const NGEarlyBreak* early_break_in_child = nullptr;
@@ -1452,7 +1451,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     // next table fragment (inserting a break token for the repeated footer
     // alone would make the table child iterator skip any preceding sections).
     auto entry = child_iterator.NextChild();
-    for (; NGBlockNode child = entry.GetNode();
+    for (; BlockNode child = entry.GetNode();
          entry = child_iterator.NextChild()) {
       if (child == grouped_children.footer)
         break;

@@ -247,7 +247,7 @@ void ComputeInsets(
   *inset_end_out = imcb_end + margin_end;
 }
 
-bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
+bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
     return false;
@@ -325,7 +325,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
 }
 
 InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& available_size,
     const LogicalOofInsets& insets,
     const LogicalStaticPosition& static_position,
@@ -371,7 +371,7 @@ InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 }
 
 bool ComputeOofInlineDimensions(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const ComputedStyle& style,
     const NGConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
@@ -497,7 +497,7 @@ bool ComputeOofInlineDimensions(
 }
 
 const NGLayoutResult* ComputeOofBlockDimensions(
-    const NGBlockNode& node,
+    const BlockNode& node,
     const ComputedStyle& style,
     const NGConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
@@ -624,7 +624,7 @@ const NGLayoutResult* ComputeOofBlockDimensions(
   return result;
 }
 
-void AdjustOffsetForSplitInline(const NGBlockNode& node,
+void AdjustOffsetForSplitInline(const BlockNode& node,
                                 const NGBoxFragmentBuilder* container_builder,
                                 LogicalOffset& offset) {
   DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());

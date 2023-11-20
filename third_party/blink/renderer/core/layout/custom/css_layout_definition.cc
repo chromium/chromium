@@ -38,7 +38,7 @@ namespace blink {
 
 namespace {
 
-void GatherChildren(const NGBlockNode& node,
+void GatherChildren(const BlockNode& node,
                     CustomLayoutScope* custom_layout_scope,
                     HeapVector<Member<CustomLayoutChild>>* children) {
   // TODO(ikilpatrick): Determine if knowing the size of the array ahead of
@@ -87,7 +87,7 @@ CSSLayoutDefinition::Instance::Instance(CSSLayoutDefinition* definition,
 bool CSSLayoutDefinition::Instance::Layout(
     const NGConstraintSpace& space,
     const Document& document,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& border_box_size,
     const BoxStrut& border_scrollbar_padding,
     CustomLayoutScope* custom_layout_scope,
@@ -229,7 +229,7 @@ bool CSSLayoutDefinition::Instance::Layout(
 bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     const NGConstraintSpace& space,
     const Document& document,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& border_box_size,
     const BoxStrut& border_scrollbar_padding,
     const LayoutUnit child_available_block_size,

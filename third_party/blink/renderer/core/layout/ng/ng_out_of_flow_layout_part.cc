@@ -325,7 +325,7 @@ class OOFCandidateStyleIterator {
 
 // static
 absl::optional<LogicalSize>
-OutOfFlowLayoutPart::InitialContainingBlockFixedSize(NGBlockNode container) {
+OutOfFlowLayoutPart::InitialContainingBlockFixedSize(BlockNode container) {
   if (!container.GetLayoutBox()->IsLayoutView() ||
       container.GetDocument().Printing())
     return absl::nullopt;
@@ -337,7 +337,7 @@ OutOfFlowLayoutPart::InitialContainingBlockFixedSize(NGBlockNode container) {
 }
 
 OutOfFlowLayoutPart::OutOfFlowLayoutPart(
-    const NGBlockNode& container_node,
+    const BlockNode& container_node,
     const NGConstraintSpace& container_space,
     NGBoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
@@ -945,7 +945,7 @@ void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 
   while (!multicols_with_pending_oofs.empty()) {
     for (auto& multicol : multicols_with_pending_oofs)
-      LayoutOOFsInMulticol(NGBlockNode(multicol.key), multicol.value);
+      LayoutOOFsInMulticol(BlockNode(multicol.key), multicol.value);
     multicols_with_pending_oofs.clear();
     container_builder->SwapMulticolsWithPendingOOFs(
         &multicols_with_pending_oofs);
@@ -953,7 +953,7 @@ void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 }
 
 void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
-    const NGBlockNode& multicol,
+    const BlockNode& multicol,
     const MulticolWithPendingOofs<LogicalOffset>* multicol_info) {
   HeapVector<LogicalOofNodeForFragmentation> oof_nodes_to_layout;
   ClearCollectionScope<HeapVector<LogicalOofNodeForFragmentation>>
@@ -1517,7 +1517,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   if (container_builder_->Node().IsPaginatedRoot()) {
     // Finish repeated fixed-positioned elements.
     for (const NodeToLayout& node_to_layout : repeated_fixedpos_descendants) {
-      const NGBlockNode& node = node_to_layout.node_info.node;
+      const BlockNode& node = node_to_layout.node_info.node;
       DCHECK_EQ(node.Style().GetPosition(), EPosition::kFixed);
       node.FinishRepeatableRoot();
     }
@@ -1528,7 +1528,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
     const LogicalOofPositionedNode& oof_node) {
-  NGBlockNode node = oof_node.Node();
+  BlockNode node = oof_node.Node();
   const NGPhysicalFragment* containing_block_fragment =
       oof_node.is_for_fragmentation
           ? To<LogicalOofNodeForFragmentation>(oof_node)
@@ -1640,7 +1640,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
              is_last_fragmentainer_so_far);
 
   // Since out-of-flow positioning sets up a constraint space with fixed
-  // inline-size, the regular layout code (|NGBlockNode::Layout()|) cannot
+  // inline-size, the regular layout code (|BlockNode::Layout()|) cannot
   // re-layout if it discovers that a scrollbar was added or removed. Handle
   // that situation here. The assumption is that if intrinsic logical widths are
   // dirty after layout, AND its inline-size depends on the intrinsic logical
@@ -2120,7 +2120,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   const NGBlockBreakToken* break_token = oof_node_to_layout.break_token;
-  const NGBlockNode& node = node_info.node;
+  const BlockNode& node = node_info.node;
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
   LogicalSize container_content_size_in_candidate_writing_mode =
@@ -2243,7 +2243,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
   const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
-  const NGBlockNode& node = container_builder_->Node();
+  const BlockNode& node = container_builder_->Node();
   const auto* fragment =
       To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
   FragmentGeometry fragment_geometry =

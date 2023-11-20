@@ -117,9 +117,9 @@ TableTypes::Column TableTypes::CreateColumn(
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
 // "outer min-content and outer max-content widths for table cells"
-// Note: this method calls NGBlockNode::ComputeMinMaxSizes.
+// Note: this method calls BlockNode::ComputeMinMaxSizes.
 TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
-    const NGBlockNode& node,
+    const BlockNode& node,
     WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
     const BoxStrut& cell_border,
@@ -295,11 +295,11 @@ void TableTypes::Column::Encompass(
   is_constrained |= cell->is_constrained;
 }
 
-TableGroupedChildren::TableGroupedChildren(const NGBlockNode& table)
-    : header(NGBlockNode(nullptr)), footer(NGBlockNode(nullptr)) {
+TableGroupedChildren::TableGroupedChildren(const BlockNode& table)
+    : header(BlockNode(nullptr)), footer(BlockNode(nullptr)) {
   for (LayoutInputNode child = table.FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (block_child.IsTableCaption()) {
       captions.push_back(block_child);
     } else {
@@ -400,7 +400,7 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator--() {
   return *this;
 }
 
-NGBlockNode TableGroupedChildrenIterator::operator*() const {
+BlockNode TableGroupedChildrenIterator::operator*() const {
   switch (current_section_) {
     case kHead:
       return grouped_children_.header;
@@ -411,7 +411,7 @@ NGBlockNode TableGroupedChildrenIterator::operator*() const {
     case kEnd:
     case kNone:
       NOTREACHED();
-      return NGBlockNode(nullptr);
+      return BlockNode(nullptr);
   }
 }
 

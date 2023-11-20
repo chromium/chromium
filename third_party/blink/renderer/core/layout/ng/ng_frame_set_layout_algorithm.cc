@@ -39,7 +39,7 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
 
 FrameSetLayoutAlgorithm::FrameSetLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
-    : LayoutAlgorithm<NGBlockNode, NGBoxFragmentBuilder, NGBlockBreakToken>(
+    : LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, NGBlockBreakToken>(
           params) {}
 
 const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
@@ -320,7 +320,7 @@ void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
   space_builder.SetIsFixedInlineSize(true);
   space_builder.SetIsFixedBlockSize(true);
   const NGLayoutResult* result =
-      To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
+      To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
   container_builder_.AddResult(
       *result, position.ConvertToLogical(container_direction, frameset_size,
                                          child_size));

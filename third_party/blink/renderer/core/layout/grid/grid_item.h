@@ -35,7 +35,7 @@ struct CORE_EXPORT GridItemData {
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
 
-  GridItemData(NGBlockNode node,
+  GridItemData(BlockNode node,
                const ComputedStyle& root_grid_style,
                FontBaseline parent_grid_font_baseline,
                bool parent_must_consider_grid_items_for_column_sizing = false,
@@ -226,7 +226,7 @@ struct CORE_EXPORT GridItemData {
 
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
-  NGBlockNode node;
+  BlockNode node;
   GridArea resolved_position;
 
   bool has_subgridded_columns : 1;

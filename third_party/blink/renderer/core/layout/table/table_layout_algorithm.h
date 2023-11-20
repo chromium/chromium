@@ -49,7 +49,7 @@ class CORE_EXPORT TableLayoutAlgorithm
       visitor->Trace(layout_result);
     }
 
-    NGBlockNode node;
+    BlockNode node;
     Member<const NGLayoutResult> layout_result;
     const BoxStrut margins;
   };

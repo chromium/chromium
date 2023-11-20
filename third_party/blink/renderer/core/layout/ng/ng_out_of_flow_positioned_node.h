@@ -164,7 +164,7 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
   OofInlineContainer<PhysicalOffset> inline_container;
 
   PhysicalOofPositionedNode(
-      NGBlockNode node,
+      BlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<PhysicalOffset> inline_container = {})
@@ -178,7 +178,7 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
     DCHECK(node.IsBlock());
   }
 
-  NGBlockNode Node() const { return NGBlockNode(box); }
+  BlockNode Node() const { return BlockNode(box); }
   HorizontalEdge GetStaticPositionHorizontalEdge() const {
     return static_cast<HorizontalEdge>(static_position_horizontal_edge);
   }
@@ -213,7 +213,7 @@ struct CORE_EXPORT LogicalOofPositionedNode {
   unsigned requires_content_before_breaking : 1;
 
   LogicalOofPositionedNode(
-      NGBlockNode node,
+      BlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<LogicalOffset> inline_container = {})
@@ -225,7 +225,7 @@ struct CORE_EXPORT LogicalOofPositionedNode {
     DCHECK(node.IsBlock());
   }
 
-  NGBlockNode Node() const { return NGBlockNode(box); }
+  BlockNode Node() const { return BlockNode(box); }
 
   void Trace(Visitor* visitor) const;
   void TraceAfterDispatch(Visitor*) const;
@@ -258,7 +258,7 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
   OofInlineContainer<PhysicalOffset> fixedpos_inline_container;
 
   PhysicalOofNodeForFragmentation(
-      NGBlockNode node,
+      BlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<PhysicalOffset> inline_container = {},
@@ -294,7 +294,7 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
   OofInlineContainer<LogicalOffset> fixedpos_inline_container;
 
   LogicalOofNodeForFragmentation(
-      NGBlockNode node,
+      BlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<LogicalOffset> inline_container = {},

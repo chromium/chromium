@@ -41,7 +41,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
 
   auto CreateCellConstraintSpace =
       [this, &table_data](
-          NGBlockNode cell, const NGBlockBreakToken* cell_break_token,
+          BlockNode cell, const NGBlockBreakToken* cell_break_token,
           const TableConstraintSpaceData::Cell& cell_data,
           LayoutUnit row_block_size, absl::optional<LayoutUnit> row_baseline,
           bool min_block_size_should_encompass_intrinsic_size) {
@@ -94,7 +94,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
       GetConstraintSpace().ShouldPropagateChildBreakValues();
 
   auto MinBlockSizeShouldEncompassIntrinsicSize =
-      [&](const NGBlockNode& cell,
+      [&](const BlockNode& cell,
           const TableConstraintSpaceData::Cell& cell_data) -> bool {
     if (!has_block_fragmentation)
       return false;
@@ -140,7 +140,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
     NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
                                         /* calculate_child_idx */ true);
     for (auto entry = child_iterator.NextChild();
-         NGBlockNode cell = To<NGBlockNode>(entry.node);
+         BlockNode cell = To<BlockNode>(entry.node);
          entry = child_iterator.NextChild()) {
       const auto* cell_break_token = To<NGBlockBreakToken>(entry.token);
       const auto& cell_style = cell.Style();

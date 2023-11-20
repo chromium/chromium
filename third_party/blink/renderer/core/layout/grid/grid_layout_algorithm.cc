@@ -4075,7 +4075,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
       ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
   for (LayoutBox* oof_child : oofs) {
-    NGBlockNode child(oof_child);
+    BlockNode child(oof_child);
     DCHECK(child.IsOutOfFlowPositioned());
 
     absl::optional<LogicalRect> containing_block_rect;

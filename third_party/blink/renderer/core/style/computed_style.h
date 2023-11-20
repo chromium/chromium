@@ -1613,7 +1613,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Return true if an element can match size container queries. In addition to
   // checking if it has a size container-type, we check if we are never able to
-  // reach NGBlockNode::Layout() for legacy layout objects or SVG elements.
+  // reach BlockNode::Layout() for legacy layout objects or SVG elements.
   bool CanMatchSizeContainerQueries(const Element& element) const;
 
   bool IsContainerForSizeContainerQueries() const {

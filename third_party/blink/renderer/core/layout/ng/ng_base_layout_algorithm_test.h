@@ -15,8 +15,8 @@
 
 namespace blink {
 
+class BlockNode;
 class LayoutNGBlockFlow;
-class NGBlockNode;
 class NGBreakToken;
 class NGPhysicalBoxFragment;
 
@@ -31,12 +31,12 @@ class BaseLayoutAlgorithmTest
   void AdvanceToLayoutPhase();
 
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
-      NGBlockNode node,
+      BlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 
   const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
-      NGBlockNode node,
+      BlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 

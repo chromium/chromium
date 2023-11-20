@@ -42,7 +42,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   STACK_ALLOCATED();
 
  public:
-  OutOfFlowLayoutPart(const NGBlockNode& container_node,
+  OutOfFlowLayoutPart(const BlockNode& container_node,
                       const NGConstraintSpace& container_space,
                       NGBoxFragmentBuilder* container_builder);
   void Run();
@@ -149,7 +149,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     DISALLOW_NEW();
 
    public:
-    NGBlockNode node;
+    BlockNode node;
     const NGConstraintSpace constraint_space;
     const LogicalStaticPosition static_position;
     PhysicalSize container_physical_content_size;
@@ -161,7 +161,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool inline_container = false;
     bool requires_content_before_breaking = false;
 
-    NodeInfo(NGBlockNode node,
+    NodeInfo(BlockNode node,
              const NGConstraintSpace constraint_space,
              const LogicalStaticPosition static_position,
              PhysicalSize container_physical_content_size,
@@ -255,7 +255,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   };
 
   static absl::optional<LogicalSize> InitialContainingBlockFixedSize(
-      NGBlockNode container);
+      BlockNode container);
 
  private:
   const ContainingBlockInfo GetContainingBlockInfo(
@@ -291,7 +291,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
-      const NGBlockNode& multicol,
+      const BlockNode& multicol,
       const MulticolWithPendingOofs<LogicalOffset>* multicol_info);
 
   // Layout the OOF nodes that are descendants of a fragmentation context root.

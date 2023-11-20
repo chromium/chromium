@@ -29,7 +29,7 @@ using mojom::blink::FormControlType;
 namespace {
 
 #if DCHECK_IS_ON()
-void AppendSubtreeToString(const NGBlockNode&,
+void AppendSubtreeToString(const BlockNode&,
                            const LayoutInputNode* target,
                            StringBuilder*,
                            unsigned indent);
@@ -60,15 +60,15 @@ void AppendNodeToString(const LayoutInputNode& node,
   string_builder->Append(node.ToString());
   string_builder->Append("\n");
 
-  if (auto* block_node = DynamicTo<NGBlockNode>(node)) {
+  if (auto* block_node = DynamicTo<BlockNode>(node)) {
     AppendSubtreeToString(*block_node, target, string_builder, indent + 2);
   } else if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
     indent += 2;
     for (const InlineItem& inline_item : items) {
-      NGBlockNode child_node(nullptr);
+      BlockNode child_node(nullptr);
       if (auto* box = DynamicTo<LayoutBox>(inline_item.GetLayoutObject())) {
-        child_node = NGBlockNode(box);
+        child_node = BlockNode(box);
       }
       IndentForDump(child_node, target, string_builder, indent);
       string_builder->Append(inline_item.ToString());
@@ -82,7 +82,7 @@ void AppendNodeToString(const LayoutInputNode& node,
   }
 }
 
-void AppendSubtreeToString(const NGBlockNode& node,
+void AppendSubtreeToString(const BlockNode& node,
                            const LayoutInputNode* target,
                            StringBuilder* string_builder,
                            unsigned indent) {
@@ -141,11 +141,11 @@ bool LayoutInputNode::IsPaginatedRoot() const {
   return view && view->IsFragmentationContextRoot();
 }
 
-NGBlockNode LayoutInputNode::ListMarkerBlockNodeIfListItem() const {
+BlockNode LayoutInputNode::ListMarkerBlockNodeIfListItem() const {
   if (auto* list_item = DynamicTo<LayoutListItem>(box_.Get())) {
-    return NGBlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
+    return BlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
   }
-  return NGBlockNode(nullptr);
+  return BlockNode(nullptr);
 }
 
 void LayoutInputNode::IntrinsicSize(
@@ -185,7 +185,7 @@ void LayoutInputNode::IntrinsicSize(
 
 LayoutInputNode LayoutInputNode::NextSibling() const {
   auto* inline_node = DynamicTo<InlineNode>(this);
-  return inline_node ? nullptr : To<NGBlockNode>(*this).NextSibling();
+  return inline_node ? nullptr : To<BlockNode>(*this).NextSibling();
 }
 
 PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
@@ -197,7 +197,7 @@ PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
 String LayoutInputNode::ToString() const {
   auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->ToString()
-                     : To<NGBlockNode>(*this).ToString();
+                     : To<BlockNode>(*this).ToString();
 }
 
 #if DCHECK_IS_ON()
@@ -209,7 +209,7 @@ String LayoutInputNode::DumpNodeTree(const LayoutInputNode* target) const {
 }
 
 String LayoutInputNode::DumpNodeTreeFromRoot() const {
-  return NGBlockNode(box_->View()).DumpNodeTree(this);
+  return BlockNode(box_->View()).DumpNodeTree(this);
 }
 
 void LayoutInputNode::ShowNodeTree(const LayoutInputNode* target) const {
@@ -227,7 +227,7 @@ void LayoutInputNode::ShowNodeTree(const LayoutInputNode* target) const {
 }
 
 void LayoutInputNode::ShowNodeTreeFromRoot() const {
-  NGBlockNode(box_->View()).ShowNodeTree(this);
+  BlockNode(box_->View()).ShowNodeTree(this);
 }
 #endif
 

@@ -29,13 +29,13 @@ struct LayoutAlgorithmParams;
 enum class MathScriptType;
 
 // Represents a node to be laid out.
-class CORE_EXPORT NGBlockNode : public LayoutInputNode {
+class CORE_EXPORT BlockNode : public LayoutInputNode {
   friend LayoutInputNode;
 
  public:
-  explicit NGBlockNode(LayoutBox* box) : LayoutInputNode(box, kBlock) {}
+  explicit BlockNode(LayoutBox* box) : LayoutInputNode(box, kBlock) {}
 
-  NGBlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
+  BlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   const NGLayoutResult* Layout(const NGConstraintSpace& constraint_space,
                                const NGBlockBreakToken* break_token = nullptr,
@@ -128,8 +128,8 @@ class CORE_EXPORT NGBlockNode : public LayoutInputNode {
 
   LayoutInputNode FirstChild() const;
 
-  NGBlockNode GetRenderedLegend() const;
-  NGBlockNode GetFieldsetContent() const;
+  BlockNode GetRenderedLegend() const;
+  BlockNode GetFieldsetContent() const;
 
   bool IsTableCell() const { return box_->IsTableCell(); }
 
@@ -239,7 +239,7 @@ class CORE_EXPORT NGBlockNode : public LayoutInputNode {
   // legacy flow thread to encompass those extra columns.
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
-  bool operator==(const NGBlockNode& other) const { return box_ == other.box_; }
+  bool operator==(const BlockNode& other) const { return box_ == other.box_; }
   bool operator==(const LayoutInputNode& other) const {
     return other.Type() == kBlock && GetLayoutBox() == other.GetLayoutBox();
   }
@@ -294,7 +294,7 @@ class CORE_EXPORT NGBlockNode : public LayoutInputNode {
 };
 
 template <>
-struct DowncastTraits<NGBlockNode> {
+struct DowncastTraits<BlockNode> {
   static bool AllowFrom(const LayoutInputNode& node) { return node.IsBlock(); }
 };
 
@@ -313,6 +313,6 @@ class DevtoolsReadonlyLayoutScope {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGBlockNode)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::BlockNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_NODE_H_

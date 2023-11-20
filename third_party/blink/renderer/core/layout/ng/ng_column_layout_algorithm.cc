@@ -38,7 +38,7 @@ class MulticolPartWalker {
 
    public:
     Entry() = default;
-    Entry(const NGBlockBreakToken* token, NGBlockNode spanner)
+    Entry(const NGBlockBreakToken* token, BlockNode spanner)
         : break_token(token), spanner(spanner) {}
 
     // The incoming break token for the content to process, or null if we're at
@@ -47,10 +47,10 @@ class MulticolPartWalker {
 
     // The column spanner node to process, or null if we're dealing with regular
     // column content.
-    NGBlockNode spanner = nullptr;
+    BlockNode spanner = nullptr;
   };
 
-  MulticolPartWalker(NGBlockNode multicol_container,
+  MulticolPartWalker(BlockNode multicol_container,
                      const NGBlockBreakToken* break_token)
       : multicol_container_(multicol_container),
         parent_break_token_(break_token),
@@ -76,7 +76,7 @@ class MulticolPartWalker {
   void Next();
 
   // Move over to the specified spanner, and take it from there.
-  void MoveToSpanner(NGBlockNode spanner,
+  void MoveToSpanner(BlockNode spanner,
                      const NGBlockBreakToken* next_column_token);
 
   // Push a break token for the column content to resume at.
@@ -92,8 +92,8 @@ class MulticolPartWalker {
   void UpdateCurrent();
 
   Entry current_;
-  NGBlockNode spanner_ = nullptr;
-  NGBlockNode multicol_container_;
+  BlockNode spanner_ = nullptr;
+  BlockNode multicol_container_;
   const NGBlockBreakToken* parent_break_token_;
   const NGBlockBreakToken* next_column_token_ = nullptr;
 
@@ -113,7 +113,7 @@ void MulticolPartWalker::Next() {
 }
 
 void MulticolPartWalker::MoveToSpanner(
-    NGBlockNode spanner,
+    BlockNode spanner,
     const NGBlockBreakToken* next_column_token) {
   *this = MulticolPartWalker(multicol_container_, nullptr);
   DCHECK(spanner.IsColumnSpanAll());
@@ -153,7 +153,7 @@ void MulticolPartWalker::UpdateCurrent() {
       if (child_break_token->InputNode() == multicol_container_) {
         current_.spanner = nullptr;
       } else {
-        current_.spanner = To<NGBlockNode>(child_break_token->InputNode());
+        current_.spanner = To<BlockNode>(child_break_token->InputNode());
         DCHECK(current_.spanner.IsColumnSpanAll());
       }
       current_.break_token = child_break_token;
@@ -194,7 +194,7 @@ void MulticolPartWalker::MoveToNext() {
     LayoutInputNode next = spanner_.NextSibling();
     // Otherwise, if there's a next spanner, we'll use that.
     if (next && next.IsColumnSpanAll()) {
-      spanner_ = To<NGBlockNode>(next);
+      spanner_ = To<BlockNode>(next);
       return;
     }
     spanner_ = nullptr;
@@ -208,11 +208,11 @@ void MulticolPartWalker::MoveToNext() {
   is_finished_ = true;
 }
 
-NGBlockNode GetSpannerFromPath(const NGColumnSpannerPath* path) {
+BlockNode GetSpannerFromPath(const NGColumnSpannerPath* path) {
   while (path->Child())
     path = path->Child();
-  DCHECK(path->BlockNode().IsColumnSpanAll());
-  return path->BlockNode();
+  DCHECK(path->GetBlockNode().IsColumnSpanAll());
+  return path->GetBlockNode();
 }
 
 }  // namespace
@@ -223,7 +223,7 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
   // When a list item has multicol, |ColumnLayoutAlgorithm| needs to keep
   // track of the list marker instead of the child layout algorithm. See
   // |NGBlockLayoutAlgorithm|.
-  if (const NGBlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
+  if (const BlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
     if (!marker_node.ListMarkerOccupiesWholeLine() &&
         (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
       container_builder_.SetUnpositionedListMarker(
@@ -410,11 +410,11 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
-    const NGBlockNode& search_parent) const {
+    const BlockNode& search_parent) const {
   MinMaxSizesResult result;
   for (LayoutInputNode child = search_parent.FirstChild(); child;
        child = child.NextSibling()) {
-    const NGBlockNode* child_block = DynamicTo<NGBlockNode>(&child);
+    const BlockNode* child_block = DynamicTo<BlockNode>(&child);
     if (!child_block)
       continue;
     MinMaxSizesResult child_result;
@@ -471,7 +471,7 @@ NGBreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
         // it, |next_column_token| will be set. Move the walker to the
         // spanner. We'll now walk that spanner and any sibling spanners, before
         // resuming at |next_column_token|.
-        NGBlockNode spanner_node = GetSpannerFromPath(path);
+        BlockNode spanner_node = GetSpannerFromPath(path);
         walker.MoveToSpanner(spanner_node, next_column_token);
         continue;
       }
@@ -487,7 +487,7 @@ NGBreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
 
     // Attempt to lay out one column spanner.
 
-    NGBlockNode spanner_node = entry.spanner;
+    BlockNode spanner_node = entry.spanner;
 
     // If this is the child we had previously determined to break before, do so
     // now and finish layout.
@@ -1048,7 +1048,7 @@ const NGLayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 }
 
 NGBreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
-    NGBlockNode spanner_node,
+    BlockNode spanner_node,
     const NGBlockBreakToken* break_token,
     MarginStrut* margin_strut) {
   spanner_path_ = nullptr;
@@ -1486,7 +1486,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
 }
 
 NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
-    const NGBlockNode& spanner,
+    const BlockNode& spanner,
     LayoutUnit block_offset) const {
   auto child_writing_direction = spanner.Style().GetWritingDirection();
   NGConstraintSpaceBuilder space_builder(

@@ -18,9 +18,9 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
 class LayoutInputNode;
-class NGBlockNode;
 
 // Define constraint classes for TableLayoutAlgorithm.
 class CORE_EXPORT TableTypes {
@@ -210,7 +210,7 @@ class CORE_EXPORT TableTypes {
                              bool is_table_fixed);
 
   static CellInlineConstraint CreateCellInlineConstraint(
-      const NGBlockNode&,
+      const BlockNode&,
       WritingDirectionMode table_writing_direction,
       bool is_fixed_layout,
       const BoxStrut& cell_border,
@@ -243,7 +243,7 @@ struct TableGroupedChildren {
   DISALLOW_NEW();
 
  public:
-  explicit TableGroupedChildren(const NGBlockNode& table);
+  explicit TableGroupedChildren(const BlockNode& table);
   ~TableGroupedChildren() {
     captions.clear();
     columns.clear();
@@ -252,16 +252,16 @@ struct TableGroupedChildren {
 
   void Trace(Visitor*) const;
 
-  HeapVector<NGBlockNode> captions;  // CAPTION
-  HeapVector<NGBlockNode> columns;   // COLGROUP, COL
+  HeapVector<BlockNode> captions;  // CAPTION
+  HeapVector<BlockNode> columns;   // COLGROUP, COL
 
-  NGBlockNode header;          // first THEAD
+  BlockNode header;  // first THEAD
 
   // These cannot be modified except in ctor to ensure
   // TableGroupedChildrenIterator works correctly.
-  HeapVector<NGBlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
+  HeapVector<BlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
 
-  NGBlockNode footer;          // first TFOOT
+  BlockNode footer;  // first TFOOT
 
   // Default iterators iterate over tbody-like (THEAD/TBODY/TFOOT) elements.
   TableGroupedChildrenIterator begin() const;
@@ -282,7 +282,7 @@ class TableGroupedChildrenIterator {
 
   TableGroupedChildrenIterator& operator++();
   TableGroupedChildrenIterator& operator--();
-  NGBlockNode operator*() const;
+  BlockNode operator*() const;
   bool operator==(const TableGroupedChildrenIterator& rhs) const;
   bool operator!=(const TableGroupedChildrenIterator& rhs) const;
   // True if section should be treated as tbody
@@ -296,7 +296,7 @@ class TableGroupedChildrenIterator {
 
   // |body_vector_| can be modified only in ctor and
   // |AdvanceToNonEmptySection()|.
-  const HeapVector<NGBlockNode>* body_vector_ = nullptr;
+  const HeapVector<BlockNode>* body_vector_ = nullptr;
   wtf_size_t position_ = 0;
 };
 

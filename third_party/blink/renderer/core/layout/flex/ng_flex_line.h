@@ -30,7 +30,7 @@ struct NGFlexItem {
   LayoutUnit total_remaining_block_size;
   FlexOffset offset;
   bool has_descendant_that_depends_on_percentage_block_size = false;
-  NGBlockNode ng_input_node;
+  BlockNode ng_input_node;
 };
 
 struct NGFlexLine {

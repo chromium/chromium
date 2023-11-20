@@ -17,7 +17,7 @@ class NGBlockBreakToken;
 class NGConstraintSpace;
 
 class CORE_EXPORT FieldsetLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -37,19 +37,19 @@ class CORE_EXPORT FieldsetLayoutAlgorithm
 
  private:
   NGBreakStatus LayoutChildren();
-  void LayoutLegend(NGBlockNode& legend);
+  void LayoutLegend(BlockNode& legend);
   NGBreakStatus LayoutFieldsetContent(
-      NGBlockNode& fieldset_content,
+      BlockNode& fieldset_content,
       const NGBlockBreakToken* content_break_token,
       LogicalSize adjusted_padding_box_size,
       bool has_legend);
 
   const NGConstraintSpace CreateConstraintSpaceForLegend(
-      NGBlockNode legend,
+      BlockNode legend,
       LogicalSize available_size,
       LogicalSize percentage_size);
   const NGConstraintSpace CreateConstraintSpaceForFieldsetContent(
-      NGBlockNode fieldset_content,
+      BlockNode fieldset_content,
       LogicalSize padding_box_size,
       LayoutUnit block_offset);
 

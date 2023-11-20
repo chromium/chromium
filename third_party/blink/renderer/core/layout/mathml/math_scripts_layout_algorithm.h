@@ -12,11 +12,11 @@
 
 namespace blink {
 
-class NGBlockNode;
+class BlockNode;
 
 // This algorithm handles msub, msup and msubsup elements.
 class CORE_EXPORT MathScriptsLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -32,7 +32,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
     LayoutUnit inline_size;
     LayoutUnit base_italic_correction;
     BoxStrut margins;
-    NGBlockNode node = nullptr;
+    BlockNode node = nullptr;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(result);
@@ -49,14 +49,14 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
       visitor->Trace(sup);
     }
 
-    NGBlockNode sub = nullptr;
-    NGBlockNode sup = nullptr;
+    BlockNode sub = nullptr;
+    BlockNode sup = nullptr;
   };
 
  private:
-  void GatherChildren(NGBlockNode* base,
+  void GatherChildren(BlockNode* base,
                       HeapVector<SubSupPair>*,
-                      NGBlockNode* prescripts,
+                      BlockNode* prescripts,
                       unsigned* first_prescript_index,
                       NGBoxFragmentBuilder* = nullptr) const;
 
@@ -64,7 +64,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
 
   typedef HeapVector<ChildAndMetrics, 4> ChildrenAndMetrics;
 
-  ChildAndMetrics LayoutAndGetMetrics(NGBlockNode child) const;
+  ChildAndMetrics LayoutAndGetMetrics(BlockNode child) const;
 
   struct VerticalMetrics {
     STACK_ALLOCATED();

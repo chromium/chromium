@@ -2586,7 +2586,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
     // > The first line of a table-cell or inline-block cannot be the first
     // > formatted line of an ancestor element.
     item_result->layout_result =
-        NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
+        BlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .LayoutAtomicInline(constraint_space_, node_.Style(),
                                 /* use_first_line_style */ false,
                                 baseline_algorithm_type);
@@ -2657,7 +2657,7 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   }
 
   DCHECK(mode_ == LineBreakerMode::kMinContent || !max_size_cache_);
-  NGBlockNode child(To<LayoutBox>(item.GetLayoutObject()));
+  BlockNode child(To<LayoutBox>(item.GetLayoutObject()));
 
   NGMinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(),
                                          child, /* is_new_fc */ true);
@@ -2714,7 +2714,7 @@ void LineBreaker::HandleBlockInInline(
     constraint_space_.GetExclusionSpace().MoveAndUpdateDerivedGeometry(
         *exclusion_space_);
 
-    NGBlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
+    BlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
     const NGColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
     const NGLayoutResult* layout_result =
@@ -2870,7 +2870,7 @@ void LineBreaker::HandleFloat(const InlineItem& item,
 
   LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
   UnpositionedFloat unpositioned_float(
-      NGBlockNode(To<LayoutBox>(item.GetLayoutObject())), float_break_token,
+      BlockNode(To<LayoutBox>(item.GetLayoutObject())), float_break_token,
       constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),
       constraint_space_.ReplacedPercentageResolutionSize(),

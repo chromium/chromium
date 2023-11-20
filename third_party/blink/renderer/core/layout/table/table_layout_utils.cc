@@ -170,7 +170,7 @@ void ApplyCellConstraintsToColumnConstraints(
 template <typename RowCountFunc>
 TableTypes::Row ComputeMinimumRowBlockSize(
     const RowCountFunc& row_count_func,
-    const NGBlockNode& row,
+    const BlockNode& row,
     const LayoutUnit cell_percentage_inline_size,
     const bool is_table_block_size_specified,
     const Vector<TableColumnLocation>& column_locations,
@@ -198,8 +198,8 @@ TableTypes::Row ComputeMinimumRowBlockSize(
   RowBaselineTabulator row_baseline_tabulator;
 
   // Gather block sizes of all cells.
-  for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
-       cell = To<NGBlockNode>(cell.NextSibling())) {
+  for (BlockNode cell = To<BlockNode>(row.FirstChild()); cell;
+       cell = To<BlockNode>(cell.NextSibling())) {
     colspan_cell_tabulator->FindNextFreeColumn();
     const ComputedStyle& cell_style = cell.Style();
     const auto cell_writing_direction = cell_style.GetWritingDirection();
@@ -384,7 +384,7 @@ class ColumnConstraintsBuilder {
 };
 
 // Computes constraints specified on column elements.
-void ComputeColumnElementConstraints(const HeapVector<NGBlockNode>& columns,
+void ComputeColumnElementConstraints(const HeapVector<BlockNode>& columns,
                                      bool is_fixed_layout,
                                      TableTypes::Columns* column_constraints) {
   ColumnConstraintsBuilder constraints_builder(column_constraints,
@@ -394,7 +394,7 @@ void ComputeColumnElementConstraints(const HeapVector<NGBlockNode>& columns,
 }
 
 void ComputeSectionInlineConstraints(
-    const NGBlockNode& section,
+    const BlockNode& section,
     bool is_fixed_layout,
     bool is_first_section,
     WritingDirectionMode table_writing_direction,
@@ -405,14 +405,14 @@ void ComputeSectionInlineConstraints(
     TableTypes::ColspanCells* colspan_cell_inline_constraints) {
   ColspanCellTabulator colspan_cell_tabulator;
   bool is_first_row = true;
-  for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-       row = To<NGBlockNode>(row.NextSibling())) {
+  for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+       row = To<BlockNode>(row.NextSibling())) {
     colspan_cell_tabulator.StartRow();
 
     // Gather constraints for each cell, and merge them into
     // CellInlineConstraints.
-    for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
-         cell = To<NGBlockNode>(cell.NextSibling())) {
+    for (BlockNode cell = To<BlockNode>(row.FirstChild()); cell;
+         cell = To<BlockNode>(cell.NextSibling())) {
       colspan_cell_tabulator.FindNextFreeColumn();
       wtf_size_t colspan = cell.TableCellColspan();
 
@@ -1392,7 +1392,7 @@ CellBlockSizeData ComputeCellBlockSize(
 
 void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
-    const NGBlockNode cell,
+    const BlockNode cell,
     const BoxStrut& cell_borders,
     const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
@@ -1456,7 +1456,7 @@ void SetupTableCellConstraintSpaceBuilder(
 
 // Computes maximum possible number of non-mergeable columns.
 wtf_size_t ComputeMaximumNonMergeableColumnCount(
-    const HeapVector<NGBlockNode>& columns,
+    const HeapVector<BlockNode>& columns,
     bool is_fixed_layout) {
   // Build column constraints.
   scoped_refptr<TableTypes::Columns> column_constraints =
@@ -1478,7 +1478,7 @@ wtf_size_t ComputeMaximumNonMergeableColumnCount(
 }
 
 scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
-    const NGBlockNode& table,
+    const BlockNode& table,
     const TableGroupedChildren& grouped_children,
     const TableBorders& table_borders,
     const BoxStrut& border_padding) {
@@ -1497,7 +1497,7 @@ scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
   bool is_first_section = true;
   wtf_size_t row_index = 0;
   wtf_size_t section_index = 0;
-  for (NGBlockNode section : grouped_children) {
+  for (BlockNode section : grouped_children) {
     if (!section.IsEmptyTableSection()) {
       ComputeSectionInlineConstraints(
           section, is_fixed_layout, is_first_section,
@@ -1515,7 +1515,7 @@ scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
 }
 
 void ComputeSectionMinimumRowBlockSizes(
-    const NGBlockNode& section,
+    const BlockNode& section,
     const LayoutUnit cell_percentage_inline_size,
     const bool is_table_block_size_specified,
     const Vector<TableColumnLocation>& column_locations,
@@ -1533,8 +1533,8 @@ void ComputeSectionMinimumRowBlockSizes(
   auto RowCountFunc = [&]() -> wtf_size_t {
     if (!row_count) {
       row_count = 0;
-      for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-           row = To<NGBlockNode>(row.NextSibling())) {
+      for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+           row = To<BlockNode>(row.NextSibling())) {
         (*row_count)++;
       }
     }
@@ -1551,8 +1551,8 @@ void ComputeSectionMinimumRowBlockSizes(
   // total_row_percent must be under 100%
   float total_row_percent = 0;
   // Get minimum block size of each row.
-  for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-       row = To<NGBlockNode>(row.NextSibling())) {
+  for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+       row = To<BlockNode>(row.NextSibling())) {
     colspan_cell_tabulator.StartRow();
     TableTypes::Row row_constraint = ComputeMinimumRowBlockSize(
         RowCountFunc, row, cell_percentage_inline_size,
@@ -1604,8 +1604,8 @@ void ComputeSectionMinimumRowBlockSizes(
 
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
                              NGBoxFragmentBuilder* builder) {
-  const NGBlockNode& node = builder->Node();
-  const NGConstraintSpace& space = builder->GetConstraintSpace();
+  const BlockNode& node = builder->Node();
+  const auto& space = builder->GetConstraintSpace();
   const bool has_inflow_children = !builder->Children().empty();
 
   // Hide table-cells if:
@@ -1695,7 +1695,7 @@ void ColspanCellTabulator::FindNextFreeColumn() {
   }
 }
 
-void ColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
+void ColspanCellTabulator::ProcessCell(const BlockNode& cell) {
   wtf_size_t colspan = cell.TableCellColspan();
   wtf_size_t rowspan = cell.TableCellRowspan();
   if (rowspan > 1)

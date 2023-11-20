@@ -30,12 +30,12 @@ MathRadicalLayoutAlgorithm::MathRadicalLayoutAlgorithm(
 }
 
 void MathRadicalLayoutAlgorithm::GatherChildren(
-    NGBlockNode* base,
-    NGBlockNode* index,
+    BlockNode* base,
+    BlockNode* index,
     NGBoxFragmentBuilder* container_builder) const {
   for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
@@ -73,8 +73,8 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
       base_descent;
   RadicalHorizontalParameters horizontal;
   BoxStrut index_margins, base_margins;
-  NGBlockNode base = nullptr;
-  NGBlockNode index = nullptr;
+  BlockNode base = nullptr;
+  BlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);
 
   const NGLayoutResult* base_layout_result = nullptr;
@@ -199,8 +199,8 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   DCHECK(IsValidMathMLRadical(Node()));
 
-  NGBlockNode base = nullptr;
-  NGBlockNode index = nullptr;
+  BlockNode base = nullptr;
+  BlockNode index = nullptr;
   GatherChildren(&base, &index);
 
   MinMaxSizes sizes;

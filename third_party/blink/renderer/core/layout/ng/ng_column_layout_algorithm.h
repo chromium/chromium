@@ -11,16 +11,16 @@
 
 namespace blink {
 
-enum class NGBreakStatus;
-class NGBlockNode;
+class BlockNode;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
+enum class NGBreakStatus;
 struct LogicalSize;
 struct MarginStrut;
 
 class CORE_EXPORT ColumnLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -32,7 +32,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
  private:
   MinMaxSizesResult ComputeSpannersMinMaxSizes(
-      const NGBlockNode& search_parent) const;
+      const BlockNode& search_parent) const;
 
   // Lay out as many children as we can. If |kNeedsEarlierBreak| is returned, it
   // means that we ran out of space at an unappealing location, and need to
@@ -53,7 +53,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
   // no break token was set, it means that we can proceed to the next row of
   // columns.
-  NGBreakStatus LayoutSpanner(NGBlockNode spanner_node,
+  NGBreakStatus LayoutSpanner(BlockNode spanner_node,
                               const NGBlockBreakToken* break_token,
                               MarginStrut*);
 
@@ -115,7 +115,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   NGConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
   NGConstraintSpace CreateConstraintSpaceForSpanner(
-      const NGBlockNode& spanner,
+      const BlockNode& spanner,
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
 

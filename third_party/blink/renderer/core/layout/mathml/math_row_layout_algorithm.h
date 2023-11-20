@@ -16,7 +16,7 @@ namespace blink {
 class LayoutUnit;
 
 class CORE_EXPORT MathRowLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
@@ -24,7 +24,7 @@ class CORE_EXPORT MathRowLayoutAlgorithm
 
   struct ChildWithOffsetAndMargins {
     DISALLOW_NEW();
-    ChildWithOffsetAndMargins(const NGBlockNode& child,
+    ChildWithOffsetAndMargins(const BlockNode& child,
                               const BoxStrut& margins,
                               LogicalOffset offset,
                               const NGLayoutResult* result)
@@ -38,7 +38,7 @@ class CORE_EXPORT MathRowLayoutAlgorithm
       visitor->Trace(result);
     }
 
-    NGBlockNode child;
+    BlockNode child;
     BoxStrut margins;
     LogicalOffset offset;
     Member<const NGLayoutResult> result;

@@ -43,7 +43,7 @@ as in the following.
 
 ### LayoutInputNode ###
 
-* NGBlockNode
+* BlockNode
   - InlineNode
     - InlineItem (open tag, span)
     - InlineItem (text, "Hello")
@@ -370,6 +370,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
 [BidiParagraph]: ../../../platform/text/bidi_paragraph.h
+[BlockNode]: ../ng/ng_block_node.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
@@ -384,7 +385,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [LogicalLineItems]: ng_logical_line_items.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
-[NGBlockNode]: ../ng/ng_block_node.h
 [NGBoxFragment]: ../ng/ng_box_fragment.h
 [NGBoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng/ng_constraint_space_builder.h

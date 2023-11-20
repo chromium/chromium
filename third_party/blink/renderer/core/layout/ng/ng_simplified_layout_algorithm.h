@@ -37,7 +37,7 @@ struct PhysicalFragmentLink;
 //       "simplified" layout on its children).
 //  3. Run the |OutOfFlowLayoutPart|.
 class CORE_EXPORT SimplifiedLayoutAlgorithm
-    : public LayoutAlgorithm<NGBlockNode,
+    : public LayoutAlgorithm<BlockNode,
                              NGBoxFragmentBuilder,
                              NGBlockBreakToken> {
  public:
