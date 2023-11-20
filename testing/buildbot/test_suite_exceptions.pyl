@@ -4905,9 +4905,11 @@
       # sufficient capacity.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
         'ci_only': True,
+        'experiment_percentage': 100,
       },
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
+        'experiment_percentage': 100,
       },
     },
   },

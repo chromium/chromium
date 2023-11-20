@@ -1779,7 +1779,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -2874,7 +2873,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

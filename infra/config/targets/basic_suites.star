@@ -3132,7 +3132,6 @@ targets.legacy_basic_suite(
             android_swarming = targets.swarming(
                 shards = 36,
             ),
-            experiment_percentage = 100,
         ),
     },
 )
