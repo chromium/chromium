@@ -7,6 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, NotificationsExperimentType) {
+  NotificationsExperimentTypeEnabled = 0,
+  NotificationsExperimentTypePromoEnabled = 1,
+  NotificationsExperimentTypeSetUpListsEnabled = 2,
+};
+
 extern NSString* const kNotificationsPromoCloseButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_NOTIFICATIONS_PROMO_VIEW_CONSTANTS_H_

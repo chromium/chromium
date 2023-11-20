@@ -11,6 +11,7 @@ source_set("features") {
     "//components/country_codes",
     "//components/version_info:channel",
     "//ios/chrome/app:background_mode_buildflags",
+    "//ios/chrome/browser/ui/ntp/feed_top_section:constants",
     "//ios/chrome/common",
     "//ui/base",
   ]

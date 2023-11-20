@@ -10,6 +10,7 @@
 #include "Availability.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
 
 namespace base {
 class TimeDelta;
@@ -334,6 +335,9 @@ BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
 // Feature flag to enable the live sport card in the Discover feed.
 BASE_DECLARE_FEATURE(kDiscoverFeedSportCard);
 
+// Content Push Notifications Variations.
+extern const char kContentPushNotificationsExperimentType[];
+
 // Feature flag to enable the content notifications.
 BASE_DECLARE_FEATURE(kContentPushNotifications);
 
@@ -538,8 +542,17 @@ bool IsFeedHotStartRefreshDisabled();
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
 
-// YES when the Content Push Notifications are enabled.
+// YES when any of the content push notification variations are enabled.
 bool IsContentPushNotificationsEnabled();
+
+// Returns the Experiment type from the content push notifications flag.
+NotificationsExperimentType ContentNotificationsExperimentTypeEnabled();
+
+// YES when the Content Push Notifications Promo is enabled.
+bool IsContentPushNotificationsPromoEnabled();
+
+// YES when the Content Push Notifications Setup List is enabled.
+bool IsContentPushNotificationsSetUpListEnabled();
 
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();

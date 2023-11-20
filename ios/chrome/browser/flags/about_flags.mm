@@ -284,6 +284,17 @@ const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Compact Vertical", kDiscoverFeedTopSyncPromoCompactVertical,
      std::size(kDiscoverFeedTopSyncPromoCompactVertical), nullptr}};
 
+const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
+    {kContentPushNotificationsExperimentType, "1"}};
+const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
+    {{kContentPushNotificationsExperimentType, "2"}};
+
+const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
+    {"Promo", kContentPushNotificationsEnabledPromo,
+     std::size(kContentPushNotificationsEnabledPromo), nullptr},
+    {"Set up list", kContentPushNotificationsEnabledSetupLists,
+     std::size(kContentPushNotificationsEnabledSetupLists), nullptr}};
+
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};
 const FeatureEntry::FeatureParam kFeedHeaderSettingReducedHeight[] = {
@@ -923,7 +934,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"content-push-notifications",
      flag_descriptions::kContentPushNotificationsName,
      flag_descriptions::kContentPushNotificationsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kContentPushNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kContentPushNotifications,
+                                    kContentPushNotificationsVariations,
+                                    "ContentPushNotifications")},
     {"overflow-menu-customization",
      flag_descriptions::kOverflowMenuCustomizationName,
      flag_descriptions::kOverflowMenuCustomizationDescription, flags_ui::kOsIos,

@@ -390,6 +390,9 @@ BASE_FEATURE(kDiscoverFeedSportCard,
              "DiscoverFeedSportCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kContentPushNotificationsExperimentType[] =
+    "ContentPushNotificationsExperimentType";
+
 BASE_FEATURE(kContentPushNotifications,
              "ContentPushNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -687,6 +690,26 @@ bool IsFollowUIUpdateEnabled() {
 
 bool IsContentPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kContentPushNotifications);
+}
+
+NotificationsExperimentType ContentNotificationsExperimentTypeEnabled() {
+  // This translates to the `NotificationsExperimentType` enum.
+  // Value 0 corresponds to `Enabled` on the feature flag. Only activates the
+  // Settings tab for content notifications.
+  return static_cast<NotificationsExperimentType>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kContentPushNotifications, kContentPushNotificationsExperimentType,
+          0));
+}
+
+bool IsContentPushNotificationsPromoEnabled() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypePromoEnabled);
+}
+
+bool IsContentPushNotificationsSetUpListEnabled() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeSetUpListsEnabled);
 }
 
 bool IsIOSLargeFakeboxEnabled() {
