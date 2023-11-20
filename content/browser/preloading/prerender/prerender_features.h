@@ -12,6 +12,7 @@ namespace content::features {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2BypassMemoryLimitCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NewLimitAndScheduler);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2AllowActivationInBackground);
 
 }  // namespace content::features
 

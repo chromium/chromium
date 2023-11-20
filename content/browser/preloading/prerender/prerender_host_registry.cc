@@ -60,6 +60,21 @@ bool IsBackground(Visibility visibility) {
   }
 }
 
+// Returns true when it is allowed to activate a prerendered page in a
+// background tab.
+bool IsAllowedToActivateInBackgroundForTesting() {
+  // Now it is allowed to activate a prerendered page in a background only on
+  // macOS for running web platform tests. See comments on the flag definition
+  // for more details.
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2AllowActivationInBackground)) {
+    return true;
+  }
+#endif
+  return false;
+}
+
 bool DeviceHasEnoughMemoryForPrerender() {
   // This method disallows prerendering on low-end devices if the
   // kPrerender2MemoryControls feature is enabled.
@@ -1511,7 +1526,8 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   // TODO(crbug.com/1399709): Remove the restriction after further investigation
   // and discussion.
   // Disallow activation when the navigation happens in the hidden tab.
-  if (web_contents()->GetVisibility() == Visibility::HIDDEN) {
+  if (web_contents()->GetVisibility() == Visibility::HIDDEN &&
+      !IsAllowedToActivateInBackgroundForTesting()) {
     CancelHost(host->frame_tree_node_id(),
                PrerenderFinalStatus::kActivatedInBackground);
     return RenderFrameHost::kNoFrameTreeNodeId;

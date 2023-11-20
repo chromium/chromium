@@ -7,12 +7,14 @@
 <script>
 
 const params = new URLSearchParams(location.search);
+const target_hint = params.get('target_hint');
+const rule_extras = {target_hint};
 
 // The main test page (restriction-battery-status.html) loads the initiator
 // page, then the initiator page will prerender itself with the `prerendering`
 // parameter.
 if (!params.has('prerendering')) {
-  loadInitiatorPage();
+  loadInitiatorPage(rule_extras);
 } else {
   const prerenderEventCollector = new PrerenderEventCollector();
   prerenderEventCollector.start(navigator.getBattery(), 'navigator.getBattery');

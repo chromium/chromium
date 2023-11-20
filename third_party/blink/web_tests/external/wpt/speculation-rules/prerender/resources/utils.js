@@ -102,7 +102,10 @@ async function writeValueToServer(key, value) {
 
 // Loads the initiator page, and navigates to the prerendered page after it
 // receives the 'readyToActivate' message.
-function loadInitiatorPage() {
+//
+// `rule_extras` provides additional parameters for the speculation rule used
+// to trigger prerendering.
+function loadInitiatorPage(rule_extras = {}) {
   // Used to communicate with the prerendering page.
   const prerenderChannel = new PrerenderChannel('prerender-channel');
   window.addEventListener('unload', () => {
@@ -125,11 +128,15 @@ function loadInitiatorPage() {
   url.searchParams.append('prerendering', '');
   // Prerender a page that notifies the initiator page of the page's ready to be
   // activated via the 'readyToActivate'.
-  startPrerendering(url.toString());
+  startPrerendering(url.toString(), rule_extras);
 
   // Navigate to the prerendered page after being informed.
   readyToActivate.then(() => {
-    window.location = url.toString();
+    if (rule_extras['target_hint'] === '_blank') {
+      window.open(url.toString(), '_blank', 'noopener');
+    } else {
+      window.location = url.toString();
+    }
   }).catch(e => {
     const testChannel = new PrerenderChannel('test-channel');
     testChannel.postMessage(

@@ -2107,7 +2107,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2InNewTab"
+      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground"
     ],
     "owners": ["nhiroki@chromium.org"],
     "expires": "Jul 1, 2024"
