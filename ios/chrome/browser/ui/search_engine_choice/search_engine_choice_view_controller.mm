@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
+#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -37,12 +38,10 @@ constexpr CGFloat kFakeOmniboxFieldLeadingInset = 52.;
 constexpr CGFloat kHorizontalInsets = -48.;
 // Space between the Chrome logo and the top of the screen.
 constexpr CGFloat kTopSpacing = 40.;
-// Space between the bottom of the primary button and the bottom of the screen.
-constexpr CGFloat kBottomSpacing = 12.;
 // Spacing between the elements of the top stack view.
 constexpr CGFloat kTopStackViewSpacing = 16.;
-// Space between the table and the primary button.
-constexpr CGFloat kPrimaryButtonTopPadding = 16.;
+// Space above and below the primary button.
+constexpr CGFloat kPrimaryButtonPadding = 14.;
 // Primary button height.
 constexpr CGFloat kPrimaryButtonHeight = 50.;
 // Logo dimensions.
@@ -267,9 +266,12 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
 }
 
 - (void)enablePrimaryButton {
-  _primaryButton.backgroundColor = [UIColor colorNamed:kBlue600Color];
-  [_primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                       forState:UIControlStateNormal];
+  UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kBlue600Color];
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kSolidButtonTextColor];
+  _primaryButton.configuration = buttonConfiguration;
   _primaryButton.enabled = YES;
 }
 
@@ -379,21 +381,21 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
 
   _primaryButton = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
   [self.view addSubview:_primaryButton];
-  [_primaryButton
-      setTitle:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE)
-      forState:UIControlStateNormal];
+  SetConfigurationTitle(
+      _primaryButton,
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
            forControlEvents:UIControlEventTouchUpInside];
-  _primaryButton.backgroundColor =
+
+  UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
+  buttonConfiguration.background.backgroundColor =
       [UIColor colorNamed:kTertiaryBackgroundColor];
-  [_primaryButton setTitleColor:[UIColor colorNamed:kDisabledTintColor]
-                       forState:UIControlStateNormal];
-  _primaryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-  _primaryButton.titleLabel.minimumScaleFactor = 0.7;
-  _primaryButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-  _primaryButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kDisabledTintColor];
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  _primaryButton.configuration = buttonConfiguration;
   _primaryButton.enabled = NO;
 
   [NSLayoutConstraint activateConstraints:@[
@@ -432,7 +434,7 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
 
     [_primaryButton.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-kBottomSpacing],
+                       constant:-kPrimaryButtonPadding],
     [_primaryButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
                                                constant:kHorizontalInsets],
     [_primaryButton.heightAnchor
@@ -442,7 +444,7 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
     [_separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
     [_separatorView.bottomAnchor
         constraintEqualToAnchor:_primaryButton.topAnchor
-                       constant:-kPrimaryButtonTopPadding],
+                       constant:-kPrimaryButtonPadding],
 
     [searchEngineTableView.widthAnchor
         constraintEqualToAnchor:_scrollContentView.widthAnchor],
