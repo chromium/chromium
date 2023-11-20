@@ -58,10 +58,14 @@
     <div id="toggleTitle">$i18n{trackPriceTitle}</div>
     <!-- This is a special handling to make sure that the annotation text,
     folder name and period will be in the same line. -->
-    <div id="toggleAnnotation">[[toggleAnnotationText_]]<a href="#"
-        id="toggleAnnotationButton"
-        on-click="onFolderClicked_"
-        hidden="[[!folderName_]]">[[folderName_]]</a><span>.</span>
+    <div id="toggleAnnotation">
+      [[toggleAnnotationText_]]
+      <span hidden="[[!showSaveLocationText_]]">
+        [[saveLocationStartText_]]<a href="#"
+            id="toggleAnnotationButton"
+            on-click="onFolderClicked_"
+            >[[folderName_]]</a>[[saveLocationEndText_]]
+      </span>
     </div>
   </div>
   <cr-toggle id="toggle" checked="{{isProductTracked_}}"

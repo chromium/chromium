@@ -518,8 +518,14 @@ TEST_F(ShoppingListHandlerTest,
   const GURL current_url = GURL("http://example.com/1");
   delegate_->SetCurrentTabUrl(current_url);
 
-  AddProductBookmark(bookmark_model_.get(), u"product 1", current_url, 123L,
-                     true, 1230000, "usd");
+  ProductInfo info;
+  info.product_cluster_id = 123L;
+  info.title = "product";
+  AddProductBookmark(bookmark_model_.get(), u"product", current_url,
+                     info.product_cluster_id.value(), true, 1230000, "usd");
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
   EXPECT_CALL(*shopping_service_, IsSubscribed(testing::_, testing::_))
       .Times(1);
 
@@ -564,29 +570,33 @@ TEST_F(ShoppingListHandlerTest, TestTrackPriceForCurrentUrl) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackPriceForCurrentUrl) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      false, 1230000, "usd");
-  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl)
-      .Times(1)
-      .WillOnce(testing::Return(product));
+  ProductInfo info;
+  info.product_cluster_id = 123L;
+  info.title = "product";
+  AddProductBookmark(bookmark_model_.get(), u"product",
+                     GURL("http://example.com/1"),
+                     info.product_cluster_id.value(), false, 1230000, "usd");
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl).Times(0);
   EXPECT_CALL(*shopping_service_,
               Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
       .Times(1);
 
   handler_->SetPriceTrackingStatusForCurrentUrl(false);
+  base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ShoppingListHandlerTest, TestGetParentBookmarkFolderNameForCurrentUrl) {
+TEST_F(ShoppingListHandlerTest,
+       TestGetParentBookmarkFolderNameForCurrentUrl_NoBookmark) {
   base::RunLoop run_loop;
-  const std::u16string& parent_name = bookmark_model_->other_node()->GetTitle();
   handler_->GetParentBookmarkFolderNameForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop, const std::u16string& parent_name,
-         const std::u16string& name) {
-        ASSERT_EQ(parent_name, name);
+      [](base::RunLoop* run_loop, const std::u16string& name) {
+        ASSERT_EQ(u"", name);
         run_loop->Quit();
       },
-      &run_loop, parent_name));
+      &run_loop));
 
   run_loop.Run();
 }

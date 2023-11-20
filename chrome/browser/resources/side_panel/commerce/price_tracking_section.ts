@@ -51,6 +51,9 @@ export class PriceTrackingSection extends PolymerElement {
   private isProductTracked_: boolean;
   private listenerIds_: number[] = [];
   private toggleAnnotationText_: string;
+  private saveLocationStartText_: string;
+  private saveLocationEndText_: string;
+  private showSaveLocationText_: boolean;
   private folderName_: string;
 
   private shoppingApi_: ShoppingListApiProxy =
@@ -84,17 +87,38 @@ export class PriceTrackingSection extends PolymerElement {
   private async updatePriceTrackingSection_(tracked: boolean) {
     if (!tracked) {
       this.folderName_ = '';
-      // TODO(crbug.com/1456420): Update the string to include the period.
       this.toggleAnnotationText_ =
           loadTimeData.getString('trackPriceDescription');
     } else {
       const {name} =
           await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
       this.folderName_ = decodeString16(name);
+
       this.toggleAnnotationText_ =
-          loadTimeData.getStringF('trackPriceDone', '');
+          loadTimeData.getString('trackPriceSaveDescription');
     }
+    this.updateSaveLocationText(this.folderName_);
     this.isProductTracked_ = tracked;
+  }
+
+  private updateSaveLocationText(folderName: string) {
+    if (folderName.length === 0) {
+      this.showSaveLocationText_ = false;
+      this.saveLocationStartText_ = '';
+      this.saveLocationEndText_ = '';
+      return;
+    }
+
+    const fullText: string =
+        loadTimeData.getStringF('trackPriceSaveLocation', folderName);
+
+    // TODO(1456420): Find a better way to dynamically add a link to a templated
+    //                string and possibly avoid using substring.
+    this.saveLocationStartText_ =
+        fullText.substring(0, fullText.lastIndexOf(folderName));
+    this.saveLocationEndText_ = fullText.substring(
+        fullText.lastIndexOf(folderName) + folderName.length);
+    this.showSaveLocationText_ = true;
   }
 
   override disconnectedCallback() {
@@ -143,6 +167,7 @@ export class PriceTrackingSection extends PolymerElement {
     }
     this.toggleAnnotationText_ = loadTimeData.getString('trackPriceError');
     this.folderName_ = '';
+    this.updateSaveLocationText('');
     this.isProductTracked_ = !attemptedTrack;
   }
 

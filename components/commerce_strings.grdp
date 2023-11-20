@@ -75,6 +75,14 @@
       Cancel
     </message>
 
+    <!-- Generic price tracking strings -->
+    <message name="IDS_PRICE_TRACKING_SAVE_DESCRIPTION" desc="Text displayed to the user explaining that the product on the web page is being tracked.">
+      You’re tracking this product.
+    </message>
+    <message name="IDS_PRICE_TRACKING_SAVE_LOCATION" desc="Text displayed to the user explaining where the product they are tracking is saved in bookmarks. This is not shown if the bookmark does not exist for the page or the user is not tracking the product.">
+      This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+
     <!-- Email consent dialog for price tracking -->
     <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site.">
       Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price of items you track drops on any site.
@@ -97,9 +105,6 @@
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE" desc="The title text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked.">
       Tracking price
-    </message>
-    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved.">
-      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked and the user can click this button to acknowledge this tracking.">
       Done
@@ -343,14 +348,11 @@
     <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option's price is typical. This string is used when we only find one buying option on the page.">
       This price is typical
     </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      You'll get email alerts if the price drops on any site
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel.">
+      You'll get email alerts if the price drops on any site.
     </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DONE" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user successfully tracks the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>
-    </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      Something went wrong. Your change wasn't saved
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page.">
+      Something went wrong. Your change wasn't saved.
     </message>
 
     <!-- For Desktop Discounts on navigation -->
