@@ -44,6 +44,12 @@ constexpr char kIPHShowCountPath[] = "show_count";
 // IPH only.
 constexpr char kIPHShownForAppsPath[] = "shown_for_apps";
 
+// Path to the most recent session start time.
+constexpr char kIPHSessionStartPath[] = "in_product_help.session_start_time";
+// Path to the most recent active time.
+constexpr char kIPHSessionLastActiveTimePath[] =
+    "in_product_help.session_last_active_time";
+
 }  // namespace
 
 BrowserFeaturePromoStorageService::BrowserFeaturePromoStorageService(
@@ -56,6 +62,8 @@ BrowserFeaturePromoStorageService::~BrowserFeaturePromoStorageService() =
 void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
+  registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
+  registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time());
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -164,4 +172,27 @@ void BrowserFeaturePromoStorageService::SavePromoData(
   }
   pref_data.SetByDottedPath(path_prefix + kIPHShownForAppsPath,
                             std::move(shown_for_apps));
+}
+
+void BrowserFeaturePromoStorageService::ResetSession() {
+  auto* const prefs = profile_->GetPrefs();
+  prefs->ClearPref(kIPHSessionStartPath);
+  prefs->ClearPref(kIPHSessionLastActiveTimePath);
+}
+
+user_education::FeaturePromoSessionData
+BrowserFeaturePromoStorageService::ReadSessionData() const {
+  user_education::FeaturePromoSessionData data;
+  auto* const prefs = profile_->GetPrefs();
+  data.start_time = prefs->GetTime(kIPHSessionStartPath);
+  data.most_recent_active_time = prefs->GetTime(kIPHSessionLastActiveTimePath);
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SaveSessionData(
+    const user_education::FeaturePromoSessionData& session_data) {
+  auto* const prefs = profile_->GetPrefs();
+  prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
+  prefs->SetTime(kIPHSessionLastActiveTimePath,
+                 session_data.most_recent_active_time);
 }

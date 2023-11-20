@@ -34,6 +34,10 @@ class BrowserFeaturePromoStorageService
   void SavePromoData(
       const base::Feature& iph_feature,
       const user_education::FeaturePromoData& snooze_data) override;
+  void ResetSession() override;
+  user_education::FeaturePromoSessionData ReadSessionData() const override;
+  void SaveSessionData(
+      const user_education::FeaturePromoSessionData& session_data) override;
 
   const raw_ptr<Profile> profile_;
 };

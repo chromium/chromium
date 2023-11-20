@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -105,6 +106,14 @@ namespace enterprise_idle {
 class IdleServiceTest : public InProcessBrowserTest {
  public:
   IdleServiceTest() = default;
+  ~IdleServiceTest() override = default;
+
+  void SetUp() override {
+    // Prevent user education from polling idle state.
+    UserEducationServiceFactory::GetInstance()
+        ->disable_idle_polling_for_testing();
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();

@@ -44,11 +44,11 @@ std::ostream& operator<<(std::ostream& oss,
 // Dismissal and snooze information.
 struct FeaturePromoData {
   FeaturePromoData();
-  ~FeaturePromoData();
   FeaturePromoData(const FeaturePromoData&);
-  FeaturePromoData(FeaturePromoData&&);
+  FeaturePromoData(FeaturePromoData&&) noexcept;
   FeaturePromoData& operator=(const FeaturePromoData&);
-  FeaturePromoData& operator=(FeaturePromoData&&);
+  FeaturePromoData& operator=(FeaturePromoData&&) noexcept;
+  ~FeaturePromoData();
 
   bool is_dismissed = false;
   FeaturePromoClosedReason last_dismissed_by =
@@ -59,6 +59,22 @@ struct FeaturePromoData {
   int snooze_count = 0;
   int show_count = 0;
   std::set<std::string> shown_for_apps;
+};
+
+// Data about the current session, which can persist across browser restarts.
+struct FeaturePromoSessionData {
+  FeaturePromoSessionData();
+  FeaturePromoSessionData(const FeaturePromoSessionData&);
+  FeaturePromoSessionData(FeaturePromoSessionData&&) noexcept;
+  FeaturePromoSessionData& operator=(const FeaturePromoSessionData&);
+  FeaturePromoSessionData& operator=(FeaturePromoSessionData&&) noexcept;
+  ~FeaturePromoSessionData();
+
+  // The beginning of the most recent session.
+  base::Time start_time;
+
+  // The last known time the browser was active.
+  base::Time most_recent_active_time;
 };
 
 }  // namespace user_education

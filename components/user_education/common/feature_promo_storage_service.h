@@ -44,6 +44,13 @@ class FeaturePromoStorageService {
   // Reset the state of |iph_feature|.
   virtual void Reset(const base::Feature& iph_feature) = 0;
 
+  virtual FeaturePromoSessionData ReadSessionData() const = 0;
+
+  virtual void SaveSessionData(const FeaturePromoSessionData& session_data) = 0;
+
+  // Reset the session data.
+  virtual void ResetSession() = 0;
+
   // Returns the set of apps that `iph_feature` has been shown for.
   std::set<std::string> GetShownForApps(const base::Feature& iph_feature) const;
 

@@ -24,6 +24,11 @@ BASE_FEATURE(kTestIPHFeature2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kAppName1[] = "App1";
 constexpr char kAppName2[] = "App2";
+constexpr base::Time kSessionTime =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(1000));
+constexpr base::Time kLastActiveTime = kSessionTime + base::Hours(2);
+constexpr base::Time kNewSessionTime = kSessionTime + base::Days(3);
+constexpr base::Time kNewActiveTime = kNewSessionTime + base::Minutes(17);
 }  // namespace
 
 // Repeats some of the tests in FeaturePromoStorageServiceTest except that a
@@ -79,6 +84,24 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     return service_.ReadPromoData(to_read_data_for);
   }
 
+  void ResetSessionData() { service_.ResetSession(); }
+
+  user_education::FeaturePromoSessionData ReadSessionData() {
+    return service_.ReadSessionData();
+  }
+
+  void SaveSessionData(
+      const user_education::FeaturePromoSessionData& session_data) {
+    service_.SaveSessionData(session_data);
+  }
+
+  void CompareSessionData(
+      const user_education::FeaturePromoSessionData& expected) {
+    const auto actual = ReadSessionData();
+    EXPECT_EQ(expected.start_time, actual.start_time);
+    EXPECT_EQ(expected.most_recent_active_time, actual.most_recent_active_time);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -124,4 +147,36 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsMultipleFeatures) {
   SaveData(kTestIPHFeature2, data2);
   CompareData(data, kTestIPHFeature);
   CompareData(data2, kTestIPHFeature2);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, NoSessionDataByDefault) {
+  CompareSessionData(user_education::FeaturePromoSessionData());
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsSessionData) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  CompareSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SaveSessionAgain) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  data.start_time = kNewSessionTime;
+  data.most_recent_active_time = kNewActiveTime;
+  SaveSessionData(data);
+  CompareSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, ResetSessionClearsData) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  ResetSessionData();
+  CompareSessionData(user_education::FeaturePromoSessionData());
 }

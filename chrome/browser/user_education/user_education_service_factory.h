@@ -21,6 +21,11 @@ class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
   static UserEducationService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  // Prevents polling of the idle state in tests where the appropriate services
+  // are not available or the extra observer would interfere with the test
+  // logic.
+  void disable_idle_polling_for_testing() { disable_idle_polling_ = true; }
+
  private:
   friend base::NoDestructor<UserEducationServiceFactory>;
 
@@ -30,6 +35,8 @@ class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
 
   UserEducationServiceFactory();
   ~UserEducationServiceFactory() override;
+
+  bool disable_idle_polling_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_FACTORY_H_
