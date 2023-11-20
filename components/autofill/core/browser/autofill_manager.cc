@@ -420,9 +420,9 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
-  if (!queryable_forms.empty() && download_manager()) {
+  if (!queryable_forms.empty() && client().GetDownloadManager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
-    if (!download_manager()->StartQueryRequest(
+    if (!client().GetDownloadManager()->StartQueryRequest(
             queryable_forms, driver().IsolationInfo(), GetWeakPtr())) {
       NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     }

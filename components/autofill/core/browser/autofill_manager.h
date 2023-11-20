@@ -370,10 +370,6 @@ class AutofillManager
   AutofillDriver& driver() { return *driver_; }
   const AutofillDriver& driver() const { return *driver_; }
 
-  AutofillDownloadManager* download_manager() {
-    return client().GetDownloadManager();
-  }
-
   // The return value shouldn't be cached, retrieve it as needed.
   AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
     return form_interactions_ukm_logger_.get();

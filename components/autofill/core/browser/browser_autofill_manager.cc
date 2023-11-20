@@ -2139,8 +2139,9 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
 
-  if (!download_manager())
+  if (!client().GetDownloadManager()) {
     return;
+  }
 
   // Check if the form is among the forms that were recently auto-filled.
   bool was_autofilled = base::Contains(autofilled_form_signatures_,
@@ -2154,7 +2155,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
 
-  download_manager()->StartUploadRequest(
+  client().GetDownloadManager()->StartUploadRequest(
       *submitted_form, was_autofilled, non_empty_types,
       /*login_form_signature=*/std::string(), observed_submission,
       client().GetPrefs(), GetWeakPtr());
