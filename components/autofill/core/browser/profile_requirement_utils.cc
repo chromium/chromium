@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 
 #include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,11 +20,22 @@ namespace {
 using AddressImportRequirement =
     autofill_metrics::AddressProfileImportRequirementMetric;
 
+// Stores the collection of AddressImportRequirement that are violated. These
+// violation prevents the import of a profile.
+constexpr AddressImportRequirement kMinimumAddressRequirementViolations[] = {
+    AddressImportRequirement::kLine1RequirementViolated,
+    AddressImportRequirement::kCityRequirementViolated,
+    AddressImportRequirement::kStateRequirementViolated,
+    AddressImportRequirement::kZipRequirementViolated,
+    AddressImportRequirement::kZipOrStateRequirementViolated,
+    AddressImportRequirement::kLine1OrHouseNumberRequirementViolated,
+    AddressImportRequirement::kNameRequirementViolated};
+
 }  // anonymous namespace
 
-base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
-GetAutofillProfileRequirementResult(const AutofillProfile& profile,
-                                    LogBuffer* import_log_buffer) {
+std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
+ValidateProfileImportRequirements(const AutofillProfile& profile,
+                                  LogBuffer* import_log_buffer) {
   CHECK(profile.HasInfo(ADDRESS_HOME_COUNTRY));
 
   std::vector<AddressImportRequirement> address_import_requirements;
@@ -66,58 +78,52 @@ GetAutofillProfileRequirementResult(const AutofillProfile& profile,
       country.requires_line1(), {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_NAME},
       AddressImportRequirement::kLine1RequirementFulfilled,
       AddressImportRequirement::kLine1RequirementViolated);
-
   is_valid &=
       ValidateAndLog(country.requires_city(), {ADDRESS_HOME_CITY},
                      AddressImportRequirement::kCityRequirementFulfilled,
                      AddressImportRequirement::kCityRequirementViolated);
-
   is_valid &=
       ValidateAndLog(country.requires_state(), {ADDRESS_HOME_STATE},
                      AddressImportRequirement::kStateRequirementFulfilled,
                      AddressImportRequirement::kStateRequirementViolated);
-
   is_valid &= ValidateAndLog(country.requires_zip(), {ADDRESS_HOME_ZIP},
                              AddressImportRequirement::kZipRequirementFulfilled,
                              AddressImportRequirement::kZipRequirementViolated);
-
   is_valid &= ValidateAndLog(
       country.requires_zip_or_state(), {ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE},
       AddressImportRequirement::kZipOrStateRequirementFulfilled,
       AddressImportRequirement::kZipOrStateRequirementViolated);
-
   is_valid &= ValidateAndLog(
       country.requires_line1_or_house_number(),
       {ADDRESS_HOME_LINE1, ADDRESS_HOME_HOUSE_NUMBER},
       AddressImportRequirement::kLine1OrHouseNumberRequirementFulfilled,
       AddressImportRequirement::kLine1OrHouseNumberRequirementViolated);
-
-  // TODO(crbug.com/1413205): Merge this into is_minimum_address.
+  // TODO(crbug.com/1413205): Only check for the full name if all other
+  // requirements are fulfilled. This is relevant for feature-enrolement.
+  // Remove `is_valid` and check in every case once the feature is launched.
   if (is_valid && country.requires_full_name()) {
     ValidateAndLog(/*required=*/true, {NAME_FULL},
                    AddressImportRequirement::kNameRequirementFulfilled,
                    AddressImportRequirement::kNameRequirementViolated);
   }
 
-  return base::flat_set<AddressImportRequirement>(
-      std::move(address_import_requirements));
+  return address_import_requirements;
 }
 
-bool IsMinimumAddress(const AutofillProfile& profile) {
+bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   const std::vector<std::string>& country_codes =
       autofill::CountryDataMap::GetInstance()->country_codes();
   if (!base::Contains(country_codes, base::UTF16ToUTF8(profile.GetRawInfo(
                                          ADDRESS_HOME_COUNTRY)))) {
     return false;
   }
-  base::flat_set<AddressImportRequirement> address_import_requirements =
-      GetAutofillProfileRequirementResult(profile,
-                                          /*import_log_buffer=*/nullptr);
+  std::vector<AddressImportRequirement> address_requirements =
+      ValidateProfileImportRequirements(profile, log_buffer);
   return !base::ranges::any_of(
       kMinimumAddressRequirementViolations,
       [&](AddressImportRequirement address_requirement_violation) {
-        return address_import_requirements.contains(
-            address_requirement_violation);
+        return base::Contains(address_requirements,
+                              address_requirement_violation);
       });
 }
 

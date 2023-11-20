@@ -409,35 +409,6 @@ size_t FormDataImporter::ExtractAddressProfiles(
   return num_complete_profiles;
 }
 
-bool FormDataImporter::LogAddressFormImportRequirementMetric(
-    const AutofillProfile& profile,
-    LogBuffer* import_log_buffer) {
-  base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
-      autofill_profile_requirement_results =
-          GetAutofillProfileRequirementResult(profile, import_log_buffer);
-
-  for (const auto& requirement_result : autofill_profile_requirement_results) {
-    autofill_metrics::LogAddressFormImportRequirementMetric(requirement_result);
-  }
-
-  autofill_metrics::LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-      autofill_profile_requirement_results.contains(
-          AddressImportRequirement::kZipRequirementViolated),
-      autofill_profile_requirement_results.contains(
-          AddressImportRequirement::kStateRequirementViolated),
-      autofill_profile_requirement_results.contains(
-          AddressImportRequirement::kCityRequirementViolated),
-      autofill_profile_requirement_results.contains(
-          AddressImportRequirement::kLine1RequirementViolated));
-
-  return !base::ranges::any_of(
-      kMinimumAddressRequirementViolations,
-      [&](AddressImportRequirement address_requirement_violation) {
-        return autofill_profile_requirement_results.contains(
-            address_requirement_violation);
-      });
-}
-
 AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     const base::flat_map<ServerFieldType, std::u16string>& observed_values,
     LogBuffer* import_log_buffer,
@@ -646,26 +617,24 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   RemoveInaccessibleProfileValues(candidate_profile);
 
   // Do not import a profile if any of the requirements is violated.
-  bool all_fulfilled = LogAddressFormImportRequirementMetric(
-                           candidate_profile, import_log_buffer) &&
+  // `IsMinimumAddress()` goes first, since it logs to autofill-internals.
+  bool all_fulfilled = IsMinimumAddress(candidate_profile, import_log_buffer) &&
                        !has_invalid_information;
 
   // Collect metrics regarding the requirements for an address profile import.
+  autofill_metrics::LogAddressFormImportRequirementMetric(candidate_profile);
   autofill_metrics::LogAddressFormImportRequirementMetric(
       has_multiple_distinct_email_addresses
           ? AddressImportRequirement::kEmailAddressUniqueRequirementViolated
           : AddressImportRequirement::kEmailAddressUniqueRequirementFulfilled);
-
   autofill_metrics::LogAddressFormImportRequirementMetric(
       has_invalid_field_types
           ? AddressImportRequirement::kNoInvalidFieldTypesRequirementViolated
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
-
   autofill_metrics::LogAddressFormImportRequirementMetric(
       import_metadata.observed_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated
           : AddressImportRequirement::kCountryValidRequirementFulfilled);
-
   autofill_metrics::LogAddressFormImportRequirementMetric(
       all_fulfilled ? AddressImportRequirement::kOverallRequirementFulfilled
                     : AddressImportRequirement::kOverallRequirementViolated);

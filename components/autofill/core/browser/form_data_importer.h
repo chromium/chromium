@@ -244,12 +244,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
                                 std::vector<AddressProfileImportCandidate>*
                                     address_profile_import_candidates);
 
-  // Validates that the required fields in the `profile` have values, based on
-  // the requirements of the `profile`'s country. Accordingly, logs the form
-  // import requirement metrics.
-  bool LogAddressFormImportRequirementMetric(const AutofillProfile& profile,
-                                             LogBuffer* import_log_buffer);
-
   // Helper method to construct an AutofillProfile out of observed values in the
   // form. Used during `ExtractAddressProfileFromSection()`.
   AutofillProfile ConstructProfileFromObservedValues(

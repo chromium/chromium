@@ -117,13 +117,9 @@ void LogAddressProfileImportUkm(
 void LogAddressFormImportRequirementMetric(
     AddressProfileImportRequirementMetric metric);
 
-// Logs the overall status of the country specific field requirements for
-// importing an address profile from a submitted form.
-void LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-    bool is_zip_missing,
-    bool is_state_missing,
-    bool is_city_missing,
-    bool is_line1_missing);
+// Validates the profile import requirements and emits all the results.
+// Additionally, logs country-specific field requirement metrics.
+void LogAddressFormImportRequirementMetric(const AutofillProfile& profile);
 
 // Logs the overall status of an address import upon form submission.
 void LogAddressFormImportStatusMetric(AddressProfileImportStatusMetric metric);
