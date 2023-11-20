@@ -329,7 +329,7 @@ class ContentAnalysisDelegateBrowserTestBase
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         kBrowserDMToken);
 #else
-        machine_scope_ ? kBrowserDMToken : kProfileDMToken);
+        machine_scope() ? kBrowserDMToken : kProfileDMToken);
 #endif
     if (machine_scope_) {
       RealtimeReportingClientFactory::GetForProfile(browser()->profile())
@@ -355,6 +355,8 @@ class ContentAnalysisDelegateBrowserTestBase
     // The test is over once the views are destroyed.
     CallQuitClosure();
   }
+
+  bool machine_scope() const { return machine_scope_; }
 
   policy::MockCloudPolicyClient* client() { return client_.get(); }
 
@@ -484,7 +486,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
       /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "bad.exe",
+      /*filename*/
+      machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
       // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
@@ -920,9 +923,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
       /*source*/ "",
       /*destination*/ "",
       {
-          created_file_paths()[0].BaseName().AsUTF8Unsafe(),
-          created_file_paths()[1].BaseName().AsUTF8Unsafe(),
-          created_file_paths()[2].BaseName().AsUTF8Unsafe(),
+          machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "a.exe",
+          machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "b.exe",
+          machine_scope() ? created_file_paths()[2].AsUTF8Unsafe() : "c.exe",
       },
       {
           // printf "a content" | sha256sum | tr '[:lower:]' '[:upper:]'
@@ -1064,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "encrypted.zip",
+      /*filename*/ machine_scope() ? test_zip.AsUTF8Unsafe() : "encrypted.zip",
       // sha256sum < chrome/test/data/safe_browsing/download_protection/\
       // encrypted.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1155,7 +1158,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "large.doc",
+      /*filename*/
+      machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "large.doc",
       // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1330,7 +1334,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "foo.doc",
+      /*filename*/
+      machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "foo.doc",
       // printf "foo content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "B3A2E2EDBAA3C798B4FC267792B1641B94793DE02D870124E5CBE663750B4CFC",

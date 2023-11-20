@@ -258,8 +258,10 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const safe_browsing::RTLookupResponse& response);
 
  private:
-  // Removes any path information and returns just the basename.
-  static std::string GetBaseName(const std::string& filename);
+  // Returns filename with full path if full path is required;
+  // Otherwise returns only the basename without full path.
+  static std::string GetFileName(const std::string& filename,
+                                 const bool include_full_path);
 
   // Returns the Gaia email address of the account signed in to the profile or
   // an empty string if the profile is not signed in.

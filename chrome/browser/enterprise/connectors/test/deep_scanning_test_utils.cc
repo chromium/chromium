@@ -573,25 +573,46 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
         << "Expected no file name but found "
         << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
   } else {
-    const std::string* filename =
-        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
-    ASSERT_TRUE(filename);
-    ASSERT_TRUE(base::Contains(filenames_and_hashes_, *filename))
-        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName;
+    ASSERT_TRUE(
+        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+
+    std::string filename =
+        *(value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    std::string filenames;
+    for (const auto& fh : filenames_and_hashes_) {
+      filenames += fh.first + "; ";
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
+    // If filename is not found as expected, try the filename without path.
+    if (!base::Contains(filenames_and_hashes_, filename)) {
+      for (const auto& fh : filenames_and_hashes_) {
+        filenames += fh.first + "; ";
+        if (base::FilePath(fh.first).BaseName().AsUTF8Unsafe() == filename) {
+          filename = fh.first;  // filename has full path now.
+        }
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
+        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName
+        << "\nActual filename: " << filename << "\nExpected one filename in: { "
+        << filenames << "}";
     ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  results_[*filename]);
+                  results_[filename]);
     ValidateField(value,
                   SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
-                  filenames_and_hashes_[*filename]);
-    if (scan_ids_.count(*filename)) {
+                  filenames_and_hashes_[filename]);
+    if (scan_ids_.count(filename)) {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    scan_ids_[*filename]);
+                    scan_ids_[filename]);
     } else {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
                     absl::optional<std::string>());
     }
-    if (dlp_verdicts_.count(*filename)) {
-      ValidateDlpVerdict(value, dlp_verdicts_[*filename]);
+    if (dlp_verdicts_.count(filename)) {
+      ValidateDlpVerdict(value, dlp_verdicts_[filename]);
     }
   }
 }
@@ -602,7 +623,9 @@ void EventReportValidator::ValidateField(
     const absl::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
     ASSERT_EQ(*value->FindString(field_key), expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << value->FindString(field_key)
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, value->FindString(field_key))
         << "Field " << field_key << " should not be populated. It has value "
@@ -618,7 +641,9 @@ void EventReportValidator::ValidateField(
   if (expected_value.has_value()) {
     const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
     ASSERT_EQ(actual_string_value, expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << actual_string_value
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, s) << "Field " << field_key
                           << " should not be populated. It has value "
@@ -631,7 +656,9 @@ void EventReportValidator::ValidateField(
     const std::string& field_key,
     const absl::optional<int>& expected_value) {
   ASSERT_EQ(value->FindInt(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindInt(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ValidateField(
@@ -639,7 +666,9 @@ void EventReportValidator::ValidateField(
     const std::string& field_key,
     const absl::optional<bool>& expected_value) {
   ASSERT_EQ(value->FindBool(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindBool(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ExpectNoReport() {
