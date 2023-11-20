@@ -237,6 +237,12 @@ viz::SurfaceId DelegatedFrameHostAndroid::GetCurrentSurfaceIdForTesting()
   return GetCurrentSurfaceId();
 }
 
+viz::SurfaceId
+DelegatedFrameHostAndroid::GetFirstSurfaceIdAfterNavigationForTesting() const {
+  return viz::SurfaceId(frame_sink_id_,
+                        first_local_surface_id_after_navigation_);
+}
+
 void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   const absl::optional<viz::SurfaceId> fallback_surface_id =
       content_layer_->oldest_acceptable_fallback();

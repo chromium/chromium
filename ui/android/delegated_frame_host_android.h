@@ -176,6 +176,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return GetPreNavigationSurfaceId();
   }
 
+  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
   void SetIsFrameSinkIdOwner(bool is_owner);
 
  private:

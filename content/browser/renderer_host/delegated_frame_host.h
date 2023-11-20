@@ -205,6 +205,8 @@ class CONTENT_EXPORT DelegatedFrameHost
     return GetPreNavigationSurfaceId();
   }
 
+  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
   void SetIsFrameSinkIdOwner(bool is_owner);
 
  private:

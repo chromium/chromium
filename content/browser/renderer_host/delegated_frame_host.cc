@@ -640,6 +640,12 @@ void DelegatedFrameHost::TakeFallbackContentFrom(DelegatedFrameHost* other) {
       desired_fallback);
 }
 
+viz::SurfaceId DelegatedFrameHost::GetFirstSurfaceIdAfterNavigationForTesting()
+    const {
+  return viz::SurfaceId(frame_sink_id_,
+                        first_local_surface_id_after_navigation_);
+}
+
 void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
   if (is_owner == owns_frame_sink_id_) {
     return;
