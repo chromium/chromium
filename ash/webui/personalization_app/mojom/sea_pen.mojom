@@ -4,6 +4,7 @@
 
 module ash.personalization_app.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
 // Encapsulates metadata for a thumbnail image, which can be displayed as an
@@ -37,4 +38,7 @@ interface SeaPenProvider {
 
     // Select a thumbnail and set as the system wallpaper for the current user.
     SelectSeaPenThumbnail(uint32 id) => (bool success);
+
+    // Sets the given Sea Pen image as the user's background.
+    SelectRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
 };

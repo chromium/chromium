@@ -82,8 +82,7 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
 };
 
 TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
-  base::test::TestFuture<uint32_t, const gfx::ImageSkia&>
-      decode_sea_pen_image_future;
+  base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
   const base::FilePath file_path = CreateFilePath("111.jpg");
   ASSERT_FALSE(base::PathExists(file_path));
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
@@ -91,7 +90,6 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
        manta::proto::ImageResolution::RESOLUTION_64},
       GetTempFileDirectory(), decode_sea_pen_image_future.GetCallback());
 
-  EXPECT_EQ(111u, decode_sea_pen_image_future.Get<uint32_t>());
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(

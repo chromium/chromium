@@ -392,6 +392,21 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
   EXPECT_EQ(std::string(), current->description_title);
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       SendsSeaPenWallpaperFromFile) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* current =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
+  EXPECT_EQ(std::string(), current->description_content);
+  EXPECT_EQ(std::string(), current->description_title);
+}
+
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
   auto* ctrl = test_wallpaper_controller();
 

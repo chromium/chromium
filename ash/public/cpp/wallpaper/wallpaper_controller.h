@@ -234,6 +234,14 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const SeaPenImage& sea_pen_image,
                                   SetWallpaperCallback callback) = 0;
 
+  // Sets the recently used Sea Pen wallpaper as system wallpaper for
+  // user with `account_id`.
+  // Calls `callback` with boolean success. Can fail if `account_id` is not
+  // allowed to set wallpaper, or the image failed to decode.
+  virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
+                                          const base::FilePath& file_path,
+                                          SetWallpaperCallback callback) = 0;
+
   // Confirms the wallpaper being previewed to be set as the actual user
   // wallpaper. Must be called in preview mode.
   virtual void ConfirmPreviewWallpaper() = 0;

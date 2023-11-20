@@ -16,8 +16,8 @@ export const kDefaultImageSymbol: unique symbol =
 
 export type DefaultImageSymbol = typeof kDefaultImageSymbol;
 
-export type DisplayableImage =
-    FilePath|GooglePhotosPhoto|WallpaperImage|DefaultImageSymbol;
+export type DisplayableImage = FilePath|GooglePhotosPhoto|WallpaperImage|
+    DefaultImageSymbol|SeaPenWallpaper;
 
 export const kMaximumLocalImagePreviews = 4;
 

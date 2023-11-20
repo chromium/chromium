@@ -295,6 +295,11 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetSeaPenWallpaper(const AccountId& account_id,
                           const SeaPenImage& sea_pen_image,
                           SetWallpaperCallback callback) override;
+
+  void SetSeaPenWallpaperFromFile(const AccountId& account_id,
+                                  const base::FilePath& file_path,
+                                  SetWallpaperCallback callback) override;
+
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,
@@ -556,8 +561,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // Used as the callback of SeaPen wallpaper decoding. Shows the wallpaper
   // immediately if `account_id` is for the active user.
   void OnSeaPenWallpaperDecoded(const AccountId& account_id,
+                                const base::FilePath& file_path,
                                 SetWallpaperCallback callback,
-                                uint32_t sea_pen_image_id,
                                 const gfx::ImageSkia& image_skia);
 
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a

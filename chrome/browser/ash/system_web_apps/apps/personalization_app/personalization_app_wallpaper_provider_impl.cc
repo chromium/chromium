@@ -424,12 +424,21 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     }
     case ash::WallpaperType::kSeaPen: {
       // TODO(b/307757290) send a unique key and set description content.
-      const std::string key = base::UnguessableToken::Create().ToString();
+      const std::string key = info->user_file_path;
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
               info->layout, info->type, key,
               /*description_title=*/std::string(),
               /*description_content=*/std::string()));
+      // Do not show file extension in user-visible selected details text.
+      const std::string file_name = base::FilePath(info->user_file_path)
+                                        .BaseName()
+                                        .RemoveExtension()
+                                        .value();
+      std::vector<std::string> attribution = {file_name};
+      NotifyAttributionChanged(
+          ash::personalization_app::mojom::CurrentAttribution::New(
+              std::move(attribution), key));
       return;
     }
     case ash::WallpaperType::kCount:

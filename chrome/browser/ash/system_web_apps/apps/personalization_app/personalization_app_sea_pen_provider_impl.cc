@@ -78,6 +78,16 @@ void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImage(
+    const base::FilePath& path,
+    SelectRecentSeaPenImageCallback callback) {
+  auto* wallpaper_controller = ash::WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+
+  wallpaper_controller->SetSeaPenWallpaperFromFile(GetAccountId(profile_), path,
+                                                   std::move(callback));
+}
+
 wallpaper_handlers::SeaPenFetcher*
 PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
   if (!sea_pen_fetcher_) {

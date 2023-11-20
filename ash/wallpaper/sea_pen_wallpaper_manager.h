@@ -28,8 +28,7 @@ class ASH_EXPORT SeaPenWallpaperManager {
   ~SeaPenWallpaperManager();
 
   using DecodeAndSaveSeaPenImageCallback =
-      base::OnceCallback<void(uint32_t sea_pen_image_id,
-                              const gfx::ImageSkia& image_skia)>;
+      base::OnceCallback<void(const gfx::ImageSkia& image_skia)>;
 
   // Decodes Sea Pen image then save the decoded image into disk. Calls
   // `callback` with the image id and the decoded image. Responds with an empty
@@ -44,8 +43,7 @@ class ASH_EXPORT SeaPenWallpaperManager {
                        DecodeAndSaveSeaPenImageCallback callback,
                        const gfx::ImageSkia& image_skia);
 
-  void OnSeaPenImageSaved(uint32_t sea_pen_image_id,
-                          const gfx::ImageSkia& image_skia,
+  void OnSeaPenImageSaved(const gfx::ImageSkia& image_skia,
                           DecodeAndSaveSeaPenImageCallback callback,
                           const base::FilePath& file_path);
 

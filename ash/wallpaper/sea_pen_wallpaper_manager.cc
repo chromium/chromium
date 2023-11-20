@@ -40,13 +40,13 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
     LOG(ERROR) << __func__ << "Failed to decode Sea Pen image";
-    std::move(callback).Run(sea_pen_image_id, gfx::ImageSkia());
+    std::move(callback).Run(gfx::ImageSkia());
     return;
   }
   std::string file_name = base::NumberToString(sea_pen_image_id) + ".jpg";
   auto on_saved = base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageSaved,
-                                 weak_factory_.GetWeakPtr(), sea_pen_image_id,
-                                 image_skia, std::move(callback));
+                                 weak_factory_.GetWeakPtr(), image_skia,
+                                 std::move(callback));
   wallpaper_file_manager_->SaveWallpaperToDisk(
       WallpaperType::kSeaPen, wallpaper_dir, file_name,
       WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia,
@@ -54,16 +54,15 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
 }
 
 void SeaPenWallpaperManager::OnSeaPenImageSaved(
-    uint32_t sea_pen_image_id,
     const gfx::ImageSkia& image_skia,
     DecodeAndSaveSeaPenImageCallback callback,
     const base::FilePath& file_path) {
   if (file_path.empty()) {
     LOG(ERROR) << __func__ << "Failed to save Sea Pen image into disk";
-    std::move(callback).Run(sea_pen_image_id, gfx::ImageSkia());
+    std::move(callback).Run(gfx::ImageSkia());
     return;
   }
-  std::move(callback).Run(sea_pen_image_id, image_skia);
+  std::move(callback).Run(image_skia);
 }
 
 }  // namespace ash

@@ -53,6 +53,10 @@ class PersonalizationAppSeaPenProviderImpl
   void SelectSeaPenThumbnail(uint32_t id,
                              SelectSeaPenThumbnailCallback callback) override;
 
+  void SelectRecentSeaPenImage(
+      const base::FilePath& path,
+      SelectRecentSeaPenImageCallback callback) override;
+
  private:
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 

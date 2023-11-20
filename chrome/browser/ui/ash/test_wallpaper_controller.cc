@@ -223,6 +223,16 @@ void TestWallpaperController::SetSeaPenWallpaper(
   std::move(callback).Run(/*success=*/true);
 }
 
+void TestWallpaperController::SetSeaPenWallpaperFromFile(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestWallpaperController::ConfirmPreviewWallpaper() {
   NOTIMPLEMENTED();
 }

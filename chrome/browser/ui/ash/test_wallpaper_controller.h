@@ -156,6 +156,9 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetSeaPenWallpaper(const AccountId& account_id,
                           const ash::SeaPenImage& sea_pen_image,
                           SetWallpaperCallback callback) override;
+  void SetSeaPenWallpaperFromFile(const AccountId& account_id,
+                                  const base::FilePath& sea_pen_file_path,
+                                  SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,

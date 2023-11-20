@@ -1118,11 +1118,38 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
     return;
   }
 
+  const std::string sea_pen_file_name =
+      base::NumberToString(sea_pen_image.id) + ".jpg";
+  const base::FilePath sea_pen_wallpaper_path =
+      GetUserSeaPenWallpaperDir(account_id).Append(sea_pen_file_name);
+
   sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
       sea_pen_image, GetUserSeaPenWallpaperDir(account_id),
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                     std::move(callback)));
+                     sea_pen_wallpaper_path, std::move(callback)));
+}
+
+void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
+    const AccountId& account_id,
+    const base::FilePath& file_path,
+    SetWallpaperCallback callback) {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+  if (!CanSetUserWallpaper(account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kSeaPen, SetWallpaperResult::kPermissionDenied);
+    // Return early to skip the work of decoding.
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
+  wallpaper_file_manager_->LoadWallpaper(
+      WallpaperType::kSeaPen, file_path.DirName(), file_path.BaseName().value(),
+      base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+                     file_path, std::move(callback)));
 }
 
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
@@ -2338,8 +2365,8 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
 
 void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
     const AccountId& account_id,
+    const base::FilePath& file_path,
     SetWallpaperCallback callback,
-    uint32_t sea_pen_image_id,
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
     wallpaper_metrics_manager_->LogWallpaperResult(
@@ -2355,9 +2382,10 @@ void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
   }
   std::move(callback).Run(true);
 
-  // TODO(b/307591556) set location and user_file_path.
-  WallpaperInfo wallpaper_info(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
-                               WallpaperType::kSeaPen, base::Time::Now());
+  WallpaperInfo wallpaper_info(file_path.BaseName().RemoveExtension().value(),
+                               WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kSeaPen, base::Time::Now(),
+                               file_path.value());
 
   SetWallpaperImpl(account_id, wallpaper_info, image_skia,
                    /*show_wallpaper=*/IsActiveUser(account_id));

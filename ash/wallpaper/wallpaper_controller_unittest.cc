@@ -2059,6 +2059,43 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       /*max_deviation=*/1));
 }
 
+TEST_P(WallpaperControllerTest, SetSeaPenWallpaperFromFile) {
+  SimulateUserLogin(kAccountId1);
+  TestWallpaperControllerObserver observer(controller_);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  gfx::ImageSkia expected_image;
+  std::string jpg_bytes = CreateEncodedImageForTesting(
+      {1, 1}, SK_ColorGREEN, data_decoder::mojom::ImageCodec::kDefault,
+      &expected_image);
+  ASSERT_TRUE(!jpg_bytes.empty());
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = scoped_temp_dir.GetPath().Append("111.jpg");
+  ASSERT_TRUE(base::WriteFile(file_path, jpg_bytes));
+
+  base::test::TestFuture<bool> set_wallpaper_future;
+  controller_->SetSeaPenWallpaperFromFile(kAccountId1, file_path,
+                                          set_wallpaper_future.GetCallback());
+
+  EXPECT_TRUE(set_wallpaper_future.Take());
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ(1, observer.wallpaper_changed_count());
+  histogram_tester().ExpectUniqueSample("Ash.Wallpaper.SeaPen.Result2",
+                                        SetWallpaperResult::kSuccess, 1);
+  // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
+  // channels +- 1.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
+}
+
 TEST_P(WallpaperControllerTest, SetDefaultWallpaperForRegularAccount) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   SimulateUserLogin(kAccountId1);

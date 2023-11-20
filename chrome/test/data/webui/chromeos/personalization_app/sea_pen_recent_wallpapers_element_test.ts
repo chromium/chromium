@@ -11,17 +11,17 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenRecentWallpapersElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
-  let wallpaperProvider: TestWallpaperProvider;
+  let seaPenProvider: TestSeaPenProvider;
   let seaPenRecentWallpapersElement: SeaPenRecentWallpapersElement|null;
 
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
-    wallpaperProvider = mocks.wallpaperProvider;
+    seaPenProvider = mocks.seaPenProvider;
   });
 
   teardown(async () => {
@@ -31,7 +31,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
 
   test('displays recently used Sea Pen wallpapers', async () => {
     personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-        wallpaperProvider.seaPenWallpapers;
+        seaPenProvider.seaPenWallpapers;
 
     // Initialize |seaPenRecentWallpapersElement|.
     seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
@@ -65,7 +65,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
 
   test('opens menu options for a Sea Pen wallpaper', async () => {
     personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-        wallpaperProvider.seaPenWallpapers;
+        seaPenProvider.seaPenWallpapers;
 
     // Initialize |seaPenRecentWallpapersElement|.
     seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
@@ -105,7 +105,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       'selects Wallpaper Info menu option for a Sea Pen wallpaper',
       async () => {
         personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-            wallpaperProvider.seaPenWallpapers;
+            seaPenProvider.seaPenWallpapers;
 
         // Initialize |seaPenRecentWallpapersElement|.
         seaPenRecentWallpapersElement =
@@ -171,4 +171,27 @@ suite('SeaPenRecentWallpapersElementTest', function() {
                 'wallpaperInfoDialog'),
             'no Wallpaper Info dialog after close button clicked');
       });
+
+  test('clicks on a recent wallpaper to set wallpaper', async () => {
+    personalizationStore.data.wallpaper.seaPen.recentWallpapers =
+        seaPenProvider.seaPenWallpapers;
+
+    // Initialize |seaPenRecentWallpapersElement|.
+    seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
+    await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+    // Sea Pen wallpaper thumbnails should display.
+    const recentWallpapers =
+        seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
+            'div:not([hidden]) .recent-wallpaper');
+    assertEquals(3, recentWallpapers!.length, 'should be 3 images available.');
+
+    // Click on the second image to set it as wallpaper.
+    (recentWallpapers[1] as HTMLElement)!.click();
+
+    const filePath = await seaPenProvider.whenCalled('selectRecentSeaPenImage');
+    assertEquals(
+        seaPenProvider.seaPenWallpapers[1]!.file_path, filePath,
+        'file_path sent for the second Sea Pen image');
+  });
 });

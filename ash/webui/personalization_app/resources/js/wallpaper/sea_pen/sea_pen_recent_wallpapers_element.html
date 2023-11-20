@@ -67,6 +67,42 @@
     background-color: var(--cros-sys-app_base_shaded);
     margin-inline: 0;
   }
+
+  .recent-wallpaper[aria-selected='true']::part(icon) {
+    --cr-icon-button-size: 20px;
+    background-color: var(--cros-bg-color);
+    border-bottom-right-radius: 50%;
+    left: -8px;
+    padding: 8px;
+    top: -8px;
+  }
+
+  .recent-wallpaper[aria-selected='true']::part(item) {
+    border-radius: var(--personalization-app-grid-item-border-radius);
+  }
+
+  .recent-wallpaper[aria-selected='true']::part(icon):before {
+    border-top-left-radius: 50%;
+    top: 8px;
+    box-shadow: 0 -8px 0 0 var(--cros-bg-color);
+    content: "";
+    height: 16px;
+    left: 36px;
+    position: absolute;
+    width: 16px;
+  }
+
+  .recent-wallpaper[aria-selected='true']::part(icon):after {
+    border-top-left-radius: 50%;
+    box-shadow: -8px 0px 0 0 var(--cros-bg-color);
+    content: "";
+    height: 16px;
+    left: 8px;
+    position: absolute;
+    top: 36px;
+    width: 16px;
+  }
+
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentWallpapers_)]]">
   <!-- TODO(b/308200616): Add finalized strings -->
@@ -86,7 +122,7 @@
             aria-posinset$="[[getAriaIndex_(index)]]"
             on-wallpaper-grid-item-selected="onRecentWallpaperSelected_"
             role="option"
-            selected="[[isRecentWallpaperSelected_(image, selectedWallpaper_)]]"
+            selected="[[isRecentWallpaperSelected_(image, currentSelected_, pendingSelected_)]]"
             src="[[image.url]]"
             tabindex$="[[tabIndex]]">
         </wallpaper-grid-item>
