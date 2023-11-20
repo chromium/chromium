@@ -13,6 +13,10 @@
 
 namespace chromeos::features {
 
+namespace {
+bool g_app_install_service_uri_enabled_for_testing = false;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables triggering app installs from a specific URI.
 BASE_FEATURE(kAppInstallServiceUri,
@@ -177,6 +181,9 @@ BASE_FEATURE(kRoundedWindows,
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsAppInstallServiceUriEnabled() {
+  if (g_app_install_service_uri_enabled_for_testing) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsAppInstallServiceUriEnabled();
 #else
@@ -319,6 +326,10 @@ int RoundedWindowsRadius() {
 
   return base::GetFieldTrialParamByFeatureAsInt(
       kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
+}
+
+base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting() {
+  return {&g_app_install_service_uri_enabled_for_testing, true};
 }
 
 }  // namespace chromeos::features

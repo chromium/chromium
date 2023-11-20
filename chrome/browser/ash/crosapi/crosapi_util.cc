@@ -194,6 +194,9 @@ constexpr char kExtensionControlledPrefObserversCapability[] = "crbug/1334985";
 // Capability to pass testing ash extension keeplist data via ash
 // commandline switch.
 constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
+// Capability to accept a package ID for installation without a parsing bug.
+// Once Ash and Lacros are both past M124, then we can remove this capability.
+constexpr char kAshAppInstallServicePackageIdFix[] = "b/304680258";
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
@@ -612,6 +615,7 @@ void InjectBrowserInitParams(
       kSharedStoragePrefsCapability,
       kExtensionControlledPrefObserversCapability,
       kAshExtensionKeeplistCmdlineSwitchCapability,
+      kAshAppInstallServicePackageIdFix,
   };
   params->ash_capabilities = {std::move(ash_capabilities)};
 

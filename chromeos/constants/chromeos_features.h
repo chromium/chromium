@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
 #define CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
 
+#include "base/auto_reset.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "build/buildflag.h"
@@ -116,6 +117,9 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
+
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting();
 
 }  // namespace features
 }  // namespace chromeos

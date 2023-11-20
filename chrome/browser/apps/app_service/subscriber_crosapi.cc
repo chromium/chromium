@@ -209,7 +209,7 @@ void SubscriberCrosapi::UninstallSilently(const std::string& app_id,
 void SubscriberCrosapi::InstallApp(crosapi::mojom::InstallAppParamsPtr params,
                                    InstallAppCallback callback) {
   bool valid = [&] {
-    if (params->package_id.has_value()) {
+    if (!params->package_id.has_value()) {
       return false;
     }
 
