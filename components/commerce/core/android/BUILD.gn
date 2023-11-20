@@ -32,8 +32,10 @@ android_library("core_java") {
 }
 
 java_cpp_enum("java_enum_srcjar") {
-  sources =
-      [ "//components/commerce/core/subscriptions/commerce_subscription.h" ]
+  sources = [
+    "//components/commerce/core/commerce_types.h",
+    "//components/commerce/core/subscriptions/commerce_subscription.h",
+  ]
 }
 
 robolectric_library("junit_tests") {

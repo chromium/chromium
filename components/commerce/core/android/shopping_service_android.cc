@@ -147,6 +147,57 @@ void ShoppingServiceAndroid::HandleMerchantInfoCallback(
       info_java_object);
 }
 
+void ShoppingServiceAndroid::GetPriceInsightsInfoForUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_gurl,
+    const JavaParamRef<jobject>& j_callback) {
+  CHECK(shopping_service_);
+
+  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      url,
+      base::BindOnce(&ShoppingServiceAndroid::HandlePriceInsightsInfoCallback,
+                     weak_ptr_factory_.GetWeakPtr(), env,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void ShoppingServiceAndroid::HandlePriceInsightsInfoCallback(
+    JNIEnv* env,
+    const ScopedJavaGlobalRef<jobject>& callback,
+    const GURL& url,
+    const absl::optional<PriceInsightsInfo>& info) {
+  ScopedJavaLocalRef<jobject> info_java_object(nullptr);
+  if (info.has_value()) {
+    ScopedJavaLocalRef<jobject> j_price_points = nullptr;
+    for (const auto& point : info->catalog_history_prices) {
+      j_price_points = Java_ShoppingService_createPricePointAndAddToList(
+          env, j_price_points, ConvertUTF8ToJavaString(env, std::get<0>(point)),
+          std::get<1>(point));
+    }
+
+    info_java_object = Java_ShoppingService_createPriceInsightsInfo(
+        env, info->product_cluster_id.has_value(),
+        info->product_cluster_id.value_or(0),
+        ConvertUTF8ToJavaString(env, info->currency_code),
+        info->typical_low_price_micros.has_value(),
+        info->typical_low_price_micros.value_or(0),
+        info->typical_high_price_micros.has_value(),
+        info->typical_high_price_micros.value_or(0),
+        info->catalog_attributes.has_value(),
+        ConvertUTF8ToJavaString(env, info->catalog_attributes.value_or("")),
+        j_price_points, info->jackpot_url.has_value(),
+        url::GURLAndroid::FromNativeGURL(env,
+                                         info->jackpot_url.value_or(GURL())),
+        static_cast<int>(info->price_bucket), info->has_multiple_catalogs);
+  }
+
+  Java_ShoppingService_runPriceInsightsInfoCallback(
+      env, callback, url::GURLAndroid::FromNativeGURL(env, url),
+      info_java_object);
+}
+
 void ShoppingServiceAndroid::FetchPriceEmailPref(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
@@ -313,6 +364,14 @@ bool ShoppingServiceAndroid::IsCommercePriceTrackingEnabled(
   CHECK(shopping_service_);
 
   return shopping_service_->IsCommercePriceTrackingEnabled();
+}
+
+bool ShoppingServiceAndroid::IsPriceInsightsEligible(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  return shopping_service_->IsPriceInsightsEligible();
 }
 
 }  // namespace commerce

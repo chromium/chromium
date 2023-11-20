@@ -72,6 +72,51 @@ public class ShoppingService {
         }
     }
 
+    /** A price point consisting of a date and the price on it. */
+    public static final class PricePoint {
+        public final String date;
+        public final long price;
+
+        public PricePoint(String date, long price) {
+            this.date = date;
+            this.price = price;
+        }
+    }
+
+    /** A data container for price insights info provided by the shopping service. */
+    public static final class PriceInsightsInfo {
+        public final Optional<Long> productClusterId;
+        public final String currencyCode;
+        public final Optional<Long> typicalLowPriceMicros;
+        public final Optional<Long> typicalHighPriceMicros;
+        public final Optional<String> catalogAttributes;
+        public final List<PricePoint> catalogHistoryPrices;
+        public final Optional<GURL> jackpotUrl;
+        public final @PriceBucket int priceBucket;
+        public final boolean hasMultipleCatalogs;
+
+        public PriceInsightsInfo(
+                Optional<Long> productClusterId,
+                String currencyCode,
+                Optional<Long> typicalLowPriceMicros,
+                Optional<Long> typicalHighPriceMicros,
+                Optional<String> catalogAttributes,
+                List<PricePoint> catalogHistoryPrices,
+                Optional<GURL> jackpotUrl,
+                @PriceBucket int priceBucket,
+                boolean hasMultipleCatalogs) {
+            this.productClusterId = productClusterId;
+            this.currencyCode = currencyCode;
+            this.typicalLowPriceMicros = typicalLowPriceMicros;
+            this.typicalHighPriceMicros = typicalHighPriceMicros;
+            this.catalogAttributes = catalogAttributes;
+            this.catalogHistoryPrices = catalogHistoryPrices;
+            this.jackpotUrl = jackpotUrl;
+            this.priceBucket = priceBucket;
+            this.hasMultipleCatalogs = hasMultipleCatalogs;
+        }
+    }
+
     /** A callback for acquiring product information about a page. */
     public interface ProductInfoCallback {
         /**
@@ -92,6 +137,17 @@ public class ShoppingService {
         void onResult(GURL url, MerchantInfo info);
     }
 
+    /** A callback for acquiring price insights information about a page. */
+    public interface PriceInsightsInfoCallback {
+        /**
+         * A notification that fetching price insights information for the URL has completed.
+         *
+         * @param url The URL the price insights info was fetched for.
+         * @param info The price insights info for the URL or {@code null} if none is available.
+         */
+        void onResult(GURL url, PriceInsightsInfo info);
+    }
+
     /** A pointer to the native side of the object. */
     private long mNativeShoppingServiceAndroid;
 
@@ -110,7 +166,10 @@ public class ShoppingService {
      *                 object will be null if there is none available.
      */
     public void getProductInfoForUrl(GURL url, ProductInfoCallback callback) {
-        if (mNativeShoppingServiceAndroid == 0) return;
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
 
         ShoppingServiceJni.get().getProductInfoForUrl(
                 mNativeShoppingServiceAndroid, this, url, callback);
@@ -136,10 +195,30 @@ public class ShoppingService {
      *                 object will be null if there is none available.
      */
     public void getMerchantInfoForUrl(GURL url, MerchantInfoCallback callback) {
-        if (mNativeShoppingServiceAndroid == 0) return;
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
 
         ShoppingServiceJni.get().getMerchantInfoForUrl(
                 mNativeShoppingServiceAndroid, this, url, callback);
+    }
+
+    /**
+     * Fetch price insights information for a URL.
+     *
+     * @param url The URL to fetch price insights info for.
+     * @param callback The callback that will run after the fetch is completed. The price insights
+     *     info object will be null if there is none available.
+     */
+    public void getPriceInsightsInfoForUrl(GURL url, PriceInsightsInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
+
+        ShoppingServiceJni.get()
+                .getPriceInsightsInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
     }
 
     /**
@@ -163,7 +242,10 @@ public class ShoppingService {
 
     /** Create new subscriptions in batch. */
     public void subscribe(CommerceSubscription sub, Callback<Boolean> callback) {
-        if (mNativeShoppingServiceAndroid == 0) return;
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(false);
+            return;
+        }
 
         assert sub.userSeenOffer != null;
         ShoppingServiceJni.get().subscribe(mNativeShoppingServiceAndroid, this, sub.type,
@@ -173,7 +255,10 @@ public class ShoppingService {
 
     /** Delete existing subscriptions in batch. */
     public void unsubscribe(CommerceSubscription sub, Callback<Boolean> callback) {
-        if (mNativeShoppingServiceAndroid == 0) return;
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(false);
+            return;
+        }
 
         ShoppingServiceJni.get().unsubscribe(mNativeShoppingServiceAndroid, this, sub.type,
                 sub.idType, sub.managementType, sub.id, callback);
@@ -185,7 +270,10 @@ public class ShoppingService {
      * @param callback A callback executed when the state of the subscription is known.
      */
     public void isSubscribed(CommerceSubscription sub, Callback<Boolean> callback) {
-        if (mNativeShoppingServiceAndroid == 0) return;
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(false);
+            return;
+        }
 
         ShoppingServiceJni.get().isSubscribed(mNativeShoppingServiceAndroid, this, sub.type,
                 sub.idType, sub.managementType, sub.id, callback);
@@ -214,6 +302,7 @@ public class ShoppingService {
 
     public void getAllPriceTrackedBookmarks(Callback<List<BookmarkId>> callback) {
         if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(new ArrayList<>());
             return;
         }
         ShoppingServiceJni.get().getAllPriceTrackedBookmarks(
@@ -264,6 +353,16 @@ public class ShoppingService {
                 mNativeShoppingServiceAndroid, this);
     }
 
+    // This is a feature check for the "price insights", which will return true
+    // if the user has the feature flag enabled, has MSBB enabled, and (if
+    // applicable) is in an eligible country and locale.
+    public boolean isPriceInsightsEligible() {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get()
+                .isPriceInsightsEligible(mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -306,6 +405,65 @@ public class ShoppingService {
     @CalledByNative
     private static void runMerchantInfoCallback(
             MerchantInfoCallback callback, GURL url, MerchantInfo info) {
+        callback.onResult(url, info);
+    }
+
+    @CalledByNative
+    private static List<PricePoint> createPricePointAndAddToList(
+            List<PricePoint> points, String date, long price) {
+        if (points == null) {
+            points = new ArrayList<>();
+        }
+        PricePoint point = new PricePoint(date, price);
+        points.add(point);
+        return points;
+    }
+
+    @CalledByNative
+    private static PriceInsightsInfo createPriceInsightsInfo(
+            boolean hasProductClusterId,
+            long productClusterId,
+            String currencyCode,
+            boolean hasTypicalLowPrice,
+            long typicalLowPriceMicros,
+            boolean hasTypicalHighPrice,
+            long typicalHighPriceMicros,
+            boolean hasCatalogAttributes,
+            String catalogAttributes,
+            List<PricePoint> catalogHistoryPrices,
+            boolean hasJackpotUrl,
+            GURL jackpotUrl,
+            int priceBucket,
+            boolean hasMultipleCatalogs) {
+        Optional<Long> clusterId =
+                hasProductClusterId ? Optional.of(productClusterId) : Optional.empty();
+        Optional<Long> lowPrice =
+                hasTypicalLowPrice ? Optional.of(typicalLowPriceMicros) : Optional.empty();
+        Optional<Long> highPrice =
+                hasTypicalHighPrice ? Optional.of(typicalHighPriceMicros) : Optional.empty();
+        Optional<String> attributes =
+                hasCatalogAttributes ? Optional.of(catalogAttributes) : Optional.empty();
+        Optional<GURL> jackpot = hasJackpotUrl ? Optional.of(jackpotUrl) : Optional.empty();
+
+        if (catalogHistoryPrices == null) {
+            catalogHistoryPrices = new ArrayList<>();
+        }
+
+        return new PriceInsightsInfo(
+                clusterId,
+                currencyCode,
+                lowPrice,
+                highPrice,
+                attributes,
+                catalogHistoryPrices,
+                jackpot,
+                priceBucket,
+                hasMultipleCatalogs);
+    }
+
+    @CalledByNative
+    private static void runPriceInsightsInfoCallback(
+            PriceInsightsInfoCallback callback, GURL url, PriceInsightsInfo info) {
         callback.onResult(url, info);
     }
 
@@ -354,5 +512,11 @@ public class ShoppingService {
         boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid, ShoppingService caller);
         boolean isCommercePriceTrackingEnabled(
                 long nativeShoppingServiceAndroid, ShoppingService caller);
+        void getPriceInsightsInfoForUrl(
+                long nativeShoppingServiceAndroid,
+                ShoppingService caller,
+                GURL url,
+                PriceInsightsInfoCallback callback);
+        boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }
