@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       OpenCompanionPageWithVssEnabled) {
+                       OpenCompanionPageWithVqsEnabled) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(

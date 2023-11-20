@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_AGENT_H_
-#define CHROME_RENDERER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_AGENT_H_
+#ifndef CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_AGENT_H_
+#define CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_AGENT_H_
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/companion/visual_search.mojom.h"
-#include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
+#include "chrome/renderer/companion/visual_query/visual_query_eligibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -24,17 +24,17 @@ using ClassificationResultsAndStats =
     std::pair<std::vector<SingleImageFeaturesAndBytes>,
               mojom::ClassificationStatsPtr>;
 
-class VisualSearchClassifierAgent : public content::RenderFrameObserver,
+class VisualQueryClassifierAgent : public content::RenderFrameObserver,
                                     mojom::VisualSuggestionsRequestHandler {
  public:
-  static VisualSearchClassifierAgent* Create(
+  static VisualQueryClassifierAgent* Create(
       content::RenderFrame* render_frame);
 
-  VisualSearchClassifierAgent(const VisualSearchClassifierAgent&) = delete;
-  VisualSearchClassifierAgent& operator=(const VisualSearchClassifierAgent&) =
+  VisualQueryClassifierAgent(const VisualQueryClassifierAgent&) = delete;
+  VisualQueryClassifierAgent& operator=(const VisualQueryClassifierAgent&) =
       delete;
 
-  ~VisualSearchClassifierAgent() override;
+  ~VisualQueryClassifierAgent() override;
 
   // RenderFrameObserver implementation:
   void OnDestruct() override;
@@ -56,7 +56,7 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
           receiver);
 
  private:
-  explicit VisualSearchClassifierAgent(content::RenderFrame* render_frame);
+  explicit VisualQueryClassifierAgent(content::RenderFrame* render_frame);
 
   // Private method used to post result from long-running visual classification
   // tasks that runs in the background thread. This method should run in the
@@ -91,9 +91,9 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
   mojo::Remote<mojom::VisualSuggestionsModelProvider> model_provider_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
-  base::WeakPtrFactory<VisualSearchClassifierAgent> weak_ptr_factory_{this};
+  base::WeakPtrFactory<VisualQueryClassifierAgent> weak_ptr_factory_{this};
 };
 
 }  // namespace companion::visual_search
 
-#endif  // CHROME_RENDERER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_AGENT_H_
+#endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_AGENT_H_

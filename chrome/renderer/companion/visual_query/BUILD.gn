@@ -4,14 +4,14 @@
 
 import("//build/buildflag_header.gni")
 
-source_set("visual_search") {
+source_set("visual_query") {
   sources = [
-    "visual_search_classification_and_eligibility.cc",
-    "visual_search_classification_and_eligibility.h",
-    "visual_search_classifier_agent.cc",
-    "visual_search_classifier_agent.h",
-    "visual_search_eligibility.cc",
-    "visual_search_eligibility.h",
+    "visual_query_classification_and_eligibility.cc",
+    "visual_query_classification_and_eligibility.h",
+    "visual_query_classifier_agent.cc",
+    "visual_query_classifier_agent.h",
+    "visual_query_eligibility.cc",
+    "visual_query_eligibility.h",
   ]
   deps = [
     "//base",
@@ -35,11 +35,11 @@ source_set("visual_search") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "visual_search_classification_and_eligibility_unittest.cc",
-    "visual_search_eligibility_unittest.cc",
+    "visual_query_classification_and_eligibility_unittest.cc",
+    "visual_query_eligibility_unittest.cc",
   ]
   deps = [
-    ":visual_search",
+    ":visual_query",
     "//base",
     "//base/test:test_support",
     "//chrome/common/companion:mojo_bindings",
@@ -60,9 +60,9 @@ source_set("unit_tests") {
 
 source_set("browser_tests") {
   testonly = true
-  sources = [ "visual_search_classifier_agent_browsertest.cc" ]
+  sources = [ "visual_query_classifier_agent_browsertest.cc" ]
   deps = [
-    ":visual_search",
+    ":visual_query",
     "//base",
     "//base/test:test_support",
     "//chrome/common",

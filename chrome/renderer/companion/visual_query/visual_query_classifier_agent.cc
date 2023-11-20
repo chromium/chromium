@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/common/companion/visual_search/features.h"
-#include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classification_and_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -171,7 +171,7 @@ ClassificationResultsAndStats ClassifyImagesOnBackground(
 
 }  // namespace
 
-VisualSearchClassifierAgent::VisualSearchClassifierAgent(
+VisualQueryClassifierAgent::VisualQueryClassifierAgent(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
   if (render_frame) {
@@ -179,20 +179,20 @@ VisualSearchClassifierAgent::VisualSearchClassifierAgent(
     render_frame->GetAssociatedInterfaceRegistry()
         ->AddInterface<mojom::VisualSuggestionsRequestHandler>(
             base::BindRepeating(
-                &VisualSearchClassifierAgent::OnRendererAssociatedRequest,
+                &VisualQueryClassifierAgent::OnRendererAssociatedRequest,
                 base::Unretained(this)));
   }
 }
 
-VisualSearchClassifierAgent::~VisualSearchClassifierAgent() = default;
+VisualQueryClassifierAgent::~VisualQueryClassifierAgent() = default;
 
 // static
-VisualSearchClassifierAgent* VisualSearchClassifierAgent::Create(
+VisualQueryClassifierAgent* VisualQueryClassifierAgent::Create(
     content::RenderFrame* render_frame) {
-  return new VisualSearchClassifierAgent(render_frame);
+  return new VisualQueryClassifierAgent(render_frame);
 }
 
-void VisualSearchClassifierAgent::StartVisualClassification(
+void VisualQueryClassifierAgent::StartVisualClassification(
     base::File visual_model,
     const std::string& config_proto,
     mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
@@ -209,7 +209,7 @@ void VisualSearchClassifierAgent::StartVisualClassification(
     is_retrying_ = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&VisualSearchClassifierAgent::StartVisualClassification,
+        base::BindOnce(&VisualQueryClassifierAgent::StartVisualClassification,
                        weak_ptr_factory_.GetWeakPtr(), std::move(visual_model),
                        std::move(config_proto), std::move(result_handler)),
         features::StartClassificationRetryDuration());
@@ -226,14 +226,14 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 
   if (is_classifying_) {
     LOCAL_HISTOGRAM_BOOLEAN(
-        "Companion.VisualSearch.Agent.OngoingClassificationFailure",
+        "Companion.VisualQuery.Agent.OngoingClassificationFailure",
         is_classifying_);
     OnClassificationDone(std::move(empty_results));
     return;
   }
 
   if (!visual_model.IsValid()) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InvalidModelFailure",
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualQuery.Agent.InvalidModelFailure",
                             !visual_model.IsValid());
     OnClassificationDone(std::move(empty_results));
     return;
@@ -241,7 +241,7 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 
   if (!visual_model_.IsValid() &&
       !visual_model_.Initialize(std::move(visual_model))) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InitModelFailure",
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualQuery.Agent.InitModelFailure",
                             true);
     OnClassificationDone(std::move(empty_results));
     return;
@@ -261,11 +261,11 @@ void VisualSearchClassifierAgent::StartVisualClassification(
       base::BindOnce(&ClassifyImagesOnBackground, std::move(dom_images),
                      std::move(model_data), std::move(config_proto),
                      viewport_size),
-      base::BindOnce(&VisualSearchClassifierAgent::OnClassificationDone,
+      base::BindOnce(&VisualQueryClassifierAgent::OnClassificationDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VisualSearchClassifierAgent::OnClassificationDone(
+void VisualQueryClassifierAgent::OnClassificationDone(
     ClassificationResultsAndStats results) {
   is_classifying_ = false;
   is_retrying_ = false;
@@ -290,14 +290,14 @@ void VisualSearchClassifierAgent::OnClassificationDone(
                              results.first.size());
 }
 
-void VisualSearchClassifierAgent::OnRendererAssociatedRequest(
+void VisualQueryClassifierAgent::OnRendererAssociatedRequest(
     mojo::PendingAssociatedReceiver<mojom::VisualSuggestionsRequestHandler>
         receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 
-void VisualSearchClassifierAgent::DidFinishLoad() {
+void VisualQueryClassifierAgent::DidFinishLoad() {
   if (!features::IsVisualSearchSuggestionsAgentEnabled()) {
     return;
   }
@@ -311,14 +311,14 @@ void VisualSearchClassifierAgent::DidFinishLoad() {
 
   if (model_provider_.is_bound()) {
     model_provider_->GetModelWithMetadata(
-        base::BindOnce(&VisualSearchClassifierAgent::HandleGetModelCallback,
+        base::BindOnce(&VisualQueryClassifierAgent::HandleGetModelCallback,
                        weak_ptr_factory_.GetWeakPtr()));
     LOCAL_HISTOGRAM_BOOLEAN(
         "Companion.VisualQuery.Agent.ModelRequestSentSuccess", true);
   }
 }
 
-void VisualSearchClassifierAgent::HandleGetModelCallback(
+void VisualQueryClassifierAgent::HandleGetModelCallback(
     base::File file,
     const std::string& config) {
   // Now that we have the result, we can unbind and reset the receiver pipe.
@@ -328,7 +328,7 @@ void VisualSearchClassifierAgent::HandleGetModelCallback(
   StartVisualClassification(std::move(file), config, std::move(result_handler));
 }
 
-void VisualSearchClassifierAgent::OnDestruct() {
+void VisualQueryClassifierAgent::OnDestruct() {
   if (render_frame_) {
     render_frame_->GetAssociatedInterfaceRegistry()->RemoveInterface(
         mojom::VisualSuggestionsRequestHandler::Name_);

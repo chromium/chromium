@@ -17,7 +17,7 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/common/companion/visual_search/features.h"
-#include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -102,16 +102,16 @@ class FakeModelProvider : mojom::VisualSuggestionsModelProvider {
   mojo::ReceiverSet<mojom::VisualSuggestionsModelProvider> receivers_;
 };
 
-class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
+class VisualQueryClassifierAgentTest : public ChromeRenderViewTest {
  public:
-  VisualSearchClassifierAgentTest() = default;
+  VisualQueryClassifierAgentTest() = default;
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
     content::RenderFrame* render_frame = GetMainRenderFrame();
     render_frame->GetAssociatedInterfaceRegistry()->RemoveInterface(
         mojom::VisualSuggestionsRequestHandler::Name_);
-    agent_ = VisualSearchClassifierAgent::Create(render_frame);
+    agent_ = VisualQueryClassifierAgent::Create(render_frame);
     model_file_ = LoadModelFile(model_file_path());
     base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
     render_frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
@@ -162,7 +162,7 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
   }
 
  protected:
-  raw_ptr<VisualSearchClassifierAgent, DanglingUntriaged>
+  raw_ptr<VisualQueryClassifierAgent, DanglingUntriaged>
       agent_;  // Owned by RenderFrame
   base::HistogramTester histogram_tester_;
   TestVisualResultHandler test_handler_;
@@ -172,7 +172,7 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
   FakeModelProvider fake_provider_;
 };
 
-TEST_F(VisualSearchClassifierAgentTest,
+TEST_F(VisualQueryClassifierAgentTest,
        StartClassification_SingleImageNonShoppy) {
   LoadHtmlWithSingleImage();
   agent_->StartVisualClassification(model_file_.Duplicate(), "",
@@ -187,7 +187,7 @@ TEST_F(VisualSearchClassifierAgentTest,
   }
 }
 
-TEST_F(VisualSearchClassifierAgentTest,
+TEST_F(VisualQueryClassifierAgentTest,
        StartClassification_SingleImageNonShoppy_AgentEnabled) {
   SetUpFeatureList();
   LoadHtmlWithSingleImage();
@@ -205,7 +205,7 @@ TEST_F(VisualSearchClassifierAgentTest,
   }
 }
 
-TEST_F(VisualSearchClassifierAgentTest, StartClassification_NoImages) {
+TEST_F(VisualQueryClassifierAgentTest, StartClassification_NoImages) {
   std::string html = "<html><body>dummy</body></html>";
   LoadHTML(html.c_str());
   agent_->StartVisualClassification(model_file_.Duplicate(), "",
@@ -224,7 +224,7 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_NoImages) {
   }
 }
 
-TEST_F(VisualSearchClassifierAgentTest, StartClassification_InvalidModel) {
+TEST_F(VisualQueryClassifierAgentTest, StartClassification_InvalidModel) {
   base::File file;
   LoadHtmlWithSingleImage();
   agent_->StartVisualClassification(file.Duplicate(), "",
@@ -232,6 +232,6 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_InvalidModel) {
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(test_handler_, HandleClassification(_, _)).Times(0);
   histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.Agent.InvalidModelFailure", true, 1);
+      "Companion.VisualQuery.Agent.InvalidModelFailure", true, 1);
 }
 }  // namespace companion::visual_search

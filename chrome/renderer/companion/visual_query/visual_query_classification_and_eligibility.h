@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFICATION_AND_ELIGIBILITY_H_
-#define CHROME_RENDERER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFICATION_AND_ELIGIBILITY_H_
+#ifndef CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFICATION_AND_ELIGIBILITY_H_
+#define CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFICATION_AND_ELIGIBILITY_H_
 
-#include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
+#include "chrome/renderer/companion/visual_query/visual_query_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"

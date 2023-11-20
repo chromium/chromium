@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -111,8 +111,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();
 
-  // Initialize a |visual_search_classifier_agent_|.
-  void SetVisualSearchClassifierAgent();
+  // Initialize a |visual_query_classifier_agent_|.
+  void SetVisualQueryClassifierAgent();
 
   void OnRenderFrameObserverRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>
@@ -167,8 +167,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<std::u16string> webui_javascript_;
 
-  // Add visual search agent to suggest visually relevant items on the page.
-  raw_ptr<companion::visual_search::VisualSearchClassifierAgent,
+  // Add visual query agent to suggest visually relevant items on the page.
+  raw_ptr<companion::visual_search::VisualQueryClassifierAgent,
           ExperimentalRenderer>
       visual_classifier_ = nullptr;
 #endif

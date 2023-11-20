@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classification_and_eligibility.h"
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
