@@ -11,21 +11,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "v8/include/v8.h"
 
 namespace blink {
-
-namespace {
-
-void ClearContinuationPreservedEmbedderData(v8::Isolate* isolate) {
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
-  v8::Context::Scope context_scope(context);
-  context->SetContinuationPreservedEmbedderData(v8::Local<v8::Value>());
-}
-
-}  // namespace
 
 ScriptWrappableTaskState::ScriptWrappableTaskState(
     scheduler::TaskAttributionInfo* task,
@@ -46,21 +34,15 @@ void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
 ScriptWrappableTaskState* ScriptWrappableTaskState::GetCurrent(
     ScriptState* script_state) {
   DCHECK(script_state);
-  if (!script_state->ContextIsValid()) {
-    return nullptr;
-  }
-
-  ScriptState::Scope scope(script_state);
-  v8::Local<v8::Context> context = script_state->GetContext();
-  DCHECK(!context.IsEmpty());
-  v8::Local<v8::Value> v8_value =
-      context->GetContinuationPreservedEmbedderData();
-  if (v8_value->IsNullOrUndefined()) {
-    return nullptr;
-  }
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
   if (isolate->IsExecutionTerminating()) {
+    return nullptr;
+  }
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Value> v8_value =
+      isolate->GetContinuationPreservedEmbedderData();
+  if (v8_value->IsNullOrUndefined()) {
     return nullptr;
   }
   // If not empty, the value must be a `ScriptWrappableTaskState`.
@@ -83,31 +65,21 @@ void ScriptWrappableTaskState::SetCurrent(
     return;
   }
   CHECK(!ScriptForbiddenScope::IsScriptForbidden());
-  if (!script_state->ContextIsValid()) {
-    // TODO(crbug.com/1351643): This is a temporary workaround for detached
-    // contexts while transitioning to per-isolate CPED. When v8 switches to
-    // per-isolate CPED, we won't restore the previous value if the context is
-    // detached, which can result in propagating the wrong value or leaking the
-    // context.
-    //
-    // The following prevents this by clearing the CPED on an arbitrary context
-    // associated with the isolate. Before the v8 API changes, this is a no-op
-    // (aside from potentially creating the context). After it changes, this
-    // will clear the per-isolate CPED since
-    // Context::SetContinuationPreservedEmbedderData() will delegate to
-    // Isolate::SetContinuationPreservedEmbedderData().
-    ClearContinuationPreservedEmbedderData(isolate);
-    return;
-  }
-  ScriptState::Scope scope(script_state);
-  v8::Local<v8::Context> context = script_state->GetContext();
-  DCHECK(!context.IsEmpty());
-  if (task_state) {
-    context->SetContinuationPreservedEmbedderData(
+  // `task_state` will be null when leaving the top-level task scope, at which
+  // point we want to clear the isolate's CPED and reference to the related
+  // context. We don't need to distinguish between null and undefined values,
+  // and V8 has a fast path if the CPED is undefined, so treat null `task_state`
+  // as undefined.
+  //
+  // TODO(crbug.com/1351643): Since the context no longer matters, change this
+  // to a utility context that will always be valid.
+  if (!script_state->ContextIsValid() || !task_state) {
+    isolate->SetContinuationPreservedEmbedderData(v8::Undefined(isolate));
+  } else {
+    ScriptState::Scope scope(script_state);
+    isolate->SetContinuationPreservedEmbedderData(
         ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state)
             .ToLocalChecked());
-  } else {
-    context->SetContinuationPreservedEmbedderData(v8::Local<v8::Value>());
   }
 }
 
