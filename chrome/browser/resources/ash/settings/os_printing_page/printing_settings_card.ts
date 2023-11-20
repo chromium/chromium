@@ -54,11 +54,29 @@ export class PrintingSettingsCardElement extends
           return isRevampWayfindingEnabled();
         },
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              print: 'os-settings:device-print',
+              scan: 'os-settings:device-scan',
+            };
+          }
+
+          return {
+            print: '',
+            scan: '',
+          };
+        },
+      },
     };
   }
 
   private browserProxy_: CupsPrintersBrowserProxy;
   private isRevampWayfindingEnabled_: boolean;
+  private rowIcons_: Record<string, string>;
 
   constructor() {
     super();

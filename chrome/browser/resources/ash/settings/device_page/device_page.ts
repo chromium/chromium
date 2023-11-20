@@ -199,6 +199,35 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         computed: 'computeInputMethodDisplayName_(' +
             'languages.inputMethods.currentId, languageHelper)',
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              mouse: 'os-settings:device-mouse',
+              touchpad: 'os-settings:device-touchpad',
+              pointingStick: 'os-settings:device-pointing-stick',
+              keyboardAndInputs: 'os-settings:device-keyboard',
+              stylus: 'os-settings:device-stylus',
+              tablet: 'os-settings:device-tablet',
+              display: 'os-settings:device-display',
+              audio: 'os-settings:device-audio',
+            };
+          }
+
+          return {
+            mouse: '',
+            touchpad: '',
+            pointingStick: '',
+            keyboardAndInputs: '',
+            stylus: '',
+            tablet: '',
+            display: '',
+            audio: '',
+          };
+        },
+      },
     };
   }
 
@@ -239,6 +268,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
   private graphicsTabletSettingsObserverReceiver:
       GraphicsTabletSettingsObserverReceiver;
+  private rowIcons_: Record<string, string>;
   private section_: Section;
 
   constructor() {
