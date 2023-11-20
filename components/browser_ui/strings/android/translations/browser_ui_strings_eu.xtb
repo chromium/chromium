@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
+<translation id="4336566011000459927">Gaur mugatuko ditu cookieak berriro Chrome-k</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Webgune honetarako konexioa ez da guztiz segurua</translation>
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
 <translation id="6192792657125177640">Salbuespenak</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Bihar blokeatuko ditu cookieak berriro Chrome-k}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
 <translation id="6195163219142236913">Hirugarrenen cookieak mugatuta</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
+<translation id="7822573154188733812">Arakatzen duzun bitartean zure jarraipena egiteko hirugarrenen cookieak erabiltzea eragozten die Chrome-k webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Multimedia-edukia erreproduzitzen</translation>
 <translation id="783819812427904514">Aktibatu bideoaren audioa</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>
 <translation id="8087000398470557479">Eduki hau <ph name="DOMAIN_NAME" /> domeinukoa da eta Google-k eskaintzen du.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> banda-mezuko aukera gehiago</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Bihar mugatuko ditu cookieak berriro Chrome-k}other{# egun barru mugatuko ditu cookieak berriro Chrome-k}}</translation>
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
