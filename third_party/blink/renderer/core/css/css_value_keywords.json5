@@ -1751,5 +1751,26 @@
     "enabled",
     "initial-only",
     // none
+
+    // inset-area
+    // none,
+    // all,
+    // center,
+    // start,
+    // end,
+    // self-start,
+    // self-end,
+    // top,
+    // bottom,
+    // left,
+    // right,
+    "x-start",
+    "x-end",
+    "y-start",
+    "y-end",
+    "x-self-start",
+    "x-self-end",
+    "y-self-start",
+    "y-self-end",
   ],
 }

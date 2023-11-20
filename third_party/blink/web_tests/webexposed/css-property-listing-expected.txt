@@ -218,6 +218,7 @@ All changes to this list should go through Blink's feature review process: http:
     image-rendering
     initial-letter
     inline-size
+    inset-area
     inset-block-end
     inset-block-start
     inset-inline-end

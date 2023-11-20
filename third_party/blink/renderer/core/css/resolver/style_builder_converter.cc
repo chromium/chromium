@@ -3113,4 +3113,42 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
+InsetArea StyleBuilderConverter::ConvertInsetArea(StyleResolverState& state,
+                                                  const CSSValue& value) {
+  if (value.IsIdentifierValue()) {
+    DCHECK_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value).GetValueID());
+    return InsetArea();
+  }
+
+  auto extract_inset_area_span =
+      [](const CSSValue& span) -> std::pair<InsetAreaRegion, InsetAreaRegion> {
+    InsetAreaRegion start = InsetAreaRegion::kNone;
+    InsetAreaRegion end = InsetAreaRegion::kNone;
+    if (const auto* all = DynamicTo<CSSIdentifierValue>(span)) {
+      DCHECK(all->GetValueID() == CSSValueID::kAll);
+      start = InsetAreaRegion::kAll;
+      end = InsetAreaRegion::kAll;
+    } else {
+      const auto& span_list = To<CSSValueList>(span);
+      CHECK_GT(span_list.length(), 0u);
+      start = To<CSSIdentifierValue>(span_list.First())
+                  .ConvertTo<InsetAreaRegion>();
+      end =
+          To<CSSIdentifierValue>(span_list.Last()).ConvertTo<InsetAreaRegion>();
+    }
+    return std::make_pair(start, end);
+  };
+  const CSSValueList& span_list = To<CSSValueList>(value);
+  InsetAreaRegion start1 = InsetAreaRegion::kAll;
+  InsetAreaRegion end1 = InsetAreaRegion::kAll;
+  InsetAreaRegion start2 = InsetAreaRegion::kAll;
+  InsetAreaRegion end2 = InsetAreaRegion::kAll;
+  CHECK_GT(span_list.length(), 0u);
+  std::tie(start1, end1) = extract_inset_area_span(span_list.Item(0));
+  if (span_list.length() == 2) {
+    std::tie(start2, end2) = extract_inset_area_span(span_list.Item(1));
+  }
+  return InsetArea(start1, end1, start2, end2);
+}
+
 }  // namespace blink

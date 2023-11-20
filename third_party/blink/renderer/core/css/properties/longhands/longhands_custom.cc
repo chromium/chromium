@@ -4254,6 +4254,205 @@ bool InlineSize::IsLayoutDependent(const ComputedStyle* style,
   return layout_object && (layout_object->IsBox() || layout_object->IsSVG());
 }
 
+namespace {
+
+inline bool IsInsetAreaStartRegion(CSSValueID region) {
+  switch (region) {
+    case CSSValueID::kStart:
+    case CSSValueID::kSelfStart:
+    case CSSValueID::kTop:
+    case CSSValueID::kLeft:
+    case CSSValueID::kXStart:
+    case CSSValueID::kYStart:
+    case CSSValueID::kXSelfStart:
+    case CSSValueID::kYSelfStart:
+      return true;
+    default:
+      return false;
+  }
+}
+
+CSSValueList* ConsumeInsetAreaSpan(CSSParserTokenRange& range) {
+  CSSValueList* area = CSSValueList::CreateSpaceSeparated();
+  if (range.Peek().Id() == CSSValueID::kAll) {
+    area->Append(*css_parsing_utils::ConsumeIdent(range));
+    return area;
+  }
+
+  bool allow_center = true;
+  CSSValueID allow_region = CSSValueID::kAll;
+  auto consume_inset_area_region =
+      [&allow_center,
+       &allow_region](CSSParserTokenRange& range) -> CSSIdentifierValue* {
+    if (range.Peek().Id() == CSSValueID::kCenter) {
+      // 'center' is allowed in all spans unless we have seen it before.
+      if (!allow_center) {
+        return nullptr;
+      }
+      allow_center = false;
+    } else if (allow_region == CSSValueID::kAll) {
+      // This is the first non-'center' region. Allow any keyword, but set
+      // allow_region to only allow the opposite non-'center' region.
+      switch (range.Peek().Id()) {
+        case CSSValueID::kStart:
+          allow_region = CSSValueID::kEnd;
+          break;
+        case CSSValueID::kEnd:
+          allow_region = CSSValueID::kStart;
+          break;
+        case CSSValueID::kSelfStart:
+          allow_region = CSSValueID::kSelfEnd;
+          break;
+        case CSSValueID::kSelfEnd:
+          allow_region = CSSValueID::kSelfStart;
+          break;
+        case CSSValueID::kTop:
+          allow_region = CSSValueID::kBottom;
+          break;
+        case CSSValueID::kBottom:
+          allow_region = CSSValueID::kTop;
+          break;
+        case CSSValueID::kLeft:
+          allow_region = CSSValueID::kRight;
+          break;
+        case CSSValueID::kRight:
+          allow_region = CSSValueID::kLeft;
+          break;
+        case CSSValueID::kXStart:
+          allow_region = CSSValueID::kXEnd;
+          break;
+        case CSSValueID::kXEnd:
+          allow_region = CSSValueID::kXStart;
+          break;
+        case CSSValueID::kYStart:
+          allow_region = CSSValueID::kYEnd;
+          break;
+        case CSSValueID::kYEnd:
+          allow_region = CSSValueID::kYStart;
+          break;
+        case CSSValueID::kXSelfStart:
+          allow_region = CSSValueID::kXSelfEnd;
+          break;
+        case CSSValueID::kXSelfEnd:
+          allow_region = CSSValueID::kXSelfStart;
+          break;
+        case CSSValueID::kYSelfStart:
+          allow_region = CSSValueID::kYSelfEnd;
+          break;
+        case CSSValueID::kYSelfEnd:
+          allow_region = CSSValueID::kYSelfStart;
+          break;
+        default:
+          return nullptr;
+      }
+    } else {
+      if (allow_region == CSSValueID::kInvalid ||
+          allow_region != range.Peek().Id()) {
+        // Either, both non-'center' regions have been consumed, or there was a
+        // mismatch with the previously consumed non-'center' region.
+        return nullptr;
+      }
+      allow_region = CSSValueID::kInvalid;
+    }
+    return css_parsing_utils::ConsumeIdent(range);
+  };
+
+  CSSIdentifierValue* start = nullptr;
+  CSSIdentifierValue* end = nullptr;
+
+  while (CSSIdentifierValue* region = consume_inset_area_region(range)) {
+    if (region->GetValueID() == CSSValueID::kCenter) {
+      if (!start) {
+        start = region;
+      }
+      if (!end) {
+        end = region;
+      }
+    } else if (IsInsetAreaStartRegion(region->GetValueID())) {
+      start = region;
+    } else {
+      end = region;
+    }
+  }
+  if (!start && !end) {
+    return nullptr;
+  }
+  if (start && start->GetValueID() == CSSValueID::kStart && end &&
+      end->GetValueID() == CSSValueID::kEnd) {
+    area->Append(*CSSIdentifierValue::Create(CSSValueID::kAll));
+  } else {
+    if (start) {
+      area->Append(*start);
+    }
+    if (end) {
+      area->Append(*end);
+    }
+  }
+  return area;
+}
+
+}  // namespace
+
+const CSSValue* InsetArea::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+  CSSValueList* area = CSSValueList::CreateSlashSeparated();
+  if (CSSValueList* span = ConsumeInsetAreaSpan(range)) {
+    area->Append(*span);
+  } else {
+    return nullptr;
+  }
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    if (CSSValueList* span = ConsumeInsetAreaSpan(range)) {
+      if (To<CSSIdentifierValue>(span->First()).GetValueID() !=
+          CSSValueID::kAll) {
+        area->Append(*span);
+      }
+    } else {
+      return nullptr;
+    }
+  }
+  return area;
+}
+
+const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  blink::InsetArea area = style.GetInsetArea();
+  if (area.FirstStart() == InsetAreaRegion::kNone) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  CSSValueList* area_value = CSSValueList::CreateSlashSeparated();
+  CSSValueList* span_value = CSSValueList::CreateSpaceSeparated();
+
+  InsetAreaRegion start = area.FirstStart();
+  InsetAreaRegion end = area.FirstEnd();
+
+  span_value->Append(*CSSIdentifierValue::Create(start));
+  if (start != end) {
+    span_value->Append(*CSSIdentifierValue::Create(end));
+  }
+  area_value->Append(*span_value);
+
+  start = area.SecondStart();
+  end = area.SecondEnd();
+
+  if (start != InsetAreaRegion::kAll) {
+    span_value = CSSValueList::CreateSpaceSeparated();
+    span_value->Append(*CSSIdentifierValue::Create(start));
+    if (start != end) {
+      span_value->Append(*CSSIdentifierValue::Create(end));
+    }
+    area_value->Append(*span_value);
+  }
+  return area_value;
+}
+
 const CSSValue* InsetBlockEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

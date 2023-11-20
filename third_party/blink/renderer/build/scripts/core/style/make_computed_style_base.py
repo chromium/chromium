@@ -93,6 +93,7 @@ ALIGNMENT_ORDER = [
     'size_t',
     'wtf_size_t',
     'int',
+    'InsetArea',
     # Aligns like short
     'unsigned short',
     'short',

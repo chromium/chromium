@@ -6923,6 +6923,22 @@
       is_property: false,
       runtime_flag: "ViewTransitionOnNavigation",
     },
+    {
+      name: "inset-area",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/inset_area.h"],
+      converter: "ConvertInsetArea",
+      default_value: "InsetArea()",
+      type_name: "InsetArea",
+      keywords: [
+        "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
+        "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
+      ],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
+    },
 
     // Shorthands
     {

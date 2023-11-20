@@ -375,6 +375,8 @@ class StyleBuilderConverter {
                                                     const CSSValue&);
   static ScopedCSSNameList* ConvertTimelineScope(StyleResolverState&,
                                                  const CSSValue&);
+
+  static InsetArea ConvertInsetArea(StyleResolverState&, const CSSValue&);
 };
 
 template <typename T>
