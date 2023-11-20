@@ -2587,7 +2587,7 @@ BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable storing a newly created owner key in the private slot.
 BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
              "StoreOwnerKeyInPrivateSlot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
