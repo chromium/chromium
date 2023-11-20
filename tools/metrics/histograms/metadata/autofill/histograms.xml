@@ -64,9 +64,15 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Autofill.CreditCardIssuerId">
   <variant name="Amex" summary="card issued by American Express"/>
+  <variant name="Anz" summary="card issued by ANZ"/>
   <variant name="CapitalOne" summary="card issued by Capital One"/>
+  <variant name="Chase" summary="card issued by JP Morgan Chase"/>
+  <variant name="Citi" summary="card issued by Citibank"/>
   <variant name="Discover" summary="card issued by Discover"/>
+  <variant name="Lloyds" summary="card issued by American Express"/>
   <variant name="Marqeta" summary="card issued by Marqeta"/>
+  <variant name="Nab" summary="card issued by National Australia Bank"/>
+  <variant name="Natwest" summary="card issued by Natwest"/>
 </variants>
 
 <variants name="Autofill.DialogError">
