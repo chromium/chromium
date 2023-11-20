@@ -24,7 +24,7 @@ bool IsInlineContainerForNode(const NGBlockNode& node,
 
 NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
     const NGPhysicalFragment& fragment,
-    const NGLayoutInputNode& container,
+    const LayoutInputNode& container,
     bool maybe_out_of_order_if_oof) {
   // If the |fragment| is not absolutely positioned, it's an in-flow anchor.
   // https://drafts.csswg.org/css-anchor-1/#determining

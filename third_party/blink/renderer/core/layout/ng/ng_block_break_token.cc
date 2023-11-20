@@ -74,13 +74,13 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
     child_break_tokens_[i] = builder->child_break_tokens_[i];
 }
 
-NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGLayoutInputNode node)
+NGBlockBreakToken::NGBlockBreakToken(PassKey key, LayoutInputNode node)
     : NGBreakToken(kBlockBreakToken, node),
       data_(MakeGarbageCollected<NGBlockBreakTokenData>()),
       const_num_children_(0) {}
 
 const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
-    const NGLayoutInputNode& node) const {
+    const LayoutInputNode& node) const {
   DCHECK(node.GetLayoutBox());
   return InlineBreakTokenFor(*node.GetLayoutBox());
 }

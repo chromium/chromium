@@ -25,7 +25,7 @@ bool AdjustToClearance(LayoutUnit clearance_offset, BfcOffset* offset) {
 }
 
 void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
-                                     const NGLayoutInputNode child,
+                                     const LayoutInputNode child,
                                      NGConstraintSpaceBuilder* builder) {
   DCHECK(!IsParallelWritingMode(parent_style.GetWritingMode(),
                                 child.Style().GetWritingMode()));
@@ -78,7 +78,7 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
 }
 
 bool ShouldBlockContainerChildStretchAutoInlineSize(
-    const NGLayoutInputNode& child) {
+    const LayoutInputNode& child) {
   return !child.GetLayoutBox()->AutoWidthShouldFitContent() &&
          !child.IsReplaced() && !child.IsTable();
 }

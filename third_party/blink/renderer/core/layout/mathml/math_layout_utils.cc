@@ -21,7 +21,7 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
     const NGBlockNode& parent_node,
     const LogicalSize& child_available_size,
     const NGConstraintSpace& parent_space,
-    const NGLayoutInputNode& child,
+    const LayoutInputNode& child,
     NGCacheSlot cache_slot,
     const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes,
@@ -65,15 +65,15 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
   return result;
 }
 
-NGLayoutInputNode FirstChildInFlow(const NGBlockNode& node) {
-  NGLayoutInputNode child = node.FirstChild();
+LayoutInputNode FirstChildInFlow(const NGBlockNode& node) {
+  LayoutInputNode child = node.FirstChild();
   while (child && child.IsOutOfFlowPositioned())
     child = child.NextSibling();
   return child;
 }
 
-NGLayoutInputNode NextSiblingInFlow(const NGBlockNode& node) {
-  NGLayoutInputNode sibling = node.NextSibling();
+LayoutInputNode NextSiblingInFlow(const NGBlockNode& node) {
+  LayoutInputNode sibling = node.NextSibling();
   while (sibling && sibling.IsOutOfFlowPositioned())
     sibling = sibling.NextSibling();
   return sibling;

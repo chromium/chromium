@@ -113,7 +113,7 @@ page) block-size, and block-offset into the fragmentainer, so that we can tell
 how much space we can use before we need to insert a break. See
 [FragmentainerSpaceLeft()](ng_fragmentation_utils.h). If content is
 [monolithic](https://www.w3.org/TR/css-break-3/#monolithic) (i.e. truly
-unbreakable), [NGLayoutInputNode::IsMonolithic()](ng_layout_input_node.h) will
+unbreakable), [LayoutInputNode::IsMonolithic()](ng_layout_input_node.h) will
 return true. Being monolithic means that we cannot break inside the element (but
 we may break before or after it).
 
@@ -158,7 +158,7 @@ is that all the layout algorithm needs to do when laying out children, is:
   each unfinished child. Block break tokens form a tree. Children are found in
   [NGBlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
-  to [NGLayoutInputNode::Layout()](ng_layout_input_node.h). When done with all
+  to [LayoutInputNode::Layout()](ng_layout_input_node.h). When done with all
   the incoming child break tokens, and as long as we didn't break again, proceed
   with the consecutive siblings of the node associated with the last incoming
   child break token.

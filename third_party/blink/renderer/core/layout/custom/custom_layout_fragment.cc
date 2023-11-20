@@ -35,7 +35,7 @@ const NGLayoutResult& CustomLayoutFragment::GetLayoutResult() const {
   return *layout_result_;
 }
 
-const NGLayoutInputNode& CustomLayoutFragment::GetLayoutNode() const {
+const LayoutInputNode& CustomLayoutFragment::GetLayoutNode() const {
   return child_->GetLayoutNode();
 }
 

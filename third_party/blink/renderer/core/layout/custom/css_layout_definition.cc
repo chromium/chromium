@@ -43,7 +43,7 @@ void GatherChildren(const NGBlockNode& node,
                     HeapVector<Member<CustomLayoutChild>>* children) {
   // TODO(ikilpatrick): Determine if knowing the size of the array ahead of
   // time improves performance in any noticeable way.
-  for (NGLayoutInputNode child = node.FirstChild(); child;
+  for (LayoutInputNode child = node.FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;

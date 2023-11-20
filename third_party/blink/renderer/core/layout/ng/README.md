@@ -132,7 +132,7 @@ Both layout input node subtrees and layout output physical fragment subtrees
 may be dumped, for debugging, logging and testing purposes.
 
 #### For layout input node subtree ####
-Call NGLayoutInputNode::ShowNodeTree() to dump the tree to stderr.
+Call LayoutInputNode::ShowNodeTree() to dump the tree to stderr.
 
 #### For physical fragment subtree ####
 Call NGPhysicalFragment::ShowFragmentTree() to dump the tree to

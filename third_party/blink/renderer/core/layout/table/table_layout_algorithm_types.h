@@ -19,8 +19,8 @@
 namespace blink {
 
 class ComputedStyle;
+class LayoutInputNode;
 class NGBlockNode;
-class NGLayoutInputNode;
 
 // Define constraint classes for TableLayoutAlgorithm.
 class CORE_EXPORT TableTypes {
@@ -216,7 +216,7 @@ class CORE_EXPORT TableTypes {
       const BoxStrut& cell_border,
       const BoxStrut& cell_padding);
 
-  static Section CreateSection(const NGLayoutInputNode&,
+  static Section CreateSection(const LayoutInputNode&,
                                wtf_size_t start_row,
                                wtf_size_t row_count,
                                LayoutUnit block_size,

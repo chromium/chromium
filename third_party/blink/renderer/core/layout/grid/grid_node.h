@@ -42,7 +42,7 @@ class CORE_EXPORT GridNode final : public NGBlockNode {
 
 template <>
 struct DowncastTraits<GridNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) { return node.IsGrid(); }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsGrid(); }
 };
 
 }  // namespace blink

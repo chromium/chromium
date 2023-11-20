@@ -494,7 +494,7 @@ bool SetParagraphTo(const String& text,
 }  // namespace
 
 InlineNode::InlineNode(LayoutBlockFlow* block)
-    : NGLayoutInputNode(block, kInline) {
+    : LayoutInputNode(block, kInline) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
   if (!block->GetInlineNodeData()) {

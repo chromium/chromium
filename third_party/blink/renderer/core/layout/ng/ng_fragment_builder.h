@@ -505,7 +505,7 @@ class CORE_EXPORT NGFragmentBuilder {
 #endif
 
  protected:
-  NGFragmentBuilder(const NGLayoutInputNode& node,
+  NGFragmentBuilder(const LayoutInputNode& node,
                     const ComputedStyle* style,
                     const NGConstraintSpace& space,
                     WritingDirectionMode writing_direction)
@@ -550,7 +550,7 @@ class CORE_EXPORT NGFragmentBuilder {
       const OofInlineContainer<LogicalOffset>* current_inline_container =
           nullptr) const;
 
-  NGLayoutInputNode node_;
+  LayoutInputNode node_;
   const NGConstraintSpace& space_;
   const ComputedStyle* style_;
   WritingDirectionMode writing_direction_;

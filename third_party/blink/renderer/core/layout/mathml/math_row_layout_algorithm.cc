@@ -78,7 +78,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
     // "Perform layout without any stretch size constraint on all the items of
     // LNotToStretch."
     bool should_layout_remaining_items_with_zero_block_stretch_size = true;
-    for (NGLayoutInputNode child = Node().FirstChild(); child;
+    for (LayoutInputNode child = Node().FirstChild(); child;
          child = child.NextSibling()) {
       if (child.IsOutOfFlowPositioned() ||
           IsBlockAxisStretchyOperator(To<NGBlockNode>(child)))
@@ -95,7 +95,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
     if (UNLIKELY(should_layout_remaining_items_with_zero_block_stretch_size)) {
       // "If LNotToStretch is empty, perform layout with stretch size constraint
       // 0 on all the items of LToStretch."
-      for (NGLayoutInputNode child = Node().FirstChild(); child;
+      for (LayoutInputNode child = Node().FirstChild(); child;
            child = child.NextSibling()) {
         if (child.IsOutOfFlowPositioned())
           continue;
@@ -113,7 +113,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
 
   // Layout in-flow children in a row.
   LayoutUnit inline_offset, max_row_ascent, max_row_descent;
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned()) {
       // TODO(rbuis): OOF should be "where child would have been if not
@@ -241,7 +241,7 @@ MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
   const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
 
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;

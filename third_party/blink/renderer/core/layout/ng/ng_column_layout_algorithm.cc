@@ -191,7 +191,7 @@ void MulticolPartWalker::MoveToNext() {
   }
 
   if (spanner_) {
-    NGLayoutInputNode next = spanner_.NextSibling();
+    LayoutInputNode next = spanner_.NextSibling();
     // Otherwise, if there's a next spanner, we'll use that.
     if (next && next.IsColumnSpanAll()) {
       spanner_ = To<NGBlockNode>(next);
@@ -412,7 +412,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
     const NGBlockNode& search_parent) const {
   MinMaxSizesResult result;
-  for (NGLayoutInputNode child = search_parent.FirstChild(); child;
+  for (LayoutInputNode child = search_parent.FirstChild(); child;
        child = child.NextSibling()) {
     const NGBlockNode* child_block = DynamicTo<NGBlockNode>(&child);
     if (!child_block)

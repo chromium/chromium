@@ -15,7 +15,7 @@ FlexChildIterator::FlexChildIterator(const NGBlockNode node) {
 
   // Collect all our children, and order them by either their
   // -webkit-box-ordinal-group/order property.
-  for (NGLayoutInputNode child = node.FirstChild(); child;
+  for (LayoutInputNode child = node.FirstChild(); child;
        child = child.NextSibling()) {
     int order = is_deprecated_webkit_box ? child.Style().BoxOrdinalGroup()
                                          : child.Style().Order();

@@ -24,7 +24,7 @@ namespace blink {
 // Each layout algorithm which can fragment, e.g. block-flow can optionally
 // accept a break token. For example:
 //
-// NGLayoutInputNode* node = ...;
+// LayoutInputNode* node = ...;
 // NGPhysicalFragment* fragment = node->Layout(space);
 // NGPhysicalFragment* fragment2 = node->Layout(space, fragment->BreakToken());
 //
@@ -32,8 +32,8 @@ namespace blink {
 class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
  public:
   enum NGBreakTokenType {
-    kBlockBreakToken = NGLayoutInputNode::kBlock,
-    kInlineBreakToken = NGLayoutInputNode::kInline
+    kBlockBreakToken = LayoutInputNode::kBlock,
+    kInlineBreakToken = LayoutInputNode::kInline
   };
   NGBreakTokenType Type() const { return static_cast<NGBreakTokenType>(type_); }
 
@@ -42,10 +42,9 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
 
   // Returns the node associated with this break token. A break token cannot be
   // used with any other node.
-  NGLayoutInputNode InputNode() const {
-    return NGLayoutInputNode::Create(
-        box_.Get(),
-        static_cast<NGLayoutInputNode::NGLayoutInputNodeType>(type_));
+  LayoutInputNode InputNode() const {
+    return LayoutInputNode::Create(
+        box_.Get(), static_cast<LayoutInputNode::LayoutInputNodeType>(type_));
   }
 
   // Return true if this break token is for a node that's being resumed in a
@@ -61,9 +60,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   void TraceAfterDispatch(Visitor*) const;
 
  protected:
-  NGBreakToken(NGBreakTokenType type,
-               NGLayoutInputNode node,
-               unsigned flags = 0)
+  NGBreakToken(NGBreakTokenType type, LayoutInputNode node, unsigned flags = 0)
       : box_(node.GetLayoutBox()),
         type_(type),
 #if DCHECK_IS_ON()
@@ -80,7 +77,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   }
 
  private:
-  // Because |NGLayoutInputNode| has a pointer and 1 bit flag, and it's fast to
+  // Because |LayoutInputNode| has a pointer and 1 bit flag, and it's fast to
   // re-construct, keep |LayoutBox| to save the memory consumed by alignment.
   Member<LayoutBox> box_;
 

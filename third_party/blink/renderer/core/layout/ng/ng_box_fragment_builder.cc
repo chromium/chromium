@@ -44,7 +44,7 @@ const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
 }
 
 void NGBoxFragmentBuilder::AddBreakBeforeChild(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     absl::optional<NGBreakAppeal> appeal,
     bool is_forced_break) {
   // If there's a pre-set break token, we shouldn't be here.

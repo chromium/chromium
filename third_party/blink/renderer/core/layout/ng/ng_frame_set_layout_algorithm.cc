@@ -272,7 +272,7 @@ Vector<LayoutUnit> FrameSetLayoutAlgorithm::LayoutAxis(
 void FrameSetLayoutAlgorithm::LayoutChildren(
     const FrameSetLayoutData& layout_data) {
   PhysicalOffset position;
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   if (!child)
     return;
   for (wtf_size_t row = 0; row < layout_data.row_sizes.size(); ++row) {
@@ -305,7 +305,7 @@ void FrameSetLayoutAlgorithm::LayoutChildren(
   }
 }
 
-void FrameSetLayoutAlgorithm::LayoutChild(const NGLayoutInputNode& child,
+void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
                                           LogicalSize available_size,
                                           PhysicalOffset position,
                                           PhysicalSize child_size) {

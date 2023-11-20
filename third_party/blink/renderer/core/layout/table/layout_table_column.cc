@@ -27,7 +27,7 @@ bool TableHasColumnsWithBackground(LayoutTable* table) {
 
     // Iterate through a colgroup's children.
     if (column.IsTableColgroup()) {
-      NGLayoutInputNode node = column.FirstChild();
+      LayoutInputNode node = column.FirstChild();
       while (node) {
         DCHECK(node.IsTableCol());
         if (node.Style().HasBackground()) {

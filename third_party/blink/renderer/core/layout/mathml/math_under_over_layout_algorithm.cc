@@ -147,7 +147,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
                                                   NGBlockNode* over,
                                                   NGBlockNode* under) {
   auto script_type = Node().ScriptType();
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
@@ -225,7 +225,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   // "Perform layout without any stretch size constraint on all the items of
   // LNotToStretch"
   bool layout_remaining_items_with_zero_inline_stretch_size = true;
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned() ||
         IsInlineAxisStretchyOperator(To<NGBlockNode>(child)))
@@ -242,7 +242,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   if (UNLIKELY(layout_remaining_items_with_zero_inline_stretch_size)) {
     // "If LNotToStretch is empty, perform layout with stretch size constraint 0
     // on all the items of LToStretch.
-    for (NGLayoutInputNode child = Node().FirstChild(); child;
+    for (LayoutInputNode child = Node().FirstChild(); child;
          child = child.NextSibling()) {
       if (child.IsOutOfFlowPositioned())
         continue;
@@ -408,7 +408,7 @@ MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;

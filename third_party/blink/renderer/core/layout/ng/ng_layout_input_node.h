@@ -52,26 +52,26 @@ struct MinMaxSizesResult {
 // Represents the input to a layout algorithm for a given node. The layout
 // engine should use the style, node type to determine which type of layout
 // algorithm to use to produce fragments for this node.
-class CORE_EXPORT NGLayoutInputNode {
+class CORE_EXPORT LayoutInputNode {
   DISALLOW_NEW();
 
  public:
-  enum NGLayoutInputNodeType {
+  enum LayoutInputNodeType {
     kBlock,
     kInline
     // When adding new values, ensure type_ below has enough bits.
   };
 
-  static NGLayoutInputNode Create(LayoutBox* box, NGLayoutInputNodeType type) {
+  static LayoutInputNode Create(LayoutBox* box, LayoutInputNodeType type) {
     // This function should create an instance of the subclass. This works
     // because subclasses are not virtual and do not add fields.
-    return NGLayoutInputNode(box, type);
+    return LayoutInputNode(box, type);
   }
 
-  NGLayoutInputNode(std::nullptr_t) : box_(nullptr), type_(kBlock) {}
+  LayoutInputNode(std::nullptr_t) : box_(nullptr), type_(kBlock) {}
 
-  NGLayoutInputNodeType Type() const {
-    return static_cast<NGLayoutInputNodeType>(type_);
+  LayoutInputNodeType Type() const {
+    return static_cast<LayoutInputNodeType>(type_);
   }
   bool IsInline() const { return type_ == kInline; }
   bool IsBlock() const { return type_ == kBlock; }
@@ -218,7 +218,7 @@ class CORE_EXPORT NGLayoutInputNode {
                      absl::optional<LayoutUnit>* computed_block_size) const;
 
   // Returns the next sibling.
-  NGLayoutInputNode NextSibling() const;
+  LayoutInputNode NextSibling() const;
 
   Document& GetDocument() const { return box_->GetDocument(); }
 
@@ -301,29 +301,29 @@ class CORE_EXPORT NGLayoutInputNode {
 
   explicit operator bool() const { return box_ != nullptr; }
 
-  bool operator==(const NGLayoutInputNode& other) const {
+  bool operator==(const LayoutInputNode& other) const {
     return box_ == other.box_ && type_ == other.type_;
   }
 
-  bool operator!=(const NGLayoutInputNode& other) const {
+  bool operator!=(const LayoutInputNode& other) const {
     return !(*this == other);
   }
 
 #if DCHECK_IS_ON()
-  String DumpNodeTree(const NGLayoutInputNode* target = nullptr) const;
+  String DumpNodeTree(const LayoutInputNode* target = nullptr) const;
 
   // Dump the node tree for the entire document, and mark `this` with an
   // asterisk.
   String DumpNodeTreeFromRoot() const;
 
-  void ShowNodeTree(const NGLayoutInputNode* target = nullptr) const;
+  void ShowNodeTree(const LayoutInputNode* target = nullptr) const;
   void ShowNodeTreeFromRoot() const;
 #endif
 
   void Trace(Visitor* visitor) const { visitor->Trace(box_); }
 
  protected:
-  NGLayoutInputNode(LayoutBox* box, NGLayoutInputNodeType type)
+  LayoutInputNode(LayoutBox* box, LayoutInputNodeType type)
       : box_(box), type_(type) {}
 
   void GetOverrideIntrinsicSize(
@@ -332,7 +332,7 @@ class CORE_EXPORT NGLayoutInputNode {
 
   Member<LayoutBox> box_;
 
-  unsigned type_ : 1;  // NGLayoutInputNodeType
+  unsigned type_ : 1;  // LayoutInputNodeType
 };
 
 }  // namespace blink

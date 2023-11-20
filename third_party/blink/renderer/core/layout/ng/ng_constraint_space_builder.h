@@ -592,7 +592,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
  public:
   NGMinMaxConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
                                  const ComputedStyle& parent_style,
-                                 const NGLayoutInputNode& child,
+                                 const LayoutInputNode& child,
                                  bool is_new_fc)
       : delegate_(parent_space,
                   child.Style().GetWritingDirection(),

@@ -108,7 +108,7 @@ template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const NGConstraintSpace&,
 template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const NGConstraintSpace&,
                                                      EBreakInside);
 
-EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
+EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder) {
   if (child.IsInline())
@@ -172,7 +172,7 @@ bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
 }
 
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
-                                         NGLayoutInputNode child,
+                                         LayoutInputNode child,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder,
                                          bool has_container_separation) {
@@ -292,7 +292,7 @@ LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
 }
 
 void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
-                                       const NGLayoutInputNode& child,
+                                       const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
                                        NGConstraintSpaceBuilder* builder,
                                        bool is_new_fc,
@@ -354,7 +354,7 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
 
 void SetupFragmentBuilderForFragmentation(
     const NGConstraintSpace& space,
-    const NGLayoutInputNode& node,
+    const LayoutInputNode& node,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder* builder) {
   // When resuming layout after a break, we may not be allowed to break again
@@ -815,7 +815,7 @@ bool HasBreakOpportunityBeforeNextChild(
 
 NGBreakStatus BreakBeforeChildIfNeeded(
     const NGConstraintSpace& space,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult& layout_result,
     LayoutUnit fragmentainer_block_offset,
     bool has_container_separation,
@@ -859,7 +859,7 @@ NGBreakStatus BreakBeforeChildIfNeeded(
 }
 
 void BreakBeforeChild(const NGConstraintSpace& space,
-                      NGLayoutInputNode child,
+                      LayoutInputNode child,
                       const NGLayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
                       absl::optional<NGBreakAppeal> appeal,
@@ -960,7 +960,7 @@ void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> new_space_shortage,
 }
 
 bool MovePastBreakpoint(const NGConstraintSpace& space,
-                        NGLayoutInputNode child,
+                        LayoutInputNode child,
                         const NGLayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
                         NGBreakAppeal appeal_before,
@@ -1207,7 +1207,7 @@ void UpdateEarlyBreakAtBlockChild(
 }
 
 bool AttemptSoftBreak(const NGConstraintSpace& space,
-                      NGLayoutInputNode child,
+                      LayoutInputNode child,
                       const NGLayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
                       NGBreakAppeal appeal_before,
@@ -1256,7 +1256,7 @@ const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
 
 bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
                         const NGBoxFragmentBuilder& builder,
-                        const NGLayoutInputNode& child) {
+                        const LayoutInputNode& child) {
   if (early_break.Type() == NGEarlyBreak::kLine) {
     DCHECK(child.IsInline() || child.IsFlexItem());
     return early_break.LineNumber() == builder.LineCount();

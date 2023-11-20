@@ -30,12 +30,12 @@ namespace {
 
 #if DCHECK_IS_ON()
 void AppendSubtreeToString(const NGBlockNode&,
-                           const NGLayoutInputNode* target,
+                           const LayoutInputNode* target,
                            StringBuilder*,
                            unsigned indent);
 
-void IndentForDump(const NGLayoutInputNode& node,
-                   const NGLayoutInputNode* target,
+void IndentForDump(const LayoutInputNode& node,
+                   const LayoutInputNode* target,
                    StringBuilder* string_builder,
                    unsigned indent) {
   unsigned start_col = 0;
@@ -48,8 +48,8 @@ void IndentForDump(const NGLayoutInputNode& node,
   }
 }
 
-void AppendNodeToString(const NGLayoutInputNode& node,
-                        const NGLayoutInputNode* target,
+void AppendNodeToString(const LayoutInputNode& node,
+                        const LayoutInputNode* target,
                         StringBuilder* string_builder,
                         unsigned indent = 2) {
   if (!node)
@@ -83,11 +83,11 @@ void AppendNodeToString(const NGLayoutInputNode& node,
 }
 
 void AppendSubtreeToString(const NGBlockNode& node,
-                           const NGLayoutInputNode* target,
+                           const LayoutInputNode* target,
                            StringBuilder* string_builder,
                            unsigned indent) {
-  NGLayoutInputNode first_child = node.FirstChild();
-  for (NGLayoutInputNode node_runner = first_child; node_runner;
+  LayoutInputNode first_child = node.FirstChild();
+  for (LayoutInputNode node_runner = first_child; node_runner;
        node_runner = node_runner.NextSibling()) {
     AppendNodeToString(node_runner, target, string_builder, indent);
   }
@@ -96,59 +96,59 @@ void AppendSubtreeToString(const NGBlockNode& node,
 
 }  // namespace
 
-bool NGLayoutInputNode::IsSlider() const {
+bool LayoutInputNode::IsSlider() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(box_->GetNode()))
     return input->FormControlType() == FormControlType::kInputRange;
   return false;
 }
 
-bool NGLayoutInputNode::IsSliderThumb() const {
+bool LayoutInputNode::IsSliderThumb() const {
   return IsBlock() && blink::IsSliderThumb(GetDOMNode());
 }
 
-bool NGLayoutInputNode::IsSvgText() const {
+bool LayoutInputNode::IsSvgText() const {
   return box_ && box_->IsSVGText();
 }
 
-bool NGLayoutInputNode::IsEmptyTableSection() const {
+bool LayoutInputNode::IsEmptyTableSection() const {
   return box_->IsTableSection() &&
          To<LayoutTableSection>(box_.Get())->IsEmpty();
 }
 
-wtf_size_t NGLayoutInputNode::TableColumnSpan() const {
+wtf_size_t LayoutInputNode::TableColumnSpan() const {
   DCHECK(IsTableCol() || IsTableColgroup());
   return To<LayoutTableColumn>(box_.Get())->Span();
 }
 
-wtf_size_t NGLayoutInputNode::TableCellColspan() const {
+wtf_size_t LayoutInputNode::TableCellColspan() const {
   DCHECK(box_->IsTableCell());
   return To<LayoutTableCell>(box_.Get())->ColSpan();
 }
 
-wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
+wtf_size_t LayoutInputNode::TableCellRowspan() const {
   DCHECK(box_->IsTableCell());
   return To<LayoutTableCell>(box_.Get())->ComputedRowSpan();
 }
 
-bool NGLayoutInputNode::IsTextControlPlaceholder() const {
+bool LayoutInputNode::IsTextControlPlaceholder() const {
   return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
 }
 
-bool NGLayoutInputNode::IsPaginatedRoot() const {
+bool LayoutInputNode::IsPaginatedRoot() const {
   if (!IsBlock())
     return false;
   const auto* view = DynamicTo<LayoutView>(box_.Get());
   return view && view->IsFragmentationContextRoot();
 }
 
-NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {
+NGBlockNode LayoutInputNode::ListMarkerBlockNodeIfListItem() const {
   if (auto* list_item = DynamicTo<LayoutListItem>(box_.Get())) {
     return NGBlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
   }
   return NGBlockNode(nullptr);
 }
 
-void NGLayoutInputNode::IntrinsicSize(
+void LayoutInputNode::IntrinsicSize(
     absl::optional<LayoutUnit>* computed_inline_size,
     absl::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
@@ -183,36 +183,36 @@ void NGLayoutInputNode::IntrinsicSize(
   }
 }
 
-NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
+LayoutInputNode LayoutInputNode::NextSibling() const {
   auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? nullptr : To<NGBlockNode>(*this).NextSibling();
 }
 
-PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
+PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
   gfx::Size icb_size =
       GetDocument().GetLayoutView()->GetLayoutSize(kIncludeScrollbars);
   return PhysicalSize(icb_size);
 }
 
-String NGLayoutInputNode::ToString() const {
+String LayoutInputNode::ToString() const {
   auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->ToString()
                      : To<NGBlockNode>(*this).ToString();
 }
 
 #if DCHECK_IS_ON()
-String NGLayoutInputNode::DumpNodeTree(const NGLayoutInputNode* target) const {
+String LayoutInputNode::DumpNodeTree(const LayoutInputNode* target) const {
   StringBuilder string_builder;
   string_builder.Append(".:: Layout input node tree ::.\n");
   AppendNodeToString(*this, target, &string_builder);
   return string_builder.ToString();
 }
 
-String NGLayoutInputNode::DumpNodeTreeFromRoot() const {
+String LayoutInputNode::DumpNodeTreeFromRoot() const {
   return NGBlockNode(box_->View()).DumpNodeTree(this);
 }
 
-void NGLayoutInputNode::ShowNodeTree(const NGLayoutInputNode* target) const {
+void LayoutInputNode::ShowNodeTree(const LayoutInputNode* target) const {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which
     // does not work in an rr replay session. Just disable timestamp printing
@@ -226,12 +226,12 @@ void NGLayoutInputNode::ShowNodeTree(const NGLayoutInputNode* target) const {
   DLOG(INFO) << "\n" << DumpNodeTree(target).Utf8();
 }
 
-void NGLayoutInputNode::ShowNodeTreeFromRoot() const {
+void LayoutInputNode::ShowNodeTreeFromRoot() const {
   NGBlockNode(box_->View()).ShowNodeTree(this);
 }
 #endif
 
-void NGLayoutInputNode::GetOverrideIntrinsicSize(
+void LayoutInputNode::GetOverrideIntrinsicSize(
     absl::optional<LayoutUnit>* computed_inline_size,
     absl::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
@@ -264,7 +264,7 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
 
 #if DCHECK_IS_ON()
 
-CORE_EXPORT void ShowLayoutTree(const blink::NGLayoutInputNode& node) {
+CORE_EXPORT void ShowLayoutTree(const blink::LayoutInputNode& node) {
   ShowLayoutTree(node.GetLayoutBox());
 }
 

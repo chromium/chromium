@@ -44,9 +44,7 @@ class CORE_EXPORT TableNode final : public NGBlockNode {
 
 template <>
 struct DowncastTraits<TableNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsTable();
-  }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsTable(); }
 };
 
 }  // namespace blink

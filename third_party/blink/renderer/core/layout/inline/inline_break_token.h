@@ -87,7 +87,7 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
                    unsigned flags /* InlineBreakTokenFlags */,
                    const NGBlockBreakToken* sub_break_token);
 
-  explicit InlineBreakToken(PassKey, NGLayoutInputNode node);
+  explicit InlineBreakToken(PassKey, LayoutInputNode node);
 
 #if DCHECK_IS_ON()
   String ToString() const;

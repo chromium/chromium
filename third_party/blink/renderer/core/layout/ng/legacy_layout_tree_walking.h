@@ -15,7 +15,7 @@
 
 namespace blink {
 
-// Return the layout object that should be the first child NGLayoutInputNode of
+// Return the layout object that should be the first child LayoutInputNode of
 // |parent|. Normally this will just be the first layout object child, but there
 // are certain layout objects that should be skipped for NG.
 inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
@@ -27,7 +27,7 @@ inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
   return child;
 }
 
-// Return the layout object that should be the parent NGLayoutInputNode of
+// Return the layout object that should be the parent LayoutInputNode of
 // |object|. Normally this will just be the parent layout object, but there
 // are certain layout objects that should be skipped for NG.
 //
@@ -50,7 +50,7 @@ inline Type GetLayoutObjectForParentNode(Type object) {
   return parent;
 }
 
-// Return true if the NGLayoutInputNode children of the NGLayoutInputNode
+// Return true if the LayoutInputNode children of the LayoutInputNode
 // established by |block| will be inline; see LayoutObject::ChildrenInline().
 inline bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {
   if (block->ChildrenInline())

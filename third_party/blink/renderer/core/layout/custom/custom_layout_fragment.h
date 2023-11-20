@@ -13,13 +13,13 @@
 
 namespace blink {
 
-class NGLayoutInputNode;
 class CustomLayoutChild;
 class LayoutBox;
-struct LogicalSize;
+class LayoutInputNode;
 class NGLayoutResult;
 class ScriptState;
 class ScriptValue;
+struct LogicalSize;
 
 // This represents the result of a layout (on a LayoutChild).
 //
@@ -59,7 +59,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   ScriptValue data(ScriptState*) const;
 
   const NGLayoutResult& GetLayoutResult() const;
-  const NGLayoutInputNode& GetLayoutNode() const;
+  const LayoutInputNode& GetLayoutNode() const;
 
   bool IsValid() const { return token_->IsValid(); }
 

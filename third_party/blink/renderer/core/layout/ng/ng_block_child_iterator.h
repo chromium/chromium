@@ -32,7 +32,7 @@ class CORE_EXPORT NGBlockChildIterator {
   STACK_ALLOCATED();
 
  public:
-  NGBlockChildIterator(NGLayoutInputNode first_child,
+  NGBlockChildIterator(LayoutInputNode first_child,
                        const NGBlockBreakToken* break_token,
                        bool calculate_child_idx = false);
 
@@ -46,10 +46,10 @@ class CORE_EXPORT NGBlockChildIterator {
       const InlineBreakToken* previous_inline_break_token = nullptr);
 
  private:
-  void AdvanceToNextChild(const NGLayoutInputNode&);
+  void AdvanceToNextChild(const LayoutInputNode&);
 
-  NGLayoutInputNode next_unstarted_child_;
-  NGLayoutInputNode tracked_child_ = nullptr;
+  LayoutInputNode next_unstarted_child_;
+  LayoutInputNode tracked_child_ = nullptr;
   const NGBlockBreakToken* break_token_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
@@ -66,12 +66,12 @@ struct NGBlockChildIterator::Entry {
 
  public:
   Entry() : node(nullptr), token(nullptr) {}
-  Entry(NGLayoutInputNode node,
+  Entry(LayoutInputNode node,
         const NGBreakToken* token,
         absl::optional<wtf_size_t> index = absl::nullopt)
       : node(node), token(token), index(index) {}
 
-  NGLayoutInputNode node;
+  LayoutInputNode node;
   const NGBreakToken* token;
   absl::optional<wtf_size_t> index;
 

@@ -14,9 +14,9 @@ namespace blink {
 class ComputedStyle;
 class CustomLayoutChild;
 class CustomLayoutToken;
+class LayoutInputNode;
 class LayoutUnit;
 class NGConstraintSpace;
-class NGLayoutInputNode;
 class SerializedScriptValue;
 class ScriptPromiseResolver;
 
@@ -62,11 +62,11 @@ class CustomLayoutWorkTask final
 
   void RunLayoutFragmentTask(const NGConstraintSpace& parent_space,
                              const ComputedStyle& parent_style,
-                             NGLayoutInputNode child);
+                             LayoutInputNode child);
   void RunIntrinsicSizesTask(const NGConstraintSpace& parent_space,
                              const ComputedStyle& parent_style,
                              const LayoutUnit child_available_block_size,
-                             NGLayoutInputNode child,
+                             LayoutInputNode child,
                              bool* child_depends_on_block_constraints);
 };
 

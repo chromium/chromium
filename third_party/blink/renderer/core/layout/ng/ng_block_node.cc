@@ -1052,7 +1052,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   return result;
 }
 
-NGLayoutInputNode NGBlockNode::NextSibling() const {
+LayoutInputNode NGBlockNode::NextSibling() const {
   LayoutObject* next_sibling = box_->NextSibling();
 
   // We may have some LayoutInline(s) still within the tree (due to treating
@@ -1073,7 +1073,7 @@ NGLayoutInputNode NGBlockNode::NextSibling() const {
   return NGBlockNode(To<LayoutBox>(next_sibling));
 }
 
-NGLayoutInputNode NGBlockNode::FirstChild() const {
+LayoutInputNode NGBlockNode::FirstChild() const {
   // If this layout is blocked by a display-lock, then we pretend this node has
   // no children.
   if (ChildLayoutBlockedByDisplayLock()) {
@@ -1421,7 +1421,7 @@ bool NGBlockNode::IsInlineFormattingContextRoot(
   if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
     if (!AreNGBlockFlowChildrenInline(block))
       return false;
-    NGLayoutInputNode first_child = FirstChild();
+    LayoutInputNode first_child = FirstChild();
     if (first_child.IsInline()) {
       if (first_child_out)
         *first_child_out = To<InlineNode>(first_child);

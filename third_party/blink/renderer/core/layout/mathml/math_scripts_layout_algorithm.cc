@@ -102,7 +102,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
   auto script_type = Node().ScriptType();
   bool number_of_scripts_is_even = true;
   sub_sup_pairs->resize(1);
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {

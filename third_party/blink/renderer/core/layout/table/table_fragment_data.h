@@ -25,7 +25,7 @@ class TableFragmentData {
                    wtf_size_t span,
                    LayoutUnit inline_offset,
                    LayoutUnit inline_size,
-                   NGLayoutInputNode node)
+                   LayoutInputNode node)
         : start_column(start_column),
           span(span),
           inline_offset(inline_offset),
@@ -36,7 +36,7 @@ class TableFragmentData {
     wtf_size_t span;
     LayoutUnit inline_offset;
     LayoutUnit inline_size;
-    NGLayoutInputNode node;
+    LayoutInputNode node;
   };
 
   using ColumnGeometries = HeapVector<ColumnGeometry>;

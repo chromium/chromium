@@ -33,7 +33,7 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
     NGBlockNode* base,
     NGBlockNode* index,
     NGBoxFragmentBuilder* container_builder) const {
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {

@@ -34,11 +34,11 @@ TEST_F(NGBlockNodeForTest, ChildInlineAndBlock) {
     <div id=container>Hello!<div></div></div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_TRUE(child2 && child2.IsBlock());
-  NGLayoutInputNode child3 = child2.NextSibling();
+  LayoutInputNode child3 = child2.NextSibling();
   EXPECT_EQ(child3, nullptr);
 }
 
@@ -48,11 +48,11 @@ TEST_F(NGBlockNodeForTest, ChildBlockAndInline) {
     <div id=container><div></div>Hello!</div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_TRUE(child2 && child2.IsBlock());
-  NGLayoutInputNode child3 = child2.NextSibling();
+  LayoutInputNode child3 = child2.NextSibling();
   EXPECT_EQ(child3, nullptr);
 }
 
@@ -65,11 +65,11 @@ TEST_F(NGBlockNodeForTest, ChildFloatBeforeBlock) {
     <div id=container><float></float><div></div></div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_TRUE(child2 && child2.IsBlock());
-  NGLayoutInputNode child3 = child2.NextSibling();
+  LayoutInputNode child3 = child2.NextSibling();
   EXPECT_EQ(child3, nullptr);
 }
 
@@ -82,9 +82,9 @@ TEST_F(NGBlockNodeForTest, ChildFloatBeforeInline) {
     <div id=container><float></float>Hello!</div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
@@ -97,9 +97,9 @@ TEST_F(NGBlockNodeForTest, ChildFloatAfterInline) {
     <div id=container>Hello<float></float></div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
@@ -112,9 +112,9 @@ TEST_F(NGBlockNodeForTest, ChildFloatOnly) {
     <div id=container><float></float></div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
@@ -129,9 +129,9 @@ TEST_F(NGBlockNodeForTest, ChildFloatWithSpaces) {
     </div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsBlock());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
@@ -144,9 +144,9 @@ TEST_F(NGBlockNodeForTest, ChildOofBeforeInline) {
     <div id=container><oof></oof>Hello!</div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 
@@ -159,9 +159,9 @@ TEST_F(NGBlockNodeForTest, ChildOofAfterInline) {
     <div id=container>Hello!<oof></oof></div>
   )HTML");
   NGBlockNode container(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode child1 = container.FirstChild();
+  LayoutInputNode child1 = container.FirstChild();
   EXPECT_TRUE(child1 && child1.IsInline());
-  NGLayoutInputNode child2 = child1.NextSibling();
+  LayoutInputNode child2 = child1.NextSibling();
   EXPECT_EQ(child2, nullptr);
 }
 

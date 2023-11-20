@@ -39,7 +39,7 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // "large" or "stretched" version, from which we perform measurement and
   // painting.
   // See https://w3c.github.io/mathml-core/#layout-of-operators
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());

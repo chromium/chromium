@@ -24,7 +24,7 @@ class CORE_EXPORT CustomLayoutAlgorithm
   const NGLayoutResult* Layout() override;
 
  private:
-  void AddAnyOutOfFlowPositionedChildren(NGLayoutInputNode* child);
+  void AddAnyOutOfFlowPositionedChildren(LayoutInputNode* child);
   MinMaxSizesResult FallbackMinMaxSizes(const MinMaxSizesFloatInput&) const;
   const NGLayoutResult* FallbackLayout();
 

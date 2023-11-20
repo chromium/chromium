@@ -66,7 +66,7 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
       ShrinkLogicalSize(container_builder_.Size(), BorderPadding()));
   PhysicalRect new_rect = converter.ToPhysical(logical_new_rect);
 
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     LayoutUnit width = new_rect.Width();
     if (child.GetDOMNode()->IsMediaControls()) {

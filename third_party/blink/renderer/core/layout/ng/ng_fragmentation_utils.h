@@ -87,7 +87,7 @@ inline wtf_size_t FragmentIndex(const NGBlockBreakToken* incoming_break_token) {
 // Calculate the final "break-between" value at a class A or C breakpoint. This
 // is the combination of all break-before and break-after values that met at the
 // breakpoint.
-EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
+EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
                                          const NGLayoutResult&,
                                          const NGBoxFragmentBuilder&);
 
@@ -112,7 +112,7 @@ bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
 
 // Calculate the appeal of breaking before this child.
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
-                                         NGLayoutInputNode child,
+                                         LayoutInputNode child,
                                          const NGLayoutResult&,
                                          const NGBoxFragmentBuilder&,
                                          bool has_container_separation);
@@ -227,7 +227,7 @@ LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder&,
 // when inside node that we know will fit (and stay) in the current
 // fragmentainer. See MustStayInCurrentFragmentainer() in NGBoxFragmentBuilder.
 void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
-                                       const NGLayoutInputNode& child,
+                                       const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
                                        NGConstraintSpaceBuilder*,
                                        bool is_new_fc,
@@ -237,7 +237,7 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
 // beginning of layout.
 void SetupFragmentBuilderForFragmentation(
     const NGConstraintSpace&,
-    const NGLayoutInputNode&,
+    const LayoutInputNode&,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder*);
 
@@ -331,7 +331,7 @@ bool HasBreakOpportunityBeforeNextChild(
 // the column level.
 NGBreakStatus BreakBeforeChildIfNeeded(
     const NGConstraintSpace&,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult&,
     LayoutUnit fragmentainer_block_offset,
     bool has_container_separation,
@@ -344,7 +344,7 @@ NGBreakStatus BreakBeforeChildIfNeeded(
 // different block-size than that of the provided layout result.
 void BreakBeforeChild(
     const NGConstraintSpace&,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult*,
     LayoutUnit fragmentainer_block_offset,
     absl::optional<NGBreakAppeal> appeal,
@@ -400,7 +400,7 @@ void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> space_shortage,
 // details on |flex_column_break_info|.
 bool MovePastBreakpoint(
     const NGConstraintSpace& space,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult& layout_result,
     LayoutUnit fragmentainer_block_offset,
     NGBreakAppeal appeal_before,
@@ -408,7 +408,7 @@ bool MovePastBreakpoint(
     bool is_row_item = false,
     NGFlexColumnBreakInfo* flex_column_break_info = nullptr);
 
-// Same as above, but without the parts that require an NGLayoutInputNode.
+// Same as above, but without the parts that require an LayoutInputNode.
 bool MovePastBreakpoint(
     const NGConstraintSpace& space,
     const NGLayoutResult& layout_result,
@@ -438,7 +438,7 @@ void UpdateEarlyBreakAtBlockChild(
 // BreakBeforeChildIfNeeded() for details on |flex_column_break_info|.
 bool AttemptSoftBreak(
     const NGConstraintSpace&,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult*,
     LayoutUnit fragmentainer_block_offset,
     NGBreakAppeal appeal_before,
@@ -457,7 +457,7 @@ const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
 // before.
 bool IsEarlyBreakTarget(const NGEarlyBreak&,
                         const NGBoxFragmentBuilder&,
-                        const NGLayoutInputNode& child);
+                        const LayoutInputNode& child);
 
 // Find out if |child| is the next step on the column spanner path (if any), and
 // return the remaining path if that's the case, nullptr otherwise.

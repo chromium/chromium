@@ -23,7 +23,7 @@ MathTokenLayoutAlgorithm::MathTokenLayoutAlgorithm(
 const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(BreakToken()));
 
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
@@ -64,7 +64,7 @@ const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult MathTokenLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput& input) {
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());

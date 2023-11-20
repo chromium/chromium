@@ -29,7 +29,7 @@ class CORE_EXPORT FrameSetLayoutAlgorithm
                                 const Vector<int>& deltas,
                                 LayoutUnit available_length);
   void LayoutChildren(const FrameSetLayoutData& layout_data);
-  void LayoutChild(const NGLayoutInputNode&,
+  void LayoutChild(const LayoutInputNode&,
                    LogicalSize available_size,
                    PhysicalOffset position,
                    PhysicalSize child_size);

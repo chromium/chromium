@@ -41,7 +41,7 @@ as in the following.
 </div>
 ```
 
-### NGLayoutInputNode ###
+### LayoutInputNode ###
 
 * NGBlockNode
   - InlineNode
@@ -269,7 +269,7 @@ Computing baselines in LayoutNG goes the following process.
 
 1. Users of baseline should request what kind and type of the baseline
    they need by calling [NGConstraintSpaceBuilder]`::AddBaselineRequest()`.
-2. Call [NGLayoutInputNode]`::Layout()`,
+2. Call [LayoutInputNode]`::Layout()`,
    that calls appropriate layout algorithm.
 3. Each layout algorithm computes baseline according to the requests.
 4. Users retrieve the result by [NGPhysicalBoxFragment]`::Baseline()`,
@@ -378,6 +378,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineItemResult]: ng_inline_item_result.h
 [InlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [InlineNode]: ng_inline_node.h
+[LayoutInputNode]: ../ng/ng_layout_input_node.h
 [LineBreaker]: ng_line_breaker.h
 [LogicalLineItem]: ng_logical_line_item.h
 [LogicalLineItems]: ng_logical_line_items.h
@@ -388,7 +389,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng/ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng/ng_constraint_space_builder.h
-[NGLayoutInputNode]: ../ng/ng_layout_input_node.h
 [NGPhysicalBoxFragment]: ../ng/ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng/ng_physical_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h

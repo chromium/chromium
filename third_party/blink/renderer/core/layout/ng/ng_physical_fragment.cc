@@ -1024,7 +1024,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
 
 bool NGPhysicalFragment::DependsOnPercentageBlockSize(
     const NGFragmentBuilder& builder) {
-  NGLayoutInputNode node = builder.node_;
+  LayoutInputNode node = builder.node_;
 
   if (!node || node.IsInline())
     return builder.has_descendant_that_depends_on_percentage_block_size_;

@@ -127,7 +127,7 @@ MathFractionLayoutAlgorithm::MathFractionLayoutAlgorithm(
 
 void MathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
                                                  NGBlockNode* denominator) {
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
@@ -279,7 +279,7 @@ MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;

@@ -11,7 +11,7 @@
 
 namespace blink {
 
-NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
+NGBlockChildIterator::NGBlockChildIterator(LayoutInputNode first_child,
                                            const NGBlockBreakToken* break_token,
                                            bool calculate_child_idx)
     : next_unstarted_child_(first_child),
@@ -66,7 +66,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
 
   const NGBreakToken* current_child_break_token = nullptr;
   absl::optional<wtf_size_t> current_child_idx;
-  NGLayoutInputNode current_child = next_unstarted_child_;
+  LayoutInputNode current_child = next_unstarted_child_;
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume
     // the children that fragmented earlier (represented by one break token
@@ -101,7 +101,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
   return Entry(current_child, current_child_break_token, current_child_idx);
 }
 
-void NGBlockChildIterator::AdvanceToNextChild(const NGLayoutInputNode& child) {
+void NGBlockChildIterator::AdvanceToNextChild(const LayoutInputNode& child) {
   next_unstarted_child_ = child.NextSibling();
   if (child_idx_)
     (*child_idx_)++;

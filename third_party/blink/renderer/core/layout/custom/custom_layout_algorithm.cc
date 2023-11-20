@@ -121,7 +121,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   const HeapVector<Member<CustomLayoutFragment>>& child_fragments =
       fragment_result_options->childFragments();
 
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   for (auto fragment : child_fragments) {
     if (!fragment->IsValid()) {
       // TODO(ikilpatrick): Report this error to the developer.
@@ -192,7 +192,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
 //
 // |child| will end up being the next inflow child, or empty.
 void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
-    NGLayoutInputNode* child) {
+    LayoutInputNode* child) {
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
     container_builder_.AddOutOfFlowChildCandidate(

@@ -107,7 +107,7 @@ inline const NGLayoutResult* LayoutInflow(
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
-    NGLayoutInputNode* node,
+    LayoutInputNode* node,
     InlineChildLayoutContext* context) {
   if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     return inline_node->Layout(space, break_token, column_spanner_path,
@@ -296,7 +296,7 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
   LayoutUnit float_left_inline_size = float_input.float_left_inline_size;
   LayoutUnit float_right_inline_size = float_input.float_right_inline_size;
 
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     // We don't check IsRubyText() here intentionally. RubyText width should
     // affect this width.
@@ -713,7 +713,7 @@ inline const NGLayoutResult* BlockLayoutAlgorithm::Layout(
   NGBlockNode ruby_text_child(nullptr);
   NGBlockNode placeholder_child(nullptr);
   NGBlockChildIterator::Entry entry;
-  for (entry = child_iterator.NextChild(); NGLayoutInputNode child = entry.node;
+  for (entry = child_iterator.NextChild(); LayoutInputNode child = entry.node;
        entry = child_iterator.NextChild(previous_inline_break_token)) {
     const NGBreakToken* child_break_token = entry.token;
 
@@ -782,7 +782,7 @@ inline const NGLayoutResult* BlockLayoutAlgorithm::Layout(
       // in front of that one. Otherwise we'll just resume after all the
       // children.
       for (entry = child_iterator.NextChild();
-           NGLayoutInputNode sibling = entry.node;
+           LayoutInputNode sibling = entry.node;
            entry = child_iterator.NextChild()) {
         DCHECK(!entry.token);
         if (sibling.IsColumnSpanAll())
@@ -1405,7 +1405,7 @@ void BlockLayoutAlgorithm::HandleFloat(
 }
 
 NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGBlockBreakToken* child_break_token,
     PreviousInflowPosition* previous_inflow_position) {
   DCHECK(child);
@@ -1627,7 +1627,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
 }
 
 const NGLayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGBlockBreakToken* child_break_token,
     const InflowChildData& child_data,
     BfcOffset origin_offset,
@@ -1849,7 +1849,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
 }
 
 NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGBreakToken* child_break_token,
     PreviousInflowPosition* previous_inflow_position,
     InlineChildLayoutContext* inline_child_layout_context,
@@ -1929,7 +1929,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
 }
 
 NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGBreakToken* child_break_token,
     const NGConstraintSpace& child_space,
     bool has_clearance_past_adjoining_floats,
@@ -2279,7 +2279,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
 
 InflowChildData BlockLayoutAlgorithm::ComputeChildData(
     const PreviousInflowPosition& previous_inflow_position,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGBreakToken* child_break_token,
     bool is_new_fc) {
   DCHECK(child);
@@ -2337,7 +2337,7 @@ InflowChildData BlockLayoutAlgorithm::ComputeChildData(
 
 PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     const PreviousInflowPosition& previous_inflow_position,
-    const NGLayoutInputNode child,
+    const LayoutInputNode child,
     const InflowChildData& child_data,
     const absl::optional<LayoutUnit>& child_bfc_block_offset,
     const LogicalOffset& logical_offset,
@@ -2481,7 +2481,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
 }
 
 LayoutUnit BlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
-    const NGLayoutInputNode& child,
+    const LayoutInputNode& child,
     const NGConstraintSpace& child_space,
     const InflowChildData& child_data,
     const NGLayoutResult& layout_result) const {
@@ -2559,7 +2559,7 @@ NGBreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation(
 }
 
 NGBreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     const NGLayoutResult& layout_result,
     PreviousInflowPosition* previous_inflow_position,
     LayoutUnit bfc_block_offset,
@@ -2723,7 +2723,7 @@ void BlockLayoutAlgorithm::UpdateEarlyBreakBetweenLines() {
 }
 
 BoxStrut BlockLayoutAlgorithm::CalculateMargins(
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     bool is_new_fc,
     LayoutUnit* additional_line_offset) {
   DCHECK(child);
@@ -2786,7 +2786,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
 }
 
 NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
-    const NGLayoutInputNode child,
+    const LayoutInputNode child,
     const NGBreakToken* child_break_token,
     const InflowChildData& child_data,
     const LogicalSize child_available_size,
@@ -3212,7 +3212,7 @@ bool BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   return true;
 }
 
-bool BlockLayoutAlgorithm::IsRubyText(const NGLayoutInputNode& child) const {
+bool BlockLayoutAlgorithm::IsRubyText(const LayoutInputNode& child) const {
   return Node().IsRubyColumn() && child.IsRubyText();
 }
 

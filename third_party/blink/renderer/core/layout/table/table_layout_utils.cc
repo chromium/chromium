@@ -336,7 +336,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
 // Computes inline constraints for COLGROUP/COLs.
 class ColumnConstraintsBuilder {
  public:
-  void VisitCol(const NGLayoutInputNode& column,
+  void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {
     // COL creates SPAN constraints. Its width is col css width, or enclosing
@@ -352,13 +352,13 @@ class ColumnConstraintsBuilder {
     column.GetLayoutBox()->ClearNeedsLayout();
   }
 
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {
     colgroup_constraint_ = TableTypes::CreateColumn(
         colgroup.Style(), absl::nullopt, is_fixed_layout_);
   }
 
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {

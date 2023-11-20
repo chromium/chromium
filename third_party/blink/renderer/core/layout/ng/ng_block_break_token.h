@@ -25,14 +25,14 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // Creates a break token for a node which did fragment, and can potentially
   // produce more fragments.
   //
-  // The node is NGBlockNode, or any other NGLayoutInputNode that produces
+  // The node is NGBlockNode, or any other LayoutInputNode that produces
   // anonymous box.
   static NGBlockBreakToken* Create(NGBoxFragmentBuilder*);
 
   // Creates a break token for a node that needs to produce its first fragment
   // in the next fragmentainer. In this case we create a break token for a node
   // that hasn't yet produced any fragments.
-  static NGBlockBreakToken* CreateBreakBefore(NGLayoutInputNode node,
+  static NGBlockBreakToken* CreateBreakBefore(LayoutInputNode node,
                                               bool is_forced_break) {
     auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
     token->is_break_before_ = true;
@@ -212,7 +212,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   }
 
   // Find the child InlineBreakToken for the specified node.
-  const InlineBreakToken* InlineBreakTokenFor(const NGLayoutInputNode&) const;
+  const InlineBreakToken* InlineBreakTokenFor(const LayoutInputNode&) const;
   const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
 #if DCHECK_IS_ON()
@@ -225,7 +225,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // has been allocated in the flexible array to store the children.
   NGBlockBreakToken(PassKey, NGBoxFragmentBuilder*);
 
-  explicit NGBlockBreakToken(PassKey, NGLayoutInputNode node);
+  explicit NGBlockBreakToken(PassKey, LayoutInputNode node);
 
   void TraceAfterDispatch(Visitor*) const;
 

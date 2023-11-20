@@ -142,7 +142,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
                                        LayoutUnit row_block_offset,
                                        EBreakBetween row_break_between,
                                        wtf_size_t row_index,
-                                       NGLayoutInputNode child,
+                                       LayoutInputNode child,
                                        bool has_container_separation,
                                        bool is_first_for_row);
 

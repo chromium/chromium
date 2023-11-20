@@ -362,7 +362,7 @@ class ColumnGeometriesBuilder {
   STACK_ALLOCATED();
 
  public:
-  void VisitCol(const NGLayoutInputNode& col,
+  void VisitCol(const LayoutInputNode& col,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {
     wtf_size_t end_column_index = start_column_index + span - 1;
@@ -377,10 +377,10 @@ class ColumnGeometriesBuilder {
                                    column_inline_size, col);
   }
 
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {}
 
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {

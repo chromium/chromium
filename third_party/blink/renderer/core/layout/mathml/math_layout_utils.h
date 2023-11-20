@@ -12,20 +12,20 @@
 
 namespace blink {
 
+class LayoutInputNode;
+class NGBlockNode;
+class NGConstraintSpace;
+class SimpleFontData;
 struct LogicalSize;
 struct MinMaxSizes;
 struct MinMaxSizesResult;
-class NGBlockNode;
-class NGConstraintSpace;
-class NGLayoutInputNode;
-class SimpleFontData;
 
 // Creates a new constraint space for the current child.
 NGConstraintSpace CreateConstraintSpaceForMathChild(
     const NGBlockNode& parent_node,
     const LogicalSize& child_available_size,
     const NGConstraintSpace& parent_constraint_space,
-    const NGLayoutInputNode&,
+    const LayoutInputNode&,
     const NGCacheSlot = NGCacheSlot::kLayout,
     const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes = absl::nullopt,
@@ -38,8 +38,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const NGBlockNode& child,
     LayoutUnit child_available_block_size);
 
-NGLayoutInputNode FirstChildInFlow(const NGBlockNode&);
-NGLayoutInputNode NextSiblingInFlow(const NGBlockNode&);
+LayoutInputNode FirstChildInFlow(const NGBlockNode&);
+LayoutInputNode NextSiblingInFlow(const NGBlockNode&);
 
 bool IsValidMathMLFraction(const NGBlockNode&);
 bool IsValidMathMLScript(const NGBlockNode&);

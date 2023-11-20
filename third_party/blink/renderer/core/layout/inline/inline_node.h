@@ -27,10 +27,10 @@ struct SvgTextContentRange;
 
 // Represents an anonymous block box to be laid out, that contains consecutive
 // inline nodes and their descendants.
-class CORE_EXPORT InlineNode : public NGLayoutInputNode {
+class CORE_EXPORT InlineNode : public LayoutInputNode {
  public:
   explicit InlineNode(LayoutBlockFlow*);
-  explicit InlineNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
+  explicit InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());
@@ -216,9 +216,7 @@ inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
 
 template <>
 struct DowncastTraits<InlineNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsInline();
-  }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsInline(); }
 };
 
 }  // namespace blink

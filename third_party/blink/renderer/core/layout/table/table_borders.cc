@@ -49,7 +49,7 @@ class ColBordersMarker {
   STACK_ALLOCATED();
 
  public:
-  void VisitCol(const NGLayoutInputNode& column,
+  void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {
     for (wtf_size_t i = 0; i < span; ++i) {
@@ -59,9 +59,9 @@ class ColBordersMarker {
                            box_order, table_writing_direction);
     }
   }
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {}
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {}
@@ -83,12 +83,12 @@ class ColgroupBordersMarker {
   STACK_ALLOCATED();
 
  public:
-  void VisitCol(const NGLayoutInputNode& column,
+  void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {}
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {}
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {

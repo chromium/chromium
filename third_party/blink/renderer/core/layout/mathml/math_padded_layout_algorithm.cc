@@ -47,7 +47,7 @@ void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
     NGBlockNode* content) const {
   // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
   // empty or contains a single anonymous mrow child.
-  if (NGLayoutInputNode child = Node().FirstChild()) {
+  if (LayoutInputNode child = Node().FirstChild()) {
     DCHECK(!child.NextSibling());
     DCHECK(!child.IsOutOfFlowPositioned());
     *content = To<NGBlockNode>(child);

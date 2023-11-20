@@ -270,7 +270,7 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
   }
 
   // Iterate through all our OOF-positioned children and add them as candidates.
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (!child.IsOutOfFlowPositioned())
       continue;

@@ -14,9 +14,9 @@ namespace {
 
 #if DCHECK_IS_ON()
 
-class NGLayoutInputNodeTest : public RenderingTest {
+class LayoutInputNodeTest : public RenderingTest {
  public:
-  String DumpAll(const NGLayoutInputNode* target = nullptr) const {
+  String DumpAll(const LayoutInputNode* target = nullptr) const {
     NGBlockNode root_node(GetDocument().GetLayoutView());
     return root_node.DumpNodeTree(target);
   }
@@ -26,7 +26,7 @@ class NGLayoutInputNodeTest : public RenderingTest {
   }
 };
 
-TEST_F(NGLayoutInputNodeTest, DumpBasic) {
+TEST_F(LayoutInputNodeTest, DumpBasic) {
   SetBodyInnerHTML(R"HTML(
     <div id="block"><span>Hello world!</span></div>
   )HTML");
@@ -44,7 +44,7 @@ TEST_F(NGLayoutInputNodeTest, DumpBasic) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGLayoutInputNodeTest, DumpBlockInInline) {
+TEST_F(LayoutInputNodeTest, DumpBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <div id="block">
       <span>
@@ -76,7 +76,7 @@ TEST_F(NGLayoutInputNodeTest, DumpBlockInInline) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGLayoutInputNodeTest, DumpInlineBlockInInline) {
+TEST_F(LayoutInputNodeTest, DumpInlineBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <div id="block">
       <span>
@@ -108,7 +108,7 @@ TEST_F(NGLayoutInputNodeTest, DumpInlineBlockInInline) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGLayoutInputNodeTest, DumpFloatInInline) {
+TEST_F(LayoutInputNodeTest, DumpFloatInInline) {
   SetBodyInnerHTML(R"HTML(
     <div id="block">
       <span>
@@ -139,7 +139,7 @@ TEST_F(NGLayoutInputNodeTest, DumpFloatInInline) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGLayoutInputNodeTest, DumpAbsposInInline) {
+TEST_F(LayoutInputNodeTest, DumpAbsposInInline) {
   SetBodyInnerHTML(R"HTML(
     <div id="block">
       <span>
@@ -170,7 +170,7 @@ TEST_F(NGLayoutInputNodeTest, DumpAbsposInInline) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGLayoutInputNodeTest, DumpRelposInline) {
+TEST_F(LayoutInputNodeTest, DumpRelposInline) {
   SetBodyInnerHTML(R"HTML(
     <span style="position:relative;">Hello world!</span>
   )HTML");

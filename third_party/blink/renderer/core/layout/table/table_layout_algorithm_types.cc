@@ -212,7 +212,7 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
       css_percentage_inline_size, percent_border_padding, is_constrained};
 }
 
-TableTypes::Section TableTypes::CreateSection(const NGLayoutInputNode& section,
+TableTypes::Section TableTypes::CreateSection(const LayoutInputNode& section,
                                               wtf_size_t start_row,
                                               wtf_size_t row_count,
                                               LayoutUnit block_size,
@@ -297,7 +297,7 @@ void TableTypes::Column::Encompass(
 
 TableGroupedChildren::TableGroupedChildren(const NGBlockNode& table)
     : header(NGBlockNode(nullptr)), footer(NGBlockNode(nullptr)) {
-  for (NGLayoutInputNode child = table.FirstChild(); child;
+  for (LayoutInputNode child = table.FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
     if (block_child.IsTableCaption()) {

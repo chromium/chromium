@@ -38,15 +38,15 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
-  NGBoxFragmentBuilder(NGLayoutInputNode node,
+  NGBoxFragmentBuilder(LayoutInputNode node,
                        const ComputedStyle* style,
                        const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGFragmentBuilder(node, style, space, writing_direction),
         is_inline_formatting_context_(node.IsInline()) {}
 
-  // Build a fragment for LayoutObject without NGLayoutInputNode. LayoutInline
-  // has InlineItem but does not have corresponding NGLayoutInputNode.
+  // Build a fragment for LayoutObject without LayoutInputNode. LayoutInline
+  // has InlineItem but does not have corresponding LayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
                        const ComputedStyle* style,
                        const NGConstraintSpace& space,
@@ -197,7 +197,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // always be provided for regular in-flow children. For other types of
   // children it may be omitted, if the break shouldn't affect the appeal of
   // breaking inside this container.
-  void AddBreakBeforeChild(NGLayoutInputNode child,
+  void AddBreakBeforeChild(LayoutInputNode child,
                            absl::optional<NGBreakAppeal> appeal,
                            bool is_forced_break);
 

@@ -111,13 +111,13 @@ class CORE_EXPORT BlockLayoutAlgorithm
            previous_inflow_position.margin_strut.Sum();
   }
 
-  BoxStrut CalculateMargins(NGLayoutInputNode child,
+  BoxStrut CalculateMargins(LayoutInputNode child,
                             bool is_new_fc,
                             LayoutUnit* additional_line_offset);
 
   // Creates a new constraint space for the current child.
   NGConstraintSpace CreateConstraintSpaceForChild(
-      const NGLayoutInputNode child,
+      const LayoutInputNode child,
       const NGBreakToken* child_break_token,
       const InflowChildData& child_data,
       const LogicalSize child_available_size,
@@ -128,13 +128,13 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // @return Estimated BFC block offset for the "to be layout" child.
   InflowChildData ComputeChildData(const PreviousInflowPosition&,
-                                   NGLayoutInputNode,
+                                   LayoutInputNode,
                                    const NGBreakToken* child_break_token,
                                    bool is_new_fc);
 
   PreviousInflowPosition ComputeInflowPosition(
       const PreviousInflowPosition&,
-      const NGLayoutInputNode child,
+      const LayoutInputNode child,
       const InflowChildData&,
       const absl::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
@@ -150,7 +150,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   //   <div style="padding: 1px">
   //     <div id="zero" style="margin: 1px"></div>
   LayoutUnit PositionSelfCollapsingChildWithParentBfc(
-      const NGLayoutInputNode& child,
+      const LayoutInputNode& child,
       const NGConstraintSpace& child_space,
       const InflowChildData& child_data,
       const NGLayoutResult&) const;
@@ -187,14 +187,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Returns false if we need to abort layout, because a previously unknown BFC
   // block offset has now been resolved.
   NGLayoutResult::EStatus HandleNewFormattingContext(
-      NGLayoutInputNode child,
+      LayoutInputNode child,
       const NGBlockBreakToken* child_break_token,
       PreviousInflowPosition*);
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
   const NGLayoutResult* LayoutNewFormattingContext(
-      NGLayoutInputNode child,
+      LayoutInputNode child,
       const NGBlockBreakToken* child_break_token,
       const InflowChildData&,
       BfcOffset origin_offset,
@@ -206,14 +206,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Returns false if we need to abort layout, because a previously unknown BFC
   // block offset has now been resolved. (Same as HandleNewFormattingContext).
   NGLayoutResult::EStatus HandleInflow(
-      NGLayoutInputNode child,
+      LayoutInputNode child,
       const NGBreakToken* child_break_token,
       PreviousInflowPosition*,
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
   NGLayoutResult::EStatus FinishInflow(
-      NGLayoutInputNode child,
+      LayoutInputNode child,
       const NGBreakToken* child_break_token,
       const NGConstraintSpace&,
       bool has_clearance_past_adjoining_floats,
@@ -242,7 +242,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // Insert a fragmentainer break before the child if necessary.
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.
-  NGBreakStatus BreakBeforeChildIfNeeded(NGLayoutInputNode child,
+  NGBreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,
                                          const NGLayoutResult&,
                                          PreviousInflowPosition*,
                                          LayoutUnit bfc_block_offset,
@@ -361,7 +361,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // Returns true if |this| is a ruby segment (LayoutRubyColumn) and the
   // specified |child| is a ruby annotation box (LayoutNGRubyText).
-  bool IsRubyText(const NGLayoutInputNode& child) const;
+  bool IsRubyText(const LayoutInputNode& child) const;
 
   // Layout |ruby_text_child| content, and decide the location of
   // |ruby_text_child|. This is called only if IsRubyText() returns true.

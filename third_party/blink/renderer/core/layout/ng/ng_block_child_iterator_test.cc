@@ -16,7 +16,7 @@
 namespace blink {
 
 const NGBlockBreakToken* CreateBreakToken(
-    NGLayoutInputNode node,
+    LayoutInputNode node,
     const NGBreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
   NGBoxFragmentBuilder builder(
@@ -47,9 +47,9 @@ TEST_F(NGBlockChildIteratorTest, NoBreakToken) {
       <div id='child2'></div>
       <div id='child3'></div>
     )HTML");
-  NGLayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
-  NGLayoutInputNode node2 = node1.NextSibling();
-  NGLayoutInputNode node3 = node2.NextSibling();
+  LayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
+  LayoutInputNode node2 = node1.NextSibling();
+  LayoutInputNode node3 = node2.NextSibling();
 
   // The iterator should loop through three children.
   NGBlockChildIterator iterator(node1, nullptr);
@@ -70,10 +70,10 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
       </div>
     )HTML");
   NGBlockNode container = NGBlockNode(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode node1 = container.FirstChild();
-  NGLayoutInputNode node2 = node1.NextSibling();
-  NGLayoutInputNode node3 = node2.NextSibling();
-  NGLayoutInputNode node4 = node3.NextSibling();
+  LayoutInputNode node1 = container.FirstChild();
+  LayoutInputNode node2 = node1.NextSibling();
+  LayoutInputNode node3 = node2.NextSibling();
+  LayoutInputNode node4 = node3.NextSibling();
 
   NGBreakTokenVector empty_tokens_list;
   const NGBreakToken* child_token1 = CreateBreakToken(node1);
@@ -146,7 +146,7 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
       </div>
     )HTML");
   NGBlockNode container = NGBlockNode(GetLayoutBoxByElementId("container"));
-  NGLayoutInputNode node1 = container.FirstChild();
+  LayoutInputNode node1 = container.FirstChild();
 
   const NGBlockBreakToken* child_token1 = CreateBreakToken(node1);
 
@@ -183,9 +183,9 @@ TEST_F(NGBlockChildIteratorTest, DeleteNodeWhileIteration) {
       <div id='child2'></div>
       <div id='child3'></div>
     )HTML");
-  NGLayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
-  NGLayoutInputNode node2 = node1.NextSibling();
-  NGLayoutInputNode node3 = node2.NextSibling();
+  LayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
+  LayoutInputNode node2 = node1.NextSibling();
+  LayoutInputNode node3 = node2.NextSibling();
 
   using Entry = NGBlockChildIterator::Entry;
   NGBlockChildIterator iterator(node1, nullptr);

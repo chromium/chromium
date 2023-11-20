@@ -28,7 +28,7 @@ class CustomLayoutChild : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CustomLayoutChild(const CSSLayoutDefinition&, NGLayoutInputNode);
+  CustomLayoutChild(const CSSLayoutDefinition&, LayoutInputNode);
   CustomLayoutChild(const CustomLayoutChild&) = delete;
   CustomLayoutChild& operator=(const CustomLayoutChild&) = delete;
   ~CustomLayoutChild() override = default;
@@ -42,7 +42,7 @@ class CustomLayoutChild : public ScriptWrappable {
                                    const CustomLayoutConstraintsOptions*,
                                    ExceptionState&);
 
-  const NGLayoutInputNode& GetLayoutNode() const {
+  const LayoutInputNode& GetLayoutNode() const {
     DCHECK(node_);
     return node_;
   }
@@ -53,7 +53,7 @@ class CustomLayoutChild : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  NGLayoutInputNode node_;
+  LayoutInputNode node_;
   Member<PrepopulatedComputedStylePropertyMap> style_map_;
   Member<CustomLayoutToken> token_;
 };

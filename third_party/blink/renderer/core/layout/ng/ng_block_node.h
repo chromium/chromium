@@ -29,12 +29,13 @@ struct LayoutAlgorithmParams;
 enum class MathScriptType;
 
 // Represents a node to be laid out.
-class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
-  friend NGLayoutInputNode;
- public:
-  explicit NGBlockNode(LayoutBox* box) : NGLayoutInputNode(box, kBlock) {}
+class CORE_EXPORT NGBlockNode : public LayoutInputNode {
+  friend LayoutInputNode;
 
-  NGBlockNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
+ public:
+  explicit NGBlockNode(LayoutBox* box) : LayoutInputNode(box, kBlock) {}
+
+  NGBlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   const NGLayoutResult* Layout(const NGConstraintSpace& constraint_space,
                                const NGBlockBreakToken* break_token = nullptr,
@@ -99,7 +100,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   const NGLayoutResult* CachedLayoutResultForOutOfFlowPositioned(
       LogicalSize container_content_size) const;
 
-  NGLayoutInputNode NextSibling() const;
+  LayoutInputNode NextSibling() const;
 
   // Computes the value of min-content and max-content for this node's border
   // box.
@@ -125,7 +126,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGConstraintSpace&,
       const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
 
-  NGLayoutInputNode FirstChild() const;
+  LayoutInputNode FirstChild() const;
 
   NGBlockNode GetRenderedLegend() const;
   NGBlockNode GetFieldsetContent() const;
@@ -239,7 +240,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
   bool operator==(const NGBlockNode& other) const { return box_ == other.box_; }
-  bool operator==(const NGLayoutInputNode& other) const {
+  bool operator==(const LayoutInputNode& other) const {
     return other.Type() == kBlock && GetLayoutBox() == other.GetLayoutBox();
   }
 
@@ -294,9 +295,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
 template <>
 struct DowncastTraits<NGBlockNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsBlock();
-  }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsBlock(); }
 };
 
 // Devtools can trigger layout to collect devtools-specific data. We don't want

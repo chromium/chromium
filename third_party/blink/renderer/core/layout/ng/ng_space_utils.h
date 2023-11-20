@@ -30,12 +30,12 @@ CORE_EXPORT bool AdjustToClearance(LayoutUnit clearance_offset,
 //
 // [1] https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto
 void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
-                                     const NGLayoutInputNode child,
+                                     const LayoutInputNode child,
                                      NGConstraintSpaceBuilder* builder);
 
 inline void SetOrthogonalFallbackInlineSizeIfNeeded(
     const ComputedStyle& parent_style,
-    const NGLayoutInputNode child,
+    const LayoutInputNode child,
     NGConstraintSpaceBuilder* builder) {
   if (LIKELY(IsParallelWritingMode(parent_style.GetWritingMode(),
                                    child.Style().GetWritingMode())))
@@ -46,7 +46,7 @@ inline void SetOrthogonalFallbackInlineSizeIfNeeded(
 // Only to be called if the child is in a writing-mode parallel with its
 // container. Return true if an auto inline-size means that the child should be
 // stretched (rather than being shrink-to-fit).
-bool ShouldBlockContainerChildStretchAutoInlineSize(const NGLayoutInputNode&);
+bool ShouldBlockContainerChildStretchAutoInlineSize(const LayoutInputNode&);
 
 }  // namespace blink
 

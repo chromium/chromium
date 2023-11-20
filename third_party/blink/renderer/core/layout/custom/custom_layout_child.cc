@@ -22,7 +22,7 @@ const char kInvalidLayoutChild[] = "The LayoutChild is not valid.";
 }  // namespace
 
 CustomLayoutChild::CustomLayoutChild(const CSSLayoutDefinition& definition,
-                                     NGLayoutInputNode node)
+                                     LayoutInputNode node)
     : node_(node),
       style_map_(MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
           node.GetDocument(),

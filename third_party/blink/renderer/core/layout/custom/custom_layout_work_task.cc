@@ -53,7 +53,7 @@ void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
                                const LayoutUnit child_available_block_size,
                                bool* child_depends_on_block_constraints) {
   DCHECK(token_->IsValid());
-  NGLayoutInputNode child = child_->GetLayoutNode();
+  LayoutInputNode child = child_->GetLayoutNode();
 
   if (type_ == CustomLayoutWorkTask::TaskType::kIntrinsicSizes) {
     RunIntrinsicSizesTask(parent_space, parent_style,
@@ -68,7 +68,7 @@ void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
 void CustomLayoutWorkTask::RunLayoutFragmentTask(
     const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
-    NGLayoutInputNode child) {
+    LayoutInputNode child) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
   DCHECK(options_ && resolver_);
 
@@ -153,7 +153,7 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
     const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     const LayoutUnit child_available_block_size,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     bool* child_depends_on_block_constraints) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
   DCHECK(resolver_);
