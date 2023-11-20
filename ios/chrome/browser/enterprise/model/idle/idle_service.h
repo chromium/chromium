@@ -23,12 +23,24 @@ class IdleService : public KeyedService {
  public:
   enum class LastState { kIdleOnBackground, kIdleOnForeground };
 
+  // Observer handling the browsing timing out without being active.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnIdleTimeoutInForeground() = 0;
+    virtual void OnClearDataOnStartup() = 0;
+    virtual void OnIdleTimeoutActionsCompleted() = 0;
+  };
+
   explicit IdleService(ChromeBrowserState* browser_state);
 
   IdleService(const IdleService&) = delete;
   IdleService& operator=(const IdleService&) = delete;
   ~IdleService() override;
 
+  // Adds and removes observers. Called when the scene agent implementing the
+  // observer  is created or destroyed.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
   // TODO(b/301676922): Move calls to `OnApplicationWillEnterForeground`
   // and `OnApplicationWillEnterBackground` to an AppStateObserver.
   // Called when the application is foregrounded, which can be after one of
@@ -57,10 +69,11 @@ class IdleService : public KeyedService {
   // Checks whether the idle state has been reached. If idle state is reached,
   // it calls `RunActionsForState` to run actions. Otherwise, it posts a task to
   // check again when the browser might possibly become idle.
-  void MaybeRunActions();
+  void CheckIfIdle();
   // Runs the actions based on `IdleTimeoutActions` and update the UI based on
   // the last state the browser was  idle in.
   void RunActionsForState(LastState last_state);
+  void RunActions();
   // Calculates the time to when the browser might become idle.
   base::TimeDelta GetPossibleTimeToIdle();
 
@@ -71,6 +84,7 @@ class IdleService : public KeyedService {
   std::unique_ptr<ActionRunner> action_runner_;
   PrefChangeRegistrar pref_change_registrar_;
   base::CancelableOnceCallback<void()> cancelable_actions_callback_;
+  base::ObserverList<Observer, true> observer_list_;
   base::WeakPtrFactory<IdleService> weak_factory_{this};
 };
 

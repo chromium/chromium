@@ -35,6 +35,14 @@ void IdleService::Shutdown() {
   action_runner_.reset();
 }
 
+void IdleService::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void IdleService::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 base::TimeDelta IdleService::GetTimeout() const {
   return browser_state_->GetPrefs()->GetTimeDelta(
       enterprise_idle::prefs::kIdleTimeout);
@@ -91,7 +99,7 @@ void IdleService::OnApplicationWillEnterBackground() {
 
 void IdleService::OnIdleTimeoutPrefChanged() {
   if (GetTimeout().is_positive()) {
-    MaybeRunActions();
+    CheckIfIdle();
   } else {
     // Cancel any outstanding callback if idle timeout is no longer valid.
     cancelable_actions_callback_.Cancel();
@@ -103,14 +111,14 @@ base::TimeDelta IdleService::GetPossibleTimeToIdle() {
 }
 
 void IdleService::PostCheckIdleTask(base::TimeDelta time_from_now) {
-  cancelable_actions_callback_.Reset(base::BindOnce(
-      &IdleService::MaybeRunActions, weak_factory_.GetWeakPtr()));
+  cancelable_actions_callback_.Reset(
+      base::BindOnce(&IdleService::CheckIfIdle, weak_factory_.GetWeakPtr()));
   // Post task to check idle state when it can potentially happen.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, cancelable_actions_callback_.callback(), time_from_now);
 }
 
-void IdleService::MaybeRunActions() {
+void IdleService::CheckIfIdle() {
   DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
   base::TimeDelta idle_threshold = GetTimeout();
   base::Time last_active_time = GetLastActiveTime();
@@ -125,13 +133,30 @@ void IdleService::MaybeRunActions() {
 
 void IdleService::RunActionsForState(LastState last_state) {
   DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
+  if (last_state == LastState::kIdleOnBackground) {
+    // TODO: check if data will be cleared.
+    for (auto& observer : observer_list_) {
+      // Show loading UI on re-foreground right away if data will be clared.
+      observer.OnClearDataOnStartup();
+    }
+    RunActions();
+  } else if (observer_list_.empty()) {
+    RunActions();
+  } else {
+    for (auto& observer : observer_list_) {
+      // Confirm that the user is not active by showing dialog before running
+      // actions.
+      observer.OnIdleTimeoutInForeground();
+    }
+  }
+
   browser_state_->GetPrefs()->SetTime(
       enterprise_idle::prefs::kLastIdleTimestamp, base::Time::Now());
-  // TODO: Implement the IdleTimeoutActions and UI changes. Show UI if
-  // action runner will clear data and last state is background.
-  action_runner_->Run();
-
   PostCheckIdleTask(GetTimeout());
+}
+
+void IdleService::RunActions() {
+  action_runner_->Run();
 }
 
 void IdleService::SetLastActiveTime() {

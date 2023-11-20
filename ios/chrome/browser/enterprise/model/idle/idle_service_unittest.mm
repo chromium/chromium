@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "base/test/gmock_callback_support.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_features.h"
@@ -37,6 +38,15 @@ class IdleTimeoutServiceTest : public PlatformTest {
   };
 
  public:
+  class MockObserver : public IdleService::Observer {
+   public:
+    MockObserver() {}
+    ~MockObserver() override {}
+    MOCK_METHOD(void, OnIdleTimeoutInForeground, (), (override));
+    MOCK_METHOD(void, OnClearDataOnStartup, (), (override));
+    MOCK_METHOD(void, OnIdleTimeoutActionsCompleted, (), (override));
+  };
+
   IdleTimeoutServiceTest() = default;
 
   void SetIdleTimeoutPolicy(base::TimeDelta timeout) {
@@ -87,6 +97,10 @@ class IdleTimeoutServiceTest : public PlatformTest {
   std::unique_ptr<IdleService> idle_service_;
   IOSChromeScopedTestingLocalState local_state_;
 };
+
+ACTION(RunActionsForNoUserAction) {
+  std::move(const_cast<base::OnceCallback<void()>>(arg0)).Run();
+}
 
 // When policy timeout is set after being unset.
 TEST_F(IdleTimeoutServiceTest, IdleTimeoutPrefsSet_OnPolicySet) {
@@ -231,6 +245,8 @@ TEST_F(IdleTimeoutServiceTest,
   EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
 }
 
+// Foreground case: idle check should be scheduled for the right time when it
+// might become idle.
 TEST_F(IdleTimeoutServiceTest, ActionsRunAtCorrectTimesWhileForegrounded) {
   SetIdleTimeoutPolicy(base::Minutes(3));
   InitIdleService();
@@ -248,6 +264,36 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunAtCorrectTimesWhileForegrounded) {
   EXPECT_CALL(*action_runner_, Run()).Times(1);
   task_environment_.FastForwardBy(base::Seconds(40));
   EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
+}
+
+// If there are observers for the service, the service should call
+// `OnIdleTimeoutInForeground` without running the actions right away. The
+// observer will decide if actions should run or not.
+TEST_F(IdleTimeoutServiceTest,
+       ActionsDoNotRunWhenObserverDoesNotInvokeCallback) {
+  SetIdleTimeoutPolicy(base::Minutes(3));
+  InitIdleService();
+  MockObserver mock_observer;
+  idle_service_->AddObserver(&mock_observer);
+  idle_service_->OnApplicationWillEnterForeground();
+  task_environment_.FastForwardBy(base::Seconds(40));
+  // Simulate user activity at t=40s.
+  SetLastActiveTime(base::Time::Now());
+
+  // At t=3, actions will not run because idle time has not reached 3.
+  // Should check again and run at t=3:40.
+  EXPECT_CALL(*action_runner_, Run()).Times(0);
+  task_environment_.FastForwardBy(base::Minutes(3) - base::Seconds(40));
+
+  // Not running the callback passed to `OnIdleTimeoutInForeground` means no
+  // actions should run.
+  testing::InSequence in_sequence;
+  EXPECT_CALL(mock_observer, OnIdleTimeoutInForeground());
+  EXPECT_CALL(*action_runner_, Run()).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(40));
+  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
+  // Remove observer before it is destroyed.
+  idle_service_->RemoveObserver(&mock_observer);
 }
 
 }  // namespace enterprise_idle

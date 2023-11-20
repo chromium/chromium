@@ -11,6 +11,8 @@ source_set("idle") {
     "idle_service.mm",
     "idle_service_factory.h",
     "idle_service_factory.mm",
+    "idle_service_observer_bridge.h",
+    "idle_service_observer_bridge.mm",
   ]
   deps = [
     "//base",
