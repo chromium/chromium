@@ -126,9 +126,13 @@ class AccountSelectionViewBinder {
                 // TODO(crbug.com/1295017): Consult UI team to determine the background color we
                 // need to use here.
                 RoundedIconGenerator roundedIconGenerator =
-                        new RoundedIconGenerator(resources, avatarSize /* iconWidthDp */,
-                                avatarSize /* iconHeightDp */, avatarSize / 2 /* cornerRadiusDp */,
-                                Color.GRAY /* backgroundColor */, avatarMonogramTextSize);
+                        new RoundedIconGenerator(
+                                resources,
+                                /* iconWidthDp= */ avatarSize,
+                                /* iconHeightDp= */ avatarSize,
+                                /* cornerRadiusDp= */ avatarSize / 2,
+                                /* backgroundColor= */ Color.GRAY,
+                                avatarMonogramTextSize);
                 avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
             }
             Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
