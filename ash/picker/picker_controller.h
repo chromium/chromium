@@ -5,12 +5,13 @@
 #ifndef ASH_PICKER_PICKER_CONTROLLER_H_
 #define ASH_PICKER_PICKER_CONTROLLER_H_
 
+#include "ash/ash_export.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
 // Controls a Picker widget.
-class PickerController {
+class ASH_EXPORT PickerController {
  public:
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
