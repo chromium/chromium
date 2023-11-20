@@ -272,17 +272,14 @@ void BackendIO::ReadyForSparseIO(EntryImpl* entry) {
 BackendIO::~BackendIO() {
   if (!did_notify_controller_io_signalled() && out_entry_) {
     // At this point it's very likely the Entry does not have a
-    // `background_queue_` so that Close() would do nothing. Post an empty
-    // task to the background task runner, which should effectively destroy
-    // the entry as there are no more references. Destruction has to happen
+    // `background_queue_` so that Close() would do nothing. Post a task to the
+    // background task runner to drop the reference, which should effectively
+    // destroy if there are no more references. Destruction has to happen
     // on the background task runner.
-    scoped_refptr<EntryImpl> entry(out_entry_.ExtractAsDangling());
-    // This balances the ref taken in LeakEntryImpl().
-    entry->Release();
-    // This should be the last ref.
-    DCHECK(entry->HasOneRef());
     background_task_runner_->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(entry)));
+        FROM_HERE,
+        base::BindOnce(&EntryImpl::Release,
+                       base::Unretained(out_entry_.ExtractAsDangling())));
   }
 }
 
