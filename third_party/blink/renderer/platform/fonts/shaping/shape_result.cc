@@ -633,7 +633,6 @@ float ShapeResult::PositionForOffset(
     unsigned absolute_offset,
     AdjustMidCluster adjust_mid_cluster) const {
   float x = 0;
-  float offset_x = 0;
 
   // The absolute_offset argument represents the offset for the entire
   // ShapeResult while offset is continuously updated to be relative to the
@@ -643,10 +642,8 @@ float ShapeResult::PositionForOffset(
   if (IsRtl()) {
     // Convert logical offsets to visual offsets, because results are in
     // logical order while runs are in visual order.
-    x = width_;
     if (offset < NumCharacters())
       offset = NumCharacters() - offset - 1;
-    x -= Width();
   }
 
   for (unsigned i = 0; i < runs_.size(); i++) {
@@ -655,10 +652,8 @@ float ShapeResult::PositionForOffset(
     DCHECK_EQ(IsRtl(), runs_[i]->IsRtl());
     unsigned num_characters = runs_[i]->num_characters_;
 
-    if (!offset_x && offset < num_characters) {
-      offset_x =
-          runs_[i]->XPositionForVisualOffset(offset, adjust_mid_cluster) + x;
-      break;
+    if (offset < num_characters) {
+      return runs_[i]->XPositionForVisualOffset(offset, adjust_mid_cluster) + x;
     }
 
     offset -= num_characters;
@@ -666,10 +661,11 @@ float ShapeResult::PositionForOffset(
   }
 
   // The position in question might be just after the text.
-  if (!offset_x && absolute_offset == NumCharacters())
+  if (absolute_offset == NumCharacters()) {
     return IsRtl() ? 0 : width_;
+  }
 
-  return offset_x;
+  return 0;
 }
 
 float ShapeResult::CaretPositionForOffset(
