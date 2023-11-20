@@ -3747,9 +3747,9 @@ crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-enco
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16le.html?include=workers [ Skip Timeout ]
 
 crbug.com/676229 plugins/mouse-click-plugin-clears-selection.html [ Failure Pass ]
-crbug.com/742670 ppapi/plugins/iframe-plugin-bgcolor.html [ Failure Pass ]
+crbug.com/742670 plugins/iframe-plugin-bgcolor.html [ Failure Pass ]
 crbug.com/780398 [ Mac ] plugins/mouse-capture-inside-shadow.html [ Failure Pass ]
-crbug.com/1331239 [ Mac ] ppapi/plugins/plugin-remove-subframe.html [ Crash Pass ]
+crbug.com/1331239 [ Mac ] plugins/plugin-remove-subframe.html [ Crash Pass ]
 
 crbug.com/678493 http/tests/permissions/chromium/test-request-window.html [ Pass Timeout ]
 
@@ -5079,7 +5079,7 @@ crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-pare
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failure Pass ]
 
 # Sheriff 2021-06-29
-crbug.com/1197464 [ Mac ] ppapi/plugins/refcount-leaks.html [ Failure Pass ]
+crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
 
 # Sheriff 2021-07-12
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
@@ -5344,8 +5344,7 @@ crbug.com/1271485 http/tests/inspector-protocol/network/load-network-resource-di
 
 # Sheriff 2021-11-29
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
-crbug.com/1239485 [ Mac Release ] ppapi/fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
-crbug.com/1239485 [ Mac Release ] ppapi/plugins/plugin-scroll.html [ Failure Pass ]
+crbug.com/1239485 [ Mac Release ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
 
 # Sheriff 2021-12-01
 crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Failure Pass ]
@@ -5363,7 +5362,7 @@ crbug.com/1159463 crbug.com/1278570 [ Mac12 Release ] virtual/gpu-rasterization/
 # Sheriff 2021-12-21
 crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failure Pass ]
 
-crbug.com/1285857 ppapi/plugins/plugin-destroyed-enumerate.html [ Failure Pass ]
+crbug.com/1285857 plugins/plugin-destroyed-enumerate.html [ Failure Pass ]
 
 # Sheriff 2021-12-22
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
@@ -5479,7 +5478,7 @@ crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Failu
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Failure Skip ]
 
 # Sheriff 2022-03-21: More flaky tests.
-crbug.com/1450306 [ Mac ] ppapi/plugins/plugin-document-back-forward.html [ Failure Pass ]
+crbug.com/1450306 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
 
 # Tests that need updates due to rounding math in layout
 crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
@@ -5723,7 +5722,7 @@ crbug.com/1351571 [ Mac ] http/tests/devtools/persistence/automapping-bind-commi
 crbug.com/1358333 [ Mac ] external/wpt/webmessaging/event.origin.sub.htm [ Failure Pass ]
 
 # Sheriff 2022-08-31
-crbug.com/1306304 [ Mac ] ppapi/plugins/multiple-plugins.html [ Failure Pass ]
+crbug.com/1306304 [ Mac ] plugins/multiple-plugins.html [ Failure Pass ]
 
 # Sheriff 2022-09-06
 crbug.com/1358298 external/wpt/html/cross-origin-embedder-policy/require-corp.https.html [ Failure Pass ]
@@ -6471,7 +6470,7 @@ crbug.com/822696 virtual/webrtc-legacy-stats-trial-disabled/http/tests/inspector
 crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeout ]
 
 #Sheriff 2023-02-21
-crbug.com/1308826 ppapi/fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeout ]
+crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeout ]
 
 # Sheriff 2023-03-23
 crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]

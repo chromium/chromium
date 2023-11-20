@@ -830,6 +830,7 @@ paint/roundedrects/degenerate-radius-assert.html
 paint/selection/selection-drag-image-in-iframe.html
 payments/payment-request-in-iframe-allowed.html
 permissionclient/storage-permission.html
+plugins/instance-available-before-stylesheets-loaded.html
 pointer-lock/lock-already-locked.html
 pointer-lock/mouse-event-api.html
 pointer-lock/pointerlockelement-null-when-pending.html

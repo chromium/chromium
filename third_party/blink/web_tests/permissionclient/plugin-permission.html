@@ -1,0 +1,43 @@
+<html>
+<head>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(a)
+{
+    document.getElementById("results").innerHTML += a + "<br>";
+}
+
+function test()
+{
+    var plugin = document.createElement('embed');
+    plugin.setAttribute("type", "application/x-blink-test-plugin");
+    document.getElementById("plugins").appendChild(plugin);
+    if (plugin.postMessage)
+        log("PASS: first plugin loaded");
+
+    if (window.testRunner && testRunner.setPluginsAllowed)
+        testRunner.setPluginsAllowed(false);
+    else
+        log("This test requires testRunner.setPluginsAllowed, so it be can't run in a browser.");
+
+    var plugin2 = document.createElement('embed');
+    plugin2.setAttribute("type", "application/x-blink-test-plugin");
+    document.getElementById("plugins").appendChild(plugin2);
+    if (plugin2.postMessage)
+        log("FAIL: second plugin loaded");
+
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+</script>
+</head>
+<body onload="test()">
+  <div id="plugins">
+  </div>
+  <div id="results"></div>
+</body>
+</html>

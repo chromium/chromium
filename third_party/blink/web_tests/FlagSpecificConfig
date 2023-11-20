@@ -50,10 +50,6 @@
     "smoke_file": "TestLists/highdpi"
   },
   {
-    "name": "ppapi",
-    "args": ["--enable-features=PPAPI"]
-  },
-  {
     "name": "skia-vulkan-swiftshader",
     "args": [
           "--enable-gpu-rasterization",

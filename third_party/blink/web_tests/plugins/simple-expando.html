@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<script>
+test(function() {
+  var obj = document.createElement("object");
+  obj.type = "application/x-blink-deprecated-test-plugin";
+  document.body.appendChild(obj);
+  obj.foo = 1;
+  assert_equals(obj.foo, 1, "Setting an expando on an <object> works");
+  obj.foo = 2;
+  assert_equals(obj.foo, 2, "Repeatedly setting an expando on an <object> works");
+}, "setting an expando");
+</script>
+</body>

@@ -1,0 +1,34 @@
+Name: Blink Test Plugin
+
+Description: Interesting description.
+
+Filename: blink_test_plugin.dll
+
+Mime Types:
+
+Type: application/x-blink-test-plugin
+
+Description: Interesting description.
+
+Suffixes: blinktestplugin
+
+
+
+
+Plugin.item() works.
+
+Plugin.namedItem() works.
+
+PluginArray.item() works.
+
+PluginArray.namedItem() works.
+
+Type: application/x-blink-test-plugin
+
+Description: Interesting description.
+
+Suffixes: blinktestplugin
+
+MimeTypeArray.item() works.
+
+MimeTypeArray.namedItem() works.

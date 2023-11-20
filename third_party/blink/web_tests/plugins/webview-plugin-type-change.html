@@ -6,9 +6,17 @@
     border: 1px solid black;
   }
 </style>
-<embed id="plugin" background-color="red"></embed>
+<embed id="plugin"></embed>
 <script>
+document.querySelector('embed').addEventListener('message', function(message) {
+    if (message.data == 'loaded')
+        if (window.testRunner)
+            testRunner.notifyDone();
+});
 onload = function() {
-    document.getElementById('plugin').setAttribute('type', 'application/x-webkit-test-webplugin');
+    document.getElementById('plugin').setAttribute('type', 'application/x-blink-test-plugin');
+
+    if (window.testRunner)
+        testRunner.waitUntilDone();
 }
 </script>

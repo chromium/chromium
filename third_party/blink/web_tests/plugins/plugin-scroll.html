@@ -1,0 +1,39 @@
+<!doctype HTML>
+<style>
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+embed {
+  width: 200px;
+  height: 80px;
+  padding: 20px;
+  margin: 20px;
+  border: 2px solid black;
+}
+</style>
+<div id="container" style="height: 3000px"></div>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+<script>
+onload = function() {
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+
+  window.scrollBy(0, 100);
+  runAfterLayoutAndPaint(function() {
+    var count = 3;
+    var loaded = 0;
+    for (var i = 0; i < 3; ++i) {
+      var embed = document.createElement('embed');
+      embed.type = 'application/x-blink-test-plugin';
+      embed.addEventListener("message", function(message) {
+        if (message.data == 'loaded') {
+          if (++loaded == count && window.testRunner)
+            testRunner.notifyDone();
+        }
+      });
+      container.appendChild(embed);
+      container.appendChild(document.createElement('br'));
+    }
+  });
+};
+</script>

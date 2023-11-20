@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../resources/js-test.js"></script>
+</head>
+<body>
+<embed id="plug1" type="application/x-blink-deprecated-test-plugin">
+<embed id="plug2" type="application/x-blink-deprecated-test-plugin">
+<script>
+description('Test that we can create two plugins, and independently clean each.');
+
+gc();
+
+var plug1 = document.getElementById("plug1");
+var plug2 = document.getElementById("plug2");
+
+testObj1 = plug1.testObject;
+testObj2 = plug2.testObject;
+
+// Verify we can access each object.
+shouldBeDefined('testObj1.testObject');
+shouldBeDefined('testObj2.testObject');
+
+// Now remove the first plugin
+plug1.parentNode.removeChild(plug1);
+
+shouldThrow('testObj1.testObject');
+
+shouldBeDefined('testObj2.testObject');
+
+// Now remove the second plugin
+plug2.parentNode.removeChild(plug2);
+
+shouldThrow('testObj2.testObject');
+</script>
+</body>
+</html>

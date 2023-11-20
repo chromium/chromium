@@ -1,0 +1,14 @@
+<script>
+function runTest() {
+    var plugin = document.getElementById('testPlugin');
+
+    window.opener.setTimeout('setTimeout("testRunner.notifyDone()",50)', 0);
+    window.close();
+}
+
+</script>
+
+<body onload="runTest()">
+<embed id="testPlugin" type="application/x-blink-deprecated-test-plugin" width="200" height="200"></embed>
+
+</body>

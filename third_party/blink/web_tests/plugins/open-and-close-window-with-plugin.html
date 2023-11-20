@@ -1,0 +1,16 @@
+<html>
+<script>
+if (!window.testRunner) {
+    alert('this test can only be run by DumpRenderTree')
+} else {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+    testRunner.setCallCloseOnWebViews(false);
+    testRunner.setPopupBlockingEnabled(false);
+    testRunner.checkForLeakedWindows();
+    window.open('resources/open-and-close-window-with-plugin.html');
+}
+
+</script>
+This tests that opening a window with a WebView that contains a plugin, and then closing the window without calling -[WebView close] does not leak the window or the web view.
+</html>

@@ -1,0 +1,21 @@
+<html>
+<head>
+<script src="../resources/js-test.js"></script>
+</head>
+<body>
+<object id="plugin" type="application/x-blink-deprecated-test-plugin"></object>
+<script>
+description("This tests checks that hasOwnProperty return true on plugin's getters that return undefined");
+
+// The plugin implements testGetUndefined the same way as the following:
+function ReferenceObject () {
+    Object.defineProperties(this, {
+        "testGetUndefined": { get: function () { return undefined; } }
+    });
+}
+
+shouldBeTrue('new ReferenceObject().hasOwnProperty("testGetUndefined")');
+shouldBeTrue('document.getElementById("plugin").hasOwnProperty("testGetUndefined")');
+</script>
+</body>
+</html>

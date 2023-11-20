@@ -1,3 +1,4 @@
+CONSOLE MESSAGE: Blink Test Plugin: initializing
  
 
 This tests that a missing plugin does not cause an assertion failure. Bug 41900

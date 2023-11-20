@@ -1,0 +1,16 @@
+<html>
+<head>
+<script src="../resources/plugin.js"></script>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+startAfterLoadAndFinish();
+</script>
+<body style="margin:0px;overflow:hidden">
+<object type="application/x-blink-test-plugin" logargs="true" data="blah">
+</object>
+<div>
+    This tests that an object tag with a data attribute gets a src attribute as well.
+</div>
+<body>
+</html>

@@ -1,0 +1,35 @@
+<html>
+<script>
+function clickElement(element) {
+    if (window.eventSender) {
+        var centerX = element.offsetLeft + element.offsetWidth / 2;
+        var centerY = element.offsetTop + element.offsetHeight / 2;
+        eventSender.mouseMoveTo(centerX, centerY);
+        eventSender.mouseDown();
+    }
+}
+
+function crash() {
+    var x = document.getElementById('x');
+    x.setAttribute('data', x.data);
+    clickElement(x);
+    document.body.innerHTML = "PASS";
+
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function load() {
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+    setTimeout(crash, 0);
+}
+</script>
+<body onload="load()">
+    <object id="x" data="x" border="1" type="application/x-blink-test-plugin">
+        <param name="wmode" value="transparent">
+    </object>
+</body>
+</html>

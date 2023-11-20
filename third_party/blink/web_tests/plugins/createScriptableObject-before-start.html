@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript">
+        if (window.testRunner)
+            testRunner.dumpAsText();
+    </script>
+</head>
+<body>
+    <p>
+        Test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=12050">http://bugs.webkit.org/show_bug.cgi?id=12050</a>
+        REGRESSION: Assertion failure in -[WebBaseNetscapePluginView willCallPlugInFunction] (plugin)</i>.
+    </p>
+    <p>
+        No ASSERT means test PASS.
+    </p>
+    <iframe style="display: none;" src='data:text/html,
+        <object id="target" type="application/x-blink-test-plugin"></object>
+        <script type="text/javascript">
+            var obj = document.getElementById("target");
+            obj.offsetLeft;
+            obj.anyProperty; 
+        </script>
+    '>
+    </iframe>
+</body>
+</html>
