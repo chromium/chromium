@@ -13,6 +13,8 @@ import static org.junit.Assert.fail;
 import static org.chromium.net.Http2TestServer.SERVER_CERT_PEM;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -42,16 +44,12 @@ import java.util.Set;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-        reason =
-                "The fallback implementation does not support public key pinning. "
-                        + "crbug.com/1494845")
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation does not support public key pinning")
 public class PkpTest {
     private static final int DISTANT_FUTURE = Integer.MAX_VALUE;
     private static final boolean INCLUDE_SUBDOMAINS = true;
     private static final boolean EXCLUDE_SUBDOMAINS = false;
-    private static final boolean KNOWN_ROOT = true;
-    private static final boolean UNKNOWN_ROOT = false;
     private static final boolean ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = true;
     private static final boolean DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = false;
 
@@ -76,7 +74,7 @@ public class PkpTest {
     @SmallTest
     public void testErrorCodeIfPinDoesNotMatch() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -103,7 +101,7 @@ public class PkpTest {
     @SmallTest
     public void testSuccessIfPinMatches() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         // Get PKP hash of the real certificate
         X509Certificate cert = readCertFromFileInPemFormat(SERVER_CERT_PEM);
         byte[] matchingHash = CertTestUtil.getPublicKeySha256(cert);
@@ -132,11 +130,19 @@ public class PkpTest {
      */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Requires the use of subdomains. This can currently only be done through"
+                            + " HostResolverRules, which fakes hostname resultion."
+                            + " TODO(crbug/1501033): Enable for HttpEngine once we have"
+                            + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualTrue() throws Exception {
         String fakeUrl = "https://test.example.com:8443";
         String fakeDomain = "example.com";
-        applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+
+        applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -163,11 +169,19 @@ public class PkpTest {
      */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Requires the use of subdomains. This can currently only be done through"
+                            + " HostResolverRules, which fakes hostname resultion."
+                            + " TODO(crbug/1501033): Enable for HttpEngine once we have"
+                            + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualFalse() throws Exception {
         String fakeUrl = "https://test.example.com:8443";
         String fakeDomain = "example.com";
-        applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+
+        applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -196,7 +210,7 @@ public class PkpTest {
     @SmallTest
     public void testSuccessIfNoPinSpecified() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -223,7 +237,7 @@ public class PkpTest {
     @SmallTest
     public void testSoonExpiringPin() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         final int tenSecondsAhead = 10;
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
@@ -251,7 +265,7 @@ public class PkpTest {
     @SmallTest
     public void testRecentlyExpiredPin() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         final int oneSecondAgo = -1;
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
@@ -279,9 +293,7 @@ public class PkpTest {
     @SmallTest
     public void testLocalTrustAnchorPinningEnforced() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(),
-                DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS,
-                UNKNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -308,9 +320,7 @@ public class PkpTest {
     @SmallTest
     public void testLocalTrustAnchorPinningNotEnforced() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(),
-                ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS,
-                UNKNOWN_ROOT);
+                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -336,7 +346,7 @@ public class PkpTest {
     @SmallTest
     public void testPinsAreNotPersisted() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
@@ -361,7 +371,7 @@ public class PkpTest {
                         .getTestFramework()
                         .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
 
-        configureCronetEngineBuilder(builder, ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+        configureCronetEngineBuilder(builder, DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         engine = builder.build();
         callback = new TestUrlRequestCallback();
         requestBuilder =
@@ -380,7 +390,7 @@ public class PkpTest {
     @SmallTest
     public void testHostNameArgumentValidation() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         final String label63 = "123456789-123456789-123456789-123456789-123456789-123456789-123";
         final String host255 = label63 + "." + label63 + "." + label63 + "." + label63;
         // Valid host names.
@@ -442,7 +452,7 @@ public class PkpTest {
     @SmallTest
     public void testNullArguments() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         verifyExceptionWhenAddPkpArgumentIsNull(mTestRule.getTestFramework(), true, false, false);
         verifyExceptionWhenAddPkpArgumentIsNull(mTestRule.getTestFramework(), false, true, false);
         verifyExceptionWhenAddPkpArgumentIsNull(mTestRule.getTestFramework(), false, false, true);
@@ -456,7 +466,7 @@ public class PkpTest {
     @SmallTest
     public void testIllegalArgumentExceptionWhenPinValueIsSHA1() throws Exception {
         applyCronetEngineBuilderConfigurationPatch(
-                mTestRule.getTestFramework(), ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
+                mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         byte[] sha1 = new byte[20];
         assertThrows(
                 "Pin value was: " + Arrays.toString(sha1),
@@ -473,6 +483,11 @@ public class PkpTest {
     /** Asserts that the response from the server contains an PKP error. */
     private void assertErrorResponse(TestUrlRequestCallback callback) {
         assertThat(callback.mError).isNotNull();
+        // NetworkException#getCronetInternalErrorCode is exposed only by the native implementation.
+        if (mTestRule.implementationUnderTest() != CronetImplementation.STATICALLY_LINKED) {
+            return;
+        }
+
         int errorCode = ((NetworkException) callback.mError).getCronetInternalErrorCode();
         Set<Integer> expectedErrors = new HashSet<>();
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
@@ -499,29 +514,65 @@ public class PkpTest {
     }
 
     private static void applyCronetEngineBuilderConfigurationPatch(
-            CronetTestFramework testFramework,
-            boolean bypassPinningForLocalAnchors,
-            boolean knownRoot)
+            CronetTestFramework testFramework, boolean bypassPinningForLocalAnchors)
+            throws Exception {
+        testFramework.applyEngineBuilderPatch(
+                (builder) -> configureCronetEngineBuilder(builder, bypassPinningForLocalAnchors));
+    }
+
+    private static void applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
+            CronetTestFramework testFramework, boolean bypassPinningForLocalAnchors)
             throws Exception {
         testFramework.applyEngineBuilderPatch(
                 (builder) ->
-                        configureCronetEngineBuilder(
-                                builder, bypassPinningForLocalAnchors, knownRoot));
+                        configureCronetEngineBuilderWithMockCertVerifier(
+                                builder, bypassPinningForLocalAnchors));
     }
 
-    private static void configureCronetEngineBuilder(
-            ExperimentalCronetEngine.Builder builder,
-            boolean bypassPinningForLocalAnchors,
-            boolean knownRoot)
+    private static void enableMockCertVerifier(ExperimentalCronetEngine.Builder builder)
             throws Exception {
-        builder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
         final String[] server_certs = {SERVER_CERT_PEM};
+        // knownRoot maps to net::CertVerifyResult.is_issued_by_known_root. There is no test which
+        // depends on that value as the only thing it affects is certificate verification for QUIC
+        // (where we never trust non web PKI certs, regardless of app/user config). Hence, always
+        // set this to false to maintain consistency with the non-MockCertVerifier case, where we
+        // use a non-trusted self signed certificate.
         CronetTestUtil.setMockCertVerifierForTesting(
-                builder, MockCertVerifier.createMockCertVerifier(server_certs, knownRoot));
+                builder,
+                MockCertVerifier.createMockCertVerifier(server_certs, /* knownRoot= */ false));
+        // MockCertVerifier uses certificates with hostname != localhost. So, setup fake
+        // hostname resolution.
         JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
         JSONObject experimentalOptions =
                 new JSONObject().put("HostResolverRules", hostResolverParams);
         builder.setExperimentalOptions(experimentalOptions.toString());
+    }
+
+    private static void internalConfigureCronetEngineBuilder(
+            ExperimentalCronetEngine.Builder builder,
+            boolean bypassPinningForLocalAnchors,
+            boolean useMockCertVerifier)
+            throws Exception {
+        builder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
+        // TODO(crbug/1490552): When not explicitly enabled, fall back to MockCertVerifier if
+        // custom CAs are not supported.
+        if (useMockCertVerifier || Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            enableMockCertVerifier(builder);
+        }
+    }
+
+    private static void configureCronetEngineBuilder(
+            ExperimentalCronetEngine.Builder builder, boolean bypassPinningForLocalAnchors)
+            throws Exception {
+        internalConfigureCronetEngineBuilder(
+                builder, bypassPinningForLocalAnchors, /* useMockCertVerifier= */ false);
+    }
+
+    private static void configureCronetEngineBuilderWithMockCertVerifier(
+            ExperimentalCronetEngine.Builder builder, boolean bypassPinningForLocalAnchors)
+            throws Exception {
+        internalConfigureCronetEngineBuilder(
+                builder, bypassPinningForLocalAnchors, /* useMockCertVerifier= */ true);
     }
 
     private static byte[] generateSomeSha256() {
