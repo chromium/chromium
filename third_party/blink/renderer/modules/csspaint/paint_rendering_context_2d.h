@@ -91,7 +91,9 @@ class MODULES_EXPORT PaintRenderingContext2D
   void resetTransform() final;
   void reset() final;
 
-  void FlushCanvas(FlushReason) final {}
+  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) final {
+    return absl::nullopt;
+  }
 
   PaintRecord GetRecord();
 

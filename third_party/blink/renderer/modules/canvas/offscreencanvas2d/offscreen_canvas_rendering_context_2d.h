@@ -143,7 +143,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  void FlushCanvas(FlushReason) override;
+  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;

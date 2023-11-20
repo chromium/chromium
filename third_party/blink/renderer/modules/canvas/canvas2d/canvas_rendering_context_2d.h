@@ -181,7 +181,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void WillDrawImage(CanvasImageSource*) const final;
 
-  void FlushCanvas(FlushReason) override;
+  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
   void Trace(Visitor*) const override;
 

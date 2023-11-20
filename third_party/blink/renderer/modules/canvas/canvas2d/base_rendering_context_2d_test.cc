@@ -132,7 +132,9 @@ class TestRenderingContext2D final
     }
   }
 
-  void FlushCanvas(FlushReason) override {}
+  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
+    return recorder_.finishRecordingAsPicture();
+  }
 
   Member<ExecutionContext> execution_context_;
   MemoryManagedPaintRecorder recorder_;

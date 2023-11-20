@@ -394,10 +394,12 @@ void CanvasRenderingContext2D::WillDraw(
   }
 }
 
-void CanvasRenderingContext2D::FlushCanvas(FlushReason reason) {
+absl::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
+    FlushReason reason) {
   if (Host() && Host()->ResourceProvider()) {
-    Host()->ResourceProvider()->FlushCanvas(reason);
+    return Host()->ResourceProvider()->FlushCanvas(reason);
   }
+  return absl::nullopt;
 }
 
 bool CanvasRenderingContext2D::WillSetFont() const {
