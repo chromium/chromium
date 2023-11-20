@@ -7,7 +7,7 @@
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Subscriber {
   void next(any result);
-  void complete();
+  [CallWith=ScriptState] void complete();
   [CallWith=ScriptState] void error(any error);
 
   readonly attribute boolean active;

@@ -176,16 +176,20 @@ test(t => {
 }, "Subscription is inactive after error()");
 
 test(t => {
+  let innerSubscriber;
   let initialActivity;
+  let initialSignalAborted;
 
   const source = new Observable((subscriber) => {
+    innerSubscriber = subscriber;
     initialActivity = subscriber.active;
+    initialSignalAborted = subscriber.signal.aborted;
   });
 
-  const ac = new AbortController();
-  ac.abort();
-  source.subscribe({signal: ac.signal});
+  source.subscribe({signal: AbortSignal.abort('Initially aborted')});
   assert_false(initialActivity);
+  assert_true(initialSignalAborted);
+  assert_equals(innerSubscriber.signal.reason, 'Initially aborted');
 }, "Subscription is inactive when aborted signal is passed in");
 
 test(() => {
@@ -541,13 +545,17 @@ test(() => {
 
     subscriber.signal.addEventListener('abort', () => {
       assert_true(subscriber.signal.aborted);
-      subscriber.next('inner abort handler');
+      results.push('inner abort handler');
+      subscriber.next('next from inner abort handler');
+      subscriber.complete();
     });
   });
 
   const ac = new AbortController();
   source.subscribe({
+    // This should never get called. If it is, the array assertion below will fail.
     next: (x) => results.push(x),
+    complete: () => results.push('complete()'),
     signal: ac.signal,
   });
 
@@ -559,8 +567,9 @@ test(() => {
 
   assert_array_equals(results, ['subscribe() callback']);
   ac.abort();
+  results.push('abort() returned');
   assert_array_equals(results, ['subscribe() callback',
-      'outer abort handler', 'inner abort handler']);
+      'outer abort handler', 'inner abort handler', 'abort() returned']);
 }, "Unsubscription lifecycle");
 
 // TODO(domfarolino): If we add `subscriber.closed`, assert that its value is
