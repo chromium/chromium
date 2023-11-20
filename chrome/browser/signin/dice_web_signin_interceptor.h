@@ -126,8 +126,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   void SetInterceptedAccountProfileSeparationPoliciesForTesting(
       absl::optional<policy::ProfileSeparationPolicies> value) {
-    state_
-        ->intercepted_account_profile_separation_policies_response_for_testing_ =
+    intercepted_account_profile_separation_policies_response_for_testing_ =
         std::move(value);
   }
 
@@ -329,11 +328,6 @@ class DiceWebSigninInterceptor : public KeyedService,
     // no value is set, then we have not yet received the policy value.
     absl::optional<policy::ProfileSeparationPolicies>
         intercepted_account_profile_separation_policies_;
-    // Value that should be return when trying to the value of the profile
-    // separation policies for the intercepted account. This should never be
-    // used in place of `intercepted_account_profile_separation_policies_`.
-    absl::optional<policy::ProfileSeparationPolicies>
-        intercepted_account_profile_separation_policies_response_for_testing_;
   };
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -344,6 +338,14 @@ class DiceWebSigninInterceptor : public KeyedService,
       account_info_update_observation_{this};
 
   std::unique_ptr<ResetableState> state_;
+
+  // Value that should be return when trying to the value of the profile
+  // separation policies for the intercepted account. This should never be
+  // used in place of `intercepted_account_profile_separation_policies_`.
+  // This field is excluded from `ResetableState` as tests do not expect to
+  // reset this value, it is expected to be sticky across tests.
+  absl::optional<policy::ProfileSeparationPolicies>
+      intercepted_account_profile_separation_policies_response_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_H_

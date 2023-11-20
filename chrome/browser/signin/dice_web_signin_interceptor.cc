@@ -317,8 +317,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       profile_, identity_manager_, email, is_new_account,
       /*intercepted_profile_separation_policies=*/absl::nullopt,
       /*expects_intercepted_profile_separation_policies_for_testing=*/
-      state_
-          ->intercepted_account_profile_separation_policies_response_for_testing_
+      intercepted_account_profile_separation_policies_response_for_testing_
           .has_value());
 
   // If we do not have all the information to enforce or not enterprise profile
@@ -510,16 +509,7 @@ void DiceWebSigninInterceptor::Shutdown() {
 }
 
 void DiceWebSigninInterceptor::Reset() {
-  absl::optional<policy::ProfileSeparationPolicies> policies_for_testing =
-      state_
-          ->intercepted_account_profile_separation_policies_response_for_testing_;
-
   state_ = std::make_unique<ResetableState>();
-  // Make sure this testing value is copied and not reset.
-  state_
-      ->intercepted_account_profile_separation_policies_response_for_testing_ =
-      policies_for_testing;
-
   account_info_update_observation_.Reset();
 }
 
@@ -700,8 +690,7 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
           state_->new_account_interception_,
           state_->intercepted_account_profile_separation_policies_,
           /*expects_intercepted_profile_separation_policies_for_testing=*/
-          state_
-              ->intercepted_account_profile_separation_policies_response_for_testing_
+          intercepted_account_profile_separation_policies_response_for_testing_
               .has_value())
           .has_value();
 
@@ -1188,12 +1177,10 @@ void DiceWebSigninInterceptor::
     return;
   }
 
-  if (state_
-          ->intercepted_account_profile_separation_policies_response_for_testing_
+  if (intercepted_account_profile_separation_policies_response_for_testing_
           .has_value()) {
     std::move(callback).Run(
-        state_
-            ->intercepted_account_profile_separation_policies_response_for_testing_
+        intercepted_account_profile_separation_policies_response_for_testing_
             .value());
     return;
   }
