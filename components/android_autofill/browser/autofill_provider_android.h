@@ -113,9 +113,9 @@ class AutofillProviderAndroid : public AutofillProvider,
   void MaybeFireFormFieldVisibilitiesDidChange(AndroidAutofillManager* manager,
                                              const FormData& form);
 
-  bool IsCurrentlyLinkedManager(AndroidAutofillManager* manager);
+  bool IsLinkedManager(AndroidAutofillManager* manager) const;
 
-  bool IsCurrentlyLinkedForm(const FormData& form);
+  bool IsLinkedForm(const FormData& form) const;
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
 

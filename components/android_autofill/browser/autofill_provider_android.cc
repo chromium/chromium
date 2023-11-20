@@ -129,7 +129,7 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (!IsCurrentlyLinkedForm(form)) {
+  if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
   }
 
@@ -223,7 +223,7 @@ void AutofillProviderAndroid::OnTextFieldDidScroll(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -241,7 +241,7 @@ void AutofillProviderAndroid::OnSelectControlDidChange(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
-  if (!IsCurrentlyLinkedForm(form)) {
+  if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
     // TODO(crbug.com/1478934): Return early at this point?
   }
@@ -259,7 +259,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager) || !form_) {
+  if (!IsLinkedManager(manager) || !form_) {
     return;
   }
 
@@ -292,7 +292,7 @@ void AutofillProviderAndroid::OnFocusNoLongerOnForm(
     AndroidAutofillManager* manager,
     bool had_interacted_form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager)) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -307,7 +307,7 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -324,7 +324,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -337,7 +337,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
 void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
     AndroidAutofillManager* manager,
     const FormData& form) {
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !base::FeatureList::IsEnabled(
           features::kAndroidAutofillSupportVisibilityChanges)) {
     return;
@@ -356,7 +356,7 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     const FormData& form,
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (manager != manager_.get() || !IsCurrentlyLinkedForm(form)) {
+  if (manager != manager_.get() || !IsLinkedForm(form)) {
     UMA_HISTOGRAM_BOOLEAN(
         "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
         manager == manager_.get());
@@ -394,8 +394,9 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
 void AutofillProviderAndroid::OnServerQueryRequestError(
     AndroidAutofillManager* manager,
     FormSignature form_signature) {
-  if (!IsCurrentlyLinkedManager(manager) || !form_.get())
+  if (!IsLinkedManager(manager) || !form_.get()) {
     return;
+  }
 
   if (auto* form_structure =
           manager_->FindCachedFormById(form_->form().global_id())) {
@@ -410,7 +411,7 @@ void AutofillProviderAndroid::OnServerQueryRequestError(
 void AutofillProviderAndroid::OnManagerResetOrDestroyed(
     AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager)) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -431,12 +432,12 @@ bool AutofillProviderAndroid::GetCachedIsAutofilled(
          form_->form().fields[field_index].is_autofilled;
 }
 
-bool AutofillProviderAndroid::IsCurrentlyLinkedManager(
-    AndroidAutofillManager* manager) {
+bool AutofillProviderAndroid::IsLinkedManager(
+    AndroidAutofillManager* manager) const {
   return manager == manager_.get();
 }
 
-bool AutofillProviderAndroid::IsCurrentlyLinkedForm(const FormData& form) {
+bool AutofillProviderAndroid::IsLinkedForm(const FormData& form) const {
   return form_ && form_->SimilarFormAs(form);
 }
 
