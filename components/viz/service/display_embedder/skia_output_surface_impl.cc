@@ -489,7 +489,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     // CopyDst usage. So don't treat it like a root surface which generally
     // won't have or support those usages.
     skgpu::graphite::TextureInfo texture_info =
-        gpu::GetGraphiteTextureInfo(gr_context_type_, format_);
+        gpu::GraphiteBackendTextureInfo(gr_context_type_, format_);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
@@ -570,11 +570,11 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
       // texture info for fallback. Fallback textures are not considered YUV
       // planes since they are allocated separately and need write usage.
       context->SetImage(
-          nullptr, {gpu::GetGraphiteTextureInfo(gr_context_type_, format)});
+          nullptr, {gpu::GraphitePromiseTextureInfo(gr_context_type_, format)});
 
       texture_infos[i] =
-          gpu::GetGraphiteTextureInfo(gr_context_type_, format,
-                                      /*plane_index=*/0, /*is_yuv_plane=*/true);
+          gpu::GraphitePromiseTextureInfo(gr_context_type_, format,
+                                          /*plane_index=*/0);
       fulfills[i] = new FulfillForPlane(context);
     }
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
@@ -632,9 +632,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
           : ToClosestSkColorType(/*gpu_compositing=*/true, format);
   if (graphite_recorder_) {
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GetGraphiteTextureInfo(gr_context_type_, format, /*plane_index=*/0,
-                                    /*is_yuv_plane=*/false, mipmap);
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphitePromiseTextureInfo(
+        gr_context_type_, format, /*plane_index=*/0, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
     skgpu::Origin origin = image_context->origin() == kTopLeft_GrSurfaceOrigin
@@ -684,8 +683,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
          plane_index++) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
-      texture_infos.emplace_back(gpu::GetGraphiteTextureInfo(
-          gr_context_type_, format, plane_index, /*is_yuv_plane=*/true));
+      texture_infos.emplace_back(gpu::GraphitePromiseTextureInfo(
+          gr_context_type_, format, plane_index));
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
@@ -857,7 +856,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
                           static_cast<SkAlphaType>(alpha_type), color_space);
-    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         gr_context_type_, format, /*plane_index=*/0,
         /*is_yuv_plane=*/false, mipmap, scanout_dcomp_surface);
     if (!texture_info.isValid()) {

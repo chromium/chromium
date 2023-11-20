@@ -425,8 +425,6 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
 
 wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
                                             int plane_index) {
-  CHECK(format.is_multi_plane() || format.IsLegacyMultiplanar() ||
-        (plane_index == 0));
   // The multi plane formats create a separate image per plane and return the
   // single planar equivalents.
   // TODO(crbug.com/1449108): The above reasoning does not hold unilaterally
@@ -458,7 +456,7 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
   }
 }
 
-wgpu::TextureUsage GetSupportedDawnTextureUsage(
+wgpu::TextureUsage SupportedDawnTextureUsage(
     bool is_yuv_plane,
     bool is_dcomp_surface,
     bool supports_multiplanar_rendering,
@@ -497,17 +495,8 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(
   return usage;
 }
 
-wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
-                                         int plane_index) {
-  if (format.is_single_plane() && !format.IsLegacyMultiplanar()) {
-    DCHECK_EQ(plane_index, 0);
-    return wgpu::TextureAspect::All;
-  }
-
-  // Dawn only supports 2 or 3 plane multiplanar formats i.e. NV12, P010, and
-  // NV12A.
-  if (format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV &&
-      format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV_A) {
+wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index) {
+  if (!is_yuv_plane) {
     return wgpu::TextureAspect::All;
   }
 
@@ -521,7 +510,7 @@ wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
   }
 }
 
-skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
+skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
@@ -532,25 +521,71 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     bool supports_multiplanar_copy) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
-    return GetGraphiteMetalTextureInfo(format, plane_index, is_yuv_plane,
-                                       mipmapped);
+    return GraphiteMetalTextureInfo(format, plane_index, is_yuv_plane,
+                                    mipmapped);
 #endif
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    return GetGraphiteDawnTextureInfo(
-        format, plane_index, is_yuv_plane, mipmapped, scanout_dcomp_surface,
+    return DawnBackendTextureInfo(
+        format, is_yuv_plane, plane_index, mipmapped, scanout_dcomp_surface,
         supports_multiplanar_rendering, supports_multiplanar_copy);
 #endif
   }
   NOTREACHED_NORETURN();
 }
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
+skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
+    GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
+    bool mipmapped,
+    bool scanout_dcomp_surface) {
+  if (gr_context_type == GrContextType::kGraphiteMetal) {
+#if BUILDFLAG(SKIA_USE_METAL)
+    return GraphiteMetalTextureInfo(format, plane_index,
+                                    /*is_yuv_plane=*/false, mipmapped);
+#endif
+  } else {
+    CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
+#if BUILDFLAG(SKIA_USE_DAWN)
+    skgpu::graphite::DawnTextureInfo dawn_texture_info;
+    wgpu::TextureFormat wgpu_format =
+        gpu::ToDawnTextureViewFormat(format, plane_index);
+    if (wgpu_format == wgpu::TextureFormat::Undefined) {
+      return dawn_texture_info;
+    }
+    dawn_texture_info.fSampleCount = 1;
+    dawn_texture_info.fFormat = wgpu_format;
+    // The aspect is always defaulted to all as multiplanar copies are not
+    // needed by the display compositor.
+    dawn_texture_info.fAspect = wgpu::TextureAspect::All;
+    // For promise textures, just need TextureBinding usage for sampling
+    // except for dcomp scanout which needs rendering and copy usages as well.
+    dawn_texture_info.fUsage = wgpu::TextureUsage::TextureBinding;
+    if (scanout_dcomp_surface) {
+      // Textures from DComp surfaces cannot be used as TextureBinding, however
+      // DCompSurfaceImageBacking creates a textureable intermediate texture.
+      // TODO(crbug.com/1468844): Remove TextureBinding usage when the
+      // intermediate workaround is remove.
+      dawn_texture_info.fUsage = wgpu::TextureUsage::TextureBinding |
+                                 wgpu::TextureUsage::RenderAttachment |
+                                 wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst;
+    }
+    dawn_texture_info.fMipmapped =
+        mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+    return dawn_texture_info;
+#endif
+  }
+  NOTREACHED_NORETURN();
+}
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
+    viz::SharedImageFormat format,
     bool is_yuv_plane,
+    int plane_index,
     bool mipmapped,
     bool scanout_dcomp_surface,
     bool supports_multiplanar_rendering,
@@ -558,16 +593,17 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   wgpu::TextureFormat wgpu_format =
       ToDawnTextureViewFormat(format, plane_index);
-  if (wgpu_format != wgpu::TextureFormat::Undefined) {
-    dawn_texture_info.fSampleCount = 1;
-    dawn_texture_info.fFormat = wgpu_format;
-    dawn_texture_info.fAspect = GetDawnTextureAspect(format, plane_index);
-    dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(
-        is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering,
-        supports_multiplanar_copy);
-    dawn_texture_info.fMipmapped =
-        mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+  if (wgpu_format == wgpu::TextureFormat::Undefined) {
+    return dawn_texture_info;
   }
+  dawn_texture_info.fSampleCount = 1;
+  dawn_texture_info.fFormat = wgpu_format;
+  dawn_texture_info.fAspect = ToDawnTextureAspect(is_yuv_plane, plane_index);
+  dawn_texture_info.fUsage = SupportedDawnTextureUsage(
+      is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering,
+      supports_multiplanar_copy);
+  dawn_texture_info.fMipmapped =
+      mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
   return dawn_texture_info;
 }
 #endif

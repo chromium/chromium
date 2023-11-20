@@ -390,8 +390,7 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
 
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
-      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      /*is_yuv_plane=*/false);
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
   NOTREACHED_NORETURN();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)

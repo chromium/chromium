@@ -105,8 +105,7 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
     viz::SharedImageFormat format);
 // Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
 // that this returns a single plane Dawn format i.e the TextureView format and
-// not a multi-planar format. `plane_index` must be 0 if `format` is
-// single-plane.
+// not a multi-planar format.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
     viz::SharedImageFormat format,
     int plane_index);
@@ -116,16 +115,16 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
 // indicates if the texture corresponds to a direct composition surface.
 // `supports_multiplanar_rendering` indicates if the dawn texture supports
 // drawing to multiplanar render targets.
-wgpu::TextureUsage GetSupportedDawnTextureUsage(
+wgpu::TextureUsage SupportedDawnTextureUsage(
     bool is_yuv_plane = false,
     bool is_dcomp_surface = false,
     bool supports_multiplanar_rendering = false,
     bool supports_multiplanar_copy = false);
 
-// Returns wgpu::TextureAspect corresponding to `plane_index` of a particular
-// `format`.
-wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
-                                         int plane_index);
+// Returns wgpu::TextureAspect corresponding to `plane_index`. `is_yuv_plane`
+// indicates if the aspect corresponds to a plane of a multi-planar
+// wgpu::Texture.
+wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
 
 // Following function return the appropriate Metal format for a
 // SharedImageFormat.
@@ -143,7 +142,7 @@ GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
 // dawn texture supports drawing to multiplanar render targets.
 // `supports_multiplanar_copy` indicates if the dawn backend supports copy
 // operations for multiplanar textures.
-GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
@@ -153,11 +152,18 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     bool supports_multiplanar_rendering = false,
     bool supports_multiplanar_copy = false);
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
+    GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
+    bool mipmapped = false,
+    bool scanout_dcomp_surface = false);
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
+    viz::SharedImageFormat format,
     bool is_yuv_plane = false,
+    int plane_index = 0,
     bool mipmapped = false,
     bool scanout_dcomp_surface = false,
     bool supports_multiplanar_rendering = false,
@@ -165,7 +171,7 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
-GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool is_yuv_plane = false,

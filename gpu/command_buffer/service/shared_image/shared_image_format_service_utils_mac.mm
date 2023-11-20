@@ -64,7 +64,7 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
 }
 
 #if BUILDFLAG(SKIA_USE_METAL)
-skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
+skgpu::graphite::MtlTextureInfo GraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index,
     bool is_yuv_plane,

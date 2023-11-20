@@ -174,9 +174,14 @@ bool DawnFallbackImageRepresentation::ReadbackFromBacking() {
             },
         .buffer = buffer.Get(),
     };
+    bool is_yuv_plane =
+        (wgpu_format_ == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+         wgpu_format_ == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm ||
+         wgpu_format_ == wgpu::TextureFormat::R8BG8A8Triplanar420Unorm);
+    // Get proper plane aspect for multiplanar textures.
     wgpu::ImageCopyTexture texture_copy = {
         .texture = texture_,
-        .aspect = GetDawnTextureAspect(format, plane_index),
+        .aspect = ToDawnTextureAspect(is_yuv_plane, plane_index),
     };
     wgpu::Extent3D extent = {static_cast<uint32_t>(plane_size.width()),
                              static_cast<uint32_t>(plane_size.height()), 1};
@@ -222,9 +227,14 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
     uint32_t bytes_per_row = staging_buffer_entry.bytes_per_row;
     const auto& plane_size = staging_buffer_entry.plane_size;
 
+    bool is_yuv_plane =
+        (wgpu_format_ == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+         wgpu_format_ == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm ||
+         wgpu_format_ == wgpu::TextureFormat::R8BG8A8Triplanar420Unorm);
+    // Get proper plane aspect for multiplanar textures.
     wgpu::ImageCopyTexture texture_copy = {
         .texture = texture_,
-        .aspect = GetDawnTextureAspect(format, plane_index),
+        .aspect = ToDawnTextureAspect(is_yuv_plane, plane_index),
     };
     wgpu::ImageCopyBuffer buffer_copy = {
         .layout =
