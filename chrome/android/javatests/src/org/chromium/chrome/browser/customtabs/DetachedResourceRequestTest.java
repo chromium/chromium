@@ -345,6 +345,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCanSetCookie() throws Exception {
         testCanSetCookie(true);
     }
@@ -638,7 +639,6 @@ public class DetachedResourceRequestTest {
         customTabsCallback.waitForCompletion(0, 1);
     }
 
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     private void testCanSetCookie(boolean afterNative) throws Exception {
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
         final Uri url = Uri.parse(mServer.getURL("/set-cookie?acookie;SameSite=none;Secure"));
