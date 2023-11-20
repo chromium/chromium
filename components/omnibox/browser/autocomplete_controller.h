@@ -438,7 +438,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // May remove actions from default suggestion to avoid interference with
   // keyword mode refresh interaction. May clear some match text that is
   // repeated across multiple consecutive matches.
-  void MaybeCleanSuggestionsForKeywordMode(const std::u16string& input,
+  void MaybeCleanSuggestionsForKeywordMode(const AutocompleteInput& input,
                                            AutocompleteResult* result);
 
   // Get the experiment stats v2 entry for the omnibox position. Used on iOS.

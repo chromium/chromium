@@ -230,7 +230,9 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
       match.fill_into_edit.substr(input.text().length());
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      input.current_page_classification() !=
+          metrics::OmniboxEventProto::NTP_REALBOX) {
     match.description = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
     match.description_class.emplace_back(0, ACMatchClassification::NONE);

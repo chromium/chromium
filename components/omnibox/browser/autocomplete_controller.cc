@@ -1127,7 +1127,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   UpdateAssistedQueryStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
   MaybeRemoveCompanyEntityImages(&internal_result_);
-  MaybeCleanSuggestionsForKeywordMode(input_.text(), &internal_result_);
+  MaybeCleanSuggestionsForKeywordMode(input_, &internal_result_);
 
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
@@ -1981,15 +1981,20 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
 }
 
 void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
-    const std::u16string& input,
+    const AutocompleteInput& input,
     AutocompleteResult* result) {
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::NTP_REALBOX) {
+    // Realbox doesn't support keyword mode yet, so keep original list intact.
+    return;
+  }
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      input.starts_with(u'@')) {
+      input.text().starts_with(u'@')) {
     // When the input is '@' exactly, some special filtering rules are applied.
     // Note: the rule preserving other matches with `associated_keyword` is
     // not currently necessary, but is intended to make it easy to coexist
     // with enterprise configured scopes when that feature is implemented.
-    if (input == u"@") {
+    if (input.text() == u"@") {
       result->EraseMatchesWhere([](const AutocompleteMatch& match) {
         return !(match.type == AutocompleteMatchType::STARTER_PACK ||
                  match.contents == u"@" || match.associated_keyword);

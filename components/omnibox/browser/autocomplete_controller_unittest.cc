@@ -534,8 +534,10 @@ TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
       CreateStarterPackMatch(u"@tabs"),
   });
 
+  AutocompleteInput input(u"@", 1u, metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
   controller_->MaybeCleanSuggestionsForKeywordMode(
-      u"@", &controller_->internal_result_);
+      input, &controller_->internal_result_);
 
   EXPECT_EQ(controller_->internal_result_.size(), 4u);
   EXPECT_TRUE(
