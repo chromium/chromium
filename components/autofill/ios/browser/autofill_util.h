@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_UTIL_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_UTIL_H_
 
-#include <vector>
+#import <optional>
+#import <vector>
 
-#include "base/values.h"
-
+#import "base/unguessable_token.h"
+#import "base/values.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 class GURL;
@@ -23,6 +24,7 @@ class FieldRendererId;
 struct FormData;
 struct FormFieldData;
 class FieldDataManager;
+struct FrameTokenWithPredecessor;
 
 // Checks if current context is secure from an autofill standpoint.
 bool IsContextSecureForWebState(web::WebState* web_state);
@@ -30,6 +32,12 @@ bool IsContextSecureForWebState(web::WebState* web_state);
 // Tries to parse a JSON string into base::Value. Returns nullptr if parsing is
 // unsuccessful.
 std::unique_ptr<base::Value> ParseJson(NSString* json_string);
+
+// Local and remote frame IDs generated in JavaScript are equivalent to
+// base::UnguessableToken (128 bits, cryptographically random). Returns a
+// base::UnguessableToken equivalent to the given JS-generated ID.
+std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
+    const std::string& frame_id);
 
 // Processes the JSON form data extracted from the page into the format expected
 // by BrowserAutofillManager and fills it in |forms_data|.
@@ -64,6 +72,12 @@ bool ExtractFormData(const base::Value::Dict& form,
 bool ExtractFormFieldData(const base::Value::Dict& field,
                           const FieldDataManager& field_data_manager,
                           FormFieldData* field_data);
+
+// Extracts a single child frame's data from the JSON dictionary into a
+// FrameTokenWithPredecessor object. Returns false if the data could not be
+// extracted.
+bool ExtractRemoteFrameToken(const base::Value::Dict& frame_data,
+                             FrameTokenWithPredecessor* token_with_predecessor);
 
 typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
 
