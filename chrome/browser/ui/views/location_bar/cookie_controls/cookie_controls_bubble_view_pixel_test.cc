@@ -88,9 +88,11 @@ class CookieControlsBubbleViewPixelTest
           std::tuple<bool, std::string, CookieControlsEnforcement>> {
  public:
   CookieControlsBubbleViewPixelTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content_settings::features::kUserBypassUI,
-        {{"expiration", std::get<1>(GetParam())}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kUserBypassUI,
+          {{"expiration", std::get<1>(GetParam())}}}},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void TearDownOnMainThread() override {
