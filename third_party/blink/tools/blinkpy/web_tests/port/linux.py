@@ -82,6 +82,11 @@ class LinuxPort(base.Port):
             ]
         return flags
 
+    def configuration_specifier_macros(self):
+        if self.flag_specific_config_name():
+            return {self.port_name: list(self.SUPPORTED_VERSIONS)}
+        return super().configuration_specifier_macros()
+
     def check_build(self, needs_http, printer):
         result = super(LinuxPort, self).check_build(needs_http, printer)
 

@@ -675,20 +675,8 @@ class TestImporter(object):
         adds new expectation lines to TestExpectations and downloads new
         baselines based on the try job results.
         """
-        _log.info('Adding test expectations lines to TestExpectations.')
-        tests_to_rebaseline = set()
-
-        to_rebaseline, self.new_test_expectations = (
+        tests_to_rebaseline, self.new_test_expectations = (
             self.expectations_updater.update_expectations())
-        tests_to_rebaseline.update(to_rebaseline)
-
-        flag_spec_options = self.host.builders.all_flag_specific_options()
-        for flag_specific in sorted(flag_spec_options):
-            _log.info('Adding test expectations lines for %s', flag_specific)
-            to_rebaseline, _ = self.expectations_updater.update_expectations(
-                flag_specific)
-            tests_to_rebaseline.update(to_rebaseline)
-
         # commit local changes so that rebaseline tool will be happy
         if self.project_git.has_working_directory_changes():
             message = 'Update test expectations'
@@ -696,7 +684,6 @@ class TestImporter(object):
 
         self.expectations_updater.download_text_baselines(
             list(tests_to_rebaseline))
-
         self.rebaselined_tests = sorted(tests_to_rebaseline)
 
     def _get_last_imported_wpt_revision(self):
