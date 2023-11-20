@@ -272,6 +272,19 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
     RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
                                          reinterpret_cast<UINT8*>(&primaries),
                                          sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));
+
+    if (hdr_metadata.cta_861_3.has_value()) {
+      UINT32 max_luminance_level =
+          hdr_metadata.cta_861_3->max_content_light_level;
+      RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_LUMINANCE_LEVEL,
+                                             max_luminance_level));
+
+      UINT32 max_frame_average_luminance_level =
+          hdr_metadata.cta_861_3->max_frame_average_light_level;
+      RETURN_IF_FAILED(
+          media_type->SetUINT32(MF_MT_MAX_FRAME_AVERAGE_LUMINANCE_LEVEL,
+                                max_frame_average_luminance_level));
+    }
   }
   base::UmaHistogramEnumeration(
       "Media.MediaFoundation.VideoColorSpace.TransferID",

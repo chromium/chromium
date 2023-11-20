@@ -281,21 +281,19 @@ struct MediaSerializer<VideoColorSpace> {
 template <>
 struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
-    // TODO(tmathmeyer) serialize more fields here potentially.
-    gfx::HdrMetadataSmpteSt2086 smpte_st_2086 =
-        value.smpte_st_2086.value_or(gfx::HdrMetadataSmpteSt2086());
     base::Value::Dict result;
-    FIELD_SERIALIZE(
-        "luminance range",
-        base::StringPrintf("%.2f => %.2f", smpte_st_2086.luminance_min,
-                           smpte_st_2086.luminance_max));
-    const auto& primaries = smpte_st_2086.primaries;
-    FIELD_SERIALIZE(
-        "primaries",
-        base::StringPrintf(
-            "[r:%.4f,%.4f, g:%.4f,%.4f, b:%.4f,%.4f, wp:%.4f,%.4f]",
-            primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
-            primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY));
+    if (value.smpte_st_2086.has_value()) {
+      FIELD_SERIALIZE("smpte_st_2086", value.smpte_st_2086->ToString());
+    }
+    if (value.cta_861_3.has_value()) {
+      FIELD_SERIALIZE("cta_861_3", value.cta_861_3->ToString());
+    }
+    if (value.ndwl.has_value()) {
+      FIELD_SERIALIZE("ndwl", value.ndwl->ToString());
+    }
+    if (value.extended_range.has_value()) {
+      FIELD_SERIALIZE("extended_range", value.extended_range->ToString());
+    }
     return base::Value(std::move(result));
   }
 };

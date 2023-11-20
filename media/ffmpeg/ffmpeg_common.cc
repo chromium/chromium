@@ -726,33 +726,44 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   if (stream->nb_side_data) {
     for (int i = 0; i < stream->nb_side_data; ++i) {
       AVPacketSideData side_data = stream->side_data[i];
-      if (side_data.type != AV_PKT_DATA_MASTERING_DISPLAY_METADATA)
-        continue;
+      switch (side_data.type) {
+        case AV_PKT_DATA_MASTERING_DISPLAY_METADATA: {
+          AVMasteringDisplayMetadata* mdcv =
+              reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
+          gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
+          if (mdcv->has_primaries) {
+            smpte_st_2086.primaries = {
+                static_cast<float>(av_q2d(mdcv->display_primaries[0][0])),
+                static_cast<float>(av_q2d(mdcv->display_primaries[0][1])),
+                static_cast<float>(av_q2d(mdcv->display_primaries[1][0])),
+                static_cast<float>(av_q2d(mdcv->display_primaries[1][1])),
+                static_cast<float>(av_q2d(mdcv->display_primaries[2][0])),
+                static_cast<float>(av_q2d(mdcv->display_primaries[2][1])),
+                static_cast<float>(av_q2d(mdcv->white_point[0])),
+                static_cast<float>(av_q2d(mdcv->white_point[1])),
+            };
+          }
+          if (mdcv->has_luminance) {
+            smpte_st_2086.luminance_max = av_q2d(mdcv->max_luminance);
+            smpte_st_2086.luminance_min = av_q2d(mdcv->min_luminance);
+          }
 
-      AVMasteringDisplayMetadata* metadata =
-          reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
-      gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
-      if (metadata->has_primaries) {
-        smpte_st_2086.primaries = {
-            static_cast<float>(av_q2d(metadata->display_primaries[0][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[0][1])),
-            static_cast<float>(av_q2d(metadata->display_primaries[1][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[1][1])),
-            static_cast<float>(av_q2d(metadata->display_primaries[2][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[2][1])),
-            static_cast<float>(av_q2d(metadata->white_point[0])),
-            static_cast<float>(av_q2d(metadata->white_point[1])),
-        };
-      }
-      if (metadata->has_luminance) {
-        smpte_st_2086.luminance_max = av_q2d(metadata->max_luminance);
-        smpte_st_2086.luminance_min = av_q2d(metadata->min_luminance);
-      }
-
-      // TODO(https://crbug.com/1446302): Consider rejecting metadata that does
-      // not specify all values.
-      if (metadata->has_primaries || metadata->has_luminance) {
-        hdr_metadata.smpte_st_2086 = smpte_st_2086;
+          // TODO(https://crbug.com/1446302): Consider rejecting metadata that
+          // does not specify all values.
+          if (mdcv->has_primaries || mdcv->has_luminance) {
+            hdr_metadata.smpte_st_2086 = smpte_st_2086;
+          }
+          break;
+        }
+        case AV_PKT_DATA_CONTENT_LIGHT_LEVEL: {
+          AVContentLightMetadata* clli =
+              reinterpret_cast<AVContentLightMetadata*>(side_data.data);
+          hdr_metadata.cta_861_3 =
+              gfx::HdrMetadataCta861_3(clli->MaxCLL, clli->MaxFALL);
+          break;
+        }
+        default:
+          break;
       }
     }
   }
