@@ -44,6 +44,10 @@
 #include "net/test/gtest_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -521,6 +525,14 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, LastModified) {
+#if BUILDFLAG(IS_ANDROID)
+  // This test doesn't work properly on Nougat; crbug.com/1502619
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
+      base::android::SDK_VERSION_NOUGAT) {
+    GTEST_SKIP();
+  }
+#endif
+
   // Create a temporary file with an arbitrary last-modified timestamp.
   const char kLastModified[] = "1994-11-15T12:45:26.000Z";
   base::FilePath path;
