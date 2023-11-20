@@ -454,6 +454,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetKeyUsages(cert_config_.key_usages);
   }
 
+  if (!cert_config_.embedded_scts.empty()) {
+    leaf->SetSctConfig(cert_config_.embedded_scts);
+  }
+
   const std::string leaf_serial_text =
       base::NumberToString(leaf->GetSerialNumber());
   const std::string intermediate_serial_text =
