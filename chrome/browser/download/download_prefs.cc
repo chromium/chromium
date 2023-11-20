@@ -147,13 +147,11 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
                                     prefs::kDownloadDefaultDirectory};
   for (const char* path_pref : kPathPrefs) {
     const PrefService::Preference* pref = prefs->FindPreference(path_pref);
-    const base::FilePath current = prefs->GetFilePath(path_pref);
-    base::FilePath migrated;
     // Update the download directory if the pref is from user pref store or
     // default pref.
-    LOG(ERROR) << "DownloadPrefs::DownloadPrefs" << pref->IsUserControlled()
-               << "," << pref->IsDefaultValue() << "," << current.value();
     if (pref->IsUserControlled()) {
+      const base::FilePath current = prefs->GetFilePath(path_pref);
+      base::FilePath migrated;
       if (!current.empty() &&
           file_manager::util::MigratePathFromOldFormat(
               profile_, GetDefaultDownloadDirectory(), current, &migrated)) {
