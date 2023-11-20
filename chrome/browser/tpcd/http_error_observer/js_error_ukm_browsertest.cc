@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, JSErr) {
 }
 
 // Test that JS Error is registered on Iframe containing uncaught JS error
-IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, IframeJSErr) {
+// Flaky: https://crbug.com/1503531.
+IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, DISABLED_IframeJSErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
