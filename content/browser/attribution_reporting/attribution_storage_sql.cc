@@ -787,7 +787,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
       continue;
     }
 
-    uint64_t trigger_data;
+    uint32_t trigger_data;
     int64_t priority;
     if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
       continue;
@@ -1503,7 +1503,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
             ReportCorruptionStatus::kSourceDataMissingEventLevel);
         break;
       }
-      uint64_t trigger_data;
+      uint32_t trigger_data;
       int64_t priority;
       if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
         corruption_causes.Put(ReportCorruptionStatus::kInvalidMetadata);

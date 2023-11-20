@@ -44,9 +44,7 @@ class CONTENT_EXPORT AttributionReport {
 
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
-    EventLevelData(uint64_t trigger_data,
-                   int64_t priority,
-                   StoredSource);
+    EventLevelData(uint32_t trigger_data, int64_t priority, StoredSource);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -56,8 +54,7 @@ class CONTENT_EXPORT AttributionReport {
     // Data provided at trigger time by the attribution destination. Depending
     // on the source type, this contains the associated data in the trigger
     // redirect.
-    // TODO(apaseltiner): Change this to `uint32_t`.
-    uint64_t trigger_data;
+    uint32_t trigger_data;
 
     // Priority specified in conversion redirect.
     int64_t priority;

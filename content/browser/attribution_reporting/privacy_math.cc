@@ -466,7 +466,7 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
-    fake_reports.push_back({.trigger_data = static_cast<uint64_t>(trigger_data),
+    fake_reports.push_back({.trigger_data = static_cast<uint32_t>(trigger_data),
                             .window_index = result.quot});
   }
   DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_reports));

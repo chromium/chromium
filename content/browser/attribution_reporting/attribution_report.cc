@@ -54,7 +54,7 @@ base::Value::Dict GetReportBody(
 
 }  // namespace
 
-AttributionReport::EventLevelData::EventLevelData(uint64_t trigger_data,
+AttributionReport::EventLevelData::EventLevelData(uint32_t trigger_data,
                                                   int64_t priority,
                                                   StoredSource source)
     : trigger_data(trigger_data),

@@ -25,7 +25,7 @@ class TriggerSpecs;
 namespace content {
 
 struct FakeEventLevelReport {
-  uint64_t trigger_data;
+  uint32_t trigger_data;
   int window_index;
 
   friend std::strong_ordering operator<=>(const FakeEventLevelReport&,

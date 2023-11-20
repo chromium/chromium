@@ -81,7 +81,7 @@ std::string SerializeReportMetadata(
     const AttributionReport::NullAggregatableData&);
 
 [[nodiscard]] bool DeserializeReportMetadata(const std::string&,
-                                             uint64_t& trigger_data,
+                                             uint32_t& trigger_data,
                                              int64_t& priority);
 
 [[nodiscard]] bool DeserializeReportMetadata(

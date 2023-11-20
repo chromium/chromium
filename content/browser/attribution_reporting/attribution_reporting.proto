@@ -48,7 +48,7 @@ message AttributionReadOnlySourceData {
 }
 
 message AttributionEventLevelMetadata {
-  optional uint64 trigger_data = 1;
+  optional uint32 trigger_data = 1;
   optional int64 priority = 2;
 }
 

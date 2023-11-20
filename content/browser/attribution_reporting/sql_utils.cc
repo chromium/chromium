@@ -285,7 +285,7 @@ std::string SerializeReportMetadata(
 }
 
 bool DeserializeReportMetadata(const std::string& str,
-                               uint64_t& trigger_data,
+                               uint32_t& trigger_data,
                                int64_t& priority) {
   proto::AttributionEventLevelMetadata msg;
   if (!msg.ParseFromString(str) || !msg.has_trigger_data() ||
