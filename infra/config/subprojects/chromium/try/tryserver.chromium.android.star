@@ -189,6 +189,7 @@ try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
