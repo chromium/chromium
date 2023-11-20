@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/public/cpp/ash_web_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -14,6 +15,7 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -36,9 +38,26 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
   return border;
 }
 
+std::unique_ptr<AshWebView> CreateWebView(PickerView::Delegate& delegate) {
+  std::unique_ptr<AshWebView> view =
+      delegate.CreateWebView(AshWebView::InitParams{
+          .rounded_corners = gfx::RoundedCornersF(
+              /*upper_left=*/0, /*upper_right*/ 0,
+              /*lower_right=*/kBorderRadius, /*lower_left=*/kBorderRadius)});
+  view->Navigate(GURL("chrome://picker"));
+  view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  // Fill up all remaining space with the view.
+  view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
+  return view;
+}
+
 }  // namespace
 
-PickerView::PickerView() {
+PickerView::PickerView(std::unique_ptr<Delegate> delegate) {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
   SetPreferredSize(kPickerSize);
@@ -52,14 +71,17 @@ PickerView::PickerView() {
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
+
+  web_view_ = AddChildView(CreateWebView(*delegate));
 }
 
 PickerView::~PickerView() = default;
 
-views::UniqueWidgetPtr PickerView::CreateWidget() {
+views::UniqueWidgetPtr PickerView::CreateWidget(
+    std::unique_ptr<PickerView::Delegate> delegate) {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.delegate = new PickerView;
+  params.delegate = new PickerView(std::move(delegate));
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.type = views::Widget::InitParams::TYPE_BUBBLE;

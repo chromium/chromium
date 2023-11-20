@@ -5,6 +5,7 @@
 #include "ash/picker/picker_controller.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 
@@ -14,6 +15,7 @@ namespace {
 using PickerControllerTest = AshTestBase;
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
+  TestAshWebViewFactory web_view_factory;
   PickerController controller;
 
   controller.ToggleWidget();
@@ -22,6 +24,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
 }
 
 TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
+  TestAshWebViewFactory web_view_factory;
   PickerController controller;
   controller.ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
@@ -34,6 +37,7 @@ TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
 }
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
+  TestAshWebViewFactory web_view_factory;
   PickerController controller;
   controller.ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(

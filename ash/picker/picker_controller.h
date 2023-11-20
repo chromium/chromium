@@ -17,6 +17,7 @@ class ASH_EXPORT PickerController {
   static bool IsFeatureKeyMatched();
 
   // Toggles the visibility of the Picker widget.
+  // `AshWebViewFactory::Get()` must be valid when this is called.
   void ToggleWidget();
 
   // Returns the Picker widget for tests.
