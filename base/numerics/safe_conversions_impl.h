@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <concepts>
 #include <limits>
 #include <type_traits>
 
@@ -47,15 +48,15 @@ struct PositionOfSignBit {
 
 // Determines if a numeric value is negative without throwing compiler
 // warnings on: unsigned(value) < 0.
-template <typename T, std::enable_if_t<std::is_signed_v<T>>* = nullptr>
+template <typename T>
+  requires(std::is_arithmetic_v<T> && std::is_signed_v<T>)
 constexpr bool IsValueNegative(T value) {
-  static_assert(std::is_arithmetic_v<T>, "Argument must be numeric.");
   return value < 0;
 }
 
-template <typename T, std::enable_if_t<!std::is_signed_v<T>>* = nullptr>
+template <typename T>
+  requires(std::is_arithmetic_v<T> && std::is_unsigned_v<T>)
 constexpr bool IsValueNegative(T) {
-  static_assert(std::is_arithmetic_v<T>, "Argument must be numeric.");
   return false;
 }
 
@@ -234,8 +235,9 @@ struct NarrowingRange {
        SrcLimits::digits < DstLimits::digits)
           ? (DstLimits::digits - SrcLimits::digits)
           : 0;
-  template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 
+  template <typename T>
+    requires(std::integral<T>)
   // Masks out the integer bits that are beyond the precision of the
   // intermediate type used for comparison.
   static constexpr T Adjust(T value) {
@@ -247,8 +249,8 @@ struct NarrowingRange {
         IsValueNegative(value)));
   }
 
-  template <typename T,
-            std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
+  template <typename T>
+    requires(std::floating_point<T>)
   static constexpr T Adjust(T value) {
     static_assert(std::is_same_v<T, Dst>, "");
     static_assert(kShift == 0, "");
@@ -542,18 +544,19 @@ struct IsIntegerArithmeticSafe {
 
 // Promotes to a type that can represent any possible result of a binary
 // arithmetic operation with the source types.
-template <typename Lhs,
-          typename Rhs,
-          bool is_promotion_possible = IsIntegerArithmeticSafe<
-              typename std::conditional<std::is_signed_v<Lhs> ||
-                                            std::is_signed_v<Rhs>,
-                                        intmax_t,
-                                        uintmax_t>::type,
-              typename MaxExponentPromotion<Lhs, Rhs>::type>::value>
-struct FastIntegerArithmeticPromotion;
+template <typename Lhs, typename Rhs>
+struct FastIntegerArithmeticPromotion {
+  using type = typename BigEnoughPromotion<Lhs, Rhs>::type;
+  static const bool is_contained = false;
+};
 
 template <typename Lhs, typename Rhs>
-struct FastIntegerArithmeticPromotion<Lhs, Rhs, true> {
+  requires(IsIntegerArithmeticSafe<
+           std::conditional_t<std::is_signed_v<Lhs> || std::is_signed_v<Rhs>,
+                              intmax_t,
+                              uintmax_t>,
+           typename MaxExponentPromotion<Lhs, Rhs>::type>::value)
+struct FastIntegerArithmeticPromotion<Lhs, Rhs> {
   using type =
       typename TwiceWiderInteger<typename MaxExponentPromotion<Lhs, Rhs>::type,
                                  std::is_signed_v<Lhs> ||
@@ -562,25 +565,17 @@ struct FastIntegerArithmeticPromotion<Lhs, Rhs, true> {
   static const bool is_contained = true;
 };
 
-template <typename Lhs, typename Rhs>
-struct FastIntegerArithmeticPromotion<Lhs, Rhs, false> {
-  using type = typename BigEnoughPromotion<Lhs, Rhs>::type;
-  static const bool is_contained = false;
-};
-
 // Extracts the underlying type from an enum.
-template <typename T, bool is_enum = std::is_enum_v<T>>
-struct ArithmeticOrUnderlyingEnum;
-
 template <typename T>
-struct ArithmeticOrUnderlyingEnum<T, true> {
-  using type = typename std::underlying_type<T>::type;
+struct ArithmeticOrUnderlyingEnum {
+  using type = T;
   static const bool value = std::is_arithmetic_v<type>;
 };
 
 template <typename T>
-struct ArithmeticOrUnderlyingEnum<T, false> {
-  using type = T;
+  requires(std::is_enum_v<T>)
+struct ArithmeticOrUnderlyingEnum<T> {
+  using type = typename std::underlying_type<T>::type;
   static const bool value = std::is_arithmetic_v<type>;
 };
 
