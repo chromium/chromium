@@ -2255,7 +2255,7 @@
     }
   </message>
   <message name="IDS_TRACKING_PROTECTION_DELETE_SITE_LABEL" desc="Accessibility label on an exception for allowing third-party cookies to delete it." formatter_data="android_java">
-    Delete site
+    Delete site <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
   <message name="IDS_TRACKING_PROTECTION_SETTINGS_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is unavailable." formatter_data="android_java">
     Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>

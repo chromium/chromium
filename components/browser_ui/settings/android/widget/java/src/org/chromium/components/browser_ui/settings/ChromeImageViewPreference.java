@@ -49,9 +49,10 @@ public class ChromeImageViewPreference extends Preference {
     /** The color resource ID for tinting of the view's background. */
     @ColorRes
     private Integer mBackgroundColorRes;
-    /** The string resource ID to use for the ImageView widget content description. */
-    @StringRes
-    private int mContentDescriptionRes;
+
+    /** The string to use for the ImageView widget content description. */
+    private CharSequence mContentDescription;
+
     /** Whether the ImageView should be enabled. */
     private boolean mImageViewEnabled = true;
     /** The ImageView Button. */
@@ -116,6 +117,22 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     /**
+     * Sets the Drawable resource ID, the String, and the OnClickListener for the ImageView widget's
+     * source, content description, and onClick, respectively. Passing 0 as the Drawable resource ID
+     * will reset the image and related attributes to their default value.
+     */
+    public void setImageView(
+            @DrawableRes int imageRes,
+            CharSequence contentDescription,
+            @Nullable View.OnClickListener listener) {
+        mImageRes = imageRes;
+        mContentDescription = contentDescription;
+        mListener = listener;
+        configureImageView();
+        notifyChanged();
+    }
+
+    /**
      * Sets the Drawable resource ID, the String resource ID, and the OnClickListener for the
      * ImageView widget's source, content description, and onClick, respectively. Passing 0 as the
      * Drawable resource ID will reset the image and related attributes to their default value.
@@ -124,11 +141,10 @@ public class ChromeImageViewPreference extends Preference {
             @DrawableRes int imageRes,
             @StringRes int contentDescriptionRes,
             @Nullable View.OnClickListener listener) {
-        mImageRes = imageRes;
-        mContentDescriptionRes = contentDescriptionRes;
-        mListener = listener;
-        configureImageView();
-        notifyChanged();
+        setImageView(
+                imageRes,
+                (contentDescriptionRes != 0) ? getContext().getString(contentDescriptionRes) : null,
+                listener);
     }
 
     /**
@@ -216,8 +232,8 @@ public class ChromeImageViewPreference extends Preference {
         }
         if (mImageViewEnabled) mButton.setOnClickListener(mListener);
 
-        if (mContentDescriptionRes != 0) {
-            mButton.setContentDescription(mButton.getResources().getString(mContentDescriptionRes));
+        if (mContentDescription != null) {
+            mButton.setContentDescription(mContentDescription);
         }
     }
 
