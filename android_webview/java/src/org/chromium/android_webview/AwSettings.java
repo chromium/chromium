@@ -2086,7 +2086,7 @@ public class AwSettings {
     public void setWebViewIntegrityApiStatus(
             @ApiStatus int defaultStatus, Map<String, @ApiStatus Integer> permissionConfig) {
         synchronized (mAwSettingsLock) {
-            mIntegrityApiStatusConfig.setApiStatus(defaultStatus, permissionConfig);
+            mIntegrityApiStatusConfig.setApiAvailabilityRules(defaultStatus, permissionConfig);
         }
     }
 
