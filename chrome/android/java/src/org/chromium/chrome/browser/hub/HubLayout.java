@@ -146,7 +146,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         // Don't forward a tabId as it is only used to select the tab again in doneHiding() which is
         // redundant work.
         // TODO(crbug/1495121): Find a way to remove the tabId parameter from start hiding.
-        startHiding(Tab.INVALID_TAB_ID);
+        startHiding(Tab.INVALID_TAB_ID, true);
     }
 
     @Override
@@ -267,10 +267,10 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     @Override
-    public void startHiding(int nextTabId) {
+    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         if (isStartingToHide()) return;
 
-        super.startHiding(nextTabId);
+        super.startHiding(nextTabId, hintAtTabSelection);
 
         // Use the EXPAND_NEW_TAB animation if it is already prepared.
         if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {

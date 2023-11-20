@@ -245,7 +245,7 @@ public class HubLayoutUnitTest {
     @SmallTest
     public void testUpdateSceneLayerAndLayoutTabsDuringHide() {
         animateCheckingSceneLayerAndLayoutTabs(
-                () -> startHiding(LayoutType.BROWSING, NEW_TAB_ID), NEW_TAB_ID);
+                () -> startHiding(LayoutType.BROWSING, NEW_TAB_ID, true), NEW_TAB_ID);
         verify(mTabContentManager, never())
                 .updateVisibleIds(eq(Collections.emptyList()), eq(Tab.INVALID_TAB_ID));
     }
@@ -533,7 +533,7 @@ public class HubLayoutUnitTest {
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
 
-        startHiding(LayoutType.BROWSING, NEW_TAB_ID);
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID, false);
         verify(mHubLayout).doneShowing();
         verify(mTab, never()).hide(anyInt());
         verify(mScrimController).forceAnimationToFinish();
@@ -591,7 +591,7 @@ public class HubLayoutUnitTest {
         } else {
             assertFalse(mHubLayout.isRunningAnimations());
             assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
-            startHiding(nextLayout, nextTabId);
+            startHiding(nextLayout, nextTabId, true);
         }
 
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
@@ -617,12 +617,13 @@ public class HubLayoutUnitTest {
         mHubLayout.show(FAKE_TIME, animate);
     }
 
-    private void startHiding(@LayoutType int nextLayout, int nextTabId) {
+    private void startHiding(
+            @LayoutType int nextLayout, int nextTabId, boolean hintAtTabSelection) {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
 
-        mHubLayout.startHiding(nextTabId);
+        mHubLayout.startHiding(nextTabId, hintAtTabSelection);
     }
 
     private void animateCheckingSceneLayerAndLayoutTabs(
