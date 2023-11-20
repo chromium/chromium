@@ -228,10 +228,10 @@ void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
   }
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Viz.BeginFrameSource.Accuracy.AverageDelta",
+      "Viz.BeginFrameSource.Accuracy.AverageDelta2",
       total_delta_ / kFramesToEmitHistogram,
       /*min=*/base::Microseconds(100),
-      /*max=*/base::Milliseconds(8), /*bucket_count=*/20);
+      /*max=*/base::Milliseconds(33), /*bucket_count=*/30);
   frames_since_last_recording_ = 0;
   total_delta_ = base::TimeDelta();
 }
