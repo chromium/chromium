@@ -19,19 +19,22 @@ WebMediaDeviceInfo::WebMediaDeviceInfo(
     const std::string& label,
     const std::string& group_id,
     const media::VideoCaptureControlSupport& video_control_support,
-    blink::mojom::FacingMode video_facing)
+    blink::mojom::FacingMode video_facing,
+    absl::optional<media::CameraAvailability> availability)
     : device_id(device_id),
       label(label),
       group_id(group_id),
       video_control_support(video_control_support),
-      video_facing(video_facing) {}
+      video_facing(video_facing),
+      availability(std::move(availability)) {}
 
 WebMediaDeviceInfo::WebMediaDeviceInfo(
     const media::VideoCaptureDeviceDescriptor& descriptor)
     : device_id(descriptor.device_id),
       label(descriptor.GetNameAndModel()),
       video_control_support(descriptor.control_support()),
-      video_facing(static_cast<blink::mojom::FacingMode>(descriptor.facing)) {}
+      video_facing(static_cast<blink::mojom::FacingMode>(descriptor.facing)),
+      availability(descriptor.availability) {}
 
 WebMediaDeviceInfo::~WebMediaDeviceInfo() = default;
 

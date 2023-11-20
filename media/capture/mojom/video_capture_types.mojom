@@ -69,6 +69,12 @@ enum VideoFacingMode {
 };
 
 [Stable, Extensible]
+enum CameraAvailability {
+  [Default] kAvailable,
+  kUnavailableExclusivelyUsedByOtherApplication,
+};
+
+[Stable, Extensible]
 enum VideoCaptureApi {
   LINUX_V4L2_SINGLE_PLANE,
   WIN_MEDIA_FOUNDATION,
@@ -379,6 +385,7 @@ struct VideoCaptureDeviceDescriptor {
   VideoCaptureApi capture_api;
   VideoCaptureControlSupport control_support;
   VideoCaptureTransportType transport_type;
+  [MinVersion=1] CameraAvailability? availability;
 };
 
 // Bundles a VideoCaptureDeviceDescriptor with corresponding supported

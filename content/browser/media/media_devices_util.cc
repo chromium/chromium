@@ -27,6 +27,7 @@
 #include "content/public/common/content_client.h"
 #include "crypto/hmac.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
@@ -258,7 +259,8 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
             ? std::string()
             : GetHMACForRawMediaDeviceID(salt_and_origin, device_info.group_id,
                                          /*use_group_salt=*/true),
-        device_info.video_control_support, device_info.video_facing);
+        device_info.video_control_support, device_info.video_facing,
+        device_info.availability);
   }
   return blink::WebMediaDeviceInfo(std::string(), std::string(), std::string(),
                                    media::VideoCaptureControlSupport(),

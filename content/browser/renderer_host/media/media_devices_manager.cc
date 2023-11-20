@@ -38,6 +38,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
@@ -957,6 +958,11 @@ MediaDevicesManager::ComputeVideoInputCapabilities(
     capabilities->formats = GetVideoInputFormats(raw_device_infos[i].device_id,
                                                  false /* try_in_use_first */);
     capabilities->facing_mode = translated_device_infos[i].video_facing;
+    if (translated_device_infos[i].availability) {
+      capabilities->availability =
+          static_cast<media::mojom::CameraAvailability>(
+              *translated_device_infos[i].availability);
+    }
     video_input_capabilities.push_back(std::move(capabilities));
   }
   return video_input_capabilities;

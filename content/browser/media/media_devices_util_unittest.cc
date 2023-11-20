@@ -5,6 +5,7 @@
 #include "content/browser/media/media_devices_util.h"
 
 #include "media/audio/audio_device_description.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -25,9 +26,13 @@ MediaDeviceSaltAndOrigin ExampleSaltAndOrigin() {
 }
 
 blink::WebMediaDeviceInfo ExampleWebMediaDeviceInfo() {
-  return blink::WebMediaDeviceInfo(/*device_id=*/"example device id",
-                                   /*label=*/"example label",
-                                   /*group_id=*/"example_group_id");
+  return blink::WebMediaDeviceInfo(
+      /*device_id=*/"example device id",
+      /*label=*/"example label",
+      /*group_id=*/"example_group_id",
+      /*video_control_support=*/{.pan = true, .tilt = true, .zoom = true},
+      blink::mojom::FacingMode::kEnvironment,
+      media::CameraAvailability::kAvailable);
 }
 
 }  // namespace
@@ -55,6 +60,14 @@ TEST(MediaDevicesUtilBrowserTest, TranslateMediaDeviceInfoWithPermission) {
   EXPECT_EQ(translated_info.group_id,
             GetHMACForRawMediaDeviceID(salt_and_origin, original_info.group_id,
                                        /*use_group_salt=*/true));
+  EXPECT_EQ(translated_info.video_facing, original_info.video_facing);
+  EXPECT_EQ(translated_info.video_control_support.pan,
+            original_info.video_control_support.pan);
+  EXPECT_EQ(translated_info.video_control_support.tilt,
+            original_info.video_control_support.tilt);
+  EXPECT_EQ(translated_info.video_control_support.zoom,
+            original_info.video_control_support.zoom);
+  EXPECT_EQ(translated_info.availability, original_info.availability);
 }
 
 TEST(MediaDevicesUtilBrowserTest, TranslateMediaDeviceInfoWithoutPermission) {
@@ -65,6 +78,11 @@ TEST(MediaDevicesUtilBrowserTest, TranslateMediaDeviceInfoWithoutPermission) {
   EXPECT_TRUE(translated_info.device_id.empty());
   EXPECT_TRUE(translated_info.label.empty());
   EXPECT_TRUE(translated_info.group_id.empty());
+  EXPECT_EQ(translated_info.video_facing, blink::mojom::FacingMode::kNone);
+  EXPECT_FALSE(translated_info.video_control_support.pan);
+  EXPECT_FALSE(translated_info.video_control_support.tilt);
+  EXPECT_FALSE(translated_info.video_control_support.zoom);
+  EXPECT_FALSE(translated_info.availability.has_value());
 }
 
 TEST(MediaDevicesUtilTest, TranslateSpecialDeviceIDs) {

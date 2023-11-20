@@ -10,6 +10,7 @@
 
 #include "media/base/video_facing.h"
 #include "media/capture/capture_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -47,6 +48,13 @@ enum class VideoCaptureTransportType {
   OTHER_TRANSPORT
 };
 
+// LINT.IfChange
+enum class CameraAvailability {
+  kAvailable,
+  kUnavailableExclusivelyUsedByOtherApplication,
+};
+// LINT.ThenChange(//media/capture/mojom/video_capture_types.mojom)
+
 // Represents information about a capture device as returned by
 // VideoCaptureDeviceFactory::GetDeviceDescriptors().
 // |device_id| represents a unique id of a physical device. Since the same
@@ -76,7 +84,8 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
       const VideoCaptureControlSupport& control_support,
       VideoCaptureTransportType transport_type =
           VideoCaptureTransportType::OTHER_TRANSPORT,
-      VideoFacingMode facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE);
+      VideoFacingMode facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE,
+      absl::optional<CameraAvailability> availability = absl::nullopt);
   VideoCaptureDeviceDescriptor(const VideoCaptureDeviceDescriptor& other);
   ~VideoCaptureDeviceDescriptor();
 
@@ -110,6 +119,7 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
   std::string model_id;
 
   VideoFacingMode facing;
+  absl::optional<CameraAvailability> availability;
 
   VideoCaptureApi capture_api;
   VideoCaptureTransportType transport_type;

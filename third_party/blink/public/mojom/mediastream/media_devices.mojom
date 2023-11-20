@@ -34,6 +34,7 @@ struct VideoInputDeviceCapabilities {
   media.mojom.VideoCaptureControlSupport control_support;
   array<media.mojom.VideoCaptureFormat> formats;
   FacingMode facing_mode;
+  media.mojom.CameraAvailability? availability;
 };
 
 struct AudioInputDeviceCapabilities {

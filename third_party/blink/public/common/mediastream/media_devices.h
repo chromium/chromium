@@ -25,18 +25,25 @@ struct BLINK_COMMON_EXPORT WebMediaDeviceInfo {
       const std::string& group_id,
       const media::VideoCaptureControlSupport& video_control_support =
           media::VideoCaptureControlSupport(),
-      blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::kNone);
+      blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::kNone,
+      absl::optional<media::CameraAvailability> availability = absl::nullopt);
   explicit WebMediaDeviceInfo(
       const media::VideoCaptureDeviceDescriptor& descriptor);
   ~WebMediaDeviceInfo();
   WebMediaDeviceInfo& operator=(const WebMediaDeviceInfo& other);
   WebMediaDeviceInfo& operator=(WebMediaDeviceInfo&& other);
 
+  bool IsAvailable() const {
+    return !availability ||
+           *availability == media::CameraAvailability::kAvailable;
+  }
+
   std::string device_id;
   std::string label;
   std::string group_id;
   media::VideoCaptureControlSupport video_control_support;
   blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::kNone;
+  absl::optional<media::CameraAvailability> availability;
 };
 
 using WebMediaDeviceInfoArray = std::vector<WebMediaDeviceInfo>;

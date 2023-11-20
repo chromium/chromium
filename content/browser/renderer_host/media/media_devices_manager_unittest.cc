@@ -30,8 +30,10 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -376,6 +378,14 @@ class MediaDevicesManagerTest : public ::testing::Test {
         EXPECT_EQ(
             video_capabilities[i]->formats[j],
             expected_video_capture_device_settings[i].supported_formats[j]);
+      }
+      EXPECT_EQ(
+          video_capabilities[i]->availability.has_value(),
+          expected_video_capture_device_settings[i].availability.has_value());
+      if (video_capabilities[i]->availability.has_value()) {
+        EXPECT_EQ(static_cast<media::CameraAvailability>(
+                      *video_capabilities[i]->availability),
+                  *expected_video_capture_device_settings[i].availability);
       }
     }
     EXPECT_EQ(audio_capabilities.size(), kNumAudioInputDevices);
@@ -1163,6 +1173,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesWithCapabilities) {
   fake_device1.supported_formats = {
       {{1000, 1000}, 60.0, media::PIXEL_FORMAT_I420},
       {{2000, 2000}, 120.0, media::PIXEL_FORMAT_I420}};
+  fake_device1.availability = media::CameraAvailability::kAvailable;
 
   media::FakeVideoCaptureDeviceSettings fake_device2;
   fake_device2.device_id = "fake_id_2";

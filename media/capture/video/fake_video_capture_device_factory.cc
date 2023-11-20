@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_facing.h"
 #include "media/capture/capture_switches.h"
 
 namespace {
@@ -246,9 +247,11 @@ void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
 #endif
 
     devices_info.emplace_back(VideoCaptureDeviceDescriptor(
-        base::StringPrintf("fake_device_%d", entry_index), entry.device_id, api,
+        base::StringPrintf("fake_device_%d", entry_index), entry.device_id,
+        /*model_id=*/std::string(), api,
         entry.photo_device_config.control_support,
-        VideoCaptureTransportType::OTHER_TRANSPORT));
+        VideoCaptureTransportType::OTHER_TRANSPORT,
+        media::MEDIA_VIDEO_FACING_NONE, entry.availability));
 
     devices_info.back().supported_formats =
         GetSupportedFormats(entry.device_id);

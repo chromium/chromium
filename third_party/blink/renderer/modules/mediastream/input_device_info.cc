@@ -8,11 +8,13 @@
 
 #include "build/build_config.h"
 #include "media/base/sample_format.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/webrtc/constants.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -51,6 +53,10 @@ void InputDeviceInfo::SetVideoInputCapabilities(
                                            static_cast<double>(max_width)};
     platform_capabilities_.frame_rate = {min_frame_rate, max_frame_rate};
   }
+  platform_capabilities_.is_available =
+      !video_input_capabilities->availability ||
+      (*video_input_capabilities->availability ==
+       media::mojom::CameraAvailability::kAvailable);
 }
 
 void InputDeviceInfo::SetAudioInputCapabilities(
@@ -79,9 +85,11 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
   MediaTrackCapabilities* capabilities = MediaTrackCapabilities::Create();
 
   // If label is null, permissions have not been given and no capabilities
-  // should be returned.
-  if (label().empty())
+  // should be returned. Also, if the device is marked as not available, it
+  // does not expose any capabilities.
+  if (label().empty() || !platform_capabilities_.is_available) {
     return capabilities;
+  }
 
   capabilities->setDeviceId(deviceId());
   capabilities->setGroupId(groupId());
