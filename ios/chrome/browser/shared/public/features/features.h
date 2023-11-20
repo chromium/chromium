@@ -560,6 +560,9 @@ bool IsIOSLargeFakeboxEnabled();
 // Returns true when the IOSHideFeedWithSearchChoice feature is enabled.
 bool IsIOSHideFeedWithSearchChoiceEnabled();
 
+// Whether or not the kIOSKeyboardAccessoryUpgrade feature is enabled.
+bool IsKeyboardAccessoryUpgradeEnabled();
+
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 

@@ -720,6 +720,10 @@ bool IsIOSHideFeedWithSearchChoiceEnabled() {
   return base::FeatureList::IsEnabled(kIOSHideFeedWithSearchChoice);
 }
 
+bool IsKeyboardAccessoryUpgradeEnabled() {
+  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade);
+}
+
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
