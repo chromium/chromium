@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 
-@implementation GridLayout {
+@implementation LegacyGridLayout {
   NSArray<NSIndexPath*>* _indexPathsOfDeletingItems;
   NSArray<NSIndexPath*>* _indexPathsOfInsertingItems;
 }

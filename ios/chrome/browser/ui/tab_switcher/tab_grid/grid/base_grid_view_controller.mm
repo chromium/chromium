@@ -32,9 +32,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -126,7 +126,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
-@property(nonatomic, strong) GridLayout* gridLayout;
+@property(nonatomic, strong) LegacyGridLayout* gridLayout;
 // The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
@@ -187,7 +187,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  self.gridLayout = [[GridLayout alloc] init];
+  self.gridLayout = [[LegacyGridLayout alloc] init];
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -464,7 +464,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     return nil;
   }
 
-  GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+  GridCell* cell = ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
 
   UICollectionViewLayoutAttributes* attributes = [self.collectionView
