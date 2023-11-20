@@ -1536,8 +1536,6 @@ crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-s
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/navigate-to-about-blank-from-subframe-unload-handler-cross-origin.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/navigate-to-about-blank-from-subframe-unload-handler-same-origin.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/redirect-on-back-updates-history-item.html [ Skip Failure Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/redirect-on-reload-updates-history-item.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/notifications/close-on-document-unload.html [ Skip Failure Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/notifications/notification-creation-detached-context.html [ Skip Failure Timeout ]
