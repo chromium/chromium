@@ -8,6 +8,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "url/gurl.h"
 
 // Functions in this module should take a preferences service as an argument and
 // perform operations on it that manipulate the preferences related to the
@@ -40,6 +41,11 @@ bool IsSubjectToParentalControls(const PrefService& pref_service);
 
 // Returns true if the extensions permissions parental control is enabled.
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
+
+// Returns true if the user is supervised and the origin is a Google
+// affiliated domain that is not allowed to delete cookies for supervised users.
+bool IsCookieDeletionDisabled(const GURL& origin,
+                              const PrefService& pref_service);
 
 }  // namespace supervised_user
 

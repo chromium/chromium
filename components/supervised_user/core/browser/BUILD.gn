@@ -10,11 +10,13 @@ static_library("supervised_user_preferences") {
 
   deps = [
     "//base",
+    "//components/google/core/common:common",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
+    "//url",
   ]
 
   if (is_android) {

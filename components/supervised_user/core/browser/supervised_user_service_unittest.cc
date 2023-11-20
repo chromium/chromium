@@ -199,29 +199,6 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
       SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
       /*expected_count=*/3);
 }
-TEST_F(SupervisedUserServiceTest,
-       CookieDeletionDisabledForYoutubeDomainsWhenClearingCookiesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_TRUE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_TRUE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
-
-TEST_F(SupervisedUserServiceTest,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
 
 TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -305,30 +282,6 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       /* SupervisedUserURLFilter::WARN */ 1));
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
 }
 
 }  // namespace supervised_user
