@@ -1083,7 +1083,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveDirtyItemsShouldBeDisplayedAsQueued"),
         TestCase("openDriveDocWhenOffline").EnableBulkPinning(),
         TestCase("completedSyncStatusDismissesAfter300Ms"),
-        TestCase("driveOutOfOrganizationSpaceBanner")
+        TestCase("driveOutOfOrganizationSpaceBanner"),
+        TestCase("copyDirectoryWithEncryptedFile")
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

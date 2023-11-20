@@ -763,6 +763,27 @@ export const ENTRIES = {
     typeText: 'Plain text',
   }),
 
+  // The directory itself is not encrypted, but will contain encrypted entries
+  // like testCSEFileInDirectory
+  testCSEDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'encrypted_files',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: 'encrypted_files',
+    sizeText: '--',
+    typeText: 'Folder',
+  }),
+
+  testCSEFileInDirectory: new TestEntryInfo({
+    type: EntryType.FILE,
+    targetPath: 'encrypted_files/test.txt',
+    mimeType: 'application/vnd.google-gsuite.encrypted; content="text/plain"',
+    lastModifiedTime: 'Apr 10, 2013, 4:20 PM',
+    nameText: 'test.txt',
+    sizeText: '--',
+    typeText: 'Plain text',
+  }),
+
   testDocument: new TestEntryInfo({
     type: EntryType.FILE,
     targetPath: 'Test Document',

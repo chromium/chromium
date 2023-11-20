@@ -24,6 +24,7 @@
 #include "chrome/test/base/devtools_listener.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class NotificationDisplayServiceTester;
 class SelectFileDialogExtensionTestFactory;
@@ -374,6 +375,8 @@ class FileManagerBrowserTestBase
   base::FilePath devtools_code_coverage_dir_;
   DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
+
+  storage::FileSystemURL error_url_;
 };
 
 std::ostream& operator<<(std::ostream& out, GuestMode mode);
