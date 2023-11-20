@@ -18,7 +18,6 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/embedder_support/features.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -235,19 +234,6 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
                                enable_updated_grease_by_policy,
                                std::string(version_info::GetVersionNumber()),
                                blink::UserAgentBrandVersionType::kFullVersion);
-}
-
-std::vector<std::string> GetFormFactorClientHints(
-    const blink::UserAgentMetadata& metadata,
-    bool is_mobile) {
-  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
-  std::vector<std::string> form_factor = {
-      is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
-
-  if (base::FeatureList::IsEnabled(kClientHintsXRFormFactor)) {
-    form_factor.push_back(blink::kXRFormFactor);
-  }
-  return form_factor;
 }
 
 }  // namespace
@@ -500,7 +486,10 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   metadata.full_version = std::string(version_info::GetVersionNumber());
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
-  metadata.form_factor = GetFormFactorClientHints(metadata, metadata.mobile);
+
+  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
+  metadata.form_factor = {metadata.mobile ? blink::kMobileFormFactor
+                                          : blink::kDesktopFormFactor};
 
 #if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetWindowsPlatformVersion();
@@ -532,8 +521,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
-  spoofed_ua.ua_metadata_override->form_factor =
-      GetFormFactorClientHints(metadata, /*is_mobile=*/false);
+  spoofed_ua.ua_metadata_override->form_factor = {blink::kDesktopFormFactor};
   // Match the above "CpuInfo" string, which is also the most common Linux
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";

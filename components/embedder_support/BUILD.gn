@@ -4,14 +4,10 @@
 
 static_library("embedder_support") {
   sources = [
-    "features.cc",
-    "features.h",
     "pref_names.h",
     "switches.cc",
     "switches.h",
   ]
-
-  public_deps = [ "//base" ]
 }
 
 # Target for general utilities that are only used in the browser process.
