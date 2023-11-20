@@ -40,16 +40,13 @@ enum class PromoCardType {
   kAddShortcut = 2,
   // Access passwords on iOS/Android promo bubble.
   kAccessOnAnyDevice = 3,
-  // Relaunch Chrome to fix the keychain issue.
-  kRelauchChrome = 4,
-  kMaxValue = kRelauchChrome,
+  kMaxValue = kAccessOnAnyDevice,
 };
 
 constexpr char kCheckupPromoId[] = "password_checkup_promo";
 constexpr char kWebPasswordManagerPromoId[] = "passwords_on_web_promo";
 constexpr char kShortcutPromoId[] = "password_shortcut_promo";
 constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
-constexpr char kRelauchChromeId[] = "relaunch_chrome_promo";
 
 constexpr char kIdKey[] = "id";
 constexpr char kLastTimeShownKey[] = "last_time_shown";
@@ -76,8 +73,6 @@ PromoCardType ConvertIdToType(const std::string& promo_id) {
     return PromoCardType::kAddShortcut;
   } else if (promo_id == kAccessOnAnyDevicePromoId) {
     return PromoCardType::kAccessOnAnyDevice;
-  } else if (promo_id == kRelauchChromeId) {
-    return PromoCardType::kRelauchChrome;
   }
   NOTREACHED_NORETURN();
 }
