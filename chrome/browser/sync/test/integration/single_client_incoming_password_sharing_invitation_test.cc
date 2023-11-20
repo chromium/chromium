@@ -84,17 +84,21 @@ sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
 
 PasswordSharingInvitationData CreateUnencryptedInvitationData() {
   PasswordSharingInvitationData password_invitation_data;
-  PasswordSharingInvitationData::PasswordData* password_data =
-      password_invitation_data.mutable_password_data();
+  PasswordSharingInvitationData::PasswordGroupData* password_group_data =
+      password_invitation_data.mutable_password_group_data();
 
-  password_data->set_password_value(kPasswordValue);
-  password_data->set_signon_realm(kSignonRealm);
-  password_data->set_origin(kOrigin);
-  password_data->set_username_element(kUsernameElement);
-  password_data->set_username_value(kUsernameValue);
-  password_data->set_password_element(kPasswordElement);
-  password_data->set_display_name(kPasswordDisplayName);
-  password_data->set_avatar_url(kPasswordAvatarUrl);
+  password_group_data->set_username_value(kUsernameValue);
+  password_group_data->set_password_value(kPasswordValue);
+
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      element_data = password_group_data->add_element_data();
+
+  element_data->set_signon_realm(kSignonRealm);
+  element_data->set_origin(kOrigin);
+  element_data->set_username_element(kUsernameElement);
+  element_data->set_password_element(kPasswordElement);
+  element_data->set_display_name(kPasswordDisplayName);
+  element_data->set_avatar_url(kPasswordAvatarUrl);
 
   return password_invitation_data;
 }
