@@ -152,14 +152,6 @@ bool IsInitialEmptyDocument(const Document& document) {
   return document.Url().IsAboutBlankURL();
 }
 
-// Return a node for the current layout object or ancestor layout object.
-Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
-  if (!layout_object)
-    return nullptr;
-  Node* node = layout_object->GetNode();
-  return node ? node : GetClosestNodeForLayoutObject(layout_object->Parent());
-}
-
 // Return true if display locked or inside slot recalc, false otherwise.
 // Also returns false if not a safe time to perform the check.
 bool IsDisplayLocked(const Node* node, bool inclusive = false) {
@@ -2307,6 +2299,16 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
   }
 
   DeferTreeUpdate(TreeUpdateReason::kTextChangedFromTextChangedNode, node);
+}
+
+// Return a node for the current layout object or ancestor layout object.
+Node* AXObjectCacheImpl::GetClosestNodeForLayoutObject(
+    const LayoutObject* layout_object) {
+  if (!layout_object) {
+    return nullptr;
+  }
+  Node* node = layout_object->GetNode();
+  return node ? node : GetClosestNodeForLayoutObject(layout_object->Parent());
 }
 
 void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {

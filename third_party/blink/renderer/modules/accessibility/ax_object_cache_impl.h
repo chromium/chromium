@@ -491,6 +491,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   static bool IsRelevantPseudoElementDescendant(
       const LayoutObject& layout_object);
   static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
+  static Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object);
 
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Sends the resulting vector over mojo to the browser

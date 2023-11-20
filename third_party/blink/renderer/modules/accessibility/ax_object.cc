@@ -5779,13 +5779,17 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
     return true;
   }
 
-  // Destroy all nested pseudo-elements, because we are only able to re-attach
-  // them via top-down tree walk and not via RepairMissingParent. See
-  // GetParentNodeForComputeParent for more commentary.
+  // Destroy all pseudo-elements that can't compute their parents, because we
+  // are only able to re-attach them via top-down tree walk and not via
+  // RepairMissingParent. See GetParentNodeForComputeParent for more
+  // commentary.
   auto* layout_object = GetLayoutObject();
-  if (layout_object && layout_object->Parent() &&
-      layout_object->Parent()->IsPseudoElement()) {
-    return true;
+  if (layout_object) {
+    Node* closest_node =
+        AXObjectCacheImpl::GetClosestNodeForLayoutObject(layout_object);
+    if (closest_node && closest_node->IsPseudoElement()) {
+      return true;
+    }
   }
 
   // Inline textbox children are dependent on their parent's ignored state.
