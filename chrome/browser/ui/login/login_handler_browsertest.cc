@@ -34,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -245,13 +246,9 @@ class LoginPromptBrowserTest
     auth_map_["bar"] = AuthInfo("testuser", "barpassword");
     auth_map_["testrealm"] = AuthInfo(username_basic_, password_);
 
-    if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
-      scoped_feature_list_.InitAndDisableFeature(
-          network::features::kSplitAuthCacheByNetworkIsolationKey);
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          network::features::kSplitAuthCacheByNetworkIsolationKey);
-    }
+    scoped_feature_list_.InitWithFeatureStates(
+        {{network::features::kSplitAuthCacheByNetworkIsolationKey,
+          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)}});
   }
 
   void SetUpOnMainThread() override {
@@ -330,6 +327,31 @@ void LoginPromptBrowserTest::ExpectSuccessfulBasicAuthTitle(
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
+
+// There are tests that will fail with third party cookies blocked. To ensure
+// that there is no regression in behavior when third party cookies are not
+// blocked this test fixture has been added which turns off third party cookie
+// blocking.
+// crbug/1503201 - LoginPromptBrowserTest cases fail in 3PCD
+class LoginPromptBrowserTestThirdPartyCookiesUnblocked
+    : public LoginPromptBrowserTest {
+ public:
+  LoginPromptBrowserTestThirdPartyCookiesUnblocked() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{network::features::kSplitAuthCacheByNetworkIsolationKey,
+          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)},
+         {content_settings::features::kTrackingProtection3pcd, false}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoginPromptBrowserTestThirdPartyCookiesUnblocked,
+    ::testing::Values(SplitAuthCacheByNetworkIsolationKey::kFalse,
+                      SplitAuthCacheByNetworkIsolationKey::kTrue));
 
 const char kPrefetchAuthPage[] = "/login/prefetch.html";
 
@@ -1130,7 +1152,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 }
 
 // Allow crossdomain iframe login prompting despite the above.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                        AllowCrossdomainPromptForSubframes) {
   const char kTestPage[] = "/login/load_iframe_from_b.html";
 
@@ -1519,7 +1541,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
 // Test that the auth cache respects NetworkIsolationKeys when splitting the
 // cache based on the key is enabled.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                        AuthCacheAcrossNetworkIsolationKeys) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
@@ -1587,7 +1609,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
                                   "'YmFzaWN1c2VyOnNlY3JldA==') >= 0"));
 }
 
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                        GloballyScopeHTTPAuthCacheEnabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1844,7 +1866,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 // interstitial. If this test becomes flaky, it's likely that the logic that
 // prevents the tested scenario from happening got broken, rather than the test
 // itself.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                        ShouldNotProceedExistingInterstitial) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -2052,7 +2074,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithOnlyInitialEntry) {
 
 // Tests that when HTTP Auth committed interstitials are enabled, a prompt
 // triggered by a subframe can be cancelled.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptFromSubframe) {
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
+                       PromptFromSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* contents =
@@ -2173,20 +2196,10 @@ class LoginPromptExtensionBrowserTest
       public testing::WithParamInterface<SplitAuthCacheByNetworkIsolationKey> {
  public:
   LoginPromptExtensionBrowserTest() {
-    if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {},
-          // disabled_features
-          {network::features::kSplitAuthCacheByNetworkIsolationKey});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {network::features::kSplitAuthCacheByNetworkIsolationKey},
-          // disabled_features
-          {});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{network::features::kSplitAuthCacheByNetworkIsolationKey,
+          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)}});
     }
-  }
 
   ~LoginPromptExtensionBrowserTest() override = default;
 
