@@ -22,6 +22,16 @@ swarming.pool_realm(
     ],
 )
 
+luci.binding(
+    realm = "pools/ci",
+    roles = "role/swarming.poolViewer",
+    projects = [
+        "infra",
+        "infra-experimental",
+        "v8",
+    ],
+)
+
 swarming.pool_realm(name = "pools/try")
 
 swarming.pool_realm(
