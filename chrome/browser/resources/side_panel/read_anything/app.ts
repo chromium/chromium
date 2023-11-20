@@ -167,6 +167,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     {name: 'Lexend Deca', css: '"Lexend Deca"'},
     {name: 'EB Garamond', css: '"EB Garamond"'},
     {name: 'STIX Two Text', css: '"STIX Two Text"'},
+    {name: 'Andika', css: 'Andika'},
   ];
 
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and

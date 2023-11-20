@@ -843,6 +843,8 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
                      default_language_code())) {
     font_choices_.push_back("STIX Two Text");
   }
-
+  if (base::Contains(kLanguagesSupportedByAndika, default_language_code())) {
+    font_choices_.push_back("Andika");
+  }
   return font_choices_;
 }

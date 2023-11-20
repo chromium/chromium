@@ -210,6 +210,9 @@ void ReadAnythingFontModel::SetDefaultLanguage(const std::string& lang) {
   if (base::Contains(kLanguagesSupportedByStixTwoText, lang)) {
     font_choices_.emplace_back(u"STIX Two Text");
   }
+  if (base::Contains(kLanguagesSupportedByAndika, lang)) {
+    font_choices_.emplace_back(u"Andika");
+  }
   font_choices_.shrink_to_fit();
 }
 

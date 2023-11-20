@@ -214,6 +214,7 @@ TEST_F(ReadAnythingModelTest, FontModelGetFontNameEnglishOptions) {
   EXPECT_EQ("Lexend Deca", GetFontModel()->GetFontNameAt(4));
   EXPECT_EQ("EB Garamond", GetFontModel()->GetFontNameAt(5));
   EXPECT_EQ("STIX Two Text", GetFontModel()->GetFontNameAt(6));
+  EXPECT_EQ("Andika", GetFontModel()->GetFontNameAt(7));
 }
 
 TEST_F(ReadAnythingModelTest, FontModelGetFontNameChineseOptions) {

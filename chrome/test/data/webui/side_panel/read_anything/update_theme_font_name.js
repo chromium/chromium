@@ -52,5 +52,8 @@
   chrome.readingMode.setThemeForTesting('STIX Two Text', 18.0, 0, 0, 1, 0);
   assertFontName('"STIX Two Text"');
 
+  chrome.readingMode.setThemeForTesting('Andika', 18.0, 0, 0, 1, 0);
+  assertFontName('Andika');
+
   return result;
 })();

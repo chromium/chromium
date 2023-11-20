@@ -1058,8 +1058,8 @@ TEST_F(ReadAnythingAppModelTest,
   // English
   SetLanguageCode("en");
   std::vector<std::string> expectedFonts = {
-      "Poppins",     "Sans-serif",  "Serif",        "Comic Neue",
-      "Lexend Deca", "EB Garamond", "STIX Two Text"};
+      "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
+      "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};
   std::vector<std::string> fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
@@ -1069,7 +1069,8 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Bulgarian
   SetLanguageCode("bg");
-  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text"};
+  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text",
+                   "Andika"};
   fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
