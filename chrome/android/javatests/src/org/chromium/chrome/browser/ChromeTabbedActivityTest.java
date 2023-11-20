@@ -6,11 +6,12 @@ package org.chromium.chrome.browser;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import com.google.common.collect.Lists;
 
@@ -23,15 +24,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -41,9 +46,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 
@@ -138,7 +145,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testTabModelSelectorObserverOnTabStateInitialized() {
         // Get the original value of |mCreatedTabOnStartup|.
         boolean createdTabOnStartup = mActivity.getCreatedTabOnStartupForTesting();
@@ -239,5 +246,46 @@ public class ChromeTabbedActivityTest {
                     Criteria.checkThat(
                             tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY)
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testExplicitViewIntent_OpensInExistingLiveActivity() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                ChromeTabbedActivity
+                                        .HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY,
+                                true,
+                                1)
+                        .build();
+        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+
+        // The newly created ChromeTabbedActivity (created via #startActivity()) should be
+        // destroyed, and the intent should be launched in the existing ChromeTabbedActivity.
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.DESTROYED,
+                () -> mActivity.getApplicationContext().startActivity(intent));
+
+        Assert.assertEquals(
+                "No new window should be opened.",
+                initialWindowCount,
+                MultiWindowUtils.getInstanceCount());
+        // A new tab should be opened in the existing ChromeTabbedActivity.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(2));
+                });
+        histogramWatcher.assertExpected();
     }
 }

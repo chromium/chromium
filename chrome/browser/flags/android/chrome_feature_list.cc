@@ -163,6 +163,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAddToHomescreenIPH,
     &kAdvancedPeripheralsSupport,
     &kAdvancedPeripheralsSupportTabStrip,
+    &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
     &kAndroidAppIntegrationSafeSearch,
@@ -919,6 +920,10 @@ BASE_FEATURE(kReaderModeInCCT,
 BASE_FEATURE(kRecordSuppressionMetrics,
              "RecordSuppressionMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRedirectExplicitCTAIntentsToExistingActivity,
+             "RedirectExplicitCTAIntentsToExistingActivity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReengagementNotification,
              "ReengagementNotification",

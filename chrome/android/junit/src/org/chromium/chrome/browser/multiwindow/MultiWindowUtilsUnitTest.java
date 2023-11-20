@@ -208,16 +208,26 @@ public class MultiWindowUtilsUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
 
         int maxInstances = MultiWindowUtils.getMaxInstances();
-        // Simulate opening of 1 less than the max number of instances.
+        // Simulate opening of 1 less than the max number of instances. #writeInstanceInfo will
+        // update the access time for IDs 0 -> |maxInstances - 2| in increasing order of recency.
         for (int i = 0; i < maxInstances - 1; i++) {
             ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
             writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
-        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
+        // New instance preferred.
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
         assertEquals(
-                "The default instance ID should be returned.",
+                "The default instance ID should be returned when a new instance is preferred.",
                 MultiWindowUtils.INVALID_INSTANCE_ID,
+                instanceId);
+
+        // Existing instance preferred.
+        instanceId = MultiWindowUtils.getInstanceIdForViewIntent(false);
+        assertEquals(
+                "The last accessed instance ID should be returned when an existing instance is"
+                        + " preferred.",
+                maxInstances - 2,
                 instanceId);
     }
 
@@ -240,7 +250,7 @@ public class MultiWindowUtilsUnitTest {
         // Simulate last access of instance ID 0.
         writeInstanceInfo(0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, 0);
 
-        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
         assertEquals("The last accessed instance ID should be returned.", 0, instanceId);
     }
 
@@ -265,7 +275,7 @@ public class MultiWindowUtilsUnitTest {
         // Simulate destruction of the activity represented by instance ID 0.
         ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(0, true);
 
-        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
         assertEquals(
                 "The instance ID of a running activity that was last accessed should be returned.",
                 maxInstances - 1,

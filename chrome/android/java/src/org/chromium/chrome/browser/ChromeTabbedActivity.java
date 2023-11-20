@@ -288,6 +288,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ChromeTabbedActivity.class.getName(), MultiInstanceChromeTabbedActivity.class.getName(),
             ChromeTabbedActivity2.class.getName(), MAIN_LAUNCHER_ACTIVITY_NAME);
 
+    static final String HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY =
+            "Android.ExplicitViewIntentFinishedNewTabbedActivity";
+
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
     private static final String SOURCE_ACTIVITY_REFERRER_OS = "android-app://android";
 
@@ -2295,6 +2298,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             windowId, ApplicationStatus.getTaskId(this), preferNew);
             mWindowId = instanceIdInfo.first;
             logIntentInfo(intent, instanceIdInfo);
+            // If a new instance ID was allocated for the newly created activity, potentially
+            // dispatch it to an existing activity under special circumstances. See
+            // |#maybeDispatchIntentInExistingActivity(Intent)| for details.
+            if (instanceIdInfo.second == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
+                    && maybeDispatchIntentInExistingActivity(intent)) {
+                return false;
+            }
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
@@ -2374,6 +2384,51 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             + logMessage;
             ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
         }
+    }
+
+    // It is possible that an undesired attempt is made to launch a VIEW intent in a new
+    // ChromeTabbedActivity by an external app. When a new activity is created using such an intent,
+    // we will try to launch it in an existing ChromeTabbedActivity instead, and finish the newly
+    // created ChromeTabbedActivity.
+    private boolean maybeDispatchIntentInExistingActivity(Intent intent) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return false;
+        }
+
+        if (!ChromeFeatureList.sRedirectExplicitCTAIntentsToExistingActivity.isEnabled()) {
+            return false;
+        }
+
+        // Check if the intent creating a new ChromeTabbedActivity was a VIEW intent launched via
+        // ChromeLauncherActivity, in which case continue to launch in the current activity.
+        boolean isExplicitViewIntent =
+                Intent.ACTION_VIEW.equals(intent.getAction())
+                        && !IntentUtils.safeGetBooleanExtra(
+                                intent,
+                                IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY,
+                                false);
+        if (!isExplicitViewIntent) return false;
+
+        // If the intent sender is Chrome, continue to launch in the current activity.
+        if (IntentHandler.wasIntentSenderChrome(intent)) {
+            return false;
+        }
+
+        // Find an instance to launch the intent in.
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(false);
+
+        // If there is no running ChromeTabbedActivity, continue to launch in the current activity.
+        if (instanceId == INVALID_WINDOW_ID) {
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY, false);
+            return false;
+        }
+
+        intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
+        MultiWindowUtils.launchIntentInInstance(intent, instanceId);
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY, true);
+        return true;
     }
 
     private void recordMaxWindowLimitExceededHistogram(boolean limitExceeded) {

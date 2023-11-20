@@ -717,15 +717,18 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
+     * @param preferNew Whether a new instance is preferred to launch a VIEW intent. {@code true} if
+     *     a new instance is preferred, {@code false} if an existing instance is preferred.
      * @return The instance ID of the Chrome window with a running activity that was accessed last,
-     *         if the maximum number of instances is open. If fewer than the maximum number is open,
-     *         the default ID will be returned, indicative of an unused window ID that can be
-     *         potentially allocated to launch a VIEW intent.
+     *     if an existing instance is preferred to launch the intent, or if the maximum number of
+     *     instances is open. If fewer than the maximum number is open, the default ID will be
+     *     returned if |preferNew| is true, indicative of an unused window ID that can be allocated
+     *     to the new instance launched by the intent.
      */
-    public static int getRunningInstanceIdForViewIntent() {
+    public static int getInstanceIdForViewIntent(boolean preferNew) {
         int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
         int maxInstances = MultiWindowUtils.getMaxInstances();
-        if (MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
+        if (preferNew && MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
 
         SparseIntArray windowIdsOfRunningTabbedActivities =
                 MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();

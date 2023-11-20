@@ -70,8 +70,7 @@ public class DragAndDropLauncherActivity extends Activity {
      */
     public static Intent getLinkLauncherIntent(
             Context context, String urlString, Integer windowId) {
-        windowId =
-                windowId == null ? MultiWindowUtils.getRunningInstanceIdForViewIntent() : windowId;
+        windowId = windowId == null ? MultiWindowUtils.getInstanceIdForViewIntent(true) : windowId;
         Intent intent = MultiWindowUtils.createNewWindowIntent(context.getApplicationContext(),
                 windowId, /*preferNew=*/true,
                 /*openAdjacently=*/false, /*addTrustedIntentExtras=*/false);
