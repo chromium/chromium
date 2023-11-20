@@ -127,7 +127,14 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
 // Tests to ensure exo processes added displays before removed displays for
 // display configuration updates. This ensures exo's clients always see a valid
 // Output during such configuration updates.
-TEST_F(WaylandDisplayOutputTest, MaintainsNonEmptyOutputList) {
+// TODO(1503560) Test consistently fails on builder Linux Chromium OS ASan LSan
+// Tests.
+#if defined(LEAK_SANITIZER) && defined(ADDRESS_SANITIZER)
+#define MAYBE_MaintainsNonEmptyOutputList DISABLED_MaintainsNonEmptyOutputList
+#else
+#define MAYBE_MaintainsNonEmptyOutputList MaintainsNonEmptyOutputList
+#endif
+TEST_F(WaylandDisplayOutputTest, MAYBE_MaintainsNonEmptyOutputList) {
   // Start with 2 displays.
   UpdateDisplay("300x400,500x600");
 
