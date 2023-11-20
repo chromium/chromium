@@ -536,9 +536,6 @@ void APIBinding::DecorateTemplateWithProperties(
 }
 
 // static
-bool APIBinding::enable_promise_support_for_testing = false;
-
-// static
 void APIBinding::GetEventObject(
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {

@@ -84,11 +84,6 @@ class APIBinding {
 
   APIBindingHooks* hooks() { return binding_hooks_.get(); }
 
-  // Global bool to allow for testing of promise support.
-  // TODO(tjudkins): Replace this with a runtime determined condition gated on
-  // MV3.
-  static bool enable_promise_support_for_testing;
-
  private:
   // Initializes the object_template_ for this API. Called lazily when the
   // first instance is created.
