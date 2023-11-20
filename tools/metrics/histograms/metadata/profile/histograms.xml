@@ -395,9 +395,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfManagedProfiles" units="profiles"
-    expires_after="2024-02-11">
+    expires_after="2024-11-01">
   <owner>agawronska@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Counts the number of locally managed profiles on a user's machine every 24
@@ -457,9 +456,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2023-08-08">
+    expires_after="2024-11-01">
   <owner>agawronska@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Tracks the percentage (0-100) of profiles that are locally managed, recorded
