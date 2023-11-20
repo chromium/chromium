@@ -63,7 +63,12 @@ source_set("pdf_extension_test_utils") {
   ]
   deps = [
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gtest",
   ]
 }
 
