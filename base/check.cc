@@ -238,7 +238,7 @@ CheckError CheckError::DPCheck(const char* condition,
 
 CheckError CheckError::DumpWillBeNotReachedNoreturn(
     const base::Location& location) {
-  auto* const log_message = new NotReachedLogMessage(
+  auto* const log_message = new DumpWillBeCheckLogMessage(
       location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
   log_message->stream() << "NOTREACHED hit. ";
   return CheckError(log_message);
@@ -302,8 +302,8 @@ NotReachedError::~NotReachedError() = default;
 
 NotReachedNoreturnError::NotReachedNoreturnError(const base::Location& location)
     : CheckError([location]() {
-        auto* const log_message =
-            new NotReachedLogMessage(location, LOGGING_FATAL);
+        auto* const log_message = new LogMessage(
+            location.file_name(), location.line_number(), LOGGING_FATAL);
         log_message->stream() << "NOTREACHED hit. ";
         return log_message;
       }()) {}
