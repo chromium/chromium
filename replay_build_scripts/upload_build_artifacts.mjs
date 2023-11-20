@@ -108,7 +108,8 @@ function copyBuildFiles(srcDir, dstDir) {
 }
 
 function prepareLinuxBinaries(buildId) {
-  const buildArchive = `${buildId}.tar.xz`;
+  const buildIdArchive = `${buildId}.tar.xz`;
+  const buildArchive = "linux-chromium.tar.xz";
 
   spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
 
@@ -119,14 +120,15 @@ function prepareLinuxBinaries(buildId) {
   // Parallel build (requires xz), unlimited cores, w/ reasonable compression.
   spawnChecked(
     "tar",
-    ["-c", "-I", "xz -2 -T0", "-f", buildArchive, "replay-chromium"],
+    ["-c", "-I", "xz -2 -T0", "-f", buildIdArchive, "replay-chromium"],
     {
       stdio: "inherit",
     }
   );
+  spawnChecked("cp", [buildIdArchive, buildArchive], { stdio: "inherit" });
 
   spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
-  return [buildArchive];
+  return [buildIdArchive];
 }
 
 function prepareWindowsBinaries(buildId) {
@@ -257,7 +259,8 @@ function buildkiteStuff(downloadUris, platform, buildId, arch) {
     const buildPattern = buildId.substring(buildId.indexOf("-"));
     const aaCrashTriageLink = `http://admin.replay.io/crash?buildReleaseOptions=DevOnly&builds=${buildPattern}&platforms=macOS&platforms=linux&platforms=windows`;
     const aaCommandCrashTriageLink = `${aaCrashTriageLink}&kind=command`;
-    const aaCrashTriageMessage = `# Admin App Crash Triage\n` + 
+    const aaCrashTriageMessage =
+      `# Admin App Crash Triage\n` +
       `* [Fatals](${aaCrashTriageLink})\n` +
       `* [Commands](${aaCommandCrashTriageLink})\n`;
     markdownMessage = aaCrashTriageMessage + markdownMessage;

@@ -1,10 +1,11 @@
 genrule(
-  name = "chromium",
-  srcs = glob(['**/*.*']),
+  name = "build-image",
+  srcs = ["Dockerfile.build"],
   remote = False,
-  cmd = 'docker build -t chromium-build-new - < Dockerfile.build && node buildLinux.mjs && cp -r out/Release $OUT',
-  out = 'out/Release/',
-  labels = [
-    'no_srcs_environment',
-  ],
+  cmd = "docker build -t chromium-build-new - < Dockerfile.build && echo chromium-build-new > $OUT",
+  out = "image_name.txt",
+  env = {
+    "REPLAY_CHROMIUM_DOCKER_IMAGE_NAME": "chromium-build-new",
+  },
+  visibility = ["PUBLIC"],
 )
