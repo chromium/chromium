@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -120,23 +121,26 @@ bool IsCreditCardUploadEnabled(
   // sync settings become independent. However, since address information is
   // uploaded during the server card saving flow, credit card upload is not
   // available when address sync is disabled.
-  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureActive() is deleted
-  // from the codebase.
-  if (sync_service->IsSyncFeatureActive() ||
+  // Before address sync is available in transport mode, server card save is
+  // offered in transport mode regardless of the setting. (The sync API exposes
+  // the kAutofill type as disabled in this case.)
+  bool syncing_or_addresses_in_transport_mode =
+      sync_service->IsSyncFeatureActive() ||
       base::FeatureList::IsEnabled(
-          syncer::kSyncDecoupleAddressPaymentSettings)) {
-    if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
-      // In full sync mode, we only allow card upload when addresses are also
-      // active, because we upload potential billing addresses with the card.
-      autofill_metrics::LogCardUploadEnabledMetric(
-          autofill_metrics::CardUploadEnabled::
-              kSyncServiceMissingAutofillProfileActiveType,
-          signin_state_for_metrics);
-      LogCardUploadDisabled(
-          log_manager,
-          "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
-      return false;
-    }
+          syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  bool has_autofill_sync_type =
+      base::FeatureList::IsEnabled(syncer::kSyncDecoupleAddressPaymentSettings)
+          ? sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                syncer::UserSelectableType::kAutofill)
+          : sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE);
+  if (syncing_or_addresses_in_transport_mode && !has_autofill_sync_type) {
+    autofill_metrics::LogCardUploadEnabledMetric(
+        autofill_metrics::CardUploadEnabled::
+            kSyncServiceMissingAutofillProfileActiveType,
+        signin_state_for_metrics);
+    LogCardUploadDisabled(
+        log_manager, "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
+    return false;
   }
 
   // Also don't offer upload for users that have an explicit sync passphrase.
