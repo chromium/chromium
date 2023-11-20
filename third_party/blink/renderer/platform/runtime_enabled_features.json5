@@ -2176,9 +2176,11 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
+      // If enabled, the lazy load image observer will use a scroll margin in
+      // its init dictionary instead of a root margin.
       name: "LazyLoadScrollMargin",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "LCPAnimatedImagesWebExposed",
