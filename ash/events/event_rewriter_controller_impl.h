@@ -66,6 +66,10 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
     return peripheral_customization_event_rewriter_;
   }
 
+  PrerewrittenEventForwarder* prerewritten_event_forwarder() {
+    return prerewritten_event_forwarder_;
+  }
+
  private:
   // The |EventRewriter|s managed by this controller.
   std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;

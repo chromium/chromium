@@ -779,13 +779,15 @@ Shell::~Shell() {
 
   wm_mode_controller_.reset();
 
+  // `shortcut_input_handler_` must be cleaned up before
+  // `event_rewriter_controller_`.
+  shortcut_input_handler_.reset();
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   input_device_settings_dispatcher_.reset();
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
   input_device_key_alias_manager_.reset();
-  shortcut_input_handler_.reset();
 
   screen_orientation_controller_.reset();
   screen_layout_observer_.reset();
@@ -1579,7 +1581,8 @@ void Shell::Init(
   modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);
   AddPreTargetHandler(modality_filter_.get());
 
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
     shortcut_input_handler_ = std::make_unique<ShortcutInputHandler>();
     AddPreTargetHandler(shortcut_input_handler_.get());
   }

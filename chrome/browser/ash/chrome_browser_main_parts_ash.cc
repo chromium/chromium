@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
@@ -1386,6 +1387,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   event_rewriter_controller->Initialize(
       event_rewriter_delegate_.get(),
       accessibility_event_rewriter_delegate_.get());
+  // `ShortcutInputHandler` is dependent on `EventRewriterController`'s
+  // initialization.
+  Shell::Get()->shortcut_input_handler()->Initialize();
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {

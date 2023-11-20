@@ -10,21 +10,30 @@ import {ShortcutInputObserverInterface, ShortcutInputProviderInterface} from './
 export class FakeShortcutInputProvider implements
     ShortcutInputProviderInterface {
   private observables: FakeObservables = new FakeObservables();
+  // TODO(jimmyxgong): Remove this when prerewrittenKeyEvent is displayed as
+  // an element in `shortcut_input.html`.
+  private prerewrittenKeyEvent: KeyEvent;
 
   constructor() {
     this.registerObservables();
   }
 
-  sendKeyPressEvent(keyEvent: KeyEvent) {
+  getPrerewrittenKeyEvent(): KeyEvent {
+    return this.prerewrittenKeyEvent;
+  }
+
+  sendKeyPressEvent(prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent) {
     this.observables.setObservableData(
-        'ShortcutInputObserver_OnShortcutInputEventPressed', [keyEvent]);
+        'ShortcutInputObserver_OnShortcutInputEventPressed',
+        [{prerewrittenKeyEvent, keyEvent}]);
     this.observables.trigger(
         'ShortcutInputObserver_OnShortcutInputEventPressed');
   }
 
-  sendKeyReleaseEvent(keyEvent: KeyEvent) {
+  sendKeyReleaseEvent(prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent) {
     this.observables.setObservableData(
-        'ShortcutInputObserver_OnShortcutInputEventReleased', [keyEvent]);
+        'ShortcutInputObserver_OnShortcutInputEventReleased',
+        [{prerewrittenKeyEvent, keyEvent}]);
     this.observables.trigger(
         'ShortcutInputObserver_OnShortcutInputEventReleased');
   }
@@ -32,13 +41,17 @@ export class FakeShortcutInputProvider implements
   startObservingShortcutInput(observer: ShortcutInputObserverInterface) {
     this.observables.observe(
         'ShortcutInputObserver_OnShortcutInputEventPressed',
-        (keyEvent: KeyEvent) => {
-          observer.onShortcutInputEventPressed(keyEvent);
+        (detail: {prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent}) => {
+          observer.onShortcutInputEventPressed(
+              detail.prerewrittenKeyEvent, detail.keyEvent);
+          this.prerewrittenKeyEvent = detail.prerewrittenKeyEvent;
         });
     this.observables.observe(
         'ShortcutInputObserver_OnShortcutInputEventReleased',
-        (keyEvent: KeyEvent) => {
-          observer.onShortcutInputEventReleased(keyEvent);
+        (detail: {prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent}) => {
+          observer.onShortcutInputEventReleased(
+              detail.prerewrittenKeyEvent, detail.keyEvent);
+          this.prerewrittenKeyEvent = detail.prerewrittenKeyEvent;
         });
   }
 

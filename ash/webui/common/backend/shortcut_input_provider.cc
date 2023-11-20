@@ -51,24 +51,38 @@ void ShortcutInputProvider::BindInterface(
 
 void ShortcutInputProvider::OnShortcutInputEventPressed(
     const mojom::KeyEvent& key_event) {
-  if (observing_paused_) {
+  if (observing_paused_ || prerewritten_event_.is_null()) {
     return;
   }
 
   for (auto& observer : shortcut_input_observers_) {
-    observer->OnShortcutInputEventPressed(key_event.Clone());
+    observer->OnShortcutInputEventPressed(prerewritten_event_.Clone(),
+                                          key_event.Clone());
   }
+  prerewritten_event_.reset();
 }
 
 void ShortcutInputProvider::OnShortcutInputEventReleased(
     const mojom::KeyEvent& key_event) {
-  if (observing_paused_) {
+  if (observing_paused_ || prerewritten_event_.is_null()) {
     return;
   }
 
   for (auto& observer : shortcut_input_observers_) {
-    observer->OnShortcutInputEventReleased(key_event.Clone());
+    observer->OnShortcutInputEventReleased(prerewritten_event_.Clone(),
+                                           key_event.Clone());
   }
+  prerewritten_event_.reset();
+}
+
+void ShortcutInputProvider::OnPrerewrittenShortcutInputEventPressed(
+    const mojom::KeyEvent& key_event) {
+  prerewritten_event_ = key_event.Clone();
+}
+
+void ShortcutInputProvider::OnPrerewrittenShortcutInputEventReleased(
+    const mojom::KeyEvent& key_event) {
+  prerewritten_event_ = key_event.Clone();
 }
 
 void ShortcutInputProvider::StartObservingShortcutInput(

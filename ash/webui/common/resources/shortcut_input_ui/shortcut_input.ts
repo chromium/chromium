@@ -37,7 +37,11 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
+      // Event after event rewrites.
       pendingKeyEvent: {type: Object},
+
+      // Event before event rewrites.
+      pendingPrerewrittenKeyEvent: {type: Object},
 
       shortcutInputProvider: {type: Object},
 
@@ -67,6 +71,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   hasLauncherButton: boolean = true;
   shortcutInputProvider: ShortcutInputProviderInterface|null = null;
   pendingKeyEvent: KeyEvent|null = null;
+  pendingPrerewrittenKeyEvent: KeyEvent|null = null;
   modifiers: Modifier[] = [];
   showSeparator: boolean = false;
   isCapturing: boolean = false;
@@ -94,27 +99,31 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   /**
    * Updates UI to the newly received KeyEvent.
    */
-  onShortcutInputEventPressed(event: KeyEvent): void {
-    this.pendingKeyEvent = event;
+  onShortcutInputEventPressed(
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+    this.pendingKeyEvent = keyEvent;
+    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
   }
 
   /**
    * Updates the UI to the new KeyEvent and dispatches and event to notify
    * parent elements.
    */
-  onShortcutInputEventReleased(event: KeyEvent): void {
+  onShortcutInputEventReleased(
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
     // Only update the UI if the released key is the last key pressed OR if its
     // a modifier.
-    if (this.pendingKeyEvent && event.vkey !== this.pendingKeyEvent.vkey) {
-      if (!ModifierKeyCodes.includes(event.vkey as number)) {
+    if (this.pendingKeyEvent && keyEvent.vkey !== this.pendingKeyEvent.vkey) {
+      if (!ModifierKeyCodes.includes(keyEvent.vkey as number)) {
         return;
       }
 
-      this.pendingKeyEvent.modifiers = event.modifiers;
+      this.pendingKeyEvent.modifiers = keyEvent.modifiers;
       return;
     }
 
-    this.pendingKeyEvent = event;
+    this.pendingKeyEvent = keyEvent;
+    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
     this.dispatchEvent(new CustomEvent('shortcut-input-event', {
       bubbles: true,
       composed: true,

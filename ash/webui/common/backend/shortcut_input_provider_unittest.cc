@@ -29,10 +29,13 @@ namespace {
 
 class FakeShortcutInputObserver : public common::mojom::ShortcutInputObserver {
  public:
-  void OnShortcutInputEventPressed(ash::mojom::KeyEventPtr key_event) override {
+  void OnShortcutInputEventPressed(
+      ash::mojom::KeyEventPtr prerewritten_key_event,
+      ash::mojom::KeyEventPtr key_event) override {
     ++num_input_events_pressed_;
   }
   void OnShortcutInputEventReleased(
+      ash::mojom::KeyEventPtr prerewritten_key_event,
       ash::mojom::KeyEventPtr key_event) override {
     ++num_input_events_released_;
   }
@@ -93,9 +96,17 @@ class ShortcutInputProviderTest : public AshTestBase {
 };
 
 TEST_F(ShortcutInputProviderTest, NoWidget) {
+  // Prerewritten event needs to read first in order for the observer to fire.
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
   ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
   ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
+
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -108,12 +119,52 @@ TEST_F(ShortcutInputProviderTest, NoWidget) {
       Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 }
 
-TEST_F(ShortcutInputProviderTest, SimpleEvent) {
+TEST_F(ShortcutInputProviderTest, NoObservedEventWithoutprewrittenEvent) {
   ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
   ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
   shortcut_input_provider_->TieProviderToWidget(widget_.get());
 
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnKeyEvent(&released_event);
+  shortcut_input_provider_->FlushMojoForTesting();
+
+  EXPECT_EQ(0, observer_->num_input_events_pressed());
+  EXPECT_EQ(0, observer_->num_input_events_released());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
+}
+
+TEST_F(ShortcutInputProviderTest, PrewrittenEventOnlyDoesNotTriggerObserver) {
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
+  shortcut_input_provider_->TieProviderToWidget(widget_.get());
+
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
+  shortcut_input_provider_->FlushMojoForTesting();
+
+  EXPECT_EQ(0, observer_->num_input_events_pressed());
+  EXPECT_EQ(0, observer_->num_input_events_released());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
+}
+
+TEST_F(ShortcutInputProviderTest, SimpleEvent) {
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
+  ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
+  shortcut_input_provider_->TieProviderToWidget(widget_.get());
+
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
+  shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -127,13 +178,19 @@ TEST_F(ShortcutInputProviderTest, SimpleEvent) {
 }
 
 TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
   ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
   ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
   shortcut_input_provider_->TieProviderToWidget(widget_.get());
 
   widget_->Hide();
 
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -147,7 +204,11 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
 
   widget_->Show();
 
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -161,11 +222,17 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
 }
 
 TEST_F(ShortcutInputProviderTest, StopObservingTest) {
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
   ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
   ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
   shortcut_input_provider_->TieProviderToWidget(widget_.get());
 
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -178,7 +245,11 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
       Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 
   shortcut_input_provider_->StopObservingShortcutInput();
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -192,11 +263,17 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
 }
 
 TEST_F(ShortcutInputProviderTest, WidgetDestroyedTest) {
+  ui::KeyEvent prerewritten_pressed_event = CreateKeyEvent(/*pressed=*/true);
+  ui::KeyEvent prerewritten_released_event = CreateKeyEvent(/*pressed=*/false);
   ui::KeyEvent pressed_event = CreateKeyEvent(/*pressed=*/true);
   ui::KeyEvent released_event = CreateKeyEvent(/*pressed=*/false);
   shortcut_input_provider_->TieProviderToWidget(widget_.get());
 
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
@@ -205,7 +282,11 @@ TEST_F(ShortcutInputProviderTest, WidgetDestroyedTest) {
 
   // Destroy the widget, key events should not be communicated over mojo.
   widget_.reset();
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_pressed_event);
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(
+      prerewritten_released_event);
   shortcut_input_handler_->OnKeyEvent(&released_event);
   shortcut_input_provider_->FlushMojoForTesting();
 
