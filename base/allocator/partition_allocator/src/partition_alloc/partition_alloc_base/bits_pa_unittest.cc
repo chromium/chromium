@@ -6,10 +6,10 @@
 
 #include "partition_alloc/partition_alloc_base/bits.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <limits>
 
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base::bits {
@@ -50,14 +50,14 @@ TEST(BitsTestPA, Log2Ceiling) {
 
 TEST(BitsTestPA, AlignUp) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignUp(0, 4));
-  EXPECT_EQ(4ul, AlignUp(1, 4));
-  EXPECT_EQ(4096ul, AlignUp(1, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4096, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4095, 4096));
-  EXPECT_EQ(8192ul, AlignUp(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0u, AlignUp(0u, 4u));
+  EXPECT_EQ(4u, AlignUp(1u, 4u));
+  EXPECT_EQ(4096u, AlignUp(1u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4096u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4095u, 4096u));
+  EXPECT_EQ(8192u, AlignUp(4097u, 4096u));
+  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTestPA, AlignUpPointer) {
@@ -83,15 +83,15 @@ TEST(BitsTestPA, AlignUpPointer) {
 
 TEST(BitsTestPA, AlignDown) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignDown(0, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4096, 4096));
-  EXPECT_EQ(0ul, AlignDown(4095, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, 32));
-  EXPECT_EQ(0ul, AlignDown(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0u, AlignDown(0u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4096u, 4096u));
+  EXPECT_EQ(0u, AlignDown(4095u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4097u, 4096u));
+  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, size_t{32}));
+  EXPECT_EQ(0ul, AlignDown(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTestPA, AlignDownPointer) {
@@ -118,10 +118,9 @@ TEST(BitsTestPA, AlignDownPointer) {
 }
 
 TEST(BitsTestPA, PowerOfTwo) {
-  EXPECT_FALSE(IsPowerOfTwo(-1));
-  EXPECT_FALSE(IsPowerOfTwo(0));
-  EXPECT_TRUE(IsPowerOfTwo(1));
-  EXPECT_TRUE(IsPowerOfTwo(2));
+  EXPECT_FALSE(IsPowerOfTwo(0u));
+  EXPECT_TRUE(IsPowerOfTwo(1u));
+  EXPECT_TRUE(IsPowerOfTwo(2u));
   // Unsigned 64 bit cases.
   for (uint32_t i = 2; i < 64; i++) {
     const uint64_t val = uint64_t{1} << i;
@@ -129,15 +128,6 @@ TEST(BitsTestPA, PowerOfTwo) {
     EXPECT_TRUE(IsPowerOfTwo(val));
     EXPECT_FALSE(IsPowerOfTwo(val + 1));
   }
-  // Signed 64 bit cases.
-  for (uint32_t i = 2; i < 63; i++) {
-    const int64_t val = int64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwo(val - 1));
-    EXPECT_TRUE(IsPowerOfTwo(val));
-    EXPECT_FALSE(IsPowerOfTwo(val + 1));
-  }
-  // Signed integers with only the last bit set are negative, not powers of two.
-  EXPECT_FALSE(IsPowerOfTwo(int64_t{1} << 63));
 }
 
 TEST(BitsTestPA, LeftMostBit) {

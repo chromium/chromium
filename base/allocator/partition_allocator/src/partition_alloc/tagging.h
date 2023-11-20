@@ -41,7 +41,7 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode);
 
 namespace internal {
 
-constexpr int kMemTagGranuleSize = 16u;
+constexpr uint64_t kMemTagGranuleSize = 16u;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 constexpr uint64_t kPtrTagMask = 0xff00000000000000uLL;
 #else

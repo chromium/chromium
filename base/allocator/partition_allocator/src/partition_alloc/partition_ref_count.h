@@ -5,8 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <atomic>
-#include <cstdint>
 
 #include "build/build_config.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
@@ -40,7 +42,7 @@ PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
 #if BUILDFLAG(IS_MAC)
   if (internal::base::mac::MacOSMajorVersion() == 13 ||
       internal::base::mac::MacOSMajorVersion() == 14) {
-    return internal::base::bits::AlignUp(ref_count_size, 8);
+    return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
   }
 #endif  // BUILDFLAG(IS_MAC)
   return ref_count_size;
