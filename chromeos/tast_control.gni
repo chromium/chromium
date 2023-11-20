@@ -133,10 +133,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1500320
   "lacros.ShelfLaunch",
 
-  # b/309858762
-  "login.AuthError",
-  "login.Offline",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
