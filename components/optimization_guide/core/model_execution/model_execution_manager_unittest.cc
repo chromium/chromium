@@ -26,17 +26,14 @@ namespace {
 using ::base::test::TestMessage;
 using ::testing::HasSubstr;
 
-TestMessage BuildTestMessage(const std::string& test_message_str) {
-  TestMessage test_message;
-  test_message.set_test(test_message_str);
-  return test_message;
-}
-
-proto::ExecuteResponse BuildTestExecuteResponse(const TestMessage& message) {
+proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
+  proto::ComposeResponse compose_response;
+  compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
-  any_metadata->set_type_url("type.googleapis.com/" + message.GetTypeName());
-  message.SerializeToString(any_metadata->mutable_value());
+  any_metadata->set_type_url("type.googleapis.com/" +
+                             compose_response.GetTypeName());
+  compose_response.SerializeToString(any_metadata->mutable_value());
   return execute_response;
 }
 
@@ -65,7 +62,7 @@ class ModelExecutionManagerTest : public testing::Test {
   bool SimulateSuccessfulResponse() {
     std::string serialized_response;
     proto::ExecuteResponse execute_response =
-        BuildTestExecuteResponse(BuildTestMessage("foo response"));
+        BuildComposeResponse("foo response");
     execute_response.SerializeToString(&serialized_response);
     return SimulateResponse(serialized_response, net::HTTP_OK);
   }
@@ -100,11 +97,11 @@ class ModelExecutionManagerTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
-  TestMessage test_message;
-  test_message.set_test("some test");
+  proto::ComposeRequest request;
+  request.set_user_input("a user typed this");
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test_message,
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelExecutionResult result,
@@ -118,21 +115,30 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
-  TestMessage test_message;
-  test_message.set_test("some test");
+  proto::ComposeRequest request;
+  request.set_user_input("a user typed this");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   model_execution_manager()->ExecuteModel(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test_message,
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelExecutionResult result,
              std::unique_ptr<ModelQualityLogEntry> log_entry) {
             EXPECT_TRUE(result.has_value());
-            EXPECT_EQ("foo response",
-                      ParsedAnyMetadata<TestMessage>(result.value())->test());
-            EXPECT_EQ(log_entry.get(), nullptr);
+            auto response =
+                ParsedAnyMetadata<proto::ComposeResponse>(result.value());
+            EXPECT_EQ("foo response", response->output());
+            EXPECT_NE(log_entry.get(), nullptr);
+            EXPECT_TRUE(log_entry.get()
+                            ->log_ai_data_request()
+                            ->mutable_compose()
+                            ->has_request_data());
+            EXPECT_TRUE(log_entry.get()
+                            ->log_ai_data_request()
+                            ->mutable_compose()
+                            ->has_response_data());
             run_loop->Quit();
           },
           &run_loop));
@@ -143,27 +149,36 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
-  TestMessage test_message;
-  test_message.set_test("some test");
+  proto::ComposeRequest request;
+  request.set_user_input("a user typed this");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   auto session = model_execution_manager()->StartSession(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   session->ExecuteModel(
-      test_message,
-      base::BindRepeating(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelStreamingExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            EXPECT_TRUE(result.has_value());
-            EXPECT_EQ("foo response",
-                      ParsedAnyMetadata<TestMessage>(result->response)->test());
-            EXPECT_TRUE(result->is_complete);
-            EXPECT_EQ(log_entry.get(), nullptr);
-            run_loop->Quit();
-          },
-          &run_loop));
+      request, base::BindRepeating(
+                   [](base::RunLoop* run_loop,
+                      OptimizationGuideModelStreamingExecutionResult result,
+                      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+                     EXPECT_TRUE(result.has_value());
+                     EXPECT_EQ("foo response",
+                               ParsedAnyMetadata<proto::ComposeResponse>(
+                                   result->response)
+                                   ->output());
+                     EXPECT_TRUE(result->is_complete);
+                     EXPECT_NE(log_entry.get(), nullptr);
+                     EXPECT_TRUE(log_entry.get()
+                                     ->log_ai_data_request()
+                                     ->mutable_compose()
+                                     ->has_request_data());
+                     EXPECT_TRUE(log_entry.get()
+                                     ->log_ai_data_request()
+                                     ->mutable_compose()
+                                     ->has_response_data());
+                     run_loop->Quit();
+                   },
+                   &run_loop));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
@@ -178,12 +193,12 @@ TEST_F(ModelExecutionManagerTest,
   auto session = model_execution_manager()->StartSession(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   // Message is added through AddContext().
-  TestMessage test_message;
-  test_message.set_test("some test");
-  session->AddContext(test_message);
+  proto::ComposeRequest request;
+  request.set_user_input("some test");
+  session->AddContext(request);
   // ExecuteModel() uses empty message.
   session->ExecuteModel(
-      TestMessage(),
+      proto::ComposeRequest(),
       base::BindRepeating(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelStreamingExecutionResult result,
@@ -205,15 +220,14 @@ TEST_F(ModelExecutionManagerTest,
       "test_email", signin::ConsentLevel::kSignin);
   auto session = model_execution_manager()->StartSession(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
-  TestMessage test_message;
-  test_message.set_test("first test");
-  session->AddContext(test_message);
-
-  test_message.set_test("second test");
-  session->AddContext(test_message);
+  proto::ComposeRequest request;
+  request.set_user_input("first test");
+  session->AddContext(request);
+  request.set_user_input("second test");
+  session->AddContext(request);
   // ExecuteModel() uses empty message.
   session->ExecuteModel(
-      TestMessage(),
+      proto::ComposeRequest(),
       base::BindRepeating(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelStreamingExecutionResult result,
@@ -236,20 +250,19 @@ TEST_F(ModelExecutionManagerTest,
   auto session = model_execution_manager()->StartSession(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   // First message is added through AddContext().
-  TestMessage test_message;
-  test_message.set_test("some test");
-  session->AddContext(test_message);
+  proto::ComposeRequest request;
+  request.set_user_input("test_message");
+  session->AddContext(request);
   // ExecuteModel() adds a different message.
-  test_message.set_test("other test");
+  request.set_user_input("other test");
   session->ExecuteModel(
-      test_message,
-      base::BindRepeating(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelStreamingExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            run_loop->Quit();
-          },
-          &run_loop));
+      request, base::BindRepeating(
+                   [](base::RunLoop* run_loop,
+                      OptimizationGuideModelStreamingExecutionResult result,
+                      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+                     run_loop->Quit();
+                   },
+                   &run_loop));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   CheckPendingRequestMessage("other test");

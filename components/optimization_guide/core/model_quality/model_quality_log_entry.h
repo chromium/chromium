@@ -30,6 +30,10 @@ class ModelQualityLogEntry {
         ->mutable_quality_data();
   }
 
+  proto::LogAiDataRequest* log_ai_data_request() {
+    return log_ai_data_request_.get();
+  }
+
  private:
   // Holds feature's model execution and quality data.
   std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request_;
