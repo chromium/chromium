@@ -1870,12 +1870,11 @@
       status: "stable",
     },
     {
-      // TODO(crbug.com/484651): Allow text-based form controls to have vertical
-      // writing mode: textarea and input types email, number, password, search,
-      // tel, text, url.
+      // Allow text-based form controls to have vertical writing mode: textarea
+      // and input types email, number, password, search, tel, text, url.
       name: "FormControlsVerticalWritingModeTextSupport",
       depends_on: ["ArrowKeysInVerticalWritingModes"],
-      status: "experimental",
+      status: "stable",
     },
     {
       // Bug fix for crbug.com/1429585
