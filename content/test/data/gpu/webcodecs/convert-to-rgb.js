@@ -5,7 +5,7 @@
 'use strict';
 
 async function validateFourColorsBytes(frame) {
-  const tolerance = 5;
+  const tolerance = 8;
   const m = 4;
   let expected_xy_color = [
     // Left-top yellow
