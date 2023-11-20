@@ -198,7 +198,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   if (self.remoteSuggestionsService) {
     _remoteSuggestionsServiceObserverBridge =
         std::make_unique<RemoteSuggestionsServiceObserverBridge>(
-            debugInfoConsumer);
+            debugInfoConsumer, self.remoteSuggestionsService);
     self.remoteSuggestionsService->AddObserver(
         _remoteSuggestionsServiceObserverBridge.get());
   }

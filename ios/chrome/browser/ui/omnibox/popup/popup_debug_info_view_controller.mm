@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event_view_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -268,15 +269,23 @@ UITableView* SuggestionsTableView() {
 #pragma mark - RemoteSuggestionsServiceObserver
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-                 startingRequest:(const network::ResourceRequest*)request
-                uniqueIdentifier:
-                    (const base::UnguessableToken&)requestIdentifier {
+    createdRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                         request:(const network::ResourceRequest*)request {
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    startedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                     requestBody:(NSString*)requestBody
+                       URLLoader:(network::SimpleURLLoader*)URLLoader {
 }
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
     completedRequestWithIdentifier:
         (const base::UnguessableToken&)requestIdentifier
-                  receivedResponse:(NSString*)response {
+                      responseCode:(NSInteger)code
+                      responseBody:(NSString*)responseBody {
 }
 
 #pragma mark - UITableViewDataSource

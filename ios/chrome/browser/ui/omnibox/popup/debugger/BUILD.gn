@@ -13,6 +13,10 @@ source_set("debugger") {
     "omnibox_autocomplete_event_view_controller.h",
     "omnibox_autocomplete_event_view_controller.mm",
     "omnibox_event.h",
+    "omnibox_remote_suggestion_event.h",
+    "omnibox_remote_suggestion_event.mm",
+    "omnibox_remote_suggestion_event_view_controller.h",
+    "omnibox_remote_suggestion_event_view_controller.mm",
   ]
   deps = [
     "//base",
