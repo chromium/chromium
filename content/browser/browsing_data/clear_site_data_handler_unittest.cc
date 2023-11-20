@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -668,6 +669,8 @@ TEST_F(ClearSiteDataHandlerTest, ThirdPartyCookieBlockingEnabled) {
   const GURL kTestURL("https://example.com");
 
   for (const auto partitioned_state_allowed_only : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("partitioned_state_allowed_only: %d",
+                                    partitioned_state_allowed_only));
     auto context = net::CreateTestURLRequestContextBuilder()->Build();
     std::unique_ptr<net::URLRequest> request(
         context->CreateRequest(kTestURL, net::DEFAULT_PRIORITY, nullptr,

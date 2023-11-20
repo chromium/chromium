@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -386,7 +387,9 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
                base::BindRepeating(&AutofillCounterTest::Callback,
                                    base::Unretained(this)));
 
-  for (const TestCase& test_case : test_cases) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    const auto& test_case = test_cases[i];
     counter.SetPeriodStartForTesting(test_case.period_start);
     counter.Restart();
     WaitForCounting();

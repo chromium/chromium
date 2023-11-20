@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
@@ -167,8 +168,10 @@ TEST(BrowsingDataFilterBuilderImplTest, Noop) {
       {"https://website.sp.nom.br", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, EmptyDelete) {
@@ -187,8 +190,9 @@ TEST(BrowsingDataFilterBuilderImplTest, EmptyDelete) {
       {"http://192.168.1.1:80", false},
   };
 
-  for (TestCase test_case : test_cases) {
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
   }
 }
 
@@ -243,8 +247,10 @@ TEST(BrowsingDataFilterBuilderImplTest, RegistrableDomainGURLDeleteList) {
       {"https://sp.nom.br", false},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, RegistrableDomainGURLPreserveList) {
@@ -287,8 +293,10 @@ TEST(BrowsingDataFilterBuilderImplTest, RegistrableDomainGURLPreserveList) {
       {"https://sp.nom.br", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest,
@@ -337,8 +345,10 @@ TEST(BrowsingDataFilterBuilderImplTest,
       {"https://subdomain.second-level-domain.fileserver", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, builder.BuildCookieDeletionFilter());
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], builder.BuildCookieDeletionFilter());
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, EmptyCookieDeletionFilter) {
@@ -395,8 +405,10 @@ TEST(BrowsingDataFilterBuilderImplTest,
       {"https://subdomain.second-level-domain.fileserver", false},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, builder.BuildCookieDeletionFilter());
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], builder.BuildCookieDeletionFilter());
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
@@ -666,8 +678,10 @@ TEST(BrowsingDataFilterBuilderImplTest,
       {"website.fileserver", false},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest,
@@ -701,8 +715,10 @@ TEST(BrowsingDataFilterBuilderImplTest,
       {"website.fileserver", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, OriginDeleteList) {
@@ -732,8 +748,10 @@ TEST(BrowsingDataFilterBuilderImplTest, OriginDeleteList) {
       {"https://www.chromium.org", false},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, OriginPreserveList) {
@@ -763,8 +781,10 @@ TEST(BrowsingDataFilterBuilderImplTest, OriginPreserveList) {
       {"https://www.youtube.com", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, CombinedDeleteList) {
@@ -786,8 +806,10 @@ TEST(BrowsingDataFilterBuilderImplTest, CombinedDeleteList) {
       {"https://www.example.com/?q=test", true},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, CombinedPreserveList) {
@@ -809,8 +831,10 @@ TEST(BrowsingDataFilterBuilderImplTest, CombinedPreserveList) {
       {"https://www.example.com/?q=test", false},
   };
 
-  for (TestCase test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, PartitionedDeleteList) {
@@ -842,8 +866,10 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedDeleteList) {
       {origin3, origin3, blink::mojom::AncestorChainBit::kCrossSite, true},
   };
 
-  for (auto test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, PartitionedPreserveList) {
@@ -875,8 +901,10 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedPreserveList) {
       {origin3, origin3, blink::mojom::AncestorChainBit::kCrossSite, false},
   };
 
-  for (auto test_case : test_cases)
-    RunTestCase(test_case, filter);
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    RunTestCase(test_cases[i], filter);
+  }
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, GetOrigins) {

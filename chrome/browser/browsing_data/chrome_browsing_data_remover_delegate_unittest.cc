@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -3128,6 +3129,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       content::BrowsingDataRemover::DATA_TYPE_COOKIES,
       constants::DATA_TYPE_HISTORY, constants::DATA_TYPE_PASSWORDS};
   for (content::BrowsingDataRemover::DataType test_data_type : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Test data type %d",
+                                    static_cast<int>(test_data_type)));
+
     {
       FederatedIdentityPermissionContext federated_context(GetProfile());
 

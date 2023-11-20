@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -990,7 +991,10 @@ IN_PROC_BROWSER_TEST_F(
           true,
       },
   };
-  for (const auto& test_case : test_cases) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
+    const auto& test_case = test_cases[i];
+
     password_manager::features_util::OptInToAccountStorage(prefs,
                                                            &sync_service);
 
