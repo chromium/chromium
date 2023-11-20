@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
+#import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
@@ -340,6 +341,9 @@ enum class ToolbarKind {
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
     paymentsSuggestionBottomSheetCoordinator;
+
+@property(nonatomic, strong)
+    PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
 
 // Coordinator for the choice screen.
 @property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
@@ -669,6 +673,9 @@ enum class ToolbarKind {
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
@@ -1301,6 +1308,9 @@ enum class ToolbarKind {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
+
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
@@ -1546,6 +1556,14 @@ enum class ToolbarKind {
   [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
+- (void)showPlusAddressesBottomSheet {
+  self.plusAddressBottomSheetCoordinator =
+      [[PlusAddressBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.plusAddressBottomSheetCoordinator start];
+}
+
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
   if (self.paymentsSuggestionBottomSheetCoordinator) {
     return;
@@ -1780,6 +1798,11 @@ enum class ToolbarKind {
 - (void)dismissPaymentSuggestions {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+}
+
+- (void)dismissPlusAddressBottomSheet {
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
 }
 
 - (void)showChoice {

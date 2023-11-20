@@ -89,6 +89,8 @@ source_set("browser_view") {
     "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/plus_addresses/coordinator",
+    "//ios/chrome/browser/plus_addresses/ui",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/prerender/model",

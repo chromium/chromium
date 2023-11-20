@@ -107,6 +107,9 @@ class GURL;
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
 
+// Dismiss the plus address bottom sheet.
+- (void)dismissPlusAddressBottomSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

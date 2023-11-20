@@ -12,6 +12,7 @@
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "url/origin.h"
 
 namespace autofill {
 class AutofillBottomSheetObserver;
@@ -26,6 +27,15 @@ class ScriptMessage;
 @class CommandDispatcher;
 @protocol PasswordsAccountStorageNoticeHandler;
 
+// This class manages state and events relating to the showing of various bottom
+// sheets for Autofill/Password Manager.
+//
+// Some bottom sheets show in response to browser-layer interactions. These can
+// be instantiated directly using public Show... methods.
+//
+// Others show in response to JS-layer interactions. In these cases, this class
+// attaches/detaches listeners in the document, and shows the appropriate bottom
+// sheet when these listeners are triggered.
 class AutofillBottomSheetTabHelper
     : public web::WebFramesManager::Observer,
       public web::WebStateObserver,
@@ -45,6 +55,13 @@ class AutofillBottomSheetTabHelper
   // Observer registration methods.
   void AddObserver(autofill::AutofillBottomSheetObserver* observer);
   void RemoveObserver(autofill::AutofillBottomSheetObserver* observer);
+
+  // Shows the plus address bottom sheet, taken in response to choosing a
+  // `kCreateNewPlusAddress` autofill suggestion. Also stores `callback` for
+  // if/when the UI completes successfully.
+  void ShowPlusAddressesBottomSheet(
+      const url::Origin& main_frame_origin,
+      plus_addresses::PlusAddressCallback callback);
 
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
@@ -88,6 +105,9 @@ class AutofillBottomSheetTabHelper
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
                               FieldTypeSource source) override;
+
+  // Used to get the callback to be run on completion of the plus_address UI.
+  plus_addresses::PlusAddressCallback GetPendingPlusAddressFillCallback();
 
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
@@ -154,6 +174,10 @@ class AutofillBottomSheetTabHelper
 
   base::ObserverList<autofill::AutofillBottomSheetObserver>::Unchecked
       observers_;
+
+  // A callback to be run on completion of the plus address bottom sheet UI
+  // flow.
+  plus_addresses::PlusAddressCallback pending_plus_address_callback_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

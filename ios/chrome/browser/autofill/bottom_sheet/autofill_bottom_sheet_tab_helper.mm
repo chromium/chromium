@@ -65,6 +65,13 @@ AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
 
 // Public methods
 
+void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
+    const url::Origin& main_frame_origin,
+    plus_addresses::PlusAddressCallback callback) {
+  pending_plus_address_callback_ = std::move(callback);
+  [commands_handler_ showPlusAddressesBottomSheet];
+}
+
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     id<AutofillBottomSheetCommands> commands_handler) {
   commands_handler_ = commands_handler;
@@ -335,6 +342,11 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
   AttachListeners(renderer_ids, registered_payments_renderer_ids_[frame_id],
                   frame_id,
                   /*must_be_empty=*/true);
+}
+
+plus_addresses::PlusAddressCallback
+AutofillBottomSheetTabHelper::GetPendingPlusAddressFillCallback() {
+  return std::move(pending_plus_address_callback_);
 }
 
 // Private methods
