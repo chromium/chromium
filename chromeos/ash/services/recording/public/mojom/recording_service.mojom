@@ -7,6 +7,7 @@ module recording.mojom;
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
@@ -81,7 +82,8 @@ interface RecordingServiceClient {
 // video.
 // Note that a maximum of one screen recording can be done at any time.
 // TODO(https://crbug.com/1147991) Explore alternative sandboxing.
-[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox,
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
   // Ash) which will be notified when recording finishes and all the encoded
@@ -134,6 +136,7 @@ interface RecordingService {
   // needed. This is desired in Fullscreen recording, as it makes it clear when
   // the recorded display changes its rotation.
   // |frame_sink_id| must be valid.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   RecordFullscreen(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
@@ -166,6 +169,7 @@ interface RecordingService {
   // OnFrameSinkSizeChanged() which will update the resolution constraints on
   // the capturer to avoid letterboxing, so the resulting video frames are sharp
   // and crisp, and their size match that of the window in pixels.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   RecordWindow(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
@@ -193,6 +197,7 @@ interface RecordingService {
   // generated video frame sizes, which results in the wrong region being shown
   // in the video.
   // |frame_sink_id| must be valid.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   RecordRegion(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,

@@ -6,8 +6,10 @@ module audio.mojom;
 
 import "media/mojo/mojom/audio_parameters.mojom";
 import "services/audio/public/mojom/audio_device_description.mojom";
+import "sandbox/policy/mojom/context.mojom";
 
 // Provides information about audio system.
+[RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface SystemInfo {
   // Replies with parameters for a specified input device (empty parameters if
   // the device is not found).

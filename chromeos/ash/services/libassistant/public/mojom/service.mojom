@@ -18,6 +18,7 @@ import "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_co
 import "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom";
 import "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom";
 import "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Service is hosted in the browser process if libassistant is not available.
@@ -38,6 +39,7 @@ const sandbox.mojom.Sandbox kLibassistantServiceSandbox
 interface LibassistantService {
 
   // Bind everything needed to start the service.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   Bind(
     pending_receiver<AudioInputController> audio_input_controller,
     pending_receiver<ConversationController> conversation_controller,

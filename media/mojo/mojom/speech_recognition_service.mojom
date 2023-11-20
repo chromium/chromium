@@ -10,6 +10,7 @@ import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/speech_recognition.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Like a SpeechRecognitionContext, except it binds AudioSourceFetcher speech
@@ -17,10 +18,12 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // Chrome OS features like Dictation and Projector, every
 // OnDeviceSpeechRecognizer can own a
 // Remote<AudioSourceSpeechRecognitionContext>.
+[RequireContext=sandbox.mojom.Context.kBrowser]
 interface AudioSourceSpeechRecognitionContext {
   // Prepares microphone audio to be captured from within the
   // SpeechRecognitionService process, with results passed back to the
   // SpeechRecognitionRecognizerClient.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindAudioSourceFetcher(
       pending_receiver<AudioSourceFetcher> fetcher_receiver,
       pending_remote<SpeechRecognitionRecognizerClient> client,
@@ -31,7 +34,8 @@ interface AudioSourceSpeechRecognitionContext {
 // The main interface to a speech secognition service process.
 // Used by the browser to issue top-level control requests to the service,
 // acquired during process launch.
-[ServiceSandbox=sandbox.mojom.Sandbox.kSpeechRecognition]
+[ServiceSandbox=sandbox.mojom.Sandbox.kSpeechRecognition,
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface SpeechRecognitionService {
   // Binds a new SpeechRecognitionContext hosted in the service process.
   BindSpeechRecognitionContext(
@@ -39,6 +43,7 @@ interface SpeechRecognitionService {
 
   // Binds a new AudioSourceSpeechRecognitionContext hosted in the service
   // process.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindAudioSourceSpeechRecognitionContext(
       pending_receiver<AudioSourceSpeechRecognitionContext> context);
 
@@ -57,11 +62,14 @@ interface SpeechRecognitionService {
 };
 
 // The interface used to start and stop fetching audio from the microphone
-// for speech recognition.
+// for speech recognition. Provided by the browser to the speech recognition
+// service.
+[RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface AudioSourceFetcher {
   // Begin fetching audio. Results will be returned using the
   // Remote<SpeechRecognitionRecognizerClient> which was passed in
   // BindAudioSourceFetcher.
+  [AllowedContext=sandbox.mojom.Context.kPrivilegedUtility]
   Start(pending_remote<AudioStreamFactory> factory, string device_id,
         media.mojom.AudioParameters audio_parameters);
 
