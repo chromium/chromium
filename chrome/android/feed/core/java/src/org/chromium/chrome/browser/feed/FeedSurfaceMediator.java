@@ -303,8 +303,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(
                 Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED,
                 () -> {
-                    int visibility = shouldShowSupervisedUserInfoCard() ? View.VISIBLE : View.GONE;
-                    setSupervisedUserInfoCardVisibility(visibility);
+                    updateSupervisedUserInfoCardVisibility(isSuggestionsVisible());
                 });
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED)) {
@@ -531,6 +530,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
 
         boolean suggestionsVisible = isSuggestionsVisible();
+        updateSupervisedUserInfoCardVisibility(suggestionsVisible);
 
         @StreamKind
         int streamKind =
@@ -921,7 +921,11 @@ public class FeedSurfaceMediator
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
     }
 
-    void setSupervisedUserInfoCardVisibility(int visibility) {
+    void updateSupervisedUserInfoCardVisibility(boolean suggestionsVisible) {
+        int visibility =
+                (suggestionsVisible && shouldShowSupervisedUserInfoCard())
+                        ? View.VISIBLE
+                        : View.GONE;
         View infoCardView = mCoordinator.getSupervisedUserInfoCardView();
         if (infoCardView == null || infoCardView.getVisibility() == visibility) {
             return;
@@ -955,13 +959,7 @@ public class FeedSurfaceMediator
                                 suggestionsVisible, mTabToStreamMap.get(0).getStreamKind()));
 
         setHeaderIndicatorState(suggestionsVisible);
-
-        // Update the supervised user info card if applicable.
-        int visibility =
-                (suggestionsVisible && shouldShowSupervisedUserInfoCard())
-                        ? View.VISIBLE
-                        : View.GONE;
-        setSupervisedUserInfoCardVisibility(visibility);
+        updateSupervisedUserInfoCardVisibility(suggestionsVisible);
 
         // Update toggleswitch item, which is last item in list.
         mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());

@@ -8,11 +8,14 @@ proto_library("proto") {
   sources = [
     "discover_feed.proto",
     "families_common.proto",
+    "get_discover_feed_query.proto",
     "get_discover_feed_request.proto",
     "get_discover_feed_response.proto",
     "kidschromemanagement_messages.proto",
     "permissions_common.proto",
     "rendered_result.proto",
+    "request_context.proto",
+    "surface.proto",
   ]
 }
 

@@ -46,18 +46,4 @@ found in the LICENSE file.
       android:translationY="-0.23sp"
       android:text="@string/supervised_user_discover_bottom_sheet_text"/>
 
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:background="?android:attr/listDivider"/>
-
-  <org.chromium.ui.widget.ButtonCompat
-      android:layout_gravity="center"
-      android:id="@+id/done_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:enabled="true"
-      android:text="@string/done"
-      style="@style/TextButton" />
-
 </LinearLayout>

@@ -31,16 +31,6 @@ public class SupervisedUserDiscoverSheetContent implements BottomSheetContent {
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.supervised_user_discover_bottom_sheet, null);
         mBottomSheetController = bottomSheetController;
-
-        Button close = mContentView.findViewById(R.id.done_button);
-
-        close.setOnClickListener(
-                (view) -> {
-                    mBottomSheetController.hideContent(
-                            this,
-                            /* animate= */ false,
-                            BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-                });
     }
 
     @Override

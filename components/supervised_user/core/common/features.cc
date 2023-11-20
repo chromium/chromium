@@ -16,7 +16,7 @@ namespace supervised_user {
 
 BASE_FEATURE(kKidFriendlyContentFeed,
              "KidFriendlyContentFeed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint{
     &kKidFriendlyContentFeed, "supervised_feed_endpoint",

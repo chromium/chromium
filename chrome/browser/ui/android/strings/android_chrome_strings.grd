@@ -3431,6 +3431,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         \n\nGoogle Chrome on Android provides quality content to help you discover, create, and grow. Open a New Tab Page in Chrome, and you'll find recommended content that is interesting and appropriate for your age. You can save content to read later, or share it with a friend or family member. Your list of content will be updated each day.
         \n\nThe list is not based on your interests or browsing history, so it won't be customized for you.
       </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_FOOTER_TITLE" desc="Title of the footer to supervised users when they reach the bottom of the discover feed" translateable="false">
+        That's all for today
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_FOOTER_SUBTITLE" desc="Subtitle of the footer to supervised users when they reach the bottom of the discover feed" translateable="false">
+        You'll see new stuff tomorrow
+      </message>
       <message name="IDS_NTP_FOLLOWING"
         meaning="Title for content - e.g. Followed sites"
         desc="Title in the feed header for user-customized following feed. This feed is composed of articles and content from sites that the user has followed">Following</message>
