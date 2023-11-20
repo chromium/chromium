@@ -110,11 +110,11 @@ const char* GetAndroidFrameTimelineDurationHistogramName(
 void JNI_JankMetricUMARecorder_RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
-    const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jintArray>& java_missed_vsyncs,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration,
     jint java_scenario_enum) {
-  RecordJankMetrics(env, java_durations_ns, java_jank_status,
+  RecordJankMetrics(env, java_durations_ns, java_missed_vsyncs,
                     java_reporting_interval_start_time,
                     java_reporting_interval_duration, java_scenario_enum);
 }
@@ -122,15 +122,15 @@ void JNI_JankMetricUMARecorder_RecordJankMetrics(
 void RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
-    const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jintArray>& java_missed_vsyncs,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration,
     jint java_scenario_enum) {
   std::vector<int64_t> durations_ns;
   JavaLongArrayToInt64Vector(env, java_durations_ns, &durations_ns);
 
-  std::vector<bool> jank_status;
-  JavaBooleanArrayToBoolVector(env, java_jank_status, &jank_status);
+  std::vector<int> missed_vsyncs;
+  JavaIntArrayToIntVector(env, java_missed_vsyncs, &missed_vsyncs);
 
   JankScenario scenario = static_cast<JankScenario>(java_scenario_enum);
 
@@ -146,7 +146,8 @@ void RecordJankMetrics(
 
   uint64_t janky_frame_count = 0;
 
-  for (bool is_janky : jank_status) {
+  for (int curr_frame_missed_vsyncs : missed_vsyncs) {
+    bool is_janky = curr_frame_missed_vsyncs > 0;
     base::UmaHistogramEnumeration(
         janky_frames_per_scenario_histogram_name,
         is_janky ? FrameJankStatus::kJanky : FrameJankStatus::kNonJanky);
@@ -157,7 +158,7 @@ void RecordJankMetrics(
 
   RecordJankMetricReportingIntervalTraceEvent(
       java_reporting_interval_start_time, java_reporting_interval_duration,
-      janky_frame_count, jank_status.size() - janky_frame_count,
+      janky_frame_count, missed_vsyncs.size() - janky_frame_count,
       java_scenario_enum);
 }
 

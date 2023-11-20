@@ -11,15 +11,20 @@ package org.chromium.base.jank_tracker;
 class JankMetrics {
     public final long[] timestampsNs;
     public final long[] durationsNs;
+    public final int[] missedVsyncs;
     public final boolean[] isJanky;
+
     public JankMetrics() {
         timestampsNs = new long[0];
         durationsNs = new long[0];
+        missedVsyncs = new int[0];
         isJanky = new boolean[0];
     }
-    public JankMetrics(long[] timestampsNs, long[] durationsNs, boolean[] isJanky) {
+
+    public JankMetrics(long[] timestampsNs, long[] durationsNs, int[] missedVsyncs) {
         this.timestampsNs = timestampsNs;
         this.durationsNs = durationsNs;
-        this.isJanky = isJanky;
+        this.missedVsyncs = missedVsyncs;
+        isJanky = new boolean[0];
     }
 }

@@ -17,13 +17,22 @@ public class JankMetricUMARecorder {
         if (metric == null) {
             return;
         }
-        JankMetricUMARecorderJni.get().recordJankMetrics(metric.durationsNs, metric.isJanky,
-                reportingIntervalStartTime, reportingIntervalDuration, scenario);
+        JankMetricUMARecorderJni.get()
+                .recordJankMetrics(
+                        metric.durationsNs,
+                        metric.missedVsyncs,
+                        reportingIntervalStartTime,
+                        reportingIntervalDuration,
+                        scenario);
     }
 
     @NativeMethods
     public interface Natives {
-        void recordJankMetrics(long[] durationsNs, boolean[] jankStatus,
-                long reportingIntervalStartTime, long reportingIntervalDuration, int scenario);
+        void recordJankMetrics(
+                long[] durationsNs,
+                int[] missedVsyncs,
+                long reportingIntervalStartTime,
+                long reportingIntervalDuration,
+                int scenario);
     }
 }

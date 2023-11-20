@@ -35,9 +35,10 @@ public class FrameMetricsStore {
     // Array of total durations stored in nanoseconds, they represent how long each frame took to
     // draw.
     private final ArrayList<Long> mTotalDurationsNs = new ArrayList<>();
-    // Array of boolean values denoting whether a given frame is janky or not. Must always be the
-    // same size as mTotalDurationsNs.
-    private final ArrayList<Boolean> mIsJanky = new ArrayList<>();
+    // Array of integers denoting number of vsyncs we missed for given frame. 0 missed vsyncs mean
+    // no jank, while >0 missed vsyncs mean the frame was janky. Must always be the same size as
+    // mTotalDurationsNs.
+    private final ArrayList<Integer> mNumMissedVsyncs = new ArrayList<>();
     // Stores the timestamp (nanoseconds) of the most recent frame metric as a scenario started.
     // Zero if no FrameMetrics have been received.
     private final HashMap<Integer, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
@@ -51,7 +52,7 @@ public class FrameMetricsStore {
         // Add arbitrary values to related arrays as well since we always want them to be of same
         // size.
         mTotalDurationsNs.add(0L);
-        mIsJanky.add(false);
+        mNumMissedVsyncs.add(0);
     }
 
     // Convert an enum value to string to use as an UMA histogram name, changes to strings should be
@@ -91,13 +92,11 @@ public class FrameMetricsStore {
         mThreadChecker = new ThreadChecker();
     }
 
-    /**
-     * Records the total draw duration and jankiness for a single frame.
-     */
-    void addFrameMeasurement(long totalDurationNs, boolean isJanky, long frameStartVsyncTs) {
+    /** Records the total draw duration and jankiness for a single frame. */
+    void addFrameMeasurement(long totalDurationNs, int numMissedVsyncs, long frameStartVsyncTs) {
         mThreadChecker.assertOnValidThread();
         mTotalDurationsNs.add(totalDurationNs);
-        mIsJanky.add(isJanky);
+        mNumMissedVsyncs.add(numMissedVsyncs);
         mTimestampsNs.add(frameStartVsyncTs);
         mMaxTimestamp = frameStartVsyncTs;
     }
@@ -185,9 +184,10 @@ public class FrameMetricsStore {
             }
 
             JankMetrics jankMetrics =
-                    convertArraysToJankMetrics(mTimestampsNs.subList(startingIndex, endingIndex),
+                    convertArraysToJankMetrics(
+                            mTimestampsNs.subList(startingIndex, endingIndex),
                             mTotalDurationsNs.subList(startingIndex, endingIndex),
-                            mIsJanky.subList(startingIndex, endingIndex));
+                            mNumMissedVsyncs.subList(startingIndex, endingIndex));
             removeUnusedFrames();
 
             Long pendingStartTimestampNs = mPendingStartTimestampNs.remove(scenario);
@@ -203,7 +203,7 @@ public class FrameMetricsStore {
             TraceEvent.instant("removeUnusedFrames", Long.toString(mTimestampsNs.size()));
             mTimestampsNs.subList(1, mTimestampsNs.size()).clear();
             mTotalDurationsNs.subList(1, mTotalDurationsNs.size()).clear();
-            mIsJanky.subList(1, mIsJanky.size()).clear();
+            mNumMissedVsyncs.subList(1, mNumMissedVsyncs.size()).clear();
             return;
         }
 
@@ -226,7 +226,7 @@ public class FrameMetricsStore {
 
         mTimestampsNs.subList(1, firstUsedIndex).clear();
         mTotalDurationsNs.subList(1, firstUsedIndex).clear();
-        mIsJanky.subList(1, firstUsedIndex).clear();
+        mNumMissedVsyncs.subList(1, firstUsedIndex).clear();
     }
 
     private long findFirstUsedTimestamp() {
@@ -241,7 +241,9 @@ public class FrameMetricsStore {
     }
 
     private JankMetrics convertArraysToJankMetrics(
-            List<Long> longTimestampsNs, List<Long> longDurations, List<Boolean> booleanIsJanky) {
+            List<Long> longTimestampsNs,
+            List<Long> longDurations,
+            List<Integer> intNumMissedVsyncs) {
         long[] timestamps = new long[longTimestampsNs.size()];
         for (int i = 0; i < longTimestampsNs.size(); i++) {
             timestamps[i] = longTimestampsNs.get(i).longValue();
@@ -252,12 +254,12 @@ public class FrameMetricsStore {
             durations[i] = longDurations.get(i).longValue();
         }
 
-        boolean[] isJanky = new boolean[booleanIsJanky.size()];
-        for (int i = 0; i < booleanIsJanky.size(); i++) {
-            isJanky[i] = booleanIsJanky.get(i).booleanValue();
+        int[] numMissedVsyncs = new int[intNumMissedVsyncs.size()];
+        for (int i = 0; i < intNumMissedVsyncs.size(); i++) {
+            numMissedVsyncs[i] = intNumMissedVsyncs.get(i).intValue();
         }
 
-        JankMetrics jankMetrics = new JankMetrics(timestamps, durations, isJanky);
+        JankMetrics jankMetrics = new JankMetrics(timestamps, durations, numMissedVsyncs);
         return jankMetrics;
     }
 }

@@ -46,19 +46,19 @@ const int64_t kDurations[] = {
 };
 const size_t kDurationsLen = std::size(kDurations);
 
-jbooleanArray GenerateJavaBooleanArray(JNIEnv* env,
-                                       const bool bool_array[],
-                                       const size_t array_length) {
-  ScopedJavaLocalRef<jbooleanArray> java_bool_array =
-      ToJavaBooleanArray(env, bool_array, array_length);
+jintArray GenerateJavaIntArray(JNIEnv* env,
+                               const int int_array[],
+                               const size_t array_length) {
+  ScopedJavaLocalRef<jintArray> java_int_array =
+      ToJavaIntArray(env, int_array, array_length);
 
-  return java_bool_array.Release();
+  return java_int_array.Release();
 }
 
-const bool kJankStatus[] = {
-    false, false, true, false, true, false, false, false,
+const int kMissedVsyncs[] = {
+    0, 0, 2, 0, 1, 0, 0, 0,
 };
-const size_t kJankStatusLen = kDurationsLen;
+const size_t kMissedVsyncsLen = kDurationsLen;
 
 }  // namespace
 
@@ -69,8 +69,8 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
   jlongArray java_durations =
       GenerateJavaLongArray(env, kDurations, kDurationsLen);
 
-  jbooleanArray java_jank_status =
-      GenerateJavaBooleanArray(env, kJankStatus, kJankStatusLen);
+  jintArray java_missed_vsyncs =
+      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
 
   const int kMinScenario = static_cast<int>(JankScenario::PERIODIC_REPORTING);
   const int kMaxScenario = static_cast<int>(JankScenario::MAX_VALUE);
@@ -87,8 +87,8 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
         env,
         /* java_durations_ns= */
         base::android::JavaParamRef<jlongArray>(env, java_durations),
-        /* java_jank_status = */
-        base::android::JavaParamRef<jbooleanArray>(env, java_jank_status),
+        /* java_missed_vsyncs = */
+        base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
         /* java_reporting_interval_start_time = */ 0,
         /* java_reporting_interval_duration = */ 1000,
         /* java_scenario_enum = */ i);
