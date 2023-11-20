@@ -28,6 +28,8 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
@@ -179,6 +181,13 @@ void WebApps::GetMenuModel(const std::string& app_id,
     return;
   }
 
+  bool can_close = true;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&can_close](const apps::AppUpdate& update) {
+        can_close = update.AllowClose().value_or(true);
+      });
+
   apps::MenuItems menu_items;
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager && swa_manager->IsSystemWebApp(web_app->app_id())) {
@@ -191,7 +200,10 @@ void WebApps::GetMenuModel(const std::string& app_id,
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     }
-  } else {
+    // If app cannot be closed there should be no more than 1 open window, so we
+    // should not allow open more windows because user won't be able to close
+    // them.
+  } else if (can_close) {
     if (chromeos::features::IsCrosShortstandEnabled()) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);

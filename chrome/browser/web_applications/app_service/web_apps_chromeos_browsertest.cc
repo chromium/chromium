@@ -132,6 +132,12 @@ namespace {
 
 constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
 
+bool HasMenuModelCommandId(ui::MenuModel* model, ash::CommandId command_id) {
+  size_t index = 0;
+  return ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
+                                                     &index);
+}
+
 }  // namespace
 
 class WebAppsPreventCloseChromeOsBrowserTest
@@ -159,8 +165,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
-                       CheckCloseButtonPresence) {
+IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
   PinAppWithIDToShelf(web_app::kCalculatorAppId);
 
@@ -201,11 +206,19 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
   std::unique_ptr<ui::SimpleMenuModel> menu_model(model_future.Take());
   ASSERT_TRUE(menu_model);
 
-  size_t index = 0;
-  ui::MenuModel* sub_model = menu_model.get();
-  EXPECT_EQ(ui::MenuModel::GetModelAndIndexForCommandId(ash::MENU_CLOSE,
-                                                        &sub_model, &index),
+  // Check close button.
+  EXPECT_EQ(HasMenuModelCommandId(menu_model.get(), ash::MENU_CLOSE),
             !IsPreventCloseEnabled());
+
+  // Check new window and new tab buttons.
+  EXPECT_EQ(HasMenuModelCommandId(menu_model.get(), ash::LAUNCH_NEW),
+            !IsPreventCloseEnabled());
+  EXPECT_EQ(
+      HasMenuModelCommandId(menu_model.get(), ash::USE_LAUNCH_TYPE_REGULAR),
+      !IsPreventCloseEnabled());
+  EXPECT_EQ(
+      HasMenuModelCommandId(menu_model.get(), ash::USE_LAUNCH_TYPE_WINDOW),
+      !IsPreventCloseEnabled());
 
   // Clear policy values, otherwise we won't be able to gracefully close stop
   // browser test.
