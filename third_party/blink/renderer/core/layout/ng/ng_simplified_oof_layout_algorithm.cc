@@ -76,7 +76,8 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
 }
 
 const NGLayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
-  FinishFragmentationForFragmentainer(ConstraintSpace(), &container_builder_);
+  FinishFragmentationForFragmentainer(GetConstraintSpace(),
+                                      &container_builder_);
   return container_builder_.ToBoxFragment();
 }
 

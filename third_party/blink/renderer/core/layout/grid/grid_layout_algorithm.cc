@@ -22,7 +22,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
   const auto& node = Node();
   const auto& style = Style();
-  const auto& constraint_space = ConstraintSpace();
+  const auto& constraint_space = GetConstraintSpace();
 
   // At various stages of the algorithm we need to know the grid available-size.
   // If it's initially indefinite, we need to know the min/max sizes as well.
@@ -207,7 +207,7 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
 const NGLayoutResult* GridLayoutAlgorithm::Layout() {
   const auto* result = LayoutInternal();
   if (result->Status() == NGLayoutResult::kDisableFragmentation) {
-    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    DCHECK(GetConstraintSpace().HasBlockFragmentation());
     return RelayoutWithoutFragmentation<GridLayoutAlgorithm>();
   }
   return result;
@@ -276,7 +276,7 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
 
   const auto& node = Node();
   const auto& border_padding = BorderPadding();
-  const auto& constraint_space = ConstraintSpace();
+  const auto& constraint_space = GetConstraintSpace();
 
   const auto block_size = ComputeBlockSizeForFragment(
       constraint_space, Style(), border_padding, intrinsic_block_size,
@@ -369,7 +369,8 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
     return FixedMinMaxSizes(override_intrinsic_inline_size);
   }
 
-  if (const auto* layout_subtree = ConstraintSpace().GetGridLayoutSubtree()) {
+  if (const auto* layout_subtree =
+          GetConstraintSpace().GetGridLayoutSubtree()) {
     return FixedMinMaxSizes(
         layout_subtree->LayoutData().Columns().ComputeSetSpanSize());
   }
@@ -478,7 +479,7 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 
   const auto& node = Node();
   const auto& style = node.Style();
-  const auto writing_mode = ConstraintSpace().GetWritingMode();
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto subgrid_area = SubgriddedAreaInParent(opt_subgrid_data);
 
   const wtf_size_t column_auto_repetitions =
@@ -631,7 +632,8 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
     HeapVector<Member<LayoutBox>>* oof_children) const {
   GridSizingTree sizing_tree;
 
-  if (const auto* layout_subtree = ConstraintSpace().GetGridLayoutSubtree()) {
+  if (const auto* layout_subtree =
+          GetConstraintSpace().GetGridLayoutSubtree()) {
     auto& [grid_items, layout_data, subtree_size] =
         sizing_tree.CreateSizingData();
 
@@ -809,7 +811,7 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   DCHECK(intrinsic_block_size);
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
 
-  const auto& constraint_space = ConstraintSpace();
+  const auto& constraint_space = GetConstraintSpace();
   const bool is_standalone_grid = !constraint_space.GetGridLayoutSubtree();
 
   bool needs_additional_pass = false;
@@ -1036,7 +1038,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
 
   const auto& node = grid_item->node;
   const auto& item_style = node.Style();
-  const auto& constraint_space = ConstraintSpace();
+  const auto& constraint_space = GetConstraintSpace();
 
   const bool is_for_columns = track_direction == kForColumns;
   const bool is_parallel_with_track_direction =
@@ -1515,7 +1517,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     return;
   }
 
-  const auto writing_mode = ConstraintSpace().GetWritingMode();
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
   track_collection.ResetBaselines();
 
   for (auto& grid_item : sizing_data.grid_items) {
@@ -1631,7 +1633,7 @@ GridLayoutAlgorithm::CreateSubgridTrackCollection(
       parent_track_collection.CreateSubgridTrackCollection(
           range_indices.begin, range_indices.end,
           GutterSize(track_direction, parent_track_collection.GutterSize()),
-          ComputeMarginsForSelf(ConstraintSpace(), Style()),
+          ComputeMarginsForSelf(GetConstraintSpace(), Style()),
           BorderScrollbarPadding(), track_direction,
           is_for_columns_in_parent
               ? subgrid_data->is_opposite_direction_in_root_grid_columns
@@ -2029,7 +2031,7 @@ void GridLayoutAlgorithm::ForEachSubgrid(
     DCHECK(next_subgrid_subtree);
     callback_func(subgrid_algorithm, next_subgrid_subtree,
                   SubgriddedItemData(grid_item, layout_data,
-                                     ConstraintSpace().GetWritingMode()));
+                                     GetConstraintSpace().GetWritingMode()));
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
@@ -3190,7 +3192,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
     GridLayoutSubtree&& opt_layout_subtree,
     bool min_block_size_should_encompass_intrinsic_size,
     absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
-  const auto& container_constraint_space = ConstraintSpace();
+  const auto& container_constraint_space = GetConstraintSpace();
 
   NGConstraintSpaceBuilder builder(
       container_constraint_space, grid_item.node.Style().GetWritingDirection(),
@@ -3270,7 +3272,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
         containing_grid_area_size,
         ComputeMarginsFor(grid_item.node.Style(),
                           containing_grid_area_size.inline_size,
-                          ConstraintSpace().GetWritingDirection()));
+                          GetConstraintSpace().GetWritingDirection()));
 
     fixed_available_size = {
         grid_item.has_subgridded_columns ? fixed_inline_size : kIndefiniteSize,
@@ -3291,7 +3293,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   DCHECK(!subgridded_item.IsSubgrid());
 
   LogicalSize containing_grid_area_size(kIndefiniteSize, kIndefiniteSize);
-  const auto writing_mode = ConstraintSpace().GetWritingMode();
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
   if (track_direction == kForColumns) {
     containing_grid_area_size.block_size = ComputeGridItemAvailableSize(
@@ -3309,7 +3311,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
     const SubgriddedItemData& subgrid_data) const {
   DCHECK(subgrid_data.IsSubgrid());
 
-  const auto writing_mode = ConstraintSpace().GetWritingMode();
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
   const LogicalSize containing_grid_area_size(
       ComputeGridItemAvailableSize(*subgrid_data,
@@ -3321,7 +3323,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
       containing_grid_area_size,
       ComputeMarginsFor(subgrid_data->node.Style(),
                         containing_grid_area_size.inline_size,
-                        ConstraintSpace().GetWritingDirection()));
+                        GetConstraintSpace().GetWritingDirection()));
 
   return CreateConstraintSpace(NGCacheSlot::kMeasure, *subgrid_data,
                                containing_grid_area_size, fixed_available_size);
@@ -3469,7 +3471,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     Vector<GridItemPlacementData>* out_grid_items_placement_data) {
   DCHECK(out_row_break_between);
 
-  const auto& container_space = ConstraintSpace();
+  const auto& container_space = GetConstraintSpace();
   const auto& [grid_items, layout_data, tree_size] = sizing_tree.TreeRootData();
 
   const auto* cached_layout_subtree = container_space.GetGridLayoutSubtree();
@@ -3633,7 +3635,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
          intrinsic_block_size && consumed_grid_block_size);
 
   // TODO(ikilpatrick): Update |SetHasSeenAllChildren| and early exit if true.
-  const auto& constraint_space = ConstraintSpace();
+  const auto& constraint_space = GetConstraintSpace();
   const auto& [grid_items, layout_data, tree_size] = sizing_tree.TreeRootData();
 
   const auto* cached_layout_subtree = constraint_space.GetGridLayoutSubtree();
@@ -4114,7 +4116,8 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // items or items with a grid-area that is not in the first or last
     // fragment, we could end up with an incorrect static position.
     if (should_process_block_end ||
-        child_offset.block_offset <= FragmentainerCapacity(ConstraintSpace())) {
+        child_offset.block_offset <=
+            FragmentainerCapacity(GetConstraintSpace())) {
       container_builder_.AddOutOfFlowChildCandidate(
           out_of_flow_item.node, child_offset, inline_edge, block_edge);
     } else {

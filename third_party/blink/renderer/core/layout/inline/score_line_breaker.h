@@ -60,7 +60,7 @@ class CORE_EXPORT ScoreLineBreaker {
     return is_balanced_ ? kMaxLinesForBalance : kMaxLinesForOptimal;
   }
 
-  const NGConstraintSpace& ConstraintSpace() const { return space_; }
+  const NGConstraintSpace& GetConstraintSpace() const { return space_; }
   const InlineBreakToken* BreakToken() const { return break_token_; }
 
   // The primary entry point of doing all the work described in the class

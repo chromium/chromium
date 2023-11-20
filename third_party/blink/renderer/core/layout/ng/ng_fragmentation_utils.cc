@@ -134,9 +134,9 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
   EBreakBetween break_before = JoinFragmentainerBreakValues(
       child.Style().BreakBefore(), layout_result.InitialBreakBefore());
   break_before = builder.JoinedBreakBetweenValue(break_before);
-  const NGConstraintSpace& space = builder.ConstraintSpace();
+  const auto& space = builder.GetConstraintSpace();
   if (space.IsPaginated() && box_fragment &&
-      !IsForcedBreakValue(builder.ConstraintSpace(), break_before)) {
+      !IsForcedBreakValue(builder.GetConstraintSpace(), break_before)) {
     AtomicString current_name = builder.PageName();
     if (current_name == g_null_atom) {
       current_name = space.PageName();
@@ -457,7 +457,7 @@ bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder& builder) {
   }
 
   // We're going to break inside.
-  if (builder.ConstraintSpace().IsNewFormattingContext()) {
+  if (builder.GetConstraintSpace().IsNewFormattingContext()) {
     return false;
   }
   // Not being a formatting context root, only in-flow child breaks will have an

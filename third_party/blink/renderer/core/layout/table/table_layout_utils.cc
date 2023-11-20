@@ -1605,7 +1605,7 @@ void ComputeSectionMinimumRowBlockSizes(
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
                              NGBoxFragmentBuilder* builder) {
   const NGBlockNode& node = builder->Node();
-  const NGConstraintSpace& space = builder->ConstraintSpace();
+  const NGConstraintSpace& space = builder->GetConstraintSpace();
   const bool has_inflow_children = !builder->Children().empty();
 
   // Hide table-cells if:

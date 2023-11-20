@@ -205,11 +205,12 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   const bool is_base_stretchy_in_inline_axis = base_properties &&
                                                base_properties->is_stretchy &&
                                                !base_properties->is_vertical;
+  const auto& constraint_space = GetConstraintSpace();
   const bool base_inherits_block_stretch_size_constraint =
-      ConstraintSpace().TargetStretchBlockSizes().has_value();
+      constraint_space.TargetStretchBlockSizes().has_value();
   const bool base_inherits_inline_stretch_size_constraint =
       !base_inherits_block_stretch_size_constraint &&
-      ConstraintSpace().HasTargetStretchInlineSize();
+      constraint_space.HasTargetStretchInlineSize();
   UnderOverVerticalParameters parameters = GetUnderOverVerticalParameters(
       Style(), is_base_large_operator, is_base_stretchy_in_inline_axis);
 
@@ -217,7 +218,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   LayoutUnit inline_stretch_size;
   auto UpdateInlineStretchSize = [&](const NGLayoutResult* result) {
     LogicalFragment fragment(
-        ConstraintSpace().GetWritingDirection(),
+        constraint_space.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
     inline_stretch_size = std::max(inline_stretch_size, fragment.InlineSize());
   };
@@ -231,7 +232,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         IsInlineAxisStretchyOperator(To<NGBlockNode>(child)))
       continue;
     const auto child_constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), child,
+        Node(), ChildAvailableSize(), constraint_space, child,
         NGCacheSlot::kMeasure);
     const auto* child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
@@ -252,7 +253,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         continue;
       LayoutUnit zero_stretch_size;
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
       const auto* child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
@@ -264,25 +265,25 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     if (child == base && base_inherits_block_stretch_size_constraint &&
         IsBlockAxisStretchyOperator(To<NGBlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
-          NGCacheSlot::kLayout, *ConstraintSpace().TargetStretchBlockSizes());
+          Node(), ChildAvailableSize(), constraint_space, child,
+          NGCacheSlot::kLayout, *constraint_space.TargetStretchBlockSizes());
     }
     if (child == base && base_inherits_inline_stretch_size_constraint &&
         IsInlineAxisStretchyOperator(To<NGBlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kLayout, absl::nullopt,
-          ConstraintSpace().TargetStretchInlineSize());
+          constraint_space.TargetStretchInlineSize());
     }
     if ((child != base || (!base_inherits_block_stretch_size_constraint &&
                            !base_inherits_inline_stretch_size_constraint)) &&
         IsInlineAxisStretchyOperator(To<NGBlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kLayout, absl::nullopt, inline_stretch_size);
     }
     return CreateConstraintSpaceForMathChild(Node(), ChildAvailableSize(),
-                                             ConstraintSpace(), child,
+                                             constraint_space, child,
                                              NGCacheSlot::kLayout);
   };
 
@@ -292,10 +293,10 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   const auto base_space = CreateConstraintSpaceForUnderOverChild(base);
   auto* base_layout_result = base.Layout(base_space);
   auto base_margins =
-      ComputeMarginsFor(base_space, base.Style(), ConstraintSpace());
+      ComputeMarginsFor(base_space, base.Style(), constraint_space);
 
   LogicalBoxFragment base_fragment(
-      ConstraintSpace().GetWritingDirection(),
+      constraint_space.GetWritingDirection(),
       To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment()));
   LayoutUnit base_ascent =
       base_fragment.FirstBaselineOrSynthesize(baseline_type);
@@ -306,9 +307,9 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     const auto over_space = CreateConstraintSpaceForUnderOverChild(over);
     const NGLayoutResult* over_layout_result = over.Layout(over_space);
     BoxStrut over_margins =
-        ComputeMarginsFor(over_space, over.Style(), ConstraintSpace());
+        ComputeMarginsFor(over_space, over.Style(), constraint_space);
     LogicalBoxFragment over_fragment(
-        ConstraintSpace().GetWritingDirection(),
+        constraint_space.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(over_layout_result->PhysicalFragment()));
     ascent += parameters.over_extra_ascender + over_margins.block_start;
     LogicalOffset over_offset = {
@@ -353,9 +354,9 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
     const NGLayoutResult* under_layout_result = under.Layout(under_space);
     BoxStrut under_margins =
-        ComputeMarginsFor(under_space, under.Style(), ConstraintSpace());
+        ComputeMarginsFor(under_space, under.Style(), constraint_space);
     LogicalBoxFragment under_fragment(
-        ConstraintSpace().GetWritingDirection(),
+        constraint_space.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(under_layout_result->PhysicalFragment()));
     descent += under_margins.block_start;
     if (parameters.use_under_over_bar_fallback) {
@@ -386,13 +387,13 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      constraint_space, Style(), BorderPadding(), intrinsic_block_size,
       border_box_size.inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -414,7 +415,7 @@ MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     // TODO(crbug.com/1125136): take into account italic correction.
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), To<NGBlockNode>(child),
+        Style(), GetConstraintSpace(), To<NGBlockNode>(child),
         ChildAvailableSize().block_size);
 
     sizes.Encompass(child_result.sizes);

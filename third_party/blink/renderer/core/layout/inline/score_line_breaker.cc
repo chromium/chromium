@@ -79,10 +79,10 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
   // Compute line breaks and cache the results (`LineInfo`) up to
   // `LineInfoList::kCapacity` lines.
   LayoutUnit line_width = line_widths_[line_index];
-  LineBreaker line_breaker(node_, LineBreakerMode::kContent, ConstraintSpace(),
-                           LineLayoutOpportunity(line_width), leading_floats,
-                           break_token_,
-                           /* column_spanner_path */ nullptr, exclusion_space_);
+  LineBreaker line_breaker(
+      node_, LineBreakerMode::kContent, GetConstraintSpace(),
+      LineLayoutOpportunity(line_width), leading_floats, break_token_,
+      /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
     LineInfo& line_info = line_info_list.Append();

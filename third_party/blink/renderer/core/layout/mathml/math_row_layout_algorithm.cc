@@ -44,22 +44,23 @@ MathRowLayoutAlgorithm::MathRowLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
-  DCHECK(!ConstraintSpace().HasBlockFragmentation());
+  DCHECK(!GetConstraintSpace().HasBlockFragmentation());
 }
 
 void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
                                             LayoutUnit* max_row_block_baseline,
                                             LogicalSize* row_total_size) {
+  const auto& constraint_space = GetConstraintSpace();
   const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
   const auto baseline_type = Style().GetFontBaseline();
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-block-axis
   const bool inherits_block_stretch_size_constraint =
-      ConstraintSpace().TargetStretchBlockSizes().has_value();
+      constraint_space.TargetStretchBlockSizes().has_value();
   const bool inherits_inline_stretch_size_constraint =
       !inherits_block_stretch_size_constraint &&
-      ConstraintSpace().HasTargetStretchInlineSize();
+      constraint_space.HasTargetStretchInlineSize();
 
   NGConstraintSpace::MathTargetStretchBlockSizes stretch_sizes;
   if (!inherits_block_stretch_size_constraint &&
@@ -67,7 +68,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
     auto UpdateBlockStretchSizes =
         [&](const NGLayoutResult* result) {
           LogicalBoxFragment fragment(
-              ConstraintSpace().GetWritingDirection(),
+              constraint_space.GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
           LayoutUnit ascent = fragment.FirstBaselineOrSynthesize(baseline_type);
           stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
@@ -84,7 +85,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
           IsBlockAxisStretchyOperator(To<NGBlockNode>(child)))
         continue;
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kMeasure);
       const auto* child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
@@ -102,7 +103,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         DCHECK(IsBlockAxisStretchyOperator(To<NGBlockNode>(child)));
         NGConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
-            Node(), ChildAvailableSize(), ConstraintSpace(), child,
+            Node(), ChildAvailableSize(), constraint_space, child,
             NGCacheSlot::kMeasure, zero_stretch_sizes);
         const auto* child_layout_result = To<NGBlockNode>(child).Layout(
             child_constraint_space, nullptr /* break_token */);
@@ -127,23 +128,23 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
     if (inherits_block_stretch_size_constraint &&
         IsBlockAxisStretchyOperator(To<NGBlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
-          NGCacheSlot::kLayout, *ConstraintSpace().TargetStretchBlockSizes());
+          Node(), ChildAvailableSize(), constraint_space, child,
+          NGCacheSlot::kLayout, *constraint_space.TargetStretchBlockSizes());
     } else if (inherits_inline_stretch_size_constraint &&
                IsInlineAxisStretchyOperator(To<NGBlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kLayout, absl::nullopt,
-          ConstraintSpace().TargetStretchInlineSize());
+          constraint_space.TargetStretchInlineSize());
     } else if (!inherits_block_stretch_size_constraint &&
                !inherits_inline_stretch_size_constraint &&
                IsBlockAxisStretchyOperator(To<NGBlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          Node(), ChildAvailableSize(), constraint_space, child,
           NGCacheSlot::kLayout, stretch_sizes);
     } else {
       child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), ConstraintSpace(), child);
+          Node(), ChildAvailableSize(), constraint_space, child);
     }
     const auto* child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
@@ -152,11 +153,11 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(child_layout_result->PhysicalFragment());
-    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+    LogicalBoxFragment fragment(constraint_space.GetWritingDirection(),
                                 physical_fragment);
 
     BoxStrut margins = ComputeMarginsFor(child_constraint_space, child.Style(),
-                                         ConstraintSpace());
+                                         constraint_space);
     inline_offset += margins.inline_start;
 
     LayoutUnit ascent =
@@ -219,12 +220,12 @@ const NGLayoutResult* MathRowLayoutAlgorithm::Layout() {
   auto intrinsic_block_size =
       max_row_size.block_size + BorderScrollbarPadding().BlockSum();
   auto block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       border_box_size.inline_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -246,7 +247,7 @@ MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
     if (child.IsOutOfFlowPositioned())
       continue;
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), To<NGBlockNode>(child),
+        Style(), GetConstraintSpace(), To<NGBlockNode>(child),
         ChildAvailableSize().block_size);
     sizes += child_result.sizes;
 

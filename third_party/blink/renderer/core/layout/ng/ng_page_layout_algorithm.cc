@@ -21,8 +21,7 @@ PageLayoutAlgorithm::PageLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
 const NGLayoutResult* PageLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
-  WritingDirectionMode writing_direction =
-      ConstraintSpace().GetWritingDirection();
+  auto writing_direction = GetConstraintSpace().GetWritingDirection();
   const NGBlockBreakToken* break_token = nullptr;
   LayoutUnit intrinsic_block_size;
   LogicalOffset page_offset;
@@ -68,11 +67,11 @@ const NGLayoutResult* PageLayoutAlgorithm::Layout() {
 
   // Compute the block-axis size now that we know our content size.
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), /* border_padding */ BoxStrut(),
+      GetConstraintSpace(), Style(), /* border_padding */ BoxStrut(),
       intrinsic_block_size, absl::nullopt);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -88,7 +87,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
     const AtomicString& page_name,
     const NGBlockBreakToken* break_token) const {
   const LayoutView* view = Node().GetDocument().GetLayoutView();
-  WritingMode writing_mode = ConstraintSpace().GetWritingMode();
+  WritingMode writing_mode = GetConstraintSpace().GetWritingMode();
   LogicalSize page_size =
       view->PageAreaSize(page_index, page_name).ConvertToLogical(writing_mode);
 
@@ -106,8 +105,9 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
 
 NGConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
-  NGConstraintSpaceBuilder space_builder(
-      ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
+  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                         Style().GetWritingDirection(),
+                                         /* is_new_fc */ true);
   space_builder.SetAvailableSize(page_size);
   space_builder.SetPercentageResolutionSize(page_size);
   space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);

@@ -266,8 +266,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       return kFragmentPage;
     return kFragmentColumn;
   }
-  const NGConstraintSpace& ConstraintSpace() const {
-    return container_builder_->ConstraintSpace();
+  const NGConstraintSpace& GetConstraintSpace() const {
+    return container_builder_->GetConstraintSpace();
   }
 
   void ComputeInlineContainingBlocks(

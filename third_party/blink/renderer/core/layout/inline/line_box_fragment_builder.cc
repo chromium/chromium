@@ -54,10 +54,10 @@ void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
       PropagateFromLayoutResultAndFragment(
           *child.layout_result,
           child.Offset() -
-              ComputeRelativeOffsetForInline(ConstraintSpace(),
+              ComputeRelativeOffsetForInline(GetConstraintSpace(),
                                              child.PhysicalFragment()->Style()),
           ComputeRelativeOffsetForOOFInInline(
-              ConstraintSpace(), child.PhysicalFragment()->Style()));
+              GetConstraintSpace(), child.PhysicalFragment()->Style()));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.

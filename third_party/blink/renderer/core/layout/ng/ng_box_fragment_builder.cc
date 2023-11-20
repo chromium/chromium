@@ -149,8 +149,9 @@ void NGBoxFragmentBuilder::AddResult(
 
   if (UNLIKELY(has_block_fragmentation_))
     PropagateBreakInfo(*result_for_propagation, offset);
-  if (UNLIKELY(ConstraintSpace().ShouldPropagateChildBreakValues()))
+  if (UNLIKELY(GetConstraintSpace().ShouldPropagateChildBreakValues())) {
     PropagateChildBreakValues(*result_for_propagation);
+  }
 
   PropagateFromLayoutResult(*result_for_propagation);
 }
@@ -362,7 +363,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   block_size_for_fragmentation_ =
       std::max(block_size_for_fragmentation_, block_end_in_container);
 
-  if (ConstraintSpace().RequiresContentBeforeBreaking()) {
+  if (GetConstraintSpace().RequiresContentBeforeBreaking()) {
     if (child_layout_result.IsBlockSizeForFragmentationClamped())
       is_block_size_for_fragmentation_clamped_ = true;
   }
@@ -382,10 +383,10 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
        !child_fragment.IsFloatingOrOutOfFlowPositioned()) ||
       child_layout_result.ShouldForceSameFragmentationFlow();
 
-  if (ConstraintSpace().IsPaginated() &&
+  if (GetConstraintSpace().IsPaginated() &&
       ((child_is_in_same_flow && !IsFragmentainerBoxType()) ||
        Node().IsPaginatedRoot())) {
-    DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
+    DCHECK(GetConstraintSpace().HasKnownFragmentainerBlockSize());
     // Include overflow inside monolithic content if this is for a page
     // fragment. Otherwise just use the fragment size.
     LayoutUnit block_size;
@@ -405,7 +406,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     }
     LayoutUnit fragment_block_end = offset.block_offset + block_size;
     LayoutUnit fragmentainer_overflow =
-        fragment_block_end - FragmentainerSpaceLeft(ConstraintSpace());
+        fragment_block_end - FragmentainerSpaceLeft(GetConstraintSpace());
     if (fragmentainer_overflow > LayoutUnit()) {
       // This child overflows the page, because there's something monolithic
       // inside. We need to be aware of this when laying out subsequent pages,
@@ -425,7 +426,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     // Downgrade the appeal of breaking inside this container, if the break
     // inside the child is less appealing than what we've found so far.
     NGBreakAppeal appeal_inside =
-        CalculateBreakAppealInside(ConstraintSpace(), child_layout_result);
+        CalculateBreakAppealInside(GetConstraintSpace(), child_layout_result);
     ClampBreakAppeal(appeal_inside);
   }
 
@@ -445,7 +446,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.
-  if (UNLIKELY(ConstraintSpace().IsInColumnBfc())) {
+  if (UNLIKELY(GetConstraintSpace().IsInColumnBfc())) {
     if (const NGColumnSpannerPath* child_spanner_path =
             child_layout_result.ColumnSpannerPath()) {
       DCHECK(HasInflowChildBreakInside() ||
@@ -498,7 +499,7 @@ void NGBoxFragmentBuilder::PropagateChildBreakValues(
       child_layout_result.FinalBreakAfter(), child_style.BreakAfter());
   SetPreviousBreakAfter(break_after);
 
-  if (ConstraintSpace().IsPaginated()) {
+  if (GetConstraintSpace().IsPaginated()) {
     SetPageNameIfNeeded(To<NGPhysicalBoxFragment>(fragment).PageName());
   }
 }
@@ -681,9 +682,9 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(ConstraintSpace().ShouldRepeat() || !HasBreakTokenData());
+  DCHECK(GetConstraintSpace().ShouldRepeat() || !HasBreakTokenData());
   DCHECK_EQ(minimal_space_shortage_, kIndefiniteSize);
-  if (!ConstraintSpace().ShouldPropagateChildBreakValues()) {
+  if (!GetConstraintSpace().ShouldPropagateChildBreakValues()) {
     DCHECK(!initial_break_before_);
     DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);
   }

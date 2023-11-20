@@ -51,7 +51,7 @@ const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
   layout_data->col_allow_border = frame_set.AllowBorderColumns();
 
   PhysicalSize size = ToPhysicalSize(container_builder_.Size(),
-                                     ConstraintSpace().GetWritingMode());
+                                     GetConstraintSpace().GetWritingMode());
   const wtf_size_t row_count = frame_set.TotalRows();
   layout_data->row_sizes =
       LayoutAxis(row_count, frame_set.RowLengths(), frame_set.RowDeltas(),
@@ -70,7 +70,7 @@ const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
 MinMaxSizesResult FrameSetLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   MinMaxSizes sizes;
-  const auto& space = ConstraintSpace();
+  const auto& space = GetConstraintSpace();
   // This function needs to return a value which is >= border+padding in order
   // to pass a DCHECK in NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems()
   // though <frameset> ignores border and padding.
@@ -310,7 +310,7 @@ void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
                                           PhysicalOffset position,
                                           PhysicalSize child_size) {
   const PhysicalSize frameset_size = ToPhysicalSize(
-      container_builder_.Size(), ConstraintSpace().GetWritingMode());
+      container_builder_.Size(), GetConstraintSpace().GetWritingMode());
   const auto container_direction = Style().GetWritingDirection();
   const bool kNewFormattingContext = true;
   NGConstraintSpaceBuilder space_builder(container_direction.GetWritingMode(),

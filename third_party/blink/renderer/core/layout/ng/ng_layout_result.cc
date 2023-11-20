@@ -85,7 +85,7 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   bitfields_.is_truncated_by_fragmentation_line =
       builder->is_truncated_by_fragmentation_line;
 
-  if (builder->ConstraintSpace().ShouldPropagateChildBreakValues() &&
+  if (builder->GetConstraintSpace().ShouldPropagateChildBreakValues() &&
       !builder->layout_object_->ShouldApplyLayoutContainment()) {
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));

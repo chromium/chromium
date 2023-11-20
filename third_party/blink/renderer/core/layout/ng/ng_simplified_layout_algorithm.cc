@@ -58,7 +58,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     container_builder_.SetEndMarginStrut(result.EndMarginStrut());
 
     // Ensure that the parent layout hasn't asked us to move our BFC position.
-    DCHECK_EQ(ConstraintSpace().GetBfcOffset(),
+    DCHECK_EQ(GetConstraintSpace().GetBfcOffset(),
               previous_result_.GetConstraintSpaceForCaching().GetBfcOffset());
     container_builder_.SetBfcLineOffset(result.BfcLineOffset());
     if (result.BfcBlockOffset())
@@ -75,7 +75,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
       container_builder_.SetIsPushedByFloats();
     container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
 
-    if (ConstraintSpace().IsTableCell()) {
+    if (GetConstraintSpace().IsTableCell()) {
       container_builder_.SetHasCollapsedBorders(
           physical_fragment.HasCollapsedBorders());
       container_builder_.SetTableCellColumnIndex(
@@ -92,7 +92,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     DCHECK(!result.SubtreeModifiedMarginStrut());
     DCHECK(result.EndMarginStrut().IsEmpty());
 
-    DCHECK_EQ(ConstraintSpace().GetBfcOffset(), BfcOffset());
+    DCHECK_EQ(GetConstraintSpace().GetBfcOffset(), BfcOffset());
     DCHECK_EQ(result.BfcLineOffset(), LayoutUnit());
     DCHECK_EQ(result.BfcBlockOffset().value_or(LayoutUnit()), LayoutUnit());
 
@@ -175,7 +175,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
     auto ComputeNewBlockSize = [&]() -> LayoutUnit {
       return ComputeBlockSizeForFragment(
-          ConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Style(), BorderPadding(),
           result.IntrinsicBlockSize(),
           container_builder_.InitialBorderBoxSize().inline_size);
     };
@@ -317,7 +317,7 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
       previous_result_.InitialBreakBefore());
   container_builder_.SetPreviousBreakAfter(previous_result_.FinalBreakAfter());
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }

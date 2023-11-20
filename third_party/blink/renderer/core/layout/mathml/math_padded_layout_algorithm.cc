@@ -64,13 +64,13 @@ const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
   const NGLayoutResult* content_layout_result = nullptr;
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), content);
+        Node(), ChildAvailableSize(), GetConstraintSpace(), content);
     content_layout_result = content.Layout(constraint_space);
     const auto& content_fragment =
         To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
-    content_margins =
-        ComputeMarginsFor(constraint_space, content.Style(), ConstraintSpace());
-    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+    content_margins = ComputeMarginsFor(constraint_space, content.Style(),
+                                        GetConstraintSpace());
+    LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                                 content_fragment);
     content_ascent = content_margins.block_start +
                      fragment.FirstBaseline().value_or(fragment.BlockSize());
@@ -95,13 +95,13 @@ const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -117,7 +117,7 @@ MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
   GetContentAsAnonymousMrow(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), ConstraintSpace(), content, ChildAvailableSize().block_size);
+      Style(), GetConstraintSpace(), content, ChildAvailableSize().block_size);
 
   bool depends_on_block_constraints =
       content_result.depends_on_block_constraints;

@@ -35,8 +35,9 @@ TableRowLayoutAlgorithm::TableRowLayoutAlgorithm(
     : LayoutAlgorithm(params) {}
 
 const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
-  const TableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
-  const auto& row = table_data.rows[ConstraintSpace().TableRowIndex()];
+  const TableConstraintSpaceData& table_data =
+      *GetConstraintSpace().TableData();
+  const auto& row = table_data.rows[GetConstraintSpace().TableRowIndex()];
 
   auto CreateCellConstraintSpace =
       [this, &table_data](
@@ -60,9 +61,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
         }
 
         DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
-                  ConstraintSpace().GetWritingMode());
+                  GetConstraintSpace().GetWritingMode());
 
-        NGConstraintSpaceBuilder builder(ConstraintSpace(),
+        NGConstraintSpaceBuilder builder(GetConstraintSpace(),
                                          cell.Style().GetWritingDirection(),
                                          /* is_new_fc */ true);
 
@@ -74,9 +75,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
             table_data.is_table_block_size_specified,
             table_data.has_collapsed_borders, NGCacheSlot::kLayout, &builder);
 
-        if (ConstraintSpace().HasBlockFragmentation()) {
+        if (GetConstraintSpace().HasBlockFragmentation()) {
           SetupSpaceBuilderForFragmentation(
-              ConstraintSpace(), cell,
+              GetConstraintSpace(), cell,
               /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
               /* is_new_fc */ true,
               container_builder_.RequiresContentBeforeBreaking());
@@ -88,9 +89,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
         return builder.ToConstraintSpace();
       };
 
-  bool has_block_fragmentation = ConstraintSpace().HasBlockFragmentation();
+  bool has_block_fragmentation = GetConstraintSpace().HasBlockFragmentation();
   bool should_propagate_child_break_values =
-      ConstraintSpace().ShouldPropagateChildBreakValues();
+      GetConstraintSpace().ShouldPropagateChildBreakValues();
 
   auto MinBlockSizeShouldEncompassIntrinsicSize =
       [&](const NGBlockNode& cell,
@@ -258,8 +259,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
-        Node(), ConstraintSpace(), /* trailing_border_padding */ LayoutUnit(),
-        FragmentainerSpaceLeft(ConstraintSpace()), &container_builder_);
+        Node(), GetConstraintSpace(),
+        /* trailing_border_padding */ LayoutUnit(),
+        FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, NGBreakStatus::kContinue);
@@ -276,7 +278,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
   container_builder_.SetBaselines(row_baseline_tabulator.ComputeBaseline(
       container_builder_.FragmentBlockSize()));
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }
 

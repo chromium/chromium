@@ -24,7 +24,7 @@ const NGLayoutResult* ReplacedLayoutAlgorithm::Layout() {
   // the intrinsic block size for NON-replaced elements. This is inconsistent
   // and could lead to subtle bugs.
   const LayoutUnit intrinsic_block_size =
-      ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+      ComputeReplacedSize(Node(), GetConstraintSpace(), BorderPadding(),
                           /* override_available_size */ absl::nullopt,
                           ReplacedSizeMode::kIgnoreBlockLengths)
           .block_size;
@@ -44,7 +44,7 @@ MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   // This is only used by flex, which expects inline-lengths to be ignored for
   // the min/max content size.
   MinMaxSizes sizes;
-  sizes = ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+  sizes = ComputeReplacedSize(Node(), GetConstraintSpace(), BorderPadding(),
                               /* override_available_size */ absl::nullopt,
                               ReplacedSizeMode::kIgnoreInlineLengths)
               .inline_size;
@@ -54,12 +54,12 @@ MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
       Style().LogicalMinHeight().IsPercentOrCalc() ||
       Style().LogicalMaxHeight().IsPercentOrCalc() ||
       (Style().LogicalHeight().IsAuto() &&
-       ConstraintSpace().IsBlockAutoBehaviorStretch());
+       GetConstraintSpace().IsBlockAutoBehaviorStretch());
   return {sizes, depends_on_block_constraints};
 }
 
 void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
-  WritingModeConverter converter(ConstraintSpace().GetWritingDirection(),
+  WritingModeConverter converter(GetConstraintSpace().GetWritingDirection(),
                                  container_builder_.Size());
   LogicalRect logical_new_rect(
       BorderPadding().StartOffset(),
@@ -74,9 +74,10 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
           To<LayoutMedia>(Node().GetLayoutBox())->ComputePanelWidth(new_rect);
     }
 
-    NGConstraintSpaceBuilder space_builder(ConstraintSpace().GetWritingMode(),
-                                           child.Style().GetWritingDirection(),
-                                           /* is_new_fc */ true);
+    NGConstraintSpaceBuilder space_builder(
+        GetConstraintSpace().GetWritingMode(),
+        child.Style().GetWritingDirection(),
+        /* is_new_fc */ true);
     LogicalSize child_size = converter.ToLogical({width, new_rect.Height()});
     space_builder.SetAvailableSize(child_size);
     space_builder.SetIsFixedInlineSize(true);

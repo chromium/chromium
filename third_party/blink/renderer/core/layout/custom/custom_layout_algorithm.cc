@@ -53,12 +53,12 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
+          GetConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(
-          ConstraintSpace(), document, Node(), border_box_size,
+          GetConstraintSpace(), document, Node(), border_box_size,
           BorderScrollbarPadding(), ChildAvailableSize().block_size, &scope,
           &intrinsic_sizes_result_options, &depends_on_block_constraints)) {
     // TODO(ikilpatrick): Report this error to the developer.
@@ -107,11 +107,11 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
+          GetConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
-  if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,
+  if (!instance->Layout(GetConstraintSpace(), document, Node(), border_box_size,
                         BorderScrollbarPadding(), &scope,
                         fragment_result_options, &fragment_result_data)) {
     // TODO(ikilpatrick): Report this error to the developer.
@@ -167,7 +167,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
       BorderScrollbarPadding().BlockSum(),
       LayoutUnit::FromDoubleRound(fragment_result_options->autoBlockSize()));
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), auto_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), auto_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a
@@ -182,7 +182,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(auto_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }

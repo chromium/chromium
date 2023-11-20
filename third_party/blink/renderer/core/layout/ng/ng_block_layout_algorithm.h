@@ -100,7 +100,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       return *container_builder_.BfcBlockOffset();
     // Otherwise fall back to the BFC block offset assigned by the parent
     // algorithm.
-    return ConstraintSpace().GetBfcOffset().block_offset;
+    return GetConstraintSpace().GetBfcOffset().block_offset;
   }
 
   // Return the BFC block offset of the next block-start border edge (for some
@@ -288,7 +288,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   bool ResolveBfcBlockOffset(PreviousInflowPosition* previous_inflow_position,
                              LayoutUnit bfc_block_offset) {
     return ResolveBfcBlockOffset(previous_inflow_position, bfc_block_offset,
-                                 ConstraintSpace().ForcedBfcBlockOffset());
+                                 GetConstraintSpace().ForcedBfcBlockOffset());
   }
 
   // A very common way to resolve the BFC block offset is to simply commit the
@@ -351,8 +351,9 @@ class CORE_EXPORT BlockLayoutAlgorithm
     // Also need to check if the constraint space is anonymous, which is the
     // case for columns (the list item marker should be placed by the multicol
     // container then, not the individual columns).
-    if (!ConstraintSpace().IsAnonymous())
+    if (!GetConstraintSpace().IsAnonymous()) {
       return true;
+    }
     // Ensure we're really a column box. We can't use |BoxType| to call this
     // from the constructor.
     DCHECK(node_.GetLayoutBox()->SlowFirstChild()->IsLayoutFlowThread());

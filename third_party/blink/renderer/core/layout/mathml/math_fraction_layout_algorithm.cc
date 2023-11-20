@@ -159,23 +159,23 @@ const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
   GatherChildren(&numerator, &denominator);
 
   const auto numerator_space = CreateConstraintSpaceForMathChild(
-      Node(), ChildAvailableSize(), ConstraintSpace(), numerator);
+      Node(), ChildAvailableSize(), GetConstraintSpace(), numerator);
   const NGLayoutResult* numerator_layout_result =
       numerator.Layout(numerator_space);
-  const auto numerator_margins =
-      ComputeMarginsFor(numerator_space, numerator.Style(), ConstraintSpace());
+  const auto numerator_margins = ComputeMarginsFor(
+      numerator_space, numerator.Style(), GetConstraintSpace());
   const auto denominator_space = CreateConstraintSpaceForMathChild(
-      Node(), ChildAvailableSize(), ConstraintSpace(), denominator);
+      Node(), ChildAvailableSize(), GetConstraintSpace(), denominator);
   const NGLayoutResult* denominator_layout_result =
       denominator.Layout(denominator_space);
   const auto denominator_margins = ComputeMarginsFor(
-      denominator_space, denominator.Style(), ConstraintSpace());
+      denominator_space, denominator.Style(), GetConstraintSpace());
 
   const LogicalBoxFragment numerator_fragment(
-      ConstraintSpace().GetWritingDirection(),
+      GetConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(numerator_layout_result->PhysicalFragment()));
   const LogicalBoxFragment denominator_fragment(
-      ConstraintSpace().GetWritingDirection(),
+      GetConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(denominator_layout_result->PhysicalFragment()));
   const auto baseline_type = Style().GetFontBaseline();
 
@@ -259,13 +259,13 @@ const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
                                denominator_margins);
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -285,7 +285,7 @@ MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
 
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), To<NGBlockNode>(child),
+        Style(), GetConstraintSpace(), To<NGBlockNode>(child),
         ChildAvailableSize().block_size);
 
     sizes.Encompass(child_result.sizes);

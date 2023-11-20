@@ -270,15 +270,15 @@ MathScriptsLayoutAlgorithm::ChildAndMetrics
 MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   ChildAndMetrics child_and_metrics;
   auto constraint_space = CreateConstraintSpaceForMathChild(
-      Node(), ChildAvailableSize(), ConstraintSpace(), child);
+      Node(), ChildAvailableSize(), GetConstraintSpace(), child);
   child_and_metrics.result =
       child.Layout(constraint_space, nullptr /*break_token*/);
   LogicalBoxFragment fragment(
-      ConstraintSpace().GetWritingDirection(),
+      GetConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(child_and_metrics.result->PhysicalFragment()));
   child_and_metrics.inline_size = fragment.InlineSize();
   child_and_metrics.margins =
-      ComputeMarginsFor(constraint_space, child.Style(), ConstraintSpace());
+      ComputeMarginsFor(constraint_space, child.Style(), GetConstraintSpace());
   child_and_metrics.ascent =
       fragment.FirstBaselineOrSynthesize(Style().GetFontBaseline());
   child_and_metrics.descent = fragment.BlockSize() - child_and_metrics.ascent +
@@ -404,13 +404,13 @@ const NGLayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   LayoutUnit intrinsic_block_size = ascent + descent;
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -438,7 +438,7 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
   LayoutUnit base_italic_correction;
   const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
+      Style(), GetConstraintSpace(), base, ChildAvailableSize().block_size);
 
   sizes = base_result.sizes;
   depends_on_block_constraints |= base_result.depends_on_block_constraints;
@@ -454,7 +454,7 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       const auto first_post_script = sub ? sub : sup;
       const auto first_post_script_result =
           ComputeMinAndMaxContentContributionForMathChild(
-              Style(), ConstraintSpace(), first_post_script,
+              Style(), GetConstraintSpace(), first_post_script,
               ChildAvailableSize().block_size);
 
       sizes += first_post_script_result.sizes;
@@ -475,7 +475,8 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
         if (!sub)
           continue;
         auto sub_result = ComputeMinAndMaxContentContributionForMathChild(
-            Style(), ConstraintSpace(), sub, ChildAvailableSize().block_size);
+            Style(), GetConstraintSpace(), sub,
+            ChildAvailableSize().block_size);
         sub_result.sizes -= base_italic_correction;
         sub_sup_pair_size.Encompass(sub_result.sizes);
 
@@ -483,7 +484,8 @@ MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
         if (!sup)
           continue;
         const auto sup_result = ComputeMinAndMaxContentContributionForMathChild(
-            Style(), ConstraintSpace(), sup, ChildAvailableSize().block_size);
+            Style(), GetConstraintSpace(), sup,
+            ChildAvailableSize().block_size);
         sub_sup_pair_size.Encompass(sup_result.sizes);
 
         sizes += sub_sup_pair_size;

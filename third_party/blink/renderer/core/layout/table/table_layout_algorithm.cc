@@ -134,7 +134,7 @@ void ComputeCaptionFragments(
     HeapVector<TableLayoutAlgorithm::CaptionResult>* captions,
     LayoutUnit& captions_block_size) {
   const NGConstraintSpace& table_constraint_space =
-      table_builder.ConstraintSpace();
+      table_builder.GetConstraintSpace();
   const LayoutUnit table_inline_size = table_builder.InlineSize();
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
@@ -569,7 +569,7 @@ const NGLayoutResult* TableLayoutAlgorithm::Layout() {
   const scoped_refptr<const TableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
   const TableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(ConstraintSpace(), Style(), grouped_children);
+      ComputeCaptionConstraint(GetConstraintSpace(), Style(), grouped_children);
   // Compute assignable table inline size.
   // Standard: https://www.w3.org/TR/css-tables-3/#width-distribution
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
@@ -578,7 +578,7 @@ const NGLayoutResult* TableLayoutAlgorithm::Layout() {
 
   const LayoutUnit assignable_table_inline_size =
       ComputeAssignableTableInlineSize(
-          Node(), ConstraintSpace(), *column_constraints, caption_constraint,
+          Node(), GetConstraintSpace(), *column_constraints, caption_constraint,
           undistributable_space, border_padding, is_fixed_layout);
 
   // Distribute assignable table width.
@@ -596,7 +596,7 @@ const NGLayoutResult* TableLayoutAlgorithm::Layout() {
   const bool is_grid_empty = column_locations.empty();
   if (is_grid_empty) {
     table_inline_size_before_collapse = ComputeEmptyTableInlineSize(
-        ConstraintSpace(), Style(), assignable_table_inline_size,
+        GetConstraintSpace(), Style(), assignable_table_inline_size,
         undistributable_space, caption_constraint, border_padding,
         table_borders->IsCollapsed());
   } else {
@@ -638,7 +638,7 @@ const NGLayoutResult* TableLayoutAlgorithm::Layout() {
         (table_inline_size_before_collapse - container_builder_.InlineSize())
             .Abs(),
         LayoutUnit(1));
-  } else if (ConstraintSpace().IsFixedInlineSize()) {
+  } else if (GetConstraintSpace().IsFixedInlineSize()) {
     // Collapsed columns + fixed inline size: columns define table whose
     // inline size is less or equal InitialFragmentGeometry.
     LayoutUnit table_inline_size =
@@ -691,7 +691,7 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
   const scoped_refptr<const TableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
   const TableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(ConstraintSpace(), Style(), grouped_children);
+      ComputeCaptionConstraint(GetConstraintSpace(), Style(), grouped_children);
 
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
       *column_constraints, border_padding.InlineSum(),
@@ -716,8 +716,8 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
 const NGLayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
   DCHECK(!is_known_to_be_last_table_box_);
   LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
-      BreakToken(), /* early_break */ nullptr);
+      Node(), container_builder_.InitialFragmentGeometry(),
+      GetConstraintSpace(), BreakToken(), /* early_break */ nullptr);
   TableLayoutAlgorithm algorithm(params);
   algorithm.is_known_to_be_last_table_box_ = true;
 
@@ -773,8 +773,8 @@ void TableLayoutAlgorithm::ComputeRows(
   }
 
   LayoutUnit css_table_block_size;
-  if (ConstraintSpace().IsInitialBlockSizeIndefinite() &&
-      !ConstraintSpace().IsFixedBlockSize()) {
+  if (GetConstraintSpace().IsInitialBlockSizeIndefinite() &&
+      !GetConstraintSpace().IsFixedBlockSize()) {
     // We get here when a flexbox wants to use the table's intrinsic height as
     // an input to the flex algorithm.
     css_table_block_size = kIndefiniteSize;
@@ -783,20 +783,23 @@ void TableLayoutAlgorithm::ComputeRows(
     // sections/rows into this space. Pass a definite intrinsic block-size into
     // |ComputeBlockSizeForFragment| to force it to resolve.
     LayoutUnit intrinsic_block_size =
-        BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalMinHeight())
+        BlockLengthUnresolvable(GetConstraintSpace(),
+                                Style().LogicalMinHeight())
             ? kIndefiniteSize
             : table_border_padding.BlockSum();
 
     LayoutUnit override_available_block_size = kIndefiniteSize;
-    if (ConstraintSpace().AvailableSize().block_size != kIndefiniteSize) {
+    if (GetConstraintSpace().AvailableSize().block_size != kIndefiniteSize) {
       override_available_block_size =
-          (ConstraintSpace().AvailableSize().block_size - captions_block_size)
+          (GetConstraintSpace().AvailableSize().block_size -
+           captions_block_size)
               .ClampNegativeToZero();
     }
 
     css_table_block_size = ComputeBlockSizeForFragment(
-        ConstraintSpace(), Style(), table_border_padding, intrinsic_block_size,
-        table_grid_inline_size, override_available_block_size);
+        GetConstraintSpace(), Style(), table_border_padding,
+        intrinsic_block_size, table_grid_inline_size,
+        override_available_block_size);
   }
   // In quirks mode, empty tables ignore any specified block-size.
   const bool is_empty_quirks_mode_table =
@@ -898,8 +901,9 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     const LogicalSize& border_spacing) {
   const TableBreakTokenData* incoming_table_break_data = nullptr;
   LogicalBoxSides border_padding_sides_to_include;
+  const auto& constraint_space = GetConstraintSpace();
   const LayoutUnit fragmentainer_space_at_start =
-      FragmentainerSpaceLeft(ConstraintSpace());
+      FragmentainerSpaceLeft(constraint_space);
   LayoutUnit previously_consumed_block_size;
   LayoutUnit previously_consumed_table_box_block_size;
 
@@ -994,7 +998,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
                                           LayoutUnit reserved_space,
                                           ESectionRepeatMode repeat_mode) {
     NGConstraintSpaceBuilder section_space_builder(
-        ConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
+        GetConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
 
     LogicalSize available_size = {section_available_inline_size,
                                   kIndefiniteSize};
@@ -1016,7 +1020,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       section_space_builder.SetShouldRepeat(repeat_mode == kMayRepeatAgain);
       section_space_builder.SetIsInsideRepeatableContent(true);
       section_space_builder.SetShouldPropagateChildBreakValues(false);
-    } else if (ConstraintSpace().HasBlockFragmentation()) {
+    } else if (GetConstraintSpace().HasBlockFragmentation()) {
       // Note that, with fragmentainer_block_offset, we pretend that any
       // repeated table header isn't there (since it doesn't really participate
       // in block fragmentation anyway), so that the block-offset right after
@@ -1025,13 +1029,14 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // having made some content progress (even if the first piece of content
       // doesn't fit).
       SetupSpaceBuilderForFragmentation(
-          ConstraintSpace(), section, fragmentainer_block_offset,
+          GetConstraintSpace(), section, fragmentainer_block_offset,
           &section_space_builder, /* is_new_fc */ true,
           container_builder_.RequiresContentBeforeBreaking());
 
       // Reserve space for any repeated header / footer.
-      if (ConstraintSpace().HasKnownFragmentainerBlockSize())
+      if (GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
         section_space_builder.ReserveSpaceInFragmentainer(reserved_space);
+      }
     }
 
     return section_space_builder.ToConstraintSpace();
@@ -1063,11 +1068,11 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   // crbug.com/1352931 for more details. Furthermore, we cannot repeat content
   // if side-effects are disabled, as that machinery depends on updating and
   // reading the physical fragments vector of the LayoutBox.
-  if (!ConstraintSpace().IsInsideRepeatableContent() &&
+  if (!GetConstraintSpace().IsInsideRepeatableContent() &&
       !NGDisableSideEffectsScope::IsDisabled() &&
       (grouped_children.header || grouped_children.footer)) {
     LayoutUnit max_section_block_size =
-        ConstraintSpace().FragmentainerBlockSize() / 4;
+        GetConstraintSpace().FragmentainerBlockSize() / 4;
     TableChildIterator child_iterator(grouped_children, BreakToken());
     for (auto entry = child_iterator.NextChild();
          NGBlockNode child = entry.GetNode();
@@ -1109,11 +1114,12 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
         // of the fragmentainer, so that would be impossible), but we will
         // continue repeating if we previously decided to do so in a previous
         // layout pass, for a previous fragment.
-        if (!ConstraintSpace().HasKnownFragmentainerBlockSize() ||
-            block_size > max_section_block_size)
+        if (!GetConstraintSpace().HasKnownFragmentainerBlockSize() ||
+            block_size > max_section_block_size) {
           continue;
+        }
 
-        if (!IsAvoidBreakValue(ConstraintSpace(),
+        if (!IsAvoidBreakValue(GetConstraintSpace(),
                                child.Style().BreakInside())) {
           continue;
         }
@@ -1207,23 +1213,23 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
         // We're done with the table box if it fits inside the fragmentainer.
         is_past_table_box =
-            !ConstraintSpace().HasKnownFragmentainerBlockSize() ||
+            !constraint_space.HasKnownFragmentainerBlockSize() ||
             table_box_extent->end <= fragmentainer_space_at_start;
       }
 
       LogicalSize available_size(container_builder_.InlineSize(),
                                  kIndefiniteSize);
-      BoxStrut margins = ComputeCaptionMargins(ConstraintSpace(), child,
+      BoxStrut margins = ComputeCaptionMargins(constraint_space, child,
                                                container_builder_.InlineSize(),
                                                child_break_token);
       child_block_start_margin = margins.block_start;
       child_block_end_margin = margins.block_end;
 
       NGConstraintSpace child_space = CreateCaptionConstraintSpace(
-          ConstraintSpace(), Style(), child, available_size,
+          constraint_space, Style(), child, available_size,
           child_block_offset + child_block_start_margin);
       CaptionResult caption = LayoutCaption(
-          ConstraintSpace(), Style(), container_builder_.InlineSize(),
+          constraint_space, Style(), container_builder_.InlineSize(),
           child_space, child, margins, child_break_token, early_break_in_child);
       DCHECK_EQ(caption.layout_result->Status(), NGLayoutResult::kSuccess);
       child_result = caption.layout_result;
@@ -1346,13 +1352,13 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
         child_block_offset = offset_for_childless_section;
       }
     }
-    if (ConstraintSpace().HasBlockFragmentation() &&
+    if (constraint_space.HasBlockFragmentation() &&
         (!child_break_token || !is_repeated_section)) {
       LayoutUnit fragmentainer_block_offset =
-          ConstraintSpace().FragmentainerOffset() + child_block_start_margin +
+          constraint_space.FragmentainerOffset() + child_block_start_margin +
           child_block_offset - repeated_header_block_size;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
-          ConstraintSpace(), child, *child_result, fragmentainer_block_offset,
+          constraint_space, child, *child_result, fragmentainer_block_offset,
           has_container_separation, &container_builder_);
       if (break_status == NGBreakStatus::kNeedsEarlierBreak)
         return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
@@ -1412,7 +1418,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       is_past_table_box = true;
     }
 
-    if (ConstraintSpace().HasBlockFragmentation()) {
+    if (constraint_space.HasBlockFragmentation()) {
       if (!has_container_separation)
         has_container_separation = !is_repeated_section;
       if (container_builder_.HasInflowChildBreakInside()) {
@@ -1471,7 +1477,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     if (has_entered_non_repeated_section) {
       adjusted_child_block_offset =
           std::min(adjusted_child_block_offset,
-                   UnclampedFragmentainerSpaceLeft(ConstraintSpace()) -
+                   UnclampedFragmentainerSpaceLeft(constraint_space) -
                        repeated_footer_block_size);
     }
 
@@ -1490,9 +1496,9 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // out of space before a repeatable footer. So insert a break if
       // necessary.
       LayoutUnit fragmentainer_block_offset =
-          ConstraintSpace().FragmentainerOffset() + offset.block_offset;
+          constraint_space.FragmentainerOffset() + offset.block_offset;
       break_status = BreakBeforeChildIfNeeded(
-          ConstraintSpace(), grouped_children.footer, *result,
+          constraint_space, grouped_children.footer, *result,
           fragmentainer_block_offset, has_container_separation,
           &container_builder_);
     }
@@ -1510,12 +1516,12 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     // If we had (any) break inside, we don't need end border-spacing, and
     // should be at-least the fragmentainer size (if definite).
     if (broke_inside) {
-      if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      if (constraint_space.HasKnownFragmentainerBlockSize()) {
         table_box_extent->end =
             std::max(table_box_extent->end, fragmentainer_space_at_start);
       }
       border_spacing_after_last_section = LayoutUnit();
-    } else if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    } else if (constraint_space.HasKnownFragmentainerBlockSize()) {
       // Truncate trailing border-spacing to fit within the fragmentainer.
       LayoutUnit new_border_spacing_after_last_section =
           std::min(border_spacing_after_last_section,
@@ -1542,7 +1548,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       if (!broke_inside) {
         // If the table box fits inside the fragmentainer, we're past it.
         is_past_table_box =
-            !ConstraintSpace().HasKnownFragmentainerBlockSize() ||
+            !constraint_space.HasKnownFragmentainerBlockSize() ||
             table_box_extent->end <= fragmentainer_space_at_start;
       }
     }
@@ -1581,9 +1587,9 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
   block_size += previously_consumed_block_size;
-  if (ConstraintSpace().IsFixedBlockSize()) {
-    block_size = ConstraintSpace().AvailableSize().block_size;
-    if (ConstraintSpace().MinBlockSizeShouldEncompassIntrinsicSize()) {
+  if (constraint_space.IsFixedBlockSize()) {
+    block_size = constraint_space.AvailableSize().block_size;
+    if (constraint_space.MinBlockSizeShouldEncompassIntrinsicSize()) {
       block_size = std::max(
           block_size, previously_consumed_block_size + intrinsic_block_size);
     }
@@ -1605,7 +1611,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status =
-        FinishFragmentation(Node(), ConstraintSpace(), border_padding.block_end,
+        FinishFragmentation(Node(), constraint_space, border_padding.block_end,
                             fragmentainer_space_at_start, &container_builder_);
     if (status == NGBreakStatus::kNeedsEarlierBreak)
       return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
@@ -1670,7 +1676,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
                                    table_borders, table_grid_rect,
                                    column_block_size);
 
-  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
 
   if (has_repeated_header && has_entered_table_box &&
       !table_box_will_continue && !is_known_to_be_last_table_box_) {

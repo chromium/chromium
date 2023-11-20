@@ -109,8 +109,8 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   virtual ~LayoutAlgorithm() = default;
 
  protected:
-  const NGConstraintSpace& ConstraintSpace() const {
-    return container_builder_.ConstraintSpace();
+  const NGConstraintSpace& GetConstraintSpace() const {
+    return container_builder_.GetConstraintSpace();
   }
 
   const ComputedStyle& Style() const { return node_.Style(); }
@@ -157,9 +157,10 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
     DCHECK(!early_break_);
     DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
 
-    LayoutAlgorithmParams params(
-        Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
-        BreakToken(), &breakpoint, additional_early_breaks);
+    LayoutAlgorithmParams params(Node(),
+                                 container_builder_.InitialFragmentGeometry(),
+                                 GetConstraintSpace(), BreakToken(),
+                                 &breakpoint, additional_early_breaks);
     Algorithm algorithm_with_break(params);
     return RelayoutAndBreakEarlier(&algorithm_with_break);
   }
@@ -183,7 +184,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // contribute to superfluous fragmentainers.
   template <typename Algorithm>
   const NGLayoutResult* RelayoutWithoutFragmentation() {
-    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    DCHECK(GetConstraintSpace().HasBlockFragmentation());
     // We'll relayout with a special cloned constraint space that disables
     // further fragmentation (but rather lets clipped child content "overflow"
     // past the fragmentation line). This means that the cached constraint space
@@ -191,7 +192,8 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
     // right thing, since, as far as input is concerned, this node is meant to
     // perform block fragmentation (and it may already have produced multiple
     // fragment, but this one will be the last).
-    NGConstraintSpace new_space = ConstraintSpace().CloneWithoutFragmentation();
+    NGConstraintSpace new_space =
+        GetConstraintSpace().CloneWithoutFragmentation();
 
     LayoutAlgorithmParams params(Node(),
                                  container_builder_.InitialFragmentGeometry(),

@@ -46,9 +46,9 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
 
   SimpleInlineChildLayoutContext context(To<InlineNode>(child),
                                          &container_builder_);
-  const NGLayoutResult* child_layout_result =
-      To<InlineNode>(child).Layout(ConstraintSpace(), /* break_token */ nullptr,
-                                   /* column_spanner_path */ nullptr, &context);
+  const NGLayoutResult* child_layout_result = To<InlineNode>(child).Layout(
+      GetConstraintSpace(), /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});
 
   // https://w3c.github.io/mathml-core/#layout-of-operators
@@ -59,12 +59,13 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
     // "If the operator has the stretchy property:"
     if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
-      if (ConstraintSpace().HasTargetStretchInlineSize())
-        operator_target_size = ConstraintSpace().TargetStretchInlineSize();
+      if (GetConstraintSpace().HasTargetStretchInlineSize()) {
+        operator_target_size = GetConstraintSpace().TargetStretchInlineSize();
+      }
     } else {
       // "Otherwise, the stretch axis of the operator is block."
       if (auto target_stretch_block_sizes =
-              ConstraintSpace().TargetStretchBlockSizes()) {
+              GetConstraintSpace().TargetStretchBlockSizes()) {
         target_stretch_ascent = target_stretch_block_sizes->ascent;
         target_stretch_descent = target_stretch_block_sizes->descent;
         if (element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
@@ -167,7 +168,7 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   }
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
   container_builder_.SetBaselines(ascent);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);

@@ -69,9 +69,9 @@ fragmentainer. This is what we want to avoid at all costs, but if monolithic
 content is taller than the fragmentainer, there's really nothing we can do about
 it.
 
-[ConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns true
-for anything that *participates* in block fragmentation. A multicol container
-*establishes* a [fragmentation
+[GetConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns
+true for anything that *participates* in block fragmentation. A multicol
+container *establishes* a [fragmentation
 context](https://www.w3.org/TR/css-break-3/#fragmentation-context). It is a
 fragmentation context root. Printing also establishes a fragmentation context,
 for the entire document. All descendants of a fragmentation context root
@@ -230,12 +230,12 @@ fragments can be retrieved from
 
 As mentioned earlier, normally the right thing to do before performing block
 fragmentation steps is to check if
-[ConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns true,
-but there are situations where we may already have generated fragments from a
-node, but need to stop it from fragmenting any further. This happens when
+[GetConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns
+true, but there are situations where we may already have generated fragments
+from a node, but need to stop it from fragmenting any further. This happens when
 overflow is clipped
 [(overflow:clip)](https://www.w3.org/TR/css-overflow-3/#valdef-overflow-clip). In
-such situations, ConstraintSpace().HasBlockFragmentation() will return false,
+such situations, GetConstraintSpace().HasBlockFragmentation() will return false,
 but we still need to pick up any previous break token to resume layout
 correctly. In cases where this distinction matters (like here - since the
 previous break token is necessary in order to calculate the final block-size, if

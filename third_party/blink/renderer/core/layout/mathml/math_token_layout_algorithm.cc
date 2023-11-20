@@ -40,9 +40,9 @@ const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
 
   SimpleInlineChildLayoutContext context(To<InlineNode>(child),
                                          &container_builder_);
-  const NGLayoutResult* child_layout_result =
-      To<InlineNode>(child).Layout(ConstraintSpace(), /* break_token */ nullptr,
-                                   /* column_spanner_path */ nullptr, &context);
+  const NGLayoutResult* child_layout_result = To<InlineNode>(child).Layout(
+      GetConstraintSpace(), /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &context);
 
   const auto& line_box =
       To<PhysicalLineBoxFragment>(child_layout_result->PhysicalFragment());
@@ -53,7 +53,7 @@ const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
   container_builder_.SetBaselines(ascent);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
@@ -73,7 +73,7 @@ MinMaxSizesResult MathTokenLayoutAlgorithm::ComputeMinMaxSizes(
   sizes += BorderScrollbarPadding().InlineSum();
 
   const auto child_result = To<InlineNode>(child).ComputeMinMaxSizes(
-      Style().GetWritingMode(), ConstraintSpace(), MinMaxSizesFloatInput());
+      Style().GetWritingMode(), GetConstraintSpace(), MinMaxSizesFloatInput());
   sizes += child_result.sizes;
 
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);

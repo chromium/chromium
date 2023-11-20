@@ -57,7 +57,7 @@ class CORE_EXPORT NGFragmentBuilder {
     style_variant_ = style_variant;
   }
 
-  const NGConstraintSpace& ConstraintSpace() const { return space_; }
+  const NGConstraintSpace& GetConstraintSpace() const { return space_; }
 
   WritingDirectionMode GetWritingDirection() const {
     return writing_direction_;

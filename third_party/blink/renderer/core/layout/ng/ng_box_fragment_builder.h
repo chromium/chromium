@@ -284,7 +284,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
-    DCHECK(ConstraintSpace().IsPaginated());
+    DCHECK(GetConstraintSpace().IsPaginated());
     auto* data = EnsureBreakTokenData();
     data->monolithic_overflow =
         std::max(data->monolithic_overflow, monolithic_overflow);
