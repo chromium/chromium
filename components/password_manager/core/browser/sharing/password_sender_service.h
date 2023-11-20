@@ -35,7 +35,9 @@ class PasswordSenderService : public KeyedService {
   PasswordSenderService& operator=(const PasswordSenderService&) = delete;
   ~PasswordSenderService() override = default;
 
-  // Sends `passwords` to the specified `recipient`.
+  // Sends `passwords` to the specified `recipient`. All entries in `passwords`
+  // are expected to belong to the same credentials group. i.e. they all share
+  // the same username and password, and all origins are affiliated.
   virtual void SendPasswords(const std::vector<PasswordForm>& passwords,
                              const PasswordRecipient& recipient) = 0;
 
