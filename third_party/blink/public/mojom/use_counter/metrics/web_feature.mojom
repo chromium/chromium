@@ -4077,6 +4077,8 @@ enum WebFeature {
   kIframeAdAuctionHeadersAttribute = 4738,
   kAutoSpeculationRulesOptedOut = 4739,
   kOverrideFlashEmbedwithHTML = 4740,
+  kLinkRelOpener = 4741,
+  kLinkRelOpenerTargetingSameFrame = 4742,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

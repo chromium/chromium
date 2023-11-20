@@ -394,6 +394,7 @@ void HTMLAnchorElement::SetRel(const AtomicString& value) {
   }
   if (new_link_relations.Contains(AtomicString("opener"))) {
     link_relations_ |= kRelationOpener;
+    UseCounter::Count(GetDocument(), WebFeature::kLinkRelOpener);
   }
 
   // These don't currently have web-facing behavior, but embedders may wish to
@@ -538,6 +539,15 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
         FastGetAttribute(html_names::kHreftranslateAttr));
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLAnchorElementHrefTranslateAttribute);
+  }
+
+  if (target_frame == frame && HasRel(kRelationOpener)) {
+    // TODO(https://crbug.com/1431495): rel=opener is currently only meaningful
+    // with target=_blank. Applying it to same-frame navigations is a potential
+    // opt-out for issue 1431495, but how many sites would trigger this opt-out
+    // inadvertently?
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kLinkRelOpenerTargetingSameFrame);
   }
 
   if (target_frame) {
