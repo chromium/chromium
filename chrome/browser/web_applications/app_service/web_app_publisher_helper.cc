@@ -1602,17 +1602,12 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 
 void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
   DCHECK(!IsShuttingDown());
-  // TODO(crbug.com/1293961): when more fseatures are added to policy manager,
-  // we need to remove per-feature updates in favor of a full refresh, as each
-  // feature multiplicatively increases the complexity of this operation.
+
   for (const WebApp& web_app : registrar().GetApps()) {
     if (IsAppServiceShortcut(web_app.app_id(), *provider_)) {
       continue;
     }
-    const auto login_mode =
-        registrar().GetAppRunOnOsLoginMode(web_app.app_id());
-
-    PublishRunOnOsLoginModeUpdate(web_app.app_id(), login_mode.value);
+    delegate_->PublishWebApp(CreateWebApp(&web_app));
   }
 }
 

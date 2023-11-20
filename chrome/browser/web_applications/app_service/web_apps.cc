@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #endif
@@ -209,8 +208,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
     guest_os::AddTerminalMenuItems(profile_, menu_items);
   }
 
-  if (menu_type == apps::MenuType::kShelf &&
-      instance_registry_->ContainsAppId(app_id)) {
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
     apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                          menu_items);
   }
