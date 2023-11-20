@@ -804,6 +804,67 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       ContentSettingAskIsBlockForIncognito) {
+  // Load a page that registers for autopip.
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  LoadCameraMicrophonePage(incognito_browser);
+  auto* original_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(original_web_contents);
+
+  // There should not currently be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Open and switch to a new tab.
+  OpenNewTab(incognito_browser);
+  auto* second_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // There should not be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  incognito_browser->tab_strip_model()->ActivateTabAt(
+      incognito_browser->tab_strip_model()->GetIndexOfWebContents(
+          original_web_contents));
+
+  // There should still be no picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Explicitly enable the content setting.
+  SetContentSetting(original_web_contents, CONTENT_SETTING_ALLOW);
+
+  // Switch back to the second tab.
+  content::MediaStartStopObserver enter_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  incognito_browser->tab_strip_model()->ActivateTabAt(
+      incognito_browser->tab_strip_model()->GetIndexOfWebContents(
+          second_web_contents));
+  enter_pip_observer.Wait();
+
+  // A picture-in-picture window should automatically open.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  content::MediaStartStopObserver exit_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  incognito_browser->tab_strip_model()->ActivateTabAt(
+      incognito_browser->tab_strip_model()->GetIndexOfWebContents(
+          original_web_contents));
+  exit_pip_observer.Wait();
+
+  // There should no longer be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        DoesNotAutopipIfNotRegistered) {
   // Load a page that does not register for autopip and start video playback.
   LoadNotRegisteredPage(browser());
