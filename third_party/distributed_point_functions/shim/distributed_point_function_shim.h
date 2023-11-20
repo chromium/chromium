@@ -12,10 +12,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/distributed_point_functions/dpf/distributed_point_function.pb.h"
 
-// This header is the interface between Chromium code and the third-party
-// distributed_point_functions library. For more info, see the comment in
-// ../BUILD.gn above the //third_party/distributed_point_functions target.
-
 namespace distributed_point_functions {
 
 // Generates a pair of keys for a DPF that evaluates to `beta` when given

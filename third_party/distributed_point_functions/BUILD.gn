@@ -25,6 +25,7 @@ source_set("distributed_point_functions") {
   deps = [
     ":internal",
     "$dpf_abseil_cpp_dir:absl",
+    "//base",
   ]
   public_deps = [ ":proto" ]
   configs += [ ":includes" ]
