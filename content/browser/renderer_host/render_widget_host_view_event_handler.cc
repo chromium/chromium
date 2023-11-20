@@ -536,6 +536,8 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     blink::WebGestureEvent fling_cancel = gesture;
     fling_cancel.SetType(blink::WebInputEvent::Type::kGestureFlingCancel);
     fling_cancel.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+    fling_cancel.data.fling_cancel.prevent_boosting = false;
+    fling_cancel.data.fling_cancel.target_viewport = false;
     if (ShouldRouteEvents()) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
           host_view_, &fling_cancel,
