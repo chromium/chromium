@@ -54,6 +54,8 @@ void TranslateServiceIOS::Shutdown() {
   translate::TranslateDownloadManager* download_manager =
       translate::TranslateDownloadManager::GetInstance();
   download_manager->Shutdown();
+  delete g_translate_service;
+  g_translate_service = nullptr;
 }
 
 void TranslateServiceIOS::OnResourceRequestsAllowed() {
