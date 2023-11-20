@@ -205,11 +205,9 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   const std::vector<Iban*> ibans = personal_data().GetLocalIbans();
 
   // Verify IBAN has been successfully updated with the new nickname on accept.
-  EXPECT_EQ(ibans.size(), 1U);
-  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
-      u"  My teacher's IBAN ");
+  ASSERT_EQ(ibans.size(), 1U);
   EXPECT_EQ(ibans[0]->value(), iban.value());
+  EXPECT_EQ(ibans[0]->nickname(), u"My teacher's IBAN");
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
