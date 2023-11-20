@@ -2586,37 +2586,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
   EXPECT_TRUE(chrome::CanDuplicateTabAt(browser(), 1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTest, DefaultMediaDevices) {
-  const std::string kDefaultAudioCapture1 = "test_default_audio_capture";
-  const std::string kDefaultVideoCapture1 = "test_default_video_capture";
-  auto SetString = [this](const std::string& path, const std::string& value) {
-    browser()->profile()->GetPrefs()->SetString(path, value);
-  };
-  SetString(prefs::kDefaultAudioCaptureDevice, kDefaultAudioCapture1);
-  SetString(prefs::kDefaultVideoCaptureDevice, kDefaultVideoCapture1);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto GetDeviceID = [web_contents](blink::mojom::MediaStreamType type) {
-    return web_contents->GetDelegate()->GetDefaultMediaDeviceID(web_contents,
-                                                                type);
-  };
-  EXPECT_EQ(kDefaultAudioCapture1,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
-  EXPECT_EQ(kDefaultVideoCapture1,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
-
-  const std::string kDefaultAudioCapture2 = "test_default_audio_capture_2";
-  const std::string kDefaultVideoCapture2 = "test_default_video_capture_2";
-  SetString(prefs::kDefaultAudioCaptureDevice, kDefaultAudioCapture2);
-  SetString(prefs::kDefaultVideoCaptureDevice, kDefaultVideoCapture2);
-  EXPECT_EQ(kDefaultAudioCapture2,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
-  EXPECT_EQ(kDefaultVideoCapture2,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
-}
-
 namespace {
 
 void CheckDisplayModeMQ(const std::u16string& display_mode,

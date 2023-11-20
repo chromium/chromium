@@ -89,14 +89,25 @@ class CONTENT_EXPORT MediaDevicesManager
   ~MediaDevicesManager() override;
 
   // Performs a possibly cached device enumeration for the requested device
-  // types and reports the results to |callback|.
-  // The enumeration results passed to |callback| are guaranteed to be valid
+  // types and reports the results to `callback`.
+  // The enumeration results passed to `callback` are guaranteed to be valid
   // only for the types specified in |requested_types|.
-  // Note that this function is not reentrant, so if |callback| needs to perform
+  // Note that this function is not reentrant, so if `callback` needs to perform
   // another call to EnumerateDevices, it must do so by posting a task to the
   // IO thread.
   void EnumerateDevices(const BoolDeviceTypes& requested_types,
                         EnumerationCallback callback);
+
+  // Performs a possibly cached device enumeration for the requested device
+  // types and reports the results to `callback`.
+  // The enumeration results passed to `callback` are guaranteed to be valid
+  // only for the types specified in `requested_types`.
+  // Note that this function is not reentrant, so if `callback` needs to perform
+  // another call to EnumerateDevices, it must do so by posting a task to the
+  // IO thread. The devices will be ordered to match user preference.
+  void EnumerateAndRankDevices(GlobalRenderFrameHostId render_frame_host_id,
+                               const BoolDeviceTypes& requested_types,
+                               EnumerationCallback callback);
 
   // Performs a possibly cached device enumeration for the requested device
   // types and reports the results to `callback`. The enumeration results are
@@ -105,12 +116,13 @@ class CONTENT_EXPORT MediaDevicesManager
   // permissions, an internal media-device salts.
   // If `request_video_input_capabilities` is true, video formats supported
   // by each device are returned in `callback`. These video formats are in
-  // no particular order and may contain duplicate entries.
-  void EnumerateDevices(GlobalRenderFrameHostId render_frame_host_id,
-                        const BoolDeviceTypes& requested_types,
-                        bool request_video_input_capabilities,
-                        bool request_audio_input_capabilities,
-                        EnumerateDevicesCallback callback);
+  // no particular order and may contain duplicate entries. The devices will be
+  // ordered to match user preference.
+  void EnumerateAndRankDevices(GlobalRenderFrameHostId render_frame_host_id,
+                               const BoolDeviceTypes& requested_types,
+                               bool request_video_input_capabilities,
+                               bool request_audio_input_capabilities,
+                               EnumerateDevicesCallback callback);
 
   uint32_t SubscribeDeviceChangeNotifications(
       GlobalRenderFrameHostId render_frame_host_id,
@@ -239,7 +251,6 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
-      GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -247,14 +258,6 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions,
       const MediaDeviceEnumeration& enumeration);
-  void OnDevicesRanked(
-      const MediaDevicesManager::BoolDeviceTypes& requested_types,
-      bool request_video_input_capabilities,
-      bool request_audio_input_capabilities,
-      EnumerateDevicesCallback callback,
-      const MediaDeviceSaltAndOrigin& salt_and_origin,
-      const MediaDevicesManager::BoolDeviceTypes& has_permissions,
-      MediaDeviceEnumeration ranked_enumeration);
   void GetAudioInputCapabilities(
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -326,7 +329,7 @@ class CONTENT_EXPORT MediaDevicesManager
                           MediaDeviceType type,
                           const MediaDeviceSaltAndOrigin& salt_and_origin,
                           bool has_permission,
-                          MediaDeviceEnumeration enumeration);
+                          const MediaDeviceEnumeration& enumeration);
 
 #if BUILDFLAG(IS_MAC)
   void StartMonitoringOnUIThread();

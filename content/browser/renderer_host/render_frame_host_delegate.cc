@@ -60,11 +60,6 @@ bool RenderFrameHostDelegate::CheckMediaAccessPermission(
   return false;
 }
 
-std::string RenderFrameHostDelegate::GetDefaultMediaDeviceID(
-    blink::mojom::MediaStreamType type) {
-  return std::string();
-}
-
 ui::AXMode RenderFrameHostDelegate::GetAccessibilityMode() {
   return ui::AXMode();
 }

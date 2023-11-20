@@ -4891,17 +4891,6 @@ bool WebContentsImpl::CheckMediaAccessPermission(
                           render_frame_host, security_origin.GetURL(), type);
 }
 
-std::string WebContentsImpl::GetDefaultMediaDeviceID(
-    blink::mojom::MediaStreamType type) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::GetDefaultMediaDeviceID",
-                        "type", static_cast<int>(type));
-
-  if (!delegate_) {
-    return std::string();
-  }
-  return delegate_->GetDefaultMediaDeviceID(this, type);
-}
-
 void WebContentsImpl::SetCaptureHandleConfig(
     blink::mojom::CaptureHandleConfigPtr config) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

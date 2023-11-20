@@ -278,12 +278,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
 
-  // Returns the ID of the default device for the given media device |type|.
-  // If the returned value is an empty string, it means that there is no
-  // default device for the given |type|.
-  virtual std::string GetDefaultMediaDeviceID(
-      blink::mojom::MediaStreamType type);
-
   // Setter for the capture handle config, which allows a captured application
   // to opt-in to exposing information to its capturer(s).
   virtual void SetCaptureHandleConfig(

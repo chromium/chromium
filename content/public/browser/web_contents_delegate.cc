@@ -262,12 +262,6 @@ bool WebContentsDelegate::CheckMediaAccessPermission(
   return false;
 }
 
-std::string WebContentsDelegate::GetDefaultMediaDeviceID(
-    WebContents* web_contents,
-    blink::mojom::MediaStreamType type) {
-  return std::string();
-}
-
 std::string WebContentsDelegate::GetTitleForMediaControls(
     WebContents* web_contents) {
   return {};

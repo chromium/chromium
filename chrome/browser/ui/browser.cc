@@ -2311,15 +2311,6 @@ bool Browser::CheckMediaAccessPermission(
                                    extension);
 }
 
-std::string Browser::GetDefaultMediaDeviceID(
-    content::WebContents* web_contents,
-    blink::mojom::MediaStreamType type) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return MediaCaptureDevicesDispatcher::GetInstance()
-      ->GetDefaultDeviceIDForProfile(profile, type);
-}
-
 std::string Browser::GetTitleForMediaControls(WebContents* web_contents) {
   return app_controller_ ? app_controller_->GetTitleForMediaControls()
                          : std::string();

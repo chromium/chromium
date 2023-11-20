@@ -139,6 +139,7 @@ void UpdateDevicePreferenceRanking(
     const std::string& pref_name,
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
+  CHECK(preferred_device_iter < current_device_infos.end());
   auto preferred_device_stable_id =
       DeviceInfoToStableId(*preferred_device_iter);
   ScopedListPrefUpdate ranking(&prefs, pref_name);

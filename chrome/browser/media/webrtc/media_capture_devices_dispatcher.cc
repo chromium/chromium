@@ -114,8 +114,9 @@ void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
 
 void MediaCaptureDevicesDispatcher::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!observers_.HasObserver(observer))
+  if (!observers_.HasObserver(observer)) {
     observers_.AddObserver(observer);
+  }
 }
 
 void MediaCaptureDevicesDispatcher::RemoveObserver(Observer* observer) {
@@ -186,19 +187,6 @@ bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
 
 void MediaCaptureDevicesDispatcher::DisableDeviceEnumerationForTesting() {
   is_device_enumeration_disabled_ = true;
-}
-
-std::string MediaCaptureDevicesDispatcher::GetDefaultDeviceIDForProfile(
-    Profile* profile,
-    blink::mojom::MediaStreamType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PrefService* prefs = profile->GetPrefs();
-  if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-    return prefs->GetString(prefs::kDefaultAudioCaptureDevice);
-  else if (type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
-    return prefs->GetString(prefs::kDefaultVideoCaptureDevice);
-  else
-    return std::string();
 }
 
 const MediaStreamDevices&

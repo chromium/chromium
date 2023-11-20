@@ -599,7 +599,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioInputRanked) {
     EXPECT_CALL(browser_client_, PreferenceRankAudioDeviceInfos(
                                      &browser_context_, audio_devices));
     base::RunLoop run_loop;
-    media_devices_manager_->EnumerateDevices(
+    media_devices_manager_->EnumerateAndRankDevices(
         render_frame_host_->GetGlobalId(), devices_to_enumerate,
         /*request_video_input_capabilities=*/false,
         /*request_audio_input_capabilities=*/true,
@@ -642,7 +642,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoInputRanked) {
     base::RunLoop run_loop;
     EXPECT_CALL(browser_client_, PreferenceRankVideoDeviceInfos(
                                      &browser_context_, video_devices));
-    media_devices_manager_->EnumerateDevices(
+    media_devices_manager_->EnumerateAndRankDevices(
         render_frame_host_->GetGlobalId(), devices_to_enumerate, true, false,
         base::BindLambdaForTesting(
             [&run_loop, kNumDevices](
@@ -1197,7 +1197,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesWithCapabilities) {
   InitializeRenderFrameHost();
 
   base::RunLoop run_loop;
-  media_devices_manager_->EnumerateDevices(
+  media_devices_manager_->EnumerateAndRankDevices(
       {-1, -1}, devices_to_enumerate, true, true,
       base::BindOnce(
           &MediaDevicesManagerTest::EnumerateWithCapabilitiesCallback,

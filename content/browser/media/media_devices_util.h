@@ -21,12 +21,6 @@
 namespace content {
 
 using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
-// Returns the ID of the user-default device ID via `callback`.
-// If no such device ID can be found, `callback` receives an empty string.
-CONTENT_EXPORT void GetDefaultMediaDeviceID(
-    blink::mojom::MediaDeviceType device_type,
-    GlobalRenderFrameHostId render_frame_host_id,
-    DeviceIdCallback callback);
 
 class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
  public:

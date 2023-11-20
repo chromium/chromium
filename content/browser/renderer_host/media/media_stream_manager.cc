@@ -2036,7 +2036,11 @@ void MediaStreamManager::OpenDevice(
 
 void MediaStreamManager::EnsureDeviceMonitorStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  media_devices_manager_->StartMonitoring();
+  // Call `EnumerateDevices` to start monitoring and ensure that the observers
+  // are notified at least once.
+  MediaDevicesManager::BoolDeviceTypes types;
+  types.fill(true);
+  media_devices_manager_->EnumerateDevices(types, base::DoNothing());
 }
 
 void MediaStreamManager::StopRemovedDevice(
