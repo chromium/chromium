@@ -2805,8 +2805,8 @@ Called by update_autofill_enums.py.-->
   <int value="2497" label="ADDRESS_HOME_APT: accepted"/>
   <int value="2512" label="ADDRESS_HOME_APT_TYPE: edited"/>
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
-  <int value="2544" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
-  <int value="2545" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
+  <int value="2560" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
+  <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -2849,394 +2849,535 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="AutofillFieldPredictionQualityByFieldType">
-  <int value="0" label="Ambiguous: True Positive"/>
-  <int value="1" label="Ambiguous: True Negative (Ambiguous)"/>
-  <int value="2" label="Ambiguous: True Negative (Unknown)"/>
-  <int value="3" label="Ambiguous: True Negative (Empty)"/>
-  <int value="4" label="Ambiguous: False Positive (Mismatch)"/>
-  <int value="5" label="Ambiguous: False Positive (Ambiguous)"/>
-  <int value="6" label="Ambiguous: False Positive (Unknown)"/>
-  <int value="7" label="Ambiguous: False Positive (Empty)"/>
-  <int value="8" label="Ambiguous: False Negative (Mismatch)"/>
-  <int value="9" label="Ambiguous: False Negative (Unknown)"/>
-  <int value="256" label="Name: True Positive"/>
-  <int value="257" label="Name: True Negative (Ambiguous)"/>
-  <int value="258" label="Name: True Negative (Unknown)"/>
-  <int value="259" label="Name: True Negative (Empty)"/>
-  <int value="260" label="Name: False Positive (Mismatch)"/>
-  <int value="261" label="Name: False Positive (Ambiguous)"/>
-  <int value="262" label="Name: False Positive (Unknown)"/>
-  <int value="263" label="Name: False Positive (Empty)"/>
-  <int value="264" label="Name: False Negative (Mismatch)"/>
-  <int value="265" label="Name: False Negative (Unknown)"/>
-  <int value="512" label="Company: True Positive"/>
-  <int value="513" label="Company: True Negative (Ambiguous)"/>
-  <int value="514" label="Company: True Negative (Unknown)"/>
-  <int value="515" label="Company: True Negative (Empty)"/>
-  <int value="516" label="Company: False Positive (Mismatch)"/>
-  <int value="517" label="Company: False Positive (Ambiguous)"/>
-  <int value="518" label="Company: False Positive (Unknown)"/>
-  <int value="519" label="Company: False Positive (Empty)"/>
-  <int value="520" label="Company: False Negative (Mismatch)"/>
-  <int value="521" label="Company: False Negative (Unknown)"/>
-  <int value="768" label="Address Line 1: True Positive"/>
-  <int value="769" label="Address Line 1: True Negative (Ambiguous)"/>
-  <int value="770" label="Address Line 1: True Negative (Unknown)"/>
-  <int value="771" label="Address Line 1: True Negative (Empty)"/>
-  <int value="772" label="Address Line 1: False Positive (Mismatch)"/>
-  <int value="773" label="Address Line 1: False Positive (Ambiguous)"/>
-  <int value="774" label="Address Line 1: False Positive (Unknown)"/>
-  <int value="775" label="Address Line 1: False Positive (Empty)"/>
-  <int value="776" label="Address Line 1: False Negative (Mismatch)"/>
-  <int value="777" label="Address Line 1: False Negative (Unknown)"/>
-  <int value="1024" label="Address Line 2: True Positive"/>
-  <int value="1025" label="Address Line 2: True Negative (Ambiguous)"/>
-  <int value="1026" label="Address Line 2: True Negative (Unknown)"/>
-  <int value="1027" label="Address Line 2: True Negative (Empty)"/>
-  <int value="1028" label="Address Line 2: False Positive (Mismatch)"/>
-  <int value="1029" label="Address Line 2: False Positive (Ambiguous)"/>
-  <int value="1030" label="Address Line 2: False Positive (Unknown)"/>
-  <int value="1031" label="Address Line 2: False Positive (Empty)"/>
-  <int value="1032" label="Address Line 2: False Negative (Mismatch)"/>
-  <int value="1033" label="Address Line 2: False Negative (Unknown)"/>
-  <int value="1280" label="City: True Positive"/>
-  <int value="1281" label="City: True Negative (Ambiguous)"/>
-  <int value="1282" label="City: True Negative (Unknown)"/>
-  <int value="1283" label="City: True Negative (Empty)"/>
-  <int value="1284" label="City: False Positive (Mismatch)"/>
-  <int value="1285" label="City: False Positive (Ambiguous)"/>
-  <int value="1286" label="City: False Positive (Unknown)"/>
-  <int value="1287" label="City: False Positive (Empty)"/>
-  <int value="1288" label="City: False Negative (Mismatch)"/>
-  <int value="1289" label="City: False Negative (Unknown)"/>
-  <int value="1536" label="State: True Positive"/>
-  <int value="1537" label="State: True Negative (Ambiguous)"/>
-  <int value="1538" label="State: True Negative (Unknown)"/>
-  <int value="1539" label="State: True Negative (Empty)"/>
-  <int value="1540" label="State: False Positive (Mismatch)"/>
-  <int value="1541" label="State: False Positive (Ambiguous)"/>
-  <int value="1542" label="State: False Positive (Unknown)"/>
-  <int value="1543" label="State: False Positive (Empty)"/>
-  <int value="1544" label="State: False Negative (Mismatch)"/>
-  <int value="1545" label="State: False Negative (Unknown)"/>
-  <int value="1792" label="ZIP: True Positive"/>
-  <int value="1793" label="ZIP: True Negative (Ambiguous)"/>
-  <int value="1794" label="ZIP: True Negative (Unknown)"/>
-  <int value="1795" label="ZIP: True Negative (Empty)"/>
-  <int value="1796" label="ZIP: False Positive (Mismatch)"/>
-  <int value="1797" label="ZIP: False Positive (Ambiguous)"/>
-  <int value="1798" label="ZIP: False Positive (Unknown)"/>
-  <int value="1799" label="ZIP: False Positive (Empty)"/>
-  <int value="1800" label="ZIP: False Negative (Mismatch)"/>
-  <int value="1801" label="ZIP: False Negative (Unknown)"/>
-  <int value="2048" label="Country: True Positive"/>
-  <int value="2049" label="Country: True Negative (Ambiguous)"/>
-  <int value="2050" label="Country: True Negative (Unknown)"/>
-  <int value="2051" label="Country: True Negative (Empty)"/>
-  <int value="2052" label="Country: False Positive (Mismatch)"/>
-  <int value="2053" label="Country: False Positive (Ambiguous)"/>
-  <int value="2054" label="Country: False Positive (Unknown)"/>
-  <int value="2055" label="Country: False Positive (Empty)"/>
-  <int value="2056" label="Country: False Negative (Mismatch)"/>
-  <int value="2057" label="Country: False Negative (Unknown)"/>
-  <int value="2304" label="Street Name: True Positive"/>
-  <int value="2305" label="Street Name: True Negative (Ambiguous)"/>
-  <int value="2306" label="Street Name: True Negative (Unknown)"/>
-  <int value="2307" label="Street Name: True Negative (Empty)"/>
-  <int value="2308" label="Street Name: False Positive (Mismatch)"/>
-  <int value="2309" label="Street Name: False Positive (Ambiguous)"/>
-  <int value="2310" label="Street Name: False Positive (Unknown)"/>
-  <int value="2311" label="Street Name: False Positive (Empty)"/>
-  <int value="2312" label="Street Name: False Negative (Mismatch)"/>
-  <int value="2313" label="Street Name: False Negative (Unknown)"/>
-  <int value="2560" label="Dependent Street Name: True Positive"/>
-  <int value="2561" label="Dependent Street Name: True Negative (Ambiguous)"/>
-  <int value="2562" label="Dependent Street Name: True Negative (Unknown)"/>
-  <int value="2563" label="Dependent Street Name: True Negative (Empty)"/>
-  <int value="2564" label="Dependent Street Name: False Positive (Mismatch)"/>
-  <int value="2565" label="Dependent Street Name: False Positive (Ambiguous)"/>
-  <int value="2566" label="Dependent Street Name: False Positive (Unknown)"/>
-  <int value="2567" label="Dependent Street Name: False Positive (Empty)"/>
-  <int value="2568" label="Dependent Street Name: False Negative (Mismatch)"/>
-  <int value="2569" label="Dependent Street Name: False Negative (Unknown)"/>
-  <int value="2816" label="House Number: True Positive"/>
-  <int value="2817" label="House Number: True Negative (Ambiguous)"/>
-  <int value="2818" label="House Number: True Negative (Unknown)"/>
-  <int value="2819" label="House Number: True Negative (Empty)"/>
-  <int value="2820" label="House Number: False Positive (Mismatch)"/>
-  <int value="2821" label="House Number: False Positive (Ambiguous)"/>
-  <int value="2822" label="House Number: False Positive (Unknown)"/>
-  <int value="2823" label="House Number: False Positive (Empty)"/>
-  <int value="2824" label="House Number: False Negative (Mismatch)"/>
-  <int value="2825" label="House Number: False Negative (Unknown)"/>
-  <int value="3072" label="Premise Name: True Positive"/>
-  <int value="3073" label="Premise Name: True Negative (Ambiguous)"/>
-  <int value="3074" label="Premise Name: True Negative (Unknown)"/>
-  <int value="3075" label="Premise Name: True Negative (Empty)"/>
-  <int value="3076" label="Premise Name: False Positive (Mismatch)"/>
-  <int value="3077" label="Premise Name: False Positive (Ambiguous)"/>
-  <int value="3078" label="Premise Name: False Positive (Unknown)"/>
-  <int value="3079" label="Premise Name: False Positive (Empty)"/>
-  <int value="3080" label="Premise Name: False Negative (Mismatch)"/>
-  <int value="3081" label="Premise Name: False Negative (Unknown)"/>
-  <int value="3328" label="Sub Premise: True Positive"/>
-  <int value="3329" label="Sub Premise: True Negative (Ambiguous)"/>
-  <int value="3330" label="Sub Premise: True Negative (Unknown)"/>
-  <int value="3331" label="Sub Premise: True Negative (Empty)"/>
-  <int value="3332" label="Sub Premise: False Positive (Mismatch)"/>
-  <int value="3333" label="Sub Premise: False Positive (Ambiguous)"/>
-  <int value="3334" label="Sub Premise: False Positive (Unknown)"/>
-  <int value="3335" label="Sub Premise: False Positive (Empty)"/>
-  <int value="3336" label="Sub Premise: False Negative (Mismatch)"/>
-  <int value="3337" label="Sub Premise: False Negative (Unknown)"/>
-  <int value="3584" label="Phone: True Positive"/>
-  <int value="3585" label="Phone: True Negative (Ambiguous)"/>
-  <int value="3586" label="Phone: True Negative (Unknown)"/>
-  <int value="3587" label="Phone: True Negative (Empty)"/>
-  <int value="3588" label="Phone: False Positive (Mismatch)"/>
-  <int value="3589" label="Phone: False Positive (Ambiguous)"/>
-  <int value="3590" label="Phone: False Positive (Unknown)"/>
-  <int value="3591" label="Phone: False Positive (Empty)"/>
-  <int value="3592" label="Phone: False Negative (Mismatch)"/>
-  <int value="3593" label="Phone: False Negative (Unknown)"/>
-  <int value="3840" label="Fax: True Positive"/>
-  <int value="3841" label="Fax: True Negative (Ambiguous)"/>
-  <int value="3842" label="Fax: True Negative (Unknown)"/>
-  <int value="3843" label="Fax: True Negative (Empty)"/>
-  <int value="3844" label="Fax: False Positive (Mismatch)"/>
-  <int value="3845" label="Fax: False Positive (Ambiguous)"/>
-  <int value="3846" label="Fax: False Positive (Unknown)"/>
-  <int value="3847" label="Fax: False Positive (Empty)"/>
-  <int value="3848" label="Fax: False Negative (Mismatch)"/>
-  <int value="3849" label="Fax: False Negative (Unknown)"/>
-  <int value="4096" label="Email: True Positive"/>
-  <int value="4097" label="Email: True Negative (Ambiguous)"/>
-  <int value="4098" label="Email: True Negative (Unknown)"/>
-  <int value="4099" label="Email: True Negative (Empty)"/>
-  <int value="4100" label="Email: False Positive (Mismatch)"/>
-  <int value="4101" label="Email: False Positive (Ambiguous)"/>
-  <int value="4102" label="Email: False Positive (Unknown)"/>
-  <int value="4103" label="Email: False Positive (Empty)"/>
-  <int value="4104" label="Email: False Negative (Mismatch)"/>
-  <int value="4105" label="Email: False Negative (Unknown)"/>
-  <int value="4352" label="CC Name: True Positive"/>
-  <int value="4353" label="CC Name: True Negative (Ambiguous)"/>
-  <int value="4354" label="CC Name: True Negative (Unknown)"/>
-  <int value="4355" label="CC Name: True Negative (Empty)"/>
-  <int value="4356" label="CC Name: False Positive (Mismatch)"/>
-  <int value="4357" label="CC Name: False Positive (Ambiguous)"/>
-  <int value="4358" label="CC Name: False Positive (Unknown)"/>
-  <int value="4359" label="CC Name: False Positive (Empty)"/>
-  <int value="4360" label="CC Name: False Negative (Mismatch)"/>
-  <int value="4361" label="CC Name: False Negative (Unknown)"/>
-  <int value="4608" label="CC Number: True Positive"/>
-  <int value="4609" label="CC Number: True Negative (Ambiguous)"/>
-  <int value="4610" label="CC Number: True Negative (Unknown)"/>
-  <int value="4611" label="CC Number: True Negative (Empty)"/>
-  <int value="4612" label="CC Number: False Positive (Mismatch)"/>
-  <int value="4613" label="CC Number: False Positive (Ambiguous)"/>
-  <int value="4614" label="CC Number: False Positive (Unknown)"/>
-  <int value="4615" label="CC Number: False Positive (Empty)"/>
-  <int value="4616" label="CC Number: False Negative (Mismatch)"/>
-  <int value="4617" label="CC Number: False Negative (Unknown)"/>
-  <int value="4864" label="CC Expiry: True Positive"/>
-  <int value="4865" label="CC Expiry: True Negative (Ambiguous)"/>
-  <int value="4866" label="CC Expiry: True Negative (Unknown)"/>
-  <int value="4867" label="CC Expiry: True Negative (Empty)"/>
-  <int value="4868" label="CC Expiry: False Positive (Mismatch)"/>
-  <int value="4869" label="CC Expiry: False Positive (Ambiguous)"/>
-  <int value="4870" label="CC Expiry: False Positive (Unknown)"/>
-  <int value="4871" label="CC Expiry: False Positive (Empty)"/>
-  <int value="4872" label="CC Expiry: False Negative (Mismatch)"/>
-  <int value="4873" label="CC Expiry: False Negative (Unknown)"/>
-  <int value="5120" label="CC Type: True Positive"/>
-  <int value="5121" label="CC Type: True Negative (Ambiguous)"/>
-  <int value="5122" label="CC Type: True Negative (Unknown)"/>
-  <int value="5123" label="CC Type: True Negative (Empty)"/>
-  <int value="5124" label="CC Type: False Positive (Mismatch)"/>
-  <int value="5125" label="CC Type: False Positive (Ambiguous)"/>
-  <int value="5126" label="CC Type: False Positive (Unknown)"/>
-  <int value="5127" label="CC Type: False Positive (Empty)"/>
-  <int value="5128" label="CC Type: False Negative (Mismatch)"/>
-  <int value="5129" label="CC Type: False Negative (Unknown)"/>
-  <int value="5376" label="Password: True Positive"/>
-  <int value="5377" label="Password: True Negative (Ambiguous)"/>
-  <int value="5378" label="Password: True Negative (Unknown)"/>
-  <int value="5379" label="Password: True Negative (Empty)"/>
-  <int value="5380" label="Password: False Positive (Mismatch)"/>
-  <int value="5381" label="Password: False Positive (Ambiguous)"/>
-  <int value="5382" label="Password: False Positive (Unknown)"/>
-  <int value="5383" label="Password: False Positive (Empty)"/>
-  <int value="5384" label="Password: False Negative (Mismatch)"/>
-  <int value="5385" label="Password: False Negative (Unknown)"/>
-  <int value="5632" label="Address Line 3: True Positive"/>
-  <int value="5633" label="Address Line 3: True Negative (Ambiguous)"/>
-  <int value="5634" label="Address Line 3: True Negative (Unknown)"/>
-  <int value="5635" label="Address Line 3: True Negative (Empty)"/>
-  <int value="5636" label="Address Line 3: False Positive (Mismatch)"/>
-  <int value="5637" label="Address Line 3: False Positive (Ambiguous)"/>
-  <int value="5638" label="Address Line 3: False Positive (Unknown)"/>
-  <int value="5639" label="Address Line 3: False Positive (Empty)"/>
-  <int value="5640" label="Address Line 3: False Negative (Mismatch)"/>
-  <int value="5641" label="Address Line 3: False Negative (Unknown)"/>
-  <int value="5888" label="Username: True Positive"/>
-  <int value="5889" label="Username: True Negative (Ambiguous)"/>
-  <int value="5890" label="Username: True Negative (Unknown)"/>
-  <int value="5891" label="Username: True Negative (Empty)"/>
-  <int value="5892" label="Username: False Positive (Mismatch)"/>
-  <int value="5893" label="Username: False Positive (Ambiguous)"/>
-  <int value="5894" label="Username: False Positive (Unknown)"/>
-  <int value="5895" label="Username: False Positive (Empty)"/>
-  <int value="5896" label="Username: False Negative (Mismatch)"/>
-  <int value="5897" label="Username: False Negative (Unknown)"/>
-  <int value="6144" label="Street Address: True Positive"/>
-  <int value="6145" label="Street Address: True Negative (Ambiguous)"/>
-  <int value="6146" label="Street Address: True Negative (Unknown)"/>
-  <int value="6147" label="Street Address: True Negative (Empty)"/>
-  <int value="6148" label="Street Address: False Positive (Mismatch)"/>
-  <int value="6149" label="Street Address: False Positive (Ambiguous)"/>
-  <int value="6150" label="Street Address: False Positive (Unknown)"/>
-  <int value="6151" label="Street Address: False Positive (Empty)"/>
-  <int value="6152" label="Street Address: False Negative (Mismatch)"/>
-  <int value="6153" label="Street Address: False Negative (Unknown)"/>
-  <int value="6400" label="CVC: True Positive"/>
-  <int value="6401" label="CVC: True Negative (Ambiguous)"/>
-  <int value="6402" label="CVC: True Negative (Unknown)"/>
-  <int value="6403" label="CVC: True Negative (Empty)"/>
-  <int value="6404" label="CVC: False Positive (Mismatch)"/>
-  <int value="6405" label="CVC: False Positive (Ambiguous)"/>
-  <int value="6406" label="CVC: False Positive (Unknown)"/>
-  <int value="6407" label="CVC: False Positive (Empty)"/>
-  <int value="6408" label="CVC: False Negative (Mismatch)"/>
-  <int value="6409" label="CVC: False Negative (Unknown)"/>
-  <int value="6656" label="Unfillable: True Positive"/>
-  <int value="6657" label="Unfillable: True Negative (Ambiguous)"/>
-  <int value="6658" label="Unfillable: True Negative (Unknown)"/>
-  <int value="6659" label="Unfillable: True Negative (Empty)"/>
-  <int value="6660" label="Unfillable: False Positive (Mismatch)"/>
-  <int value="6661" label="Unfillable: False Positive (Ambiguous)"/>
-  <int value="6662" label="Unfillable: False Positive (Unknown)"/>
-  <int value="6663" label="Unfillable: False Positive (Empty)"/>
-  <int value="6664" label="Unfillable: False Negative (Mismatch)"/>
-  <int value="6665" label="Unfillable: False Negative (Unknown)"/>
-  <int value="9216" label="Birthdate: True Positive"/>
-  <int value="9217" label="Birthdate: True Negative (Ambiguous)"/>
-  <int value="9218" label="Birthdate: True Negative (Unknown)"/>
-  <int value="9219" label="Birthdate: True Negative (Empty)"/>
-  <int value="9220" label="Birthdate: False Positive (Mismatch)"/>
-  <int value="9221" label="Birthdate: False Positive (Ambiguous)"/>
-  <int value="9222" label="Birthdate: False Positive (Unknown)"/>
-  <int value="9223" label="Birthdate: False Positive (Empty)"/>
-  <int value="9224" label="Birthdate: False Negative (Mismatch)"/>
-  <int value="9225" label="Birthdate: False Negative (Unknown)"/>
-  <int value="9472" label="IBAN: True Positive"/>
-  <int value="9473" label="IBAN: True Negative (Ambiguous)"/>
-  <int value="9474" label="IBAN: True Negative (Unknown)"/>
-  <int value="9475" label="IBAN: True Negative (Empty)"/>
-  <int value="9476" label="IBAN: False Positive (Mismatch)"/>
-  <int value="9477" label="IBAN: False Positive (Ambiguous)"/>
-  <int value="9478" label="IBAN: False Positive (Unknown)"/>
-  <int value="9479" label="IBAN: False Positive (Empty)"/>
-  <int value="9480" label="IBAN: False Negative (Mismatch)"/>
-  <int value="9481" label="IBAN: False Negative (Unknown)"/>
-  <int value="9672" label="Landmark: True Positive"/>
-  <int value="9673" label="Landmark: True Negative (Ambiguous)"/>
-  <int value="9674" label="Landmark: True Negative (Unknown)"/>
-  <int value="9675" label="Landmark: True Negative (Empty)"/>
-  <int value="9676" label="Landmark: False Positive (Mismatch)"/>
-  <int value="9677" label="Landmark: False Positive (Ambiguous)"/>
-  <int value="9678" label="Landmark: False Positive (Unknown)"/>
-  <int value="9679" label="Landmark: False Positive (Empty)"/>
-  <int value="9680" label="Landmark: False Negative (Mismatch)"/>
-  <int value="9681" label="Landmark: False Negative (Unknown)"/>
-  <int value="9872" label="Between Streets: True Positive"/>
-  <int value="9873" label="Between Streets: True Negative (Ambiguous)"/>
-  <int value="9874" label="Between Streets: True Negative (Unknown)"/>
-  <int value="9875" label="Between Streets: True Negative (Empty)"/>
-  <int value="9876" label="Between Streets: False Positive (Mismatch)"/>
-  <int value="9877" label="Between Streets: False Positive (Ambiguous)"/>
-  <int value="9878" label="Between Streets: False Positive (Unknown)"/>
-  <int value="9879" label="Between Streets: False Positive (Empty)"/>
-  <int value="9880" label="Between Streets: False Negative (Mismatch)"/>
-  <int value="9881" label="Between Streets: False Negative (Unknown)"/>
-  <int value="9972" label="Admin Level 2: True Positive"/>
-  <int value="9973" label="Admin Level 2: True Negative (Ambiguous)"/>
-  <int value="9974" label="Admin Level 2: True Negative (Unknown)"/>
-  <int value="9975" label="Admin Level 2: True Negative (Empty)"/>
-  <int value="9976" label="Admin Level 2: False Positive (Mismatch)"/>
-  <int value="9977" label="Admin Level 2: False Positive (Ambiguous)"/>
-  <int value="9978" label="Admin Level 2: False Positive (Unknown)"/>
-  <int value="9979" label="Admin Level 2: False Positive (Empty)"/>
-  <int value="9980" label="Admin Level 2: False Negative (Mismatch)"/>
-  <int value="9981" label="Admin Level 2: False Negative (Unknown)"/>
-  <int value="10072" label="Street location: True Positive"/>
-  <int value="10073" label="Street location: True Negative (Ambiguous)"/>
-  <int value="10074" label="Street location: True Negative (Unknown)"/>
-  <int value="10075" label="Street location: True Negative (Empty)"/>
-  <int value="10076" label="Street location: False Positive (Mismatch)"/>
-  <int value="10077" label="Street location: False Positive (Ambiguous)"/>
-  <int value="10078" label="Street location: False Positive (Unknown)"/>
-  <int value="10079" label="Street location: False Positive (Empty)"/>
-  <int value="10080" label="Street location: False Negative (Mismatch)"/>
-  <int value="10081" label="Street location: False Negative (Unknown)"/>
-  <int value="10172" label="Address overflow: True Positive"/>
-  <int value="10173" label="Address overflow: True Negative (Ambiguous)"/>
-  <int value="10174" label="Address overflow: True Negative (Unknown)"/>
-  <int value="10175" label="Address overflow: True Negative (Empty)"/>
-  <int value="10176" label="Address overflow: False Positive (Mismatch)"/>
-  <int value="10177" label="Address overflow: False Positive (Ambiguous)"/>
-  <int value="10178" label="Address overflow: False Positive (Unknown)"/>
-  <int value="10179" label="Address overflow: False Positive (Empty)"/>
-  <int value="10180" label="Address overflow: False Negative (Mismatch)"/>
-  <int value="10181" label="Address overflow: False Negative (Unknown)"/>
-  <int value="10272" label="Delivery instructions: True Positive"/>
-  <int value="10273" label="Delivery instructions: True Negative (Ambiguous)"/>
-  <int value="10274" label="Delivery instructions: True Negative (Unknown)"/>
-  <int value="10275" label="Delivery instructions: True Negative (Empty)"/>
-  <int value="10276" label="Delivery instructions: False Positive (Mismatch)"/>
-  <int value="10277" label="Delivery instructions: False Positive (Ambiguous)"/>
-  <int value="10278" label="Delivery instructions: False Positive (Unknown)"/>
-  <int value="10279" label="Delivery instructions: False Positive (Empty)"/>
-  <int value="10280" label="Delivery instructions: False Negative (Mismatch)"/>
-  <int value="10281" label="Delivery instructions: False Negative (Unknown)"/>
-  <int value="10372" label="Address overflow and landmark: True Positive"/>
-  <int value="10373"
-      label="Address overflow and landmark: True Negative (Ambiguous)"/>
-  <int value="10374"
-      label="Address overflow and landmark: True Negative (Unknown)"/>
-  <int value="10375"
-      label="Address overflow and landmark: True Negative (Empty)"/>
-  <int value="10376"
-      label="Address overflow and landmark: False Positive (Mismatch)"/>
-  <int value="10377"
-      label="Address overflow and landmark: False Positive (Ambiguous)"/>
-  <int value="10378"
-      label="Address overflow and landmark: False Positive (Unknown)"/>
-  <int value="10379"
-      label="Address overflow and landmark: False Positive (Empty)"/>
-  <int value="10380"
-      label="Address overflow and landmark: False Negative (Mismatch)"/>
-  <int value="10381"
-      label="Address overflow and landmark: False Negative (Unknown)"/>
-  <int value="10472" label="Between streets and landmark: True Positive"/>
-  <int value="10473"
-      label="Between streets and landmark: True Negative (Ambiguous)"/>
-  <int value="10474"
-      label="Between streets and landmark: True Negative (Unknown)"/>
-  <int value="10475"
-      label="Between streets and landmark: True Negative (Empty)"/>
-  <int value="10476"
-      label="Between streets and landmark: False Positive (Mismatch)"/>
-  <int value="10477"
-      label="Between streets and landmark: False Positive (Ambiguous)"/>
-  <int value="10478"
-      label="Between streets and landmark: False Positive (Unknown)"/>
-  <int value="10479"
-      label="Between streets and landmark: False Positive (Empty)"/>
-  <int value="10480"
-      label="Between streets and landmark: False Negative (Mismatch)"/>
-  <int value="10481"
-      label="Between streets and landmark: False Negative (Unknown)"/>
+<!-- Generated from components/autofill/core/browser/metrics/autofill_metrics.cc.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="AMBIGUOUS: True Positive"/>
+  <int value="1" label="AMBIGUOUS: True Negative (Ambiguous)"/>
+  <int value="2" label="AMBIGUOUS: True Negative (Unknown)"/>
+  <int value="3" label="AMBIGUOUS: True Negative (Empty)"/>
+  <int value="4" label="AMBIGUOUS: False Positive (Mismatch)"/>
+  <int value="5" label="AMBIGUOUS: False Positive (Ambiguous)"/>
+  <int value="6" label="AMBIGUOUS: False Positive (Unknown)"/>
+  <int value="7" label="AMBIGUOUS: False Positive (Empty)"/>
+  <int value="8" label="AMBIGUOUS: False Negative (Mismatch)"/>
+  <int value="9" label="AMBIGUOUS: False Negative (Unknown)"/>
+  <int value="256" label="NAME: True Positive"/>
+  <int value="257" label="NAME: True Negative (Ambiguous)"/>
+  <int value="258" label="NAME: True Negative (Unknown)"/>
+  <int value="259" label="NAME: True Negative (Empty)"/>
+  <int value="260" label="NAME: False Positive (Mismatch)"/>
+  <int value="261" label="NAME: False Positive (Ambiguous)"/>
+  <int value="262" label="NAME: False Positive (Unknown)"/>
+  <int value="263" label="NAME: False Positive (Empty)"/>
+  <int value="264" label="NAME: False Negative (Mismatch)"/>
+  <int value="265" label="NAME: False Negative (Unknown)"/>
+  <int value="512" label="COMPANY: True Positive"/>
+  <int value="513" label="COMPANY: True Negative (Ambiguous)"/>
+  <int value="514" label="COMPANY: True Negative (Unknown)"/>
+  <int value="515" label="COMPANY: True Negative (Empty)"/>
+  <int value="516" label="COMPANY: False Positive (Mismatch)"/>
+  <int value="517" label="COMPANY: False Positive (Ambiguous)"/>
+  <int value="518" label="COMPANY: False Positive (Unknown)"/>
+  <int value="519" label="COMPANY: False Positive (Empty)"/>
+  <int value="520" label="COMPANY: False Negative (Mismatch)"/>
+  <int value="521" label="COMPANY: False Negative (Unknown)"/>
+  <int value="768" label="ADDRESS_LINE_1: True Positive"/>
+  <int value="769" label="ADDRESS_LINE_1: True Negative (Ambiguous)"/>
+  <int value="770" label="ADDRESS_LINE_1: True Negative (Unknown)"/>
+  <int value="771" label="ADDRESS_LINE_1: True Negative (Empty)"/>
+  <int value="772" label="ADDRESS_LINE_1: False Positive (Mismatch)"/>
+  <int value="773" label="ADDRESS_LINE_1: False Positive (Ambiguous)"/>
+  <int value="774" label="ADDRESS_LINE_1: False Positive (Unknown)"/>
+  <int value="775" label="ADDRESS_LINE_1: False Positive (Empty)"/>
+  <int value="776" label="ADDRESS_LINE_1: False Negative (Mismatch)"/>
+  <int value="777" label="ADDRESS_LINE_1: False Negative (Unknown)"/>
+  <int value="1024" label="ADDRESS_LINE_2: True Positive"/>
+  <int value="1025" label="ADDRESS_LINE_2: True Negative (Ambiguous)"/>
+  <int value="1026" label="ADDRESS_LINE_2: True Negative (Unknown)"/>
+  <int value="1027" label="ADDRESS_LINE_2: True Negative (Empty)"/>
+  <int value="1028" label="ADDRESS_LINE_2: False Positive (Mismatch)"/>
+  <int value="1029" label="ADDRESS_LINE_2: False Positive (Ambiguous)"/>
+  <int value="1030" label="ADDRESS_LINE_2: False Positive (Unknown)"/>
+  <int value="1031" label="ADDRESS_LINE_2: False Positive (Empty)"/>
+  <int value="1032" label="ADDRESS_LINE_2: False Negative (Mismatch)"/>
+  <int value="1033" label="ADDRESS_LINE_2: False Negative (Unknown)"/>
+  <int value="1280" label="ADDRESS_CITY: True Positive"/>
+  <int value="1281" label="ADDRESS_CITY: True Negative (Ambiguous)"/>
+  <int value="1282" label="ADDRESS_CITY: True Negative (Unknown)"/>
+  <int value="1283" label="ADDRESS_CITY: True Negative (Empty)"/>
+  <int value="1284" label="ADDRESS_CITY: False Positive (Mismatch)"/>
+  <int value="1285" label="ADDRESS_CITY: False Positive (Ambiguous)"/>
+  <int value="1286" label="ADDRESS_CITY: False Positive (Unknown)"/>
+  <int value="1287" label="ADDRESS_CITY: False Positive (Empty)"/>
+  <int value="1288" label="ADDRESS_CITY: False Negative (Mismatch)"/>
+  <int value="1289" label="ADDRESS_CITY: False Negative (Unknown)"/>
+  <int value="1536" label="ADDRESS_STATE: True Positive"/>
+  <int value="1537" label="ADDRESS_STATE: True Negative (Ambiguous)"/>
+  <int value="1538" label="ADDRESS_STATE: True Negative (Unknown)"/>
+  <int value="1539" label="ADDRESS_STATE: True Negative (Empty)"/>
+  <int value="1540" label="ADDRESS_STATE: False Positive (Mismatch)"/>
+  <int value="1541" label="ADDRESS_STATE: False Positive (Ambiguous)"/>
+  <int value="1542" label="ADDRESS_STATE: False Positive (Unknown)"/>
+  <int value="1543" label="ADDRESS_STATE: False Positive (Empty)"/>
+  <int value="1544" label="ADDRESS_STATE: False Negative (Mismatch)"/>
+  <int value="1545" label="ADDRESS_STATE: False Negative (Unknown)"/>
+  <int value="1792" label="ADDRESS_ZIP: True Positive"/>
+  <int value="1793" label="ADDRESS_ZIP: True Negative (Ambiguous)"/>
+  <int value="1794" label="ADDRESS_ZIP: True Negative (Unknown)"/>
+  <int value="1795" label="ADDRESS_ZIP: True Negative (Empty)"/>
+  <int value="1796" label="ADDRESS_ZIP: False Positive (Mismatch)"/>
+  <int value="1797" label="ADDRESS_ZIP: False Positive (Ambiguous)"/>
+  <int value="1798" label="ADDRESS_ZIP: False Positive (Unknown)"/>
+  <int value="1799" label="ADDRESS_ZIP: False Positive (Empty)"/>
+  <int value="1800" label="ADDRESS_ZIP: False Negative (Mismatch)"/>
+  <int value="1801" label="ADDRESS_ZIP: False Negative (Unknown)"/>
+  <int value="2048" label="ADDRESS_COUNTRY: True Positive"/>
+  <int value="2049" label="ADDRESS_COUNTRY: True Negative (Ambiguous)"/>
+  <int value="2050" label="ADDRESS_COUNTRY: True Negative (Unknown)"/>
+  <int value="2051" label="ADDRESS_COUNTRY: True Negative (Empty)"/>
+  <int value="2052" label="ADDRESS_COUNTRY: False Positive (Mismatch)"/>
+  <int value="2053" label="ADDRESS_COUNTRY: False Positive (Ambiguous)"/>
+  <int value="2054" label="ADDRESS_COUNTRY: False Positive (Unknown)"/>
+  <int value="2055" label="ADDRESS_COUNTRY: False Positive (Empty)"/>
+  <int value="2056" label="ADDRESS_COUNTRY: False Negative (Mismatch)"/>
+  <int value="2057" label="ADDRESS_COUNTRY: False Negative (Unknown)"/>
+  <int value="2304" label="ADDRESS_HOME_STREET_NAME: True Positive"/>
+  <int value="2305"
+      label="ADDRESS_HOME_STREET_NAME: True Negative (Ambiguous)"/>
+  <int value="2306" label="ADDRESS_HOME_STREET_NAME: True Negative (Unknown)"/>
+  <int value="2307" label="ADDRESS_HOME_STREET_NAME: True Negative (Empty)"/>
+  <int value="2308"
+      label="ADDRESS_HOME_STREET_NAME: False Positive (Mismatch)"/>
+  <int value="2309"
+      label="ADDRESS_HOME_STREET_NAME: False Positive (Ambiguous)"/>
+  <int value="2310" label="ADDRESS_HOME_STREET_NAME: False Positive (Unknown)"/>
+  <int value="2311" label="ADDRESS_HOME_STREET_NAME: False Positive (Empty)"/>
+  <int value="2312"
+      label="ADDRESS_HOME_STREET_NAME: False Negative (Mismatch)"/>
+  <int value="2313" label="ADDRESS_HOME_STREET_NAME: False Negative (Unknown)"/>
+  <int value="2560" label="ADDRESS_HOME_HOUSE_NUMBER: True Positive"/>
+  <int value="2561"
+      label="ADDRESS_HOME_HOUSE_NUMBER: True Negative (Ambiguous)"/>
+  <int value="2562" label="ADDRESS_HOME_HOUSE_NUMBER: True Negative (Unknown)"/>
+  <int value="2563" label="ADDRESS_HOME_HOUSE_NUMBER: True Negative (Empty)"/>
+  <int value="2564"
+      label="ADDRESS_HOME_HOUSE_NUMBER: False Positive (Mismatch)"/>
+  <int value="2565"
+      label="ADDRESS_HOME_HOUSE_NUMBER: False Positive (Ambiguous)"/>
+  <int value="2566"
+      label="ADDRESS_HOME_HOUSE_NUMBER: False Positive (Unknown)"/>
+  <int value="2567" label="ADDRESS_HOME_HOUSE_NUMBER: False Positive (Empty)"/>
+  <int value="2568"
+      label="ADDRESS_HOME_HOUSE_NUMBER: False Negative (Mismatch)"/>
+  <int value="2569"
+      label="ADDRESS_HOME_HOUSE_NUMBER: False Negative (Unknown)"/>
+  <int value="2816" label="ADDRESS_HOME_SUBPREMISE: True Positive"/>
+  <int value="2817" label="ADDRESS_HOME_SUBPREMISE: True Negative (Ambiguous)"/>
+  <int value="2818" label="ADDRESS_HOME_SUBPREMISE: True Negative (Unknown)"/>
+  <int value="2819" label="ADDRESS_HOME_SUBPREMISE: True Negative (Empty)"/>
+  <int value="2820" label="ADDRESS_HOME_SUBPREMISE: False Positive (Mismatch)"/>
+  <int value="2821"
+      label="ADDRESS_HOME_SUBPREMISE: False Positive (Ambiguous)"/>
+  <int value="2822" label="ADDRESS_HOME_SUBPREMISE: False Positive (Unknown)"/>
+  <int value="2823" label="ADDRESS_HOME_SUBPREMISE: False Positive (Empty)"/>
+  <int value="2824" label="ADDRESS_HOME_SUBPREMISE: False Negative (Mismatch)"/>
+  <int value="2825" label="ADDRESS_HOME_SUBPREMISE: False Negative (Unknown)"/>
+  <int value="3072" label="PHONE: True Positive"/>
+  <int value="3073" label="PHONE: True Negative (Ambiguous)"/>
+  <int value="3074" label="PHONE: True Negative (Unknown)"/>
+  <int value="3075" label="PHONE: True Negative (Empty)"/>
+  <int value="3076" label="PHONE: False Positive (Mismatch)"/>
+  <int value="3077" label="PHONE: False Positive (Ambiguous)"/>
+  <int value="3078" label="PHONE: False Positive (Unknown)"/>
+  <int value="3079" label="PHONE: False Positive (Empty)"/>
+  <int value="3080" label="PHONE: False Negative (Mismatch)"/>
+  <int value="3081" label="PHONE: False Negative (Unknown)"/>
+  <int value="3328" label="FAX: True Positive"/>
+  <int value="3329" label="FAX: True Negative (Ambiguous)"/>
+  <int value="3330" label="FAX: True Negative (Unknown)"/>
+  <int value="3331" label="FAX: True Negative (Empty)"/>
+  <int value="3332" label="FAX: False Positive (Mismatch)"/>
+  <int value="3333" label="FAX: False Positive (Ambiguous)"/>
+  <int value="3334" label="FAX: False Positive (Unknown)"/>
+  <int value="3335" label="FAX: False Positive (Empty)"/>
+  <int value="3336" label="FAX: False Negative (Mismatch)"/>
+  <int value="3337" label="FAX: False Negative (Unknown)"/>
+  <int value="3584" label="EMAIL: True Positive"/>
+  <int value="3585" label="EMAIL: True Negative (Ambiguous)"/>
+  <int value="3586" label="EMAIL: True Negative (Unknown)"/>
+  <int value="3587" label="EMAIL: True Negative (Empty)"/>
+  <int value="3588" label="EMAIL: False Positive (Mismatch)"/>
+  <int value="3589" label="EMAIL: False Positive (Ambiguous)"/>
+  <int value="3590" label="EMAIL: False Positive (Unknown)"/>
+  <int value="3591" label="EMAIL: False Positive (Empty)"/>
+  <int value="3592" label="EMAIL: False Negative (Mismatch)"/>
+  <int value="3593" label="EMAIL: False Negative (Unknown)"/>
+  <int value="3840" label="CREDIT_CARD_NAME: True Positive"/>
+  <int value="3841" label="CREDIT_CARD_NAME: True Negative (Ambiguous)"/>
+  <int value="3842" label="CREDIT_CARD_NAME: True Negative (Unknown)"/>
+  <int value="3843" label="CREDIT_CARD_NAME: True Negative (Empty)"/>
+  <int value="3844" label="CREDIT_CARD_NAME: False Positive (Mismatch)"/>
+  <int value="3845" label="CREDIT_CARD_NAME: False Positive (Ambiguous)"/>
+  <int value="3846" label="CREDIT_CARD_NAME: False Positive (Unknown)"/>
+  <int value="3847" label="CREDIT_CARD_NAME: False Positive (Empty)"/>
+  <int value="3848" label="CREDIT_CARD_NAME: False Negative (Mismatch)"/>
+  <int value="3849" label="CREDIT_CARD_NAME: False Negative (Unknown)"/>
+  <int value="4096" label="CREDIT_CARD_NUMBER: True Positive"/>
+  <int value="4097" label="CREDIT_CARD_NUMBER: True Negative (Ambiguous)"/>
+  <int value="4098" label="CREDIT_CARD_NUMBER: True Negative (Unknown)"/>
+  <int value="4099" label="CREDIT_CARD_NUMBER: True Negative (Empty)"/>
+  <int value="4100" label="CREDIT_CARD_NUMBER: False Positive (Mismatch)"/>
+  <int value="4101" label="CREDIT_CARD_NUMBER: False Positive (Ambiguous)"/>
+  <int value="4102" label="CREDIT_CARD_NUMBER: False Positive (Unknown)"/>
+  <int value="4103" label="CREDIT_CARD_NUMBER: False Positive (Empty)"/>
+  <int value="4104" label="CREDIT_CARD_NUMBER: False Negative (Mismatch)"/>
+  <int value="4105" label="CREDIT_CARD_NUMBER: False Negative (Unknown)"/>
+  <int value="4352" label="CREDIT_CARD_DATE: True Positive"/>
+  <int value="4353" label="CREDIT_CARD_DATE: True Negative (Ambiguous)"/>
+  <int value="4354" label="CREDIT_CARD_DATE: True Negative (Unknown)"/>
+  <int value="4355" label="CREDIT_CARD_DATE: True Negative (Empty)"/>
+  <int value="4356" label="CREDIT_CARD_DATE: False Positive (Mismatch)"/>
+  <int value="4357" label="CREDIT_CARD_DATE: False Positive (Ambiguous)"/>
+  <int value="4358" label="CREDIT_CARD_DATE: False Positive (Unknown)"/>
+  <int value="4359" label="CREDIT_CARD_DATE: False Positive (Empty)"/>
+  <int value="4360" label="CREDIT_CARD_DATE: False Negative (Mismatch)"/>
+  <int value="4361" label="CREDIT_CARD_DATE: False Negative (Unknown)"/>
+  <int value="4608" label="CREDIT_CARD_TYPE: True Positive"/>
+  <int value="4609" label="CREDIT_CARD_TYPE: True Negative (Ambiguous)"/>
+  <int value="4610" label="CREDIT_CARD_TYPE: True Negative (Unknown)"/>
+  <int value="4611" label="CREDIT_CARD_TYPE: True Negative (Empty)"/>
+  <int value="4612" label="CREDIT_CARD_TYPE: False Positive (Mismatch)"/>
+  <int value="4613" label="CREDIT_CARD_TYPE: False Positive (Ambiguous)"/>
+  <int value="4614" label="CREDIT_CARD_TYPE: False Positive (Unknown)"/>
+  <int value="4615" label="CREDIT_CARD_TYPE: False Positive (Empty)"/>
+  <int value="4616" label="CREDIT_CARD_TYPE: False Negative (Mismatch)"/>
+  <int value="4617" label="CREDIT_CARD_TYPE: False Negative (Unknown)"/>
+  <int value="4864" label="PASSWORD: True Positive"/>
+  <int value="4865" label="PASSWORD: True Negative (Ambiguous)"/>
+  <int value="4866" label="PASSWORD: True Negative (Unknown)"/>
+  <int value="4867" label="PASSWORD: True Negative (Empty)"/>
+  <int value="4868" label="PASSWORD: False Positive (Mismatch)"/>
+  <int value="4869" label="PASSWORD: False Positive (Ambiguous)"/>
+  <int value="4870" label="PASSWORD: False Positive (Unknown)"/>
+  <int value="4871" label="PASSWORD: False Positive (Empty)"/>
+  <int value="4872" label="PASSWORD: False Negative (Mismatch)"/>
+  <int value="4873" label="PASSWORD: False Negative (Unknown)"/>
+  <int value="5120" label="ADDRESS_LINE_3: True Positive"/>
+  <int value="5121" label="ADDRESS_LINE_3: True Negative (Ambiguous)"/>
+  <int value="5122" label="ADDRESS_LINE_3: True Negative (Unknown)"/>
+  <int value="5123" label="ADDRESS_LINE_3: True Negative (Empty)"/>
+  <int value="5124" label="ADDRESS_LINE_3: False Positive (Mismatch)"/>
+  <int value="5125" label="ADDRESS_LINE_3: False Positive (Ambiguous)"/>
+  <int value="5126" label="ADDRESS_LINE_3: False Positive (Unknown)"/>
+  <int value="5127" label="ADDRESS_LINE_3: False Positive (Empty)"/>
+  <int value="5128" label="ADDRESS_LINE_3: False Negative (Mismatch)"/>
+  <int value="5129" label="ADDRESS_LINE_3: False Negative (Unknown)"/>
+  <int value="5376" label="USERNAME: True Positive"/>
+  <int value="5377" label="USERNAME: True Negative (Ambiguous)"/>
+  <int value="5378" label="USERNAME: True Negative (Unknown)"/>
+  <int value="5379" label="USERNAME: True Negative (Empty)"/>
+  <int value="5380" label="USERNAME: False Positive (Mismatch)"/>
+  <int value="5381" label="USERNAME: False Positive (Ambiguous)"/>
+  <int value="5382" label="USERNAME: False Positive (Unknown)"/>
+  <int value="5383" label="USERNAME: False Positive (Empty)"/>
+  <int value="5384" label="USERNAME: False Negative (Mismatch)"/>
+  <int value="5385" label="USERNAME: False Negative (Unknown)"/>
+  <int value="5632" label="STREET_ADDRESS: True Positive"/>
+  <int value="5633" label="STREET_ADDRESS: True Negative (Ambiguous)"/>
+  <int value="5634" label="STREET_ADDRESS: True Negative (Unknown)"/>
+  <int value="5635" label="STREET_ADDRESS: True Negative (Empty)"/>
+  <int value="5636" label="STREET_ADDRESS: False Positive (Mismatch)"/>
+  <int value="5637" label="STREET_ADDRESS: False Positive (Ambiguous)"/>
+  <int value="5638" label="STREET_ADDRESS: False Positive (Unknown)"/>
+  <int value="5639" label="STREET_ADDRESS: False Positive (Empty)"/>
+  <int value="5640" label="STREET_ADDRESS: False Negative (Mismatch)"/>
+  <int value="5641" label="STREET_ADDRESS: False Negative (Unknown)"/>
+  <int value="5888" label="CREDIT_CARD_VERIFICATION: True Positive"/>
+  <int value="5889"
+      label="CREDIT_CARD_VERIFICATION: True Negative (Ambiguous)"/>
+  <int value="5890" label="CREDIT_CARD_VERIFICATION: True Negative (Unknown)"/>
+  <int value="5891" label="CREDIT_CARD_VERIFICATION: True Negative (Empty)"/>
+  <int value="5892"
+      label="CREDIT_CARD_VERIFICATION: False Positive (Mismatch)"/>
+  <int value="5893"
+      label="CREDIT_CARD_VERIFICATION: False Positive (Ambiguous)"/>
+  <int value="5894" label="CREDIT_CARD_VERIFICATION: False Positive (Unknown)"/>
+  <int value="5895" label="CREDIT_CARD_VERIFICATION: False Positive (Empty)"/>
+  <int value="5896"
+      label="CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
+  <int value="5897" label="CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
+  <int value="6144" label="UNFILLABLE: True Positive"/>
+  <int value="6145" label="UNFILLABLE: True Negative (Ambiguous)"/>
+  <int value="6146" label="UNFILLABLE: True Negative (Unknown)"/>
+  <int value="6147" label="UNFILLABLE: True Negative (Empty)"/>
+  <int value="6148" label="UNFILLABLE: False Positive (Mismatch)"/>
+  <int value="6149" label="UNFILLABLE: False Positive (Ambiguous)"/>
+  <int value="6150" label="UNFILLABLE: False Positive (Unknown)"/>
+  <int value="6151" label="UNFILLABLE: False Positive (Empty)"/>
+  <int value="6152" label="UNFILLABLE: False Negative (Mismatch)"/>
+  <int value="6153" label="UNFILLABLE: False Negative (Unknown)"/>
+  <int value="6400" label="ADDRESS_HOME_APT_NUM: True Positive"/>
+  <int value="6401" label="ADDRESS_HOME_APT_NUM: True Negative (Ambiguous)"/>
+  <int value="6402" label="ADDRESS_HOME_APT_NUM: True Negative (Unknown)"/>
+  <int value="6403" label="ADDRESS_HOME_APT_NUM: True Negative (Empty)"/>
+  <int value="6404" label="ADDRESS_HOME_APT_NUM: False Positive (Mismatch)"/>
+  <int value="6405" label="ADDRESS_HOME_APT_NUM: False Positive (Ambiguous)"/>
+  <int value="6406" label="ADDRESS_HOME_APT_NUM: False Positive (Unknown)"/>
+  <int value="6407" label="ADDRESS_HOME_APT_NUM: False Positive (Empty)"/>
+  <int value="6408" label="ADDRESS_HOME_APT_NUM: False Negative (Mismatch)"/>
+  <int value="6409" label="ADDRESS_HOME_APT_NUM: False Negative (Unknown)"/>
+  <int value="6656" label="ADDRESS_HOME_SORTING_CODE: True Positive"/>
+  <int value="6657"
+      label="ADDRESS_HOME_SORTING_CODE: True Negative (Ambiguous)"/>
+  <int value="6658" label="ADDRESS_HOME_SORTING_CODE: True Negative (Unknown)"/>
+  <int value="6659" label="ADDRESS_HOME_SORTING_CODE: True Negative (Empty)"/>
+  <int value="6660"
+      label="ADDRESS_HOME_SORTING_CODE: False Positive (Mismatch)"/>
+  <int value="6661"
+      label="ADDRESS_HOME_SORTING_CODE: False Positive (Ambiguous)"/>
+  <int value="6662"
+      label="ADDRESS_HOME_SORTING_CODE: False Positive (Unknown)"/>
+  <int value="6663" label="ADDRESS_HOME_SORTING_CODE: False Positive (Empty)"/>
+  <int value="6664"
+      label="ADDRESS_HOME_SORTING_CODE: False Negative (Mismatch)"/>
+  <int value="6665"
+      label="ADDRESS_HOME_SORTING_CODE: False Negative (Unknown)"/>
+  <int value="6912" label="ADDRESS_HOME_DEPENDENT_LOCALITY: True Positive"/>
+  <int value="6913"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: True Negative (Ambiguous)"/>
+  <int value="6914"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: True Negative (Unknown)"/>
+  <int value="6915"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: True Negative (Empty)"/>
+  <int value="6916"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Positive (Mismatch)"/>
+  <int value="6917"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Positive (Ambiguous)"/>
+  <int value="6918"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Positive (Unknown)"/>
+  <int value="6919"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Positive (Empty)"/>
+  <int value="6920"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Negative (Mismatch)"/>
+  <int value="6921"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: False Negative (Unknown)"/>
+  <int value="7168" label="ADDRESS_HOME_OTHER_SUBUNIT: True Positive"/>
+  <int value="7169"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: True Negative (Ambiguous)"/>
+  <int value="7170"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: True Negative (Unknown)"/>
+  <int value="7171" label="ADDRESS_HOME_OTHER_SUBUNIT: True Negative (Empty)"/>
+  <int value="7172"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: False Positive (Mismatch)"/>
+  <int value="7173"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: False Positive (Ambiguous)"/>
+  <int value="7174"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: False Positive (Unknown)"/>
+  <int value="7175" label="ADDRESS_HOME_OTHER_SUBUNIT: False Positive (Empty)"/>
+  <int value="7176"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: False Negative (Mismatch)"/>
+  <int value="7177"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: False Negative (Unknown)"/>
+  <int value="7424" label="ADDRESS_HOME_ADDRESS: True Positive"/>
+  <int value="7425" label="ADDRESS_HOME_ADDRESS: True Negative (Ambiguous)"/>
+  <int value="7426" label="ADDRESS_HOME_ADDRESS: True Negative (Unknown)"/>
+  <int value="7427" label="ADDRESS_HOME_ADDRESS: True Negative (Empty)"/>
+  <int value="7428" label="ADDRESS_HOME_ADDRESS: False Positive (Mismatch)"/>
+  <int value="7429" label="ADDRESS_HOME_ADDRESS: False Positive (Ambiguous)"/>
+  <int value="7430" label="ADDRESS_HOME_ADDRESS: False Positive (Unknown)"/>
+  <int value="7431" label="ADDRESS_HOME_ADDRESS: False Positive (Empty)"/>
+  <int value="7432" label="ADDRESS_HOME_ADDRESS: False Negative (Mismatch)"/>
+  <int value="7433" label="ADDRESS_HOME_ADDRESS: False Negative (Unknown)"/>
+  <int value="7680" label="ADDRESS_HOME_ADDRESS_WITH_NAME: True Positive"/>
+  <int value="7681"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: True Negative (Ambiguous)"/>
+  <int value="7682"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: True Negative (Unknown)"/>
+  <int value="7683"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: True Negative (Empty)"/>
+  <int value="7684"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Positive (Mismatch)"/>
+  <int value="7685"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Positive (Ambiguous)"/>
+  <int value="7686"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Positive (Unknown)"/>
+  <int value="7687"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Positive (Empty)"/>
+  <int value="7688"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Negative (Mismatch)"/>
+  <int value="7689"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: False Negative (Unknown)"/>
+  <int value="7936" label="ADDRESS_HOME_FLOOR: True Positive"/>
+  <int value="7937" label="ADDRESS_HOME_FLOOR: True Negative (Ambiguous)"/>
+  <int value="7938" label="ADDRESS_HOME_FLOOR: True Negative (Unknown)"/>
+  <int value="7939" label="ADDRESS_HOME_FLOOR: True Negative (Empty)"/>
+  <int value="7940" label="ADDRESS_HOME_FLOOR: False Positive (Mismatch)"/>
+  <int value="7941" label="ADDRESS_HOME_FLOOR: False Positive (Ambiguous)"/>
+  <int value="7942" label="ADDRESS_HOME_FLOOR: False Positive (Unknown)"/>
+  <int value="7943" label="ADDRESS_HOME_FLOOR: False Positive (Empty)"/>
+  <int value="7944" label="ADDRESS_HOME_FLOOR: False Negative (Mismatch)"/>
+  <int value="7945" label="ADDRESS_HOME_FLOOR: False Negative (Unknown)"/>
+  <int value="8192" label="UNKNOWN_TYPE: True Positive"/>
+  <int value="8193" label="UNKNOWN_TYPE: True Negative (Ambiguous)"/>
+  <int value="8194" label="UNKNOWN_TYPE: True Negative (Unknown)"/>
+  <int value="8195" label="UNKNOWN_TYPE: True Negative (Empty)"/>
+  <int value="8196" label="UNKNOWN_TYPE: False Positive (Mismatch)"/>
+  <int value="8197" label="UNKNOWN_TYPE: False Positive (Ambiguous)"/>
+  <int value="8198" label="UNKNOWN_TYPE: False Positive (Unknown)"/>
+  <int value="8199" label="UNKNOWN_TYPE: False Positive (Empty)"/>
+  <int value="8200" label="UNKNOWN_TYPE: False Negative (Mismatch)"/>
+  <int value="8201" label="UNKNOWN_TYPE: False Negative (Unknown)"/>
+  <int value="8448" label="BIRTHDATE: True Positive"/>
+  <int value="8449" label="BIRTHDATE: True Negative (Ambiguous)"/>
+  <int value="8450" label="BIRTHDATE: True Negative (Unknown)"/>
+  <int value="8451" label="BIRTHDATE: True Negative (Empty)"/>
+  <int value="8452" label="BIRTHDATE: False Positive (Mismatch)"/>
+  <int value="8453" label="BIRTHDATE: False Positive (Ambiguous)"/>
+  <int value="8454" label="BIRTHDATE: False Positive (Unknown)"/>
+  <int value="8455" label="BIRTHDATE: False Positive (Empty)"/>
+  <int value="8456" label="BIRTHDATE: False Negative (Mismatch)"/>
+  <int value="8457" label="BIRTHDATE: False Negative (Unknown)"/>
+  <int value="8704" label="IBAN: True Positive"/>
+  <int value="8705" label="IBAN: True Negative (Ambiguous)"/>
+  <int value="8706" label="IBAN: True Negative (Unknown)"/>
+  <int value="8707" label="IBAN: True Negative (Empty)"/>
+  <int value="8708" label="IBAN: False Positive (Mismatch)"/>
+  <int value="8709" label="IBAN: False Positive (Ambiguous)"/>
+  <int value="8710" label="IBAN: False Positive (Unknown)"/>
+  <int value="8711" label="IBAN: False Positive (Empty)"/>
+  <int value="8712" label="IBAN: False Negative (Mismatch)"/>
+  <int value="8713" label="IBAN: False Negative (Unknown)"/>
+  <int value="8960" label="ADDRESS_HOME_LANDMARK: True Positive"/>
+  <int value="8961" label="ADDRESS_HOME_LANDMARK: True Negative (Ambiguous)"/>
+  <int value="8962" label="ADDRESS_HOME_LANDMARK: True Negative (Unknown)"/>
+  <int value="8963" label="ADDRESS_HOME_LANDMARK: True Negative (Empty)"/>
+  <int value="8964" label="ADDRESS_HOME_LANDMARK: False Positive (Mismatch)"/>
+  <int value="8965" label="ADDRESS_HOME_LANDMARK: False Positive (Ambiguous)"/>
+  <int value="8966" label="ADDRESS_HOME_LANDMARK: False Positive (Unknown)"/>
+  <int value="8967" label="ADDRESS_HOME_LANDMARK: False Positive (Empty)"/>
+  <int value="8968" label="ADDRESS_HOME_LANDMARK: False Negative (Mismatch)"/>
+  <int value="8969" label="ADDRESS_HOME_LANDMARK: False Negative (Unknown)"/>
+  <int value="9216" label="ADDRESS_HOME_BETWEEN_STREETS: True Positive"/>
+  <int value="9217"
+      label="ADDRESS_HOME_BETWEEN_STREETS: True Negative (Ambiguous)"/>
+  <int value="9218"
+      label="ADDRESS_HOME_BETWEEN_STREETS: True Negative (Unknown)"/>
+  <int value="9219"
+      label="ADDRESS_HOME_BETWEEN_STREETS: True Negative (Empty)"/>
+  <int value="9220"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Positive (Mismatch)"/>
+  <int value="9221"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Positive (Ambiguous)"/>
+  <int value="9222"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Positive (Unknown)"/>
+  <int value="9223"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Positive (Empty)"/>
+  <int value="9224"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Negative (Mismatch)"/>
+  <int value="9225"
+      label="ADDRESS_HOME_BETWEEN_STREETS: False Negative (Unknown)"/>
+  <int value="9472" label="ADDRESS_HOME_ADMIN_LEVEL2: True Positive"/>
+  <int value="9473"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: True Negative (Ambiguous)"/>
+  <int value="9474" label="ADDRESS_HOME_ADMIN_LEVEL2: True Negative (Unknown)"/>
+  <int value="9475" label="ADDRESS_HOME_ADMIN_LEVEL2: True Negative (Empty)"/>
+  <int value="9476"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: False Positive (Mismatch)"/>
+  <int value="9477"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: False Positive (Ambiguous)"/>
+  <int value="9478"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: False Positive (Unknown)"/>
+  <int value="9479" label="ADDRESS_HOME_ADMIN_LEVEL2: False Positive (Empty)"/>
+  <int value="9480"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: False Negative (Mismatch)"/>
+  <int value="9481"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: False Negative (Unknown)"/>
+  <int value="9728" label="ADDRESS_HOME_STREET_LOCATION: True Positive"/>
+  <int value="9729"
+      label="ADDRESS_HOME_STREET_LOCATION: True Negative (Ambiguous)"/>
+  <int value="9730"
+      label="ADDRESS_HOME_STREET_LOCATION: True Negative (Unknown)"/>
+  <int value="9731"
+      label="ADDRESS_HOME_STREET_LOCATION: True Negative (Empty)"/>
+  <int value="9732"
+      label="ADDRESS_HOME_STREET_LOCATION: False Positive (Mismatch)"/>
+  <int value="9733"
+      label="ADDRESS_HOME_STREET_LOCATION: False Positive (Ambiguous)"/>
+  <int value="9734"
+      label="ADDRESS_HOME_STREET_LOCATION: False Positive (Unknown)"/>
+  <int value="9735"
+      label="ADDRESS_HOME_STREET_LOCATION: False Positive (Empty)"/>
+  <int value="9736"
+      label="ADDRESS_HOME_STREET_LOCATION: False Negative (Mismatch)"/>
+  <int value="9737"
+      label="ADDRESS_HOME_STREET_LOCATION: False Negative (Unknown)"/>
+  <int value="9984" label="ADDRESS_HOME_OVERFLOW: True Positive"/>
+  <int value="9985" label="ADDRESS_HOME_OVERFLOW: True Negative (Ambiguous)"/>
+  <int value="9986" label="ADDRESS_HOME_OVERFLOW: True Negative (Unknown)"/>
+  <int value="9987" label="ADDRESS_HOME_OVERFLOW: True Negative (Empty)"/>
+  <int value="9988" label="ADDRESS_HOME_OVERFLOW: False Positive (Mismatch)"/>
+  <int value="9989" label="ADDRESS_HOME_OVERFLOW: False Positive (Ambiguous)"/>
+  <int value="9990" label="ADDRESS_HOME_OVERFLOW: False Positive (Unknown)"/>
+  <int value="9991" label="ADDRESS_HOME_OVERFLOW: False Positive (Empty)"/>
+  <int value="9992" label="ADDRESS_HOME_OVERFLOW: False Negative (Mismatch)"/>
+  <int value="9993" label="ADDRESS_HOME_OVERFLOW: False Negative (Unknown)"/>
+  <int value="10240" label="DELIVERY_INSTRUCTIONS: True Positive"/>
+  <int value="10241" label="DELIVERY_INSTRUCTIONS: True Negative (Ambiguous)"/>
+  <int value="10242" label="DELIVERY_INSTRUCTIONS: True Negative (Unknown)"/>
+  <int value="10243" label="DELIVERY_INSTRUCTIONS: True Negative (Empty)"/>
+  <int value="10244" label="DELIVERY_INSTRUCTIONS: False Positive (Mismatch)"/>
+  <int value="10245" label="DELIVERY_INSTRUCTIONS: False Positive (Ambiguous)"/>
+  <int value="10246" label="DELIVERY_INSTRUCTIONS: False Positive (Unknown)"/>
+  <int value="10247" label="DELIVERY_INSTRUCTIONS: False Positive (Empty)"/>
+  <int value="10248" label="DELIVERY_INSTRUCTIONS: False Negative (Mismatch)"/>
+  <int value="10249" label="DELIVERY_INSTRUCTIONS: False Negative (Unknown)"/>
+  <int value="10496" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: True Positive"/>
+  <int value="10497"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: True Negative (Ambiguous)"/>
+  <int value="10498"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: True Negative (Unknown)"/>
+  <int value="10499"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: True Negative (Empty)"/>
+  <int value="10500"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Positive (Mismatch)"/>
+  <int value="10501"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Positive (Ambiguous)"/>
+  <int value="10502"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Positive (Unknown)"/>
+  <int value="10503"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Positive (Empty)"/>
+  <int value="10504"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Negative (Mismatch)"/>
+  <int value="10505"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: False Negative (Unknown)"/>
+  <int value="10752"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: True Positive"/>
+  <int value="10753"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: True Negative
+             (Ambiguous)"/>
+  <int value="10754"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: True Negative
+             (Unknown)"/>
+  <int value="10755"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: True Negative (Empty)"/>
+  <int value="10756"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Positive
+             (Mismatch)"/>
+  <int value="10757"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Positive
+             (Ambiguous)"/>
+  <int value="10758"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Positive
+             (Unknown)"/>
+  <int value="10759"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Positive (Empty)"/>
+  <int value="10760"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Negative
+             (Mismatch)"/>
+  <int value="10761"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Negative
+             (Unknown)"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -5095,22 +5236,22 @@ Called by update_autofill_enums.py.-->
   <int value="948"
       label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
              with both predictions"/>
-  <int value="955"
+  <int value="961"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions equal -
              Value agrees"/>
-  <int value="956"
+  <int value="962"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions equal -
              Value disagrees"/>
-  <int value="957"
+  <int value="963"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with old prediction"/>
-  <int value="958"
+  <int value="964"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with new prediction"/>
-  <int value="959"
+  <int value="965"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with neither prediction"/>
-  <int value="960"
+  <int value="966"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with both predictions"/>
 </enum>
@@ -5356,7 +5497,7 @@ Called by update_autofill_enums.py.-->
   <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
   <int value="156" label="ADDRESS_HOME_APT"/>
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
-  <int value="159" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
+  <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">
