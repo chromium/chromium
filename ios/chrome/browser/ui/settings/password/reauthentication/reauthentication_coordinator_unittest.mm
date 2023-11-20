@@ -32,6 +32,9 @@
 // Set when `willPushReauthenticationViewController` is called.
 @property(nonatomic) BOOL willPushReauthVCCalled;
 
+// Set when `dismissUIAfterFailedReauthenticationWithCoordinator` is called.
+@property(nonatomic) BOOL dismissUICalled;
+
 @end
 
 @implementation FakeReauthenticationCoordinatorDelegate
@@ -43,6 +46,11 @@
 
 - (void)willPushReauthenticationViewController {
   self.willPushReauthVCCalled = YES;
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  _dismissUICalled = YES;
 }
 
 @end
@@ -242,9 +250,7 @@ TEST_F(ReauthenticationCoordinatorTest,
   // Reauth vc should still be there.
   CheckReauthenticationViewControllerIsPresented();
   ASSERT_FALSE(delegate_.successfulReauth);
-
-  // Cancelling reauth should close settings.
-  OCMExpect([mocked_application_commands_handler_ closeSettingsUI]);
+  ASSERT_FALSE(delegate_.dismissUICalled);
 
   // Mock reauth result when app is in the foreground and active again.
   mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
@@ -255,6 +261,6 @@ TEST_F(ReauthenticationCoordinatorTest,
 
   ASSERT_FALSE(delegate_.successfulReauth);
 
-  // Verify command was dispatched.
-  EXPECT_OCMOCK_VERIFY(mocked_application_commands_handler_);
+  // Cancelling reauth should close settings.
+  ASSERT_TRUE(delegate_.dismissUICalled);
 }

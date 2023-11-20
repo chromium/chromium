@@ -159,6 +159,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings:settings",
+    "//ios/chrome/browser/ui/settings:settings_navigation_controller_constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/autofill",

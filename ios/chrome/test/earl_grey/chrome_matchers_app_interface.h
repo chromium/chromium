@@ -331,6 +331,10 @@
 // Returns matcher for the Google Services Settings view.
 + (id<GREYMatcher>)googleServicesSettingsView;
 
+// Returns matcher for the Navigation Bar embedded in the Settings Navigation
+// Controller.
++ (id<GREYMatcher>)settingsNavigationBar;
+
 // Returns matcher for the back button on a settings menu.
 + (id<GREYMatcher>)settingsMenuBackButton;
 

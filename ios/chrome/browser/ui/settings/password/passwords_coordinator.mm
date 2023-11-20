@@ -424,6 +424,12 @@ using password_manager::WarningType;
   [self restartReauthCoordinator];
 }
 
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
+}
+
 #pragma mark PasswordDetailsCoordinatorDelegate
 
 - (void)passwordDetailsCoordinatorDidRemove:
@@ -492,6 +498,13 @@ using password_manager::WarningType;
     _reauthCoordinator.delegate = nil;
     _reauthCoordinator = nil;
   }
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {

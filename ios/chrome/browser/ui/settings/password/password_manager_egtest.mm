@@ -3391,9 +3391,11 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
-  // Failed auth should dismiss the Password Manager, leaving the NTP visible.
+  // Failed auth should dismiss the Password Manager, the Settings menu is
+  // displayed.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check password manager visit metric.
@@ -3419,8 +3421,9 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // Dismiss the passcode alert, this should dismiss the Password Manager.
   DismissSetPasscodeDialog();
 
-  // Check for the NTP after Password Manager is gone.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+  // Check for the Settings page after Password Manager is gone.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check Reauthentication UI metrics.

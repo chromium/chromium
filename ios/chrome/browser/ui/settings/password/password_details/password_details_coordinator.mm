@@ -448,6 +448,13 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
+}
+
 - (void)willPushReauthenticationViewController {
   // Dismiss modal ui before reauth view controller is pushed in front of
   // password details.

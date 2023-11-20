@@ -191,4 +191,10 @@ enum class DismissalReason {
   // `self` is deleted.
 }
 
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [self passwordSettingsCoordinatorDidRemove:self.passwordSettingsCoordinator];
+}
+
 @end

@@ -33,6 +33,7 @@ source_set("password_issues") {
     "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/ui/settings/password/password_details",
     "//ios/chrome/browser/ui/settings/password/reauthentication",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/reauthentication",

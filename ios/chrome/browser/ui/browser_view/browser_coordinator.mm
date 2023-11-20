@@ -732,6 +732,13 @@ enum class ToolbarKind {
   self.storeKitCoordinator = nil;
 }
 
+// Stops the coordinator for password manager settings.
+- (void)stopPasswordSettingsCoordinator {
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
+}
+
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
   if (!self.browser->GetBrowserState() || !self.started) {
     return;
@@ -2944,9 +2951,14 @@ enum class ToolbarKind {
 - (void)passwordSettingsCoordinatorDidRemove:
     (PasswordSettingsCoordinator*)coordinator {
   DCHECK_EQ(self.passwordSettingsCoordinator, coordinator);
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
+
+  [self stopPasswordSettingsCoordinator];
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [self stopPasswordSettingsCoordinator];
 }
 
 #pragma mark - ReadingListCoordinatorDelegate

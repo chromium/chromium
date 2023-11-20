@@ -536,6 +536,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [self restartReauthCoordinator];
 }
 
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
@@ -556,6 +562,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {

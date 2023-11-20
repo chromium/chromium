@@ -158,6 +158,13 @@
   // No-op.
 }
 
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [self.manualFillAllPasswordCoordinatorDelegate
+      manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
+}
+
 - (void)willPushReauthenticationViewController {
   // No-op.
 }

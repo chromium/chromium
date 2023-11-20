@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -611,7 +612,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   self.navigationBar.prefersLargeTitles = YES;
-  self.navigationBar.accessibilityIdentifier = @"SettingNavigationBar";
+  self.navigationBar.accessibilityIdentifier =
+      password_manager::kSettingsNavigationBarAccessibilityID;
 
   // Set the NavigationController delegate.
   self.delegate = self;
@@ -914,6 +916,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(self.savedPasswordsCoordinator, coordinator);
   [self stopPasswordsCoordinator];
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+
+  [applicationHandler closeSettingsUI];
 }
 
 #pragma mark PasswordDetailsCoordinatorDelegate

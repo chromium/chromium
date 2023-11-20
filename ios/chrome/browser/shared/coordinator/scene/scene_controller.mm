@@ -3471,6 +3471,12 @@ void InjectNTP(Browser* browser) {
   self.passwordCheckupCoordinator = nil;
 }
 
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [self closeSettingsUI];
+}
+
 #pragma mark - Helpers for web state list events
 
 // Called when the last incognito tab was closed.

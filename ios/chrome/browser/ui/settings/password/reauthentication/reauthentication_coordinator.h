@@ -19,6 +19,14 @@
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator;
 
+// Dismisses the UI protected by Local Authentication. When there are several
+// levels of UI protected by LA , this function results in the dismissal of all
+// LA-protected UI levels. For example if the user opens Settings > Password
+// Manager > Password Details and LA is canceled, then Password Details and
+// Password Manager are dismissed, leaving the user on the Settings page.
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator;
+
 // Invoked when the coordinator is about to push its view controller.
 // Parent coordinators can prepare for reauthentication here, by stopping any
 // presented alerts or unregistering observers not needed while reauth is

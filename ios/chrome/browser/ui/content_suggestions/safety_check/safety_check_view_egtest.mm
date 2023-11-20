@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -54,28 +55,33 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 @implementation SafetyCheckViewCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kMagicStack.name) + "," +
-      std::string(kSafetyCheckMagicStack.name));
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
+  // Mock local authentication for opening Password Checkup.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
 }
 
 - (void)tearDown {
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
-
   [super tearDown];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_enabled.push_back(kMagicStack);
+  config.features_enabled.push_back(kSafetyCheckMagicStack);
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordAuthOnEntryV2);
+
+  return config;
 }
 
 // Tests that long pressing the Safety Check view displays a context menu; tests
@@ -150,6 +156,69 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
       selectElementWithMatcher:
           grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that the Password Checkup view is dismissed when the user doesn't pass
+// Local Authentication.
+- (void)testPasswordCheckupDismissedAfterFailedAuthentication {
+  password_manager_test_utils::SavePasswordForm();
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              safety_check::kSafetyCheckViewID),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 350)
+      onElementWithMatcher:grey_accessibilityID(
+                               kMagicStackScrollViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                     IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
+                                                          condition),
+             @"Timeout waiting for the Safety Check to complete its run.");
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  // Delay the auth result to be able to validate that the passwords are not
+  // visible until the result is emitted.
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE))]
+      performAction:grey_tap()];
+
+  // Verify that the Password Checkup Homepage is not displayed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Checkup and reauthentication UI should be gone, leaving Safety
+  // Check visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SafetyCheckTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  ;
 }
 
 @end

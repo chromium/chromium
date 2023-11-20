@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_REAUTHENTICATION_REAUTHENTICATION_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_REAUTHENTICATION_REAUTHENTICATION_CONSTANTS_H_
 
+#import <Foundation/Foundation.h>
+
 namespace password_manager {
 // Name of histogram tracking events in the password manager reauthentication
 // UI.
 extern const char kReauthenticationUIEventHistogram[];
+
+// Accessibility for ReauthenticationViewController.
+extern NSString* const kReauthenticationViewControllerAccessibilityIdentifier;
 
 }  // namespace password_manager
 

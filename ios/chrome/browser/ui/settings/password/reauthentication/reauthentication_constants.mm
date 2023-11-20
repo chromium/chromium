@@ -7,4 +7,7 @@
 namespace password_manager {
 const char kReauthenticationUIEventHistogram[] =
     "PasswordManager.iOS.ReauthenticationUI.Event";
+
+NSString* const kReauthenticationViewControllerAccessibilityIdentifier =
+    @"ReauthenticationViewController";
 }

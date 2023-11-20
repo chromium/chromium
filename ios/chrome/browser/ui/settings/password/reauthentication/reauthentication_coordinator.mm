@@ -124,23 +124,20 @@
 
   __weak __typeof(self) weakSelf = self;
 
-  // Action OK -> Close settings.
+  // Action OK -> Close UI.
   [_passcodeRequestAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_OK)
                 action:^{
-                  [weakSelf.dispatcher closeSettingsUI];
+                  [weakSelf closeUI];
                 }
                  style:UIAlertActionStyleCancel];
 
   // Action Learn How -> Close settings and open passcode help page.
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
   [_passcodeRequestAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  [weakSelf openPasscodeHelpPage];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -154,7 +151,7 @@
     [_delegate successfulReauthenticationWithCoordinator:self];
 
   } else {
-    [_dispatcher closeSettingsUI];
+    [self closeUI];
   }
 }
 
@@ -262,6 +259,19 @@
   [_baseNavigationController popViewControllerAnimated:NO];
   _reauthViewController.delegate = nil;
   _reauthViewController = nil;
+}
+
+// Dismisses the UI protected with Local Authentication.
+- (void)closeUI {
+  [_delegate dismissUIAfterFailedReauthenticationWithCoordinator:self];
+}
+
+// Closes the UI and open the support page on setting up a passcode.
+- (void)openPasscodeHelpPage {
+  // TODO(crbug.com/1462419): Move to ReauthenticationCoordinatorDelegate.
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
+  [_dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 @end

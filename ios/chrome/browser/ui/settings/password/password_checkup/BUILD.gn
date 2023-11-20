@@ -28,6 +28,7 @@ source_set("password_checkup") {
     "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password/password_issues",
     "//ios/chrome/browser/ui/settings/password/reauthentication",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/ui/settings/password/widget_promo_instructions",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/reauthentication",

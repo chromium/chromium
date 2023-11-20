@@ -425,6 +425,10 @@ id<GREYMatcher> GoogleServicesSettingsView() {
   return [ChromeMatchersAppInterface googleServicesSettingsView];
 }
 
+id<GREYMatcher> SettingsNavigationBar() {
+  return [ChromeMatchersAppInterface settingsNavigationBar];
+}
+
 id<GREYMatcher> SettingsMenuBackButton() {
   return [ChromeMatchersAppInterface settingsMenuBackButton];
 }

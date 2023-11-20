@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
@@ -122,6 +123,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
 
 - (void)tearDown {
   [PasswordManagerAppInterface clearCredentials];
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface removeMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
@@ -137,7 +139,11 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
       password_manager::features::kIOSPasswordBottomSheet);
 
   if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetOpenPasswordDetails)]) {
+            (testOpenPasswordBottomSheetOpenPasswordDetails)] ||
+      [self
+          isRunningTest:@selector
+          (testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication
+              )]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -434,6 +440,82 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   // Verify visit metric was recorded.
   CheckPasswordDetailsVisitMetricCount(1);
+}
+
+// Verifies that Password Details is not revealed when local authentication
+// fails.
+- (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  NSURL* URL =
+      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
+                                                  password:@"password"
+                                                       URL:URL];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
+                                                  password:@"password2"
+                                                       URL:URL];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(2, credentialsCount, @".");
+
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Delay the auth result to be able to validate that password details is
+  // not visible until the result is emitted.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Long press to open context menu.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
+                     grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Password details shouldn't be visible until auth is passed.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify visit metric was not recorded yet.
+  CheckPasswordDetailsVisitMetricCount(0);
+
+  // Emit auth result so password details surface is dismissed due to failed
+  // auth.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Validate the whole settings UI is gone.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify visit metric was not recorded.
+  CheckPasswordDetailsVisitMetricCount(0);
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {

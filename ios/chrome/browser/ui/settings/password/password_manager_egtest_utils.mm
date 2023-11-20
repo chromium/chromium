@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -141,6 +142,11 @@ id<GREYMatcher> DeleteButtonForUsernameAndSites(NSString* username,
           stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
                            username, sites]),
       grey_interactable(), nullptr);
+}
+
+id<GREYMatcher> ReauthenticationController() {
+  return grey_accessibilityID(
+      password_manager::kReauthenticationViewControllerAccessibilityIdentifier);
 }
 
 GREYElementInteraction* GetInteractionForIssuesListItem(

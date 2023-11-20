@@ -258,7 +258,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/version_info",
     "//ios/chrome/app",
-    "//ios/chrome/app:app_internal",
     "//ios/chrome/app:mode",
     "//ios/chrome/browser/url_loading/model",
     "//net",

@@ -12,6 +12,7 @@ source_set("reauthentication") {
     ":reauthentication_ui",
     "//base",
     "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -51,6 +52,13 @@ source_set("reauthentication_constants") {
     "reauthentication_constants.h",
     "reauthentication_constants.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("reauthentication_delegate") {
+  sources = [ "password_manager_reauthentication_delegate.h" ]
+
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

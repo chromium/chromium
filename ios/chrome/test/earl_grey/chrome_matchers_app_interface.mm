@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
@@ -715,6 +716,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kGoogleServicesSettingsViewIdentifier);
 }
 
++ (id<GREYMatcher>)settingsNavigationBar {
+  return grey_allOf(
+      grey_kindOfClass([UINavigationBar class]),
+      grey_accessibilityID(
+          password_manager::kSettingsNavigationBarAccessibilityID),
+      nil);
+}
+
 + (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
   return grey_allOf(
       grey_anyOf(grey_accessibilityLabel(buttonTitle),
@@ -726,8 +735,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsMenuBackButton {
   UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
-      SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
-                                         GetAnyKeyWindow()));
+      SubviewWithAccessibilityIdentifier(
+          password_manager::kSettingsNavigationBarAccessibilityID,
+          GetAnyKeyWindow()));
   return
       [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
@@ -735,8 +745,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
   UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(
-          @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
-                                       stringWithFormat:@"%d", windowNumber])));
+          password_manager::kSettingsNavigationBarAccessibilityID,
+          WindowWithAccessibilityIdentifier(
+              [NSString stringWithFormat:@"%d", windowNumber])));
   return
       [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
