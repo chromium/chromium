@@ -733,6 +733,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4856841893565072365">Bara de meniu pentru sortare inteligentă</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4883824756452868502">Detectează unități</translation>
 <translation id="488785315393301722">Afișați detaliile</translation>
 <translation id="4894963374040315706">Astfel, cauți mai rapid folosind vocea</translation>
 <translation id="489903206070130262">Ultima filă deschisă</translation>
@@ -740,7 +741,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4904877109095351937">Marchează ca citite</translation>
 <translation id="4908869848243824489">Discover de la Google</translation>
 <translation id="4913626501929406101">Poți trimite în siguranță o copie a parolei unui membru al grupului de familie. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lupă</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4922154083994158612">Mai multă securitate?</translation>
 <translation id="4930714375720679147">Activează</translation>
@@ -855,8 +855,10 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5551897871312988470">Oferă traducerea</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="555749644339804659">Se verifică parolele…</translation>
+<translation id="5559567453458728487">Convertește unitățile de măsură găsite pe web</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5572684875078967866">Stocarea informațiilor</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Urmărește coletul}few{Urmăriți toate pachetele}other{Urmăriți toate pachetele}}</translation>
 <translation id="5597915316964418992">Deschide grila cu file</translation>
 <translation id="560322036295180549">Dezactivată de organizație</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
@@ -1119,6 +1121,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6781260999953472352">Activezi sincronizarea?</translation>
 <translation id="6781405765516175232">Pentru opțiunile de traseu, atinge Obține indicații de orientare.</translation>
 <translation id="6785453220513215166">Se trimite raportul de blocare...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Anulează urmărirea coletului}few{Anulează urmărirea tuturor coletelor}other{Anulează urmărirea tuturor coletelor}}</translation>
 <translation id="6790502149545262384">În curând, vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="6797885426782475225">Căutare vocală</translation>
 <translation id="6800349425672670802">Poți accesa toate filele deschise din Comutatorul de file.</translation>

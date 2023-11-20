@@ -733,6 +733,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4856841893565072365">Barra de menú con orde intelixente</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4883824756452868502">Detectar unidades</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Permíteche buscar de forma máis rápida usando a voz</translation>
 <translation id="489903206070130262">A túa última pestana aberta</translation>
@@ -740,7 +741,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4904877109095351937">Marcar como lidos</translation>
 <translation id="4908869848243824489">Discover, de Google</translation>
 <translation id="4913626501929406101">Podes compartir de maneira segura unha copia do teu contrasinal con calquera persoa do teu grupo familiar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Obxectivo</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4922154083994158612">Queres aumentar a seguranza?</translation>
 <translation id="4930714375720679147">Activar</translation>
@@ -855,8 +855,10 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5551897871312988470">Ofrecer a tradución</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555749644339804659">Comprobando contrasinais…</translation>
+<translation id="5559567453458728487">Converte as unidades de medida que se atopen na Web</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5572684875078967866">Almacenamento de información</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Facer seguimento deste paquete}other{Facer seguimento de todos os paquetes}}</translation>
 <translation id="5597915316964418992">Abre a grade de pestanas</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
@@ -1119,6 +1121,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6781260999953472352">Queres activar a sincronización?</translation>
 <translation id="6781405765516175232">Para consultar as opcións de ruta, toca Obter indicacións.</translation>
 <translation id="6785453220513215166">Enviando informe de erros...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Deixar de facer seguimento deste paquete}other{Deixar de facer seguimento de todos os paquetes}}</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6797885426782475225">Busca por voz</translation>
 <translation id="6800349425672670802">Podes acceder todas as pestanas abertas desde o selector de pestanas.</translation>

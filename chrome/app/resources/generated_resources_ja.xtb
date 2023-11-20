@@ -1127,7 +1127,6 @@
 <translation id="1862311223300693744">特殊な VPN、プロキシ、ファイアウォール、NAS ソフトウェアをインストールしていますか？</translation>
 <translation id="1863047423483329595">トラッキング防止機能は一時的に使用できなくなっています。Chrome でこの機能を更新している間は、サイトが一時的にサードパーティ Cookie を使用できます（ただし、ユーザーがブロックしている場合を除きます）。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">シリアルポートが見つかりません</translation>
-<translation id="1863207472175483351">インストール中…</translation>
 <translation id="1864111464094315414">ログイン</translation>
 <translation id="1864400682872660285">寒色</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
@@ -2670,6 +2669,7 @@
 <translation id="3021065318976393105">バッテリー駆動時</translation>
 <translation id="3021066826692793094">蝶</translation>
 <translation id="3021678814754966447">フレームのソースを表示(&amp;V)</translation>
+<translation id="3021902017511220299">スキャンに失敗しました。この操作は管理者によってブロックされています。</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> がこの Chromebook から削除され、<ph name="PRIMARY_EMAIL" /> には保存されません。</translation>
 <translation id="3022978424994383087">聞き取れませんでした。</translation>
 <translation id="3023464535986383522">選択して読み上げ</translation>
@@ -5107,7 +5107,6 @@
 <translation id="4988526792673242964">ページ</translation>
 <translation id="49896407730300355">反時計回りに回転(&amp;O)</translation>
 <translation id="4989966318180235467">バックグラウンド ページの検証(&amp;B)</translation>
-<translation id="4990949771467040994">待機中…</translation>
 <translation id="4991420928586866460">キーボードの最上段のキーをファンクション キーとして使用する</translation>
 <translation id="4992458225095111526">Powerwash の実行を確認</translation>
 <translation id="4992473555164495036">使用できる入力方法が管理者によって制限されています。</translation>
@@ -9033,6 +9032,7 @@
 <translation id="811994229154425014">スペース 2 つでピリオドを入力</translation>
 <translation id="8120505434908124087">eSIM プロファイルのインストール</translation>
 <translation id="8121750884985440809">現在、画面をキャストしています</translation>
+<translation id="8122898034710982882">スマートフォン ハブ、<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黄色と白の花</translation>
 <translation id="8123975449645947908">後方スクロール</translation>
 <translation id="8124313775439841391">管理対象 ONC</translation>
@@ -9068,6 +9068,7 @@
 <translation id="8148760431881541277">ログインの制限</translation>
 <translation id="8149564499626272569">USB ケーブルで接続したスマートフォンで確認</translation>
 <translation id="8149870652370242480">スマートフォンに保存されているパスワードを使用するには、iOS 版 Chrome をダウンロードして Google アカウントにログインします。</translation>
+<translation id="8151057139207656239">ビルドの詳細をコピーしました</translation>
 <translation id="815114315010033526">代わりに QR コードを使用</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">ファイルがありません</translation>

@@ -1127,7 +1127,6 @@
 <translation id="1862311223300693744">तपाईंले कुनै पनि विशेष VPN, प्रोक्सी, फायरवाल वा NAS सफ्टवेयर इन्स्टल गर्नुभएको छ?</translation>
 <translation id="1863047423483329595">ट्र्याकिङबाट सुरक्षित राख्ने सुविधा हाल उपलब्ध छैन। तपाईंले तेस्रो पक्षीय कुकीहरू ब्लक गर्नुभएको छैन भने Chrome ले यो सुविधा अपडेट गरिरहेका बेला साइटहरूले केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
-<translation id="1863207472175483351">इन्स्टल गरिँदै छ...</translation>
 <translation id="1864111464094315414">लगइन</translation>
 <translation id="1864400682872660285">अझ शीतल</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
@@ -2674,6 +2673,7 @@
 <translation id="3021065318976393105">ब्याट्री प्रयोग भइरहेका बेला</translation>
 <translation id="3021066826692793094">पुतली</translation>
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;हेर्नुहोस्</translation>
+<translation id="3021902017511220299">स्क्यान गर्न सकिएन। तपाईंका एड्मिनले यो कारबाही गर्न रोक लगाउनुभएको छ।</translation>
 <translation id="3022361196600037287">यो Chromebook बाट <ph name="DEVICE" /> हटाइने छ र उक्त डिभाइस अब <ph name="PRIMARY_EMAIL" /> मा सेभ गरिने छैन।</translation>
 <translation id="3022978424994383087">मैले बुझिनँ।</translation>
 <translation id="3023464535986383522">सेलेक्ट टु स्पिक सुविधा</translation>
@@ -5112,7 +5112,6 @@
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="49896407730300355">घडिको उल्टो दिशा&amp;तिर घुमाउनुहोस्</translation>
 <translation id="4989966318180235467">निरीक्षण र पृष्ठभूमि पृष्ठ</translation>
-<translation id="4990949771467040994">प्रतीक्षा गरिँदै छ...</translation>
 <translation id="4991420928586866460">शीर्ष पङ्क्तिका कुञ्जीहरूलाई प्रकार्य कुञ्जीहरूको रूपमा व्यवहार गर्नुहोस्</translation>
 <translation id="4992458225095111526">Powerwash पुष्टि गर्नुहोस्</translation>
 <translation id="4992473555164495036">तपाईंको प्रशासकले उपलब्ध इनपुट विधिहरूलाई सीमित गर्नुभएको छ।</translation>
@@ -9041,6 +9040,7 @@
 <translation id="811994229154425014">दुई पटक स्पेस थिच्दा पूर्ण विराम टाइप हुने पारियोस्</translation>
 <translation id="8120505434908124087">eSIM प्रोफाइल इन्स्टल गर्नुहोस्</translation>
 <translation id="8121750884985440809">तपाईं अहिले आफ्नो स्क्रिन कास्ट गर्दै हुनुहुन्छ</translation>
+<translation id="8122898034710982882">फोन हब, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">पहेँलो र सेतो फुल</translation>
 <translation id="8123975449645947908">पछाडितिर स्क्रोल गर्नुहोस्</translation>
 <translation id="8124313775439841391">व्यवस्थित ONC</translation>
@@ -9076,6 +9076,7 @@
 <translation id="8148760431881541277">साइन इन गर्ने सीमा तोक्नुहोस्</translation>
 <translation id="8149564499626272569">USB केबलमार्फत आफ्नो फोन कनेक्ट गरेर पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="8149870652370242480">आफ्नो फोनमा सेभ गरिएका पासवर्डहरू प्रयोग गर्न Chrome को iOS संस्करण डाउनलोड गर्नुहोस् र आफ्नो Google खातामा साइन इन गर्नुहोस्।</translation>
+<translation id="8151057139207656239">बिल्डसम्बन्धी विवरणहरू कपी गरिएका छन्</translation>
 <translation id="815114315010033526">बरु QR कोड प्रयोग गर्नुहोस्</translation>
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
 <translation id="8154790740888707867">कुनै फाइल छैन</translation>

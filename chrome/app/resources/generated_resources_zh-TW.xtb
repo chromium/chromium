@@ -1130,7 +1130,6 @@
 <translation id="1862311223300693744">你是否安裝了任何特殊的 VPN、Proxy、防火牆或網路附加儲存 (NAS) 軟體？</translation>
 <translation id="1863047423483329595">追蹤保護功能暫時無法使用。Chrome 更新這項功能時，網站可能會暫時使用第三方 Cookie (除非你封鎖這類 Cookie)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">找不到序列埠</translation>
-<translation id="1863207472175483351">安裝中...</translation>
 <translation id="1864111464094315414">登入</translation>
 <translation id="1864400682872660285">冷色調</translation>
 <translation id="1864454756846565995">USB-C 裝置 (背面連接埠)</translation>
@@ -2676,6 +2675,7 @@
 <translation id="3021065318976393105">使用電池時</translation>
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">檢視頁框原始碼(&amp;V)</translation>
+<translation id="3021902017511220299">掃描失敗。系統管理員已禁止這項操作。</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> 將從這部 Chromebook 中移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音內容。</translation>
 <translation id="3023464535986383522">隨選朗讀</translation>
@@ -5114,7 +5114,6 @@
 <translation id="4988526792673242964">網頁</translation>
 <translation id="49896407730300355">逆時針旋轉(&amp;O)</translation>
 <translation id="4989966318180235467">檢查背景頁面(&amp;B)</translation>
-<translation id="4990949771467040994">等待中…</translation>
 <translation id="4991420928586866460">使用最上方一排按鍵做為功能鍵</translation>
 <translation id="4992458225095111526">確認執行 Powerwash</translation>
 <translation id="4992473555164495036">你的管理員對可用的輸入法設定了限制。</translation>
@@ -9042,6 +9041,7 @@
 <translation id="811994229154425014">按兩下空格鍵可輸入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
 <translation id="8121750884985440809">你目前正在投放螢幕畫面</translation>
+<translation id="8122898034710982882">Phone Hub、<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黃色和白色花朵</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理化 ONC</translation>
@@ -9077,6 +9077,7 @@
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8149564499626272569">透過接上 USB 傳輸線的手機進行驗證</translation>
 <translation id="8149870652370242480">如要在手機上使用儲存的密碼，請下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
+<translation id="8151057139207656239">已複製版本詳細資料</translation>
 <translation id="815114315010033526">改用 QR 圖碼</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>

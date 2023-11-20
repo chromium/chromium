@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
 <translation id="429312253194641664">ছাইটটোৱে মিডিয়া প্লে’ কৰি আছে</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
+<translation id="4336566011000459927">Chromeএ আজি পুনৰ কুকি সীমিত কৰিব</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />ৰ অধীনত থকা আটাইবোৰ ছাইট</translation>
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">এই ছাইটলৈ থকা আপোনাৰ সংযোগটো সুৰক্ষিত নহয়</translation>
 <translation id="6181444274883918285">ব্যতিক্ৰম ছাইট যোগ কৰক</translation>
 <translation id="6192792657125177640">ব্যতিক্রমসমূহ</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chromeএ কাইলৈ পুনৰ কুকি অৱৰোধ কৰিব}one{কুকিসমূহ পুনৰ অৱৰোধ কৰালৈ # দিন আছে}other{কুকিসমূহ পুনৰ অৱৰোধ কৰালৈ # দিন আছে}}</translation>
 <translation id="6195163219142236913">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="6196640612572343990">তৃতীয়-পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="6205314730813004066">বিজ্ঞাপনৰ গোপনীয়তা</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
+<translation id="7822573154188733812">আপুনি ব্ৰাউজ কৰি থাকোঁতে ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ কৰাটো Chromeএ অৱৰোধ কৰে। <ph name="BEGIN_LINK" />আপোনাৰ ট্ৰেকিঙৰ সুৰক্ষাসমূহ পৰিচালনা কৰিবলৈ<ph name="END_LINK" /> ছেটিঙলৈ যাওক।</translation>
 <translation id="7835852323729233924">মিডিয়া প্লে’ হৈ আছে</translation>
 <translation id="783819812427904514">ভিডিঅ' আনমিউট কৰক</translation>
 <translation id="7846076177841592234">বাছনি বাতিল কৰক</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">আপুনি চোৱা যিকোনো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>
 <translation id="8087000398470557479">এই সমল Googleএ যোগান ধৰা <ph name="DOMAIN_NAME" />ৰ।</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />টোত অধিক বিকল্প</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chromeএ কাইলৈ পুনৰ কুকি সীমিত কৰিব}one{Chromeএ পুনৰ কুকি সীমিত কৰিবলৈ # দিন আছে}other{Chromeএ পুনৰ কুকি সীমিত কৰিবলৈ # দিন আছে}}</translation>
 <translation id="8116925261070264013">মিউট আছে</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>

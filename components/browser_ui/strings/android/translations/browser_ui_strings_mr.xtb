@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">अनुमत</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
+<translation id="4336566011000459927">Chrome आज पुन्हा कुकी मर्यादित करेल</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अंतर्गत सर्व साइट</translation>
 <translation id="4402755511846832236">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटना जाणून घेण्यापासून ब्लॉक करा</translation>
 <translation id="4412992751769744546">तृतीय-पक्ष कुकीजना अनुमती द्या</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही</translation>
 <translation id="6181444274883918285">साइट एक्सेप्शन जोडा</translation>
 <translation id="6192792657125177640">अपवाद</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome उद्या पुन्हा कुकी ब्लॉक करेल}other{# दिवसांनी कुकी पुन्हा ब्लॉक केल्या जातील}}</translation>
 <translation id="6195163219142236913">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
+<translation id="7822573154188733812">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome हे साइटना तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते. <ph name="BEGIN_LINK" />तुमच्या ट्रॅकिंगपासून संरक्षणांचे व्यवस्थापन करणे<ph name="END_LINK" /> यासाठी सेटिंग्जना भेट द्या.</translation>
 <translation id="7835852323729233924">मीडिया प्ले करत आहे</translation>
 <translation id="783819812427904514">व्हिडिओ अनम्यूट करा</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मध्ये आणखी पर्याय</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome पुन्हा # दिवसांनी कुकी मर्यादित करेल}}</translation>
 <translation id="8116925261070264013">म्यूट केले</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>

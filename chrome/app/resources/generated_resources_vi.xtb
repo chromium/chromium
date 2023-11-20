@@ -1142,7 +1142,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
     nào không?</translation>
 <translation id="1863047423483329595">Tính năng Chống theo dõi tạm thời không hoạt động. Trong khi Chrome đang cập nhật tính năng này, các trang web có thể tạm thời dùng cookie của bên thứ ba, trừ phi bạn chặn các cookie này. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Không tìm thấy cổng nối tiếp nào</translation>
-<translation id="1863207472175483351">đang cài đặt...</translation>
 <translation id="1864111464094315414">Đăng nhập</translation>
 <translation id="1864400682872660285">Mát hơn</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
@@ -5131,7 +5130,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4988526792673242964">Trang</translation>
 <translation id="49896407730300355">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="4989966318180235467">Kiểm tra trang &amp;nền</translation>
-<translation id="4990949771467040994">đang chờ…</translation>
 <translation id="4991420928586866460">Coi các phím ở hàng trên cùng là phím chức năng</translation>
 <translation id="4992458225095111526">Xác nhận Powerwash</translation>
 <translation id="4992473555164495036">Quản trị viên của bạn đã giới hạn các phương thức nhập có sẵn.</translation>

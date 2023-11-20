@@ -650,6 +650,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3659667652322717492">Puwede mong baguhin ang gawi ng mikropono anumang oras sa ibang pagkakataon.</translation>
 <translation id="3659814201068740063">Mga <ph name="TIME_LEFT" /> ang natitira (<ph name="PERCENTAGE" />%).
 Isaksak ang iyong device.</translation>
+<translation id="3660860940251915011">I-toggle ang mataas na visibility ng <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Pinapamahalaang user na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Mag-swipe para i-hide ang iyong naka-float na window</translation>
 <translation id="367531336287639526">Piliin ang unang icon sa kaliwa ng address bar</translation>
@@ -980,6 +981,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Binago noong <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="4989163558385430922">Tingnan lahat</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>

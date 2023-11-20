@@ -1132,7 +1132,6 @@
 <translation id="1862311223300693744">Ձեր համակարգչում տեղադրվա՞ծ է որևէ հատուկ VPN, պրոքսի, հրապատ կամ NAS ծրագրաշար։</translation>
 <translation id="1863047423483329595">Հետագծման արգելափակումը ժամանակավորապես անհասանելի է։ Քանի դեռ Chrome-ը թարմացնում է այս գործառույթը, կայքերը կարող են ժամանակավորապես օգտագործել երրորդ կողմի քուքիներ, եթե չարգելափակեք դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Հաջորդական միացքներ չեն գտնվել</translation>
-<translation id="1863207472175483351">տեղադրում...</translation>
 <translation id="1864111464094315414">Մուտք</translation>
 <translation id="1864400682872660285">Սառը</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
@@ -1846,6 +1845,7 @@
 <translation id="2402226831639195063">Տոնային նշաններ</translation>
 <translation id="2405887402346713222">Սարքի և բաղադրիչների սերիական համարները</translation>
 <translation id="2406153734066939945">Ջնջե՞լ այս պրոֆիլը և դրա տվյալները</translation>
+<translation id="2407671304279211586">Ընտրել DNS ծառայություններ մատուցող</translation>
 <translation id="2408018932941436077">Քարտը պահվում է</translation>
 <translation id="2408955596600435184">Մուտքագրեք ձեր PIN կոդը</translation>
 <translation id="2409268599591722235">Սկսել</translation>
@@ -5115,7 +5115,6 @@
 <translation id="4988526792673242964">Էջեր</translation>
 <translation id="49896407730300355">Պտտել ժամացույցի &amp;սլաքին հակառակ</translation>
 <translation id="4989966318180235467">Հետազոտել &amp;հետնաշերտի էջը</translation>
-<translation id="4990949771467040994">սպասեք…</translation>
 <translation id="4991420928586866460">Դարձնել վերին շարքի ստեղները գործառույթային ստեղներ</translation>
 <translation id="4992458225095111526">Powerwash-ի հաստատում</translation>
 <translation id="4992473555164495036">Ադմինիստրատորն սահմանափակել է հասանելի ներածման եղանակները։</translation>

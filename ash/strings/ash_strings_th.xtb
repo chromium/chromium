@@ -646,6 +646,7 @@
 <translation id="3659667652322717492">คุณเปลี่ยนลักษณะการทำงานของไมค์ได้ทุกเมื่อในภายหลัง</translation>
 <translation id="3659814201068740063">เหลืออีกประมาณ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)
 เชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
+<translation id="3660860940251915011">เปิด/ปิดระดับการเข้าถึงสูงของ <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ปัดเพื่อซ่อนหน้าต่างแบบลอย</translation>
 <translation id="367531336287639526">เลือกไอคอนแรกทางด้านซ้ายของแถบที่อยู่</translation>
@@ -975,6 +976,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">แก้ไขเมื่อ <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">เดสก์ที่ 16</translation>
 <translation id="4989163558385430922">ดูทั้งหมด</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>

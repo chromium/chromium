@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">Επιτρέπεται</translation>
 <translation id="429312253194641664">Ένας ιστότοπος κάνει αναπαραγωγή μέσων</translation>
 <translation id="42981349822642051">Επέκταση</translation>
+<translation id="4336566011000459927">Το Chrome θα περιορίσει ξανά τα cookie σήμερα</translation>
 <translation id="4338831206024587507">Όλοι οι ιστότοποι στον τομέα <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Να μην επιτρέπεται σε ιστοτόπους να γνωρίζουν πότε χρησιμοποιείτε τη συσκευή ενεργά</translation>
 <translation id="4412992751769744546">Αποδοχή cookie τρίτου μέρους</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ασφαλής</translation>
 <translation id="6181444274883918285">Προσθήκη εξαίρεσης ιστότοπου</translation>
 <translation id="6192792657125177640">Εξαιρέσεις</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Το Chrome θα αποκλείσει ξανά τα cookie αύριο}other{# ημέρες έως ότου αποκλειστούν ξανά τα cookie}}</translation>
 <translation id="6195163219142236913">Τα cookie τρίτου μέρους περιορίζονται</translation>
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7804248752222191302">Ένας ιστότοπος χρησιμοποιεί την κάμερά σας.</translation>
 <translation id="7807060072011926525">Παρέχεται από την Google</translation>
+<translation id="7822573154188733812">Το Chrome δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε. Μεταβείτε στις ρυθμίσεις για να <ph name="BEGIN_LINK" />διαχειριστείτε τα μέτρα προστασίας από παρακολούθηση<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Αναπαραγωγή πολυμέσων</translation>
 <translation id="783819812427904514">Κατάργηση σίγασης βίντεο</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">Οποιοσδήποτε ιστότοπος που επισκέπτεστε μπορεί να προβάλει οποιαδήποτε διαφήμιση σε εσάς</translation>
 <translation id="8087000398470557479">Αυτό το περιεχόμενο προέρχεται από το <ph name="DOMAIN_NAME" /> και παρέχεται από την Google.</translation>
 <translation id="8088603949666785339">Περισσότερες επιλογές στο <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Το Chrome θα περιορίσει ξανά τα cookie αύριο}other{# ημέρες έως ότου το Chrome περιορίσει ξανά τα cookie}}</translation>
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="813082847718468539">Προβολή πληροφοριών τοποθεσίας</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>

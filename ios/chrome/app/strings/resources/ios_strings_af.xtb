@@ -733,6 +733,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4856841893565072365">Slimrangskikingkieslysbalk</translation>
 <translation id="4860895144060829044">Bel</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="4883824756452868502">Bespeur eenhede</translation>
 <translation id="488785315393301722">Wys besonderhede</translation>
 <translation id="4894963374040315706">Dit maak dit vir jou moontlik om met jou stem te soek</translation>
 <translation id="489903206070130262">Jou laaste oop oortjie</translation>
@@ -740,7 +741,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4904877109095351937">Merk as gelees</translation>
 <translation id="4908869848243824489">Ontdek deur Google</translation>
 <translation id="4913626501929406101">Jy kan veilig ’n kopie van jou wagwoord met iemand in jou gesinsgroep deel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lens</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4922154083994158612">Nog sekuriteit?</translation>
 <translation id="4930714375720679147">Skakel aan</translation>
@@ -855,8 +855,10 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="555749644339804659">Gaan tans wagwoorde na …</translation>
+<translation id="5559567453458728487">Skakel metingeenhede om wat op die web gevind word</translation>
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5572684875078967866">Inligtingberging</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Spoor hierdie pakkie na}other{Spoor alle pakkies na}}</translation>
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -1119,6 +1121,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6781260999953472352">Skakel sinkronisering aan?</translation>
 <translation id="6781405765516175232">Tik op “Kry rigtingaanwysings” vir roete-opsies.</translation>
 <translation id="6785453220513215166">Stuur tans omvalverslag …</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Stop nasporing van hierdie pakkie}other{Stop nasporing van hierdie pakkies}}</translation>
 <translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
 <translation id="6797885426782475225">Stemsoektog</translation>
 <translation id="6800349425672670802">Jy kan vanaf die Oortjiewisselaar toegang tot al jou oop oortjies kry.</translation>

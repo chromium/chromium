@@ -733,6 +733,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4856841893565072365">Nutika sortimise menüüriba</translation>
 <translation id="4860895144060829044">Helistage</translation>
 <translation id="4881695831933465202">Ava</translation>
+<translation id="4883824756452868502">Ühikute tuvastamine</translation>
 <translation id="488785315393301722">Üksikasjade kuvamine</translation>
 <translation id="4894963374040315706">See võimaldab hääle abil otsida</translation>
 <translation id="489903206070130262">Teie viimane avatud vaheleht</translation>
@@ -740,7 +741,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4904877109095351937">Märgi loetuks</translation>
 <translation id="4908869848243824489">Discover Google'ilt</translation>
 <translation id="4913626501929406101">Saate mõne oma peregrupi liikmega turvaliselt oma parooli koopiat jagada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Objektiiv</translation>
 <translation id="4918086044614829423">Nõustu</translation>
 <translation id="4922154083994158612">Kas soovite paremat turvalisust?</translation>
 <translation id="4930714375720679147">Lülita sisse</translation>
@@ -855,8 +855,10 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5551897871312988470">Paku tõlkimist</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="555749644339804659">Paroolide kontrollimine …</translation>
+<translation id="5559567453458728487">Veebist leitavate mõõtühikute teisendamine</translation>
 <translation id="556042886152191864">Nupp</translation>
 <translation id="5572684875078967866">Infoühikud</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Jälgi seda saadetist}other{Jälgi kõiki saadetisi}}</translation>
 <translation id="5597915316964418992">Vahelehtede ruudustiku avamine</translation>
 <translation id="560322036295180549">Teie organisatsioon on välja lülitanud</translation>
 <translation id="5614553682702429503">Kas salvestada parool?</translation>
@@ -1119,6 +1121,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6781260999953472352">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="6781405765516175232">Marsruudivalikute nägemiseks puudutage valikut „Hankige juhiseid“.</translation>
 <translation id="6785453220513215166">Krahhiaruande saatmine ...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Peata selle saadetise jälgimine}other{Peata kõigi saadetiste jälgimine}}</translation>
 <translation id="6790502149545262384">Varsti näete uue vahelehe avamisel lugusid saidilt <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Häälotsing</translation>
 <translation id="6800349425672670802">Kõikide avatud vahelehtede juurde pääsete funktsiooniga Vahelehtede vaheti.</translation>

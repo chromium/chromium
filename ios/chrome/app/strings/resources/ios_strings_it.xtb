@@ -733,6 +733,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4856841893565072365">Barra dei menu con ordine intelligente</translation>
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4881695831933465202">Apri</translation>
+<translation id="4883824756452868502">Rileva unità</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
 <translation id="4894963374040315706">In questo modo puoi eseguire ricerche con i comandi vocali</translation>
 <translation id="489903206070130262">Ultima scheda aperta</translation>
@@ -740,7 +741,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4904877109095351937">Segna come già letti</translation>
 <translation id="4908869848243824489">Discover di Google</translation>
 <translation id="4913626501929406101">Puoi condividere in sicurezza una copia della tua password con un membro del tuo gruppo Famiglia. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lente</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4922154083994158612">Vuoi maggiore sicurezza?</translation>
 <translation id="4930714375720679147">Attiva</translation>
@@ -855,8 +855,10 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5551897871312988470">Proponi di tradurre</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="555749644339804659">Controllo delle password…</translation>
+<translation id="5559567453458728487">Converti le unità di misura trovate sul web</translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5572684875078967866">Archiviazione delle informazioni</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Monitora questo pacchetto}other{Monitora tutti i pacchetti}}</translation>
 <translation id="5597915316964418992">Apri la griglia delle schede</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
@@ -1119,6 +1121,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6781260999953472352">Vuoi attivare la sincronizzazione?</translation>
 <translation id="6781405765516175232">Per conoscere le opzioni per il percorso, tocca "Indicazioni stradali".</translation>
 <translation id="6785453220513215166">Invio report sugli arresti anomali...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Annulla monitoraggio del pacchetto}other{Annulla monitoraggio di tutti i pacchetti}}</translation>
 <translation id="6790502149545262384">A breve vedrai storie di <ph name="CHANNEL_NAME" /> quando aprirai una nuova scheda.</translation>
 <translation id="6797885426782475225">Ricerca vocale</translation>
 <translation id="6800349425672670802">Puoi accedere a tutte le schede aperte dal Selettore di schede.</translation>

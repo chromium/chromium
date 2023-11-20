@@ -1142,7 +1142,6 @@
     있나요?</translation>
 <translation id="1863047423483329595">추적 보호 기능을 일시적으로 사용할 수 없습니다. Chrome에서 이 기능을 업데이트하는 동안 사이트에서 서드 파티 쿠키를 차단하지 않으면 일시적으로 쿠키를 사용할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">직렬 포트를 찾을 수 없음</translation>
-<translation id="1863207472175483351">설치 중...</translation>
 <translation id="1864111464094315414">로그인</translation>
 <translation id="1864400682872660285">시원함</translation>
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
@@ -1861,6 +1860,7 @@
 <translation id="2402226831639195063">신호음</translation>
 <translation id="2405887402346713222">기기 및 구성요소 일련번호</translation>
 <translation id="2406153734066939945">프로필과 데이터를 삭제하시겠습니까?</translation>
+<translation id="2407671304279211586">DNS 제공업체 선택</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409268599591722235">시작하기</translation>
@@ -5130,7 +5130,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="49896407730300355">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="4989966318180235467">백그라운드 페이지 검사(&amp;B)</translation>
-<translation id="4990949771467040994">대기 중…</translation>
 <translation id="4991420928586866460">맨 위 키를 기능 키로 사용</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>

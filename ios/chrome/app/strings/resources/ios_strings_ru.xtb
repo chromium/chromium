@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">Умная сортировка для строки меню</translation>
 <translation id="4860895144060829044">Позвонить</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4883824756452868502">Определять единицы измерения</translation>
 <translation id="488785315393301722">Показать сведения</translation>
 <translation id="4894963374040315706">Это нужно, чтобы использовать голосовой поиск.</translation>
 <translation id="489903206070130262">Последняя открытая вкладка</translation>
@@ -740,7 +741,6 @@
 <translation id="4904877109095351937">Отметить как прочитанное</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4913626501929406101">Вы можете поделиться копией пароля с участником семейной группы. Это безопасно. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Лупа</translation>
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4922154083994158612">Хотите усилить защиту аккаунта?</translation>
 <translation id="4930714375720679147">Включить</translation>
@@ -855,8 +855,10 @@
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="555749644339804659">Проверка паролей…</translation>
+<translation id="5559567453458728487">Конвертировать единицы измерения в Сети.</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5572684875078967866">Объем данных</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Отслеживать эту посылку}one{Отслеживать все посылки}few{Отслеживать все посылки}many{Отслеживать все посылки}other{Отслеживать все посылки}}</translation>
 <translation id="5597915316964418992">Откройте сетку таблицы.</translation>
 <translation id="560322036295180549">Функция отключена вашей организацией</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
@@ -1119,6 +1121,7 @@
 <translation id="6781260999953472352">Включить синхронизацию?</translation>
 <translation id="6781405765516175232">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
 <translation id="6785453220513215166">Отправка отчета об ошибке…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Перестать отслеживать посылку}one{Перестать отслеживать все посылки}few{Перестать отслеживать все посылки}many{Перестать отслеживать все посылки}other{Перестать отслеживать все посылки}}</translation>
 <translation id="6790502149545262384">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6797885426782475225">Голосовой поиск</translation>
 <translation id="6800349425672670802">Все открытые вкладки можно найти в переключателе вкладок.</translation>

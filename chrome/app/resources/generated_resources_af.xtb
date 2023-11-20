@@ -1142,7 +1142,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
     NAS-sagteware?</translation>
 <translation id="1863047423483329595">Nasporing-beskerming is tydelik onbeskikbaar. Terwyl Chrome hierdie kenmerk opdateer, kan werwe derdepartywebkoekies tydelik gebruik tensy jy dit blokkeer. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Geen reekspoorte is gevind nie</translation>
-<translation id="1863207472175483351">installeer tans …</translation>
 <translation id="1864111464094315414">Meld aan</translation>
 <translation id="1864400682872660285">Koeler</translation>
 <translation id="1864454756846565995">USB C-toestel (poort aan agterkant)</translation>
@@ -1859,6 +1858,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2402226831639195063">Tone</translation>
 <translation id="2405887402346713222">Toestel- en komponentreeksnommers</translation>
 <translation id="2406153734066939945">Vee hierdie profiel en sy data uit?</translation>
+<translation id="2407671304279211586">Kies DNS-verskaffer</translation>
 <translation id="2408018932941436077">Stoor tans kaart</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2409268599591722235">Kom ons begin</translation>
@@ -5130,7 +5130,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4988526792673242964">Bladsye</translation>
 <translation id="49896407730300355">Draai antikloksgewys</translation>
 <translation id="4989966318180235467">Ondersoek agtergrondbladsy</translation>
-<translation id="4990949771467040994">wag tans …</translation>
 <translation id="4991420928586866460">Behandel sleutels in die boonste ry soos funksiesleutels</translation>
 <translation id="4992458225095111526">Bevestig Powerwash</translation>
 <translation id="4992473555164495036">Jou administrateur het die beskikbare invoermetodes beperk.</translation>
