@@ -11431,7 +11431,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
-    expires_after="2024-04-28">
+    expires_after="2024-05-15">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -11442,7 +11442,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseTabAction"
-    enum="WebUITabStripCloseTabActions" expires_after="2023-12-13">
+    enum="WebUITabStripCloseTabActions" expires_after="2024-05-15">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -11453,7 +11453,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-05-15">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -11467,7 +11467,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.LoadDocumentTime" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-05-15">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -11481,7 +11481,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2024-04-28">
+    expires_after="2024-05-15">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -11492,7 +11492,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenDuration" units="ms"
-    expires_after="2023-12-13">
+    expires_after="2024-05-15">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -11503,7 +11503,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabActivation" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-05-15">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -11513,7 +11513,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabCreation" units="ms"
-    expires_after="2023-12-13">
+    expires_after="2024-05-15">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -11522,7 +11522,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabDataReceived" units="ms"
-    expires_after="2023-12-13">
+    expires_after="2024-05-15">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
