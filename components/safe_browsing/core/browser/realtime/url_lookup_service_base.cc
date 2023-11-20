@@ -148,8 +148,6 @@ bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
-  base::UmaHistogramBoolean("SafeBrowsing.RT.CannotCheckInvalidUrl",
-                            !url.is_valid());
   return CanGetReputationOfUrl(url);
 }
 

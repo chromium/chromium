@@ -2120,17 +2120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.CannotCheckInvalidUrl" enum="BooleanEnabled"
-    expires_after="2023-12-17">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether the URL cannot be checked because it is not valid. Logged each
-    time a URL is checked by Safe Browsing URL checker if real-time URL lookups
-    are enabled and eligible for the request destination.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.RT.ConsumerVersionReason"
     enum="SafeBrowsingRTConsumerVersionReason" expires_after="2024-03-17">
   <owner>xinghuilu@chromium.org</owner>
