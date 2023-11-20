@@ -62,9 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   void DisableHotspot(HotspotControlCallback callback,
                       hotspot_config::mojom::DisableReason disable_reason);
 
-  // Restart hotspot if hotspot is active.
-  void RestartHotspotIfActive();
-
   // Set whether Hotspot should be allowed/disallowed by policy.
   void SetPolicyAllowHotspot(bool allow_hotspot);
 
@@ -117,8 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
                                        bool wifi_turned_off);
   void OnPrepareEnableWifiCompleted(
       base::OnceCallback<void(bool success)> callback,
-      hotspot_config::mojom::HotspotControlResult control_result);
-  void OnDisableHotspotCompleteForRestart(
       hotspot_config::mojom::HotspotControlResult control_result);
   void CompleteCurrentRequest(
       const bool& enabled,

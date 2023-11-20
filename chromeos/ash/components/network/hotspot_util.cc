@@ -14,6 +14,9 @@ namespace ash {
 
 namespace {
 
+constexpr char kTetheringStateRestarting[] = "restarting";
+constexpr char kTetheringIdleReasonConfigChange[] = "config_change";
+
 hotspot_config::mojom::WiFiBand ShillBandToMojom(
     const std::string& shill_band) {
   using hotspot_config::mojom::WiFiBand;
@@ -71,7 +74,6 @@ std::string HexDecode(const std::string& hex_ssid) {
 hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     const std::string& shill_state) {
   using hotspot_config::mojom::HotspotState;
-
   if (shill_state == shill::kTetheringStateActive) {
     return HotspotState::kEnabled;
   }
@@ -80,7 +82,8 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     return HotspotState::kDisabled;
   }
 
-  if (shill_state == shill::kTetheringStateStarting) {
+  if (shill_state == shill::kTetheringStateStarting ||
+      shill_state == kTetheringStateRestarting) {
     return HotspotState::kEnabling;
   }
 
@@ -115,6 +118,10 @@ hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
   if (idle_reason == shill::kTetheringIdleReasonUserExit ||
       idle_reason == shill::kTetheringIdleReasonClientStop) {
     return DisableReason::kUserInitiated;
+  }
+
+  if (idle_reason == kTetheringIdleReasonConfigChange) {
+    return DisableReason::kRestart;
   }
 
   NOTREACHED_NORETURN() << "Unexpected idle reason: " << idle_reason;

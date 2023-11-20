@@ -470,26 +470,6 @@ TEST_F(HotspotControllerTest, SetPolicyAllowHotspot) {
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
 }
 
-TEST_F(HotspotControllerTest, RestartHotspotIfActive) {
-  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  hotspot_controller_->RestartHotspotIfActive();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u, observer_.hotspot_turned_off_count());
-  EXPECT_EQ(0u, observer_.hotspot_turned_on_count());
-
-  SetHotspotStateInShill(shill::kTetheringStateActive);
-  SetHotspotAllowed();
-  AddActiveCellularServivce();
-  base::RunLoop().RunUntilIdle();
-
-  hotspot_controller_->RestartHotspotIfActive();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, observer_.hotspot_turned_off_count());
-  EXPECT_EQ(hotspot_config::mojom::DisableReason::kRestart,
-            observer_.last_disable_reason());
-}
-
 TEST_F(HotspotControllerTest, RestoreWiFiStatus) {
   SetHotspotAllowed();
   AddActiveCellularServivce();
