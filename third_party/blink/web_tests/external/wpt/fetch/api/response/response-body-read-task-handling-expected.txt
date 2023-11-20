@@ -2,6 +2,5 @@ This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_false: shouldn't have run microtasks yet expected false got true
 [FAIL] reading from a body stream should occur in a microtask scope
   assert_false: shouldn't have run microtasks yet expected false got true
-[PASS] piping from a body stream to a JS-written WritableStream should occur in a microtask scope
 Harness: the test ran to completion.
 

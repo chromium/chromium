@@ -1,9 +1,4 @@
 This is a testharness.js-based test.
-[PASS] event dispatches on click
-[PASS] event action is set to invokeAction
-[PASS] event action is set to invokeaction attribute
-[PASS] event does not dispatch if click:preventDefault is called
-[PASS] event does not dispatch if invoker is disabled
 [FAIL] event dispatches if invoker is non-HTML Element
   assert_true: event was called expected true got false
 Harness: the test ran to completion.

@@ -1,105 +1,38 @@
 This is a testharness.js-based test.
-Found 84 tests; 67 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <video> member must not be supported: onwebkitfullscreenchange
   assert_false: expected false got true
 [FAIL] Document member must not be supported: onwebkitfullscreenchange
   assert_false: expected false got true
-[PASS] <video> member must not be supported: onmozfullscreenchange
-[PASS] Document member must not be supported: onmozfullscreenchange
-[PASS] <video> member must not be supported: onmsfullscreenchange
-[PASS] Document member must not be supported: onmsfullscreenchange
 [FAIL] <video> member must not be supported: onwebkitfullscreenerror
   assert_false: expected false got true
 [FAIL] Document member must not be supported: onwebkitfullscreenerror
   assert_false: expected false got true
-[PASS] <video> member must not be supported: onmozfullscreenerror
-[PASS] Document member must not be supported: onmozfullscreenerror
-[PASS] <video> member must not be supported: onmsfullscreenerror
-[PASS] Document member must not be supported: onmsfullscreenerror
-[PASS] <video> member must not be supported: webkitCurrentFullScreenElement (uppercase S)
 [FAIL] Document member must not be supported: webkitCurrentFullScreenElement (uppercase S)
   assert_false: expected false got true
-[PASS] <video> member must not be supported: mozCurrentFullScreenElement (uppercase S)
-[PASS] Document member must not be supported: mozCurrentFullScreenElement (uppercase S)
-[PASS] <video> member must not be supported: msCurrentFullScreenElement (uppercase S)
-[PASS] Document member must not be supported: msCurrentFullScreenElement (uppercase S)
-[PASS] <video> member must not be supported: webkitFullscreenElement
 [FAIL] Document member must not be supported: webkitFullscreenElement
   assert_false: expected false got true
-[PASS] <video> member must not be supported: mozFullscreenElement
-[PASS] Document member must not be supported: mozFullscreenElement
-[PASS] <video> member must not be supported: msFullscreenElement
-[PASS] Document member must not be supported: msFullscreenElement
-[PASS] <video> member must not be supported: webkitFullscreenEnabled
 [FAIL] Document member must not be supported: webkitFullscreenEnabled
   assert_false: expected false got true
-[PASS] <video> member must not be supported: mozFullscreenEnabled
-[PASS] Document member must not be supported: mozFullscreenEnabled
-[PASS] <video> member must not be supported: msFullscreenEnabled
-[PASS] Document member must not be supported: msFullscreenEnabled
-[PASS] <video> member must not be supported: webkitIsFullScreen (uppercase S)
 [FAIL] Document member must not be supported: webkitIsFullScreen (uppercase S)
   assert_false: expected false got true
-[PASS] <video> member must not be supported: mozIsFullScreen (uppercase S)
-[PASS] Document member must not be supported: mozIsFullScreen (uppercase S)
-[PASS] <video> member must not be supported: msIsFullScreen (uppercase S)
-[PASS] Document member must not be supported: msIsFullScreen (uppercase S)
 [FAIL] <video> member must not be supported: webkitRequestFullScreen (uppercase S)
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitRequestFullScreen (uppercase S)
-[PASS] <video> member must not be supported: mozRequestFullScreen (uppercase S)
-[PASS] Document member must not be supported: mozRequestFullScreen (uppercase S)
-[PASS] <video> member must not be supported: msRequestFullScreen (uppercase S)
-[PASS] Document member must not be supported: msRequestFullScreen (uppercase S)
 [FAIL] <video> member must not be supported: webkitRequestFullscreen
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitRequestFullscreen
-[PASS] <video> member must not be supported: mozRequestFullscreen
-[PASS] Document member must not be supported: mozRequestFullscreen
-[PASS] <video> member must not be supported: msRequestFullscreen
-[PASS] Document member must not be supported: msRequestFullscreen
 [FAIL] <video> member must not be supported: webkitDisplayingFullscreen
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitDisplayingFullscreen
-[PASS] <video> member must not be supported: mozDisplayingFullscreen
-[PASS] Document member must not be supported: mozDisplayingFullscreen
-[PASS] <video> member must not be supported: msDisplayingFullscreen
-[PASS] Document member must not be supported: msDisplayingFullscreen
 [FAIL] <video> member must not be supported: webkitEnterFullScreen (uppercase S)
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitEnterFullScreen (uppercase S)
-[PASS] <video> member must not be supported: mozEnterFullScreen (uppercase S)
-[PASS] Document member must not be supported: mozEnterFullScreen (uppercase S)
-[PASS] <video> member must not be supported: msEnterFullScreen (uppercase S)
-[PASS] Document member must not be supported: msEnterFullScreen (uppercase S)
 [FAIL] <video> member must not be supported: webkitEnterFullscreen
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitEnterFullscreen
-[PASS] <video> member must not be supported: mozEnterFullscreen
-[PASS] Document member must not be supported: mozEnterFullscreen
-[PASS] <video> member must not be supported: msEnterFullscreen
-[PASS] Document member must not be supported: msEnterFullscreen
 [FAIL] <video> member must not be supported: webkitExitFullScreen (uppercase S)
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitExitFullScreen (uppercase S)
-[PASS] <video> member must not be supported: mozExitFullScreen (uppercase S)
-[PASS] Document member must not be supported: mozExitFullScreen (uppercase S)
-[PASS] <video> member must not be supported: msExitFullScreen (uppercase S)
-[PASS] Document member must not be supported: msExitFullScreen (uppercase S)
 [FAIL] <video> member must not be supported: webkitExitFullscreen
   assert_false: expected false got true
 [FAIL] Document member must not be supported: webkitExitFullscreen
   assert_false: expected false got true
-[PASS] <video> member must not be supported: mozExitFullscreen
-[PASS] Document member must not be supported: mozExitFullscreen
-[PASS] <video> member must not be supported: msExitFullscreen
-[PASS] Document member must not be supported: msExitFullscreen
 [FAIL] <video> member must not be supported: webkitSupportsFullscreen
   assert_false: expected false got true
-[PASS] Document member must not be supported: webkitSupportsFullscreen
-[PASS] <video> member must not be supported: mozSupportsFullscreen
-[PASS] Document member must not be supported: mozSupportsFullscreen
-[PASS] <video> member must not be supported: msSupportsFullscreen
-[PASS] Document member must not be supported: msSupportsFullscreen
 Harness: the test ran to completion.
 

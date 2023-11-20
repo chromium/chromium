@@ -1,37 +1,13 @@
 This is a testharness.js-based test.
-Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Loading data…
-[PASS] ToASCII("fass.de")
-[PASS] ToASCII("faß.de")
-[PASS] ToASCII("Faß.de")
-[PASS] ToASCII("xn--fa-hia.de")
-[PASS] ToASCII("à.א̈")
-[PASS] ToASCII("à.א̈")
-[PASS] ToASCII("À.א̈")
-[PASS] ToASCII("À.א̈")
-[PASS] ToASCII("xn--0ca.xn--ssa73l")
-[PASS] ToASCII("à̈.א")
-[PASS] ToASCII("à̈.א")
-[PASS] ToASCII("À̈.א")
-[PASS] ToASCII("À̈.א")
-[PASS] ToASCII("xn--0ca81i.xn--4db")
+Found 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("a‌b") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("A‌B") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("A‌b") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ab")
 [FAIL] ToASCII("xn--ab-j1t") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("a्‌b")
-[PASS] ToASCII("A्‌B")
-[PASS] ToASCII("A्‌b")
-[PASS] ToASCII("xn--ab-fsf")
-[PASS] ToASCII("a्b")
-[PASS] ToASCII("A्B")
-[PASS] ToASCII("A्b")
-[PASS] ToASCII("xn--ab-fsf604u")
 [FAIL] ToASCII("a‍b") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("A‍B") C2
@@ -40,108 +16,8 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ab-m1t") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("a्‍b")
-[PASS] ToASCII("A्‍B")
-[PASS] ToASCII("A्‍b")
-[PASS] ToASCII("xn--ab-fsf014u")
-[PASS] ToASCII("¡")
-[PASS] ToASCII("xn--7a")
-[PASS] ToASCII("᧚")
-[PASS] ToASCII("xn--pkf")
-[PASS] ToASCII("。") A4_2 (ignored)
-[PASS] ToASCII(".") A4_2 (ignored)
-[PASS] ToASCII("ꭠ")
-[PASS] ToASCII("xn--3y9a")
-[PASS] ToASCII("1234567890ä1234567890123456789012345678901234567890123456") A4_2 (ignored)
-[PASS] ToASCII("1234567890ä1234567890123456789012345678901234567890123456") A4_2 (ignored)
-[PASS] ToASCII("1234567890Ä1234567890123456789012345678901234567890123456") A4_2 (ignored)
-[PASS] ToASCII("1234567890Ä1234567890123456789012345678901234567890123456") A4_2 (ignored)
-[PASS] ToASCII("xn--12345678901234567890123456789012345678901234567890123456-fxe") A4_2 (ignored)
-[PASS] ToASCII("www.eXample.cOm")
-[PASS] ToASCII("Bücher.de")
-[PASS] ToASCII("Bücher.de")
-[PASS] ToASCII("bücher.de")
-[PASS] ToASCII("bücher.de")
-[PASS] ToASCII("BÜCHER.DE")
-[PASS] ToASCII("BÜCHER.DE")
-[PASS] ToASCII("xn--bcher-kva.de")
-[PASS] ToASCII("ÖBB")
-[PASS] ToASCII("ÖBB")
-[PASS] ToASCII("öbb")
-[PASS] ToASCII("öbb")
-[PASS] ToASCII("Öbb")
-[PASS] ToASCII("Öbb")
-[PASS] ToASCII("xn--bb-eka")
-[PASS] ToASCII("βόλος.com")
-[PASS] ToASCII("βόλος.com")
-[PASS] ToASCII("ΒΌΛΟΣ.COM")
-[PASS] ToASCII("ΒΌΛΟΣ.COM")
-[PASS] ToASCII("βόλοσ.com")
-[PASS] ToASCII("βόλοσ.com")
-[PASS] ToASCII("Βόλοσ.com")
-[PASS] ToASCII("Βόλοσ.com")
-[PASS] ToASCII("xn--nxasmq6b.com")
-[PASS] ToASCII("Βόλος.com")
-[PASS] ToASCII("Βόλος.com")
-[PASS] ToASCII("xn--nxasmm1c.com")
-[PASS] ToASCII("xn--nxasmm1c")
-[PASS] ToASCII("βόλος")
-[PASS] ToASCII("βόλος")
-[PASS] ToASCII("ΒΌΛΟΣ")
-[PASS] ToASCII("ΒΌΛΟΣ")
-[PASS] ToASCII("βόλοσ")
-[PASS] ToASCII("βόλοσ")
-[PASS] ToASCII("Βόλοσ")
-[PASS] ToASCII("Βόλοσ")
-[PASS] ToASCII("xn--nxasmq6b")
-[PASS] ToASCII("Βόλος")
-[PASS] ToASCII("Βόλος")
-[PASS] ToASCII("www.ශ්‍රී.com")
-[PASS] ToASCII("WWW.ශ්‍රී.COM")
-[PASS] ToASCII("Www.ශ්‍රී.com")
-[PASS] ToASCII("www.xn--10cl1a0b.com")
-[PASS] ToASCII("www.ශ්රී.com")
-[PASS] ToASCII("WWW.ශ්රී.COM")
-[PASS] ToASCII("Www.ශ්රී.com")
-[PASS] ToASCII("www.xn--10cl1a0b660p.com")
-[PASS] ToASCII("نامه‌ای")
-[PASS] ToASCII("xn--mgba3gch31f")
-[PASS] ToASCII("نامهای")
-[PASS] ToASCII("xn--mgba3gch31f060k")
-[PASS] ToASCII("xn--mgba3gch31f060k.com")
-[PASS] ToASCII("نامه‌ای.com")
-[PASS] ToASCII("نامه‌ای.COM")
-[PASS] ToASCII("xn--mgba3gch31f.com")
-[PASS] ToASCII("نامهای.com")
-[PASS] ToASCII("نامهای.COM")
-[PASS] ToASCII("a.b．c。d｡")
-[PASS] ToASCII("a.b.c。d。")
-[PASS] ToASCII("A.B.C。D。")
-[PASS] ToASCII("A.b.c。D。")
-[PASS] ToASCII("a.b.c.d.")
-[PASS] ToASCII("A.B．C。D｡")
-[PASS] ToASCII("A.b．c。D｡")
-[PASS] ToASCII("Ü.xn--tda")
-[PASS] ToASCII("Ü.xn--tda")
-[PASS] ToASCII("ü.xn--tda")
-[PASS] ToASCII("ü.xn--tda")
-[PASS] ToASCII("Ü.XN--TDA")
-[PASS] ToASCII("Ü.XN--TDA")
-[PASS] ToASCII("Ü.xn--Tda")
-[PASS] ToASCII("Ü.xn--Tda")
-[PASS] ToASCII("xn--tda.xn--tda")
-[PASS] ToASCII("ü.ü")
-[PASS] ToASCII("ü.ü")
-[PASS] ToASCII("Ü.Ü")
-[PASS] ToASCII("Ü.Ü")
-[PASS] ToASCII("Ü.ü")
-[PASS] ToASCII("Ü.ü")
 [FAIL] ToASCII("xn--u-ccb") V1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("a⒈com") P1; V6
-[PASS] ToASCII("a1.com")
-[PASS] ToASCII("A⒈COM") P1; V6
-[PASS] ToASCII("A⒈Com") P1; V6
 [FAIL] ToASCII("xn--acom-0w1b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--a-ecp.ru") V6
@@ -150,27 +26,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--a.pt") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--a-Ä.pt") P4
-[PASS] ToASCII("xn--a-Ä.pt") P4
-[PASS] ToASCII("xn--a-ä.pt") P4
-[PASS] ToASCII("xn--a-ä.pt") P4
-[PASS] ToASCII("XN--A-Ä.PT") P4
-[PASS] ToASCII("XN--A-Ä.PT") P4
-[PASS] ToASCII("Xn--A-Ä.pt") P4
-[PASS] ToASCII("Xn--A-Ä.pt") P4
-[PASS] ToASCII("xn--xn--a--gua.pt") V2 (ignored)
-[PASS] ToASCII("日本語。ＪＰ")
-[PASS] ToASCII("日本語。JP")
-[PASS] ToASCII("日本語。jp")
-[PASS] ToASCII("日本語。Jp")
-[PASS] ToASCII("xn--wgv71a119e.jp")
-[PASS] ToASCII("日本語.jp")
-[PASS] ToASCII("日本語.JP")
-[PASS] ToASCII("日本語.Jp")
-[PASS] ToASCII("日本語。ｊｐ")
-[PASS] ToASCII("日本語。Ｊｐ")
-[PASS] ToASCII("☕")
-[PASS] ToASCII("xn--53h")
 [FAIL] ToASCII("1.aß‌‍b‌‍cßßßßdςσßßßßßßßßeßßßßßßßßßßxßßßßßßßßßßyßßßßßßßß̂ßz") C1; C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.ASS‌‍B‌‍CSSSSSSSSDΣΣSSSSSSSSSSSSSSSSESSSSSSSSSSSSSSSSSSSSXSSSSSSSSSSSSSSSSSSSSYSSSSSSSSSSSSSSSŜSSZ") C1; C2; A4_2 (ignored)
@@ -185,13 +40,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.Ass‌‍b‌‍cssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") C1; C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("1.xn--assbcssssssssdssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssssz-pxq1419aa") A4_2 (ignored)
-[PASS] ToASCII("1.assbcssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") A4_2 (ignored)
-[PASS] ToASCII("1.assbcssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") A4_2 (ignored)
-[PASS] ToASCII("1.ASSBCSSSSSSSSDΣΣSSSSSSSSSSSSSSSSESSSSSSSSSSSSSSSSSSSSXSSSSSSSSSSSSSSSSSSSSYSSSSSSSSSSSSSSSŜSSZ") A4_2 (ignored)
-[PASS] ToASCII("1.ASSBCSSSSSSSSDΣΣSSSSSSSSSSSSSSSSESSSSSSSSSSSSSSSSSSSSXSSSSSSSSSSSSSSSSSSSSYSSSSSSSSSSSSSSSŜSSZ") A4_2 (ignored)
-[PASS] ToASCII("1.Assbcssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") A4_2 (ignored)
-[PASS] ToASCII("1.Assbcssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") A4_2 (ignored)
 [FAIL] ToASCII("1.xn--assbcssssssssdssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssssz-pxq1419aa69989dba9gc") C1; C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.Aß‌‍b‌‍cßßßßdςσßßßßßßßßeßßßßßßßßßßxßßßßßßßßßßyßßßßßßßß̂ßz") C1; C2; A4_2 (ignored)
@@ -206,106 +54,22 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌X‍n‌-‍-Bss") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--bss")
-[PASS] ToASCII("夙")
 [FAIL] ToASCII("xn--xn--bss-7z6ccid") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌X‍n‌-‍-Bß") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--xn--b-pqa5796ccahd") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ˣ͏ℕ​﹣­－᠌ℬ︀ſ⁤𝔰󠇯ﬄ")
-[PASS] ToASCII("x͏N​-­-᠌B︀s⁤s󠇯ffl")
-[PASS] ToASCII("x͏n​-­-᠌b︀s⁤s󠇯ffl")
-[PASS] ToASCII("X͏N​-­-᠌B︀S⁤S󠇯FFL")
-[PASS] ToASCII("X͏n​-­-᠌B︀s⁤s󠇯ffl")
-[PASS] ToASCII("xn--bssffl")
-[PASS] ToASCII("夡夞夜夙")
-[PASS] ToASCII("ˣ͏ℕ​﹣­－᠌ℬ︀S⁤𝔰󠇯FFL")
-[PASS] ToASCII("x͏N​-­-᠌B︀S⁤s󠇯FFL")
-[PASS] ToASCII("ˣ͏ℕ​﹣­－᠌ℬ︀s⁤𝔰󠇯ffl")
-[PASS] ToASCII("ä1234567890123456789012345678901234567890123456789012345")
-[PASS] ToASCII("ä1234567890123456789012345678901234567890123456789012345")
-[PASS] ToASCII("Ä1234567890123456789012345678901234567890123456789012345")
-[PASS] ToASCII("Ä1234567890123456789012345678901234567890123456789012345")
-[PASS] ToASCII("xn--1234567890123456789012345678901234567890123456789012345-9te")
-[PASS] ToASCII("a.b..-q--a-.e") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("a.b..-q--ä-.e") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("a.b..-q--ä-.e") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("A.B..-Q--Ä-.E") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("A.B..-Q--Ä-.E") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("A.b..-Q--Ä-.E") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("A.b..-Q--Ä-.E") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("a.b..xn---q----jra.e") V2 (ignored); V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("a..c") A4_2 (ignored)
-[PASS] ToASCII("a.-b.") V3 (ignored)
-[PASS] ToASCII("a.b-.c") V3 (ignored)
-[PASS] ToASCII("a.-.c") V3 (ignored)
-[PASS] ToASCII("a.bc--de.f") V2 (ignored)
-[PASS] ToASCII("ä.­.c") A4_2 (ignored)
-[PASS] ToASCII("ä.­.c") A4_2 (ignored)
-[PASS] ToASCII("Ä.­.C") A4_2 (ignored)
-[PASS] ToASCII("Ä.­.C") A4_2 (ignored)
-[PASS] ToASCII("xn--4ca..c") A4_2 (ignored)
-[PASS] ToASCII("ä.-b.") V3 (ignored)
-[PASS] ToASCII("ä.-b.") V3 (ignored)
-[PASS] ToASCII("Ä.-B.") V3 (ignored)
-[PASS] ToASCII("Ä.-B.") V3 (ignored)
-[PASS] ToASCII("xn--4ca.-b.") V3 (ignored)
-[PASS] ToASCII("ä.b-.c") V3 (ignored)
-[PASS] ToASCII("ä.b-.c") V3 (ignored)
-[PASS] ToASCII("Ä.B-.C") V3 (ignored)
-[PASS] ToASCII("Ä.B-.C") V3 (ignored)
-[PASS] ToASCII("Ä.b-.C") V3 (ignored)
-[PASS] ToASCII("Ä.b-.C") V3 (ignored)
-[PASS] ToASCII("xn--4ca.b-.c") V3 (ignored)
-[PASS] ToASCII("ä.-.c") V3 (ignored)
-[PASS] ToASCII("ä.-.c") V3 (ignored)
-[PASS] ToASCII("Ä.-.C") V3 (ignored)
-[PASS] ToASCII("Ä.-.C") V3 (ignored)
-[PASS] ToASCII("xn--4ca.-.c") V3 (ignored)
-[PASS] ToASCII("ä.bc--de.f") V2 (ignored)
-[PASS] ToASCII("ä.bc--de.f") V2 (ignored)
-[PASS] ToASCII("Ä.BC--DE.F") V2 (ignored)
-[PASS] ToASCII("Ä.BC--DE.F") V2 (ignored)
-[PASS] ToASCII("Ä.bc--De.f") V2 (ignored)
-[PASS] ToASCII("Ä.bc--De.f") V2 (ignored)
-[PASS] ToASCII("xn--4ca.bc--de.f") V2 (ignored)
-[PASS] ToASCII("a.b.̈c.d") V5
-[PASS] ToASCII("A.B.̈C.D") V5
-[PASS] ToASCII("A.b.̈c.d") V5
 [FAIL] ToASCII("a.b.xn--c-bcb.d") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("A0")
-[PASS] ToASCII("0A")
-[PASS] ToASCII("אׇ")
-[PASS] ToASCII("xn--vdbr")
-[PASS] ToASCII("א9ׇ")
-[PASS] ToASCII("xn--9-ihcz")
-[PASS] ToASCII("את")
-[PASS] ToASCII("xn--4db6c")
-[PASS] ToASCII("א׳ת")
-[PASS] ToASCII("xn--4db6c0a")
-[PASS] ToASCII("א7ת")
-[PASS] ToASCII("xn--7-zhc3f")
-[PASS] ToASCII("א٧ת")
-[PASS] ToASCII("xn--4db6c6t")
-[PASS] ToASCII("ஹ்‍")
-[PASS] ToASCII("xn--dmc4b")
-[PASS] ToASCII("ஹ்")
-[PASS] ToASCII("xn--dmc4b194h")
 [FAIL] ToASCII("ஹ‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--dmc")
-[PASS] ToASCII("ஹ")
 [FAIL] ToASCII("xn--dmc225h") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ஹ்‌")
-[PASS] ToASCII("xn--dmc4by94h")
 [FAIL] ToASCII("ஹ‌") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--dmc025h") C1
@@ -314,54 +78,18 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("لٰ‌ۭۯ")
-[PASS] ToASCII("xn--ghb2gxqia")
-[PASS] ToASCII("لٰۭۯ")
-[PASS] ToASCII("xn--ghb2gxqia7523a")
-[PASS] ToASCII("لٰ‌ۯ")
-[PASS] ToASCII("xn--ghb2g3q")
-[PASS] ToASCII("لٰۯ")
-[PASS] ToASCII("xn--ghb2g3qq34f")
-[PASS] ToASCII("ل‌ۭۯ")
-[PASS] ToASCII("xn--ghb25aga")
-[PASS] ToASCII("لۭۯ")
-[PASS] ToASCII("xn--ghb25aga828w")
-[PASS] ToASCII("ل‌ۯ")
-[PASS] ToASCII("xn--ghb65a")
-[PASS] ToASCII("لۯ")
-[PASS] ToASCII("xn--ghb65a953d")
-[PASS] ToASCII("xn--ghb2gxq")
-[PASS] ToASCII("لٰۭ")
 [FAIL] ToASCII("ۯ‌ۯ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--cmba")
-[PASS] ToASCII("ۯۯ")
 [FAIL] ToASCII("xn--cmba004q") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ghb")
-[PASS] ToASCII("ل")
-[PASS] ToASCII("a。。b") A4_2 (ignored)
-[PASS] ToASCII("A。。B") A4_2 (ignored)
-[PASS] ToASCII("a..b") A4_2 (ignored)
-[PASS] ToASCII("..xn--skb") A4_2 (ignored)
-[PASS] ToASCII("⒕∝ٟ򓤦．-󠄯") P1; V6; V3 (ignored)
-[PASS] ToASCII("14.∝ٟ򓤦.-󠄯") P1; V6; V3 (ignored)
 [FAIL] ToASCII("14.xn--7hb713l3v90n.-") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--7hb713lfwbi1311b.-") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꡣ.ߏ")
-[PASS] ToASCII("xn--8c9a.xn--qsb")
-[PASS] ToASCII("񯞜．𐿇ྡྷݽ؀") P1; V6
-[PASS] ToASCII("񯞜．𐿇ྡྷݽ؀") P1; V6
-[PASS] ToASCII("񯞜.𐿇ྡྷݽ؀") P1; V6
 [FAIL] ToASCII("xn--gw68a.xn--ifb57ev2psc6027m") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𣳔̃.𑓂") V5
 [FAIL] ToASCII("xn--nsa95820a.xn--wz1d") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌򅎭.Ⴒ𑇀") C1; P1; V6
-[PASS] ToASCII("‌򅎭.ⴒ𑇀") C1; P1; V6
 [FAIL] ToASCII("xn--bn95b.xn--9kj2034e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug15083f.xn--9kj2034e") C1; V6
@@ -370,13 +98,10 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug15083f.xn--qnd6272k") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("繱𑖿‍.８︒") P1; V6
 [FAIL] ToASCII("xn--gl0as212a.xn--8-o89h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug6928ac48e.xn--8-o89h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠆾．𞀈") V5; A4_2 (ignored)
-[PASS] ToASCII("󠆾.𞀈") V5; A4_2 (ignored)
 [FAIL] ToASCII(".xn--ph4h") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("ß۫。‍") C2
@@ -387,16 +112,10 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("Ss۫。‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ss-59d.")
-[PASS] ToASCII("ss۫.")
-[PASS] ToASCII("SS۫.")
-[PASS] ToASCII("Ss۫.")
 [FAIL] ToASCII("xn--ss-59d.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca012a.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠐵‌⒈．󠎇") C1; P1; V6
-[PASS] ToASCII("󠐵‌1..󠎇") C1; P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("xn--1-bs31m..xn--tv36e") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1-rgn37671n..xn--tv36e") C1; V6; A4_2 (ignored)
@@ -405,154 +124,84 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug88o47900b.xn--tv36e") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󟈣ٟꪲß。󌓧") P1; V6
-[PASS] ToASCII("󟈣ٟꪲSS。󌓧") P1; V6
-[PASS] ToASCII("󟈣ٟꪲss。󌓧") P1; V6
-[PASS] ToASCII("󟈣ٟꪲSs。󌓧") P1; V6
 [FAIL] ToASCII("xn--ss-3xd2839nncy1m.xn--bb79d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca92z0t7n5w96j.xn--bb79d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ݴ‌𞤿。𽘐䉜‍񿤼") C1; C2; P1; V6
-[PASS] ToASCII("ݴ‌𞤝。𽘐䉜‍񿤼") C1; C2; P1; V6
 [FAIL] ToASCII("xn--4pb2977v.xn--z0nt555ukbnv") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--4pb607jjt73a.xn--1ug236ke314donv1a") C1; C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ㅤ्Ⴀ័.᠋") P1; V6
-[PASS] ToASCII("ᅠ्Ⴀ័.᠋") P1; V6
-[PASS] ToASCII("ᅠ्ⴀ័.᠋") P1; V6
 [FAIL] ToASCII("xn--n3b742bkqf4ty.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--n3b468aoqa89r.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ㅤ्ⴀ័.᠋") P1; V6
 [FAIL] ToASCII("xn--n3b445e53po6d.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--n3b468azngju2a.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("❣‍．্𑰽ؒꤩ") C2; V5
-[PASS] ToASCII("❣‍.্𑰽ؒꤩ") C2; V5
 [FAIL] ToASCII("xn--pei.xn--0fb32q3w7q2g4d") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ugy10a.xn--0fb32q3w7q2g4d") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("͉。𧡫") V5
 [FAIL] ToASCII("xn--nua.xn--bc6k") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑰿󠅦．ᅠ") P1; V5; V6
-[PASS] ToASCII("𑰿󠅦.ᅠ") P1; V5; V6
 [FAIL] ToASCII("xn--ok3d.xn--psd") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("蔏｡𑰺") V5
-[PASS] ToASCII("蔏。𑰺") V5
 [FAIL] ToASCII("xn--uy1a.xn--jk3d") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--8g1d12120a.xn--5l6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑋧꧀2｡㧉򒖄") P1; V5; V6
-[PASS] ToASCII("𑋧꧀2。㧉򒖄") P1; V5; V6
 [FAIL] ToASCII("xn--2-5z4eu89y.xn--97l02706d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⤸ς𺱀｡ﾠ") P1; V6
-[PASS] ToASCII("⤸ς𺱀。ᅠ") P1; V6
-[PASS] ToASCII("⤸Σ𺱀。ᅠ") P1; V6
-[PASS] ToASCII("⤸σ𺱀。ᅠ") P1; V6
 [FAIL] ToASCII("xn--4xa192qmp03d.xn--psd") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa392qmp03d.xn--psd") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⤸Σ𺱀｡ﾠ") P1; V6
-[PASS] ToASCII("⤸σ𺱀｡ﾠ") P1; V6
 [FAIL] ToASCII("xn--4xa192qmp03d.xn--cl7c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa392qmp03d.xn--cl7c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍󯑖󠁐．ֽ𙮰ꡝ𐋡") C2; P1; V5; V6
-[PASS] ToASCII("‍󯑖󠁐.ֽ𙮰ꡝ𐋡") C2; P1; V5; V6
 [FAIL] ToASCII("xn--b726ey18m.xn--ldb8734fg0qcyzzg") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug66101lt8me.xn--ldb8734fg0qcyzzg") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("。􃈵ς񀠇。𐮈") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("。􃈵Σ񀠇。𐮈") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("。􃈵σ񀠇。𐮈") P1; V6; A4_2 (ignored)
 [FAIL] ToASCII(".xn--4xa68573c7n64d.xn--f29c") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--3xa88573c7n64d.xn--f29c") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞤷.𐮐𞢁𐹠ؤ")
-[PASS] ToASCII("𞤷.𐮐𞢁𐹠ؤ")
-[PASS] ToASCII("𞤕.𐮐𞢁𐹠ؤ")
-[PASS] ToASCII("𞤕.𐮐𞢁𐹠ؤ")
-[PASS] ToASCII("xn--ve6h.xn--jgb1694kz0b2176a")
-[PASS] ToASCII("-󠉖ꡧ．󠊂񇆃🄉") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----hg4ei0361g.xn--207ht163h7m94c") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌｡͔") C1; V5
-[PASS] ToASCII("‌。͔") C1; V5
 [FAIL] ToASCII(".xn--yua") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--yua") C1; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞤥󠅮．ᡄႮ") P1; V6
-[PASS] ToASCII("𞤥󠅮.ᡄႮ") P1; V6
-[PASS] ToASCII("𞤥󠅮.ᡄⴎ")
-[PASS] ToASCII("𞤃󠅮.ᡄႮ") P1; V6
-[PASS] ToASCII("𞤃󠅮.ᡄⴎ")
-[PASS] ToASCII("xn--de6h.xn--37e857h")
-[PASS] ToASCII("𞤥.ᡄⴎ")
-[PASS] ToASCII("𞤃.ᡄႮ") P1; V6
-[PASS] ToASCII("𞤃.ᡄⴎ")
 [FAIL] ToASCII("xn--de6h.xn--mnd799a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞤥󠅮．ᡄⴎ")
-[PASS] ToASCII("𞤃󠅮．ᡄႮ") P1; V6
-[PASS] ToASCII("𞤃󠅮．ᡄⴎ")
-[PASS] ToASCII("𞤥.ᡄႮ") P1; V6
-[PASS] ToASCII("ྤ񱤯．𝟭Ⴛ") P1; V5; V6
-[PASS] ToASCII("ྤ񱤯.1Ⴛ") P1; V5; V6
-[PASS] ToASCII("ྤ񱤯.1ⴛ") P1; V5; V6
 [FAIL] ToASCII("xn--0fd40533g.xn--1-tws") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0fd40533g.xn--1-q1g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ྤ񱤯．𝟭ⴛ") P1; V5; V6
-[PASS] ToASCII("ς򅜌８.𞭤") P1; V6
-[PASS] ToASCII("ς򅜌8.𞭤") P1; V6
-[PASS] ToASCII("Σ򅜌8.𞭤") P1; V6
-[PASS] ToASCII("σ򅜌8.𞭤") P1; V6
 [FAIL] ToASCII("xn--8-zmb14974n.xn--su6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--8-xmb44974n.xn--su6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Σ򅜌８.𞭤") P1; V6
-[PASS] ToASCII("σ򅜌８.𞭤") P1; V6
 [FAIL] ToASCII("‌긃.榶-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌긃.榶-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ej0b.xn----d87b") V3 (ignored)
 [FAIL] ToASCII("xn--0ug3307c.xn----d87b") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("뉓泓𜵽.্‍") P1; V5; V6
-[PASS] ToASCII("뉓泓𜵽.্‍") P1; V5; V6
 [FAIL] ToASCII("xn--lwwp69lqs7m.xn--b7b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--lwwp69lqs7m.xn--b7b605i") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᯳Ⴑᅟ．𑄴Ⅎ") P1; V5; V6
-[PASS] ToASCII("᯳Ⴑᅟ.𑄴Ⅎ") P1; V5; V6
-[PASS] ToASCII("᯳ⴑᅟ.𑄴ⅎ") P1; V5; V6
-[PASS] ToASCII("᯳Ⴑᅟ.𑄴ⅎ") P1; V5; V6
 [FAIL] ToASCII("xn--pnd26a55x.xn--73g3065g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--osd925cvyn.xn--73g3065g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--pnd26a55x.xn--f3g7465g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᯳ⴑᅟ．𑄴ⅎ") P1; V5; V6
-[PASS] ToASCII("᯳Ⴑᅟ．𑄴ⅎ") P1; V5; V6
 [FAIL] ToASCII("Å둄-．‌") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("Å둄-．‌") C1; V3 (ignored)
@@ -565,17 +214,12 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("å둄-.‌") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn----1fa1788k.") V3 (ignored)
 [FAIL] ToASCII("xn----1fa1788k.xn--0ug") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("å둄-．‌") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("å둄-．‌") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("룱‍𰍨‌。𝨖︒") C1; C2; P1; V5; V6
-[PASS] ToASCII("룱‍𰍨‌。𝨖︒") C1; C2; P1; V5; V6
-[PASS] ToASCII("룱‍𰍨‌。𝨖。") C1; C2; V5
-[PASS] ToASCII("룱‍𰍨‌。𝨖。") C1; C2; V5
 [FAIL] ToASCII("xn--ct2b0738h.xn--772h.") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb3358ili2v.xn--772h.") C1; C2; V5
@@ -584,38 +228,24 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb3358ili2v.xn--y86cl899a") C1; C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("🄄．᳜⒈ß") P1; V5; V6
-[PASS] ToASCII("🄄．᳜⒈SS") P1; V5; V6
-[PASS] ToASCII("🄄．᳜⒈ss") P1; V5; V6
-[PASS] ToASCII("🄄．᳜⒈Ss") P1; V5; V6
 [FAIL] ToASCII("xn--x07h.xn--ss-k1r094b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--x07h.xn--zca344lmif") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᯳.-逋񳦭󙙮") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn--1zf.xn----483d46987byr50b") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ݖ。ㅤ‍ς") C2; P1; V6
-[PASS] ToASCII("ݖ。ᅠ‍ς") C2; P1; V6
-[PASS] ToASCII("ݖ。ᅠ‍Σ") C2; P1; V6
-[PASS] ToASCII("ݖ。ᅠ‍σ") C2; P1; V6
 [FAIL] ToASCII("xn--9ob.xn--4xa380e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9ob.xn--4xa380ebol") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9ob.xn--3xa580ebol") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ݖ。ㅤ‍Σ") C2; P1; V6
-[PASS] ToASCII("ݖ。ㅤ‍σ") C2; P1; V6
 [FAIL] ToASCII("xn--9ob.xn--4xa574u") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9ob.xn--4xa795lq2l") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9ob.xn--3xa995lq2l") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡆႣ｡󞢧̕‍‍") C2; P1; V6
-[PASS] ToASCII("ᡆႣ。󞢧̕‍‍") C2; P1; V6
-[PASS] ToASCII("ᡆⴃ。󞢧̕‍‍") C2; P1; V6
 [FAIL] ToASCII("xn--57e237h.xn--5sa98523p") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--57e237h.xn--5sa649la993427a") C2; V6
@@ -624,76 +254,34 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--bnd320b.xn--5sa649la993427a") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡆⴃ｡󞢧̕‍‍") C2; P1; V6
-[PASS] ToASCII("𞀨｡᭄򡛨𞎇") P1; V5; V6
-[PASS] ToASCII("𞀨。᭄򡛨𞎇") P1; V5; V6
 [FAIL] ToASCII("xn--mi4h.xn--1uf6843smg20c") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᢛ󨅟ß.ጧ") P1; V6
-[PASS] ToASCII("ᢛ󨅟SS.ጧ") P1; V6
-[PASS] ToASCII("ᢛ󨅟ss.ጧ") P1; V6
-[PASS] ToASCII("ᢛ󨅟Ss.ጧ") P1; V6
 [FAIL] ToASCII("xn--ss-7dp66033t.xn--p5d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca562jc642x.xn--p5d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⮒‌.񒚗‌") C1; P1; V6
 [FAIL] ToASCII("xn--b9i.xn--5p9y") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugx66b.xn--0ugz2871c") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ß｡𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("ß。𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("ß。𐋳ⴌྸ")
-[PASS] ToASCII("SS。𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("ss。𐋳ⴌྸ")
-[PASS] ToASCII("Ss。𐋳Ⴌྸ") P1; V6
 [FAIL] ToASCII("ss.xn--lgd10cu829c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ss.xn--lgd921mvv0m")
-[PASS] ToASCII("ss.𐋳ⴌྸ")
-[PASS] ToASCII("SS.𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("Ss.𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("xn--zca.xn--lgd921mvv0m")
-[PASS] ToASCII("ß.𐋳ⴌྸ")
 [FAIL] ToASCII("xn--zca.xn--lgd10cu829c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ß｡𐋳ⴌྸ")
-[PASS] ToASCII("SS｡𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("ss｡𐋳ⴌྸ")
-[PASS] ToASCII("Ss｡𐋳Ⴌྸ") P1; V6
-[PASS] ToASCII("ᩚ𛦝్。𚝬𝟵") P1; V5; V6
-[PASS] ToASCII("ᩚ𛦝్。𚝬9") P1; V5; V6
 [FAIL] ToASCII("xn--lqc703ebm93a.xn--9-000p") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡖ｡̟񗛨ஂ-") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ᡖ。̟񗛨ஂ-") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn--m8e.xn----mdb555dkk71m") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("🄇伐︒.𜙚꣄") P1; V6
 [FAIL] ToASCII("xn--woqs083bel0g.xn--0f9ao925c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠆠．񷐴󌟈") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("󠆠.񷐴󌟈") P1; V6; A4_2 (ignored)
 [FAIL] ToASCII(".xn--rx21bhv12i") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-.ᢆ󡲣-") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("-.xn----pbkx6497q") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󏒰．-𝟻ß") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰.-5ß") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰.-5SS") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰.-5ss") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--t960e.-5ss") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--t960e.xn---5-hia") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󏒰．-𝟻SS") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰．-𝟻ss") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰．-𝟻Ss") P1; V6; V3 (ignored)
-[PASS] ToASCII("󏒰.-5Ss") P1; V6; V3 (ignored)
-[PASS] ToASCII("‍𐨿.🤒Ⴥ򑮶") C2; P1; V6
-[PASS] ToASCII("‍𐨿.🤒ⴥ򑮶") C2; P1; V6
 [FAIL] ToASCII("xn--0s9c.xn--tljz038l0gz4b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug9533g.xn--tljz038l0gz4b") C2; V6
@@ -702,18 +290,12 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug9533g.xn--9nd3211w0gz4b") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𵋅。ß𬵩‍") C2; P1; V6
-[PASS] ToASCII("𵋅。SS𬵩‍") C2; P1; V6
-[PASS] ToASCII("𵋅。ss𬵩‍") C2; P1; V6
-[PASS] ToASCII("𵋅。Ss𬵩‍") C2; P1; V6
 [FAIL] ToASCII("xn--ey1p.xn--ss-eq36b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ey1p.xn--ss-n1tx0508a") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ey1p.xn--zca870nz438b") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⒋｡⒈‍򳴢") C2; P1; V6
-[PASS] ToASCII("4.。1.‍򳴢") C2; P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("4..1.xn--sf51d") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("4..1.xn--1ug64613i") C2; V6; A4_2 (ignored)
@@ -722,9 +304,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--wsh.xn--1ug58o74922a") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴓ𑜫‍򗭓．ڧ𑰶") P1; V6
-[PASS] ToASCII("Ⴓ𑜫‍򗭓.ڧ𑰶") P1; V6
-[PASS] ToASCII("ⴓ𑜫‍򗭓.ڧ𑰶") P1; V6
 [FAIL] ToASCII("xn--blj6306ey091d.xn--9jb4223l") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ugy52cym7p7xu5e.xn--9jb4223l") V6
@@ -733,18 +312,12 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--rnd479ep20q7x12e.xn--9jb4223l") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴓ𑜫‍򗭓．ڧ𑰶") P1; V6
-[PASS] ToASCII("𐨿.🄆—") P1; V5; V6
 [FAIL] ToASCII("xn--0s9c.xn--8ug8324p") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򔊱񁦮۸。󠾭-") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--lmb18944c0g2z.xn----2k81m") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("🞅󠳡󜍙.񲖷") P1; V6
 [FAIL] ToASCII("xn--ie9hi1349bqdlb.xn--oj69a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⃧񯡎-򫣝.4Ⴄ‌") C1; P1; V5; V6
-[PASS] ToASCII("⃧񯡎-򫣝.4ⴄ‌") C1; P1; V5; V6
 [FAIL] ToASCII("xn----9snu5320fi76w.xn--4-ivs") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----9snu5320fi76w.xn--4-sgn589c") C1; V5; V6
@@ -753,292 +326,132 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----9snu5320fi76w.xn--4-f0g649i") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᚭ｡𝌠ß𖫱")
-[PASS] ToASCII("ᚭ。𝌠ß𖫱")
-[PASS] ToASCII("ᚭ。𝌠SS𖫱")
-[PASS] ToASCII("ᚭ。𝌠ss𖫱")
-[PASS] ToASCII("ᚭ。𝌠Ss𖫱")
-[PASS] ToASCII("xn--hwe.xn--ss-ci1ub261a")
-[PASS] ToASCII("ᚭ.𝌠ss𖫱")
-[PASS] ToASCII("ᚭ.𝌠SS𖫱")
-[PASS] ToASCII("ᚭ.𝌠Ss𖫱")
-[PASS] ToASCII("xn--hwe.xn--zca4946pblnc")
-[PASS] ToASCII("ᚭ.𝌠ß𖫱")
-[PASS] ToASCII("ᚭ｡𝌠SS𖫱")
-[PASS] ToASCII("ᚭ｡𝌠ss𖫱")
-[PASS] ToASCII("ᚭ｡𝌠Ss𖫱")
-[PASS] ToASCII("񏁇᜴．𐨺É⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴．𐨺É⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴.𐨺É⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴.𐨺É⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴.𐨺é⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴.𐨺é⬓𑄴") P1; V5; V6
 [FAIL] ToASCII("xn--c0e34564d.xn--9ca207st53lg3f") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񏁇᜴．𐨺é⬓𑄴") P1; V5; V6
-[PASS] ToASCII("񏁇᜴．𐨺é⬓𑄴") P1; V5; V6
-[PASS] ToASCII("xn--09e4694e..xn--ye6h") A4_2 (ignored)
-[PASS] ToASCII("Ⴣ．ٓᢤ") P1; V5; V6
-[PASS] ToASCII("Ⴣ.ٓᢤ") P1; V5; V6
-[PASS] ToASCII("ⴣ.ٓᢤ") V5
 [FAIL] ToASCII("xn--rlj.xn--vhb294g") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--7nd.xn--vhb294g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴣ．ٓᢤ") V5
-[PASS] ToASCII("󠄈ࠓ．싉򄆻Ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ．싉򄆻Ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ.싉򄆻Ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ.싉򄆻Ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ.싉򄆻ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ.싉򄆻ⴤ򂡐") P1; V6
 [FAIL] ToASCII("xn--oub.xn--sljz109bpe25dviva") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--oub.xn--8nd9522gpe69cviva") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠄈ࠓ．싉򄆻ⴤ򂡐") P1; V6
-[PASS] ToASCII("󠄈ࠓ．싉򄆻ⴤ򂡐") P1; V6
-[PASS] ToASCII("𑁅。-") V5; V3 (ignored)
 [FAIL] ToASCII("xn--210d.-") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꡦᡑ‍⒈。𐋣-") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("ꡦᡑ‍1.。𐋣-") C2; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--1-o7j0610f..xn----381i") V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII("xn--1-o7j663bdl7m..xn----381i") C2; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--h8e863drj7h.xn----381i") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--h8e470bl0d838o.xn----381i") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⒈䰹‍-。웈") C2; P1; V6; V3 (ignored)
-[PASS] ToASCII("⒈䰹‍-。웈") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("1.䰹‍-。웈") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.䰹‍-。웈") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("1.xn----zw5a.xn--kp5b") V3 (ignored)
 [FAIL] ToASCII("1.xn----tgnz80r.xn--kp5b") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----dcp160o.xn--kp5b") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----tgnx5rjr6c.xn--kp5b") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("て。‌󠳽߳") C1; P1; V6
 [FAIL] ToASCII("xn--m9j.xn--rtb10784p") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--m9j.xn--rtb154j9l73w") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ς｡꧀ۧ") V5
-[PASS] ToASCII("ς。꧀ۧ") V5
-[PASS] ToASCII("Σ。꧀ۧ") V5
-[PASS] ToASCII("σ。꧀ۧ") V5
 [FAIL] ToASCII("xn--4xa.xn--3lb1944f") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa.xn--3lb1944f") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Σ｡꧀ۧ") V5
-[PASS] ToASCII("σ｡꧀ۧ") V5
-[PASS] ToASCII("்󥫅򌉑.ႢႵ") P1; V5; V6
-[PASS] ToASCII("்󥫅򌉑.ⴂⴕ") P1; V5; V6
-[PASS] ToASCII("்󥫅򌉑.Ⴂⴕ") P1; V5; V6
 [FAIL] ToASCII("xn--xmc83135idcxza.xn--9md086l") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--xmc83135idcxza.xn--tkjwb") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--xmc83135idcxza.xn--9md2b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᰲ🄈⾛֦．‍򯥤߽") C2; P1; V5; V6
 [FAIL] ToASCII("xn--xcb756i493fwi5o.xn--1tb13454l") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--xcb756i493fwi5o.xn--1tb334j1197q") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᢗ｡Ӏ񝄻") P1; V6
-[PASS] ToASCII("ᢗ。Ӏ񝄻") P1; V6
-[PASS] ToASCII("ᢗ。ӏ񝄻") P1; V6
 [FAIL] ToASCII("xn--hbf.xn--s5a83117e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--hbf.xn--d5a86117e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᢗ｡ӏ񝄻") P1; V6
-[PASS] ToASCII("-𐋷𖾑。󠆬") V3 (ignored)
-[PASS] ToASCII("xn----991iq40y.") V3 (ignored)
-[PASS] ToASCII("𑲘󠄒𓑡｡𝟪Ⴜ") P1; V5; V6
-[PASS] ToASCII("𑲘󠄒𓑡。8Ⴜ") P1; V5; V6
-[PASS] ToASCII("𑲘󠄒𓑡。8ⴜ") P1; V5; V6
 [FAIL] ToASCII("xn--7m3d291b.xn--8-vws") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--7m3d291b.xn--8-s1g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑲘󠄒𓑡｡𝟪ⴜ") P1; V5; V6
-[PASS] ToASCII("᮫｡🂉󠁰") P1; V5; V6
-[PASS] ToASCII("᮫。🂉󠁰") P1; V5; V6
 [FAIL] ToASCII("xn--zxf.xn--fx7ho0250c") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󬚶󸋖򖩰-。‌") C1; P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----7i12hu122k9ire.") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----7i12hu122k9ire.xn--0ug") C1; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒．𑑂︯") P1; V5; V6
-[PASS] ToASCII("︒．𑑂︯") P1; V5; V6
-[PASS] ToASCII("。.𑑂︯") V5; A4_2 (ignored)
 [FAIL] ToASCII("..xn--s96cu30b") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--y86c.xn--s96cu30b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꤬。‍") C2; V5
 [FAIL] ToASCII("xn--zi9a.") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zi9a.xn--1ug") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󦈄。-") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--xm38e.-") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("̰．󰜱蚀") P1; V5; V6
-[PASS] ToASCII("̰.󰜱蚀") P1; V5; V6
 [FAIL] ToASCII("xn--xta.xn--e91aw9417e") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("🢟🄈‍ꡎ｡྄") C2; P1; V5; V6
 [FAIL] ToASCII("xn--nc9aq743ds0e.xn--3ed") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug4874cfd0kbmg.xn--3ed") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꡔ。္ᢇ") V5
 [FAIL] ToASCII("xn--tc9a.xn--9jd663b") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𰅧񣩠-．꯭-悜") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("𰅧񣩠-.꯭-悜") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----7m53aj640l.xn----8f4br83t") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡉ𶓧⬞ᢜ.-‍𞣑‮") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--87e0ol04cdl39e.xn----qinu247r") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--87e0ol04cdl39e.xn----ugn5e3763s") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞥓．ܘ")
-[PASS] ToASCII("𞥓.ܘ")
-[PASS] ToASCII("xn--of6h.xn--inb")
-[PASS] ToASCII("󠄽-．-්") V3 (ignored)
-[PASS] ToASCII("󠄽-.-්") V3 (ignored)
-[PASS] ToASCII("-.xn----ptf") V3 (ignored)
-[PASS] ToASCII("Ⴚ𐋸󠄄。𝟝ퟶ်") P1; V6
-[PASS] ToASCII("Ⴚ𐋸󠄄。5ퟶ်") P1; V6
-[PASS] ToASCII("ⴚ𐋸󠄄。5ퟶ်")
-[PASS] ToASCII("xn--ilj2659d.xn--5-dug9054m")
-[PASS] ToASCII("ⴚ𐋸.5ퟶ်")
-[PASS] ToASCII("Ⴚ𐋸.5ퟶ်") P1; V6
 [FAIL] ToASCII("xn--ynd2415j.xn--5-dug9054m") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴚ𐋸󠄄。𝟝ퟶ်")
-[PASS] ToASCII("‍-ᠹ﹪.ᷡᤢ") C2; P1; V5; V6
-[PASS] ToASCII("‍-ᠹ%.ᷡᤢ") C2; P1; V5; V6
-[PASS] ToASCII("xn---%-u4o.xn--gff52t") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("xn---%-u4oy48b.xn--gff52t") C2; P1; V5; V6
 [FAIL] ToASCII("xn----c6jx047j.xn--gff52t") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----c6j614b1z4v.xn--gff52t") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ܣ֣｡㌪")
-[PASS] ToASCII("ܣ֣。ハイツ")
-[PASS] ToASCII("xn--ucb18e.xn--eck4c5a")
-[PASS] ToASCII("ܣ֣.ハイツ")
-[PASS] ToASCII("𣩫．򌑲") P1; V6
-[PASS] ToASCII("𣩫.򌑲") P1; V6
 [FAIL] ToASCII("xn--td3j.xn--4628b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--skb")
-[PASS] ToASCII("ڹ")
-[PASS] ToASCII("్𝨾֩𝟭。-𑜨") V5; V3 (ignored)
-[PASS] ToASCII("్𝨾֩1。-𑜨") V5; V3 (ignored)
 [FAIL] ToASCII("xn--1-rfc312cdp45c.xn----nq0j") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򣿈。뙏") P1; V6
-[PASS] ToASCII("򣿈。뙏") P1; V6
 [FAIL] ToASCII("xn--ph26c.xn--281b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񕨚󠄌󑽀ᡀ.ࢶ") P1; V6
 [FAIL] ToASCII("xn--z7e98100evc01b.xn--czb") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍｡񅁛") C2; P1; V6
-[PASS] ToASCII("‍。񅁛") C2; P1; V6
 [FAIL] ToASCII(".xn--6x4u") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--6x4u") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑖿𝨔.ᡟ𑖿ᭂ‌") C1; V5
 [FAIL] ToASCII("xn--461dw464a.xn--v8e29loy65a") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--461dw464a.xn--v8e29ldzfo952a") C1; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("퀬-?񶳒.‌ૅ󩸤۴") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.‌ૅ󩸤۴") C1; P1; V6
-[PASS] ToASCII("xn---?-6g4k75207c.xn--hmb76q74166b") P1; V5; V6
-[PASS] ToASCII("xn---?-6g4k75207c.xn--hmb76q48y18505a") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.xn--hmb76q74166b") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.xn--hmb76q74166b") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.XN--HMB76Q74166B") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.XN--HMB76Q74166B") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.Xn--Hmb76q74166b") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.Xn--Hmb76q74166b") P1; V5; V6
-[PASS] ToASCII("퀬-?񶳒.xn--hmb76q48y18505a") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.xn--hmb76q48y18505a") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.XN--HMB76Q48Y18505A") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.XN--HMB76Q48Y18505A") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.Xn--Hmb76q48y18505a") C1; P1; V6
-[PASS] ToASCII("퀬-?񶳒.Xn--Hmb76q48y18505a") C1; P1; V6
-[PASS] ToASCII("‍┮󠇐．ఀ్᜴‍") C2; V5
-[PASS] ToASCII("‍┮󠇐.ఀ్᜴‍") C2; V5
 [FAIL] ToASCII("xn--kxh.xn--eoc8m432a") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug04r.xn--eoc8m432a40i") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򹚪｡🄂") P1; V6
 [FAIL] ToASCII("xn--n433d.xn--v07h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑍨刍.🛦") V5
 [FAIL] ToASCII("xn--rbry728b.xn--y88h") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠌏3｡ᯱ𝟒") P1; V5; V6
-[PASS] ToASCII("󠌏3。ᯱ4") P1; V5; V6
 [FAIL] ToASCII("xn--3-ib31m.xn--4-pql") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("͊．𐨎") V5
-[PASS] ToASCII("͊.𐨎") V5
 [FAIL] ToASCII("xn--oua.xn--mr9c") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꡆ。Ↄྵ놮-") P1; V6; V3 (ignored)
-[PASS] ToASCII("ꡆ。Ↄྵ놮-") P1; V6; V3 (ignored)
-[PASS] ToASCII("ꡆ。ↄྵ놮-") V3 (ignored)
-[PASS] ToASCII("ꡆ。ↄྵ놮-") V3 (ignored)
-[PASS] ToASCII("xn--fc9a.xn----qmg097k469k") V3 (ignored)
 [FAIL] ToASCII("xn--fc9a.xn----qmg787k869k") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑑂｡‍󥞀🞕򥁔") C2; P1; V5; V6
-[PASS] ToASCII("𑑂。‍󥞀🞕򥁔") C2; P1; V5; V6
 [FAIL] ToASCII("xn--8v1d.xn--ye9h41035a2qqs") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--8v1d.xn--1ug1386plvx1cd8vya") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ßুᷭ。ؠ8₅")
-[PASS] ToASCII("ßুᷭ。ؠ85")
-[PASS] ToASCII("SSুᷭ。ؠ85")
-[PASS] ToASCII("ssুᷭ。ؠ85")
-[PASS] ToASCII("Ssুᷭ。ؠ85")
-[PASS] ToASCII("xn--ss-e2f077r.xn--85-psd")
-[PASS] ToASCII("ssুᷭ.ؠ85")
-[PASS] ToASCII("SSুᷭ.ؠ85")
-[PASS] ToASCII("Ssুᷭ.ؠ85")
-[PASS] ToASCII("xn--zca266bwrr.xn--85-psd")
-[PASS] ToASCII("ßুᷭ.ؠ85")
-[PASS] ToASCII("SSুᷭ。ؠ8₅")
-[PASS] ToASCII("ssুᷭ。ؠ8₅")
-[PASS] ToASCII("Ssুᷭ。ؠ8₅")
-[PASS] ToASCII("︍છ。嵨")
-[PASS] ToASCII("xn--6dc.xn--tot")
-[PASS] ToASCII("છ.嵨")
-[PASS] ToASCII("-‌⒙𐫥｡𝨵") C1; P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("-‌18.𐫥。𝨵") C1; V5; V3 (ignored)
 [FAIL] ToASCII("-18.xn--rx9c.xn--382h") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn---18-9m0a.xn--rx9c.xn--382h") C1; V5; V3 (ignored)
@@ -1047,27 +460,16 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----sgn18r3191a.xn--382h") C1; V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︅︒。𦀾᳠") P1; V6
-[PASS] ToASCII("︅。。𦀾᳠") A4_2 (ignored)
-[PASS] ToASCII("..xn--t6f5138v") A4_2 (ignored)
 [FAIL] ToASCII("xn--y86c.xn--t6f5138v") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--t6f5138v")
-[PASS] ToASCII("𦀾᳠")
-[PASS] ToASCII("򮵛ؓ.Ⴕ") P1; V6
-[PASS] ToASCII("򮵛ؓ.ⴕ") P1; V6
 [FAIL] ToASCII("xn--1fb94204l.xn--dlj") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1fb94204l.xn--tnd") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌󠄷｡򒑁") C1; P1; V6
-[PASS] ToASCII("‌󠄷。򒑁") C1; P1; V6
 [FAIL] ToASCII(".xn--w720c") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--w720c") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⒈ූ焅.󗡙‍ꡟ") C2; P1; V6
-[PASS] ToASCII("1.ූ焅.󗡙‍ꡟ") C2; P1; V5; V6
 [FAIL] ToASCII("1.xn--t1c6981c.xn--4c9a21133d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.xn--t1c6981c.xn--1ugz184c9lw7i") C2; V5; V6
@@ -1076,17 +478,12 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--t1c337io97c.xn--1ugz184c9lw7i") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑇀▍.⁞ᠰ") V5
 [FAIL] ToASCII("xn--9zh3057f.xn--j7e103b") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("-3.‍ヌᢕ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-3.xn--fbf115j") V3 (ignored)
 [FAIL] ToASCII("-3.xn--fbf739aq5o") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐨿󠆌鸮𑚶.ς") V5
-[PASS] ToASCII("𐨿󠆌鸮𑚶.Σ") V5
-[PASS] ToASCII("𐨿󠆌鸮𑚶.σ") V5
 [FAIL] ToASCII("xn--l76a726rt2h.xn--4xa") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--l76a726rt2h.xn--3xa") V5
@@ -1099,7 +496,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("σ-。‌1-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn----zmb.1-") V3 (ignored)
 [FAIL] ToASCII("xn----zmb.xn--1--i1t") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----xmb.xn--1--i1t") C1; V3 (ignored)
@@ -1108,16 +504,10 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("σ-。‌𝟭-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᜴-ೢ．󠄩Ⴄ") P1; V5; V6
-[PASS] ToASCII("᜴-ೢ.󠄩Ⴄ") P1; V5; V6
-[PASS] ToASCII("᜴-ೢ.󠄩ⴄ") V5
 [FAIL] ToASCII("xn----ggf830f.xn--vkj") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----ggf830f.xn--cnd") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᜴-ೢ．󠄩ⴄ") V5
-[PASS] ToASCII("‍。𞀘⒈ꡍ擉") C2; P1; V5; V6
-[PASS] ToASCII("‍。𞀘1.ꡍ擉") C2; V5
 [FAIL] ToASCII(".xn--1-1p4r.xn--s7uv61m") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--1-1p4r.xn--s7uv61m") C2; V5
@@ -1126,29 +516,16 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--tsh026uql4bew9p") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⫐｡Ⴠ-󃐢") P1; V6
-[PASS] ToASCII("⫐。Ⴠ-󃐢") P1; V6
-[PASS] ToASCII("⫐。ⴠ-󃐢") P1; V6
 [FAIL] ToASCII("xn--r3i.xn----2wst7439i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--r3i.xn----z1g58579u") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⫐｡ⴠ-󃐢") P1; V6
-[PASS] ToASCII("𑑂◊．⦟∠") V5
-[PASS] ToASCII("𑑂◊.⦟∠") V5
 [FAIL] ToASCII("xn--01h3338f.xn--79g270a") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("헁󘖙ฺ󚍚。ں𝟜") P1; V6
-[PASS] ToASCII("헁󘖙ฺ󚍚。ں𝟜") P1; V6
-[PASS] ToASCII("헁󘖙ฺ󚍚。ں4") P1; V6
-[PASS] ToASCII("헁󘖙ฺ󚍚。ں4") P1; V6
 [FAIL] ToASCII("xn--o4c1723h8g85gt4ya.xn--4-dvc") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꥓.̽𑂽馋") P1; V5; V6
 [FAIL] ToASCII("xn--3j9a.xn--bua0708eqzrd") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󈫝򪛸‍｡䜖") C2; P1; V6
-[PASS] ToASCII("󈫝򪛸‍。䜖") C2; P1; V6
 [FAIL] ToASCII("xn--g138cxw05a.xn--k0o") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug30527h9mxi.xn--k0o") C2; V6
@@ -1159,8 +536,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--c9e433epi4b3j20a.xn--kmb859ja94998b") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("፟ᡈ‌．︒-𖾐-") C1; P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("፟ᡈ‌.。-𖾐-") C1; V5; V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII("xn--b7d82w..xn-----pe4u") V5; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--b7d82wo4h..xn-----pe4u") C1; V5; V3 (ignored); A4_2 (ignored)
@@ -1169,8 +544,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--b7d82wo4h.xn-----c82nz547a") C1; V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝩜。-୍Ⴋ") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("𝩜。-୍ⴋ") V5; V3 (ignored)
 [FAIL] ToASCII("xn--792h.xn----bse820x") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--792h.xn----bse632b") V5; V6; V3 (ignored)
@@ -1179,17 +552,8 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("9隁⯮.᠍‌") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--9-mfs8024b.")
-[PASS] ToASCII("9隁⯮.")
 [FAIL] ToASCII("xn--9-mfs8024b.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᮬႬ‌̥。𝟸") C1; P1; V5; V6
-[PASS] ToASCII("ᮬⴌ‌̥。𝟸") C1; V5
-[PASS] ToASCII("xn--2ib43l.xn--te6h")
-[PASS] ToASCII("ٽृ.𞤵")
-[PASS] ToASCII("ٽृ.𞤓")
-[PASS] ToASCII("‌。ﾠ྄ྖ") C1; P1; V6
-[PASS] ToASCII("‌。ᅠ྄ྖ") C1; P1; V6
 [FAIL] ToASCII(".xn--3ed0b20h") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--3ed0b20h") C1; V6
@@ -1198,75 +562,38 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--3ed0by082k") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꧐Ӏ᮪ࣶ．눵") P1; V6
-[PASS] ToASCII("꧐Ӏ᮪ࣶ．눵") P1; V6
-[PASS] ToASCII("꧐Ӏ᮪ࣶ.눵") P1; V6
-[PASS] ToASCII("꧐Ӏ᮪ࣶ.눵") P1; V6
-[PASS] ToASCII("꧐ӏ᮪ࣶ.눵")
-[PASS] ToASCII("꧐ӏ᮪ࣶ.눵")
-[PASS] ToASCII("xn--s5a04sn4u297k.xn--2e1b")
 [FAIL] ToASCII("xn--d5a07sn4u297k.xn--2e1b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꧐ӏ᮪ࣶ．눵")
-[PASS] ToASCII("꧐ӏ᮪ࣶ．눵")
-[PASS] ToASCII("꣪｡𖄿𑆾󠇗") P1; V5; V6
-[PASS] ToASCII("꣪。𖄿𑆾󠇗") P1; V5; V6
 [FAIL] ToASCII("xn--3g9a.xn--ud1dz07k") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--9hb7344k.")
-[PASS] ToASCII("𐫇١.")
-[PASS] ToASCII("Ⴥ.𑄳㊸") P1; V5; V6
-[PASS] ToASCII("Ⴥ.𑄳43") P1; V5; V6
-[PASS] ToASCII("ⴥ.𑄳43") V5
 [FAIL] ToASCII("xn--tlj.xn--43-274o") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9nd.xn--43-274o") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴥ.𑄳㊸") V5
-[PASS] ToASCII("񗪨󠄉ﾠྷ.񸞰꥓") P1; V6
-[PASS] ToASCII("񗪨󠄉ᅠྷ.񸞰꥓") P1; V6
 [FAIL] ToASCII("xn--kgd36f9z57y.xn--3j9au7544a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--kgd7493jee34a.xn--3j9au7544a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ؘ.۳‌꥓") C1; V5
 [FAIL] ToASCII("xn--6fb.xn--gmb0524f") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--6fb.xn--gmb469jjf1h") C1; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡌ．︒ᢑ") P1; V6
-[PASS] ToASCII("ᡌ.。ᢑ") A4_2 (ignored)
-[PASS] ToASCII("xn--c8e..xn--bbf") A4_2 (ignored)
 [FAIL] ToASCII("xn--c8e.xn--bbf9168i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞷏。ᠢ򓘆") P1; V6
 [FAIL] ToASCII("xn--hd7h.xn--46e66060j") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("䂹󾖅𐋦．‍") C2; P1; V6
-[PASS] ToASCII("䂹󾖅𐋦.‍") C2; P1; V6
 [FAIL] ToASCII("xn--0on3543c5981i.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0on3543c5981i.xn--1ug") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ߥ.ڵ")
-[PASS] ToASCII("xn--dtb.xn--okb")
-[PASS] ToASCII(".xn--3e6h") A4_2 (ignored)
-[PASS] ToASCII("xn--3e6h")
-[PASS] ToASCII("𞤿")
-[PASS] ToASCII("𞤝")
-[PASS] ToASCII("်‍‌。-‌") C1; V5; V3 (ignored)
 [FAIL] ToASCII("xn--bkd.-") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--bkd412fca.xn----sgn") C1; V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒｡᭄ᡉ") P1; V5; V6
-[PASS] ToASCII("。。᭄ᡉ") V5; A4_2 (ignored)
 [FAIL] ToASCII("..xn--87e93m") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--y86c.xn--87e93m") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-᮫︒‍.񒶈񥹓") C2; P1; V6; V3 (ignored)
-[PASS] ToASCII("-᮫。‍.񒶈񥹓") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----qml..xn--x50zy803a") V6; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----qml.xn--1ug.xn--x50zy803a") C2; V6; V3 (ignored)
@@ -1275,31 +602,18 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----qmlv7tw180a.xn--x50zy803a") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ڹ．ᡳᅟ") P1; V6
-[PASS] ToASCII("ڹ.ᡳᅟ") P1; V6
 [FAIL] ToASCII("xn--skb.xn--osd737a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("㨛𘱎.︒𝟕ഁ") P1; V6
-[PASS] ToASCII("㨛𘱎.。7ഁ") A4_2 (ignored)
-[PASS] ToASCII("xn--mbm8237g..xn--7-7hf") A4_2 (ignored)
 [FAIL] ToASCII("xn--mbm8237g.xn--7-7hf1526p") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ß‌꫶ᢥ．⊶ჁႶ") C1; P1; V6
-[PASS] ToASCII("ß‌꫶ᢥ.⊶ჁႶ") C1; P1; V6
 [FAIL] ToASCII("ß‌꫶ᢥ.⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("SS‌꫶ᢥ.⊶ჁႶ") C1; P1; V6
 [FAIL] ToASCII("ss‌꫶ᢥ.⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ss‌꫶ᢥ.⊶Ⴡⴖ") C1; P1; V6
 [FAIL] ToASCII("xn--ss-4epx629f.xn--5nd703gyrh") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4ep585bkm5p.xn--5nd703gyrh") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ss-4epx629f.xn--ifh802b6a")
-[PASS] ToASCII("ss꫶ᢥ.⊶ⴡⴖ")
-[PASS] ToASCII("SS꫶ᢥ.⊶ჁႶ") P1; V6
-[PASS] ToASCII("Ss꫶ᢥ.⊶Ⴡⴖ") P1; V6
 [FAIL] ToASCII("xn--ss-4epx629f.xn--undv409k") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4ep585bkm5p.xn--ifh802b6a") C1
@@ -1312,21 +626,14 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("ß‌꫶ᢥ．⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("SS‌꫶ᢥ．⊶ჁႶ") C1; P1; V6
 [FAIL] ToASCII("ss‌꫶ᢥ．⊶ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ss‌꫶ᢥ．⊶Ⴡⴖ") C1; P1; V6
-[PASS] ToASCII("‍。ς󠁉") C2; P1; V6
-[PASS] ToASCII("‍。Σ󠁉") C2; P1; V6
-[PASS] ToASCII("‍。σ󠁉") C2; P1; V6
 [FAIL] ToASCII(".xn--4xa24344p") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--4xa24344p") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--3xa44344p") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⒒򨘙򳳠𑓀.-󞡊") P1; V6; V3 (ignored)
-[PASS] ToASCII("11.򨘙򳳠𑓀.-󞡊") P1; V6; V3 (ignored)
 [FAIL] ToASCII("11.xn--uz1d59632bxujd.xn----x310m") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3shy698frsu9dt1me.xn----x310m") V6; V3 (ignored)
@@ -1335,20 +642,14 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("-。‍") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-.") V3 (ignored)
 [FAIL] ToASCII("-.xn--1ug") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ቬ򔠼񁗶｡𐨬𝟠") P1; V6
-[PASS] ToASCII("ቬ򔠼񁗶。𐨬8") P1; V6
 [FAIL] ToASCII("xn--d0d41273c887z.xn--8-ob5i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ς‍-.Ⴣ𦟙") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("ς‍-.ⴣ𦟙") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Σ‍-.Ⴣ𦟙") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("σ‍-.ⴣ𦟙") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn----zmb.xn--rlj2573p") V3 (ignored)
 [FAIL] ToASCII("xn----zmb048s.xn--rlj2573p") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----zmb.xn--7nd64871a") V6; V3 (ignored)
@@ -1359,41 +660,24 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----xmb348s.xn--7nd64871a") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󅬽.蠔") P1; V6
 [FAIL] ToASCII("xn--g747d.xn--xl2a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ࣦ‍．뼽") C2; V5
-[PASS] ToASCII("ࣦ‍．뼽") C2; V5
-[PASS] ToASCII("ࣦ‍.뼽") C2; V5
-[PASS] ToASCII("ࣦ‍.뼽") C2; V5
 [FAIL] ToASCII("xn--p0b.xn--e43b") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--p0b869i.xn--e43b") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񍨽．񋸕") P1; V6
-[PASS] ToASCII("񍨽.񋸕") P1; V6
 [FAIL] ToASCII("xn--pr3x.xn--rv7w") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐯀𐸉𞧏。񢚧₄Ⴋ񂹫") P1; V6
-[PASS] ToASCII("𐯀𐸉𞧏。񢚧4Ⴋ񂹫") P1; V6
-[PASS] ToASCII("𐯀𐸉𞧏。񢚧4ⴋ񂹫") P1; V6
 [FAIL] ToASCII("xn--039c42bq865a.xn--4-wvs27840bnrzm") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--039c42bq865a.xn--4-t0g49302fnrzm") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐯀𐸉𞧏。񢚧₄ⴋ񂹫") P1; V6
-[PASS] ToASCII("𝟓。ۗ") V5
-[PASS] ToASCII("5。ۗ") V5
 [FAIL] ToASCII("5.xn--nlb") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌򺸩.⾕") C1; P1; V6
-[PASS] ToASCII("‌򺸩.谷") C1; P1; V6
 [FAIL] ToASCII("xn--i183d.xn--6g3a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug26167i.xn--6g3a") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒󎰇‍.-ܼ‌") C1; C2; P1; V6; V3 (ignored)
-[PASS] ToASCII("。󎰇‍.-ܼ‌") C1; C2; P1; V6; V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII(".xn--hh50e.xn----t2c") V6; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--1ug05310k.xn----t2c071q") C1; C2; V6; V3 (ignored); A4_2 (ignored)
@@ -1402,9 +686,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug1658ftw26f.xn----t2c071q") C1; C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍．𝟗") C2
-[PASS] ToASCII("Ⴍ𿣍ꡨ֮。Ⴞ‌‌") C1; P1; V6
-[PASS] ToASCII("ⴍ𿣍ꡨ֮。ⴞ‌‌") C1; P1; V6
 [FAIL] ToASCII("xn--5cb172r175fug38a.xn--mlj") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--5cb172r175fug38a.xn--0uga051h") C1; V6
@@ -1413,78 +694,36 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--5cb347co96jug15a.xn--2nd059ea") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐋰。󑓱") P1; V6
 [FAIL] ToASCII("xn--k97c.xn--q031e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ࣟႫ𶿸귤．򠅼𝟢휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟႫ𶿸귤．򠅼𝟢휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟႫ𶿸귤.򠅼0휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟႫ𶿸귤.򠅼0휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟⴋ𶿸귤.򠅼0휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟⴋ𶿸귤.򠅼0휪ૣ") P1; V5; V6
 [FAIL] ToASCII("xn--i0b436pkl2g2h42a.xn--0-8le8997mulr5f") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--i0b601b6r7l2hs0a.xn--0-8le8997mulr5f") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ࣟⴋ𶿸귤．򠅼𝟢휪ૣ") P1; V5; V6
-[PASS] ToASCII("ࣟⴋ𶿸귤．򠅼𝟢휪ૣ") P1; V5; V6
-[PASS] ToASCII("ބ．𞡝؁") P1; V6
-[PASS] ToASCII("ބ.𞡝؁") P1; V6
 [FAIL] ToASCII("xn--lqb.xn--jfb1808v") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("્₃.8꣄‍🃤") V5
-[PASS] ToASCII("્3.8꣄‍🃤") V5
 [FAIL] ToASCII("xn--3-yke.xn--8-sl4et308f") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3-yke.xn--8-ugnv982dbkwm") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("鱊。‌") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--rt6a.")
-[PASS] ToASCII("鱊.")
 [FAIL] ToASCII("xn--rt6a.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--4-0bd15808a.")
-[PASS] ToASCII("𞤺ߌ4.")
-[PASS] ToASCII("𞤘ߌ4.")
-[PASS] ToASCII("-｡䏛") V3 (ignored)
-[PASS] ToASCII("-。䏛") V3 (ignored)
-[PASS] ToASCII("-.xn--xco") V3 (ignored)
-[PASS] ToASCII("‌񒃠．‍") C1; C2; P1; V6
-[PASS] ToASCII("‌񒃠.‍") C1; C2; P1; V6
 [FAIL] ToASCII("xn--dj8y.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugz7551c.xn--1ug") C1; C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑇀.󠨱") P1; V5; V6
 [FAIL] ToASCII("xn--wd1d.xn--k946e") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𞤪.ς")
-[PASS] ToASCII("𞤈.Σ")
-[PASS] ToASCII("𞤪.σ")
-[PASS] ToASCII("𞤈.σ")
-[PASS] ToASCII("xn--ie6h.xn--4xa")
-[PASS] ToASCII("𞤈.ς")
-[PASS] ToASCII("xn--ie6h.xn--3xa")
-[PASS] ToASCII("𞤪.Σ")
-[PASS] ToASCII("‌Ⴚ｡ς") C1; P1; V6
-[PASS] ToASCII("‌Ⴚ。ς") C1; P1; V6
 [FAIL] ToASCII("‌ⴚ。ς") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌Ⴚ。Σ") C1; P1; V6
 [FAIL] ToASCII("‌ⴚ。σ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ilj.xn--4xa")
-[PASS] ToASCII("ⴚ.σ")
-[PASS] ToASCII("Ⴚ.Σ") P1; V6
-[PASS] ToASCII("ⴚ.ς")
-[PASS] ToASCII("Ⴚ.ς") P1; V6
 [FAIL] ToASCII("xn--ynd.xn--4xa") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ynd.xn--3xa") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ilj.xn--3xa")
-[PASS] ToASCII("Ⴚ.σ") P1; V6
 [FAIL] ToASCII("xn--0ug262c.xn--4xa") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ynd759e.xn--4xa") C1; V6
@@ -1495,7 +734,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌ⴚ｡ς") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌Ⴚ｡Σ") C1; P1; V6
 [FAIL] ToASCII("‌ⴚ｡σ") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍⾕。‌꥓̐ꡎ") C1; C2
@@ -1508,59 +746,32 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug0273b.xn--0sa359l6n7g13a") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("淽。ᠾ")
-[PASS] ToASCII("xn--34w.xn--x7e")
-[PASS] ToASCII("淽.ᠾ")
-[PASS] ToASCII("򬨩Ⴓ❓｡𑄨") P1; V5; V6
-[PASS] ToASCII("򬨩Ⴓ❓。𑄨") P1; V5; V6
-[PASS] ToASCII("򬨩ⴓ❓。𑄨") P1; V5; V6
 [FAIL] ToASCII("xn--8di78qvw32y.xn--k80d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--rnd896i0j14q.xn--k80d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򬨩ⴓ❓｡𑄨") P1; V5; V6
-[PASS] ToASCII("៿｡𞬳") P1; V6
-[PASS] ToASCII("៿。𞬳") P1; V6
 [FAIL] ToASCII("xn--45e.xn--et6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ْ‍｡್𑚳") C2; V5
-[PASS] ToASCII("ْ‍。್𑚳") C2; V5
 [FAIL] ToASCII("xn--uhb.xn--8tc4527k") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--uhb882k.xn--8tc4527k") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ß𰀻񆬗｡𝩨🕮ß") P1; V5; V6
-[PASS] ToASCII("ß𰀻񆬗。𝩨🕮ß") P1; V5; V6
-[PASS] ToASCII("SS𰀻񆬗。𝩨🕮SS") P1; V5; V6
-[PASS] ToASCII("ss𰀻񆬗。𝩨🕮ss") P1; V5; V6
-[PASS] ToASCII("Ss𰀻񆬗。𝩨🕮Ss") P1; V5; V6
 [FAIL] ToASCII("xn--ss-jl59biy67d.xn--ss-4d11aw87d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca20040bgrkh.xn--zca3653v86qa") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("SS𰀻񆬗｡𝩨🕮SS") P1; V5; V6
-[PASS] ToASCII("ss𰀻񆬗｡𝩨🕮ss") P1; V5; V6
-[PASS] ToASCII("Ss𰀻񆬗｡𝩨🕮Ss") P1; V5; V6
 [FAIL] ToASCII("‍。‌") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--0ug") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠑘．󠄮") P1; V6
-[PASS] ToASCII("󠑘.󠄮") P1; V6
 [FAIL] ToASCII("xn--s136e.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꦷ󝵙멹。⒛󠨇") P1; V5; V6
-[PASS] ToASCII("ꦷ󝵙멹。⒛󠨇") P1; V5; V6
-[PASS] ToASCII("ꦷ󝵙멹。20.󠨇") P1; V5; V6
-[PASS] ToASCII("ꦷ󝵙멹。20.󠨇") P1; V5; V6
 [FAIL] ToASCII("xn--ym9av13acp85w.20.xn--d846e") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ym9av13acp85w.xn--dth22121k") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌｡︒") C1; P1; V6
 [FAIL] ToASCII("‌。。") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("..") A4_2 (ignored)
 [FAIL] ToASCII("xn--0ug..") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--y86c") V6; A4_2 (ignored)
@@ -1577,7 +788,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("ᡲ-3.Ss-‌-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn---3-p9o.ss--") V2 (ignored); V3 (ignored)
 [FAIL] ToASCII("xn---3-p9o.xn--ss---276a") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn---3-p9o.xn-----fia9303a") C1; V3 (ignored)
@@ -1588,26 +798,16 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("ᡲ-𝟹.Ss-‌-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󙶜ᢘ。᩿⺢") P1; V5; V6
 [FAIL] ToASCII("xn--ibf35138o.xn--fpfz94g") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򗆧𝟯。⒈᩶𝟚򠘌") P1; V6
-[PASS] ToASCII("򗆧3。1.᩶2򠘌") P1; V5; V6
 [FAIL] ToASCII("xn--3-rj42h.1.xn--2-13k96240l") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3-rj42h.xn--2-13k746cq465x") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꡠ．۲")
-[PASS] ToASCII("ꡠ.۲")
-[PASS] ToASCII("xn--5c9a.xn--fmb")
-[PASS] ToASCII("꙽‌霣🄆｡‌𑁂ᬁ") C1; P1; V5; V6
-[PASS] ToASCII("꙽‌霣🄆｡‌𑁂ᬁ") C1; P1; V5; V6
 [FAIL] ToASCII("xn--2q5a751a653w.xn--4sf0725i") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug4208b2vjuk63a.xn--4sf36u6u4w") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("兎｡ᠼ󠴜𑚶𑰿") P1; V6
-[PASS] ToASCII("兎。ᠼ󠴜𑚶𑰿") P1; V6
 [FAIL] ToASCII("xn--b5q.xn--v7e6041kqqd4m251b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("𝟙｡‍𝟸‍⁷") C2
@@ -1616,13 +816,8 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.xn--27-l1tb") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡨ-｡󠻋𝟷") P1; V6; V3 (ignored)
-[PASS] ToASCII("ᡨ-。󠻋1") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----z8j.xn--1-5671m") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴜ򈷭ྀ⾇。Ⴏ♀‌‌") C1; P1; V6
-[PASS] ToASCII("Ⴜ򈷭ྀ舛。Ⴏ♀‌‌") C1; P1; V6
-[PASS] ToASCII("ⴜ򈷭ྀ舛。ⴏ♀‌‌") C1; P1; V6
 [FAIL] ToASCII("xn--zed372mdj2do3v4h.xn--e5h11w") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zed372mdj2do3v4h.xn--0uga678bgyh") C1; V6
@@ -1631,19 +826,10 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zed54dz10wo343g.xn--nnd089ea464d") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴜ򈷭ྀ⾇。ⴏ♀‌‌") C1; P1; V6
-[PASS] ToASCII("𑁆𝟰.‍") C2; V5
-[PASS] ToASCII("𑁆4.‍") C2; V5
 [FAIL] ToASCII("xn--4-xu7i.") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--4-xu7i.xn--1ug") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񮴘Ⴞ癀｡𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘Ⴞ癀｡𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘Ⴞ癀。𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘Ⴞ癀。𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘ⴞ癀。𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘ⴞ癀。𑘿‍‌붼") C1; P1; V5; V6
 [FAIL] ToASCII("xn--mlju35u7qx2f.xn--et3bn23n") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--mlju35u7qx2f.xn--0ugb6122js83c") C1; V5; V6
@@ -1652,29 +838,16 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--2nd6803c7q37d.xn--0ugb6122js83c") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񮴘ⴞ癀｡𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("񮴘ⴞ癀｡𑘿‍‌붼") C1; P1; V5; V6
-[PASS] ToASCII("-𑈶⒏．⒎𰛢󠎭") P1; V6; V3 (ignored)
-[PASS] ToASCII("-𑈶8..7.𰛢󠎭") P1; V6; V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII("xn---8-bv5o..7.xn--c35nf1622b") V6; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----scp6252h.xn--zshy411yzpx2d") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("໋‍．鎁󠰑") C2; P1; V5; V6
-[PASS] ToASCII("໋‍.鎁󠰑") C2; P1; V5; V6
 [FAIL] ToASCII("xn--t8c.xn--iz4a43209d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--t8c059f.xn--iz4a43209d") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򉛴.-ᡢ֒𝨠") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--ep37b.xn----hec165lho83b") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𿀫．᮪ςႦ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫.᮪ςႦ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫.᮪ςⴆ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫.᮪ΣႦ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫.᮪σⴆ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫.᮪Σⴆ‍") C2; P1; V5; V6
 [FAIL] ToASCII("xn--nu4s.xn--4xa153j7im") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--nu4s.xn--4xa153jk8cs1q") C2; V5; V6
@@ -1687,12 +860,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--nu4s.xn--3xa417dxriome") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𿀫．᮪ςⴆ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫．᮪ΣႦ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫．᮪σⴆ‍") C2; P1; V5; V6
-[PASS] ToASCII("𿀫．᮪Σⴆ‍") C2; P1; V5; V6
-[PASS] ToASCII("⒈‌ꫬ︒．્") C1; P1; V5; V6
-[PASS] ToASCII("1.‌ꫬ。.્") C1; V5; A4_2 (ignored)
 [FAIL] ToASCII("1.xn--sv9a..xn--mfc") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1.xn--0ug7185c..xn--mfc") C1; V5; A4_2 (ignored)
@@ -1701,76 +868,38 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug78o720myr1c.xn--mfc") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ß‍.᯲񄾼") C2; P1; V5; V6
-[PASS] ToASCII("SS‍.᯲񄾼") C2; P1; V5; V6
-[PASS] ToASCII("ss‍.᯲񄾼") C2; P1; V5; V6
-[PASS] ToASCII("Ss‍.᯲񄾼") C2; P1; V5; V6
 [FAIL] ToASCII("ss.xn--0zf22107b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-n1t.xn--0zf22107b") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca870n.xn--0zf22107b") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("🕼．ﾠ") P1; V6
-[PASS] ToASCII("🕼.ᅠ") P1; V6
 [FAIL] ToASCII("xn--my8h.xn--psd") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--my8h.xn--cl7c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("爕򳙑．𝟰気") P1; V6
-[PASS] ToASCII("爕򳙑.4気") P1; V6
 [FAIL] ToASCII("xn--1zxq3199c.xn--4-678b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󞝃。򑆃񉢗--") P1; V6; V2 (ignored); V3 (ignored)
 [FAIL] ToASCII("xn--2y75e.xn-----1l15eer88n") V6; V2 (ignored); V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("蔰。󠁹ࣝ-𑈵") P1; V6
 [FAIL] ToASCII("xn--sz1a.xn----mrd9984r3dl0i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ςჅ。ݚ") P1; V6
-[PASS] ToASCII("ςⴥ。ݚ")
-[PASS] ToASCII("ΣჅ。ݚ") P1; V6
-[PASS] ToASCII("σⴥ。ݚ")
-[PASS] ToASCII("Σⴥ。ݚ")
-[PASS] ToASCII("xn--4xa203s.xn--epb")
-[PASS] ToASCII("σⴥ.ݚ")
-[PASS] ToASCII("ΣჅ.ݚ") P1; V6
-[PASS] ToASCII("Σⴥ.ݚ")
 [FAIL] ToASCII("xn--4xa477d.xn--epb") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--3xa403s.xn--epb")
-[PASS] ToASCII("ςⴥ.ݚ")
 [FAIL] ToASCII("xn--3xa677d.xn--epb") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--vkb.xn--08e172a")
-[PASS] ToASCII("ڼ.ẏᡤ")
-[PASS] ToASCII("ڼ.ẏᡤ")
-[PASS] ToASCII("ڼ.Ẏᡤ")
-[PASS] ToASCII("ڼ.Ẏᡤ")
 [FAIL] ToASCII("xn--pt9c.xn--hnd666l") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--pt9c.xn--0kjya")
-[PASS] ToASCII("𐩗.ⴉⴕ")
-[PASS] ToASCII("𐩗.ႩႵ") P1; V6
-[PASS] ToASCII("𐩗.Ⴉⴕ") P1; V6
 [FAIL] ToASCII("xn--pt9c.xn--hndy") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌‌ㄤ．̮󕨑ূ") C1; P1; V5; V6
-[PASS] ToASCII("‌‌ㄤ.̮󕨑ূ") C1; P1; V5; V6
 [FAIL] ToASCII("xn--1fk.xn--vta284a9o563a") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0uga242k.xn--vta284a9o563a") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴔ𝨨₃󠁦．𝟳𑂹ஂ") P1; V6
-[PASS] ToASCII("Ⴔ𝨨3󠁦.7𑂹ஂ") P1; V6
-[PASS] ToASCII("ⴔ𝨨3󠁦.7𑂹ஂ") P1; V6
 [FAIL] ToASCII("xn--3-ews6985n35s3g.xn--7-cve6271r") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3-b1g83426a35t0g.xn--7-cve6271r") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴔ𝨨₃󠁦．𝟳𑂹ஂ") P1; V6
-[PASS] ToASCII("䏈‌。‌⒈񱢕") C1; P1; V6
-[PASS] ToASCII("䏈‌。‌1.񱢕") C1; P1; V6
 [FAIL] ToASCII("xn--eco.1.xn--ms39a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug491l.xn--1-rgn.xn--ms39a") C1; V6
@@ -1779,38 +908,22 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug491l.xn--0ug88oot66q") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("１꫶ß𑲥｡ᷘ") V5
-[PASS] ToASCII("1꫶ß𑲥。ᷘ") V5
-[PASS] ToASCII("1꫶SS𑲥。ᷘ") V5
-[PASS] ToASCII("1꫶ss𑲥。ᷘ") V5
 [FAIL] ToASCII("xn--1ss-ir6ln166b.xn--weg") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1-qfa2471kdb0d.xn--weg") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("１꫶SS𑲥｡ᷘ") V5
-[PASS] ToASCII("１꫶ss𑲥｡ᷘ") V5
-[PASS] ToASCII("1꫶Ss𑲥。ᷘ") V5
-[PASS] ToASCII("１꫶Ss𑲥｡ᷘ") V5
 [FAIL] ToASCII("xn--3j78f.xn--mkb20b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𲤱⒛⾳．ꡦ⒈") P1; V6
-[PASS] ToASCII("𲤱20.音.ꡦ1.") P1; V6
 [FAIL] ToASCII("xn--20-9802c.xn--0w5a.xn--1-eg4e.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--dth6033bzbvx.xn--tsh9439b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ge6h.xn--oc9a")
-[PASS] ToASCII("𞤨.ꡏ")
-[PASS] ToASCII("𞤆.ꡏ")
-[PASS] ToASCII("‌.ßႩ-") C1; P1; V6; V3 (ignored)
 [FAIL] ToASCII("‌.ßⴉ-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌.SSႩ-") C1; P1; V6; V3 (ignored)
 [FAIL] ToASCII("‌.ssⴉ-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌.Ssⴉ-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--ss--bi1b") V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII("xn--0ug.xn--ss--bi1b") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--ss--4rn") V6; V3 (ignored); A4_2 (ignored)
@@ -1821,62 +934,22 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn----pfa042j") C1; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("齙--𝟰.ß")
-[PASS] ToASCII("齙--4.ß")
-[PASS] ToASCII("齙--4.SS")
-[PASS] ToASCII("齙--4.ss")
-[PASS] ToASCII("齙--4.Ss")
-[PASS] ToASCII("xn----4-p16k.ss")
-[PASS] ToASCII("xn----4-p16k.xn--zca")
-[PASS] ToASCII("齙--𝟰.SS")
-[PASS] ToASCII("齙--𝟰.ss")
-[PASS] ToASCII("齙--𝟰.Ss")
-[PASS] ToASCII("󃲙󠋘｡?-‍") C2; P1; V6
-[PASS] ToASCII("󃲙󠋘。?-‍") C2; P1; V6
-[PASS] ToASCII("xn--ct86d8w51a.?-") P1; V6; V3 (ignored)
-[PASS] ToASCII("xn--ct86d8w51a.xn--?--n1t") C2; P1; V6
-[PASS] ToASCII("xn--ct86d8w51a.?-‍") C2; P1; V6
-[PASS] ToASCII("XN--CT86D8W51A.?-‍") C2; P1; V6
-[PASS] ToASCII("Xn--Ct86d8w51a.?-‍") C2; P1; V6
-[PASS] ToASCII("𝪞Ⴐ｡쪡") P1; V5; V6
-[PASS] ToASCII("𝪞Ⴐ｡쪡") P1; V5; V6
-[PASS] ToASCII("𝪞Ⴐ。쪡") P1; V5; V6
-[PASS] ToASCII("𝪞Ⴐ。쪡") P1; V5; V6
-[PASS] ToASCII("𝪞ⴐ。쪡") V5
-[PASS] ToASCII("𝪞ⴐ。쪡") V5
 [FAIL] ToASCII("xn--7kj1858k.xn--pi6b") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ond3755u.xn--pi6b") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝪞ⴐ｡쪡") V5
-[PASS] ToASCII("𝪞ⴐ｡쪡") V5
-[PASS] ToASCII("ᡅ０‌｡⎢󤨄") C1; P1; V6
-[PASS] ToASCII("ᡅ0‌。⎢󤨄") C1; P1; V6
 [FAIL] ToASCII("xn--0-z6j.xn--8lh28773l") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0-z6jy93b.xn--8lh28773l") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𲮚９ꍩ៓．‍ß") C2; P1; V6
-[PASS] ToASCII("𲮚9ꍩ៓.‍ß") C2; P1; V6
-[PASS] ToASCII("𲮚9ꍩ៓.‍SS") C2; P1; V6
-[PASS] ToASCII("𲮚9ꍩ៓.‍ss") C2; P1; V6
 [FAIL] ToASCII("xn--9-i0j5967eg3qz.ss") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𲮚９ꍩ៓．‍SS") C2; P1; V6
-[PASS] ToASCII("𲮚９ꍩ៓．‍ss") C2; P1; V6
-[PASS] ToASCII("𲮚9ꍩ៓.‍Ss") C2; P1; V6
-[PASS] ToASCII("𲮚９ꍩ៓．‍Ss") C2; P1; V6
-[PASS] ToASCII("ꗷ𑆀.ݝ𐩒")
-[PASS] ToASCII("xn--ju8a625r.xn--hpb0073k")
-[PASS] ToASCII("Ⴏ󠅋-．‍Ⴉ") C2; P1; V6; V3 (ignored)
-[PASS] ToASCII("Ⴏ󠅋-.‍Ⴉ") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("ⴏ󠅋-.‍ⴉ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn----3vs.xn--0kj") V3 (ignored)
 [FAIL] ToASCII("xn----3vs.xn--1ug532c") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----00g.xn--hnd") V6; V3 (ignored)
@@ -1885,66 +958,36 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("ⴏ󠅋-．‍ⴉ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("᜔。󠆣-𑋪") V5; V3 (ignored)
 [FAIL] ToASCII("xn--fze.xn----ly8i") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꯨ-．򨏜ֽß") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-.򨏜ֽß") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-.򨏜ֽSS") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-.򨏜ֽss") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-.򨏜ֽSs") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----pw5e.xn--ss-7jd10716y") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----pw5e.xn--zca50wfv060a") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ꯨ-．򨏜ֽSS") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-．򨏜ֽss") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ꯨ-．򨏜ֽSs") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("𝟥♮𑜫࣭．្𑜫8󠆏") V5
-[PASS] ToASCII("3♮𑜫࣭.្𑜫8󠆏") V5
 [FAIL] ToASCII("xn--3-ksd277tlo7s.xn--8-f0jx021l") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-｡򕌀‍❡") C2; P1; V6; V3 (ignored)
-[PASS] ToASCII("-。򕌀‍❡") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("-.xn--nei54421f") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("-.xn--1ug800aq795s") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝟓☱𝟐򥰵｡𝪮񐡳") P1; V5; V6
-[PASS] ToASCII("5☱2򥰵。𝪮񐡳") P1; V5; V6
 [FAIL] ToASCII("xn--52-dwx47758j.xn--kd3hk431k") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-.-├򖦣") P1; V6; V3 (ignored)
 [FAIL] ToASCII("-.xn----ukp70432h") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ς．ﷁ🞛⒈") P1; V6
-[PASS] ToASCII("ς.فمي🞛1.")
-[PASS] ToASCII("Σ.فمي🞛1.")
-[PASS] ToASCII("σ.فمي🞛1.")
-[PASS] ToASCII("xn--4xa.xn--1-gocmu97674d.")
-[PASS] ToASCII("xn--3xa.xn--1-gocmu97674d.")
-[PASS] ToASCII("Σ．ﷁ🞛⒈") P1; V6
-[PASS] ToASCII("σ．ﷁ🞛⒈") P1; V6
 [FAIL] ToASCII("xn--4xa.xn--dhbip2802atb20c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa.xn--dhbip2802atb20c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("9󠇥．󪴴ᢓ") P1; V6
-[PASS] ToASCII("9󠇥.󪴴ᢓ") P1; V6
 [FAIL] ToASCII("9.xn--dbf91222q") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒Ⴖͦ．‌") C1; P1; V6
-[PASS] ToASCII("。Ⴖͦ.‌") C1; P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("。ⴖͦ.‌") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--hva754s.") A4_2 (ignored)
 [FAIL] ToASCII(".xn--hva754s.xn--0ug") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--hva929d.") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII(".xn--hva929d.xn--0ug") C1; V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒ⴖͦ．‌") C1; P1; V6
 [FAIL] ToASCII("xn--hva754sy94k.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--hva754sy94k.xn--0ug") C1; V6
@@ -1953,76 +996,46 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--hva929dl29p.xn--0ug") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--hva754s.")
-[PASS] ToASCII("ⴖͦ.")
-[PASS] ToASCII("Ⴖͦ.") P1; V6
 [FAIL] ToASCII("xn--hva929d.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--hzb.xn--ukj4430l")
-[PASS] ToASCII("ࢻ.ⴃ𞀒")
-[PASS] ToASCII("ࢻ.Ⴃ𞀒") P1; V6
 [FAIL] ToASCII("xn--hzb.xn--bnd2938u") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍‌。２䫷󠧷") C1; C2; P1; V6
-[PASS] ToASCII("‍‌。2䫷󠧷") C1; C2; P1; V6
 [FAIL] ToASCII(".xn--2-me5ay1273i") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb.xn--2-me5ay1273i") C1; C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-𞀤󜠐。򈬖") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----rq4re4997d.xn--l707b") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󳛂︒‌㟀．ؤ⒈") C1; P1; V6
-[PASS] ToASCII("󳛂︒‌㟀．ؤ⒈") C1; P1; V6
 [FAIL] ToASCII("xn--z272f.xn--etl.xn--1-smc.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--etlt457ccrq7h.xn--jgb476m") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug754gxl4ldlt0k.xn--jgb476m") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("߼𐸆.𓖏︒񊨩Ⴐ") P1; V6
-[PASS] ToASCII("߼𐸆.𓖏。񊨩Ⴐ") P1; V6
-[PASS] ToASCII("߼𐸆.𓖏。񊨩ⴐ") P1; V6
 [FAIL] ToASCII("xn--0tb8725k.xn--tu8d.xn--7kj73887a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0tb8725k.xn--tu8d.xn--ond97931d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("߼𐸆.𓖏︒񊨩ⴐ") P1; V6
 [FAIL] ToASCII("xn--0tb8725k.xn--7kj9008dt18a7py9c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0tb8725k.xn--ond3562jt18a7py9c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴥ⚭󠖫⋃｡𑌼") P1; V5; V6
-[PASS] ToASCII("Ⴥ⚭󠖫⋃。𑌼") P1; V5; V6
-[PASS] ToASCII("ⴥ⚭󠖫⋃。𑌼") P1; V5; V6
 [FAIL] ToASCII("xn--vfh16m67gx1162b.xn--ro1d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9nd623g4zc5z060c.xn--ro1d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴥ⚭󠖫⋃｡𑌼") P1; V5; V6
-[PASS] ToASCII("󠆓⛏-。ꡒ") V3 (ignored)
-[PASS] ToASCII("xn----o9p.xn--rc9a") V3 (ignored)
-[PASS] ToASCII("‍攌꯭。ᢖ-Ⴘ") C2; P1; V6
 [FAIL] ToASCII("‍攌꯭。ᢖ-ⴘ") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--p9ut19m.xn----mck373i")
-[PASS] ToASCII("攌꯭.ᢖ-ⴘ")
-[PASS] ToASCII("攌꯭.ᢖ-Ⴘ") P1; V6
 [FAIL] ToASCII("xn--p9ut19m.xn----k1g451d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug592ykp6b.xn----mck373i") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug592ykp6b.xn----k1g451d") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌ꖨ．⒗３툒۳") C1; P1; V6
-[PASS] ToASCII("‌ꖨ．⒗３툒۳") C1; P1; V6
 [FAIL] ToASCII("‌ꖨ.16.3툒۳") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌ꖨ.16.3툒۳") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--9r8a.16.xn--3-nyc0117m")
-[PASS] ToASCII("ꖨ.16.3툒۳")
-[PASS] ToASCII("ꖨ.16.3툒۳")
 [FAIL] ToASCII("xn--0ug2473c.16.xn--3-nyc0117m") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9r8a.xn--3-nyc678tu07m") V6
@@ -2033,26 +1046,14 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("1𝨙⸖.‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--1-5bt6845n.")
-[PASS] ToASCII("1𝨙⸖.")
 [FAIL] ToASCII("xn--1-5bt6845n.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("F󠅟｡򏗅♚") P1; V6
-[PASS] ToASCII("F󠅟。򏗅♚") P1; V6
-[PASS] ToASCII("f󠅟。򏗅♚") P1; V6
 [FAIL] ToASCII("f.xn--45hz6953f") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("f󠅟｡򏗅♚") P1; V6
-[PASS] ToASCII("୍𑄴ᷩ。𝟮Ⴘ𞀨񃥇") P1; V5; V6
-[PASS] ToASCII("୍𑄴ᷩ。2Ⴘ𞀨񃥇") P1; V5; V6
-[PASS] ToASCII("୍𑄴ᷩ。2ⴘ𞀨񃥇") P1; V5; V6
 [FAIL] ToASCII("xn--9ic246gs21p.xn--2-nws2918ndrjr") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--9ic246gs21p.xn--2-k1g43076adrwq") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("୍𑄴ᷩ。𝟮ⴘ𞀨񃥇") P1; V5; V6
-[PASS] ToASCII("򓠭‌‌⒈。勉𑁅") C1; P1; V6
-[PASS] ToASCII("򓠭‌‌1.。勉𑁅") C1; P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("xn--1-yi00h..xn--4grs325b") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1-rgna61159u..xn--4grs325b") C1; V6; A4_2 (ignored)
@@ -2061,130 +1062,62 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0uga855aez302a.xn--4grs325b") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡃ.玿񫈜󕞐") P1; V6
 [FAIL] ToASCII("xn--27e.xn--7cy81125a0yq4a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⃚．𑘿-") V5; V3 (ignored)
-[PASS] ToASCII("⃚.𑘿-") V5; V3 (ignored)
 [FAIL] ToASCII("xn--w0g.xn----bd0j") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ႂ-‍꣪．ꡊ‍񼸳") C2; P1; V5; V6
-[PASS] ToASCII("ႂ-‍꣪.ꡊ‍񼸳") C2; P1; V5; V6
 [FAIL] ToASCII("xn----gyg3618i.xn--jc9ao4185a") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----gyg250jio7k.xn--1ug8774cri56d") C2; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑈵廊.𐠍") V5
 [FAIL] ToASCII("xn--xytw701b.xn--yc9c") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴞ𶛀𛗻．ᢗ릫") P1; V6
-[PASS] ToASCII("Ⴞ𶛀𛗻．ᢗ릫") P1; V6
-[PASS] ToASCII("Ⴞ𶛀𛗻.ᢗ릫") P1; V6
-[PASS] ToASCII("Ⴞ𶛀𛗻.ᢗ릫") P1; V6
-[PASS] ToASCII("ⴞ𶛀𛗻.ᢗ릫") P1; V6
-[PASS] ToASCII("ⴞ𶛀𛗻.ᢗ릫") P1; V6
 [FAIL] ToASCII("xn--mlj0486jgl2j.xn--hbf6853f") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--2nd8876sgl2j.xn--hbf6853f") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴞ𶛀𛗻．ᢗ릫") P1; V6
-[PASS] ToASCII("ⴞ𶛀𛗻．ᢗ릫") P1; V6
-[PASS] ToASCII("ß‍်｡⒈") C2; P1; V6
-[PASS] ToASCII("SS‍်｡⒈") C2; P1; V6
-[PASS] ToASCII("ss‍်｡⒈") C2; P1; V6
-[PASS] ToASCII("Ss‍်｡⒈") C2; P1; V6
 [FAIL] ToASCII("xn--ss-f4j.xn--tsh") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-f4j585j.xn--tsh") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca679eh2l.xn--tsh") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ی𐨿．ß྄𑍬")
-[PASS] ToASCII("ی𐨿.ß྄𑍬")
-[PASS] ToASCII("ی𐨿.SS྄𑍬")
-[PASS] ToASCII("ی𐨿.ss྄𑍬")
-[PASS] ToASCII("xn--clb2593k.xn--ss-toj6092t")
-[PASS] ToASCII("xn--clb2593k.xn--zca216edt0r")
-[PASS] ToASCII("ی𐨿．SS྄𑍬")
-[PASS] ToASCII("ی𐨿．ss྄𑍬")
-[PASS] ToASCII("ی𐨿.Ss྄𑍬")
-[PASS] ToASCII("ی𐨿．Ss྄𑍬")
-[PASS] ToASCII("ྟ．-ࠪ") V5; V3 (ignored)
-[PASS] ToASCII("ྟ.-ࠪ") V5; V3 (ignored)
 [FAIL] ToASCII("xn--vfd.xn----fhd") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᵬ󠆠．핒⒒⒈􈄦") P1; V6
-[PASS] ToASCII("ᵬ󠆠．핒⒒⒈􈄦") P1; V6
-[PASS] ToASCII("ᵬ󠆠.핒11.1.􈄦") P1; V6
-[PASS] ToASCII("ᵬ󠆠.핒11.1.􈄦") P1; V6
 [FAIL] ToASCII("xn--tbg.xn--11-5o7k.1.xn--k469f") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--tbg.xn--tsht7586kyts9l") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⒈✌򟬟．𝟡񠱣") P1; V6
-[PASS] ToASCII("1.✌򟬟.9񠱣") P1; V6
 [FAIL] ToASCII("1.xn--7bi44996f.xn--9-o706d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--tsh24g49550b.xn--9-o706d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ς．꧀꣄") V5
-[PASS] ToASCII("ς.꧀꣄") V5
-[PASS] ToASCII("Σ.꧀꣄") V5
-[PASS] ToASCII("σ.꧀꣄") V5
 [FAIL] ToASCII("xn--4xa.xn--0f9ars") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa.xn--0f9ars") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Σ．꧀꣄") V5
-[PASS] ToASCII("σ．꧀꣄") V5
-[PASS] ToASCII("➆񷧕ỗ⒈．򑬒񡘮࡛𝟫") P1; V6
-[PASS] ToASCII("➆񷧕ỗ⒈．򑬒񡘮࡛𝟫") P1; V6
-[PASS] ToASCII("➆񷧕ỗ1..򑬒񡘮࡛9") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("➆񷧕ỗ1..򑬒񡘮࡛9") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("➆񷧕Ỗ1..򑬒񡘮࡛9") P1; V6; A4_2 (ignored)
-[PASS] ToASCII("➆񷧕Ỗ1..򑬒񡘮࡛9") P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("xn--1-3xm292b6044r..xn--9-6jd87310jtcqs") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("➆񷧕Ỗ⒈．򑬒񡘮࡛𝟫") P1; V6
-[PASS] ToASCII("➆񷧕Ỗ⒈．򑬒񡘮࡛𝟫") P1; V6
 [FAIL] ToASCII("xn--6lg26tvvc6v99z.xn--9-6jd87310jtcqs") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--ye6h") A4_2 (ignored)
-[PASS] ToASCII("xn--ye6h")
-[PASS] ToASCII("𞤺")
-[PASS] ToASCII("𞤘")
-[PASS] ToASCII("ܼ‌-。𓐾ß") C1; P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ܼ‌-。𓐾SS") C1; P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ܼ‌-。𓐾ss") C1; P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("ܼ‌-。𓐾Ss") C1; P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----s2c.xn--ss-066q") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----s2c071q.xn--ss-066q") C1; V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----s2c071q.xn--zca7848m") C1; V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-򷝬፞𑜧.ᷫ-︒") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("-򷝬፞𑜧.ᷫ-。") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----b5h1837n2ok9f.xn----mkm.") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----b5h1837n2ok9f.xn----mkmw278h") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("︒.򚠡ᩙ") P1; V6
-[PASS] ToASCII("。.򚠡ᩙ") P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("..xn--cof61594i") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--y86c.xn--cof61594i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑰺.-򑟏") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn--jk3d.xn----iz68g") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠻩．赏") P1; V6
-[PASS] ToASCII("󠻩.赏") P1; V6
 [FAIL] ToASCII("xn--2856e.xn--6o3a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴍ．񍇦‌") C1; P1; V6
-[PASS] ToASCII("Ⴍ.񍇦‌") C1; P1; V6
-[PASS] ToASCII("ⴍ.񍇦‌") C1; P1; V6
 [FAIL] ToASCII("xn--4kj.xn--p01x") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--4kj.xn--0ug56448b") C1; V6
@@ -2193,71 +1126,32 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--lnd.xn--0ug56448b") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴍ．񍇦‌") C1; P1; V6
-[PASS] ToASCII("𝟛．笠")
-[PASS] ToASCII("𝟛．笠")
-[PASS] ToASCII("3.笠")
-[PASS] ToASCII("3.xn--6vz")
-[PASS] ToASCII("-‍.Ⴞ𐋷") C2; P1; V6; V3 (ignored)
 [FAIL] ToASCII("-‍.ⴞ𐋷") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-.xn--mlj8559d") V3 (ignored)
 [FAIL] ToASCII("xn----ugn.xn--mlj8559d") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("-.xn--2nd2315j") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----ugn.xn--2nd2315j") C2; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍ςßܱ．்") C2; V5
-[PASS] ToASCII("‍ςßܱ.்") C2; V5
-[PASS] ToASCII("‍ΣSSܱ.்") C2; V5
-[PASS] ToASCII("‍σssܱ.்") C2; V5
-[PASS] ToASCII("‍Σssܱ.்") C2; V5
 [FAIL] ToASCII("xn--ss-ubc826a.xn--xmc") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-ubc826ab34b.xn--xmc") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍Σßܱ.்") C2; V5
-[PASS] ToASCII("‍σßܱ.்") C2; V5
 [FAIL] ToASCII("xn--zca39lk1di19a.xn--xmc") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--zca19ln1di19a.xn--xmc") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍ΣSSܱ．்") C2; V5
-[PASS] ToASCII("‍σssܱ．்") C2; V5
-[PASS] ToASCII("‍Σssܱ．்") C2; V5
-[PASS] ToASCII("‍Σßܱ．்") C2; V5
-[PASS] ToASCII("‍σßܱ．்") C2; V5
-[PASS] ToASCII("󧋵্ς．ς𐨿") P1; V6
-[PASS] ToASCII("󧋵্ς.ς𐨿") P1; V6
-[PASS] ToASCII("󧋵্Σ.Σ𐨿") P1; V6
-[PASS] ToASCII("󧋵্σ.ς𐨿") P1; V6
-[PASS] ToASCII("󧋵্σ.σ𐨿") P1; V6
-[PASS] ToASCII("󧋵্Σ.σ𐨿") P1; V6
 [FAIL] ToASCII("xn--4xa502av8297a.xn--4xa6055k") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󧋵্Σ.ς𐨿") P1; V6
 [FAIL] ToASCII("xn--4xa502av8297a.xn--3xa8055k") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa702av8297a.xn--3xa8055k") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󧋵্Σ．Σ𐨿") P1; V6
-[PASS] ToASCII("󧋵্σ．ς𐨿") P1; V6
-[PASS] ToASCII("󧋵্σ．σ𐨿") P1; V6
-[PASS] ToASCII("󧋵্Σ．σ𐨿") P1; V6
-[PASS] ToASCII("󧋵্Σ．ς𐨿") P1; V6
-[PASS] ToASCII("񣤒｡륧") P1; V6
-[PASS] ToASCII("񣤒｡륧") P1; V6
-[PASS] ToASCII("񣤒。륧") P1; V6
-[PASS] ToASCII("񣤒。륧") P1; V6
 [FAIL] ToASCII("xn--s264a.xn--pw2b") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᡆ𑓝．𞵆") P1; V6
-[PASS] ToASCII("ᡆ𑓝.𞵆") P1; V6
 [FAIL] ToASCII("xn--57e0440k.xn--k86h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("􋿦｡ᠽ") P1; V6
-[PASS] ToASCII("􋿦。ᠽ") P1; V6
 [FAIL] ToASCII("xn--j890g.xn--w7e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("嬃𝍌．‍ୄ") C2
@@ -2268,32 +1162,22 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--b6s0078f.xn--0ic557h") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌.񟛤") C1; P1; V6
 [FAIL] ToASCII(".xn--q823a") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--q823a") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򺛕Ⴃ䠅．𐸑") P1; V6
-[PASS] ToASCII("򺛕Ⴃ䠅.𐸑") P1; V6
-[PASS] ToASCII("򺛕ⴃ䠅.𐸑") P1; V6
 [FAIL] ToASCII("xn--ukju77frl47r.xn--yl0d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--bnd074zr557n.xn--yl0d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("򺛕ⴃ䠅．𐸑") P1; V6
-[PASS] ToASCII("-｡︒") P1; V6; V3 (ignored)
-[PASS] ToASCII("-。。") V3 (ignored); A4_2 (ignored)
-[PASS] ToASCII("-..") V3 (ignored); A4_2 (ignored)
 [FAIL] ToASCII("-.xn--y86c") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍.F") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍.f") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".f") A4_2 (ignored)
 [FAIL] ToASCII("xn--1ug.f") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("f")
 [FAIL] ToASCII("‍㨲｡ß") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍㨲。ß") C2
@@ -2304,10 +1188,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍㨲。Ss") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--9bm.ss")
-[PASS] ToASCII("㨲.ss")
-[PASS] ToASCII("㨲.SS")
-[PASS] ToASCII("㨲.Ss")
 [FAIL] ToASCII("xn--1ug914h.ss") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug914h.xn--zca") C2
@@ -2318,58 +1198,32 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍㨲｡Ss") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍．􀸨") C2; P1; V6
-[PASS] ToASCII("‍.􀸨") C2; P1; V6
 [FAIL] ToASCII(".xn--h327f") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--h327f") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--98e.xn--om9c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꫶ᢏฺ２.𐋢݅ྟ︒") P1; V5; V6
-[PASS] ToASCII("꫶ᢏฺ2.𐋢݅ྟ。") V5
 [FAIL] ToASCII("xn--2-2zf840fk16m.xn--sob093b2m7s.") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--2-2zf840fk16m.xn--sob093bj62sz9d") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝟎。甯")
-[PASS] ToASCII("0。甯")
-[PASS] ToASCII("0.xn--qny")
-[PASS] ToASCII("0.甯")
-[PASS] ToASCII("-⾆．꫶") V5; V3 (ignored)
-[PASS] ToASCII("-舌.꫶") V5; V3 (ignored)
 [FAIL] ToASCII("xn----ef8c.xn--2v9a") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-｡ᢘ") V3 (ignored)
-[PASS] ToASCII("-。ᢘ") V3 (ignored)
-[PASS] ToASCII("-.xn--ibf") V3 (ignored)
 [FAIL] ToASCII("璼𝨭｡‌󠇟") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("璼𝨭。‌󠇟") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--gky8837e.")
-[PASS] ToASCII("璼𝨭.")
 [FAIL] ToASCII("xn--gky8837e.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‌.‌") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--157b.xn--gnb")
-[PASS] ToASCII("튛.ܖ")
-[PASS] ToASCII("튛.ܖ")
-[PASS] ToASCII("Ⴗ．𑄴ׂꦷ񘃨") P1; V5; V6
-[PASS] ToASCII("Ⴗ．𑄴ׂꦷ񘃨") P1; V5; V6
-[PASS] ToASCII("Ⴗ.𑄴ׂꦷ񘃨") P1; V5; V6
-[PASS] ToASCII("ⴗ.𑄴ׂꦷ񘃨") P1; V5; V6
 [FAIL] ToASCII("xn--flj.xn--qdb0605f14ycrms3c") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--vnd.xn--qdb0605f14ycrms3c") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴗ．𑄴ׂꦷ񘃨") P1; V5; V6
-[PASS] ToASCII("ⴗ．𑄴ׂꦷ񘃨") P1; V5; V6
-[PASS] ToASCII("⒈酫︒。ࣖ") P1; V5; V6
-[PASS] ToASCII("1.酫。。ࣖ") V5; A4_2 (ignored)
 [FAIL] ToASCII("1.xn--8j4a..xn--8zb") V5; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--tsh4490bfe8c.xn--8zb") V5; V6
@@ -2380,8 +1234,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--co6h.xn--1-h1gs") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꠆。𻚏ྰ⒕") P1; V5; V6
-[PASS] ToASCII("꠆。𻚏ྰ14.") P1; V5; V6
 [FAIL] ToASCII("xn--l98a.xn--14-jsj57880f.") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--l98a.xn--dgd218hhp28d") V5; V6
@@ -2390,12 +1242,8 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("84󠇗𝈻.‍𐋵⛧‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--84-s850a.xn--59h6326e")
-[PASS] ToASCII("84𝈻.𐋵⛧")
 [FAIL] ToASCII("xn--84-s850a.xn--1uga573cfq1w") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񭜎⒈｡‌𝟤") C1; P1; V6
-[PASS] ToASCII("񭜎1.。‌2") C1; P1; V6; A4_2 (ignored)
 [FAIL] ToASCII("xn--1-ex54e..xn--2-rgn") C1; V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--tsh94183d.xn--2-rgn") C1; V6
@@ -2410,7 +1258,6 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍‌󠆪。Ss𑓃") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--ss-bh7o") A4_2 (ignored)
 [FAIL] ToASCII("xn--0ugb.xn--ss-bh7o") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb.xn--zca0732l") C1; C2
@@ -2421,24 +1268,14 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("‍‌󠆪｡Ss𑓃") C1; C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ss-bh7o")
-[PASS] ToASCII("ss𑓃")
-[PASS] ToASCII("SS𑓃")
-[PASS] ToASCII("Ss𑓃")
-[PASS] ToASCII("︒‌ヶ䒩.ꡪ") C1; P1; V6
 [FAIL] ToASCII("。‌ヶ䒩.ꡪ") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--qekw60d.xn--gd9a") A4_2 (ignored)
 [FAIL] ToASCII(".xn--0ug287dj0o.xn--gd9a") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--qekw60dns9k.xn--gd9a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug287dj0or48o.xn--gd9a") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--qekw60d.xn--gd9a")
-[PASS] ToASCII("ヶ䒩.ꡪ")
-[PASS] ToASCII("‌⒈𤮍.󢓋᩠") C1; P1; V6
-[PASS] ToASCII("‌1.𤮍.󢓋᩠") C1; P1; V6
 [FAIL] ToASCII("1.xn--4x6j.xn--jof45148n") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1-rgn.xn--4x6j.xn--jof45148n") C1; V6
@@ -2447,129 +1284,68 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug88o7471d.xn--jof45148n") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝅵｡𝟫𞀈䬺⒈") P1; V6
-[PASS] ToASCII("𝅵。9𞀈䬺1.") P1; V6
 [FAIL] ToASCII("xn--3f1h.xn--91-030c1650n.") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3f1h.xn--9-ecp936non25a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--8c1a.xn--2ib8jn539l")
-[PASS] ToASCII("舛.ٽ𞤴ڻ")
-[PASS] ToASCII("舛.ٽ𞤒ڻ")
-[PASS] ToASCII("-󠅱0｡៏᷽톇십") V5; V3 (ignored)
-[PASS] ToASCII("-󠅱0｡៏᷽톇십") V5; V3 (ignored)
-[PASS] ToASCII("-󠅱0。៏᷽톇십") V5; V3 (ignored)
-[PASS] ToASCII("-󠅱0。៏᷽톇십") V5; V3 (ignored)
 [FAIL] ToASCII("-0.xn--r4e872ah77nghm") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᅟႿႵრ｡୍") P1; V5; V6
-[PASS] ToASCII("ᅟႿႵრ。୍") P1; V5; V6
-[PASS] ToASCII("ᅟⴟⴕრ。୍") P1; V5; V6
-[PASS] ToASCII("ᅟႿႵᲠ。୍") P1; V5; V6
 [FAIL] ToASCII("xn--tndt4hvw.xn--9ic") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1od7wz74eeb.xn--9ic") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᅟⴟⴕრ｡୍") P1; V5; V6
-[PASS] ToASCII("ᅟႿႵᲠ｡୍") P1; V5; V6
-[PASS] ToASCII("ᅟႿⴕრ。୍") P1; V5; V6
 [FAIL] ToASCII("xn--3nd0etsm92g.xn--9ic") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᅟႿⴕრ｡୍") P1; V5; V6
 [FAIL] ToASCII("xn--l96h.xn--03e93aq365d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝟛꣄𝆪｡꣪-") V5; V3 (ignored)
-[PASS] ToASCII("𝟛꣄𝆪｡꣪-") V5; V3 (ignored)
-[PASS] ToASCII("3꣄𝆪。꣪-") V5; V3 (ignored)
 [FAIL] ToASCII("xn--3-sl4eu679e.xn----xn4e") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᄹ｡໊򠯤󠄞") P1; V5; V6
-[PASS] ToASCII("ᄹ。໊򠯤󠄞") P1; V5; V6
 [FAIL] ToASCII("xn--lrd.xn--s8c05302k") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Ⴆ򻢩．󠆡︉𞤍") P1; V6
-[PASS] ToASCII("Ⴆ򻢩.󠆡︉𞤍") P1; V6
-[PASS] ToASCII("ⴆ򻢩.󠆡︉𞤯") P1; V6
 [FAIL] ToASCII("xn--xkjw3965g.xn--ne6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--end82983m.xn--ne6h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ⴆ򻢩．󠆡︉𞤯") P1; V6
-[PASS] ToASCII("ⴆ򻢩.󠆡︉𞤍") P1; V6
-[PASS] ToASCII("ⴆ򻢩．󠆡︉𞤍") P1; V6
-[PASS] ToASCII("񗛨.򅟢𝟨꣄") P1; V6
-[PASS] ToASCII("񗛨.򅟢6꣄") P1; V6
 [FAIL] ToASCII("xn--mi60a.xn--6-sl4es8023c") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐋸󮘋Ⴢ.Ⴁ") P1; V6
-[PASS] ToASCII("𐋸󮘋ⴢ.ⴁ") P1; V6
-[PASS] ToASCII("𐋸󮘋Ⴢ.ⴁ") P1; V6
 [FAIL] ToASCII("xn--6nd5215jr2u0h.xn--skj") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--qlj1559dr224h.xn--skj") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--6nd5215jr2u0h.xn--8md") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񗑿꠆₄򩞆｡𲩧󠒹ς") P1; V6
-[PASS] ToASCII("񗑿꠆4򩞆。𲩧󠒹ς") P1; V6
-[PASS] ToASCII("񗑿꠆4򩞆。𲩧󠒹Σ") P1; V6
-[PASS] ToASCII("񗑿꠆4򩞆。𲩧󠒹σ") P1; V6
 [FAIL] ToASCII("xn--4-w93ej7463a9io5a.xn--4xa31142bk3f0d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--4-w93ej7463a9io5a.xn--3xa51142bk3f0d") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񗑿꠆₄򩞆｡𲩧󠒹Σ") P1; V6
-[PASS] ToASCII("񗑿꠆₄򩞆｡𲩧󠒹σ") P1; V6
-[PASS] ToASCII("𾢬。ܩ。쯙5") P1; V6
-[PASS] ToASCII("𾢬。ܩ。쯙5") P1; V6
 [FAIL] ToASCII("xn--t92s.xn--znb.xn--5-y88f") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("៊.‍𝟮𑀿") C2; V5
-[PASS] ToASCII("៊.‍2𑀿") C2; V5
 [FAIL] ToASCII("xn--m4e.xn--2-ku7i") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--m4e.xn--2-tgnv469h") C2; V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("꫶。嬶ß葽") V5
-[PASS] ToASCII("꫶。嬶SS葽") V5
-[PASS] ToASCII("꫶。嬶ss葽") V5
-[PASS] ToASCII("꫶。嬶Ss葽") V5
 [FAIL] ToASCII("xn--2v9a.xn--ss-q40dp97m") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--2v9a.xn--zca7637b14za") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ς𑐽𵢈𑜫｡𞬩‌𐫄") C1; P1; V6
-[PASS] ToASCII("ς𑐽𵢈𑜫。𞬩‌𐫄") C1; P1; V6
-[PASS] ToASCII("Σ𑐽𵢈𑜫。𞬩‌𐫄") C1; P1; V6
-[PASS] ToASCII("σ𑐽𵢈𑜫。𞬩‌𐫄") C1; P1; V6
 [FAIL] ToASCII("xn--4xa2260lk3b8z15g.xn--tw9ct349a") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--4xa2260lk3b8z15g.xn--0ug4653g2xzf") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--3xa4260lk3b8z15g.xn--0ug4653g2xzf") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("Σ𑐽𵢈𑜫｡𞬩‌𐫄") C1; P1; V6
-[PASS] ToASCII("σ𑐽𵢈𑜫｡𞬩‌𐫄") C1; P1; V6
-[PASS] ToASCII("⺢򇺅𝟤｡‍🚷") C2; P1; V6
-[PASS] ToASCII("⺢򇺅2。‍🚷") C2; P1; V6
 [FAIL] ToASCII("xn--2-4jtr4282f.xn--m78h") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--2-4jtr4282f.xn--1ugz946p") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𝨥。⫟𑈾") V5
 [FAIL] ToASCII("xn--n82h.xn--63iw010f") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-ᢗ‌🄄.𑜢") C1; P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----pck1820x.xn--9h2d") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----pck312bx563c.xn--9h2d") C1; V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("឴.쮇-") P1; V5; V6; V3 (ignored)
-[PASS] ToASCII("឴.쮇-") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn--z3e.xn----938f") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‌𑓂。⒈-􀪛") C1; P1; V6
-[PASS] ToASCII("‌𑓂。1.-􀪛") C1; P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn--wz1d.1.xn----rg03o") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugy057g.1.xn----rg03o") C1; V6; V3 (ignored)
@@ -2578,78 +1354,34 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugy057g.xn----dcp29674o") C1; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII(".xn--hcb32bni") A4_2 (ignored)
-[PASS] ToASCII("xn--hcb32bni")
-[PASS] ToASCII("ڽ٣֖")
-[PASS] ToASCII("ྔꡋ-．-𖬴") V5; V3 (ignored)
-[PASS] ToASCII("ྔꡋ-.-𖬴") V5; V3 (ignored)
 [FAIL] ToASCII("xn----ukg9938i.xn----4u5m") V5; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("񿒳-⋢‌．标-") C1; P1; V6; V3 (ignored)
-[PASS] ToASCII("񿒳-⋢‌．标-") C1; P1; V6; V3 (ignored)
-[PASS] ToASCII("񿒳-⋢‌.标-") C1; P1; V6; V3 (ignored)
-[PASS] ToASCII("񿒳-⋢‌.标-") C1; P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----9mo67451g.xn----qj7b") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----sgn90kn5663a.xn----qj7b") C1; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-񕉴.۠ᢚ-") P1; V5; V6; V3 (ignored)
 [FAIL] ToASCII("xn----qi38c.xn----jxc827k") V5; V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("。صىืلا。岓᯲󠾃ᡂ") P1; V6; A4_2 (ignored)
 [FAIL] ToASCII(".xn--mgb1a7bt462h.xn--17e10qe61f9r71s") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("ᢌ．-࡚") V3 (ignored)
-[PASS] ToASCII("ᢌ.-࡚") V3 (ignored)
-[PASS] ToASCII("xn--59e.xn----5jd") V3 (ignored)
-[PASS] ToASCII("္-𚮭🞢．ß") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢.ß") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢.SS") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢.ss") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢.Ss") P1; V5; V6
 [FAIL] ToASCII("xn----9tg11172akr8b.ss") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----9tg11172akr8b.xn--zca") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("္-𚮭🞢．SS") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢．ss") P1; V5; V6
-[PASS] ToASCII("္-𚮭🞢．Ss") P1; V5; V6
-[PASS] ToASCII("锣。੍󠘻󠚆") P1; V5; V6
 [FAIL] ToASCII("xn--gc5a.xn--ybc83044ppga") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--8gb2338k.xn--lhb0154f")
-[PASS] ToASCII("ؽ𑈾.ى꤫")
-[PASS] ToASCII("ჁႱ6̘。ßᬃ") P1; V6
-[PASS] ToASCII("ⴡⴑ6̘。ßᬃ")
-[PASS] ToASCII("ჁႱ6̘。SSᬃ") P1; V6
-[PASS] ToASCII("ⴡⴑ6̘。ssᬃ")
-[PASS] ToASCII("Ⴡⴑ6̘。Ssᬃ") P1; V6
 [FAIL] ToASCII("xn--6-8cb306hms1a.xn--ss-2vq") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--6-8cb7433a2ba.xn--ss-2vq")
-[PASS] ToASCII("ⴡⴑ6̘.ssᬃ")
-[PASS] ToASCII("ჁႱ6̘.SSᬃ") P1; V6
-[PASS] ToASCII("Ⴡⴑ6̘.Ssᬃ") P1; V6
 [FAIL] ToASCII("xn--6-8cb555h2b.xn--ss-2vq") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--6-8cb7433a2ba.xn--zca894k")
-[PASS] ToASCII("ⴡⴑ6̘.ßᬃ")
 [FAIL] ToASCII("xn--6-8cb555h2b.xn--zca894k") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠄏𖬴󠲽｡ﾠ") P1; V5; V6
-[PASS] ToASCII("󠄏𖬴󠲽。ᅠ") P1; V5; V6
 [FAIL] ToASCII("xn--619ep9154c.xn--psd") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--619ep9154c.xn--cl7c") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("󠭔.𐋱₂") P1; V6
-[PASS] ToASCII("󠭔.𐋱2") P1; V6
 [FAIL] ToASCII("xn--vi56e.xn--2-w91i") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("⶿.ß‍") C2; P1; V6
-[PASS] ToASCII("⶿.SS‍") C2; P1; V6
-[PASS] ToASCII("⶿.ss‍") C2; P1; V6
-[PASS] ToASCII("⶿.Ss‍") C2; P1; V6
 [FAIL] ToASCII("xn--7pj.ss") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--7pj.xn--ss-n1t") C2; V6
@@ -2658,33 +1390,18 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("梉。‌") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--7zv.")
-[PASS] ToASCII("梉.")
 [FAIL] ToASCII("xn--7zv.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--iwb.ss")
-[PASS] ToASCII("ࡓ.ss")
-[PASS] ToASCII("ࡓ.SS")
-[PASS] ToASCII("䃚蟥-。-񽒘⒈") P1; V6; V3 (ignored)
-[PASS] ToASCII("䃚蟥-。-񽒘1.") P1; V6; V3 (ignored)
 [FAIL] ToASCII("xn----n50a258u.xn---1-up07j.") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn----n50a258u.xn----ecp33805f") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("-｡⺐") V3 (ignored)
-[PASS] ToASCII("-。⺐") V3 (ignored)
-[PASS] ToASCII("-.xn--6vj") V3 (ignored)
-[PASS] ToASCII("󠰩𑲬．ٜ") P1; V5; V6
-[PASS] ToASCII("󠰩𑲬.ٜ") P1; V5; V6
 [FAIL] ToASCII("xn--sn3d59267c.xn--4hb") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𐍺.񚇃‌") C1; P1; V5; V6
 [FAIL] ToASCII("xn--ie8c.xn--2g51a") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--ie8c.xn--0ug03366c") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("‍‍襔。Ⴜ5ꡮ񵝏") C2; P1; V6
-[PASS] ToASCII("‍‍襔。ⴜ5ꡮ񵝏") C2; P1; V6
 [FAIL] ToASCII("xn--2u2a.xn--5-uws5848bpf44e") V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1uga7691f.xn--5-uws5848bpf44e") C2; V6
@@ -2693,48 +1410,12 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1uga7691f.xn--5-r1g7167ipfw8d") C2; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--ix9c26l.xn--q0s")
-[PASS] ToASCII("𐫜𑌼.婀")
-[PASS] ToASCII("𝟖ß．󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ß.󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ß.󠄐-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8SS.󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.󠄐-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.xn---?-gfk") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.xn---?-261a") P1; V6; V3 (ignored)
-[PASS] ToASCII("xn--8-qfa.xn---?-261a") P1; V6; V3 (ignored)
-[PASS] ToASCII("xn--8-qfa.xn---?-gfk") P1; V6; V3 (ignored)
-[PASS] ToASCII("𝟖ß．󠄐-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("𝟖SS．󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("𝟖ss．󠄐-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("𝟖ss．󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8ss.-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8SS.-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("xn--8-qfa.-?ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("XN--8-QFA.-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("Xn--8-Qfa.-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("xn--8-qfa.-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("𝟖Ss．󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("8Ss.󠄐-?Ⴏ") P1; V6; V3 (ignored)
-[PASS] ToASCII("ꦹ‍큷𻶡｡₂") C2; P1; V5; V6
-[PASS] ToASCII("ꦹ‍큷𻶡｡₂") C2; P1; V5; V6
-[PASS] ToASCII("𐫀．ډ𑌀")
-[PASS] ToASCII("𐫀.ډ𑌀")
-[PASS] ToASCII("xn--pw9c.xn--fjb8658k")
 [FAIL] ToASCII("𐋷。‍") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("xn--r97c.")
-[PASS] ToASCII("𐋷.")
 [FAIL] ToASCII("xn--r97c.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑰳𑈯。⥪") V5
 [FAIL] ToASCII("xn--2g1d14o.xn--jti") V5
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑆀䁴񤧣．Ⴕ𝟜‌͈") C1; P1; V5; V6
-[PASS] ToASCII("𑆀䁴񤧣.Ⴕ4‌͈") C1; P1; V5; V6
-[PASS] ToASCII("𑆀䁴񤧣.ⴕ4‌͈") C1; P1; V5; V6
 [FAIL] ToASCII("xn--1mnx647cg3x1b.xn--4-zfb5123a") V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1mnx647cg3x1b.xn--4-zfb502tlsl") C1; V5; V6
@@ -2743,6 +1424,5 @@ Found 2032 tests; 1320 PASS, 712 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
 [FAIL] ToASCII("xn--1mnx647cg3x1b.xn--4-zfb324h32o") C1; V5; V6
   assert_throws_js: function "() => new URL(`https://${encodedInput}/x`)" did not throw
-[PASS] ToASCII("𑆀䁴񤧣．ⴕ𝟜‌͈") C1; P1; V5; V6
 Harness: the test ran to completion.
 

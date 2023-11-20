@@ -1,14 +1,6 @@
 This is a testharness.js-based test.
-[PASS] It triggers beforeinput and input events on text typing
-[PASS] It triggers beforeinput and input events on typing RETURN
-[PASS] It triggers beforeinput and input events on typing Shift+RETURN
-[PASS] It triggers beforeinput and input events on typing DELETE with pre-existing content
 [FAIL] It triggers beforeinput and input events on typing DELETE with no pre-existing content
   assert_equals: expected 2 but got 1
-[PASS] It triggers beforeinput and input events on typing BACK_SPACE with pre-existing content
 [FAIL] It triggers beforeinput and input events on typing BACK_SPACE with no pre-existing content
   assert_equals: expected 2 but got 1
-[PASS] It triggers beforeinput and input events on typing Undo and Redo key combinations with an existing history
-[PASS] It triggers beforeinput and input events on typing Undo and Redo key combinations without an existing history
-[PASS] InputEvents have correct data/order when typing on textarea and contenteditable
 Harness: the test ran to completion.

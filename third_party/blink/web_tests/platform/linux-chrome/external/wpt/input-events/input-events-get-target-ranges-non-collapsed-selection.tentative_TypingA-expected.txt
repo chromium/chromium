@@ -1,15 +1,9 @@
 This is a testharness.js-based test.
-Found 70 tests; 40 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] TypingA at "<p>{abc}</p>"
-[PASS] TypingA at "<p>{abc}<br></p>"
-[PASS] TypingA at "<p>{<img>}</p>"
-[PASS] TypingA at "<p>{<img>}<br></p>"
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TypingA at "<p>{ abc }</p>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \" a \", 0) - (#text \" a \", 5)" but got "(#text \" a \", 1) - (#text \" a \", 4)"
 [FAIL] TypingA at "<p>abc   [</p><p>]   def</p>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 3)" but got "(#text \"abcadef\", 6) - (<p>, 0)"
-[PASS] TypingA at "<p>ab[c</p><p>d]ef</p>"
-[PASS] TypingA at "<p>ab[c </p><p> d]ef</p>"
 [FAIL] TypingA at "<p>ab[c </p><p>] def</p>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abadef\", 2) - (#text \"\", 1)" but got "(#text \"abadef\", 2) - (<p>, 0)"
 [FAIL] TypingA at "<p>abc [</p><p>] def</p>"
@@ -18,26 +12,22 @@ Found 70 tests; 40 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 1)" but got "(#text \"abcadef\", 4) - (<p>, 0)"
 [FAIL] TypingA at "<p>abc[<img>]def</p>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abca\", 3) - (#text \"def\", 0)" but got "(<p>, 1) - (<p>, 2)"
-[PASS] TypingA at "<div>abc[<hr>]def</div>"
 [FAIL] TypingA at "<div>abc [<hr>]def</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abca\", 3) - (#text \"def\", 0)" but got "(#text \"abca\", 4) - (#text \"def\", 0)"
 [FAIL] TypingA at "<div>abc [<hr>] def</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abca\", 3) - (#text \"def\", 1)" but got "(#text \"abca\", 4) - (#text \"def\", 0)"
 [FAIL] TypingA at "<div>abc {<hr>} def</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abca\", 3) - (#text \"def\", 1)" but got "(#text \"abca\", 4) - (#text \"def\", 0)"
-[PASS] TypingA at "<p>abc{<br>}def</p>"
 [FAIL] TypingA at "<div>abc[<p>]def<br>ghi</p></div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 0)" but got "(#text \"abcadef\", 3) - (<p>, 0)"
 [FAIL] TypingA at "<div>abc   [<p>]   def<br>ghi</p></div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 3)" but got "(#text \"abcadef\", 6) - (<p>, 0)"
-[PASS] TypingA at "<div><p>abc[</p>]def</div>"
 [FAIL] TypingA at "<div><p>abc   [</p>]   def</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 3)" but got "(#text \"abcadef\", 6) - (#text \"\", 0)"
 [FAIL] TypingA at "<div>abc[<ul><li>]def</li></ul>ghi</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 0)" but got "(#text \"abcadef\", 3) - (<li>, 0)"
 [FAIL] TypingA at "<div>abc  [<ul><li>] def </li></ul>  ghi</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcadef\", 3) - (#text \"\", 1)" but got "(#text \"abcadef\", 5) - (<li>, 0)"
-[PASS] TypingA at "<div>abc<ul><li>def[</li></ul>]ghi</div>"
 [FAIL] TypingA at "<div>abc <ul><li>  def  [</li></ul>] ghi</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"  defaghi\", 5) - (#text \"\", 1)" but got "(#text \"  defaghi\", 7) - (#text \"\", 0)"
 [FAIL] TypingA at "<div>abc[<ul><li>]def</li><li>ghi</li></ul>jkl</div>"
@@ -46,33 +36,8 @@ Found 70 tests; 40 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"abcaghi\", 3) - (#text \"\", 0)" but got "(#text \"abcaghi\", 3) - (<li>, 0)"
 [FAIL] TypingA at "<div>abc<ul><li>def[</li><li>]ghi</li></ul>jkl</div>"
   assert_equals: gBeforeinput[0].getTargetRanges()[0] should return expected range (inputType is "insertText") expected "(#text \"defaghi\", 3) - (#text \"\", 0)" but got "(#text \"defaghi\", 3) - (<li>, 0)"
-[PASS] TypingA at "<div>abc<ul><li>def</li><li>ghi[</li></ul>]jkl</div>"
-[PASS] TypingA at "<div>abc<ul><li>def[</li><li>ghi</li></ul>]jkl</div>"
-[PASS] TypingA at "<p>abc[</p><p>}<br></p>"
-[PASS] TypingA at "<p>abc[<span contenteditable="false">def</span>]ghi</p>"
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>d]ef</td></tr></table>"
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>def</td></tr><tr><td>ghi</td><td>j]kl</td></tr></table>"
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>def</td></tr></table><table><tr><td>ghi</td><td>j]kl</td></tr></table>"
-[PASS] TypingA at "<p>{abc}</p>" - comparing innerHTML
-[PASS] TypingA at "<p>{abc}<br></p>" - comparing innerHTML
-[PASS] TypingA at "<p>{<img>}</p>" - comparing innerHTML
-[PASS] TypingA at "<p>{<img>}<br></p>" - comparing innerHTML
 [FAIL] TypingA at "<p>{ abc }</p>" - comparing innerHTML
   assert_equals: expected "<p>a</p>" but got "<p> a </p>"
-[PASS] TypingA at "<p>abc   [</p><p>]   def</p>" - comparing innerHTML
-[PASS] TypingA at "<p>ab[c</p><p>d]ef</p>" - comparing innerHTML
-[PASS] TypingA at "<p>ab[c </p><p> d]ef</p>" - comparing innerHTML
-[PASS] TypingA at "<p>ab[c </p><p>] def</p>" - comparing innerHTML
-[PASS] TypingA at "<p>abc [</p><p>] def</p>" - comparing innerHTML
-[PASS] TypingA at "<p>abc [</p><p> ]def</p>" - comparing innerHTML
-[PASS] TypingA at "<p>abc[<img>]def</p>" - comparing innerHTML
-[PASS] TypingA at "<div>abc[<hr>]def</div>" - comparing innerHTML
-[PASS] TypingA at "<div>abc [<hr>]def</div>" - comparing innerHTML
-[PASS] TypingA at "<div>abc [<hr>] def</div>" - comparing innerHTML
-[PASS] TypingA at "<div>abc {<hr>} def</div>" - comparing innerHTML
-[PASS] TypingA at "<p>abc{<br>}def</p>" - comparing innerHTML
-[PASS] TypingA at "<div>abc[<p>]def<br>ghi</p></div>" - comparing innerHTML
-[PASS] TypingA at "<div>abc   [<p>]   def<br>ghi</p></div>" - comparing innerHTML
 [FAIL] TypingA at "<div><p>abc[</p>]def</div>" - comparing innerHTML
   assert_in_array: value "<p>abcadef</p>" not in array ["<div><p>abcadef</p></div>", "<div><p>abcadef<br></p></div>"]
 [FAIL] TypingA at "<div><p>abc   [</p>]   def</div>" - comparing innerHTML
@@ -95,9 +60,4 @@ Found 70 tests; 40 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "<div>abc<ul><li>def</li><li>ghiajkl</li></ul></div>" but got "abc<ul><li>def</li><li>ghiajkl</li></ul>"
 [FAIL] TypingA at "<div>abc<ul><li>def[</li><li>ghi</li></ul>]jkl</div>" - comparing innerHTML
   assert_equals: expected "<div>abc<ul><li>defajkl</li></ul></div>" but got "abc<ul><li>defajkl</li></ul>"
-[PASS] TypingA at "<p>abc[</p><p>}<br></p>" - comparing innerHTML
-[PASS] TypingA at "<p>abc[<span contenteditable="false">def</span>]ghi</p>" - comparing innerHTML
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>d]ef</td></tr></table>" - comparing innerHTML
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>def</td></tr><tr><td>ghi</td><td>j]kl</td></tr></table>" - comparing innerHTML
-[PASS] TypingA at "<table><tr><td>ab[c</td><td>def</td></tr></table><table><tr><td>ghi</td><td>j]kl</td></tr></table>" - comparing innerHTML
 Harness: the test ran to completion.

@@ -1,18 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Filling effect values reflect changes to font-size on element
-[PASS] Filling effect values reflect changes to font-size on parent element
-[PASS] Filling effect values reflect changes to variables on element
-[PASS] Filling effect values reflect changes to variables on parent element
-[PASS] Filling effect values reflect changes to the the animation's keyframes
-[PASS] Filling effect values reflect changes to the the animation's composite mode
 [FAIL] Filling effect values reflect changes to the the animation's iteration composite mode
   assert_equals: Effect value after updating the iteration composite mode expected "200px" but got "100px"
-[PASS] Filling effect values reflect changes to the base value when using additive animation
-[PASS] Filling effect values reflect changes to the base value when using additive animation on a single keyframe
-[PASS] Filling effect values reflect changes to the base value when using the fill value is an implicit keyframe
-[PASS] Filling effect values reflect changes to the base value via a parent element
-[PASS] Filling effect values reflect changes to underlying animations
-[PASS] Filling effect values reflect changes to underlying animations via a a parent element
-[PASS] Filling effect values reflect changes to underlying animations made by directly changing the keyframes
 Harness: the test ran to completion.
 

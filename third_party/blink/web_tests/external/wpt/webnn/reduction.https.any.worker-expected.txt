@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 298 tests; 11 PASS, 287 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 287 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceL1 float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL1) is not supported.
 [FAIL] reduceL1 float32 1D tensor all negative default options / sync
@@ -150,21 +150,10 @@ Found 298 tests; 11 PASS, 287 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMax) is not supported.
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMax) is not supported.
-[PASS] reduceMean float32 1D tensor all positive default options / sync
-[PASS] reduceMean float32 1D tensor all negative default options / sync
-[PASS] reduceMean float32 1D tensor all positive integers default options / sync
-[PASS] reduceMean float32 1D tensor all negative integers default options / sync
-[PASS] reduceMean float32 2D tensor default options / sync
-[PASS] reduceMean float32 3D tensor default options / sync
-[PASS] reduceMean float32 4D tensor default options / sync
-[PASS] reduceMean float32 5D tensor default options / sync
-[PASS] reduceMean float32 3D tensor options.axes / sync
 [FAIL] reduceMean float32 4D tensor options.axes / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter.
-[PASS] reduceMean float32 3D tensor options.keepDimensions=false / sync
 [FAIL] reduceMean float32 3D tensor options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': XNNPACK can't support keep dimensions.
-[PASS] reduceMean float32 4D tensor options.keepDimensions=false / sync
 [FAIL] reduceMean float32 4D tensor options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': XNNPACK can't support keep dimensions.
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=false / sync

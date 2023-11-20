@@ -1,11 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] Property alignment-baseline has initial value baseline
   assert_equals: expected "baseline" but got "auto"
-[PASS] Property alignment-baseline does not inherit
-[PASS] Property baseline-shift has initial value 0px
-[PASS] Property baseline-shift does not inherit
-[PASS] Property dominant-baseline has initial value auto
-[PASS] Property dominant-baseline inherits
 [FAIL] Property initial-letters has initial value normal
   assert_true: initial-letters doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property initial-letters does not inherit
@@ -22,9 +17,5 @@ This is a testharness.js-based test.
   assert_true: initial-sizing doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property initial-sizing does not inherit
   assert_true: expected true got false
-[PASS] Property line-height has initial value normal
-[PASS] Property line-height inherits
-[PASS] Property vertical-align has initial value baseline
-[PASS] Property vertical-align does not inherit
 Harness: the test ran to completion.
 

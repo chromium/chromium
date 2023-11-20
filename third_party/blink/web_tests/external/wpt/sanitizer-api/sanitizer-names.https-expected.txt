@@ -1,9 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Element names in config item: allowElements
-[PASS] Element names in config item: dropElements
-[PASS] Element names in config item: blockElements
-[PASS] Attribute names in config item: allowAttributes
-[PASS] Attribute names in config item: dropAttributes
 [FAIL] Namespaced elements #0: allowElements: ["p"]
   assert_equals: expected "<p>Hello</p>" but got ""
 [FAIL] Namespaced elements #1: allowElements: ["svg"]

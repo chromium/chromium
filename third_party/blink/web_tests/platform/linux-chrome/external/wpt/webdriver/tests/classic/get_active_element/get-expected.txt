@@ -1,11 +1,4 @@
 This is a wdspec test.
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   assert 200 == 404
-[PASS] test_no_such_element
-[PASS] test_success_document
-[PASS] test_success_input
-[PASS] test_success_input_non_interactable
-[PASS] test_success_explicit_focus
-[PASS] test_success_iframe_content
 Harness: the test ran to completion.

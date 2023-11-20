@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 70 tests; 4 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] averagePool2d float32 4D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor all negative default options / sync
@@ -24,7 +24,6 @@ Found 70 tests; 4 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor options.layout=nchw / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[PASS] averagePool2d float32 4D tensor options.layout=nhwc / sync
 [FAIL] averagePool2d float32 4D tensor options.roundingType=floor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / sync
@@ -33,7 +32,6 @@ Found 70 tests; 4 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[PASS] averagePool2d float32 4D tensor options.dilations with options.strides / sync
 [FAIL] maxPool2d float32 4D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] maxPool2d float32 4D tensor options.windowDimensions / sync
@@ -56,7 +54,6 @@ Found 70 tests; 4 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] maxPool2d float32 4D tensor options.layout=nchw / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[PASS] maxPool2d float32 4D tensor options.layout=nhwc / sync
 [FAIL] maxPool2d float32 4D tensor options.roundingType=floor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil / sync
@@ -65,7 +62,6 @@ Found 70 tests; 4 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[PASS] maxPool2d float32 4D tensor options.dilations with options.strides / sync
 [FAIL] averagePool2d float32 4D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all negative default options / async

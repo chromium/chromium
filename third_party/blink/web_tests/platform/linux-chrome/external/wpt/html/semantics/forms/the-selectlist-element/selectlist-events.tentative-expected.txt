@@ -1,11 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Button controller code should not run if the click event is preventDefaulted.
-[PASS] Listbox controller code should not run if the click event is preventDefaulted.
 [FAIL] <selectlist> should fire input and change events when new option is selected.
   assert_false: expected false got true
 [FAIL] <selectlist> should fire input and change events even when new selected option has the same value as the old.
   assert_array_equals: input event should have fired after ArrowDown. lengths differ, expected array ["input"] length 1, got [] length 0
-[PASS] <selectlist> should fire input and change events when option in listbox is clicked
 [FAIL] Check that <Space> opens <selectlist>.
   assert_false: <Enter> should close selectlist expected false got true
 [FAIL] Check that <Space> opens <selectlist> when <selectlist> specifies tabindex

@@ -1,14 +1,4 @@
 This is a testharness.js-based test.
-[PASS] pad float32 1D tensor default options / sync
-[PASS] pad float32 2D tensor default options / sync
-[PASS] pad float32 3D tensor default options / sync
-[PASS] pad float32 4D tensor default options / sync
-[PASS] pad float32 5D tensor default options / sync
-[PASS] pad float32 2D tensor explicit options.mode='constant' / sync
-[PASS] pad float32 2D tensor options.value default constant mode / sync
-[PASS] pad float32 4D tensor options.mode='edge' / sync
-[PASS] pad float32 4D tensor options.mode='reflection' / sync
-[PASS] pad float32 4D tensor options.mode='symmetric' / sync
 [FAIL] pad float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] pad float32 2D tensor default options / async

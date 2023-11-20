@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 tests; 0 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] 3041  HIRAGANA LETTER SMALL A may NOT appear at line start if strict
   assert_approx_equals: expected 99 +/- 1 but got 69
 [FAIL] 3043  HIRAGANA LETTER SMALL I may NOT appear at line start if strict

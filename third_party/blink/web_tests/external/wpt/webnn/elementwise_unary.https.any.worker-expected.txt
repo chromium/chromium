@@ -1,15 +1,5 @@
 This is a testharness.js-based test.
-Found 90 tests; 20 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] abs float32 1D tensor / sync
-[PASS] abs float32 2D tensor / sync
-[PASS] abs float32 3D tensor / sync
-[PASS] abs float32 4D tensor / sync
-[PASS] abs float32 5D tensor / sync
-[PASS] ceil float32 1D tensor / sync
-[PASS] ceil float32 2D tensor / sync
-[PASS] ceil float32 3D tensor / sync
-[PASS] ceil float32 4D tensor / sync
-[PASS] ceil float32 5D tensor / sync
+Found 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] cos float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
 [FAIL] cos float32 2D tensor / sync
@@ -30,11 +20,6 @@ Found 90 tests; 20 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
 [FAIL] exp float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
-[PASS] floor float32 1D tensor / sync
-[PASS] floor float32 2D tensor / sync
-[PASS] floor float32 3D tensor / sync
-[PASS] floor float32 4D tensor / sync
-[PASS] floor float32 5D tensor / sync
 [FAIL] log float32 positive 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
 [FAIL] log float32 positive 2D tensor / sync
@@ -45,11 +30,6 @@ Found 90 tests; 20 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
 [FAIL] log float32 positive 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
-[PASS] neg float32 1D tensor / sync
-[PASS] neg float32 2D tensor / sync
-[PASS] neg float32 3D tensor / sync
-[PASS] neg float32 4D tensor / sync
-[PASS] neg float32 5D tensor / sync
 [FAIL] sin float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
 [FAIL] sin float32 2D tensor / sync

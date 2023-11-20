@@ -1,5 +1,3 @@
 This is a wdspec test.
-[PASS] test_release_char_sequence_sends_keyup_events_in_reverse
-[PASS] test_release_mouse_sequence_resets_dblclick_state[with release actions]
 [FAIL] test_release_mouse_sequence_resets_dblclick_state[without release actions]
 Harness: the test ran to completion.

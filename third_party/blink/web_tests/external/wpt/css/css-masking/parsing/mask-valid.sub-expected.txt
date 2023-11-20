@@ -1,32 +1,5 @@
 This is a testharness.js-based test.
-Found 55 tests; 45 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] e.style['mask'] = "none" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) luminance" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\")" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) 1px 2px" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\") 1px 2px / contain" should set the property value
-[PASS] e.style['mask'] = "repeat-y" should set the property value
-[PASS] e.style['mask'] = "border-box" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) padding-box" should set the property value
-[PASS] e.style['mask'] = "content-box" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\") fill-box" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) stroke-box" should set the property value
-[PASS] e.style['mask'] = "view-box" should set the property value
-[PASS] e.style['mask'] = "no-clip" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\") add" should set the property value
-[PASS] e.style['mask'] = "subtract" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\") intersect" should set the property value
-[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) exclude" should set the property value
-[PASS] e.style['mask'] = "alpha" should set the property value
-[PASS] e.style['mask'] = "url(\\"https://web-platform.test/\\") alpha" should set the property value
-[PASS] e.style['mask'] = "border-box border-box" should set the property value
-[PASS] e.style['mask'] = "content-box content-box" should set the property value
-[PASS] e.style['mask'] = "border-box content-box" should set the property value
-[PASS] e.style['mask'] = "border-box no-clip" should set the property value
-[PASS] e.style['mask'] = "intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
-[PASS] e.style['mask'] = "intersect no-clip space round 1px 2px / contain view-box, stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
-[PASS] e.style['mask'] = "none alpha" should set the property value
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['mask'] = "none" should set mask-border-outset
   assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-border-repeat
@@ -37,15 +10,6 @@ Found 55 tests; 45 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-border-source should be canonical expected (string) "none" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
-[PASS] e.style['mask'] = "none" should set mask-clip
-[PASS] e.style['mask'] = "none" should set mask-composite
-[PASS] e.style['mask'] = "none" should set mask-image
-[PASS] e.style['mask'] = "none" should set mask-mode
-[PASS] e.style['mask'] = "none" should set mask-origin
-[PASS] e.style['mask'] = "none" should set mask-position
-[PASS] e.style['mask'] = "none" should set mask-repeat
-[PASS] e.style['mask'] = "none" should set mask-size
-[PASS] e.style['mask'] = "none" should not set unrelated longhands
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-outset
   assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-repeat
@@ -56,14 +20,5 @@ Found 55 tests; 45 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-border-source should be canonical expected (string) "none" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-clip
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-composite
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-image
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-mode
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-repeat
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size
-[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should not set unrelated longhands
 Harness: the test ran to completion.
 

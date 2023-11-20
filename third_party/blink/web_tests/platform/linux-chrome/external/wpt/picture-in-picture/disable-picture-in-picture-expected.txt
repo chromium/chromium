@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Test disablePictureInPicture IDL attribute
-[PASS] Request Picture-in-Picture rejects if disablePictureInPicture is true
 [FAIL] Request Picture-in-Picture rejects if disablePictureInPicture becomes true before promise resolves.
   promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: Picture-in-Picture is not available." that is not a DOMException InvalidStateError: property "code" is equal to 9, expected 11
 [FAIL] pictureInPictureElement is unset if disablePictureInPicture becomes true

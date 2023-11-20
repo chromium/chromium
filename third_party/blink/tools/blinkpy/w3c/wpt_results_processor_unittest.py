@@ -479,7 +479,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'variant_foo=baz-actual.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                [PASS] passing subtest (include for now)
                 [FAIL] subtest
                   actual-message
                 Harness: the test ran to completion.
@@ -582,7 +581,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'variant_foo=baz-expected.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                [PASS] passing subtest
                 Harness: the test ran to completion.
                 """))
 

@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property font-style value 'normal'
-[PASS] Property font-style value 'italic'
 [FAIL] Property font-style value 'oblique'
   assert_equals: expected "oblique" but got "italic"
 Harness: the test ran to completion.

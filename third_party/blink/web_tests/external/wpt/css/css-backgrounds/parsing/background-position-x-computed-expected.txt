@@ -1,24 +1,14 @@
 This is a testharness.js-based test.
-[PASS] Property background-position-x value 'center'
-[PASS] Property background-position-x value 'left'
-[PASS] Property background-position-x value 'right'
 [FAIL] Property background-position-x value 'x-start'
   assert_true: 'x-start' is a supported value for background-position-x. expected true got false
 [FAIL] Property background-position-x value 'x-end'
   assert_true: 'x-end' is a supported value for background-position-x. expected true got false
-[PASS] Property background-position-x value '-20%'
-[PASS] Property background-position-x value '10px'
-[PASS] Property background-position-x value '0.5em'
-[PASS] Property background-position-x value 'calc(10px - 0.5em)'
 [FAIL] Property background-position-x value 'left -20%'
   assert_true: 'left -20%' is a supported value for background-position-x. expected true got false
 [FAIL] Property background-position-x value 'right -10px'
   assert_true: 'right -10px' is a supported value for background-position-x. expected true got false
-[PASS] Property background-position-x value '-20%, 10px'
-[PASS] Property background-position-x value 'center, left, right'
 [FAIL] Property background-position-x value '0.5em, x-start, x-end'
   assert_true: '0.5em, x-start, x-end' is a supported value for background-position-x. expected true got false
-[PASS] Property background-position-x value 'calc(10px - 0.5em), -20%, 10px'
 [FAIL] Property background-position-x value 'calc(10px - 0.5em), left -20%, right 10px'
   assert_true: 'calc(10px - 0.5em), left -20%, right 10px' is a supported value for background-position-x. expected true got false
 Harness: the test ran to completion.

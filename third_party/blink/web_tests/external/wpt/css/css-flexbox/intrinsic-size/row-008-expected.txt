@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] .min-width-flexbox 1
 [FAIL] .min-width-flexbox 2
   assert_equals: \n<div class="min-width-flexbox" data-expected-width="310"><div data-expected-width="200" style="flex: 0 1 200px; width: 500px;"><div></div></div><div data-expected-width="101" style="flex: 0.1 0 100px; width: 200px;"><div></div></div></div>\nwidth expected 310 but got 400
 [FAIL] .min-width-flexbox 3
@@ -12,7 +11,6 @@ This is a testharness.js-based test.
   assert_equals: \n<div class="min-width-flexbox" data-expected-width="637.5"><div data-expected-width="368.75" style="flex: 0.75 1 200px; width: 500px;"><div></div></div><div data-expected-width="268.75" style="flex: 0.75 0 100px; width: 200px;"><div></div></div></div>\nwidth expected 637.5 but got 700
 [FAIL] .min-width-flexbox 7
   assert_equals: \n<div class="min-width-flexbox" data-expected-width="900"><div data-expected-width="500" style="flex: 1 1 200px; width: 500px;"><div></div></div><div data-expected-width="400" style="flex: 1 0 100px; width: 200px;"><div></div></div></div>\nwidth expected 900 but got 700
-[PASS] .min-width-flexbox 8
 [FAIL] .min-width-flexbox 9
   assert_equals: \n<div class="min-width-flexbox" data-expected-width="405"><div data-expected-width="205" style="flex: 0.1 1 200px; width: 500px;"><div></div></div><div data-expected-width="200" style="flex: 2 0 100px; width: 200px;"><div></div></div></div>\nwidth expected 405 but got 700
 [FAIL] .min-width-flexbox 10

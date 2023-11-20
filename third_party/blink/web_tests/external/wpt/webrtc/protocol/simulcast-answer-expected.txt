@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] createAnswer() with multiple send encodings should create simulcast answer
 [FAIL] Using the ~rid SDP syntax in a remote offer does not control the local encodings active flag
   assert_not_equals: got disallowed value false
 [FAIL] Disabling encodings locally does not change the SDP

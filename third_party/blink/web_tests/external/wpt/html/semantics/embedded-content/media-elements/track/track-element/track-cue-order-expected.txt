@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Text track cue order, decreasing start times.
-[PASS] Text track cue order, equal start times varying end times.
-[PASS] Text track cue order, equal start and end times.
-[PASS] Text track cue order, after re-insertion.
 [FAIL] Text track cue order, equal start and end times with startTime mutations.
   assert_equals: "1" moved first expected "123" but got "231"
-[PASS] Text track cue order, equal start and end times with endTime mutations.
 Harness: the test ran to completion.
 

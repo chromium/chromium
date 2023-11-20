@@ -1,45 +1,17 @@
 This is a testharness.js-based test.
-[PASS] PointerEvent: Constructor test
 [FAIL] getCoalescedEvents in event
   assert_equals: expected false but got true
-[PASS] getPredictedEvents().length
-[PASS] event.target
-[PASS] event.currentTarget
-[PASS] event.eventPhase
-[PASS] event.clientX
-[PASS] event.pointerType
-[PASS] getPredictedEvents()[0].clientX
-[PASS] getPredictedEvents()[1].clientX
-[PASS] getPredictedEvents()[0].pointerId
-[PASS] getPredictedEvents()[0].pointerType
-[PASS] getPredictedEvents()[0].isPrimary
-[PASS] getPredictedEvents()[0].getPredictedEvents().length
 [FAIL] getPredictedEvents()[0].target
   assert_equals: expected null but got Element node <div id="target0"></div>
-[PASS] getPredictedEvents()[0].currentTarget
-[PASS] getPredictedEvents()[0].eventPhase
-[PASS] getPredictedEvents()[0].cancelable
-[PASS] getPredictedEvents()[0].bubbles
 [FAIL] getPredictedEvents()[0].offsetX
   assert_equals: expected 320 but got 312
 [FAIL] getPredictedEvents()[0].offsetY
   assert_equals: expected 0 but got -121.140625
-[PASS] getPredictedEvents()[1].pointerId
-[PASS] getPredictedEvents()[1].pointerType
-[PASS] getPredictedEvents()[1].isPrimary
-[PASS] getPredictedEvents()[1].getPredictedEvents().length
 [FAIL] getPredictedEvents()[1].target
   assert_equals: expected null but got Element node <div id="target0"></div>
-[PASS] getPredictedEvents()[1].currentTarget
-[PASS] getPredictedEvents()[1].eventPhase
-[PASS] getPredictedEvents()[1].cancelable
-[PASS] getPredictedEvents()[1].bubbles
 [FAIL] getPredictedEvents()[1].offsetX
   assert_equals: expected 330 but got 322
 [FAIL] getPredictedEvents()[1].offsetY
   assert_equals: expected 0 but got -121.140625
-[PASS] default event.pointerType
-[PASS] default getPredictedEvents().length
-[PASS] type event.pointerType
 Harness: the test ran to completion.
 

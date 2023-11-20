@@ -37,7 +37,6 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout iohw is not supported.
 [FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout hwoi is not supported.
-[PASS] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / sync
 [FAIL] convTranspose2d float32 4D input and filter tensors options.bias / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 [FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / sync

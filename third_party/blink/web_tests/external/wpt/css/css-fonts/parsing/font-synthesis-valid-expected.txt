@@ -1,16 +1,6 @@
 This is a testharness.js-based test.
-[PASS] e.style['font-synthesis'] = "none" should set the property value
-[PASS] e.style['font-synthesis'] = "weight" should set the property value
-[PASS] e.style['font-synthesis'] = "style" should set the property value
-[PASS] e.style['font-synthesis'] = "small-caps" should set the property value
 [FAIL] e.style['font-synthesis'] = "position" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['font-synthesis'] = "style weight" should set the property value
-[PASS] e.style['font-synthesis'] = "small-caps weight" should set the property value
-[PASS] e.style['font-synthesis'] = "small-caps style" should set the property value
-[PASS] e.style['font-synthesis'] = "style weight small-caps" should set the property value
-[PASS] e.style['font-synthesis'] = "style small-caps weight " should set the property value
-[PASS] e.style['font-synthesis'] = "small-caps style weight " should set the property value
 [FAIL] e.style['font-synthesis'] = "position style" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['font-synthesis'] = "position weight style" should set the property value

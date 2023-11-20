@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Setting sinkId to the empty string at construction should succeed.
-[PASS] Setting sinkId with a valid device identifier at construction should succeed.
-[PASS] Setting sinkId with an AudioSinkOptions at construction should succeed.
 [FAIL] Invalid sinkId arguments should throw an appropriate exception.
   assert_throws_dom: An invalid device identifier should throw a NotFoundError exception. function "() => {\n      const audioContext = new AudioContext({sinkId: 'some_random_device_id'});\n      audioContext.close();\n    }" did not throw
 Harness: the test ran to completion.

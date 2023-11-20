@@ -1,39 +1,5 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] LayoutShift interface: existence and properties of interface object
-[PASS] LayoutShift interface object length
-[PASS] LayoutShift interface object name
-[PASS] LayoutShift interface: existence and properties of interface prototype object
-[PASS] LayoutShift interface: existence and properties of interface prototype object's "constructor" property
-[PASS] LayoutShift interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] LayoutShift interface: attribute value
-[PASS] LayoutShift interface: attribute hadRecentInput
-[PASS] LayoutShift interface: attribute lastInputTime
-[PASS] LayoutShift interface: attribute sources
-[PASS] LayoutShift interface: operation toJSON()
-[PASS] LayoutShift must be primary interface of layoutShift
-[PASS] Stringification of layoutShift
-[PASS] LayoutShift interface: layoutShift must inherit property "value" with the proper type
-[PASS] LayoutShift interface: layoutShift must inherit property "hadRecentInput" with the proper type
-[PASS] LayoutShift interface: layoutShift must inherit property "lastInputTime" with the proper type
-[PASS] LayoutShift interface: layoutShift must inherit property "sources" with the proper type
-[PASS] LayoutShift interface: layoutShift must inherit property "toJSON()" with the proper type
 [FAIL] LayoutShift interface: default toJSON operation on layoutShift
   assert_true: property "id" should be present in the output of LayoutShift.prototype.toJSON() expected true got false
-[PASS] LayoutShiftAttribution interface: existence and properties of interface object
-[PASS] LayoutShiftAttribution interface object length
-[PASS] LayoutShiftAttribution interface object name
-[PASS] LayoutShiftAttribution interface: existence and properties of interface prototype object
-[PASS] LayoutShiftAttribution interface: existence and properties of interface prototype object's "constructor" property
-[PASS] LayoutShiftAttribution interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] LayoutShiftAttribution interface: attribute node
-[PASS] LayoutShiftAttribution interface: attribute previousRect
-[PASS] LayoutShiftAttribution interface: attribute currentRect
-[PASS] LayoutShiftAttribution must be primary interface of layoutShiftAttribution
-[PASS] Stringification of layoutShiftAttribution
-[PASS] LayoutShiftAttribution interface: layoutShiftAttribution must inherit property "node" with the proper type
-[PASS] LayoutShiftAttribution interface: layoutShiftAttribution must inherit property "previousRect" with the proper type
-[PASS] LayoutShiftAttribution interface: layoutShiftAttribution must inherit property "currentRect" with the proper type
 Harness: the test ran to completion.
 

@@ -3,5 +3,4 @@ This is a testharness.js-based test.
   'expose legacy touch event APIs'
 [PRECONDITION_FAILED] Touch events are GlobalEventHandlers' own property
   'expose legacy touch event APIs'
-[PASS] Touch events not in Element.prototype
 Harness: the test ran to completion.

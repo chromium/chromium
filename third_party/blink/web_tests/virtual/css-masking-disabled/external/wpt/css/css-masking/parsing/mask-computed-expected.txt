@@ -1,10 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Property mask value 'none'
 [FAIL] Property mask value 'linear-gradient(to left bottom, red, blue)'
   assert_true: 'linear-gradient(to left bottom, red, blue)' is a supported value for mask. expected true got false
 [FAIL] Property mask value 'linear-gradient(to left bottom, red, blue) luminance'
   assert_true: 'linear-gradient(to left bottom, red, blue) luminance' is a supported value for mask. expected true got false
-[PASS] Property mask value 'url("https://example.com/")'
 [FAIL] Property mask value 'linear-gradient(to left bottom, red, blue) 1px 2px'
   assert_true: 'linear-gradient(to left bottom, red, blue) 1px 2px' is a supported value for mask. expected true got false
 [FAIL] Property mask value 'url("https://example.com/") 1px 2px / contain'

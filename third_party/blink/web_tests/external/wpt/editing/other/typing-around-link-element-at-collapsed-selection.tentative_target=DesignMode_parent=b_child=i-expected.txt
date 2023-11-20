@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Testing inserting content around link element
-[PASS] Inserting "XY" after setting caret position to middle of a link in <b> and containing <i> (Selection.collapse) in <p><b><a href="about:blank"><i>[]abc</i></a></b></p>
-[PASS] Inserting "XY" after setting caret position to middle of a link in <b> and containing <i> (Selection.addRange) in <p><b><a href="about:blank"><i>[]abc</i></a></b></p>
 [FAIL] Inserting "XY" after setting caret position to start of a link in <b> and containing <i> (Selection.collapse) in <p><b><a href="about:blank"><i>ab[]c</i></a></b></p>
   assert_in_array: value "<p><b>XY<a href=\\"about:blank\\"><i>abc</i></a></b></p>" not in array ["<p><b><i>XY<a href=\\"about:blank\\">abc</a></i></b></p>", "<p><b><i>XY<a href=\\"about:blank\\">abc</a>undefined<br></p>"]
 [FAIL] Inserting "XY" after setting caret position to start of a link in <b> and containing <i> (Selection.addRange) in <p><b><a href="about:blank"><i>ab[]c</i></a></b></p>
@@ -10,7 +7,6 @@ This is a testharness.js-based test.
   assert_in_array: value "<p><b><a href=\\"about:blank\\"><i>abc</i></a>XY</b></p>" not in array ["<p><b><i><a href=\\"about:blank\\">abc</a>XY</i></b></p>", "<p><b><i><a href=\\"about:blank\\">abc</a>XYundefined<br></p>"]
 [FAIL] Inserting "XY" after setting caret position to end of a link in <b> and containing <i> (Selection.addRange) in <p><b><a href="about:blank"><i>ab[]c</i></a></b></p>
   assert_in_array: value "<p><b><a href=\\"about:blank\\"><i>abc</i></a>XY</b></p>" not in array ["<p><b><i><a href=\\"about:blank\\">abc</a>XY</i></b></p>", "<p><b><i><a href=\\"about:blank\\">abc</a>XYundefined<br></p>"]
-[PASS] Inserting "XY" after modifying caret position to middle of a link in <b> and containing <i> in <p><b><a href="about:blank"><i>[]abc</i></a></b></p>
 [FAIL] Inserting "XY" after modifying caret position to start of a link in <b> and containing <i> in <p><b><a href="about:blank"><i>ab[]c</i></a></b></p>
   assert_in_array: value "<p><b>XY<a href=\\"about:blank\\"><i>abc</i></a></b></p>" not in array ["<p><b><i>XY<a href=\\"about:blank\\">abc</a></i></b></p>", "<p><b><i>XY<a href=\\"about:blank\\">abc</a></i></b><br></p>"]
 [FAIL] Inserting "XY" after modifying caret position to end of a link in <b> and containing <i> in <p><b><a href="about:blank"><i>ab[]c</i></a></b></p>

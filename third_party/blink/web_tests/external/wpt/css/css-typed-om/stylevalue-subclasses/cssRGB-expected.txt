@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 53 tests; 31 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Constructing a CSSRGB with an angle CSSUnitValue for the color channels throws a SyntaxError.
   assert_throws_dom: function "() => new CSSRGB(color, 0, 0)" threw object "TypeError: Failed to construct 'CSSRGB': Color channel must be interpretable as a number or a percentage." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
 [FAIL] Constructing a CSSRGB with a CSSMathValue that doesn"t match <number> for the color channels throws a SyntaxError.
@@ -44,36 +44,5 @@ Found 53 tests; 31 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "() => result[attr] = color" threw object "TypeError: Failed to set the 'alpha' property on 'CSSRGB': The provided double value is non-finite." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
 [FAIL] Updating the alpha channel to a CSS number throws a SyntaxError.
   assert_throws_dom: function "() => result.alpha = CSS.number(1)" threw object "TypeError: Failed to set the 'alpha' property on 'CSSRGB': Alpha must be interpretable as a percentage." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-[PASS] CSSRGB can be constructed from three numbers and will get an alpha of 100%.
-[PASS] CSSRGB can be constructed from four numbers.
-[PASS] CSSRGB.r can be updated with a number with the resulting value being a percentage.
-[PASS] CSSRGB.r can be updated with a CSS number.
-[PASS] CSSRGB.r can be updated with CSS percent.
-[PASS] CSSRGB.r can be updated with CSS math sum.
-[PASS] CSSRGB.r can be updated with CSS math product.
-[PASS] CSSRGB.r can be updated with CSS math max.
-[PASS] CSSRGB.r can be updated with CSS math min.
-[PASS] CSSRGB.g can be updated with a number with the resulting value being a percentage.
-[PASS] CSSRGB.g can be updated with a CSS number.
-[PASS] CSSRGB.g can be updated with CSS percent.
-[PASS] CSSRGB.g can be updated with CSS math sum.
-[PASS] CSSRGB.g can be updated with CSS math product.
-[PASS] CSSRGB.g can be updated with CSS math max.
-[PASS] CSSRGB.g can be updated with CSS math min.
-[PASS] CSSRGB.b can be updated with a number with the resulting value being a percentage.
-[PASS] CSSRGB.b can be updated with a CSS number.
-[PASS] CSSRGB.b can be updated with CSS percent.
-[PASS] CSSRGB.b can be updated with CSS math sum.
-[PASS] CSSRGB.b can be updated with CSS math product.
-[PASS] CSSRGB.b can be updated with CSS math max.
-[PASS] CSSRGB.b can be updated with CSS math min.
-[PASS] CSSRGB.alpha can be updated with a number with the resulting value being a percentage.
-[PASS] CSSRGB.alpha can be updated with CSS percent.
-[PASS] CSSRGB.alpha can be updated with CSS math sum.
-[PASS] CSSRGB.alpha can be updated with CSS math product.
-[PASS] CSSRGB.alpha can be updated with CSS math max.
-[PASS] CSSRGB.alpha can be updated with CSS math min.
-[PASS] toRGB function evaluates sum, product and max objects.
-[PASS] toRGB() function works as expected and values can be updated.
 Harness: the test ran to completion.
 

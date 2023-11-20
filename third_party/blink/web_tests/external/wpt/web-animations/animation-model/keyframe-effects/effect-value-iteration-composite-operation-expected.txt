@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] iteration composition of discrete type animation (align-content)
 [FAIL] iteration composition of <length> type animation
   assert_equals: Animated margin-left style at 0s of the third iteration expected "20px" but got "0px"
 [FAIL] iteration composition of <percentage> type animation
@@ -24,7 +23,6 @@ This is a testharness.js-based test.
   assert_equals: Animated filter blur style at 0s of the third iteration expected "blur(20px)" but got "blur(0px)"
 [FAIL] iteration composition of filter brightness for different unit animation
   assert_equals: Animated filter brightness style at 0s of the third iteration expected "brightness(2.6)" but got "brightness(1)"
-[PASS] iteration composition of filter brightness animation
 [FAIL] iteration composition of filter drop-shadow animation
   assert_equals: Animated filter drop-shadow style at 0s of the third iteration expected "drop-shadow(rgb(240, 240, 240) 20px 20px 20px)" but got "drop-shadow(rgb(0, 0, 0) 0px 0px 0px)"
 [FAIL] iteration composition of same filter list animation
@@ -33,8 +31,6 @@ This is a testharness.js-based test.
   assert_equals: Animated filter list at 50s of the third iteration expected "contrast(4) brightness(4)" but got "contrast(2) brightness(2)"
 [FAIL] iteration composition of different length filter list animation
   assert_equals: Animated filter list at 0s of the third iteration expected "sepia(1) contrast(3)" but got "sepia(0) contrast(1)"
-[PASS] iteration composition of transform(rotate) animation
-[PASS] iteration composition of transform: [ scale(0), scale(1) ] animation
 [FAIL] iteration composition of transform: [ scale(1), scale(2) ] animation
   assert_approx_equals: expected matrix(3, 0, 0, 3, 0, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform(scale) style at 0s of the third iteration expected 3 +/- 0.0001 but got 1
 [FAIL] iteration composition of transform: scale(2) animation

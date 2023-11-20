@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Constructing RTCPeerConnection with expired certificate should reject with InvalidAccessError
-[PASS] Calling setConfiguration with different set of certs should reject with InvalidModificationError
-[PASS] RTCCertificate should have at least one fingerprint
-[PASS] RTCPeerConnection({ certificates }) should generate offer SDP with fingerprint of provided certificate
 [FAIL] RTCPeerConnection({ certificates }) should generate offer SDP with fingerprint of all provided certificates
   assert_true: Expect fingerprint line to be found in SDP expected true got false
 Harness: the test ran to completion.

@@ -1,22 +1,4 @@
 This is a testharness.js-based test.
-[PASS] LinearAccelerationSensor: Test that onerror is sent when permissions are not granted.
-[PASS] LinearAccelerationSensor: Test that onerror is send when start() call has failed.
-[PASS] LinearAccelerationSensor: Test that frequency is capped to allowed maximum.
-[PASS] LinearAccelerationSensor: Test that frequency is capped to the maximum supported frequency.
-[PASS] LinearAccelerationSensor: Test that frequency is limited to the minimum supported frequency.
-[PASS] LinearAccelerationSensor: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
-[PASS] LinearAccelerationSensor: Test that sensor can be constructed within an iframe allowed to use feature policy.
-[PASS] LinearAccelerationSensor: Test that 'onreading' is called and sensor reading is valid.
-[PASS] LinearAccelerationSensor: sensor reading is correct.
-[PASS] LinearAccelerationSensor: Test that readings are all mapped to expectedReadings correctly.
-[PASS] LinearAccelerationSensor: sensor timestamp is updated when time passes.
-[PASS] LinearAccelerationSensor: Test that sensor can be successfully created and its states are correct.
-[PASS] LinearAccelerationSensor: no exception is thrown when calling start() on already started sensor.
-[PASS] LinearAccelerationSensor: no exception is thrown when calling stop() on already stopped sensor.
-[PASS] LinearAccelerationSensor: Test that fresh reading is fetched on start().
 [FAIL] LinearAccelerationSensor: Readings are not delivered when the page has no visibility
   assert_true: expected true got false
-[PASS] LinearAccelerationSensor: frequency hint works.
-[PASS] LinearAccelerationSensor: Readings delivered by shared platform sensor are immediately accessible to all sensors.
-[PASS] LinearAccelerationSensor: throw 'TypeError' if frequency is invalid.
 Harness: the test ran to completion.

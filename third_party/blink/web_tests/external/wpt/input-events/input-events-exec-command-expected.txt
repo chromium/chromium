@@ -1,391 +1,152 @@
 This is a testharness.js-based test.
-Found 313 tests; 239 PASS, 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Calling execCommand("insertText", false, a) (calling execCommand)
-[PASS] Calling execCommand("insertText", false, a) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertText", false, a) (inputType value)
-[PASS] Calling execCommand("insertText", false, a) (data value)
-[PASS] Calling execCommand("insertText", false, a) (dataTransfer value)
-[PASS] Calling execCommand("insertText", false, bc) (calling execCommand)
-[PASS] Calling execCommand("insertText", false, bc) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertText", false, bc) (inputType value)
-[PASS] Calling execCommand("insertText", false, bc) (data value)
-[PASS] Calling execCommand("insertText", false, bc) (dataTransfer value)
-[PASS] execCommand("insertText") should insert "abc" into the editor
-[PASS] Calling execCommand("insertOrderedList", false, null) (calling execCommand)
-[PASS] Calling execCommand("insertOrderedList", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertOrderedList", false, null) (inputType value)
-[PASS] Calling execCommand("insertOrderedList", false, null) (data value)
-[PASS] Calling execCommand("insertOrderedList", false, null) (dataTransfer value)
-[PASS] execCommand("insertOrderedList") should make <ol> and wrap the text with it
-[PASS] Calling execCommand("insertUnorderedList", false, null) (calling execCommand)
-[PASS] Calling execCommand("insertUnorderedList", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertUnorderedList", false, null) (inputType value)
-[PASS] Calling execCommand("insertUnorderedList", false, null) (data value)
-[PASS] Calling execCommand("insertUnorderedList", false, null) (dataTransfer value)
-[PASS] execCommand("insertUnorderedList") should make <ul> and wrap the text with it
-[PASS] Calling execCommand("insertLineBreak", false, null) (calling execCommand)
-[PASS] Calling execCommand("insertLineBreak", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertLineBreak", false, null) (inputType value)
-[PASS] Calling execCommand("insertLineBreak", false, null) (data value)
-[PASS] Calling execCommand("insertLineBreak", false, null) (dataTransfer value)
-[PASS] Calling execCommand("insertParagraph", false, null) (calling execCommand)
-[PASS] Calling execCommand("insertParagraph", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("insertParagraph", false, null) (inputType value)
-[PASS] Calling execCommand("insertParagraph", false, null) (data value)
-[PASS] Calling execCommand("insertParagraph", false, null) (dataTransfer value)
-[PASS] Calling execCommand("insertHorizontalRule", false, null) (calling execCommand)
-[PASS] Calling execCommand("insertHorizontalRule", false, null) (shouldn't fire beforeinput)
+Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling execCommand("insertHorizontalRule", false, null) (inputType value)
   assert_equals: expected "insertHorizontalRule" but got ""
-[PASS] Calling execCommand("insertHorizontalRule", false, null) (data value)
-[PASS] Calling execCommand("insertHorizontalRule", false, null) (dataTransfer value)
-[PASS] Calling execCommand("bold", false, null) (calling execCommand)
-[PASS] Calling execCommand("bold", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("bold", false, null) (inputType value)
-[PASS] Calling execCommand("bold", false, null) (data value)
-[PASS] Calling execCommand("bold", false, null) (dataTransfer value)
-[PASS] execCommand("bold") should wrap selected text with <b> element
-[PASS] Calling execCommand("italic", false, null) (calling execCommand)
-[PASS] Calling execCommand("italic", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("italic", false, null) (inputType value)
-[PASS] Calling execCommand("italic", false, null) (data value)
-[PASS] Calling execCommand("italic", false, null) (dataTransfer value)
-[PASS] execCommand("italic") should wrap selected text with <i> element
-[PASS] Calling execCommand("underline", false, null) (calling execCommand)
-[PASS] Calling execCommand("underline", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("underline", false, null) (inputType value)
-[PASS] Calling execCommand("underline", false, null) (data value)
-[PASS] Calling execCommand("underline", false, null) (dataTransfer value)
-[PASS] execCommand("underline") should wrap selected text with <u> element
-[PASS] Calling execCommand("strikeThrough", false, null) (calling execCommand)
-[PASS] Calling execCommand("strikeThrough", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("strikeThrough", false, null) (inputType value)
-[PASS] Calling execCommand("strikeThrough", false, null) (data value)
-[PASS] Calling execCommand("strikeThrough", false, null) (dataTransfer value)
-[PASS] execCommand("strikeThrough") should wrap selected text with <strike> element
-[PASS] Calling execCommand("superscript", false, null) (calling execCommand)
-[PASS] Calling execCommand("superscript", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("superscript", false, null) (inputType value)
-[PASS] Calling execCommand("superscript", false, null) (data value)
-[PASS] Calling execCommand("superscript", false, null) (dataTransfer value)
-[PASS] execCommand("superscript") should wrap selected text with <sup> element
-[PASS] Calling execCommand("subscript", false, null) (calling execCommand)
-[PASS] Calling execCommand("subscript", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("subscript", false, null) (inputType value)
-[PASS] Calling execCommand("subscript", false, null) (data value)
-[PASS] Calling execCommand("subscript", false, null) (dataTransfer value)
-[PASS] execCommand("subscript") should wrap selected text with <sub> element
-[PASS] Calling execCommand("backColor", false, #FF0000) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, #FF0000) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, #FF0000) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, #FF0000) (data value)
   assert_equals: expected (string) "rgb(255, 0, 0)" but got (object) null
-[PASS] Calling execCommand("backColor", false, #FF0000) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, #00FF00FF) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, #00FF00FF) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, #00FF00FF) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, #00FF00FF) (data value)
   assert_equals: expected (string) "rgb(0, 255, 0)" but got (object) null
-[PASS] Calling execCommand("backColor", false, #00FF00FF) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, #0000FF88) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, #0000FF88) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, #0000FF88) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, #0000FF88) (data value)
   assert_equals: expected (string) "rgba(0, 0, 255, 0.533)" but got (object) null
-[PASS] Calling execCommand("backColor", false, #0000FF88) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, orange) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, orange) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, orange) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, orange) (data value)
   assert_equals: expected (string) "rgb(255, 165, 0)" but got (object) null
-[PASS] Calling execCommand("backColor", false, orange) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, Inherit) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, Inherit) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, Inherit) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, Inherit) (data value)
   assert_equals: expected (string) "inherit" but got (object) null
-[PASS] Calling execCommand("backColor", false, Inherit) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, Initial) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, Initial) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, Initial) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, Initial) (data value)
   assert_equals: expected (string) "initial" but got (object) null
-[PASS] Calling execCommand("backColor", false, Initial) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, Reset) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, Reset) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, Reset) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, Reset) (data value)
   assert_equals: expected (string) "reset" but got (object) null
-[PASS] Calling execCommand("backColor", false, Reset) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, transparent) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, transparent) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, transparent) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, transparent) (data value)
   assert_equals: expected (string) "rgba(0, 0, 0, 0)" but got (object) null
-[PASS] Calling execCommand("backColor", false, transparent) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, CurrentColor) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, CurrentColor) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, CurrentColor) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, CurrentColor) (data value)
   assert_equals: expected (string) "currentcolor" but got (object) null
-[PASS] Calling execCommand("backColor", false, CurrentColor) (dataTransfer value)
-[PASS] Calling execCommand("backColor", false, Invalid-Value) (calling execCommand)
-[PASS] Calling execCommand("backColor", false, Invalid-Value) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("backColor", false, Invalid-Value) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("backColor", false, Invalid-Value) (data value)
   assert_equals: expected (string) "Invalid-Value" but got (object) null
-[PASS] Calling execCommand("backColor", false, Invalid-Value) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, #FF0000) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, #FF0000) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, #FF0000) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, #FF0000) (data value)
   assert_equals: expected (string) "rgb(255, 0, 0)" but got (object) null
-[PASS] Calling execCommand("foreColor", false, #FF0000) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, #00FF00FF) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, #00FF00FF) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, #00FF00FF) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, #00FF00FF) (data value)
   assert_equals: expected (string) "rgb(0, 255, 0)" but got (object) null
-[PASS] Calling execCommand("foreColor", false, #00FF00FF) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, #0000FF88) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, #0000FF88) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, #0000FF88) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, #0000FF88) (data value)
   assert_equals: expected (string) "rgba(0, 0, 255, 0.533)" but got (object) null
-[PASS] Calling execCommand("foreColor", false, #0000FF88) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, orange) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, orange) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, orange) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, orange) (data value)
   assert_equals: expected (string) "rgb(255, 165, 0)" but got (object) null
-[PASS] Calling execCommand("foreColor", false, orange) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, Inherit) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, Inherit) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, Inherit) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, Inherit) (data value)
   assert_equals: expected (string) "inherit" but got (object) null
-[PASS] Calling execCommand("foreColor", false, Inherit) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, Initial) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, Initial) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, Initial) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, Initial) (data value)
   assert_equals: expected (string) "initial" but got (object) null
-[PASS] Calling execCommand("foreColor", false, Initial) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, Reset) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, Reset) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, Reset) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, Reset) (data value)
   assert_equals: expected (string) "reset" but got (object) null
-[PASS] Calling execCommand("foreColor", false, Reset) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, transparent) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, transparent) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, transparent) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, transparent) (data value)
   assert_equals: expected (string) "rgba(0, 0, 0, 0)" but got (object) null
-[PASS] Calling execCommand("foreColor", false, transparent) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, CurrentColor) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, CurrentColor) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, CurrentColor) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, CurrentColor) (data value)
   assert_equals: expected (string) "currentcolor" but got (object) null
-[PASS] Calling execCommand("foreColor", false, CurrentColor) (dataTransfer value)
-[PASS] Calling execCommand("foreColor", false, Invalid-Value) (calling execCommand)
-[PASS] Calling execCommand("foreColor", false, Invalid-Value) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("foreColor", false, Invalid-Value) (inputType value)
   assert_equals: expected "formatFontColor" but got ""
 [FAIL] Calling execCommand("foreColor", false, Invalid-Value) (data value)
   assert_equals: expected (string) "Invalid-Value" but got (object) null
-[PASS] Calling execCommand("foreColor", false, Invalid-Value) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, #FF0000) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, #FF0000) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, #FF0000) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, #FF0000) (data value)
   assert_equals: expected (string) "rgb(255, 0, 0)" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, #FF0000) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, #00FF00FF) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, #00FF00FF) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, #00FF00FF) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, #00FF00FF) (data value)
   assert_equals: expected (string) "rgb(0, 255, 0)" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, #00FF00FF) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, #0000FF88) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, #0000FF88) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, #0000FF88) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, #0000FF88) (data value)
   assert_equals: expected (string) "rgba(0, 0, 255, 0.533)" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, #0000FF88) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, orange) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, orange) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, orange) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, orange) (data value)
   assert_equals: expected (string) "rgb(255, 165, 0)" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, orange) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, Inherit) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, Inherit) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, Inherit) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, Inherit) (data value)
   assert_equals: expected (string) "inherit" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, Inherit) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, Initial) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, Initial) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, Initial) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, Initial) (data value)
   assert_equals: expected (string) "initial" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, Initial) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, Reset) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, Reset) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, Reset) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, Reset) (data value)
   assert_equals: expected (string) "reset" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, Reset) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, transparent) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, transparent) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, transparent) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, transparent) (data value)
   assert_equals: expected (string) "rgba(0, 0, 0, 0)" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, transparent) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, CurrentColor) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, CurrentColor) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, CurrentColor) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, CurrentColor) (data value)
   assert_equals: expected (string) "currentcolor" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, CurrentColor) (dataTransfer value)
-[PASS] Calling execCommand("hiliteColor", false, Invalid-Value) (calling execCommand)
-[PASS] Calling execCommand("hiliteColor", false, Invalid-Value) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("hiliteColor", false, Invalid-Value) (inputType value)
   assert_equals: expected "formatBackColor" but got ""
 [FAIL] Calling execCommand("hiliteColor", false, Invalid-Value) (data value)
   assert_equals: expected (string) "Invalid-Value" but got (object) null
-[PASS] Calling execCommand("hiliteColor", false, Invalid-Value) (dataTransfer value)
-[PASS] Calling execCommand("fontName", false, monospace) (calling execCommand)
-[PASS] Calling execCommand("fontName", false, monospace) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("fontName", false, monospace) (inputType value)
   assert_equals: expected "formatFontName" but got ""
 [FAIL] Calling execCommand("fontName", false, monospace) (data value)
   assert_equals: expected (string) "monospace" but got (object) null
-[PASS] Calling execCommand("fontName", false, monospace) (dataTransfer value)
-[PASS] Calling execCommand("fontName", false,  monospace ) (calling execCommand)
-[PASS] Calling execCommand("fontName", false,  monospace ) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("fontName", false,  monospace ) (inputType value)
   assert_equals: expected "formatFontName" but got ""
 [FAIL] Calling execCommand("fontName", false,  monospace ) (data value)
   assert_equals: expected (string) " monospace " but got (object) null
-[PASS] Calling execCommand("fontName", false,  monospace ) (dataTransfer value)
-[PASS] Calling execCommand("fontName", false,   monospace  ) (calling execCommand)
-[PASS] Calling execCommand("fontName", false,   monospace  ) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("fontName", false,   monospace  ) (inputType value)
   assert_equals: expected "formatFontName" but got ""
 [FAIL] Calling execCommand("fontName", false,   monospace  ) (data value)
   assert_equals: expected (string) "  monospace  " but got (object) null
-[PASS] Calling execCommand("fontName", false,   monospace  ) (dataTransfer value)
-[PASS] Calling execCommand("justifyCenter", false, null) (calling execCommand)
-[PASS] Calling execCommand("justifyCenter", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("justifyCenter", false, null) (inputType value)
-[PASS] Calling execCommand("justifyCenter", false, null) (data value)
-[PASS] Calling execCommand("justifyCenter", false, null) (dataTransfer value)
-[PASS] execCommand("justifyCenter") should wrap the text with <div> element whose text-align is center
-[PASS] Calling execCommand("justifyFull", false, null) (calling execCommand)
-[PASS] Calling execCommand("justifyFull", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("justifyFull", false, null) (inputType value)
-[PASS] Calling execCommand("justifyFull", false, null) (data value)
-[PASS] Calling execCommand("justifyFull", false, null) (dataTransfer value)
-[PASS] execCommand("justifyFull") should wrap the text with <div> element whose text-align is justify
-[PASS] Calling execCommand("justifyRight", false, null) (calling execCommand)
-[PASS] Calling execCommand("justifyRight", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("justifyRight", false, null) (inputType value)
-[PASS] Calling execCommand("justifyRight", false, null) (data value)
-[PASS] Calling execCommand("justifyRight", false, null) (dataTransfer value)
-[PASS] execCommand("justifyRight") should wrap the text with <div> element whose text-align is right
-[PASS] Calling execCommand("justifyLeft", false, null) (calling execCommand)
-[PASS] Calling execCommand("justifyLeft", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("justifyLeft", false, null) (inputType value)
-[PASS] Calling execCommand("justifyLeft", false, null) (data value)
-[PASS] Calling execCommand("justifyLeft", false, null) (dataTransfer value)
-[PASS] execCommand("justifyLeft") should wrap the text with <div> element whose text-align is left
-[PASS] Calling execCommand("removeFormat", false, null) (calling execCommand)
-[PASS] Calling execCommand("removeFormat", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("removeFormat", false, null) (inputType value)
-[PASS] Calling execCommand("removeFormat", false, null) (data value)
-[PASS] Calling execCommand("removeFormat", false, null) (dataTransfer value)
-[PASS] execCommand("removeFormat") should remove the style of current block
-[PASS] Calling execCommand("indent", false, null) (calling execCommand)
-[PASS] Calling execCommand("indent", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("indent", false, null) (inputType value)
-[PASS] Calling execCommand("indent", false, null) (data value)
-[PASS] Calling execCommand("indent", false, null) (dataTransfer value)
-[PASS] Calling execCommand("outdent", false, null) (calling execCommand)
-[PASS] Calling execCommand("outdent", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("outdent", false, null) (inputType value)
-[PASS] Calling execCommand("outdent", false, null) (data value)
-[PASS] Calling execCommand("outdent", false, null) (dataTransfer value)
-[PASS] Set of execCommand("indent") and execCommand("outdent") should keep same DOM tree
-[PASS] Calling execCommand("copy", false, null) (calling execCommand)
-[PASS] Calling execCommand("copy", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("copy", false, null) (inputType value)
-[PASS] Calling execCommand("cut", false, null) (calling execCommand)
-[PASS] Calling execCommand("cut", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("cut", false, null) (inputType value)
-[PASS] Calling execCommand("cut", false, null) (data value)
-[PASS] Calling execCommand("cut", false, null) (dataTransfer value)
-[PASS] Calling execCommand("paste", false, null) (calling execCommand)
-[PASS] Calling execCommand("paste", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("paste", false, null) (inputType value)
-[PASS] Calling execCommand("paste", false, null) (data value)
 [FAIL] Calling execCommand("paste", false, null) (dataTransfer value, text/plain)
   assert_true: calling dataTransfer.getData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'getData') expected true got false
 [FAIL] Calling execCommand("paste", false, null) (dataTransfer.clearData(text/plain))
   assert_true: calling dataTransfer.clearData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'clearData') expected true got false
 [FAIL] Calling execCommand("paste", false, null) (dataTransfer.setData(text/plain))
   assert_true: calling dataTransfer.setData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'setData') expected true got false
-[PASS] Calling execCommand("createLink", false, https://example.com/) (calling execCommand)
-[PASS] Calling execCommand("createLink", false, https://example.com/) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("createLink", false, https://example.com/) (inputType value)
   assert_equals: expected "insertLink" but got ""
 [FAIL] Calling execCommand("createLink", false, https://example.com/) (data value)
   assert_equals: expected (string) "https://example.com/" but got (object) null
-[PASS] Calling execCommand("createLink", false, https://example.com/) (dataTransfer value)
-[PASS] execCommand("createLink") should create a link with absolute URL
-[PASS] Calling execCommand("unlink", false, null) (calling execCommand)
-[PASS] Calling execCommand("unlink", false, null) (shouldn't fire beforeinput)
-[PASS] Calling execCommand("unlink", false, null) (inputType value)
-[PASS] Calling execCommand("unlink", false, null) (data value)
-[PASS] Calling execCommand("unlink", false, null) (dataTransfer value)
-[PASS] execCommand("createLink") should remove the link
-[PASS] Calling execCommand("createLink", false, foo.html) (calling execCommand)
-[PASS] Calling execCommand("createLink", false, foo.html) (shouldn't fire beforeinput)
 [FAIL] Calling execCommand("createLink", false, foo.html) (inputType value)
   assert_equals: expected "insertLink" but got ""
 [FAIL] Calling execCommand("createLink", false, foo.html) (data value)
   assert_equals: expected (string) "foo.html" but got (object) null
-[PASS] Calling execCommand("createLink", false, foo.html) (dataTransfer value)
-[PASS] execCommand("createLink") should create a link with relative URL
 Harness: the test ran to completion.
 

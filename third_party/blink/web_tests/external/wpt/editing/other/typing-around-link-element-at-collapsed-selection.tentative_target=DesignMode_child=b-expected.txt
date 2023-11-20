@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Testing inserting content around link element
-[PASS] Inserting "XY" after setting caret position to middle of a link containing <b> (Selection.collapse) in <p><a href="about:blank"><b>[]abc</b></a></p>
-[PASS] Inserting "XY" after setting caret position to middle of a link containing <b> (Selection.addRange) in <p><a href="about:blank"><b>[]abc</b></a></p>
 [FAIL] Inserting "XY" after setting caret position to start of a link containing <b> (Selection.collapse) in <p><a href="about:blank"><b>ab[]c</b></a></p>
   assert_in_array: value "<p>XY<a href=\\"about:blank\\"><b>abc</b></a></p>" not in array ["<p><b>XY<a href=\\"about:blank\\">abc</a></b></p>", "<p><b>XY<a href=\\"about:blank\\">abc</a>undefined<br></p>"]
 [FAIL] Inserting "XY" after setting caret position to start of a link containing <b> (Selection.addRange) in <p><a href="about:blank"><b>ab[]c</b></a></p>
@@ -10,7 +7,6 @@ This is a testharness.js-based test.
   assert_in_array: value "<p><a href=\\"about:blank\\"><b>abc</b></a>XY</p>" not in array ["<p><b><a href=\\"about:blank\\">abc</a>XY</b></p>", "<p><b><a href=\\"about:blank\\">abc</a>XYundefined<br></p>"]
 [FAIL] Inserting "XY" after setting caret position to end of a link containing <b> (Selection.addRange) in <p><a href="about:blank"><b>ab[]c</b></a></p>
   assert_in_array: value "<p><a href=\\"about:blank\\"><b>abc</b></a>XY</p>" not in array ["<p><b><a href=\\"about:blank\\">abc</a>XY</b></p>", "<p><b><a href=\\"about:blank\\">abc</a>XYundefined<br></p>"]
-[PASS] Inserting "XY" after modifying caret position to middle of a link containing <b> in <p><a href="about:blank"><b>[]abc</b></a></p>
 [FAIL] Inserting "XY" after modifying caret position to start of a link containing <b> in <p><a href="about:blank"><b>ab[]c</b></a></p>
   assert_in_array: value "<p>XY<a href=\\"about:blank\\"><b>abc</b></a></p>" not in array ["<p><b>XY<a href=\\"about:blank\\">abc</a></b></p>", "<p><b>XY<a href=\\"about:blank\\">abc</a></b><br></p>"]
 [FAIL] Inserting "XY" after modifying caret position to end of a link containing <b> in <p><a href="about:blank"><b>ab[]c</b></a></p>

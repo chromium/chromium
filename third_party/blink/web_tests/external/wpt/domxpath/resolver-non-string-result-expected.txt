@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] undefined
-[PASS] null
-[PASS] number
-[PASS] boolean
 [FAIL] symbol
   assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] object coercion (abrupt completion)

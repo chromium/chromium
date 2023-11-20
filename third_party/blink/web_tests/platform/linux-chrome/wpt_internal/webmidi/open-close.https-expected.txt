@@ -1,4 +1,3 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Cannot set properties of undefined (setting 'onstatechange')
-[PASS] opening and closing MIDI devices
 Harness: the test ran to completion.

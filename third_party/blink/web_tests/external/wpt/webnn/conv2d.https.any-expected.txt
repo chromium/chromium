@@ -37,7 +37,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout oihw is not supported."
 [FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio' / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout hwio is not supported."
-[PASS] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / async
 [FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo' / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout ihwo is not supported."
 [FAIL] conv2d float32 4D input and filter tensors 1D options.bias / async

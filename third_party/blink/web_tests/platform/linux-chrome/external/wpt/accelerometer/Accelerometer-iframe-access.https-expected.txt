@@ -1,17 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] Accelerometer: unfocused sensors in cross-origin frames are not updated
   promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
-[PASS] Accelerometer: sensors in same-origin frames are updated if one of the frames is focused
-[PASS] Accelerometer: losing a document's frame with an active sensor does not crash
-[PASS] Accelerometer: calling start() in a non-fully active document does not crash
 [FAIL] LinearAccelerationSensor: unfocused sensors in cross-origin frames are not updated
   promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
-[PASS] LinearAccelerationSensor: sensors in same-origin frames are updated if one of the frames is focused
-[PASS] LinearAccelerationSensor: losing a document's frame with an active sensor does not crash
-[PASS] LinearAccelerationSensor: calling start() in a non-fully active document does not crash
 [FAIL] GravitySensor: unfocused sensors in cross-origin frames are not updated
   promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
-[PASS] GravitySensor: sensors in same-origin frames are updated if one of the frames is focused
-[PASS] GravitySensor: losing a document's frame with an active sensor does not crash
-[PASS] GravitySensor: calling start() in a non-fully active document does not crash
 Harness: the test ran to completion.

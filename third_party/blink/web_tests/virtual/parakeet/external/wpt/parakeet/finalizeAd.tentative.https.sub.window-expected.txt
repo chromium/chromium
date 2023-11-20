@@ -1,7 +1,3 @@
 This is a testharness.js-based test.
-[PASS] finalizeAd() should be supported on the navigator interface.
-[PASS] finalizeAd() should reject an invalid Ads object.
-[PASS] finalizeAd() should reject a missing decisionLogicURL.
-[PASS] finalizeAd() should reject a non-HTTPS decisionLogicURL.
 Harness: the test ran to completion.
 

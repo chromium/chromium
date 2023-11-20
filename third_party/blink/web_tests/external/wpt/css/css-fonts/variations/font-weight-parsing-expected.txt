@@ -1,34 +1,14 @@
 This is a testharness.js-based test.
-[PASS] @supports: Values that are not multiple of 100 should be parsed successfully
-[PASS] @supports: Non-integer Values should be parsed successfully
-[PASS] @supports: Minimum allowed value should be parsed successfully
-[PASS] @supports: Values below minimum should be rejected
-[PASS] @supports: Values below zero should be rejected
-[PASS] @supports: Maximum allowed value should be parsed successfully
-[PASS] @supports: Values above maximum should be rejected
-[PASS] @supports: Simple calc value
 [FAIL] @supports: Negative simple calc value (to be clamped)
   assert_equals: Negative simple calc value (to be clamped) expected true but got false
 [FAIL] @supports: Out-of-range simple calc value (to be clamped)
   assert_equals: Out-of-range simple calc value (to be clamped) expected true but got false
-[PASS] @supports: Valid calc expression
 [FAIL] @supports: Valid calc expression with out-of-range value (to be clamped)
   assert_equals: Valid calc expression with out-of-range value (to be clamped) expected true but got false
-[PASS] @supports: Valid calc expression with units
-[PASS] @supports: Extra number after numeric value
-[PASS] @supports: Extra content after numeric value
-[PASS] @supports: Extra content after keyword value
-[PASS] @supports: Extra content after calc value
-[PASS] Computed style: Values that are not multiple of 100 should be parsed successfully
-[PASS] Computed style: Non-integer Values should be parsed successfully
-[PASS] Computed style: Minimum allowed value should be parsed successfully
-[PASS] Computed style: Maximum allowed value should be parsed successfully
-[PASS] Computed style: Simple calc value
 [FAIL] Computed style: Negative simple calc value (to be clamped)
   assert_equals: Negative simple calc value (to be clamped) expected "1" but got "300"
 [FAIL] Computed style: Out-of-range simple calc value (to be clamped)
   assert_equals: Out-of-range simple calc value (to be clamped) expected "1000" but got "300"
-[PASS] Computed style: Valid calc expression
 [FAIL] Computed style: Valid calc expression with out-of-range value (to be clamped)
   assert_equals: Valid calc expression with out-of-range value (to be clamped) expected "1000" but got "300"
 Harness: the test ran to completion.

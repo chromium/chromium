@@ -1,4 +1,3 @@
 This is a testharness.js-based test.
-[PASS] Test scrolling into view when typing
 Harness: the test ran to completion.
 

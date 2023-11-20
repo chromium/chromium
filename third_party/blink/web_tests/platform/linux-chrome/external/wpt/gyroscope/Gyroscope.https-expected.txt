@@ -1,22 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Gyroscope: Test that onerror is sent when permissions are not granted.
-[PASS] Gyroscope: Test that onerror is send when start() call has failed.
-[PASS] Gyroscope: Test that frequency is capped to allowed maximum.
-[PASS] Gyroscope: Test that frequency is capped to the maximum supported frequency.
-[PASS] Gyroscope: Test that frequency is limited to the minimum supported frequency.
-[PASS] Gyroscope: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
-[PASS] Gyroscope: Test that sensor can be constructed within an iframe allowed to use feature policy.
-[PASS] Gyroscope: Test that 'onreading' is called and sensor reading is valid.
-[PASS] Gyroscope: sensor reading is correct.
-[PASS] Gyroscope: Test that readings are all mapped to expectedReadings correctly.
-[PASS] Gyroscope: sensor timestamp is updated when time passes.
-[PASS] Gyroscope: Test that sensor can be successfully created and its states are correct.
-[PASS] Gyroscope: no exception is thrown when calling start() on already started sensor.
-[PASS] Gyroscope: no exception is thrown when calling stop() on already stopped sensor.
-[PASS] Gyroscope: Test that fresh reading is fetched on start().
 [FAIL] Gyroscope: Readings are not delivered when the page has no visibility
   assert_true: expected true got false
-[PASS] Gyroscope: frequency hint works.
-[PASS] Gyroscope: Readings delivered by shared platform sensor are immediately accessible to all sensors.
-[PASS] Gyroscope: throw 'TypeError' if frequency is invalid.
 Harness: the test ran to completion.

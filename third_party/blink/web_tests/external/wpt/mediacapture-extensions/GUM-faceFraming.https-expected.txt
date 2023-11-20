@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-[PASS] Test getSupportedConstraints().faceFraming
 [PRECONDITION_FAILED] Test getCapabilities().faceFraming
   Optional property faceFraming not in capabilities
 [PRECONDITION_FAILED] Test getSettings().faceFraming
   Optional property faceFraming not in capabilities
-[PASS] Test applyConstraints() with faceFraming
 Harness: the test ran to completion.
 

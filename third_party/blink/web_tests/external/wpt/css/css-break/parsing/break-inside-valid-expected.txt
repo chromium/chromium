@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] e.style['break-inside'] = "auto" should set the property value
-[PASS] e.style['break-inside'] = "avoid" should set the property value
-[PASS] e.style['break-inside'] = "avoid-page" should set the property value
-[PASS] e.style['break-inside'] = "avoid-column" should set the property value
 [FAIL] e.style['break-inside'] = "avoid-region" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.

@@ -1,20 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Test that logical border-*-style properties are supported.
-[PASS] Test that border-inline-style shorthand sets longhands and serializes correctly.
-[PASS] Test that border-block-style shorthand sets longhands and serializes correctly.
-[PASS] Test that border-style shorthand sets longhands and serializes correctly.
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
 [FAIL] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom-style expected "solid" but got "double"
 [FAIL] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
@@ -23,10 +7,6 @@ This is a testharness.js-based test.
   assert_equals: 'border-inline-start-style' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end-style expected "solid" but got "double"
 [FAIL] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: 'border-inline-start-style', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end-style expected "solid" but got "double"
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
 [FAIL] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top-style expected "solid" but got "dotted"
 [FAIL] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
@@ -35,10 +15,6 @@ This is a testharness.js-based test.
   assert_equals: 'border-inline-start-style' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', border-left-style expected "solid" but got "groove"
 [FAIL] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: 'border-inline-start-style', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', border-left-style expected "solid" but got "groove"
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
 [FAIL] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom-style expected "solid" but got "double"
 [FAIL] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
@@ -47,10 +23,6 @@ This is a testharness.js-based test.
   assert_equals: 'border-inline-start-style' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', border-left-style expected "solid" but got "groove"
 [FAIL] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: 'border-inline-start-style', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', border-left-style expected "solid" but got "groove"
-[PASS] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-style properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-style properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
 [FAIL] Test that logical border-*-style properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top-style expected "solid" but got "dotted"
 [FAIL] Test that border-*-style shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.

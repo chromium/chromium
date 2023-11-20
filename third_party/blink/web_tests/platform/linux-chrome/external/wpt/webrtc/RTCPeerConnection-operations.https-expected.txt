@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to parse SessionDescription.  Expect line: v=
-[PASS] promiseState helper works
-[PASS] promiseStateFinal helper works
 [FAIL] createOffer must detect InvalidStateError synchronously when chain is empty (prerequisite)
   assert_equals: expected "InvalidStateError" but got "Error"
 [FAIL] createAnswer must detect InvalidStateError synchronously when chain is empty (prerequisite)
@@ -10,17 +8,14 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
   assert_equals: promise rejected on same task expected "rejected" but got "pending"
 [FAIL] addIceCandidate must detect InvalidStateError synchronously when chain is empty
   assert_equals: expected "InvalidStateError" but got "Error"
-[PASS] replaceTrack must detect InvalidStateError synchronously when chain is empty and transceiver is stopped
 [FAIL] setParameters must detect InvalidStateError synchronously always when transceiver is stopped
   assert_equals: promise rejected on same task expected "rejected" but got "pending"
-[PASS] pc.getStats must detect InvalidAccessError synchronously always
 [FAIL] isOperationsChainEmpty detects empty in stable
   assert_true: Empty to start expected true got false
 [FAIL] isOperationsChainEmpty detects empty in have-local-offer
   assert_true: Empty to start expected true got false
 [FAIL] isOperationsChainEmpty detects empty in have-remote-offer
   assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
-[PASS] createOffer uses operations chain
 [FAIL] createAnswer uses operations chain
   assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
 [FAIL] setLocalDescription uses operations chain
@@ -31,7 +26,6 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
   assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
 [FAIL] Firing of negotiationneeded does NOT use operations chain
   assert_true: Empty chain expected true got false
-[PASS] Negotiationneeded only fires once operations chain is empty
 [FAIL] replaceTrack uses operations chain
   assert_true: Empty chain expected true got false
 [FAIL] setParameters does NOT use the operations chain
@@ -42,8 +36,6 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
   assert_true: Empty chain expected true got false
 [FAIL] receiver.getStats does NOT use the operations chain
   assert_true: Empty chain expected true got false
-[PASS] addIceCandidate chains onto SRD, fails before
-[PASS] Operations queue not vulnerable to recursion by chained negotiationneeded
 [FAIL] Pack operations queue with implicit offer and answer
   promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to parse SessionDescription.  Expect line: v="
 [TIMEOUT] Negotiate solely by operations queue and signaling state

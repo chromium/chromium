@@ -1,19 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading '0')
-[PASS] Codepoint U+b7 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+c0 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+cb is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+d6 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+d8 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+e7 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+f6 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+f8 is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+23a is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+37d is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+37f is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+11bf is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+1fff is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+200c is a valid 'non-ASCII ident codepoint'.
-[PASS] Codepoint U+200d is a valid 'non-ASCII ident codepoint'.
 Harness: the test ran to completion.
 

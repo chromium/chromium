@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Request through fetch should have 'accept' header with value '*/*'
-[PASS] Request through fetch should have 'accept' header with value 'custom/*'
 [FAIL] Request through fetch should have a 'accept-language' header
   assert_true: expected true got false
-[PASS] Request through fetch should have 'accept-language' header with value 'bzh'
 Harness: the test ran to completion.

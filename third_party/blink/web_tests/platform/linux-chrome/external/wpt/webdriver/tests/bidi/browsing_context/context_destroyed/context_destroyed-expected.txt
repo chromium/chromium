@@ -1,15 +1,6 @@
 This is a wdspec test.
-[PASS] test_unsubscribe
-[PASS] test_new_context[tab]
-[PASS] test_new_context[window]
-[PASS] test_navigate[same_origin]
-[PASS] test_navigate[cross_origin]
-[PASS] test_navigate_iframe[same_origin]
-[PASS] test_navigate_iframe[cross_origin]
-[PASS] test_delete_iframe
 [FAIL] test_delete_nested_iframes
   AssertionError: assert 2 == 1
 [FAIL] test_iframe_destroy_parent
   AssertionError: assert 3 == 1
-[PASS] test_subscribe_to_one_context
 Harness: the test ran to completion.

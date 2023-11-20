@@ -1,22 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Accelerometer: Test that onerror is sent when permissions are not granted.
-[PASS] Accelerometer: Test that onerror is send when start() call has failed.
-[PASS] Accelerometer: Test that frequency is capped to allowed maximum.
-[PASS] Accelerometer: Test that frequency is capped to the maximum supported frequency.
-[PASS] Accelerometer: Test that frequency is limited to the minimum supported frequency.
-[PASS] Accelerometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
-[PASS] Accelerometer: Test that sensor can be constructed within an iframe allowed to use feature policy.
-[PASS] Accelerometer: Test that 'onreading' is called and sensor reading is valid.
-[PASS] Accelerometer: sensor reading is correct.
-[PASS] Accelerometer: Test that readings are all mapped to expectedReadings correctly.
-[PASS] Accelerometer: sensor timestamp is updated when time passes.
-[PASS] Accelerometer: Test that sensor can be successfully created and its states are correct.
-[PASS] Accelerometer: no exception is thrown when calling start() on already started sensor.
-[PASS] Accelerometer: no exception is thrown when calling stop() on already stopped sensor.
-[PASS] Accelerometer: Test that fresh reading is fetched on start().
 [FAIL] Accelerometer: Readings are not delivered when the page has no visibility
   assert_true: expected true got false
-[PASS] Accelerometer: frequency hint works.
-[PASS] Accelerometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
-[PASS] Accelerometer: throw 'TypeError' if frequency is invalid.
 Harness: the test ran to completion.

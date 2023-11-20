@@ -1,12 +1,4 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context
-[PASS] test_no_browsing_context
-[PASS] test_switch_to_window_sets_top_level_context
 [FAIL] test_element_not_found_after_tab_switch
   webdriver.error.StaleElementReferenceException: stale element reference (404): stale element reference: stale element not found
-[PASS] test_finds_exising_user_prompt_after_tab_switch[alert]
-[PASS] test_finds_exising_user_prompt_after_tab_switch[confirm]
-[PASS] test_finds_exising_user_prompt_after_tab_switch[prompt]
 Harness: the test ran to completion.

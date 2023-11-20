@@ -1,12 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Property text-wrap value 'wrap'
-[PASS] Property text-wrap value 'nowrap'
 [FAIL] Property text-wrap value 'auto'
   assert_true: 'auto' is a supported value for text-wrap. expected true got false
-[PASS] Property text-wrap value 'balance'
 [FAIL] Property text-wrap value 'stable'
   assert_true: 'stable' is a supported value for text-wrap. expected true got false
-[PASS] Property text-wrap value 'pretty'
 [FAIL] Property text-wrap value 'wrap auto'
   assert_true: 'wrap auto' is a supported value for text-wrap. expected true got false
 [FAIL] Property text-wrap value 'wrap balance'

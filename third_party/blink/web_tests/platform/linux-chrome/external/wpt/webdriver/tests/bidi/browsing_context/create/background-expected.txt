@@ -1,10 +1,6 @@
 This is a wdspec test.
-[PASS] test_background_default_false[tab]
-[PASS] test_background_default_false[window]
 [FAIL] test_background[True-tab]
   assert True != True
 [FAIL] test_background[True-window]
   assert True != True
-[PASS] test_background[False-tab]
-[PASS] test_background[False-window]
 Harness: the test ran to completion.

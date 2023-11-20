@@ -1,19 +1,7 @@
 This is a testharness.js-based test.
-[PASS] Background Fetch requires an activated Service Worker
-[PASS] Argument verification is done for BackgroundFetchManager.fetch()
-[PASS] IDs must be unique among active Background Fetch registrations
-[PASS] Empty URL is OK.
 [FAIL] Requests with PUT method require CORS Preflight and succeed.
   assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
 [FAIL] Requests with text/json content type require CORS Preflight and succeed.
   assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
-[PASS] Using Background Fetch to successfully fetch a single resource
-[PASS] Registration object gets updated values when a background fetch completes.
-[PASS] Background Fetch that exceeds the quota throws a QuotaExceededError
-[PASS] Fetches can have requests with duplicate URLs
-[PASS] recordsAvailable is false after onbackgroundfetchsuccess finishes execution.
-[PASS] Using Background Fetch to fetch a non-existent resource should fail.
-[PASS] Fetches with mixed content should fail.
-[PASS] Responses failing CORS checks are not leaked
 Harness: the test ran to completion.
 

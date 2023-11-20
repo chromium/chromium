@@ -105,53 +105,7 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
     return lines
 
 
-def compact_test_output(lines: List[TestharnessLine]) -> List[TestharnessLine]:
-    """Returns a compact output for reflection test results.
-
-    The reflection tests contain a large number of tests.
-    This test output merges PASS lines to make baselines smaller.
-    """
-    def maybe_append_pass_line(compact_lines, prefix, subtest, passes):
-        if passes > 1:
-            compact_lines.append(
-                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
-                                f'{prefix}: {passes} tests'))
-        elif passes == 1:
-            compact_lines.append(
-                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
-                                subtest))
-
-    compact_lines = []
-    prev_prefix = None
-    prev_subtest = None
-    prev_passes = 0
-    for line in lines:
-        if (line.line_type != LineType.SUBTEST
-                or line.statuses != set([Status.PASS])
-                or ':' not in line.subtest):
-            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                                   prev_passes)
-            prev_passes = 0
-            compact_lines.append(line)
-            continue
-
-        # We get a PASS subtest with ':' in test name
-        prefix, suffix = line.subtest.split(':', 1)
-        if prefix != prev_prefix:
-            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                                   prev_passes)
-            prev_prefix, prev_subtest = prefix, line.subtest
-            prev_passes = 1
-        else:
-            prev_passes += 1
-
-    maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                           prev_passes)
-    return compact_lines
-
-
-def format_testharness_baseline(lines: List[TestharnessLine],
-                                do_compact: bool) -> str:
+def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
     """Format testharness.js results in the same way as [0].
 
     [0]: //third_party/blink/web_tests/resources/testharnessreport.js
@@ -170,17 +124,15 @@ def format_testharness_baseline(lines: List[TestharnessLine],
         except ValueError:
             pass
 
-    if do_compact:
-        lines = compact_test_output(lines)
-
     for line in lines:
         if line.line_type is LineType.SUBTEST:
             assert line.subtest and line.statuses, line
             statuses = ' '.join(sorted(status.name
                                        for status in line.statuses))
-            content += f'[{statuses}] {_escape(line.subtest)}\n'
-            if line.message:
-                content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
+            if statuses != 'PASS':
+                content += f'[{statuses}] {_escape(line.subtest)}\n'
+                if line.message:
+                    content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
         elif line.line_type is LineType.HARNESS_ERROR:
             (status, ) = line.statuses
             assert isinstance(status.value, int), line
@@ -198,10 +150,10 @@ def format_testharness_baseline(lines: List[TestharnessLine],
         if (line.line_type is LineType.TESTHARNESS_HEADER
                 and status_counts[Status.PASS] < total
                 and total >= _COUNT_THRESHOLD):
-            content += f'Found {total} tests; '
-            content += ', '.join(
-                f'{count} {status.name}'
-                for status, count in status_counts.items()) + '.\n'
+            content += 'Found '
+            content += ', '.join(f'{count} {status.name}'
+                                 for status, count in status_counts.items()
+                                 if status.name != 'PASS') + '.\n'
     return content
 
 
@@ -267,18 +219,15 @@ def is_test_output_passing(content_text: str) -> bool:
     """Checks whether |content_text| is a passing testharness output.
 
     Under a relatively loose/accepting definition of passing
-    testharness output, we consider any output with at least one
-    PASS result and no FAIL result (or TIMEOUT or NOTRUN).
+    testharness output, we consider any output without FAIL result
+    (or TIMEOUT or NOTRUN).
     """
-    at_least_one_pass = False
     for line in parse_testharness_baseline(content_text):
         if line.line_type is LineType.HARNESS_ERROR or line.statuses - {
                 Status.PASS
         }:
             return False
-        if line.line_type is LineType.ALL_PASS or Status.PASS in line.statuses:
-            at_least_one_pass = True
-    return at_least_one_pass
+    return True
 
 
 def has_other_useful_output(content_text: str) -> bool:

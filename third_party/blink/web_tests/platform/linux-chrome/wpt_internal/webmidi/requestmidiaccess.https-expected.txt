@@ -1,4 +1,3 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: internals is not defined
-[PASS] basic MIDI access is functional
 Harness: the test ran to completion.

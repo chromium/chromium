@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 274 tests; 0 PASS, 274 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 274 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <mask-image> from neutral to [url(../resources/green-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <mask-image> from neutral to [url(../resources/green-20.png)] at (0) should be [url(../resources/green-20.png)]

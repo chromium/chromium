@@ -1,8 +1,5 @@
 This is a testharness.js-based test.
-Found 77 tests; 25 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Use text/xml as fallback MIME type
-[PASS] Use text/xml as fallback MIME type, 2
-[PASS] Loading data…
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] 1) MIME types need to be parsed and serialized: text/html;charset=gbk
   assert_equals: expected "text/html;charset=gbk" but got "text/html"
 [FAIL] 2) MIME types need to be parsed and serialized: TEXT/HTML;CHARSET=GBK
@@ -15,7 +12,6 @@ Found 77 tests; 25 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "text/html;charset=gbk" but got "text/html"
 [FAIL] 6) MIME types need to be parsed and serialized: text/html;charset=();charset=GBK
   assert_equals: expected "text/html;charset=\\"()\\"" but got "application/octet-stream"
-[PASS] 7) MIME types need to be parsed and serialized: text/html;charset =gbk
 [FAIL] 8) MIME types need to be parsed and serialized: text/html ;charset=gbk
   assert_equals: expected "text/html;charset=gbk" but got "text/html"
 [FAIL] 9) MIME types need to be parsed and serialized: text/html; charset=gbk
@@ -80,7 +76,6 @@ Found 77 tests; 25 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "text/html;charset=\\"{gbk}\\"" but got "text/html"
 [FAIL] 39) MIME types need to be parsed and serialized: text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk
   assert_equals: expected "text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk" but got "text/html"
-[PASS] 40) MIME types need to be parsed and serialized: 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789/0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 [FAIL] 41) MIME types need to be parsed and serialized: text/html;a]=bar;b[=bar;c=bar
   assert_equals: expected "text/html;c=bar" but got "application/octet-stream"
 [FAIL] 42) MIME types need to be parsed and serialized: text/html;valid=";";foo=bar
@@ -109,25 +104,5 @@ Found 77 tests; 25 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "text/html;test=\\"ÿ\\";charset=gbk" but got "application/octet-stream"
 [FAIL] 54) MIME types need to be parsed and serialized: x/x;test=�;x=x
   assert_equals: expected "x/x;x=x" but got "application/octet-stream"
-[PASS] 55) MIME types need to be parsed and serialized: x/x
-[PASS] 56) MIME types need to be parsed and serialized: x/x
-[PASS] 57) MIME types need to be parsed and serialized: x/x
-[PASS] 58) MIME types need to be parsed and serialized: x/x
-[PASS] 59) MIME types need to be parsed and serialized: 
-[PASS] 60) MIME types need to be parsed and serialized: 	
-[PASS] 61) MIME types need to be parsed and serialized: /
-[PASS] 62) MIME types need to be parsed and serialized: bogus
-[PASS] 63) MIME types need to be parsed and serialized: bogus/
-[PASS] 64) MIME types need to be parsed and serialized: bogus/ 
-[PASS] 65) MIME types need to be parsed and serialized: bogus/bogus/;
-[PASS] 66) MIME types need to be parsed and serialized: </>
-[PASS] 67) MIME types need to be parsed and serialized: (/)
-[PASS] 68) MIME types need to be parsed and serialized: ÿ/ÿ
-[PASS] 69) MIME types need to be parsed and serialized: text/html(;doesnot=matter
-[PASS] 70) MIME types need to be parsed and serialized: {/}
-[PASS] 71) MIME types need to be parsed and serialized: Ā/Ā
-[PASS] 72) MIME types need to be parsed and serialized: text /html
-[PASS] 73) MIME types need to be parsed and serialized: text/ html
-[PASS] 74) MIME types need to be parsed and serialized: "text/html"
 Harness: the test ran to completion.
 

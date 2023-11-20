@@ -1,21 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Digital goods service exists.
-[PASS] Digital goods service is available.
-[PASS] Digital goods service rejects for empty payment method.
-[PASS] Digital goods service rejects for unknown payment method.
-[PASS] Digital goods service rejects from within cross-site iframe.
-[PASS] Digital goods service passes same-site check from within subdomain iframe.
-[PASS] GetDetails round trip, required fields.
-[PASS] GetDetails round trip, optional fields.
-[PASS] GetDetails multiple IDs.
-[PASS] GetDetails no IDs should error.
-[PASS] GetDetails none found.
-[PASS] GetDetails not all found.
-[PASS] GetDetails internal error.
-[PASS] Consume a purchase token.
-[PASS] Consume with bad purchase token should error.
-[PASS] ListPurchases round trip.
-[PASS] ListPurchaseHistory round trip.
 [FAIL] DigitalGoods referenced by scripts should survive garbage collector.
   promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
 Harness: the test ran to completion.

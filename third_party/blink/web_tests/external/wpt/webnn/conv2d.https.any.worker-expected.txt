@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 1 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] conv2d float32 4D input and filter(non-constant) tensors default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 [FAIL] conv2d float32 4D input and filter tensors default options / sync
@@ -38,7 +38,6 @@ Found 52 tests; 1 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout oihw is not supported.
 [FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio' / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout hwio is not supported.
-[PASS] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / sync
 [FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo' / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout ihwo is not supported.
 [FAIL] conv2d float32 4D input and filter tensors 1D options.bias / sync

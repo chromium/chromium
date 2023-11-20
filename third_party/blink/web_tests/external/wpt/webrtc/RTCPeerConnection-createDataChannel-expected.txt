@@ -1,58 +1,12 @@
 This is a testharness.js-based test.
-Found 50 tests; 46 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] createDataChannel with no argument should throw TypeError
-[PASS] createDataChannel with closed connection should throw InvalidStateError
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] createDataChannel attribute default values
   assert_equals: expected "blob" but got "arraybuffer"
 [FAIL] createDataChannel with provided parameters should initialize attributes to provided values
   assert_equals: expected "blob" but got "arraybuffer"
-[PASS] createDataChannel with label "foo" should succeed
-[PASS] createDataChannel with label null should succeed
-[PASS] createDataChannel with label undefined should succeed
-[PASS] createDataChannel with label lone surrogate should succeed
-[PASS] createDataChannel with ordered false should succeed
-[PASS] createDataChannel with ordered null/undefined should succeed
-[PASS] createDataChannel with maxPacketLifeTime 0 should succeed
-[PASS] createDataChannel with maxRetransmits 0 should succeed
-[PASS] createDataChannel with both maxPacketLifeTime and maxRetransmits undefined should succeed
-[PASS] createDataChannel with both maxPacketLifeTime and maxRetransmits should throw TypeError
-[PASS] createDataChannel with protocol "foo" should succeed
-[PASS] createDataChannel with protocol null should succeed
-[PASS] createDataChannel with protocol undefined should succeed
-[PASS] createDataChannel with protocol lone surrogate should succeed
-[PASS] createDataChannel with id 0 and negotiated not set should succeed, but not set the channel's id
-[PASS] createDataChannel with id 1 and negotiated not set should succeed, but not set the channel's id
-[PASS] createDataChannel with id 65534 and negotiated not set should succeed, but not set the channel's id
 [FAIL] createDataChannel with id 65535 and negotiated not set should succeed, but not set the channel's id
   Failed to execute 'createDataChannel' on 'RTCPeerConnection': RTCDataChannel cannot have id > 65534
-[PASS] createDataChannel with id 0 and negotiated true should succeed, and set the channel's id
-[PASS] createDataChannel with id 1 and negotiated true should succeed, and set the channel's id
 [FAIL] createDataChannel with id 65534 and negotiated true should succeed, and set the channel's id
   Failed to execute 'createDataChannel' on 'RTCPeerConnection': RTCDataChannel creation failed
-[PASS] createDataChannel with id -1 and negotiated not set should throw TypeError
-[PASS] createDataChannel with id 65536 and negotiated not set should throw TypeError
-[PASS] createDataChannel with id -1 should throw TypeError
-[PASS] createDataChannel with id 65535 should throw TypeError
-[PASS] createDataChannel with id 65536 should throw TypeError
-[PASS] createDataChannel with too long label should throw TypeError
-[PASS] createDataChannel with too long label (2 byte unicode) should throw TypeError
-[PASS] createDataChannel with same label used twice should not throw
-[PASS] createDataChannel with negotiated true and id should succeed
-[PASS] createDataChannel with too long protocol should throw TypeError
-[PASS] createDataChannel with too long protocol (2 byte unicode) should throw TypeError
-[PASS] createDataChannel with maximum length label and protocol should succeed
-[PASS] createDataChannel with negotiated false should succeed
-[PASS] createDataChannel with negotiated false and id 42 should ignore the id
-[PASS] createDataChannel with negotiated true and id not defined should throw TypeError
-[PASS] Channels created (after setRemoteDescription) should have id assigned
-[PASS] Reusing a data channel id that is in use should throw OperationError
-[PASS] Reusing a data channel id that is in use (after setRemoteDescription) should throw OperationError
-[PASS] Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) should throw OperationError
-[PASS] New datachannel should be in the connecting state after creation (after connection establishment)
-[PASS] addTrack, then creating datachannel, should negotiate properly
-[PASS] addTrack, then creating datachannel, should negotiate properly when max-bundle is used
-[PASS] New negotiated datachannel should be in the connecting state after creation (after connection establishment)
-[PASS] addTrack, then creating negotiated datachannel, should negotiate properly
-[PASS] addTrack, then creating negotiated datachannel, should negotiate properly when max-bundle is used
 Harness: the test ran to completion.
 

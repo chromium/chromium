@@ -1,9 +1,4 @@
 This is a wdspec test.
-[PASS] test_basic
 [FAIL] test_repeat_new_session
   assert 200 == 500
-[PASS] test_missing_first_match
-[PASS] test_missing_always_match
-[PASS] test_desired
-[PASS] test_ignore_non_spec_fields_in_capabilities
 Harness: the test ran to completion.

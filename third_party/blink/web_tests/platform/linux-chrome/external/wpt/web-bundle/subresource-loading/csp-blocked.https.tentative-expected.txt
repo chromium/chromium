@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] URL matching of CSP should be done based on the subresource URL, not on the bundle URL, when the subresource URL is HTTPS URL.
-[PASS] URL matching of script-src CSP should be done based on the bundle URL when the subresource URL is uuid-in-package: URL.
 [FAIL] Check the CSP violation reports.
   assert_equals: Report count. expected 2 but got 0
 Harness: the test ran to completion.

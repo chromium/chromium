@@ -5,7 +5,4 @@ This is a testharness.js-based test.
   assert_equals: expected "NotAllowedError" but got "Error"
 [FAIL] share() not allowed, as only allowed to share with self
   assert_equals: expected "NotAllowedError" but got "Error"
-[PASS] canShare() not allowed to share by default permissions policy cross-origin
-[PASS] canShare() is allowed by permissions policy to share cross-origin on a particular origin
-[PASS] canShare() with self
 Harness: the test ran to completion.

@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property outline-color value 'currentColor'
-[PASS] Property outline-color value 'red'
 [FAIL] auto computes to itself or to currentColor depending on the value of outline-style
   assert_equals: expected "auto" but got "rgb(255, 0, 0)"
 Harness: the test ran to completion.

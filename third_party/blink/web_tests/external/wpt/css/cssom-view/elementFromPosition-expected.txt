@@ -1,12 +1,6 @@
 This is a testharness.js-based test.
-[PASS] document.elementFromPoint
-[PASS] document.elementFromPoint is a Function
-[PASS] test some point of the element: top left corner
-[PASS] test some point of the element: top line
 [FAIL] test some point of the element: top right corner
   assert_equals: expected true but got false
-[PASS] test some point of the element: left line
-[PASS] test some point of the element: inside
 [FAIL] test some point of the element: right line
   assert_equals: expected true but got false
 [FAIL] test some point of the element: bottom left corner
@@ -15,10 +9,5 @@ This is a testharness.js-based test.
   assert_equals: expected true but got false
 [FAIL] test some point of the element: bottom right corner
   assert_equals: expected true but got false
-[PASS] Point (0, 0), return root element(HTML)
-[PASS]  test negative x 
-[PASS]  test negative y 
-[PASS] test outside of viewport
-[PASS] test the top of layer
 Harness: the test ran to completion.
 

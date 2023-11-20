@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-[PASS] .wrapper 1
-[PASS] .wrapper 2
 [FAIL] .wrapper 3
   assert_equals: \n<div class="wrapper">\n  <canvas></canvas>\n  <div style="display: inline-block;" class="magenta-dotted-border" data-offset-y="0">\n    <div style="display: grid;" class="border-padding-margin" data-offset-y="25"></div>\n  </div>\n</div>\noffsetTop expected 0 but got 1
-[PASS] .wrapper 4
-[PASS] .wrapper 5
-[PASS] .wrapper 6
-[PASS] .wrapper 7
 Harness: the test ran to completion.
 

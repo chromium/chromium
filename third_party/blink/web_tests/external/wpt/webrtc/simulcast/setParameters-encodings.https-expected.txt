@@ -3,7 +3,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to set parameters since getParameters() has never been called on this sender"
 [FAIL] sRD(simulcast offer) can narrow the simulcast envelope when interrupted by a setParameters
   promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to set parameters since getParameters() has never been called on this sender"
-[PASS] a simulcast setParameters followed by a sRD(unicast answer) results in keeping the first encoding
 [FAIL] sRD(unicast answer) interrupted by setParameters(simulcast) results in keeping the first encoding
   promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to set parameters since getParameters() has never been called on this sender"
 [FAIL] sRD(unicast reoffer) interrupted by setParameters(simulcast) results in keeping the first encoding
@@ -14,7 +13,6 @@ This is a testharness.js-based test.
   assert_array_equals: lengths differ, expected array ["foo", "bar"] length 2, got [undefined] length 1
 [FAIL] addTrack, then sRD(simulcast offer) interrupted by a unicast setParameters results in simulcast without the settings from setParameters
   assert_array_equals: lengths differ, expected array ["foo", "bar"] length 2, got [undefined] length 1
-[PASS] getParameters, then sLD(unicast answer) interrupted by a simulcast setParameters results in unicast
 [FAIL] Success task for setLocalDescription(answer) clears [[LastReturnedParameters]]
   assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] Success task for setRemoteDescription(offer) clears [[LastReturnedParameters]]

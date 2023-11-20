@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] SVGAElement.text getting
 [FAIL] Test for anchor 0
   assert_equals: expected (string) "a b c " but got (undefined) undefined
 [FAIL] Test for anchor 1

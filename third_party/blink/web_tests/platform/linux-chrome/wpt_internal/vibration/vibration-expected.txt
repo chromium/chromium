@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] VibrationManager Mojo bindings and mock interfaces are available to tests.
 [FAIL] navigator.vibrate(1234) triggers vibration correctly.
   assert_equals: expected (string) "Vibrate" but got (object) object "[object Object]"
-[PASS] navigator.vibrate(0) triggers cancel correctly.
 Harness: the test ran to completion.

@@ -3,6 +3,5 @@ This is a testharness.js-based test.
   assert_equals: worker error expected (string) "unknown error" but got (undefined) undefined
 [FAIL] treat-as-public to private: failure.
   assert_equals: worker error expected (string) "unknown error" but got (undefined) undefined
-[PASS] public to public: success.
 Harness: the test ran to completion.
 

@@ -1,16 +1,3 @@
 This is a testharness.js-based test.
-[PASS] @font-face matching for quoted and unquoted serif (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted sans-serif (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted cursive (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted fantasy (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted monospace (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted system-ui (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted emoji (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted math (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted fangsong (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted ui-serif (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted ui-sans-serif (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted ui-monospace (drawing text in a canvas)
-[PASS] @font-face matching for quoted and unquoted ui-rounded (drawing text in a canvas)
 Harness: the test ran to completion.
 

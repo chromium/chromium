@@ -1,15 +1,8 @@
 This is a wdspec test.
-[PASS] test_detached_shadow_root[top_context]
-[PASS] test_detached_shadow_root[child_context]
-[PASS] test_stale_element[top_context]
-[PASS] test_stale_element[child_context]
-[PASS] test_element_reference[element]
-[PASS] test_element_reference[shadow-root]
 [FAIL] test_not_supported_nodes[attribute]
   AssertionError: assert 200 == 500
 [FAIL] test_not_supported_nodes[text]
   AssertionError: assert 200 == 500
-[PASS] test_not_supported_nodes[cdata]
 [FAIL] test_not_supported_nodes[processing_instruction]
   AssertionError: assert 200 == 500
 [FAIL] test_not_supported_nodes[comment]

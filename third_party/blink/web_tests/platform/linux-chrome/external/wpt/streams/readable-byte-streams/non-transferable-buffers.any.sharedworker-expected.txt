@@ -1,8 +1,5 @@
 This is a testharness.js-based test.
-[PASS] ReadableStream with byte source: read() with a non-transferable buffer
 [FAIL] ReadableStream with byte source: fill() with a non-transferable buffer
   promise_test: Unhandled rejection with value: object "TypeError: reader.fill is not a function"
-[PASS] ReadableStream with byte source: enqueue() with a non-transferable buffer
-[PASS] ReadableStream with byte source: respondWithNewView() with a non-transferable buffer
 Harness: the test ran to completion.
 

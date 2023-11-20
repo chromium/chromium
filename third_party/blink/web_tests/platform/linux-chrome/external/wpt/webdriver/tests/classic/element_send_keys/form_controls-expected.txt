@@ -1,10 +1,4 @@
 This is a wdspec test.
-[PASS] test_input
-[PASS] test_textarea
-[PASS] test_input_append
-[PASS] test_textarea_append
-[PASS] test_input_insert_when_focused
-[PASS] test_textarea_insert_when_focused
 [FAIL] test_date
   AssertionError: assert '0101-02-01' == '2000-01-01'
 Harness: the test ran to completion.

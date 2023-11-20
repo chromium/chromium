@@ -1,24 +1,8 @@
 This is a testharness.js-based test.
-[PASS] 'text-orientation: mixed' - horizontal-tb
-[PASS] 'text-orientation: upright' - horizontal-tb
-[PASS] 'text-orientation: sideways' - horizontal-tb
-[PASS] Rotation attribute - horizontal-tb
-[PASS] <textPath> - horizontal-tb
-[PASS] 'text-orientation: mixed' - vertical-rl
-[PASS] 'text-orientation: upright' - vertical-rl
-[PASS] 'text-orientation: sideways' - vertical-rl
-[PASS] Rotation attribute - vertical-rl
-[PASS] <textPath> - vertical-rl
-[PASS] 'text-orientation: mixed' - vertical-lr
-[PASS] 'text-orientation: upright' - vertical-lr
-[PASS] 'text-orientation: sideways' - vertical-lr
-[PASS] Rotation attribute - vertical-lr
-[PASS] <textPath> - vertical-lr
 [FAIL] 'text-orientation: mixed' - sideways-rl
   assert_equals: 月 expected 90 but got 0
 [FAIL] 'text-orientation: upright' - sideways-rl
   assert_equals: T expected 90 but got 0
-[PASS] 'text-orientation: sideways' - sideways-rl
 [FAIL] Rotation attribute - sideways-rl
   assert_equals: 木 expected 270.5 but got 180.5
 [FAIL] <textPath> - sideways-rl

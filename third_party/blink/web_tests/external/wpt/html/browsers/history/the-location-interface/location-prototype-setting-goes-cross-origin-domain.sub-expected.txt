@@ -1,20 +1,14 @@
 This is a testharness.js-based test.
-[PASS] Same-origin (for now): the prototype is accessible
-[PASS] Became cross-origin via document.domain: the prototype is now null
 [FAIL] Became cross-origin via document.domain: setting the prototype to an empty object via Object.setPrototypeOf should throw a TypeError
   assert_throws_js: function "() => {\n      Object.setPrototypeOf(target, newValue);\n    }" threw object "SecurityError: Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame." ("SecurityError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] Became cross-origin via document.domain: setting the prototype to an empty object via __proto__ should throw a "SecurityError" DOMException
 [FAIL] Became cross-origin via document.domain: setting the prototype to an empty object via Reflect.setPrototypeOf should return false
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-[PASS] Became cross-origin via document.domain: the prototype must still be null
 [FAIL] Became cross-origin via document.domain: setting the prototype to null via Object.setPrototypeOf should not throw
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-[PASS] Became cross-origin via document.domain: setting the prototype to null via __proto__ should throw a "SecurityError" since it ends up in CrossOriginGetOwnProperty
 [FAIL] Became cross-origin via document.domain: setting the prototype to null via Reflect.setPrototypeOf should return true
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 [FAIL] Became cross-origin via document.domain: setting the prototype to the original value from before going cross-origin via Object.setPrototypeOf should throw a TypeError
   assert_throws_js: function "() => {\n      Object.setPrototypeOf(target, newValue);\n    }" threw object "SecurityError: Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame." ("SecurityError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] Became cross-origin via document.domain: setting the prototype to the original value from before going cross-origin via __proto__ should throw a "SecurityError" DOMException
 [FAIL] Became cross-origin via document.domain: setting the prototype to the original value from before going cross-origin via Reflect.setPrototypeOf should return false
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 Harness: the test ran to completion.

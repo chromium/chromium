@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
 [FAIL] Service Worker responds to fetch event with the referrer policy
   promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[PASS] Service Worker should respond to fetch with the default referrer policy
-[PASS] Service Worker should respond to fetch with the referrer URL when a member of RequestInit is present - Default Referrer
 Harness: the test ran to completion.

@@ -1,16 +1,4 @@
 This is a wdspec test.
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context
-[PASS] test_no_browsing_context
-[PASS] test_basic
-[PASS] test_no_browsing_history
-[PASS] test_seen_nodes[http]
-[PASS] test_seen_nodes[https]
-[PASS] test_seen_nodes[https coop]
-[PASS] test_data_urls
 [FAIL] test_dismissed_beforeunload
   webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
-[PASS] test_fragments
-[PASS] test_history_pushstate
-[PASS] test_removed_iframe
 Harness: the test ran to completion.

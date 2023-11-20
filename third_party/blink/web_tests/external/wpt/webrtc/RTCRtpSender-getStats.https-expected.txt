@@ -3,6 +3,5 @@ This is a testharness.js-based test.
   assert_equals: Expect dictionary.selectedCandidatePairId to be string expected "string" but got "undefined"
 [FAIL] sender.getStats() via addTrack should return stats report containing outbound-rtp stats
   assert_equals: Expect dictionary.selectedCandidatePairId to be string expected "string" but got "undefined"
-[PASS] sender.getStats() should return stats report containing ICE candidate stats
 Harness: the test ran to completion.
 

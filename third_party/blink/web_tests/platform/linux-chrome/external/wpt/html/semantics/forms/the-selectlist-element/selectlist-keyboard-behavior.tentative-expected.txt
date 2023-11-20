@@ -1,12 +1,6 @@
 This is a testharness.js-based test.
-[PASS] defaultbutton: When the listbox is closed, spacebar should open the listbox.
-[PASS] defaultbutton: When the listbox is closed, all arrow keys should open the listbox.
-[PASS] defaultbutton: When the listbox is closed, the enter key should submit the form or do nothing.
-[PASS] defaultbutton: When the listbox is open, the enter key should commit the selected option.
 [FAIL] custombutton: When the listbox is closed, spacebar should open the listbox.
   promise_test: Unhandled rejection with value: "error: Action send_keys failed"
 [FAIL] custombutton: When the listbox is closed, all arrow keys should open the listbox.
   promise_test: Unhandled rejection with value: "error: Action send_keys failed"
-[PASS] custombutton: When the listbox is closed, the enter key should submit the form or do nothing.
-[PASS] custombutton: When the listbox is open, the enter key should commit the selected option.
 Harness: the test ran to completion.

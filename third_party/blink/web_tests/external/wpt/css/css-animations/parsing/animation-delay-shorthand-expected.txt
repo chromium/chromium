@@ -1,26 +1,10 @@
 This is a testharness.js-based test.
-[PASS] e.style['animation-delay'] = "1s" should set the property value
-[PASS] e.style['animation-delay'] = "-1s" should set the property value
 [FAIL] e.style['animation-delay'] = "1s 2s" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['animation-delay'] = "1s, 2s" should set the property value
 [FAIL] e.style['animation-delay'] = "1s 2s, 3s" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['animation-delay'] = "1s, 2s 3s" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['animation-delay'] = "1s, 2s, 3s" should set the property value
-[PASS] e.style['animation-delay'] = "1s 2s 3s" should not set the property value
-[PASS] e.style['animation-delay'] = "0s, 1s 2s 3s" should not set the property value
-[PASS] e.style['animation-delay'] = "1s / 2s" should not set the property value
-[PASS] e.style['animation-delay'] = "1s, 2px" should not set the property value
-[PASS] e.style['animation-delay'] = "#ff0000" should not set the property value
-[PASS] e.style['animation-delay'] = "red" should not set the property value
-[PASS] e.style['animation-delay'] = "thing" should not set the property value
-[PASS] e.style['animation-delay'] = "thing 0%" should not set the property value
-[PASS] e.style['animation-delay'] = "thing 42%" should not set the property value
-[PASS] e.style['animation-delay'] = "thing 100%" should not set the property value
-[PASS] e.style['animation-delay'] = "thing 100px" should not set the property value
-[PASS] e.style['animation-delay'] = "100% thing" should not set the property value
 [FAIL] e.style['animation-delay'] = "1s 2s" should set animation-delay-end
   assert_equals: animation-delay-end should be canonical expected (string) "2s" but got (undefined) undefined
 [FAIL] e.style['animation-delay'] = "1s 2s" should set animation-delay-start

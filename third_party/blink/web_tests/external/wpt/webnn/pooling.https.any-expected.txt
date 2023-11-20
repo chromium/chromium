@@ -23,7 +23,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.layout=nchw / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-[PASS] averagePool2d float32 4D tensor options.layout=nhwc / async
 [FAIL] averagePool2d float32 4D tensor options.roundingType=floor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / async
@@ -32,7 +31,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-[PASS] averagePool2d float32 4D tensor options.dilations with options.strides / async
 [FAIL] maxPool2d float32 4D tensor default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] maxPool2d float32 4D tensor options.windowDimensions / async
@@ -55,7 +53,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] maxPool2d float32 4D tensor options.layout=nchw / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-[PASS] maxPool2d float32 4D tensor options.layout=nhwc / async
 [FAIL] maxPool2d float32 4D tensor options.roundingType=floor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil / async
@@ -64,6 +61,5 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-[PASS] maxPool2d float32 4D tensor options.dilations with options.strides / async
 Harness: the test ran to completion.
 

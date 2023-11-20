@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-[PASS] ReadableStream tee() should not touch Object.prototype properties
-[PASS] ReadableStream tee() should not call the global ReadableStream
 [FAIL] ReadableStream async iterator should use the original values of getReader() and ReadableStreamDefaultReader methods
   promise_test: Unhandled rejection with value: object "TypeError: rs is not async iterable"
-[PASS] tee() should not call Promise.prototype.then()
-[PASS] pipeTo() should not call Promise.prototype.then()
 Harness: the test ran to completion.
 

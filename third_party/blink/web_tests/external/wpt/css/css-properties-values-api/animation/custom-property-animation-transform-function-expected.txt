@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Animating a custom property of type <transform-function>
-[PASS] Animating a custom property of type <transform-function> with a single keyframe
 [FAIL] Animating a custom property of type <transform-function> with additivity
   assert_equals: expected "translateX(350px)" but got "translate(350px)"
 [FAIL] Animating a custom property of type <transform-function> with a single keyframe and additivity

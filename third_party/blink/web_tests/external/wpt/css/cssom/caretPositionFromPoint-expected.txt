@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] document.caretPositionFromPoint() throws when called without the correct parameters
 [FAIL] document.caretPositionFromPoint() should return null for a document with no viewport
   doc.caretPositionFromPoint is not a function
 [FAIL] document.caretPositionFromPoint() should return null if given coordinates outside of the viewport

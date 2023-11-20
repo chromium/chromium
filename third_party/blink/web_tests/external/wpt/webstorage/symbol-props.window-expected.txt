@@ -1,19 +1,7 @@
 This is a testharness.js-based test.
-[PASS] localStorage: plain set + get (loose)
-[PASS] localStorage: plain set + get (strict)
-[PASS] localStorage: defineProperty + get
 [FAIL] localStorage: defineProperty not configurable
   assert_true: configurable expected true got false
-[PASS] localStorage: get with symbol on prototype
-[PASS] localStorage: delete existing property
-[PASS] localStorage: delete non-existent property
-[PASS] sessionStorage: plain set + get (loose)
-[PASS] sessionStorage: plain set + get (strict)
-[PASS] sessionStorage: defineProperty + get
 [FAIL] sessionStorage: defineProperty not configurable
   assert_true: configurable expected true got false
-[PASS] sessionStorage: get with symbol on prototype
-[PASS] sessionStorage: delete existing property
-[PASS] sessionStorage: delete non-existent property
 Harness: the test ran to completion.
 

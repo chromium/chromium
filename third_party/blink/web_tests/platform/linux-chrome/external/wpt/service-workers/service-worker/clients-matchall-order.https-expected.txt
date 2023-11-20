@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Clients.matchAll() returns non-focused controlled windows in creation order.
-[PASS] Clients.matchAll() returns controlled windows in focus order.  Case 1.
-[PASS] Clients.matchAll() returns controlled windows in focus order.  Case 2.
-[PASS] Clients.matchAll() returns non-focused uncontrolled windows in creation order.
 [FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 1.
   assert_equals: expected URL index 0 expected "https://web-platform.test:8444/service-workers/service-worker/clients-matchall-order.https.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-uncontrolled-windows-1&q=2"
 [FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 2.

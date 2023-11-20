@@ -1,23 +1,4 @@
 This is a testharness.js-based test.
-[PASS] sec-fetch-site - Same origin no attributes
-[PASS] sec-fetch-site - Cross-site no attributes
-[PASS] sec-fetch-site - Same site no attributes
-[PASS] sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect no attributes
-[PASS] sec-fetch-site - Cross-Site -> Same Origin no attributes
-[PASS] sec-fetch-site - Cross-Site -> Same-Site no attributes
-[PASS] sec-fetch-site - Cross-Site -> Cross-Site no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same Origin no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same-Site no attributes
-[PASS] sec-fetch-site - Same-Origin -> Cross-Site no attributes
-[PASS] sec-fetch-site - Same-Site -> Same Origin no attributes
-[PASS] sec-fetch-site - Same-Site -> Same-Site no attributes
-[PASS] sec-fetch-site - Same-Site -> Cross-Site no attributes
-[PASS] sec-fetch-mode no attributes
-[PASS] sec-fetch-mode attributes: crossorigin
-[PASS] sec-fetch-mode attributes: crossorigin=anonymous
-[PASS] sec-fetch-mode attributes: crossorigin=use-credentials
-[PASS] sec-fetch-dest no attributes
 [FAIL] sec-fetch-dest attributes: as=audio
   assert_array_equals: expected property 0 to be "audio" but got "empty" (expected array ["audio"] got ["empty"])
 [FAIL] sec-fetch-dest attributes: as=document
@@ -42,6 +23,5 @@ This is a testharness.js-based test.
   assert_array_equals: expected property 0 to be "video" but got "empty" (expected array ["video"] got ["empty"])
 [FAIL] sec-fetch-dest attributes: as=worker
   assert_array_equals: expected property 0 to be "worker" but got "empty" (expected array ["worker"] got ["empty"])
-[PASS] sec-fetch-user no attributes
 Harness: the test ran to completion.
 

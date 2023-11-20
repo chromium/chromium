@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
 [FAIL] Notification.requestPermission must be called from a secure context
   assert_equals: expected "denied" but got "default"
-[PASS] Notification.permission must be called from a secure context
 Harness: the test ran to completion.

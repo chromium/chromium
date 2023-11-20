@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Template content should throw when its ancestor is being appended.
 [FAIL] Template content should throw exception when its ancestor in a different document but connected via host is being append.
   assert_equals: expected Document node with 0 children but got Document node with 2 children
 Harness: the test ran to completion.

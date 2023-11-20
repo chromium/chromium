@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 71 tests; 5 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial namespace CSS: original namespace defined
-[PASS] Partial namespace CSS: member names are unique
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSParserRule interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSParserRule" expected property "CSSParserRule" missing
 [FAIL] CSSParserRule interface object length
@@ -120,7 +116,6 @@ Found 71 tests; 5 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSSParserFunction" expected property "CSSParserFunction" missing
 [FAIL] CSSParserFunction interface: stringifier
   assert_own_property: self does not have own property "CSSParserFunction" expected property "CSSParserFunction" missing
-[PASS] CSS namespace: operation escape(CSSOMString)
 [FAIL] CSS namespace: operation parseStylesheet(CSSStringSource, optional CSSParserOptions)
   assert_own_property: namespace object missing operation "parseStylesheet" expected property "parseStylesheet" missing
 [FAIL] CSS namespace: operation parseRuleList(CSSStringSource, optional CSSParserOptions)

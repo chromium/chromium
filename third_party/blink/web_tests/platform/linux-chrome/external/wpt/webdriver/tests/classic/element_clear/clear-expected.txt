@@ -1,10 +1,8 @@
 This is a wdspec test.
-[PASS] test_null_response_value
 [FAIL] test_no_top_browsing_context
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -15,85 +13,6 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_pointer_interactable
-[PASS] test_keyboard_interactable
-[PASS] test_input[number-42-]
-[PASS] test_input[range-42-50]
-[PASS] test_input[email-foo@example.com-]
-[PASS] test_input[password-password-]
-[PASS] test_input[search-search-]
-[PASS] test_input[tel-999-]
-[PASS] test_input[text-text-]
-[PASS] test_input[url-https://example.com/-]
-[PASS] test_input[color-#ff0000-#000000]
-[PASS] test_input[date-2017-12-26-]
-[PASS] test_input[datetime-2017-12-26T19:48-]
-[PASS] test_input[datetime-local-2017-12-26T19:48-]
-[PASS] test_input[time-19:48-]
-[PASS] test_input[month-2017-11-]
-[PASS] test_input[week-2017-W52-]
-[PASS] test_input_disabled[number]
-[PASS] test_input_disabled[range]
-[PASS] test_input_disabled[email]
-[PASS] test_input_disabled[password]
-[PASS] test_input_disabled[search]
-[PASS] test_input_disabled[tel]
-[PASS] test_input_disabled[text]
-[PASS] test_input_disabled[url]
-[PASS] test_input_disabled[color]
-[PASS] test_input_disabled[date]
-[PASS] test_input_disabled[datetime]
-[PASS] test_input_disabled[datetime-local]
-[PASS] test_input_disabled[time]
-[PASS] test_input_disabled[month]
-[PASS] test_input_disabled[week]
-[PASS] test_input_disabled[file]
-[PASS] test_input_readonly[number]
-[PASS] test_input_readonly[range]
-[PASS] test_input_readonly[email]
-[PASS] test_input_readonly[password]
-[PASS] test_input_readonly[search]
-[PASS] test_input_readonly[tel]
-[PASS] test_input_readonly[text]
-[PASS] test_input_readonly[url]
-[PASS] test_input_readonly[color]
-[PASS] test_input_readonly[date]
-[PASS] test_input_readonly[datetime]
-[PASS] test_input_readonly[datetime-local]
-[PASS] test_input_readonly[time]
-[PASS] test_input_readonly[month]
-[PASS] test_input_readonly[week]
-[PASS] test_input_readonly[file]
-[PASS] test_textarea
-[PASS] test_textarea_disabled
-[PASS] test_textarea_readonly
-[PASS] test_input_file
-[PASS] test_input_file_multiple
-[PASS] test_select
-[PASS] test_button
-[PASS] test_button_with_subtree
-[PASS] test_contenteditable
-[PASS] test_designmode
-[PASS] test_resettable_element_focus_when_empty
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[number-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[range-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[email-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[url-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[color-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[date-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[datetime-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[datetime-local-foo]
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[time-foo]
 [FAIL] test_resettable_element_does_not_satisfy_validation_constraints[month-foo]
   assert False
-[PASS] test_resettable_element_does_not_satisfy_validation_constraints[week-foo]
-[PASS] test_non_editable_inputs[checkbox]
-[PASS] test_non_editable_inputs[radio]
-[PASS] test_non_editable_inputs[hidden]
-[PASS] test_non_editable_inputs[submit]
-[PASS] test_non_editable_inputs[button]
-[PASS] test_non_editable_inputs[image]
-[PASS] test_scroll_into_view
 Harness: the test ran to completion.

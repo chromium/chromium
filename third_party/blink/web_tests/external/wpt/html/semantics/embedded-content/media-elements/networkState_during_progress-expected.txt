@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-[PASS] audio events - networkState during progress
 [FAIL] audioElement.networkState should be NETWORK_LOADING during progress event
   assert_equals: expected 2 but got 1
-[PASS] video events - networkState during progress
 [FAIL] videoElement.networkState should be NETWORK_LOADING during progress event
   assert_equals: expected 2 but got 1
 Harness: the test ran to completion.

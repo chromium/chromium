@@ -1,12 +1,6 @@
 This is a testharness.js-based test.
-[PASS] Loading data…
-[PASS] Parsing: <javascript:/example.com/> against <http://example.org/foo/bar>
-[PASS] Parsing: <javascript:example.com/> against <http://example.org/foo/bar>
-[PASS] Parsing: <javascript:/example.com/> without base
-[PASS] Parsing: <javascript:example.com/> without base
 [FAIL] Parsing: <javascript:/../> without base
   assert_equals: href expected "javascript:/" but got "javascript:/../"
-[PASS] Parsing: <> without base
 [FAIL] Parsing: <javascript://example.com:8080/pathname?search#hash> without base
   assert_equals: host expected "example.com:8080" but got ""
 [FAIL] Parsing: <javascript:///test> without base

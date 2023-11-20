@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] table 1
-[PASS] table 2
-[PASS] table 3
-[PASS] table 4
 [FAIL PASS] table 5
 [FAIL PASS] table 6
 Harness: the test ran to completion.

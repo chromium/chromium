@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 149 tests; 11 PASS, 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceL1 float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (reduceL1) is not supported."
 [FAIL] reduceL1 float32 1D tensor all negative default options / async
@@ -150,21 +150,10 @@ Found 149 tests; 11 PASS, 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (reduceMax) is not supported."
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (reduceMax) is not supported."
-[PASS] reduceMean float32 1D tensor all positive default options / async
-[PASS] reduceMean float32 1D tensor all negative default options / async
-[PASS] reduceMean float32 1D tensor all positive integers default options / async
-[PASS] reduceMean float32 1D tensor all negative integers default options / async
-[PASS] reduceMean float32 2D tensor default options / async
-[PASS] reduceMean float32 3D tensor default options / async
-[PASS] reduceMean float32 4D tensor default options / async
-[PASS] reduceMean float32 5D tensor default options / async
-[PASS] reduceMean float32 3D tensor options.axes / async
 [FAIL] reduceMean float32 4D tensor options.axes / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter."
-[PASS] reduceMean float32 3D tensor options.keepDimensions=false / async
 [FAIL] reduceMean float32 3D tensor options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: XNNPACK can't support keep dimensions."
-[PASS] reduceMean float32 4D tensor options.keepDimensions=false / async
 [FAIL] reduceMean float32 4D tensor options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: XNNPACK can't support keep dimensions."
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=false / async

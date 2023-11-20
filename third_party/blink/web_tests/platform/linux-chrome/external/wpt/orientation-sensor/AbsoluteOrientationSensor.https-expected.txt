@@ -1,24 +1,4 @@
 This is a testharness.js-based test.
-[PASS] AbsoluteOrientationSensor: Test that onerror is sent when permissions are not granted.
-[PASS] AbsoluteOrientationSensor: Test that onerror is send when start() call has failed.
-[PASS] AbsoluteOrientationSensor: Test that frequency is capped to allowed maximum.
-[PASS] AbsoluteOrientationSensor: Test that frequency is capped to the maximum supported frequency.
-[PASS] AbsoluteOrientationSensor: Test that frequency is limited to the minimum supported frequency.
-[PASS] AbsoluteOrientationSensor: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
-[PASS] AbsoluteOrientationSensor: Test that sensor can be constructed within an iframe allowed to use feature policy.
-[PASS] AbsoluteOrientationSensor: Test that 'onreading' is called and sensor reading is valid.
-[PASS] AbsoluteOrientationSensor: sensor reading is correct.
-[PASS] AbsoluteOrientationSensor: Test that readings are all mapped to expectedReadings correctly.
-[PASS] AbsoluteOrientationSensor: sensor timestamp is updated when time passes.
-[PASS] AbsoluteOrientationSensor: Test that sensor can be successfully created and its states are correct.
-[PASS] AbsoluteOrientationSensor: no exception is thrown when calling start() on already started sensor.
-[PASS] AbsoluteOrientationSensor: no exception is thrown when calling stop() on already stopped sensor.
-[PASS] AbsoluteOrientationSensor: Test that fresh reading is fetched on start().
 [FAIL] AbsoluteOrientationSensor: Readings are not delivered when the page has no visibility
   assert_true: expected true got false
-[PASS] AbsoluteOrientationSensor: frequency hint works.
-[PASS] AbsoluteOrientationSensor: Readings delivered by shared platform sensor are immediately accessible to all sensors.
-[PASS] AbsoluteOrientationSensor: throw 'TypeError' if frequency is invalid.
-[PASS] AbsoluteOrientationSensor.quaternion return a four-element FrozenArray.
-[PASS] AbsoluteOrientationSensor.populateMatrix() method works correctly.
 Harness: the test ran to completion.

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 90 tests; 0 PASS, 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: abs is not implemented.
 [FAIL] abs float32 2D tensor / sync

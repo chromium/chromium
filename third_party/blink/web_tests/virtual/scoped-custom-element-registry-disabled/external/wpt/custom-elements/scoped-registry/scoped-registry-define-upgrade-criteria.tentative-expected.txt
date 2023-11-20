@@ -1,7 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] Adding definition to global registry should not affect shadow roots using scoped registry
   Illegal constructor
-[PASS] Adding definition to global registry should affect shadow roots also using global registry
 [FAIL] Adding definition to scoped registry should affect all associated shadow roots
   Illegal constructor
 [FAIL] Adding definition to scoped registry should not affect document tree scope
@@ -22,6 +21,5 @@ This is a testharness.js-based test.
   Illegal constructor
 [FAIL] Adding definition to scoped registry should not upgrade nodes in detached frames
   Illegal constructor
-[PASS] Adding definition to scoped registry should not upgrade nodes in closed windows
 Harness: the test ran to completion.
 

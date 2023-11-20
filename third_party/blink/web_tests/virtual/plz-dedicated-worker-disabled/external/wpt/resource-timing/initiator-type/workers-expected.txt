@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[PASS] The initiator type for classic worker must be 'other'
-[PASS] The initiator type for module worker must be 'other'
 Harness: the test ran to completion.
 

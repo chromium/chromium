@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-[PASS] setRemoteDescription with invalid type and invalid SDP should reject with TypeError
 [FAIL] setRemoteDescription() with invalid SDP and stable state should reject with InvalidStateError
   assert_throws_dom: function "() => { throw e }" threw object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to parse SessionDescription. invalid Expect line: v=" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
-[PASS] Negotiation should fire signalingsstate events
-[PASS] Calling setRemoteDescription() again after one round of remote-offer/local-answer should succeed
-[PASS] Switching role from offerer to answerer after going back to stable state should succeed
-[PASS] Closing on setRemoteDescription() neither resolves nor rejects
-[PASS] Closing on rollback neither resolves nor rejects
 Harness: the test ran to completion.
 

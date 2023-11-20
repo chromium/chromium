@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: Unexpected animation count expected 5 but got 6
-[PASS] Ensure that transition easing functions are properly applied.
 Harness: the test ran to completion.
 

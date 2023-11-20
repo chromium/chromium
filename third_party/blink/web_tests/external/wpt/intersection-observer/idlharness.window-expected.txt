@@ -1,49 +1,5 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Element includes ParentNode: member names are unique
-[PASS] Element includes NonDocumentTypeChildNode: member names are unique
-[PASS] Element includes ChildNode: member names are unique
-[PASS] Element includes Slottable: member names are unique
-[PASS] IntersectionObserver interface: existence and properties of interface object
-[PASS] IntersectionObserver interface object length
-[PASS] IntersectionObserver interface object name
-[PASS] IntersectionObserver interface: existence and properties of interface prototype object
-[PASS] IntersectionObserver interface: existence and properties of interface prototype object's "constructor" property
-[PASS] IntersectionObserver interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] IntersectionObserver interface: attribute root
-[PASS] IntersectionObserver interface: attribute rootMargin
-[PASS] IntersectionObserver interface: attribute scrollMargin
-[PASS] IntersectionObserver interface: attribute thresholds
-[PASS] IntersectionObserver interface: operation observe(Element)
-[PASS] IntersectionObserver interface: operation unobserve(Element)
-[PASS] IntersectionObserver interface: operation disconnect()
-[PASS] IntersectionObserver interface: operation takeRecords()
-[PASS] IntersectionObserver must be primary interface of observer
-[PASS] Stringification of observer
-[PASS] IntersectionObserver interface: observer must inherit property "root" with the proper type
-[PASS] IntersectionObserver interface: observer must inherit property "rootMargin" with the proper type
-[PASS] IntersectionObserver interface: observer must inherit property "scrollMargin" with the proper type
-[PASS] IntersectionObserver interface: observer must inherit property "thresholds" with the proper type
-[PASS] IntersectionObserver interface: observer must inherit property "observe(Element)" with the proper type
-[PASS] IntersectionObserver interface: calling observe(Element) on observer with too few arguments must throw TypeError
-[PASS] IntersectionObserver interface: observer must inherit property "unobserve(Element)" with the proper type
-[PASS] IntersectionObserver interface: calling unobserve(Element) on observer with too few arguments must throw TypeError
-[PASS] IntersectionObserver interface: observer must inherit property "disconnect()" with the proper type
-[PASS] IntersectionObserver interface: observer must inherit property "takeRecords()" with the proper type
-[PASS] IntersectionObserverEntry interface: existence and properties of interface object
 [FAIL] IntersectionObserverEntry interface object length
   assert_equals: wrong value for IntersectionObserverEntry.length expected 1 but got 0
-[PASS] IntersectionObserverEntry interface object name
-[PASS] IntersectionObserverEntry interface: existence and properties of interface prototype object
-[PASS] IntersectionObserverEntry interface: existence and properties of interface prototype object's "constructor" property
-[PASS] IntersectionObserverEntry interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] IntersectionObserverEntry interface: attribute time
-[PASS] IntersectionObserverEntry interface: attribute rootBounds
-[PASS] IntersectionObserverEntry interface: attribute boundingClientRect
-[PASS] IntersectionObserverEntry interface: attribute intersectionRect
-[PASS] IntersectionObserverEntry interface: attribute isIntersecting
-[PASS] IntersectionObserverEntry interface: attribute intersectionRatio
-[PASS] IntersectionObserverEntry interface: attribute target
 Harness: the test ran to completion.
 

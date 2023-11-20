@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] insertparagraph  starting bold
-[PASS] insertparagraph  starting not bold
-[PASS] insertlinebreak  starting bold
-[PASS] insertlinebreak  starting not bold
 [FAIL] delete  starting bold
   assert_equals: bold state expected false but got true
 [FAIL] delete  starting not bold
@@ -23,8 +19,6 @@ This is a testharness.js-based test.
   assert_equals: bold state expected false but got true
 [FAIL] indent  starting not bold
   assert_equals: bold state expected true but got false
-[PASS] outdent  starting bold
-[PASS] outdent  starting not bold
 [FAIL] justifyleft  starting bold
   assert_equals: bold state expected false but got true
 [FAIL] justifyleft  starting not bold
@@ -49,13 +43,9 @@ This is a testharness.js-based test.
   assert_equals: bold state expected false but got true
 [FAIL] formatblock blockquote starting not bold
   assert_equals: bold state expected true but got false
-[PASS] inserthorizontalrule  starting bold
 [FAIL] inserthorizontalrule  starting not bold
   assert_equals: bold state expected true but got false
-[PASS] insertimage a starting bold
 [FAIL] insertimage a starting not bold
   assert_equals: bold state expected true but got false
-[PASS] inserttext bar starting bold
-[PASS] inserttext bar starting not bold
 Harness: the test ran to completion.
 

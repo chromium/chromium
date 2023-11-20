@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] Evaled the script via eval, successful import
   promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/imports-a.js?1"
-[PASS] Evaled the script via eval, failed import
 [FAIL] Evaled the script via Function, successful import
   promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/imports-a.js?2"
-[PASS] Evaled the script via Function, failed import
 Harness: the test ran to completion.
 

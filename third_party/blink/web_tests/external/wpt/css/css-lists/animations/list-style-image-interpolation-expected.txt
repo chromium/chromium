@@ -1,290 +1,136 @@
 This is a testharness.js-based test.
-Found 220 tests; 154 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from neutral to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
-[PASS] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0) should be [none]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [initial] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [inherit] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/blue-20.png)]
-[PASS] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/blue-20.png)]
 [FAIL] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/blue-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / blue - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [unset] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/stripes-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.5) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.5 ) "
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/stripes-20.png)]
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.5) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.5 ) "
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/stripes-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
-[PASS] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
   assert_equals: expected "none " but got "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (-0.3) should be [none]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0) should be [none]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.3) should be [none]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [none] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (0.6) should be [url(../resources/stripes-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , url ( http : / / web - platform.test : 8001 / ... / stripes - 20.png ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1) should be [url(../resources/stripes-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [url(../resources/stripes-20.png)] at (1.5) should be [url(../resources/stripes-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../resources/green-20.png)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../resources/green-20.png)]
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../resources/green-20.png)]
   assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green - 20.png ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] Web Animations: property <list-style-image> from [url(../resources/green-20.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
-[PASS] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
 [FAIL] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
   assert_equals: expected "linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
   assert_equals: expected "linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Transitions with transition: all: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
-[PASS] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
 [FAIL] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
   assert_equals: expected "linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] CSS Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
-[PASS] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
-[PASS] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
 [FAIL] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
   assert_equals: expected "linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.3 ) "
 [FAIL] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
   assert_equals: expected "linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) " but got "- webkit - cross - fade ( linear - gradient ( - 45deg , rgb ( 255 , 0 , 0 ) , rgb ( 255 , 255 , 0 ) ) , linear - gradient ( 45deg , rgb ( 0 , 0 , 255 ) , rgb ( 255 , 165 , 0 ) ) , 0.6 ) "
-[PASS] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
-[PASS] Web Animations: property <list-style-image> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
 Harness: the test ran to completion.
 

@@ -1,13 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Updating the playback rate maintains the current time
-[PASS] Updating the playback rate while running makes the animation pending
-[PASS] Updating the playback rate on a play-pending animation maintains the current time
-[PASS] Updating the playback rate on a pause-pending animation maintains the current time
-[PASS] If a pending playback rate is set multiple times, the latest wins
-[PASS] In the idle state, the playback rate is applied immediately
-[PASS] In the paused state, the playback rate is applied immediately
-[PASS] Updating the playback rate on a finished animation maintains the current time
-[PASS] Updating the playback rate to zero on a finished animation maintains the current time
 [FAIL] Updating the negative playback rate with the unresolved current time and a positive infinite associated effect end should not throw an exception
   assert_equals: We apply the pending playback rate immediately if the current time is unresolved expected -1 but got 1
 Harness: the test ran to completion.

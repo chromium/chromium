@@ -115,16 +115,6 @@ This is a wdspec test.
   KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host}/#ref1-https://{wpt_host}/#ref2]
   AssertionError
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/-https://some.other.host/]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}:1234/-https://{wpt_host}:5678/]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/-https://{wpt_host}:5678/]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/path-https://{wpt_host}/other/path]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/path-https://{wpt_host}/path/continued]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/pathcase-https://{wpt_host}/PATHCASE]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/?searchcase-https://{wpt_host}/?SEARCHCASE]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/?key-https://{wpt_host}/?otherkey]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/?key-https://{wpt_host}/?key=value]
-[PASS] test_string_patterns_not_matching[https://{wpt_host}/?a=b&c=d-https://{wpt_host}/?c=d&a=b]
 [FAIL] test_string_patterns_not_matching[https://{wpt_host}/??-https://{wpt_host}/?]
   AssertionError
 Harness: the test ran to completion.

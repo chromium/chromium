@@ -1,8 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] object.contentWindow
   assert_equals: The contentWindow of the object element should be null as it is showing fallback content. expected null but got object "[object Window]"
-[PASS] object.contentWindow.name
-[PASS] object.width
-[PASS] object.height
 Harness: the test ran to completion.
 

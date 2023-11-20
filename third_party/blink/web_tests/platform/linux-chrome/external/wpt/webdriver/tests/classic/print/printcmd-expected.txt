@@ -1,33 +1,4 @@
 This is a wdspec test.
-[PASS] test_no_top_browsing_context
-[PASS] test_no_browsing_context
-[PASS] test_html_document
 [FAIL] test_large_html_document
   webdriver.error.ScriptTimeoutException: script timeout (500): script timeout
-[PASS] test_page_ranges_document[ranges0-expected0]
-[PASS] test_page_ranges_document[ranges1-expected1]
-[PASS] test_page_ranges_document[ranges2-expected2]
-[PASS] test_page_ranges_document[ranges3-expected3]
-[PASS] test_page_ranges_document[ranges4-expected4]
-[PASS] test_page_ranges_document[ranges5-expected5]
-[PASS] test_page_ranges_document[ranges6-expected6]
-[PASS] test_page_ranges_document[ranges7-expected7]
-[PASS] test_page_ranges_document[ranges8-expected8]
-[PASS] test_page_ranges_document[ranges9-expected9]
-[PASS] test_page_ranges_document[ranges10-expected10]
-[PASS] test_page_ranges_invalid[options0]
-[PASS] test_page_ranges_invalid[options1]
-[PASS] test_page_ranges_invalid[options2]
-[PASS] test_page_ranges_invalid[options3]
-[PASS] test_page_ranges_invalid[options4]
-[PASS] test_page_ranges_invalid[options5]
-[PASS] test_page_ranges_invalid[options6]
-[PASS] test_page_ranges_invalid[options7]
-[PASS] test_page_ranges_invalid[options8]
-[PASS] test_page_ranges_invalid[options9]
-[PASS] test_page_ranges_invalid[options10]
-[PASS] test_page_ranges_invalid[options11]
-[PASS] test_page_ranges_invalid[options12]
-[PASS] test_page_ranges_invalid[options13]
-[PASS] test_page_ranges_invalid[options14]
 Harness: the test ran to completion.

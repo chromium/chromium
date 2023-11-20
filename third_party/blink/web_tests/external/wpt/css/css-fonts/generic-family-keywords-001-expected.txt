@@ -1,13 +1,6 @@
 This is a testharness.js-based test.
-[PASS] @font-face matching for quoted and unquoted serif
-[PASS] @font-face matching for quoted and unquoted sans-serif
-[PASS] @font-face matching for quoted and unquoted cursive
-[PASS] @font-face matching for quoted and unquoted fantasy
-[PASS] @font-face matching for quoted and unquoted monospace
-[PASS] @font-face matching for quoted and unquoted system-ui
 [FAIL] @font-face matching for quoted and unquoted emoji
   assert_equals: unquoted emoji does not match @font-face rule expected 25 but got 50
-[PASS] @font-face matching for quoted and unquoted math
 [FAIL] @font-face matching for quoted and unquoted fangsong
   assert_equals: unquoted fangsong does not match @font-face rule expected 25 but got 50
 [FAIL] @font-face matching for quoted and unquoted ui-serif

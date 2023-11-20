@@ -3,7 +3,6 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 200 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -14,31 +13,8 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_property_non_existent
-[PASS] test_content_attribute
-[PASS] test_idl_attribute
-[PASS] test_primitives["foobar"-foobar]
-[PASS] test_primitives[42-42]
-[PASS] test_primitives[js_primitive2-py_primitive2]
-[PASS] test_primitives[js_primitive3-py_primitive3]
-[PASS] test_primitives[null-None]
-[PASS] test_primitives[undefined-None]
-[PASS] test_collection_dom_token_list
-[PASS] test_primitives_set_by_execute_script["foobar"-foobar]
-[PASS] test_primitives_set_by_execute_script[42-42]
-[PASS] test_primitives_set_by_execute_script[js_primitive2-py_primitive2]
-[PASS] test_primitives_set_by_execute_script[js_primitive3-py_primitive3]
-[PASS] test_primitives_set_by_execute_script[null-None]
-[PASS] test_primitives_set_by_execute_script[undefined-None]
-[PASS] test_web_reference[element-WebElement]
 [FAIL] test_web_reference[frame-WebFrame]
   AssertionError: javascript error (500): javascript error: circular reference
-[PASS] test_web_reference[shadowRoot-ShadowRoot]
 [FAIL] test_web_reference[window-WebWindow]
   AssertionError: javascript error (500): javascript error: circular reference
-[PASS] test_mutated_element
-[PASS] test_anchor_href[relative]
-[PASS] test_anchor_href[absolute]
 Harness: the test ran to completion.

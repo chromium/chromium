@@ -1,9 +1,4 @@
 This is a testharness.js-based test.
-[PASS] "foo\0" becomes "foo�"
-[PASS] "f\0oo" becomes "f�oo"
-[PASS] "\0foo" becomes "�foo"
-[PASS] "\0" becomes "�"
-[PASS] "\0\0\0" becomes "���"
 [FAIL] "fooU+d800" becomes "foo�"
   assert_equals: expected "foo\\ufffd" but got "fooU+d800"
 [FAIL] "fU+d800oo" becomes "f�oo"

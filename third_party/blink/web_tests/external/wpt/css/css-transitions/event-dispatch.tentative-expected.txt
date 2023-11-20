@@ -1,32 +1,7 @@
 This is a testharness.js-based test.
-[PASS] Idle -> Pending or Before
-[PASS] Idle -> Before
-[PASS] Idle or Pending -> Active
-[PASS] Idle or Pending -> After
-[PASS] Before -> Idle (display: none)
-[PASS] Before -> Idle (Animation.timeline = null)
-[PASS] Before -> Active
-[PASS] Before -> After
-[PASS] Active -> Idle, no delay (display: none)
-[PASS] Active -> Idle, no delay (Animation.timeline = null)
-[PASS] Active -> Idle, with positive delay (display: none)
-[PASS] Active -> Idle, with positive delay (Animation.timeline = null)
-[PASS] Active -> Idle, with negative delay (display: none)
 [FAIL] Active -> Idle, with negative delay (Animation.timeline = null)
   assert_equals: expected 0 but got 100
-[PASS] Active -> Before
-[PASS] Active -> After
-[PASS] After -> Before
-[PASS] After -> Active
-[PASS] Calculating the interval start and end time with negative start delay.
 [FAIL] Calculating the interval start and end time with negative end delay.
   assert_equals: expected 50 but got 100
-[PASS] Call Animation.cancel after canceling transition.
-[PASS] Restart transition after canceling transition immediately
-[PASS] Call Animation.cancel after restarting transition immediately
-[PASS] Set timeline and play transition after clear the timeline
-[PASS] Set null target effect after canceling the transition
-[PASS] Cancel the transition after clearing the target effect
-[PASS] Cancel the transition after it finishes
 Harness: the test ran to completion.
 

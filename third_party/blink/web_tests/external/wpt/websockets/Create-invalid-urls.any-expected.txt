@@ -3,11 +3,5 @@ This is a testharness.js-based test.
   assert_throws_dom: function "() => new WebSocket(input)" did not throw
 [FAIL] new WebSocket("wss://foo bar.com/") should throw a "SyntaxError" DOMException
   assert_throws_dom: function "() => new WebSocket(input)" did not throw
-[PASS] new WebSocket("ftp://web-platform.test:8001/") should throw a "SyntaxError" DOMException
-[PASS] new WebSocket("mailto:example@example.org") should throw a "SyntaxError" DOMException
-[PASS] new WebSocket("about:blank") should throw a "SyntaxError" DOMException
-[PASS] new WebSocket("http://web-platform.test:8001/#") should throw a "SyntaxError" DOMException
-[PASS] new WebSocket("http://web-platform.test:8001/#test") should throw a "SyntaxError" DOMException
-[PASS] new WebSocket("#test") should throw a "SyntaxError" DOMException
 Harness: the test ran to completion.
 

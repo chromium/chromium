@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] document.execCommand("inserttext") should not change the DOM or fire textupdate
-[PASS] document.execCommand("bold") should not change the DOM or fire textupdate
-[PASS] queryCommandState, queryCommandvalue, and queryCommandInterm should always return false
 [FAIL] document.execCommand("copy") should work but document.execCommand("cut") should not change the DOM or the clipboard
   assert_true: 'copy' always returns true regardless of whether it did anything expected true got false
 Harness: the test ran to completion.

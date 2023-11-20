@@ -1,41 +1,7 @@
 This is a testharness.js-based test.
-Found 66 tests; 57 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
-[PASS] idl_test validation
-[PASS] Partial interface HTMLVideoElement: original interface defined
-[PASS] Partial interface HTMLVideoElement: member names are unique
-[PASS] Partial interface Document: original interface defined
-[PASS] Partial interface Document: member names are unique
-[PASS] Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
-[PASS] Partial interface mixin DocumentOrShadowRoot: member names are unique
-[PASS] Partial interface Document[2]: member names are unique
-[PASS] Partial interface mixin DocumentOrShadowRoot[2]: member names are unique
-[PASS] Partial interface Document[3]: member names are unique
-[PASS] Document includes GlobalEventHandlers: member names are unique
-[PASS] HTMLElement includes GlobalEventHandlers: member names are unique
-[PASS] HTMLElement includes ElementContentEditable: member names are unique
-[PASS] HTMLElement includes HTMLOrSVGElement: member names are unique
-[PASS] Document includes NonElementParentNode: member names are unique
-[PASS] DocumentFragment includes NonElementParentNode: member names are unique
-[PASS] Document includes DocumentOrShadowRoot: member names are unique
-[PASS] ShadowRoot includes DocumentOrShadowRoot: member names are unique
-[PASS] Document includes ParentNode: member names are unique
-[PASS] DocumentFragment includes ParentNode: member names are unique
-[PASS] Element includes ParentNode: member names are unique
-[PASS] Element includes NonDocumentTypeChildNode: member names are unique
-[PASS] Element includes ChildNode: member names are unique
-[PASS] Element includes Slottable: member names are unique
-[PASS] Document includes XPathEvaluatorBase: member names are unique
-[PASS] PictureInPictureWindow interface: existence and properties of interface object
-[PASS] PictureInPictureWindow interface object length
-[PASS] PictureInPictureWindow interface object name
-[PASS] PictureInPictureWindow interface: existence and properties of interface prototype object
-[PASS] PictureInPictureWindow interface: existence and properties of interface prototype object's "constructor" property
-[PASS] PictureInPictureWindow interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] PictureInPictureWindow interface: attribute width
-[PASS] PictureInPictureWindow interface: attribute height
-[PASS] PictureInPictureWindow interface: attribute onresize
 [FAIL] PictureInPictureWindow must be primary interface of pipw
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 [FAIL] Stringification of pipw
@@ -46,33 +12,10 @@ Found 66 tests; 57 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 [FAIL] PictureInPictureWindow interface: pipw must inherit property "onresize" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
-[PASS] PictureInPictureEvent interface: existence and properties of interface object
-[PASS] PictureInPictureEvent interface object length
-[PASS] PictureInPictureEvent interface object name
-[PASS] PictureInPictureEvent interface: existence and properties of interface prototype object
-[PASS] PictureInPictureEvent interface: existence and properties of interface prototype object's "constructor" property
-[PASS] PictureInPictureEvent interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] PictureInPictureEvent interface: attribute pictureInPictureWindow
 [FAIL] PictureInPictureEvent must be primary interface of new PictureInPictureEvent("type", { pictureInPictureWindow: pipw })
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 [FAIL] Stringification of new PictureInPictureEvent("type", { pictureInPictureWindow: pipw })
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 [FAIL] PictureInPictureEvent interface: new PictureInPictureEvent("type", { pictureInPictureWindow: pipw }) must inherit property "pictureInPictureWindow" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
-[PASS] HTMLVideoElement interface: operation requestPictureInPicture()
-[PASS] HTMLVideoElement interface: attribute onenterpictureinpicture
-[PASS] HTMLVideoElement interface: attribute onleavepictureinpicture
-[PASS] HTMLVideoElement interface: attribute disablePictureInPicture
-[PASS] HTMLVideoElement interface: video must inherit property "requestPictureInPicture()" with the proper type
-[PASS] HTMLVideoElement interface: video must inherit property "onenterpictureinpicture" with the proper type
-[PASS] HTMLVideoElement interface: video must inherit property "onleavepictureinpicture" with the proper type
-[PASS] HTMLVideoElement interface: video must inherit property "disablePictureInPicture" with the proper type
-[PASS] DocumentOrShadowRoot interface: document must inherit property "pictureInPictureElement" with the proper type
-[PASS] Document interface: attribute pictureInPictureEnabled
-[PASS] Document interface: operation exitPictureInPicture()
-[PASS] Document interface: attribute pictureInPictureElement
-[PASS] Document interface: document must inherit property "pictureInPictureEnabled" with the proper type
-[PASS] Document interface: document must inherit property "exitPictureInPicture()" with the proper type
-[PASS] Document interface: document must inherit property "pictureInPictureElement" with the proper type
-[PASS] ShadowRoot interface: attribute pictureInPictureElement
 Harness: the test ran to completion.

@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] request Picture-in-Picture requires a user gesture
-[PASS] request Picture-in-Picture requires loaded metadata for the video element
-[PASS] request Picture-in-Picture requires video track for the video element
 [FAIL] request Picture-in-Picture resolves on user click
   promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
 Harness: the test ran to completion.

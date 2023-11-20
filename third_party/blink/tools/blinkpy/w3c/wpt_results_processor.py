@@ -666,8 +666,7 @@ class WPTResultsProcessor:
         expected_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
         if result.testharness_results:
-            actual_text = format_testharness_baseline(
-                result.get_result(), '/html/dom/reflection' in result.name)
+            actual_text = format_testharness_baseline(result.get_result())
             artifacts.CreateArtifact('actual_text', actual_subpath,
                                      actual_text.encode())
             if self.reset_results and self._iteration == 0 and result.actual not in {

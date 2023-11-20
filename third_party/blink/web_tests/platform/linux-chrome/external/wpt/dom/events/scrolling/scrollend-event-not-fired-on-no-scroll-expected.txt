@@ -1,7 +1,3 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
-[PASS] No scroll via wheel on div shouldn't fire scrollend.
-[PASS] No scroll via keys on div shouldn't fire scrollend.
-[PASS] No scroll via wheel on document shouldn't fire scrollend.
-[PASS] No scroll via keys on document shouldn't fire scrollend.
 Harness: the test ran to completion.

@@ -1,15 +1,6 @@
 This is a wdspec test.
-[PASS] test_invalid_browsing_context
-[PASS] test_key_backspace
-[PASS] test_key_codepoint[\U0001f604]
-[PASS] test_key_codepoint[\U0001f60d]
 [FAIL] test_key_codepoint[\u0ba8\u0bbf]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid key value: நி)
 [FAIL] test_key_codepoint[\u1100\u1161\u11a8]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid key value: 각)
-[PASS] test_key_shadow_tree[outer-open]
-[PASS] test_key_shadow_tree[outer-closed]
-[PASS] test_key_shadow_tree[inner-open]
-[PASS] test_key_shadow_tree[inner-closed]
-[PASS] test_null_response_value
 Harness: the test ran to completion.

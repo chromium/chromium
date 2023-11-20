@@ -1,12 +1,4 @@
 This is a testharness.js-based test.
-[PASS] document.scripts should not contain shadow nodes
-[PASS] document.all should not contain shadow nodes
-[PASS] document.forms should not contain shadow nodes
-[PASS] document.images should not contain shadow nodes
-[PASS] document.links should not contain shadow nodes
-[PASS] document.anchors should not contain shadow nodes
-[PASS] document.embeds should not contain shadow nodes
-[PASS] document.plugins should not contain shadow nodes
 [FAIL] document.applets should not contain any nodes
   assert_equals: expected 0 but got 1
 Harness: the test ran to completion.

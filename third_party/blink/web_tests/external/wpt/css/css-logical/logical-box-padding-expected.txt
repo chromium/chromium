@@ -1,20 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Test that logical padding-* properties are supported.
-[PASS] Test that padding-inline shorthand sets longhands and serializes correctly.
-[PASS] Test that padding-block shorthand sets longhands and serializes correctly.
-[PASS] Test that padding shorthand sets longhands and serializes correctly.
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
 [FAIL] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', padding-bottom expected "1px" but got "4px"
 [FAIL] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
@@ -23,10 +7,6 @@ This is a testharness.js-based test.
   assert_equals: 'padding-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', padding-block-end expected "1px" but got "4px"
 [FAIL] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: 'padding-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', padding-block-end expected "1px" but got "4px"
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
 [FAIL] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', padding-top expected "1px" but got "3px"
 [FAIL] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
@@ -35,10 +15,6 @@ This is a testharness.js-based test.
   assert_equals: 'padding-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', padding-left expected "1px" but got "5px"
 [FAIL] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: 'padding-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', padding-left expected "1px" but got "5px"
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
 [FAIL] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', padding-bottom expected "1px" but got "4px"
 [FAIL] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
@@ -47,10 +23,6 @@ This is a testharness.js-based test.
   assert_equals: 'padding-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', padding-left expected "1px" but got "5px"
 [FAIL] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: 'padding-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', padding-left expected "1px" but got "5px"
-[PASS] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that padding-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that padding-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
 [FAIL] Test that logical padding-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', padding-top expected "1px" but got "3px"
 [FAIL] Test that padding-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.

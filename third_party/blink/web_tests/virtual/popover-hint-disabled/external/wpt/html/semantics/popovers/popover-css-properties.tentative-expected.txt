@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 10 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property popover-show-delay value '0s'
   assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property popover-show-delay value '0ms'
@@ -18,11 +18,6 @@ Found 76 tests; 10 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['popover-show-delay'] = "inherit" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['popover-show-delay'] = "0" should not set the property value
-[PASS] e.style['popover-show-delay'] = "foo" should not set the property value
-[PASS] e.style['popover-show-delay'] = "-1s" should not set the property value
-[PASS] e.style['popover-show-delay'] = "none" should not set the property value
-[PASS] e.style['popover-show-delay'] = "auto" should not set the property value
 [FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
@@ -89,11 +84,6 @@ Found 76 tests; 10 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['popover-hide-delay'] = "inherit" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['popover-hide-delay'] = "0" should not set the property value
-[PASS] e.style['popover-hide-delay'] = "foo" should not set the property value
-[PASS] e.style['popover-hide-delay'] = "-1s" should not set the property value
-[PASS] e.style['popover-hide-delay'] = "none" should not set the property value
-[PASS] e.style['popover-hide-delay'] = "auto" should not set the property value
 [FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]

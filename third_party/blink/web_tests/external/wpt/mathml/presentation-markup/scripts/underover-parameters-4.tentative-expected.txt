@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Baseline alignment
-[PASS] Heights of bases
-[PASS] AccentBaseHeight, UnderbarExtraDescender
 [FAIL] AccentBaseHeight, UnderbarVerticalGap
   assert_approx_equals: munderover: accent over short base expected 40 +/- 2 but got 30
 [FAIL] AccentBaseHeight, OverbarExtraAscender

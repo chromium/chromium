@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Set location.protocol to http (percent-encoded here for clarity)
 [FAIL] Set location.protocol to ht%0Atp (percent-encoded here for clarity)
   Failed to set the 'protocol' property on 'Location': 'ht\ntp' is an invalid protocol.
 [FAIL] Set location.protocol to http%0A (percent-encoded here for clarity)

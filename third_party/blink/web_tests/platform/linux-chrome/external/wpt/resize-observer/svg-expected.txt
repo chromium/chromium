@@ -1,23 +1,4 @@
 This is a testharness.js-based test.
-[PASS] ResizeObserver implemented
-[PASS] guard
-[PASS] test0: observe svg:circle
-[PASS] test1: observe svg:ellipse
-[PASS] test2: observe svg:foreignObject
-[PASS] test3: observe svg:image
-[PASS] test4: observe svg:line
-[PASS] test5: observe svg:path
-[PASS] test6: observe svg:polygon
-[PASS] test7: observe svg:polyline
-[PASS] test8: observe svg:rect
-[PASS] test9: observe svg:text
-[PASS] test10: observe svg:svg, top/left is 0 even with padding
-[PASS] test11: observe svg non-displayable element
-[PASS] test12: observe svg:rect content box
-[PASS] test13: observe svg:rect border box
-[PASS] test14: observe g:rect content and border box
 [FAIL] test15: observe svg:text content and border box
   assert_equals: expected 360 but got 138.3125
-[PASS] test16: observe g:rect content, border and device-pixel-content boxes
-[PASS] test17: observe g:rect content, border and device-pixel-content boxes with zoom
 Harness: the test ran to completion.

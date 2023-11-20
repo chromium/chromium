@@ -1,14 +1,4 @@
 This is a testharness.js-based test.
-[PASS] abs float32 1D tensor / async
-[PASS] abs float32 2D tensor / async
-[PASS] abs float32 3D tensor / async
-[PASS] abs float32 4D tensor / async
-[PASS] abs float32 5D tensor / async
-[PASS] ceil float32 1D tensor / async
-[PASS] ceil float32 2D tensor / async
-[PASS] ceil float32 3D tensor / async
-[PASS] ceil float32 4D tensor / async
-[PASS] ceil float32 5D tensor / async
 [FAIL] cos float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (cos) is not supported."
 [FAIL] cos float32 2D tensor / async
@@ -29,11 +19,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (exp) is not supported."
 [FAIL] exp float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (exp) is not supported."
-[PASS] floor float32 1D tensor / async
-[PASS] floor float32 2D tensor / async
-[PASS] floor float32 3D tensor / async
-[PASS] floor float32 4D tensor / async
-[PASS] floor float32 5D tensor / async
 [FAIL] log float32 positive 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (log) is not supported."
 [FAIL] log float32 positive 2D tensor / async
@@ -44,11 +29,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (log) is not supported."
 [FAIL] log float32 positive 5D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (log) is not supported."
-[PASS] neg float32 1D tensor / async
-[PASS] neg float32 2D tensor / async
-[PASS] neg float32 3D tensor / async
-[PASS] neg float32 4D tensor / async
-[PASS] neg float32 5D tensor / async
 [FAIL] sin float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (sin) is not supported."
 [FAIL] sin float32 2D tensor / async

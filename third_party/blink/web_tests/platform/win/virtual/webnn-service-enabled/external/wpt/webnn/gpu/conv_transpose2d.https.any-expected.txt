@@ -1,30 +1,11 @@
 This is a testharness.js-based test.
-[PASS] convTranspose2d float32 4D input and filter(non-constant) tensors default options / async
-[PASS] convTranspose2d float32 4D input and filter tensors default options / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.padding / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.strides / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.dilations / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.outputPadding / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.outputSizes / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.autoPad=explicit options.padding / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper ignored options.padding / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower ignored options.padding / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw / async
 [FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout hwoi is not supported."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout ohwi is not supported."
-[PASS] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw / async
 [FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout hwoi is not supported."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout ohwi is not supported."
-[PASS] convTranspose2d float32 4D input and filter tensors options.bias / async
-[PASS] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / async
-[PASS] convTranspose2d float32 4D input and filter tensors options.activation=relu / async
 Harness: the test ran to completion.
 

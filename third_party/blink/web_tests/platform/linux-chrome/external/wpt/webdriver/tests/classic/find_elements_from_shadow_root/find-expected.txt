@@ -1,6 +1,4 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   assert 200 == 404
 [FAIL] test_no_such_shadow_root_with_element
@@ -11,11 +9,6 @@ This is a wdspec test.
   AssertionError: assert 'detached shadow root' == 'no such shadow root'
 [FAIL] test_no_such_shadow_root_with_shadow_root_from_other_frame
   AssertionError: assert 'detached shadow root' == 'no such shadow root'
-[PASS] test_detached_shadow_root[top_context]
-[PASS] test_detached_shadow_root[child_context]
-[PASS] test_no_elements_with_unknown_selector[not-existent]
-[PASS] test_no_elements_with_unknown_selector[existent-other-frame]
-[PASS] test_no_elements_with_unknown_selector[existent-outside-shadow-root]
 [FAIL] test_invalid_shadow_root_id_argument[True]
   AssertionError: assert 'no such element' == 'no such shadow root'
 [FAIL] test_invalid_shadow_root_id_argument[None]
@@ -26,19 +19,6 @@ This is a wdspec test.
   AssertionError: assert 'no such element' == 'no such shadow root'
 [FAIL] test_invalid_shadow_root_id_argument[shadow_root_id4]
   AssertionError: assert 'no such element' == 'no such shadow root'
-[PASS] test_invalid_using_argument[a]
-[PASS] test_invalid_using_argument[True]
-[PASS] test_invalid_using_argument[None]
-[PASS] test_invalid_using_argument[1]
-[PASS] test_invalid_using_argument[using4]
-[PASS] test_invalid_using_argument[using5]
-[PASS] test_invalid_selector_argument[None]
-[PASS] test_invalid_selector_argument[value1]
-[PASS] test_invalid_selector_argument[value2]
-[PASS] test_find_elements_equivalence
-[PASS] test_find_elements[open-css selector-#linkText]
-[PASS] test_find_elements[open-link text-full link text]
-[PASS] test_find_elements[open-partial link text-link text]
 [FAIL] test_find_elements[open-tag name-a]
   AssertionError: invalid argument (400): invalid argument: invalid locator
 [FAIL] test_find_elements[open-xpath-//a]
@@ -53,20 +33,6 @@ This is a wdspec test.
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
 [FAIL] test_find_elements[closed-xpath-//a]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
-[PASS] test_find_elements_link_text[<a href=#>link text</a>-link text]
-[PASS] test_find_elements_link_text[<a href=#>&nbsp;link text&nbsp;</a>-link text]
-[PASS] test_find_elements_link_text[<a href=#>link<br>text</a>-link\ntext]
-[PASS] test_find_elements_link_text[<a href=#>link&amp;text</a>-link&text]
-[PASS] test_find_elements_link_text[<a href=#>LINK TEXT</a>-LINK TEXT]
-[PASS] test_find_elements_link_text[<a href=# style='text-transform: uppercase'>link text</a>-LINK TEXT]
-[PASS] test_find_elements_partial_link_text[<a href=#>partial link text</a>-link]
-[PASS] test_find_elements_partial_link_text[<a href=#>&nbsp;partial link text&nbsp;</a>-link]
-[PASS] test_find_elements_partial_link_text[<a href=#>partial link text</a>-k t]
-[PASS] test_find_elements_partial_link_text[<a href=#>partial link<br>text</a>-k\nt]
-[PASS] test_find_elements_partial_link_text[<a href=#>partial link&amp;text</a>-k&t]
-[PASS] test_find_elements_partial_link_text[<a href=#>PARTIAL LINK TEXT</a>-LINK]
-[PASS] test_find_elements_partial_link_text[<a href=# style='text-transform: uppercase'>partial link text</a>-LINK]
-[PASS] test_find_elements_in_nested_shadow_root[open]
 [FAIL] test_find_elements_in_nested_shadow_root[closed]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
 Harness: the test ran to completion.

@@ -1,10 +1,8 @@
 This is a wdspec test.
-[PASS] test_null_response_value
 [FAIL] test_no_top_browsing_context
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -15,6 +13,4 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
 Harness: the test ran to completion.

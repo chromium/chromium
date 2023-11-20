@@ -1,11 +1,4 @@
 This is a testharness.js-based test.
-[PASS] e.style['text-align-last'] = "auto" should set the property value
-[PASS] e.style['text-align-last'] = "start" should set the property value
-[PASS] e.style['text-align-last'] = "end" should set the property value
-[PASS] e.style['text-align-last'] = "left" should set the property value
-[PASS] e.style['text-align-last'] = "right" should set the property value
-[PASS] e.style['text-align-last'] = "center" should set the property value
-[PASS] e.style['text-align-last'] = "justify" should set the property value
 [FAIL] e.style['text-align-last'] = "match-parent" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.

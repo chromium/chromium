@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading 'getReader')
-[PASS] Test we can transfer a Video MediaStreamTrackProcessor stream
-[PASS] Test we can transfer an Audio MediaStreamTrackProcessor stream
 Harness: the test ran to completion.

@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] .target 1
-[PASS] .target 2
-[PASS] .target 3
-[PASS] .target 4
 [FAIL] .target 5
   assert_equals: \n<div class="target" id="target5" data-offset-x="450" data-offset-y="200"></div>\noffsetLeft expected 450 but got 250
 [FAIL] .target 6

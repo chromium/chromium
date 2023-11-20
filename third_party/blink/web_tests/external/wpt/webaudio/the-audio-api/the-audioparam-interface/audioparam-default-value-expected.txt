@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] # AUDIT TASK RUNNER STARTED.
-[PASS] Executing "test"
-[PASS] Audit report
-[PASS] > [test] 
 [FAIL] X AudioParam's defaultValue is not equal to -1. Got 1.
   assert_true: expected true got false
 [FAIL] < [test] 1 out of 1 assertions were failed.

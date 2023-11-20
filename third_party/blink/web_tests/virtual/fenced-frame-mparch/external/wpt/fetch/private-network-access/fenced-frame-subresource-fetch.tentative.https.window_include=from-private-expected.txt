@@ -1,15 +1,3 @@
 This is a testharness.js-based test.
-[PASS] private to local: failed preflight.
-[PASS] private to local: missing CORS headers on preflight response.
-[PASS] private to local: missing PNA header on preflight response.
-[PASS] private to local: missing CORS headers on final response.
-[PASS] private to local: success.
-[PASS] private to local: PUT success.
-[PASS] private to local: no-CORS mode failed preflight.
-[PASS] private to local: no-CORS mode missing CORS headers on preflight response.
-[PASS] private to local: no-CORS mode missing PNA header on preflight response.
-[PASS] private to local: no-CORS mode success.
-[PASS] private to private: no preflight required.
-[PASS] private to public: no preflight required.
 Harness: the test ran to completion.
 

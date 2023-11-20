@@ -1,23 +1,11 @@
 This is a testharness.js-based test.
-[PASS] Normalizing "var(--A)" on a CSS property returns correct CSSUnparsedValue
 [FAIL] Normalizing "var(--A)" on a shorthand returns correct CSSUnparsedValue
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-[PASS] Normalizing "var(--A)" on a list-valued property returns correct CSSUnparsedValue
-[PASS] Normalizing "var(--A)" on a custom property returns correct CSSUnparsedValue
-[PASS] Normalizing "var(--A, 1em)" on a CSS property returns correct CSSUnparsedValue
 [FAIL] Normalizing "var(--A, 1em)" on a shorthand returns correct CSSUnparsedValue
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-[PASS] Normalizing "var(--A, 1em)" on a list-valued property returns correct CSSUnparsedValue
-[PASS] Normalizing "var(--A, 1em)" on a custom property returns correct CSSUnparsedValue
-[PASS] Normalizing "var(--A, var(--B))" on a CSS property returns correct CSSUnparsedValue
 [FAIL] Normalizing "var(--A, var(--B))" on a shorthand returns correct CSSUnparsedValue
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-[PASS] Normalizing "var(--A, var(--B))" on a list-valued property returns correct CSSUnparsedValue
-[PASS] Normalizing "var(--A, var(--B))" on a custom property returns correct CSSUnparsedValue
-[PASS] Normalizing "calc(42px + var(--foo, 15em) + var(--bar, var(--far) + 15px))" on a CSS property returns correct CSSUnparsedValue
 [FAIL] Normalizing "calc(42px + var(--foo, 15em) + var(--bar, var(--far) + 15px))" on a shorthand returns correct CSSUnparsedValue
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-[PASS] Normalizing "calc(42px + var(--foo, 15em) + var(--bar, var(--far) + 15px))" on a list-valued property returns correct CSSUnparsedValue
-[PASS] Normalizing "calc(42px + var(--foo, 15em) + var(--bar, var(--far) + 15px))" on a custom property returns correct CSSUnparsedValue
 Harness: the test ran to completion.
 

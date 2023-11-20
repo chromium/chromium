@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Delete in "<dl contenteditable><dt>{}</dt></dl>"
-[PASS] Delete in "<dl contenteditable><dd>{}</dd></dl>"
 [FAIL] Delete in "<dl contenteditable><dd><ul><li>{}</li></ul></dd></dl>"
   assert_in_array: value "<dd><ul><li></li></ul></dd>" not in array ["<dd></dd>", "<dd><br></dd>"]
 [FAIL] Delete in "<dl contenteditable><dd><ol><li>{}</li></ol></dd></dl>"

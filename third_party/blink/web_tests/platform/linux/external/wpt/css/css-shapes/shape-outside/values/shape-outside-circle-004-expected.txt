@@ -1,27 +1,11 @@
 This is a testharness.js-based test.
-Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] test unit (inline): cm - circle(at 50cm)
-[PASS] test unit (inline): cm - circle(at 50% 50cm)
-[PASS] test unit (inline): cm - circle(at 50cm 50%)
-[PASS] test unit (inline): cm - circle(at 50cm 50cm)
-[PASS] test unit (inline): cm - circle(at left 50cm)
-[PASS] test unit (inline): cm - circle(at 50cm top)
-[PASS] test unit (inline): cm - circle(at right 80cm)
-[PASS] test unit (inline): cm - circle(at 70cm bottom)
-[PASS] test unit (inline): cm - circle(at center 60cm)
-[PASS] test unit (inline): cm - circle(at 60cm center)
-[PASS] test unit (inline): cm - circle(at left 50% top 50cm)
+Found 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] test unit (inline): cm - circle(at left 50% bottom 70cm)
   assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 70cm)"
-[PASS] test unit (inline): cm - circle(at left 50cm top 50%)
-[PASS] test unit (inline): cm - circle(at left 50cm top 50cm)
 [FAIL] test unit (inline): cm - circle(at left 50cm bottom 70%)
   assert_equals: expected "circle(at 50cm calc(30%))" but got "circle(at 50cm 30%)"
-[PASS] test unit (inline): cm - circle(at top 50% left 50cm)
 [FAIL] test unit (inline): cm - circle(at top 50% right 80cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 80cm top 50%)"
-[PASS] test unit (inline): cm - circle(at top 50cm left 50%)
-[PASS] test unit (inline): cm - circle(at top 50cm left 50cm)
 [FAIL] test unit (inline): cm - circle(at top 50cm right 80%)
   assert_equals: expected "circle(at calc(20%) 50cm)" but got "circle(at 20% 50cm)"
 [FAIL] test unit (inline): cm - circle(at bottom 70% left 50cm)
@@ -44,28 +28,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 3023.62px) calc(30%))" but got "circle(at right 80cm top 30%)"
 [FAIL] test unit (inline): cm - circle(at right 80cm bottom 70cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 80cm bottom 70cm)"
-[PASS] test unit (inline): mm - circle(at 50mm)
-[PASS] test unit (inline): mm - circle(at 50% 50mm)
-[PASS] test unit (inline): mm - circle(at 50mm 50%)
-[PASS] test unit (inline): mm - circle(at 50mm 50mm)
-[PASS] test unit (inline): mm - circle(at left 50mm)
-[PASS] test unit (inline): mm - circle(at 50mm top)
-[PASS] test unit (inline): mm - circle(at right 80mm)
-[PASS] test unit (inline): mm - circle(at 70mm bottom)
-[PASS] test unit (inline): mm - circle(at center 60mm)
-[PASS] test unit (inline): mm - circle(at 60mm center)
-[PASS] test unit (inline): mm - circle(at left 50% top 50mm)
 [FAIL] test unit (inline): mm - circle(at left 50% bottom 70mm)
   assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 70mm)"
-[PASS] test unit (inline): mm - circle(at left 50mm top 50%)
-[PASS] test unit (inline): mm - circle(at left 50mm top 50mm)
 [FAIL] test unit (inline): mm - circle(at left 50mm bottom 70%)
   assert_equals: expected "circle(at 50mm calc(30%))" but got "circle(at 50mm 30%)"
-[PASS] test unit (inline): mm - circle(at top 50% left 50mm)
 [FAIL] test unit (inline): mm - circle(at top 50% right 80mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 80mm top 50%)"
-[PASS] test unit (inline): mm - circle(at top 50mm left 50%)
-[PASS] test unit (inline): mm - circle(at top 50mm left 50mm)
 [FAIL] test unit (inline): mm - circle(at top 50mm right 80%)
   assert_equals: expected "circle(at calc(20%) 50mm)" but got "circle(at 20% 50mm)"
 [FAIL] test unit (inline): mm - circle(at bottom 70% left 50mm)
@@ -88,28 +56,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 302.362px) calc(30%))" but got "circle(at right 80mm top 30%)"
 [FAIL] test unit (inline): mm - circle(at right 80mm bottom 70mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 80mm bottom 70mm)"
-[PASS] test unit (inline): in - circle(at 50in)
-[PASS] test unit (inline): in - circle(at 50% 50in)
-[PASS] test unit (inline): in - circle(at 50in 50%)
-[PASS] test unit (inline): in - circle(at 50in 50in)
-[PASS] test unit (inline): in - circle(at left 50in)
-[PASS] test unit (inline): in - circle(at 50in top)
-[PASS] test unit (inline): in - circle(at right 80in)
-[PASS] test unit (inline): in - circle(at 70in bottom)
-[PASS] test unit (inline): in - circle(at center 60in)
-[PASS] test unit (inline): in - circle(at 60in center)
-[PASS] test unit (inline): in - circle(at left 50% top 50in)
 [FAIL] test unit (inline): in - circle(at left 50% bottom 70in)
   assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 70in)"
-[PASS] test unit (inline): in - circle(at left 50in top 50%)
-[PASS] test unit (inline): in - circle(at left 50in top 50in)
 [FAIL] test unit (inline): in - circle(at left 50in bottom 70%)
   assert_equals: expected "circle(at 50in calc(30%))" but got "circle(at 50in 30%)"
-[PASS] test unit (inline): in - circle(at top 50% left 50in)
 [FAIL] test unit (inline): in - circle(at top 50% right 80in)
   assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 80in top 50%)"
-[PASS] test unit (inline): in - circle(at top 50in left 50%)
-[PASS] test unit (inline): in - circle(at top 50in left 50in)
 [FAIL] test unit (inline): in - circle(at top 50in right 80%)
   assert_equals: expected "circle(at calc(20%) 50in)" but got "circle(at 20% 50in)"
 [FAIL] test unit (inline): in - circle(at bottom 70% left 50in)
@@ -132,28 +84,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 7680px) calc(30%))" but got "circle(at right 80in top 30%)"
 [FAIL] test unit (inline): in - circle(at right 80in bottom 70in)
   assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 80in bottom 70in)"
-[PASS] test unit (inline): pt - circle(at 50pt)
-[PASS] test unit (inline): pt - circle(at 50% 50pt)
-[PASS] test unit (inline): pt - circle(at 50pt 50%)
-[PASS] test unit (inline): pt - circle(at 50pt 50pt)
-[PASS] test unit (inline): pt - circle(at left 50pt)
-[PASS] test unit (inline): pt - circle(at 50pt top)
-[PASS] test unit (inline): pt - circle(at right 80pt)
-[PASS] test unit (inline): pt - circle(at 70pt bottom)
-[PASS] test unit (inline): pt - circle(at center 60pt)
-[PASS] test unit (inline): pt - circle(at 60pt center)
-[PASS] test unit (inline): pt - circle(at left 50% top 50pt)
 [FAIL] test unit (inline): pt - circle(at left 50% bottom 70pt)
   assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 70pt)"
-[PASS] test unit (inline): pt - circle(at left 50pt top 50%)
-[PASS] test unit (inline): pt - circle(at left 50pt top 50pt)
 [FAIL] test unit (inline): pt - circle(at left 50pt bottom 70%)
   assert_equals: expected "circle(at 50pt calc(30%))" but got "circle(at 50pt 30%)"
-[PASS] test unit (inline): pt - circle(at top 50% left 50pt)
 [FAIL] test unit (inline): pt - circle(at top 50% right 80pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 80pt top 50%)"
-[PASS] test unit (inline): pt - circle(at top 50pt left 50%)
-[PASS] test unit (inline): pt - circle(at top 50pt left 50pt)
 [FAIL] test unit (inline): pt - circle(at top 50pt right 80%)
   assert_equals: expected "circle(at calc(20%) 50pt)" but got "circle(at 20% 50pt)"
 [FAIL] test unit (inline): pt - circle(at bottom 70% left 50pt)
@@ -176,28 +112,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 106.667px) calc(30%))" but got "circle(at right 80pt top 30%)"
 [FAIL] test unit (inline): pt - circle(at right 80pt bottom 70pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 80pt bottom 70pt)"
-[PASS] test unit (inline): pc - circle(at 50pc)
-[PASS] test unit (inline): pc - circle(at 50% 50pc)
-[PASS] test unit (inline): pc - circle(at 50pc 50%)
-[PASS] test unit (inline): pc - circle(at 50pc 50pc)
-[PASS] test unit (inline): pc - circle(at left 50pc)
-[PASS] test unit (inline): pc - circle(at 50pc top)
-[PASS] test unit (inline): pc - circle(at right 80pc)
-[PASS] test unit (inline): pc - circle(at 70pc bottom)
-[PASS] test unit (inline): pc - circle(at center 60pc)
-[PASS] test unit (inline): pc - circle(at 60pc center)
-[PASS] test unit (inline): pc - circle(at left 50% top 50pc)
 [FAIL] test unit (inline): pc - circle(at left 50% bottom 70pc)
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 70pc)"
-[PASS] test unit (inline): pc - circle(at left 50pc top 50%)
-[PASS] test unit (inline): pc - circle(at left 50pc top 50pc)
 [FAIL] test unit (inline): pc - circle(at left 50pc bottom 70%)
   assert_equals: expected "circle(at 50pc calc(30%))" but got "circle(at 50pc 30%)"
-[PASS] test unit (inline): pc - circle(at top 50% left 50pc)
 [FAIL] test unit (inline): pc - circle(at top 50% right 80pc)
   assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 80pc top 50%)"
-[PASS] test unit (inline): pc - circle(at top 50pc left 50%)
-[PASS] test unit (inline): pc - circle(at top 50pc left 50pc)
 [FAIL] test unit (inline): pc - circle(at top 50pc right 80%)
   assert_equals: expected "circle(at calc(20%) 50pc)" but got "circle(at 20% 50pc)"
 [FAIL] test unit (inline): pc - circle(at bottom 70% left 50pc)
@@ -220,28 +140,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1280px) calc(30%))" but got "circle(at right 80pc top 30%)"
 [FAIL] test unit (inline): pc - circle(at right 80pc bottom 70pc)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 80pc bottom 70pc)"
-[PASS] test unit (inline): em - circle(at 50em)
-[PASS] test unit (inline): em - circle(at 50% 50em)
-[PASS] test unit (inline): em - circle(at 50em 50%)
-[PASS] test unit (inline): em - circle(at 50em 50em)
-[PASS] test unit (inline): em - circle(at left 50em)
-[PASS] test unit (inline): em - circle(at 50em top)
-[PASS] test unit (inline): em - circle(at right 80em)
-[PASS] test unit (inline): em - circle(at 70em bottom)
-[PASS] test unit (inline): em - circle(at center 60em)
-[PASS] test unit (inline): em - circle(at 60em center)
-[PASS] test unit (inline): em - circle(at left 50% top 50em)
 [FAIL] test unit (inline): em - circle(at left 50% bottom 70em)
   assert_equals: expected "circle(at 50% calc(100% - 70em))" but got "circle(at left 50% bottom 70em)"
-[PASS] test unit (inline): em - circle(at left 50em top 50%)
-[PASS] test unit (inline): em - circle(at left 50em top 50em)
 [FAIL] test unit (inline): em - circle(at left 50em bottom 70%)
   assert_equals: expected "circle(at 50em calc(30%))" but got "circle(at 50em 30%)"
-[PASS] test unit (inline): em - circle(at top 50% left 50em)
 [FAIL] test unit (inline): em - circle(at top 50% right 80em)
   assert_equals: expected "circle(at calc(100% - 80em) 50%)" but got "circle(at right 80em top 50%)"
-[PASS] test unit (inline): em - circle(at top 50em left 50%)
-[PASS] test unit (inline): em - circle(at top 50em left 50em)
 [FAIL] test unit (inline): em - circle(at top 50em right 80%)
   assert_equals: expected "circle(at calc(20%) 50em)" but got "circle(at 20% 50em)"
 [FAIL] test unit (inline): em - circle(at bottom 70% left 50em)
@@ -264,28 +168,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80em) calc(30%))" but got "circle(at right 80em top 30%)"
 [FAIL] test unit (inline): em - circle(at right 80em bottom 70em)
   assert_equals: expected "circle(at calc(100% - 80em) calc(100% - 70em))" but got "circle(at right 80em bottom 70em)"
-[PASS] test unit (inline): ex - circle(at 50ex)
-[PASS] test unit (inline): ex - circle(at 50% 50ex)
-[PASS] test unit (inline): ex - circle(at 50ex 50%)
-[PASS] test unit (inline): ex - circle(at 50ex 50ex)
-[PASS] test unit (inline): ex - circle(at left 50ex)
-[PASS] test unit (inline): ex - circle(at 50ex top)
-[PASS] test unit (inline): ex - circle(at right 80ex)
-[PASS] test unit (inline): ex - circle(at 70ex bottom)
-[PASS] test unit (inline): ex - circle(at center 60ex)
-[PASS] test unit (inline): ex - circle(at 60ex center)
-[PASS] test unit (inline): ex - circle(at left 50% top 50ex)
 [FAIL] test unit (inline): ex - circle(at left 50% bottom 70ex)
   assert_equals: expected "circle(at 50% calc(100% - 70ex))" but got "circle(at left 50% bottom 70ex)"
-[PASS] test unit (inline): ex - circle(at left 50ex top 50%)
-[PASS] test unit (inline): ex - circle(at left 50ex top 50ex)
 [FAIL] test unit (inline): ex - circle(at left 50ex bottom 70%)
   assert_equals: expected "circle(at 50ex calc(30%))" but got "circle(at 50ex 30%)"
-[PASS] test unit (inline): ex - circle(at top 50% left 50ex)
 [FAIL] test unit (inline): ex - circle(at top 50% right 80ex)
   assert_equals: expected "circle(at calc(100% - 80ex) 50%)" but got "circle(at right 80ex top 50%)"
-[PASS] test unit (inline): ex - circle(at top 50ex left 50%)
-[PASS] test unit (inline): ex - circle(at top 50ex left 50ex)
 [FAIL] test unit (inline): ex - circle(at top 50ex right 80%)
   assert_equals: expected "circle(at calc(20%) 50ex)" but got "circle(at 20% 50ex)"
 [FAIL] test unit (inline): ex - circle(at bottom 70% left 50ex)
@@ -308,28 +196,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80ex) calc(30%))" but got "circle(at right 80ex top 30%)"
 [FAIL] test unit (inline): ex - circle(at right 80ex bottom 70ex)
   assert_equals: expected "circle(at calc(100% - 80ex) calc(100% - 70ex))" but got "circle(at right 80ex bottom 70ex)"
-[PASS] test unit (inline): ch - circle(at 50ch)
-[PASS] test unit (inline): ch - circle(at 50% 50ch)
-[PASS] test unit (inline): ch - circle(at 50ch 50%)
-[PASS] test unit (inline): ch - circle(at 50ch 50ch)
-[PASS] test unit (inline): ch - circle(at left 50ch)
-[PASS] test unit (inline): ch - circle(at 50ch top)
-[PASS] test unit (inline): ch - circle(at right 80ch)
-[PASS] test unit (inline): ch - circle(at 70ch bottom)
-[PASS] test unit (inline): ch - circle(at center 60ch)
-[PASS] test unit (inline): ch - circle(at 60ch center)
-[PASS] test unit (inline): ch - circle(at left 50% top 50ch)
 [FAIL] test unit (inline): ch - circle(at left 50% bottom 70ch)
   assert_equals: expected "circle(at 50% calc(100% - 70ch))" but got "circle(at left 50% bottom 70ch)"
-[PASS] test unit (inline): ch - circle(at left 50ch top 50%)
-[PASS] test unit (inline): ch - circle(at left 50ch top 50ch)
 [FAIL] test unit (inline): ch - circle(at left 50ch bottom 70%)
   assert_equals: expected "circle(at 50ch calc(30%))" but got "circle(at 50ch 30%)"
-[PASS] test unit (inline): ch - circle(at top 50% left 50ch)
 [FAIL] test unit (inline): ch - circle(at top 50% right 80ch)
   assert_equals: expected "circle(at calc(100% - 80ch) 50%)" but got "circle(at right 80ch top 50%)"
-[PASS] test unit (inline): ch - circle(at top 50ch left 50%)
-[PASS] test unit (inline): ch - circle(at top 50ch left 50ch)
 [FAIL] test unit (inline): ch - circle(at top 50ch right 80%)
   assert_equals: expected "circle(at calc(20%) 50ch)" but got "circle(at 20% 50ch)"
 [FAIL] test unit (inline): ch - circle(at bottom 70% left 50ch)
@@ -352,28 +224,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80ch) calc(30%))" but got "circle(at right 80ch top 30%)"
 [FAIL] test unit (inline): ch - circle(at right 80ch bottom 70ch)
   assert_equals: expected "circle(at calc(100% - 80ch) calc(100% - 70ch))" but got "circle(at right 80ch bottom 70ch)"
-[PASS] test unit (inline): rem - circle(at 50rem)
-[PASS] test unit (inline): rem - circle(at 50% 50rem)
-[PASS] test unit (inline): rem - circle(at 50rem 50%)
-[PASS] test unit (inline): rem - circle(at 50rem 50rem)
-[PASS] test unit (inline): rem - circle(at left 50rem)
-[PASS] test unit (inline): rem - circle(at 50rem top)
-[PASS] test unit (inline): rem - circle(at right 80rem)
-[PASS] test unit (inline): rem - circle(at 70rem bottom)
-[PASS] test unit (inline): rem - circle(at center 60rem)
-[PASS] test unit (inline): rem - circle(at 60rem center)
-[PASS] test unit (inline): rem - circle(at left 50% top 50rem)
 [FAIL] test unit (inline): rem - circle(at left 50% bottom 70rem)
   assert_equals: expected "circle(at 50% calc(100% - 70rem))" but got "circle(at left 50% bottom 70rem)"
-[PASS] test unit (inline): rem - circle(at left 50rem top 50%)
-[PASS] test unit (inline): rem - circle(at left 50rem top 50rem)
 [FAIL] test unit (inline): rem - circle(at left 50rem bottom 70%)
   assert_equals: expected "circle(at 50rem calc(30%))" but got "circle(at 50rem 30%)"
-[PASS] test unit (inline): rem - circle(at top 50% left 50rem)
 [FAIL] test unit (inline): rem - circle(at top 50% right 80rem)
   assert_equals: expected "circle(at calc(100% - 80rem) 50%)" but got "circle(at right 80rem top 50%)"
-[PASS] test unit (inline): rem - circle(at top 50rem left 50%)
-[PASS] test unit (inline): rem - circle(at top 50rem left 50rem)
 [FAIL] test unit (inline): rem - circle(at top 50rem right 80%)
   assert_equals: expected "circle(at calc(20%) 50rem)" but got "circle(at 20% 50rem)"
 [FAIL] test unit (inline): rem - circle(at bottom 70% left 50rem)
@@ -396,28 +252,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80rem) calc(30%))" but got "circle(at right 80rem top 30%)"
 [FAIL] test unit (inline): rem - circle(at right 80rem bottom 70rem)
   assert_equals: expected "circle(at calc(100% - 80rem) calc(100% - 70rem))" but got "circle(at right 80rem bottom 70rem)"
-[PASS] test unit (inline): vw - circle(at 50vw)
-[PASS] test unit (inline): vw - circle(at 50% 50vw)
-[PASS] test unit (inline): vw - circle(at 50vw 50%)
-[PASS] test unit (inline): vw - circle(at 50vw 50vw)
-[PASS] test unit (inline): vw - circle(at left 50vw)
-[PASS] test unit (inline): vw - circle(at 50vw top)
-[PASS] test unit (inline): vw - circle(at right 80vw)
-[PASS] test unit (inline): vw - circle(at 70vw bottom)
-[PASS] test unit (inline): vw - circle(at center 60vw)
-[PASS] test unit (inline): vw - circle(at 60vw center)
-[PASS] test unit (inline): vw - circle(at left 50% top 50vw)
 [FAIL] test unit (inline): vw - circle(at left 50% bottom 70vw)
   assert_equals: expected "circle(at 50% calc(100% - 70vw))" but got "circle(at left 50% bottom 70vw)"
-[PASS] test unit (inline): vw - circle(at left 50vw top 50%)
-[PASS] test unit (inline): vw - circle(at left 50vw top 50vw)
 [FAIL] test unit (inline): vw - circle(at left 50vw bottom 70%)
   assert_equals: expected "circle(at 50vw calc(30%))" but got "circle(at 50vw 30%)"
-[PASS] test unit (inline): vw - circle(at top 50% left 50vw)
 [FAIL] test unit (inline): vw - circle(at top 50% right 80vw)
   assert_equals: expected "circle(at calc(100% - 80vw) 50%)" but got "circle(at right 80vw top 50%)"
-[PASS] test unit (inline): vw - circle(at top 50vw left 50%)
-[PASS] test unit (inline): vw - circle(at top 50vw left 50vw)
 [FAIL] test unit (inline): vw - circle(at top 50vw right 80%)
   assert_equals: expected "circle(at calc(20%) 50vw)" but got "circle(at 20% 50vw)"
 [FAIL] test unit (inline): vw - circle(at bottom 70% left 50vw)
@@ -440,28 +280,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80vw) calc(30%))" but got "circle(at right 80vw top 30%)"
 [FAIL] test unit (inline): vw - circle(at right 80vw bottom 70vw)
   assert_equals: expected "circle(at calc(100% - 80vw) calc(100% - 70vw))" but got "circle(at right 80vw bottom 70vw)"
-[PASS] test unit (inline): vh - circle(at 50vh)
-[PASS] test unit (inline): vh - circle(at 50% 50vh)
-[PASS] test unit (inline): vh - circle(at 50vh 50%)
-[PASS] test unit (inline): vh - circle(at 50vh 50vh)
-[PASS] test unit (inline): vh - circle(at left 50vh)
-[PASS] test unit (inline): vh - circle(at 50vh top)
-[PASS] test unit (inline): vh - circle(at right 80vh)
-[PASS] test unit (inline): vh - circle(at 70vh bottom)
-[PASS] test unit (inline): vh - circle(at center 60vh)
-[PASS] test unit (inline): vh - circle(at 60vh center)
-[PASS] test unit (inline): vh - circle(at left 50% top 50vh)
 [FAIL] test unit (inline): vh - circle(at left 50% bottom 70vh)
   assert_equals: expected "circle(at 50% calc(100% - 70vh))" but got "circle(at left 50% bottom 70vh)"
-[PASS] test unit (inline): vh - circle(at left 50vh top 50%)
-[PASS] test unit (inline): vh - circle(at left 50vh top 50vh)
 [FAIL] test unit (inline): vh - circle(at left 50vh bottom 70%)
   assert_equals: expected "circle(at 50vh calc(30%))" but got "circle(at 50vh 30%)"
-[PASS] test unit (inline): vh - circle(at top 50% left 50vh)
 [FAIL] test unit (inline): vh - circle(at top 50% right 80vh)
   assert_equals: expected "circle(at calc(100% - 80vh) 50%)" but got "circle(at right 80vh top 50%)"
-[PASS] test unit (inline): vh - circle(at top 50vh left 50%)
-[PASS] test unit (inline): vh - circle(at top 50vh left 50vh)
 [FAIL] test unit (inline): vh - circle(at top 50vh right 80%)
   assert_equals: expected "circle(at calc(20%) 50vh)" but got "circle(at 20% 50vh)"
 [FAIL] test unit (inline): vh - circle(at bottom 70% left 50vh)
@@ -484,28 +308,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80vh) calc(30%))" but got "circle(at right 80vh top 30%)"
 [FAIL] test unit (inline): vh - circle(at right 80vh bottom 70vh)
   assert_equals: expected "circle(at calc(100% - 80vh) calc(100% - 70vh))" but got "circle(at right 80vh bottom 70vh)"
-[PASS] test unit (inline): vmin - circle(at 50vmin)
-[PASS] test unit (inline): vmin - circle(at 50% 50vmin)
-[PASS] test unit (inline): vmin - circle(at 50vmin 50%)
-[PASS] test unit (inline): vmin - circle(at 50vmin 50vmin)
-[PASS] test unit (inline): vmin - circle(at left 50vmin)
-[PASS] test unit (inline): vmin - circle(at 50vmin top)
-[PASS] test unit (inline): vmin - circle(at right 80vmin)
-[PASS] test unit (inline): vmin - circle(at 70vmin bottom)
-[PASS] test unit (inline): vmin - circle(at center 60vmin)
-[PASS] test unit (inline): vmin - circle(at 60vmin center)
-[PASS] test unit (inline): vmin - circle(at left 50% top 50vmin)
 [FAIL] test unit (inline): vmin - circle(at left 50% bottom 70vmin)
   assert_equals: expected "circle(at 50% calc(100% - 70vmin))" but got "circle(at left 50% bottom 70vmin)"
-[PASS] test unit (inline): vmin - circle(at left 50vmin top 50%)
-[PASS] test unit (inline): vmin - circle(at left 50vmin top 50vmin)
 [FAIL] test unit (inline): vmin - circle(at left 50vmin bottom 70%)
   assert_equals: expected "circle(at 50vmin calc(30%))" but got "circle(at 50vmin 30%)"
-[PASS] test unit (inline): vmin - circle(at top 50% left 50vmin)
 [FAIL] test unit (inline): vmin - circle(at top 50% right 80vmin)
   assert_equals: expected "circle(at calc(100% - 80vmin) 50%)" but got "circle(at right 80vmin top 50%)"
-[PASS] test unit (inline): vmin - circle(at top 50vmin left 50%)
-[PASS] test unit (inline): vmin - circle(at top 50vmin left 50vmin)
 [FAIL] test unit (inline): vmin - circle(at top 50vmin right 80%)
   assert_equals: expected "circle(at calc(20%) 50vmin)" but got "circle(at 20% 50vmin)"
 [FAIL] test unit (inline): vmin - circle(at bottom 70% left 50vmin)
@@ -528,28 +336,12 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80vmin) calc(30%))" but got "circle(at right 80vmin top 30%)"
 [FAIL] test unit (inline): vmin - circle(at right 80vmin bottom 70vmin)
   assert_equals: expected "circle(at calc(100% - 80vmin) calc(100% - 70vmin))" but got "circle(at right 80vmin bottom 70vmin)"
-[PASS] test unit (inline): vmax - circle(at 50vmax)
-[PASS] test unit (inline): vmax - circle(at 50% 50vmax)
-[PASS] test unit (inline): vmax - circle(at 50vmax 50%)
-[PASS] test unit (inline): vmax - circle(at 50vmax 50vmax)
-[PASS] test unit (inline): vmax - circle(at left 50vmax)
-[PASS] test unit (inline): vmax - circle(at 50vmax top)
-[PASS] test unit (inline): vmax - circle(at right 80vmax)
-[PASS] test unit (inline): vmax - circle(at 70vmax bottom)
-[PASS] test unit (inline): vmax - circle(at center 60vmax)
-[PASS] test unit (inline): vmax - circle(at 60vmax center)
-[PASS] test unit (inline): vmax - circle(at left 50% top 50vmax)
 [FAIL] test unit (inline): vmax - circle(at left 50% bottom 70vmax)
   assert_equals: expected "circle(at 50% calc(100% - 70vmax))" but got "circle(at left 50% bottom 70vmax)"
-[PASS] test unit (inline): vmax - circle(at left 50vmax top 50%)
-[PASS] test unit (inline): vmax - circle(at left 50vmax top 50vmax)
 [FAIL] test unit (inline): vmax - circle(at left 50vmax bottom 70%)
   assert_equals: expected "circle(at 50vmax calc(30%))" but got "circle(at 50vmax 30%)"
-[PASS] test unit (inline): vmax - circle(at top 50% left 50vmax)
 [FAIL] test unit (inline): vmax - circle(at top 50% right 80vmax)
   assert_equals: expected "circle(at calc(100% - 80vmax) 50%)" but got "circle(at right 80vmax top 50%)"
-[PASS] test unit (inline): vmax - circle(at top 50vmax left 50%)
-[PASS] test unit (inline): vmax - circle(at top 50vmax left 50vmax)
 [FAIL] test unit (inline): vmax - circle(at top 50vmax right 80%)
   assert_equals: expected "circle(at calc(20%) 50vmax)" but got "circle(at 20% 50vmax)"
 [FAIL] test unit (inline): vmax - circle(at bottom 70% left 50vmax)
@@ -572,29 +364,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 80vmax) calc(30%))" but got "circle(at right 80vmax top 30%)"
 [FAIL] test unit (inline): vmax - circle(at right 80vmax bottom 70vmax)
   assert_equals: expected "circle(at calc(100% - 80vmax) calc(100% - 70vmax))" but got "circle(at right 80vmax bottom 70vmax)"
-[PASS] test unit (computed): cm - circle(at 50cm)
-[PASS] test unit (computed): cm - circle(at 50% 50cm)
-[PASS] test unit (computed): cm - circle(at 50cm 50%)
-[PASS] test unit (computed): cm - circle(at 50cm 50cm)
-[PASS] test unit (computed): cm - circle(at left 50cm)
-[PASS] test unit (computed): cm - circle(at 50cm top)
-[PASS] test unit (computed): cm - circle(at right 80cm)
-[PASS] test unit (computed): cm - circle(at 70cm bottom)
-[PASS] test unit (computed): cm - circle(at center 60cm)
-[PASS] test unit (computed): cm - circle(at 60cm center)
-[PASS] test unit (computed): cm - circle(at left 50% top 50cm)
 [FAIL] test unit (computed): cm - circle(at left 50% bottom 70cm)
   assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 2645.67px)"
-[PASS] test unit (computed): cm - circle(at left 50cm top 50%)
-[PASS] test unit (computed): cm - circle(at left 50cm top 50cm)
-[PASS] test unit (computed): cm - circle(at left 50cm bottom 70%)
-[PASS] test unit (computed): cm - circle(at top 50% left 50cm)
 [FAIL] test unit (computed): cm - circle(at top 50% right 80cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 3023.62px top 50%)"
-[PASS] test unit (computed): cm - circle(at top 50cm left 50%)
-[PASS] test unit (computed): cm - circle(at top 50cm left 50cm)
-[PASS] test unit (computed): cm - circle(at top 50cm right 80%)
-[PASS] test unit (computed): cm - circle(at bottom 70% left 50cm)
 [FAIL] test unit (computed): cm - circle(at bottom 70% right 80cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) 30%)" but got "circle(at right 3023.62px top 30%)"
 [FAIL] test unit (computed): cm - circle(at bottom 70cm left 50%)
@@ -603,7 +376,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 2645.67px)"
 [FAIL] test unit (computed): cm - circle(at bottom 70cm right 80cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 3023.62px bottom 2645.67px)"
-[PASS] test unit (computed): cm - circle(at right 80% top 50cm)
 [FAIL] test unit (computed): cm - circle(at right 80% bottom 70cm)
   assert_equals: expected "circle(at 20% calc(100% - 2645.67px))" but got "circle(at left 20% bottom 2645.67px)"
 [FAIL] test unit (computed): cm - circle(at right 80cm top 50%)
@@ -612,29 +384,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 3023.62px) 30%)" but got "circle(at right 3023.62px top 30%)"
 [FAIL] test unit (computed): cm - circle(at right 80cm bottom 70cm)
   assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 3023.62px bottom 2645.67px)"
-[PASS] test unit (computed): mm - circle(at 50mm)
-[PASS] test unit (computed): mm - circle(at 50% 50mm)
-[PASS] test unit (computed): mm - circle(at 50mm 50%)
-[PASS] test unit (computed): mm - circle(at 50mm 50mm)
-[PASS] test unit (computed): mm - circle(at left 50mm)
-[PASS] test unit (computed): mm - circle(at 50mm top)
-[PASS] test unit (computed): mm - circle(at right 80mm)
-[PASS] test unit (computed): mm - circle(at 70mm bottom)
-[PASS] test unit (computed): mm - circle(at center 60mm)
-[PASS] test unit (computed): mm - circle(at 60mm center)
-[PASS] test unit (computed): mm - circle(at left 50% top 50mm)
 [FAIL] test unit (computed): mm - circle(at left 50% bottom 70mm)
   assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 264.567px)"
-[PASS] test unit (computed): mm - circle(at left 50mm top 50%)
-[PASS] test unit (computed): mm - circle(at left 50mm top 50mm)
-[PASS] test unit (computed): mm - circle(at left 50mm bottom 70%)
-[PASS] test unit (computed): mm - circle(at top 50% left 50mm)
 [FAIL] test unit (computed): mm - circle(at top 50% right 80mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 302.362px top 50%)"
-[PASS] test unit (computed): mm - circle(at top 50mm left 50%)
-[PASS] test unit (computed): mm - circle(at top 50mm left 50mm)
-[PASS] test unit (computed): mm - circle(at top 50mm right 80%)
-[PASS] test unit (computed): mm - circle(at bottom 70% left 50mm)
 [FAIL] test unit (computed): mm - circle(at bottom 70% right 80mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) 30%)" but got "circle(at right 302.362px top 30%)"
 [FAIL] test unit (computed): mm - circle(at bottom 70mm left 50%)
@@ -643,7 +396,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 264.567px)"
 [FAIL] test unit (computed): mm - circle(at bottom 70mm right 80mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 302.362px bottom 264.567px)"
-[PASS] test unit (computed): mm - circle(at right 80% top 50mm)
 [FAIL] test unit (computed): mm - circle(at right 80% bottom 70mm)
   assert_equals: expected "circle(at 20% calc(100% - 264.567px))" but got "circle(at left 20% bottom 264.567px)"
 [FAIL] test unit (computed): mm - circle(at right 80mm top 50%)
@@ -652,29 +404,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 302.362px) 30%)" but got "circle(at right 302.362px top 30%)"
 [FAIL] test unit (computed): mm - circle(at right 80mm bottom 70mm)
   assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 302.362px bottom 264.567px)"
-[PASS] test unit (computed): in - circle(at 50in)
-[PASS] test unit (computed): in - circle(at 50% 50in)
-[PASS] test unit (computed): in - circle(at 50in 50%)
-[PASS] test unit (computed): in - circle(at 50in 50in)
-[PASS] test unit (computed): in - circle(at left 50in)
-[PASS] test unit (computed): in - circle(at 50in top)
-[PASS] test unit (computed): in - circle(at right 80in)
-[PASS] test unit (computed): in - circle(at 70in bottom)
-[PASS] test unit (computed): in - circle(at center 60in)
-[PASS] test unit (computed): in - circle(at 60in center)
-[PASS] test unit (computed): in - circle(at left 50% top 50in)
 [FAIL] test unit (computed): in - circle(at left 50% bottom 70in)
   assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 6720px)"
-[PASS] test unit (computed): in - circle(at left 50in top 50%)
-[PASS] test unit (computed): in - circle(at left 50in top 50in)
-[PASS] test unit (computed): in - circle(at left 50in bottom 70%)
-[PASS] test unit (computed): in - circle(at top 50% left 50in)
 [FAIL] test unit (computed): in - circle(at top 50% right 80in)
   assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 7680px top 50%)"
-[PASS] test unit (computed): in - circle(at top 50in left 50%)
-[PASS] test unit (computed): in - circle(at top 50in left 50in)
-[PASS] test unit (computed): in - circle(at top 50in right 80%)
-[PASS] test unit (computed): in - circle(at bottom 70% left 50in)
 [FAIL] test unit (computed): in - circle(at bottom 70% right 80in)
   assert_equals: expected "circle(at calc(100% - 7680px) 30%)" but got "circle(at right 7680px top 30%)"
 [FAIL] test unit (computed): in - circle(at bottom 70in left 50%)
@@ -683,7 +416,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 6720px)"
 [FAIL] test unit (computed): in - circle(at bottom 70in right 80in)
   assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 7680px bottom 6720px)"
-[PASS] test unit (computed): in - circle(at right 80% top 50in)
 [FAIL] test unit (computed): in - circle(at right 80% bottom 70in)
   assert_equals: expected "circle(at 20% calc(100% - 6720px))" but got "circle(at left 20% bottom 6720px)"
 [FAIL] test unit (computed): in - circle(at right 80in top 50%)
@@ -692,29 +424,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 7680px) 30%)" but got "circle(at right 7680px top 30%)"
 [FAIL] test unit (computed): in - circle(at right 80in bottom 70in)
   assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 7680px bottom 6720px)"
-[PASS] test unit (computed): pt - circle(at 50pt)
-[PASS] test unit (computed): pt - circle(at 50% 50pt)
-[PASS] test unit (computed): pt - circle(at 50pt 50%)
-[PASS] test unit (computed): pt - circle(at 50pt 50pt)
-[PASS] test unit (computed): pt - circle(at left 50pt)
-[PASS] test unit (computed): pt - circle(at 50pt top)
-[PASS] test unit (computed): pt - circle(at right 80pt)
-[PASS] test unit (computed): pt - circle(at 70pt bottom)
-[PASS] test unit (computed): pt - circle(at center 60pt)
-[PASS] test unit (computed): pt - circle(at 60pt center)
-[PASS] test unit (computed): pt - circle(at left 50% top 50pt)
 [FAIL] test unit (computed): pt - circle(at left 50% bottom 70pt)
   assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 93.3333px)"
-[PASS] test unit (computed): pt - circle(at left 50pt top 50%)
-[PASS] test unit (computed): pt - circle(at left 50pt top 50pt)
-[PASS] test unit (computed): pt - circle(at left 50pt bottom 70%)
-[PASS] test unit (computed): pt - circle(at top 50% left 50pt)
 [FAIL] test unit (computed): pt - circle(at top 50% right 80pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 106.667px top 50%)"
-[PASS] test unit (computed): pt - circle(at top 50pt left 50%)
-[PASS] test unit (computed): pt - circle(at top 50pt left 50pt)
-[PASS] test unit (computed): pt - circle(at top 50pt right 80%)
-[PASS] test unit (computed): pt - circle(at bottom 70% left 50pt)
 [FAIL] test unit (computed): pt - circle(at bottom 70% right 80pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) 30%)" but got "circle(at right 106.667px top 30%)"
 [FAIL] test unit (computed): pt - circle(at bottom 70pt left 50%)
@@ -723,7 +436,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 93.3333px)"
 [FAIL] test unit (computed): pt - circle(at bottom 70pt right 80pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 106.667px bottom 93.3333px)"
-[PASS] test unit (computed): pt - circle(at right 80% top 50pt)
 [FAIL] test unit (computed): pt - circle(at right 80% bottom 70pt)
   assert_equals: expected "circle(at 20% calc(100% - 93.3333px))" but got "circle(at left 20% bottom 93.3333px)"
 [FAIL] test unit (computed): pt - circle(at right 80pt top 50%)
@@ -732,29 +444,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 106.667px) 30%)" but got "circle(at right 106.667px top 30%)"
 [FAIL] test unit (computed): pt - circle(at right 80pt bottom 70pt)
   assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 106.667px bottom 93.3333px)"
-[PASS] test unit (computed): pc - circle(at 50pc)
-[PASS] test unit (computed): pc - circle(at 50% 50pc)
-[PASS] test unit (computed): pc - circle(at 50pc 50%)
-[PASS] test unit (computed): pc - circle(at 50pc 50pc)
-[PASS] test unit (computed): pc - circle(at left 50pc)
-[PASS] test unit (computed): pc - circle(at 50pc top)
-[PASS] test unit (computed): pc - circle(at right 80pc)
-[PASS] test unit (computed): pc - circle(at 70pc bottom)
-[PASS] test unit (computed): pc - circle(at center 60pc)
-[PASS] test unit (computed): pc - circle(at 60pc center)
-[PASS] test unit (computed): pc - circle(at left 50% top 50pc)
 [FAIL] test unit (computed): pc - circle(at left 50% bottom 70pc)
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
-[PASS] test unit (computed): pc - circle(at left 50pc top 50%)
-[PASS] test unit (computed): pc - circle(at left 50pc top 50pc)
-[PASS] test unit (computed): pc - circle(at left 50pc bottom 70%)
-[PASS] test unit (computed): pc - circle(at top 50% left 50pc)
 [FAIL] test unit (computed): pc - circle(at top 50% right 80pc)
   assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
-[PASS] test unit (computed): pc - circle(at top 50pc left 50%)
-[PASS] test unit (computed): pc - circle(at top 50pc left 50pc)
-[PASS] test unit (computed): pc - circle(at top 50pc right 80%)
-[PASS] test unit (computed): pc - circle(at bottom 70% left 50pc)
 [FAIL] test unit (computed): pc - circle(at bottom 70% right 80pc)
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): pc - circle(at bottom 70pc left 50%)
@@ -763,7 +456,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
 [FAIL] test unit (computed): pc - circle(at bottom 70pc right 80pc)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): pc - circle(at right 80% top 50pc)
 [FAIL] test unit (computed): pc - circle(at right 80% bottom 70pc)
   assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
 [FAIL] test unit (computed): pc - circle(at right 80pc top 50%)
@@ -772,29 +464,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): pc - circle(at right 80pc bottom 70pc)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): em - circle(at 50em)
-[PASS] test unit (computed): em - circle(at 50% 50em)
-[PASS] test unit (computed): em - circle(at 50em 50%)
-[PASS] test unit (computed): em - circle(at 50em 50em)
-[PASS] test unit (computed): em - circle(at left 50em)
-[PASS] test unit (computed): em - circle(at 50em top)
-[PASS] test unit (computed): em - circle(at right 80em)
-[PASS] test unit (computed): em - circle(at 70em bottom)
-[PASS] test unit (computed): em - circle(at center 60em)
-[PASS] test unit (computed): em - circle(at 60em center)
-[PASS] test unit (computed): em - circle(at left 50% top 50em)
 [FAIL] test unit (computed): em - circle(at left 50% bottom 70em)
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
-[PASS] test unit (computed): em - circle(at left 50em top 50%)
-[PASS] test unit (computed): em - circle(at left 50em top 50em)
-[PASS] test unit (computed): em - circle(at left 50em bottom 70%)
-[PASS] test unit (computed): em - circle(at top 50% left 50em)
 [FAIL] test unit (computed): em - circle(at top 50% right 80em)
   assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
-[PASS] test unit (computed): em - circle(at top 50em left 50%)
-[PASS] test unit (computed): em - circle(at top 50em left 50em)
-[PASS] test unit (computed): em - circle(at top 50em right 80%)
-[PASS] test unit (computed): em - circle(at bottom 70% left 50em)
 [FAIL] test unit (computed): em - circle(at bottom 70% right 80em)
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): em - circle(at bottom 70em left 50%)
@@ -803,7 +476,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
 [FAIL] test unit (computed): em - circle(at bottom 70em right 80em)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): em - circle(at right 80% top 50em)
 [FAIL] test unit (computed): em - circle(at right 80% bottom 70em)
   assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
 [FAIL] test unit (computed): em - circle(at right 80em top 50%)
@@ -812,29 +484,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): em - circle(at right 80em bottom 70em)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): ex - circle(at 50ex)
-[PASS] test unit (computed): ex - circle(at 50% 50ex)
-[PASS] test unit (computed): ex - circle(at 50ex 50%)
-[PASS] test unit (computed): ex - circle(at 50ex 50ex)
-[PASS] test unit (computed): ex - circle(at left 50ex)
-[PASS] test unit (computed): ex - circle(at 50ex top)
-[PASS] test unit (computed): ex - circle(at right 80ex)
-[PASS] test unit (computed): ex - circle(at 70ex bottom)
-[PASS] test unit (computed): ex - circle(at center 60ex)
-[PASS] test unit (computed): ex - circle(at 60ex center)
-[PASS] test unit (computed): ex - circle(at left 50% top 50ex)
 [FAIL] test unit (computed): ex - circle(at left 50% bottom 70ex)
   assert_equals: expected "circle(at 50% calc(100% - 896px))" but got "circle(at left 50% bottom 896px)"
-[PASS] test unit (computed): ex - circle(at left 50ex top 50%)
-[PASS] test unit (computed): ex - circle(at left 50ex top 50ex)
-[PASS] test unit (computed): ex - circle(at left 50ex bottom 70%)
-[PASS] test unit (computed): ex - circle(at top 50% left 50ex)
 [FAIL] test unit (computed): ex - circle(at top 50% right 80ex)
   assert_equals: expected "circle(at calc(100% - 1024px) 50%)" but got "circle(at right 1024px top 50%)"
-[PASS] test unit (computed): ex - circle(at top 50ex left 50%)
-[PASS] test unit (computed): ex - circle(at top 50ex left 50ex)
-[PASS] test unit (computed): ex - circle(at top 50ex right 80%)
-[PASS] test unit (computed): ex - circle(at bottom 70% left 50ex)
 [FAIL] test unit (computed): ex - circle(at bottom 70% right 80ex)
   assert_equals: expected "circle(at calc(100% - 1024px) 30%)" but got "circle(at right 1024px top 30%)"
 [FAIL] test unit (computed): ex - circle(at bottom 70ex left 50%)
@@ -843,7 +496,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 896px))" but got "circle(at left 50% bottom 896px)"
 [FAIL] test unit (computed): ex - circle(at bottom 70ex right 80ex)
   assert_equals: expected "circle(at calc(100% - 1024px) calc(100% - 896px))" but got "circle(at right 1024px bottom 896px)"
-[PASS] test unit (computed): ex - circle(at right 80% top 50ex)
 [FAIL] test unit (computed): ex - circle(at right 80% bottom 70ex)
   assert_equals: expected "circle(at 20% calc(100% - 896px))" but got "circle(at left 20% bottom 896px)"
 [FAIL] test unit (computed): ex - circle(at right 80ex top 50%)
@@ -852,29 +504,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1024px) 30%)" but got "circle(at right 1024px top 30%)"
 [FAIL] test unit (computed): ex - circle(at right 80ex bottom 70ex)
   assert_equals: expected "circle(at calc(100% - 1024px) calc(100% - 896px))" but got "circle(at right 1024px bottom 896px)"
-[PASS] test unit (computed): ch - circle(at 50ch)
-[PASS] test unit (computed): ch - circle(at 50% 50ch)
-[PASS] test unit (computed): ch - circle(at 50ch 50%)
-[PASS] test unit (computed): ch - circle(at 50ch 50ch)
-[PASS] test unit (computed): ch - circle(at left 50ch)
-[PASS] test unit (computed): ch - circle(at 50ch top)
-[PASS] test unit (computed): ch - circle(at right 80ch)
-[PASS] test unit (computed): ch - circle(at 70ch bottom)
-[PASS] test unit (computed): ch - circle(at center 60ch)
-[PASS] test unit (computed): ch - circle(at 60ch center)
-[PASS] test unit (computed): ch - circle(at left 50% top 50ch)
 [FAIL] test unit (computed): ch - circle(at left 50% bottom 70ch)
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
-[PASS] test unit (computed): ch - circle(at left 50ch top 50%)
-[PASS] test unit (computed): ch - circle(at left 50ch top 50ch)
-[PASS] test unit (computed): ch - circle(at left 50ch bottom 70%)
-[PASS] test unit (computed): ch - circle(at top 50% left 50ch)
 [FAIL] test unit (computed): ch - circle(at top 50% right 80ch)
   assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
-[PASS] test unit (computed): ch - circle(at top 50ch left 50%)
-[PASS] test unit (computed): ch - circle(at top 50ch left 50ch)
-[PASS] test unit (computed): ch - circle(at top 50ch right 80%)
-[PASS] test unit (computed): ch - circle(at bottom 70% left 50ch)
 [FAIL] test unit (computed): ch - circle(at bottom 70% right 80ch)
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): ch - circle(at bottom 70ch left 50%)
@@ -883,7 +516,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
 [FAIL] test unit (computed): ch - circle(at bottom 70ch right 80ch)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): ch - circle(at right 80% top 50ch)
 [FAIL] test unit (computed): ch - circle(at right 80% bottom 70ch)
   assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
 [FAIL] test unit (computed): ch - circle(at right 80ch top 50%)
@@ -892,29 +524,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): ch - circle(at right 80ch bottom 70ch)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): rem - circle(at 50rem)
-[PASS] test unit (computed): rem - circle(at 50% 50rem)
-[PASS] test unit (computed): rem - circle(at 50rem 50%)
-[PASS] test unit (computed): rem - circle(at 50rem 50rem)
-[PASS] test unit (computed): rem - circle(at left 50rem)
-[PASS] test unit (computed): rem - circle(at 50rem top)
-[PASS] test unit (computed): rem - circle(at right 80rem)
-[PASS] test unit (computed): rem - circle(at 70rem bottom)
-[PASS] test unit (computed): rem - circle(at center 60rem)
-[PASS] test unit (computed): rem - circle(at 60rem center)
-[PASS] test unit (computed): rem - circle(at left 50% top 50rem)
 [FAIL] test unit (computed): rem - circle(at left 50% bottom 70rem)
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
-[PASS] test unit (computed): rem - circle(at left 50rem top 50%)
-[PASS] test unit (computed): rem - circle(at left 50rem top 50rem)
-[PASS] test unit (computed): rem - circle(at left 50rem bottom 70%)
-[PASS] test unit (computed): rem - circle(at top 50% left 50rem)
 [FAIL] test unit (computed): rem - circle(at top 50% right 80rem)
   assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
-[PASS] test unit (computed): rem - circle(at top 50rem left 50%)
-[PASS] test unit (computed): rem - circle(at top 50rem left 50rem)
-[PASS] test unit (computed): rem - circle(at top 50rem right 80%)
-[PASS] test unit (computed): rem - circle(at bottom 70% left 50rem)
 [FAIL] test unit (computed): rem - circle(at bottom 70% right 80rem)
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): rem - circle(at bottom 70rem left 50%)
@@ -923,7 +536,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
 [FAIL] test unit (computed): rem - circle(at bottom 70rem right 80rem)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): rem - circle(at right 80% top 50rem)
 [FAIL] test unit (computed): rem - circle(at right 80% bottom 70rem)
   assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
 [FAIL] test unit (computed): rem - circle(at right 80rem top 50%)
@@ -932,29 +544,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
 [FAIL] test unit (computed): rem - circle(at right 80rem bottom 70rem)
   assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
-[PASS] test unit (computed): vw - circle(at 50vw)
-[PASS] test unit (computed): vw - circle(at 50% 50vw)
-[PASS] test unit (computed): vw - circle(at 50vw 50%)
-[PASS] test unit (computed): vw - circle(at 50vw 50vw)
-[PASS] test unit (computed): vw - circle(at left 50vw)
-[PASS] test unit (computed): vw - circle(at 50vw top)
-[PASS] test unit (computed): vw - circle(at right 80vw)
-[PASS] test unit (computed): vw - circle(at 70vw bottom)
-[PASS] test unit (computed): vw - circle(at center 60vw)
-[PASS] test unit (computed): vw - circle(at 60vw center)
-[PASS] test unit (computed): vw - circle(at left 50% top 50vw)
 [FAIL] test unit (computed): vw - circle(at left 50% bottom 70vw)
   assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
-[PASS] test unit (computed): vw - circle(at left 50vw top 50%)
-[PASS] test unit (computed): vw - circle(at left 50vw top 50vw)
-[PASS] test unit (computed): vw - circle(at left 50vw bottom 70%)
-[PASS] test unit (computed): vw - circle(at top 50% left 50vw)
 [FAIL] test unit (computed): vw - circle(at top 50% right 80vw)
   assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
-[PASS] test unit (computed): vw - circle(at top 50vw left 50%)
-[PASS] test unit (computed): vw - circle(at top 50vw left 50vw)
-[PASS] test unit (computed): vw - circle(at top 50vw right 80%)
-[PASS] test unit (computed): vw - circle(at bottom 70% left 50vw)
 [FAIL] test unit (computed): vw - circle(at bottom 70% right 80vw)
   assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
 [FAIL] test unit (computed): vw - circle(at bottom 70vw left 50%)
@@ -963,7 +556,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
 [FAIL] test unit (computed): vw - circle(at bottom 70vw right 80vw)
   assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
-[PASS] test unit (computed): vw - circle(at right 80% top 50vw)
 [FAIL] test unit (computed): vw - circle(at right 80% bottom 70vw)
   assert_equals: expected "circle(at 20% calc(100% - 560px))" but got "circle(at left 20% bottom 560px)"
 [FAIL] test unit (computed): vw - circle(at right 80vw top 50%)
@@ -972,29 +564,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
 [FAIL] test unit (computed): vw - circle(at right 80vw bottom 70vw)
   assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
-[PASS] test unit (computed): vh - circle(at 50vh)
-[PASS] test unit (computed): vh - circle(at 50% 50vh)
-[PASS] test unit (computed): vh - circle(at 50vh 50%)
-[PASS] test unit (computed): vh - circle(at 50vh 50vh)
-[PASS] test unit (computed): vh - circle(at left 50vh)
-[PASS] test unit (computed): vh - circle(at 50vh top)
-[PASS] test unit (computed): vh - circle(at right 80vh)
-[PASS] test unit (computed): vh - circle(at 70vh bottom)
-[PASS] test unit (computed): vh - circle(at center 60vh)
-[PASS] test unit (computed): vh - circle(at 60vh center)
-[PASS] test unit (computed): vh - circle(at left 50% top 50vh)
 [FAIL] test unit (computed): vh - circle(at left 50% bottom 70vh)
   assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
-[PASS] test unit (computed): vh - circle(at left 50vh top 50%)
-[PASS] test unit (computed): vh - circle(at left 50vh top 50vh)
-[PASS] test unit (computed): vh - circle(at left 50vh bottom 70%)
-[PASS] test unit (computed): vh - circle(at top 50% left 50vh)
 [FAIL] test unit (computed): vh - circle(at top 50% right 80vh)
   assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
-[PASS] test unit (computed): vh - circle(at top 50vh left 50%)
-[PASS] test unit (computed): vh - circle(at top 50vh left 50vh)
-[PASS] test unit (computed): vh - circle(at top 50vh right 80%)
-[PASS] test unit (computed): vh - circle(at bottom 70% left 50vh)
 [FAIL] test unit (computed): vh - circle(at bottom 70% right 80vh)
   assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
 [FAIL] test unit (computed): vh - circle(at bottom 70vh left 50%)
@@ -1003,7 +576,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
 [FAIL] test unit (computed): vh - circle(at bottom 70vh right 80vh)
   assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
-[PASS] test unit (computed): vh - circle(at right 80% top 50vh)
 [FAIL] test unit (computed): vh - circle(at right 80% bottom 70vh)
   assert_equals: expected "circle(at 20% calc(100% - 420px))" but got "circle(at left 20% bottom 420px)"
 [FAIL] test unit (computed): vh - circle(at right 80vh top 50%)
@@ -1012,29 +584,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
 [FAIL] test unit (computed): vh - circle(at right 80vh bottom 70vh)
   assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
-[PASS] test unit (computed): vmin - circle(at 50vmin)
-[PASS] test unit (computed): vmin - circle(at 50% 50vmin)
-[PASS] test unit (computed): vmin - circle(at 50vmin 50%)
-[PASS] test unit (computed): vmin - circle(at 50vmin 50vmin)
-[PASS] test unit (computed): vmin - circle(at left 50vmin)
-[PASS] test unit (computed): vmin - circle(at 50vmin top)
-[PASS] test unit (computed): vmin - circle(at right 80vmin)
-[PASS] test unit (computed): vmin - circle(at 70vmin bottom)
-[PASS] test unit (computed): vmin - circle(at center 60vmin)
-[PASS] test unit (computed): vmin - circle(at 60vmin center)
-[PASS] test unit (computed): vmin - circle(at left 50% top 50vmin)
 [FAIL] test unit (computed): vmin - circle(at left 50% bottom 70vmin)
   assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
-[PASS] test unit (computed): vmin - circle(at left 50vmin top 50%)
-[PASS] test unit (computed): vmin - circle(at left 50vmin top 50vmin)
-[PASS] test unit (computed): vmin - circle(at left 50vmin bottom 70%)
-[PASS] test unit (computed): vmin - circle(at top 50% left 50vmin)
 [FAIL] test unit (computed): vmin - circle(at top 50% right 80vmin)
   assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
-[PASS] test unit (computed): vmin - circle(at top 50vmin left 50%)
-[PASS] test unit (computed): vmin - circle(at top 50vmin left 50vmin)
-[PASS] test unit (computed): vmin - circle(at top 50vmin right 80%)
-[PASS] test unit (computed): vmin - circle(at bottom 70% left 50vmin)
 [FAIL] test unit (computed): vmin - circle(at bottom 70% right 80vmin)
   assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
 [FAIL] test unit (computed): vmin - circle(at bottom 70vmin left 50%)
@@ -1043,7 +596,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
 [FAIL] test unit (computed): vmin - circle(at bottom 70vmin right 80vmin)
   assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
-[PASS] test unit (computed): vmin - circle(at right 80% top 50vmin)
 [FAIL] test unit (computed): vmin - circle(at right 80% bottom 70vmin)
   assert_equals: expected "circle(at 20% calc(100% - 420px))" but got "circle(at left 20% bottom 420px)"
 [FAIL] test unit (computed): vmin - circle(at right 80vmin top 50%)
@@ -1052,29 +604,10 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
 [FAIL] test unit (computed): vmin - circle(at right 80vmin bottom 70vmin)
   assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
-[PASS] test unit (computed): vmax - circle(at 50vmax)
-[PASS] test unit (computed): vmax - circle(at 50% 50vmax)
-[PASS] test unit (computed): vmax - circle(at 50vmax 50%)
-[PASS] test unit (computed): vmax - circle(at 50vmax 50vmax)
-[PASS] test unit (computed): vmax - circle(at left 50vmax)
-[PASS] test unit (computed): vmax - circle(at 50vmax top)
-[PASS] test unit (computed): vmax - circle(at right 80vmax)
-[PASS] test unit (computed): vmax - circle(at 70vmax bottom)
-[PASS] test unit (computed): vmax - circle(at center 60vmax)
-[PASS] test unit (computed): vmax - circle(at 60vmax center)
-[PASS] test unit (computed): vmax - circle(at left 50% top 50vmax)
 [FAIL] test unit (computed): vmax - circle(at left 50% bottom 70vmax)
   assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
-[PASS] test unit (computed): vmax - circle(at left 50vmax top 50%)
-[PASS] test unit (computed): vmax - circle(at left 50vmax top 50vmax)
-[PASS] test unit (computed): vmax - circle(at left 50vmax bottom 70%)
-[PASS] test unit (computed): vmax - circle(at top 50% left 50vmax)
 [FAIL] test unit (computed): vmax - circle(at top 50% right 80vmax)
   assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
-[PASS] test unit (computed): vmax - circle(at top 50vmax left 50%)
-[PASS] test unit (computed): vmax - circle(at top 50vmax left 50vmax)
-[PASS] test unit (computed): vmax - circle(at top 50vmax right 80%)
-[PASS] test unit (computed): vmax - circle(at bottom 70% left 50vmax)
 [FAIL] test unit (computed): vmax - circle(at bottom 70% right 80vmax)
   assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
 [FAIL] test unit (computed): vmax - circle(at bottom 70vmax left 50%)
@@ -1083,7 +616,6 @@ Found 780 tests; 468 PASS, 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
 [FAIL] test unit (computed): vmax - circle(at bottom 70vmax right 80vmax)
   assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
-[PASS] test unit (computed): vmax - circle(at right 80% top 50vmax)
 [FAIL] test unit (computed): vmax - circle(at right 80% bottom 70vmax)
   assert_equals: expected "circle(at 20% calc(100% - 560px))" but got "circle(at left 20% bottom 560px)"
 [FAIL] test unit (computed): vmax - circle(at right 80vmax top 50%)

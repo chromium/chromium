@@ -11,7 +11,6 @@ This is a testharness.js-based test.
   assert_equals: .tr display expected "table-row" but got "block"
 [FAIL] .td
   assert_equals: .td display expected "table-cell" but got "block"
-[PASS] .li
 [FAIL] .inline
   assert_equals: .inline display expected "inline" but got "block"
 [FAIL] .inline-block

@@ -13,17 +13,5 @@ This is a testharness.js-based test.
   assert_equals: expected 0 but got 1
 [FAIL] invalid: @keyframes revert-layer { }
   assert_equals: expected 0 but got 1
-[PASS] invalid: @keyframes 12 { }
-[PASS] invalid: @keyframes -12 { }
-[PASS] invalid: @keyframes 12foo { }
-[PASS] invalid: @keyframes foo.bar { }
-[PASS] invalid: @keyframes one two { }
-[PASS] invalid: @keyframes one, two { }
-[PASS] invalid: @keyframes one, initial { }
-[PASS] invalid: @keyframes one, inherit { }
-[PASS] invalid: @keyframes one, unset { }
-[PASS] invalid: @keyframes default, two { }
-[PASS] invalid: @keyframes revert, three { }
-[PASS] invalid: @keyframes revert-layer, four { }
 Harness: the test ran to completion.
 

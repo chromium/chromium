@@ -1,41 +1,11 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial interface XRFrame: original interface defined
-[PASS] Partial interface XRFrame: member names are unique
-[PASS] Partial interface XRSession: original interface defined
-[PASS] Partial interface XRSession: member names are unique
-[PASS] Partial interface XRHitTestResult: original interface defined
-[PASS] Partial interface XRHitTestResult: member names are unique
-[PASS] Partial interface XRFrame[2]: original interface defined
-[PASS] Partial interface XRFrame[2]: member names are unique
-[PASS] Partial interface XRSession[2]: member names are unique
-[PASS] Partial interface XRFrame[3]: member names are unique
-[PASS] XRAnchor interface: existence and properties of interface object
-[PASS] XRAnchor interface object length
-[PASS] XRAnchor interface object name
-[PASS] XRAnchor interface: existence and properties of interface prototype object
-[PASS] XRAnchor interface: existence and properties of interface prototype object's "constructor" property
-[PASS] XRAnchor interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] XRAnchor interface: attribute anchorSpace
 [FAIL] XRAnchor interface: operation requestPersistentHandle()
   assert_own_property: interface prototype object missing non-static operation expected property "requestPersistentHandle" missing
-[PASS] XRAnchor interface: operation delete()
-[PASS] XRAnchorSet interface: existence and properties of interface object
-[PASS] XRAnchorSet interface object length
-[PASS] XRAnchorSet interface object name
-[PASS] XRAnchorSet interface: existence and properties of interface prototype object
-[PASS] XRAnchorSet interface: existence and properties of interface prototype object's "constructor" property
-[PASS] XRAnchorSet interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] XRAnchorSet interface: setlike<XRAnchor>
-[PASS] XRHitTestResult interface: operation createAnchor()
 [FAIL] XRSession interface: attribute persistentAnchors
   assert_true: The prototype object must have a property "persistentAnchors" expected true got false
 [FAIL] XRSession interface: operation restorePersistentAnchor(DOMString)
   assert_own_property: interface prototype object missing non-static operation expected property "restorePersistentAnchor" missing
 [FAIL] XRSession interface: operation deletePersistentAnchor(DOMString)
   assert_own_property: interface prototype object missing non-static operation expected property "deletePersistentAnchor" missing
-[PASS] XRFrame interface: operation createAnchor(XRRigidTransform, XRSpace)
-[PASS] XRFrame interface: attribute trackedAnchors
 Harness: the test ran to completion.
 

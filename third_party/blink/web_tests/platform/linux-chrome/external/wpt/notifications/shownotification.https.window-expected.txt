@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] fetching no notifications
 [FAIL] fetching notification with an empty title
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
 [FAIL] fetching notification by tag filter

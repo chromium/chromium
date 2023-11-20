@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] First dynamic import should use nonce=abc
-[PASS] Second dynamic import should use nonce=def
 [FAIL] Third dynamic import should use nonce=ghi
   promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/imports-a.js"
 Harness: the test ran to completion.

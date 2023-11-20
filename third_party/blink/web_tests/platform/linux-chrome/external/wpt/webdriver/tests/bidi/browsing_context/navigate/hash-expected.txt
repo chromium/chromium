@@ -5,9 +5,6 @@ This is a wdspec test.
   AssertionError
 [FAIL] test_navigate_in_the_same_document[with identical hashes]
   AssertionError
-[PASS] test_navigate_in_the_same_document[with hash to without hash]
-[PASS] test_navigate_different_documents[with identical hashes]
-[PASS] test_navigate_different_documents[with different hashes]
 [FAIL] test_navigate_in_iframe
   AssertionError
 [FAIL] test_navigate_unique_navigation_id

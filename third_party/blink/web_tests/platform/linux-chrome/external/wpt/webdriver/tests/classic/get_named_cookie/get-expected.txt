@@ -1,11 +1,4 @@
 This is a wdspec test.
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such cookie' == 'no such window'
-[PASS] test_get_named_session_cookie
-[PASS] test_get_named_cookie
-[PASS] test_duplicated_cookie
-[PASS] test_get_cookie_with_same_site_flag[None]
-[PASS] test_get_cookie_with_same_site_flag[Lax]
-[PASS] test_get_cookie_with_same_site_flag[Strict]
 Harness: the test ran to completion.

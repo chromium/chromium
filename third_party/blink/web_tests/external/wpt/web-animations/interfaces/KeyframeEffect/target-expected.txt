@@ -1,21 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Test setting target before constructing the associated animation
-[PASS] Test setting target from null to a valid target
-[PASS] Test setting target from a valid target to null
-[PASS] Test setting target from a valid target to another target
-[PASS] Target element can be set to a foreign element
-[PASS] Change target from null to an existing pseudoElement setting target first.
-[PASS] Change target from null to an existing pseudoElement setting pseudoElement first.
-[PASS] Change target from an existing pseudo-element to the originating element.
-[PASS] Change target from an existing to a different existing pseudo-element by setting target.
-[PASS] Change target from an existing to a different existing pseudo-element by setting pseudoElement.
-[PASS] Change target from a non-existing to a different existing pseudo-element by setting target.
-[PASS] Change target from a non-existing to a different existing pseudo-element by setting pseudoElement.
 [FAIL] Change target from null to a non-existing pseudoElement setting target first.
   assert_equals: Value at 50% progress after setting new target expected "50px" but got "10px"
 [FAIL] Change target from null to a non-existing pseudoElement setting pseudoElement first.
   assert_equals: Value at 50% progress after setting new target expected "50px" but got "10px"
-[PASS] Change target from a non-existing pseudo-element to the originating element.
 [FAIL] Change target from an existing to a different non-existing pseudo-element by setting target.
   assert_equals: Value of 2nd element (currently targeted) after changing the effect target expected "50px" but got "20px"
 [FAIL] Change target from an existing to a different non-existing pseudo-element by setting pseudoElement.
@@ -24,9 +11,6 @@ This is a testharness.js-based test.
   assert_equals: Value of 2nd element (currently targeted) after changing the effect target expected "50px" but got "20px"
 [FAIL] Change target from a non-existing to a different non-existing pseudo-element by setting pseudoElement.
   assert_equals: Value of 2nd element (currently targeted) after changing the effect target expected "50px" but got "20px"
-[PASS] Changing pseudoElement to a non-null invalid pseudo-selector '' throws a SyntaxError
-[PASS] Changing pseudoElement to a non-null invalid pseudo-selector 'before' throws a SyntaxError
-[PASS] Changing pseudoElement to a non-null invalid pseudo-selector ':abc' throws a SyntaxError
 [FAIL] Changing pseudoElement to a non-null invalid pseudo-selector '::abc' throws a SyntaxError
   assert_throws_dom: function "() => effect.pseudoElement = pseudo" did not throw
 [FAIL] Changing pseudoElement to a non-null invalid pseudo-selector '::placeholder' throws a SyntaxError

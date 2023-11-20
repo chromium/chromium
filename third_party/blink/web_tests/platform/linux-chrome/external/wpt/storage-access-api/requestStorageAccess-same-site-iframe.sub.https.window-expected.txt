@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] [same-site-frame] document.requestStorageAccess() should exist on the document interface
 [FAIL] [same-site-frame] document.requestStorageAccess() should resolve in top-level frame or same-site iframe, otherwise reject with a NotAllowedError with no user gesture.
   assert_unreached: document.requestStorageAccess() call should resolve in top-level frame or same-site iframe. Reached unreachable code
 [FAIL] [same-site-frame] document.requestStorageAccess() should be resolved with no user gesture when a permission grant exists, and should allow cookie access

@@ -1,6 +1,4 @@
 This is a wdspec test.
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   assert 200 == 404
-[PASS] test_source_matches_outer_html
 Harness: the test ran to completion.

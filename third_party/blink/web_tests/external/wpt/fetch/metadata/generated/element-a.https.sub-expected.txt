@@ -1,25 +1,6 @@
 This is a testharness.js-based test.
-[PASS] sec-fetch-site - Same origin - no attributes
-[PASS] sec-fetch-site - Cross-site - no attributes
-[PASS] sec-fetch-site - Same site - no attributes
-[PASS] sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect - no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect - no attributes
-[PASS] sec-fetch-site - Cross-Site -> Same Origin - no attributes
-[PASS] sec-fetch-site - Cross-Site -> Same-Site - no attributes
-[PASS] sec-fetch-site - Cross-Site -> Cross-Site - no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same Origin - no attributes
-[PASS] sec-fetch-site - Same-Origin -> Same-Site - no attributes
-[PASS] sec-fetch-site - Same-Origin -> Cross-Site - no attributes
-[PASS] sec-fetch-site - Same-Site -> Same Origin - no attributes
-[PASS] sec-fetch-site - Same-Site -> Same-Site - no attributes
-[PASS] sec-fetch-site - Same-Site -> Cross-Site - no attributes
-[PASS] sec-fetch-site - HTTPS downgrade-upgrade - no attributes
-[PASS] sec-fetch-mode - no attributes
 [FAIL] sec-fetch-mode - attributes: download
   assert_array_equals: expected property 0 to be "no-cors" but got "navigate" (expected array ["no-cors"] got ["navigate"])
-[PASS] sec-fetch-dest - no attributes
-[PASS] sec-fetch-dest - attributes: download
-[PASS] sec-fetch-user - no attributes
 [FAIL] sec-fetch-user - no attributes with user activation
   assert_own_property: expected property "sec-fetch-user" missing
 Harness: the test ran to completion.

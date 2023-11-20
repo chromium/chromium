@@ -5,7 +5,6 @@ This is a wdspec test.
   assert True is False
 [FAIL] test_keeps_focused_area
   assert True is False
-[PASS] test_double_activation
 [FAIL] test_activate_window
   assert True is False
 Harness: the test ran to completion.
