@@ -29,8 +29,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
-  RealboxHandler::SetupDropdownWebUIDataSource(source,
-                                               Profile::FromWebUI(web_ui));
+  RealboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
   webui::SetupWebUIDataSource(
       source,

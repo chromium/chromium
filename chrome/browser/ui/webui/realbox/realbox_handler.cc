@@ -616,11 +616,22 @@ LocationBarModel* RealboxOmniboxClient::GetLocationBarModel() {
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                           Profile* profile) {
-  RealboxHandler::SetupDropdownWebUIDataSource(source, profile);
-
   static constexpr webui::LocalizedString kStrings[] = {
-      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD}};
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
+      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
+      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean(
+      "omniboxActionsUISimplification",
+      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
+  source->AddBoolean(
+      "realboxCr23ExpandedStateIcons",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 
   source->AddBoolean(
       "realboxMatchSearchboxTheme",
@@ -666,21 +677,6 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 void RealboxHandler::SetupDropdownWebUIDataSource(
     content::WebUIDataSource* source,
     Profile* profile) {
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
-      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
-  source->AddLocalizedStrings(kStrings);
-
-  source->AddBoolean(
-      "omniboxActionsUISimplification",
-      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
-  source->AddBoolean(
-      "realboxCr23ExpandedStateIcons",
-      base::FeatureList::IsEnabled(
-          ntp_features::kRealboxCr23ExpandedStateIcons) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 
 // static
