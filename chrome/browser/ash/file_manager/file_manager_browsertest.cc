@@ -929,8 +929,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuSharedDrive").NewDirectoryTree(),
         TestCase("dirContextMenuSharedWithMe").NewDirectoryTree(),
         TestCase("dirContextMenuOffline").NewDirectoryTree(),
-        // TODO(b/301340154): should Computers allow rename?
-        // TestCase("dirContextMenuComputers").NewDirectoryTree(),
+        TestCase("dirContextMenuComputers").NewDirectoryTree(),
         TestCase("dirContextMenuTrash").NewDirectoryTree(),
         TestCase("dirContextMenuShortcut").NewDirectoryTree(),
         TestCase("dirContextMenuFocus").NewDirectoryTree(),
