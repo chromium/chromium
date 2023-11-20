@@ -2921,6 +2921,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
                                               GLboolean visible,
                                               GLfloat hdr_headroom,
                                               const volatile GLbyte* key) {
+  TRACE_EVENT0("gpu", "RasterDecoderImpl::DoBeginRasterCHROMIUM");
   // Workaround for https://crbug.com/906453: Flush before BeginRaster (the
   // commands between BeginRaster and EndRaster will not flush).
   FlushToWorkAroundMacCrashes();
