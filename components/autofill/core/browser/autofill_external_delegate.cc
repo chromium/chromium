@@ -465,8 +465,27 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kFieldByFieldFilling:
       if (const AutofillField* autofill_trigger_field =
               GetQueriedAutofillField()) {
-        LogFillingMethodUsed(autofill_metrics::AutofillFillingMethodMetric::
-                                 kFieldByFieldFilling);
+        autofill_metrics::LogFillingMethodUsed(
+            autofill_metrics::AutofillFillingMethodMetric::
+                kFieldByFieldFilling);
+        CHECK(suggestion.field_by_field_filling_type_used);
+        // Only log the field-by-field filling type used if it was accepted from
+        // a suggestion in a subpopup. The root popup can have field-by-field
+        // suggestions after a field-by-field suggestion was accepted from a
+        // subpopup, this is done to keep the user in a certain filling
+        // granularity during their filling experience. However only the
+        // subpopups field-by-field-filling types are statically built, based on
+        // what we think is useful/handy (this will in the future vary per
+        // country, see crbug.com/1502162), while field-by-field filling
+        // suggestions in the root popup are dynamically built depending on the
+        // triggering field type, which means that selecting them is the only
+        // option users have in the first level. Therefore we only emit logs for
+        // subpopup acceptance to measure the efficiency of the types we chose
+        // and potentially remove/add new ones.
+        if (position.sub_popup_level > 0) {
+          autofill_metrics::LogFieldByFieldFillingFieldUsed(
+              *(suggestion.field_by_field_filling_type_used));
+        }
         // We target only the triggering field type in the
         // PopupItemId::kFieldByFieldFilling case.
         last_field_types_to_fill_for_address_form_section_
@@ -489,7 +508,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kFillFullAddress:
-      LogFillingMethodUsed(
+      autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -499,7 +518,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
            .field_types_to_fill = GetAddressFieldsForGroupFilling()});
       break;
     case PopupItemId::kFillFullName:
-      LogFillingMethodUsed(
+      autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kGroupFillingName);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -510,8 +529,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
     case PopupItemId::kFillFullPhoneNumber:
-      LogFillingMethodUsed(autofill_metrics::AutofillFillingMethodMetric::
-                               kGroupFillingPhoneNumber);
+      autofill_metrics::LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::
+              kGroupFillingPhoneNumber);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -521,7 +541,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
     case PopupItemId::kFillFullEmail:
-      LogFillingMethodUsed(
+      autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -638,7 +658,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
             suggestion.popup_item_id ==
                 PopupItemId::kFillEverythingFromAddressProfile) {
-          LogFillingMethodUsed(
+          autofill_metrics::LogFillingMethodUsed(
               autofill_metrics::AutofillFillingMethodMetric::kFullForm);
         }
       }

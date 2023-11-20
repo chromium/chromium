@@ -1356,6 +1356,47 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       suggestion, SuggestionPosition{.row = 1}, suggestion_source);
 }
 
+// Tests that when the suggestion is of type
+// `PopupItemId::kFieldByFieldFilling`, we emit the expected metric
+// corresponding to which field type was used.
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_SubPopup_EmitsTypeMetric) {
+  Suggestion suggestion = Suggestion(u"Jon", PopupItemId::kFieldByFieldFilling);
+  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+  IssueOnQuery();
+  browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
+  // Wait until form is parsed.
+  task_environment_.RunUntilIdle();
+  base::HistogramTester histogram_tester;
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.row = 0, .sub_popup_level = 1},
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 1);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_RootPopup_DoNotEmitTypeMetric) {
+  Suggestion suggestion = Suggestion(u"Jon", PopupItemId::kFieldByFieldFilling);
+  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+  IssueOnQuery();
+  browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
+  // Wait until form is parsed.
+  task_environment_.RunUntilIdle();
+  base::HistogramTester histogram_tester;
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.row = 0},
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 0);
+}
+
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastServerTypesToFillForSectionTestParams {

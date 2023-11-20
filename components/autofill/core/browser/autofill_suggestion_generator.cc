@@ -869,6 +869,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
+      // TODO(crbug.com/1502162): Make the granular filling options vary
+      // depending on the locale.
       AddGranularFillingChildSuggestions(last_targeted_fields,
                                          trigger_field_type, *profile,
                                          suggestions.back());
