@@ -252,9 +252,9 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 - (void)setupSnapshotView {
   TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
   snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-  // Snapshot view is shown only during the animation transtion to the Tab
-  // view. The Tab view uses not static, but dynaic colors. Therefore, it is
-  // safe to apply dynaimc color here.
+  // Snapshot view is shown only during the animation transition to the Tab
+  // view. The Tab view uses not static, but dynamic colors. Therefore, it is
+  // safe to apply dynamic color here.
   snapshotView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   snapshotView.hidden = YES;
   _snapshotView = snapshotView;

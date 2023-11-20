@@ -793,7 +793,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       arrayByAddingObjectsFromArray:secondaryInactiveItems];
 }
 
-// Sets the proper insets for the Remote Tabs ViewController to accomodate for
+// Sets the proper insets for the Remote Tabs ViewController to accommodate for
 // the safe area, toolbar, and status bar.
 - (void)setInsetForRemoteTabs {
   // Sync the scroll view offset to the current page value if the scroll view
@@ -827,7 +827,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Sets the proper insets for the Grid ViewControllers to accomodate for the
+// Sets the proper insets for the Grid ViewControllers to accommodate for the
 // safe area and toolbars.
 - (void)setInsetForGridViews {
   // Sync the scroll view offset to the current page value if the scroll view
@@ -1634,7 +1634,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Returns YES if a new tab action that tagets the `destinationPage` can be
+// Returns YES if a new tab action that targets the `destinationPage` can be
 // performed. The _currentPage can be the same page as the `destinationPage`.
 - (BOOL)canPerformOpenNewTabActionForDestinationPage:
     (TabGridPage)destinationPage {
@@ -1746,7 +1746,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Calculates the proper insets for the Incognito Grid ViewController to
-// accomodate for the safe area and toolbar.
+// accommodate for the safe area and toolbar.
 - (UIEdgeInsets)calculateInsetForIncognitoGridView {
   // The content inset of the tab grids must be modified so that the toolbars
   // do not obscure the tabs. This may change depending on orientation.
@@ -1765,7 +1765,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Calculates the proper insets for the Regular Grid ViewController to
-// accomodate for the safe area and toolbars.
+// accommodate for the safe area and toolbars.
 - (UIEdgeInsets)calculateInsetForRegularGridView {
   UIEdgeInsets inset = [self calculateInsetForIncognitoGridView];
 
@@ -1790,7 +1790,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion {
   if (self.currentPage == TabGridPageIncognitoTabs) {
-    // History retrival shouldn't be done from incognito tabs page.
+    // History retrieval shouldn't be done from incognito tabs page.
     completion(0);
     return;
   }
