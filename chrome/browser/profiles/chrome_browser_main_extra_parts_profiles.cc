@@ -486,6 +486,11 @@
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+// A ChromeOS build for a dev linux machine.
+#include "chrome/browser/smart_card/fake_smart_card_device_service_factory.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -769,6 +774,11 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   ExitTypeServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // A ChromeOS build for a dev linux machine.
+  // Makes manual testing possible.
+  FakeSmartCardDeviceServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   FastCheckoutCapabilitiesFetcherFactory::GetInstance();
