@@ -30,6 +30,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
@@ -61,7 +62,7 @@ enum ScreenAiInstallStatus {
 // </if>
 
 const SettingsA11yPageElementBase =
-    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    PrefsMixin(WebUiListenerMixin(I18nMixin(BaseMixin(PolymerElement))));
 
 export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get is() {
