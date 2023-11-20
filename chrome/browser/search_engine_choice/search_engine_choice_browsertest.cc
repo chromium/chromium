@@ -698,3 +698,41 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING, 1);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       DialogIsDisplayedOnEveryGuestSession) {
+  // Initial browser
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* first_guest_session = CreateGuestBrowser();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  auto* first_service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(
+          first_guest_session->profile()));
+
+  // Navigate to a URL to display the dialog.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      first_guest_session, GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_TRUE(first_service->IsShowingDialog(first_guest_session));
+  CloseBrowserSynchronously(first_guest_session);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* second_guest_session = CreateGuestBrowser();
+  auto* second_service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(
+          second_guest_session->profile()));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  // Navigate to a URL to display the dialog.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      second_guest_session, GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_TRUE(second_service->IsShowingDialog(second_guest_session));
+}
+#endif

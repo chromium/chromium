@@ -92,7 +92,9 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
         TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
                                                           prepopulate_id);
     CHECK(search_engine);
-    SetDefaultSearchProviderPrefValue(*pref_service, search_engine->sync_guid);
+    TemplateURL search_engine_template_url = TemplateURL(*search_engine);
+    template_url_service_->SetUserSelectedDefaultSearchProvider(
+        &search_engine_template_url);
   } else {
     // Make sure that the default search engine is a custom search engine.
     const TemplateURL* default_search_provider =
