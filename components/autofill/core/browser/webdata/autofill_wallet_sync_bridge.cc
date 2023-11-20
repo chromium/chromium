@@ -393,8 +393,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
         found_diff = true;
         if (notify_webdata_backend) {
           web_data_backend_->NotifyOfIbanChanged(
-              IbanChange(IbanChange::REMOVE,
-                         base::NumberToString(existing_iban->instrument_id()),
+              IbanChange(IbanChange::REMOVE, existing_iban->instrument_id(),
                          *existing_iban));
         }
       }
@@ -408,8 +407,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
         found_diff = true;
         if (notify_webdata_backend) {
           web_data_backend_->NotifyOfIbanChanged(IbanChange(
-              IbanChange::ADD,
-              base::NumberToString(wallet_iban.instrument_id()), wallet_iban));
+              IbanChange::ADD, wallet_iban.instrument_id(), wallet_iban));
         }
       }
     }

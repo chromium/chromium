@@ -57,6 +57,7 @@ namespace {
 using autofill::AutofillProfileChange;
 using autofill::CreditCardChange;
 using base::ScopedTempDir;
+using IbanChangeKey = absl::variant<std::string, int64_t>;
 using sync_pb::AutofillWalletSpecifics;
 using sync_pb::EntityMetadata;
 using sync_pb::ModelTypeState;
@@ -220,8 +221,7 @@ MATCHER_P(RemoveChange, key, "") {
     return false;
   }
   if (arg.key() != key) {
-    *result_listener << "key " << arg.key() << " does not match expected "
-                     << key;
+    *result_listener << "keys don't match";
   }
   return true;
 }
@@ -231,8 +231,7 @@ MATCHER_P2(AddChange, key, data, "") {
     return false;
   }
   if (arg.key() != key) {
-    *result_listener << "key " << arg.key() << " does not match expected "
-                     << key;
+    *result_listener << "keys don't match";
   }
   if (arg.data_model() != data) {
     *result_listener << "data " << arg.data_model()
@@ -897,9 +896,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsNewMaskedIban) {
 
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), NotifyOfIbanChanged(AddChange(
-                              base::NumberToString(server_iban.instrument_id()),
-                              server_iban)));
+  EXPECT_CALL(*backend(),
+              NotifyOfIbanChanged(AddChange(
+                  IbanChangeKey(server_iban.instrument_id()), server_iban)));
   StartSyncing({masked_iban_specifics});
 
   EXPECT_THAT(GetAllLocalData(),
@@ -926,12 +925,11 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), NotifyOfIbanChanged(RemoveChange(base::NumberToString(
-                              server_iban1.instrument_id()))));
-  EXPECT_CALL(
-      *backend(),
-      NotifyOfIbanChanged(AddChange(
-          base::NumberToString(server_iban2.instrument_id()), server_iban2)));
+  EXPECT_CALL(*backend(), NotifyOfIbanChanged(RemoveChange(
+                              IbanChangeKey(server_iban1.instrument_id()))));
+  EXPECT_CALL(*backend(),
+              NotifyOfIbanChanged(AddChange(
+                  IbanChangeKey(server_iban2.instrument_id()), server_iban2)));
   StartSyncing({masked_iban2_specifics});
 
   std::vector<std::unique_ptr<Iban>> iban_vector;

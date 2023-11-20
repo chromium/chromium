@@ -257,17 +257,19 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
       CreateMetadataChangeList();
   auto data = std::make_unique<syncer::EntityData>();
 
+  std::string key_str = base::NumberToString(change.key());
   switch (change.type()) {
     case ServerCvcChange::ADD:
     case ServerCvcChange::UPDATE:
       data->name = base::NumberToString(change.data_model().instrument_id);
       *data->specifics.mutable_autofill_wallet_credential() =
           AutofillWalletCredentialSpecificsFromStructData(change.data_model());
-      change_processor()->Put(change.key(), std::move(data),
+      change_processor()->Put(std::move(key_str), std::move(data),
                               metadata_change_list.get());
       break;
     case ServerCvcChange::REMOVE:
-      change_processor()->Delete(change.key(), metadata_change_list.get());
+      change_processor()->Delete(std::move(key_str),
+                                 metadata_change_list.get());
       break;
   }
 }

@@ -713,8 +713,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
   const ServerCvc server_cvc{instrument_id, cvc,
                              /*last_updated_timestamp=*/AutofillClock::Now()};
   if (AutofillTable::FromWebDatabase(db)->AddServerCvc(server_cvc)) {
-    const ServerCvcChange change{
-        ServerCvcChange::ADD, base::NumberToString(instrument_id), server_cvc};
+    const ServerCvcChange change{ServerCvcChange::ADD, instrument_id,
+                                 server_cvc};
     for (auto& db_observer : db_observer_list_) {
       // TODO(crbug/1477924): Add integration tests for Add, Remove and Update
       // for Wallet Credential data.
@@ -735,8 +735,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCvc(
   const ServerCvc server_cvc{instrument_id, cvc,
                              /*last_updated_timestamp=*/AutofillClock::Now()};
   if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(server_cvc)) {
-    const ServerCvcChange change{ServerCvcChange::UPDATE,
-                                 base::NumberToString(instrument_id),
+    const ServerCvcChange change{ServerCvcChange::UPDATE, instrument_id,
                                  server_cvc};
     for (auto& db_observer : db_observer_list_) {
       db_observer.ServerCvcChanged(change);
@@ -755,8 +754,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveServerCvc(
   if (AutofillTable::FromWebDatabase(db)->RemoveServerCvc(instrument_id)) {
     // Remove doesn't require `ServerCvc` struct data, so an empty data is
     // passed to the ServerCvcChange
-    const ServerCvcChange change{ServerCvcChange::REMOVE,
-                                 base::NumberToString(instrument_id),
+    const ServerCvcChange change{ServerCvcChange::REMOVE, instrument_id,
                                  ServerCvc{}};
     for (auto& db_observer : db_observer_list_) {
       db_observer.ServerCvcChanged(change);
@@ -778,10 +776,9 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearServerCvcs(
          server_cvc_list) {
       // Remove doesn't require `ServerCvc` struct data, so an empty data is
       // passed to the ServerCvcChange
-      const ServerCvcChange change{
-          ServerCvcChange::REMOVE,
-          base::NumberToString(server_cvc_from_list->instrument_id),
-          ServerCvc{}};
+      const ServerCvcChange change{ServerCvcChange::REMOVE,
+                                   server_cvc_from_list->instrument_id,
+                                   ServerCvc{}};
       for (auto& db_observer : db_observer_list_) {
         db_observer.ServerCvcChanged(change);
       }

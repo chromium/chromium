@@ -646,10 +646,10 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
   return change_processor()->GetError();
 }
 
-template <class DataType>
+template <typename DataType, typename KeyType>
 void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
     WalletMetadataSpecifics::Type type,
-    AutofillDataModelChange<DataType> change) {
+    AutofillDataModelChange<DataType, KeyType> change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::string& metadata_id = change.key();
@@ -659,7 +659,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
       CreateMetadataChangeList();
 
   switch (change.type()) {
-    case AutofillDataModelChange<DataType>::REMOVE:
+    case AutofillDataModelChange<DataType, KeyType>::REMOVE:
       if (RemoveServerMetadata(GetAutofillTable(), type, metadata_id)) {
         cache_.erase(storage_key);
         // Send up deletion only if we had this entry in the DB. It is not there
@@ -667,8 +667,8 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
         change_processor()->Delete(storage_key, metadata_change_list.get());
       }
       return;
-    case AutofillDataModelChange<DataType>::ADD:
-    case AutofillDataModelChange<DataType>::UPDATE:
+    case AutofillDataModelChange<DataType, KeyType>::ADD:
+    case AutofillDataModelChange<DataType, KeyType>::UPDATE:
       AutofillMetadata new_entry = change.data_model().GetMetadata();
       auto it = cache_.find(storage_key);
       absl::optional<AutofillMetadata> existing_entry = absl::nullopt;

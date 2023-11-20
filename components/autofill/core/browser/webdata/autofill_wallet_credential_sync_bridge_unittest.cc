@@ -350,8 +350,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Add) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::ADD, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::ADD, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
@@ -370,8 +369,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Update) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::UPDATE, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::UPDATE, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
@@ -390,8 +388,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Remove) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::REMOVE, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::REMOVE, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
