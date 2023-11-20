@@ -177,6 +177,7 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
+    ("fuchsia-arm64-rel-ready", "gardener|p/chrome|arm64", "rel-ready"),
     ("fuchsia-arm64-nest-sd", "gardener|p/chrome|arm64", "nest-arm"),
     ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-arm"),
     ("fuchsia-cast-astro", "gardener|hardware|cast", "ast"),
