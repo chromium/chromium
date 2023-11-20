@@ -54,12 +54,10 @@ struct WebAppInstallInfo;
 using AppInstallationAcceptanceCallback =
     base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>;
 
-// Shows the Web App install bubble.
+// Shows the Create Shortcut confirmation dialog.
 //
 // |web_app_info| is the WebAppInstallInfo being converted into an app.
-// |web_app_info.app_url| should contain a start url from a web app manifest
-// (for a Desktop PWA), or the current url (when creating a shortcut app).
-void ShowWebAppInstallDialog(
+void ShowCreateShortcutDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,

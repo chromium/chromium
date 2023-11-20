@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_CREATE_SHORTCUT_CONFIRMATION_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_CREATE_SHORTCUT_CONFIRMATION_VIEW_H_
 
 #include <memory>
 #include <string>
@@ -27,22 +27,24 @@ namespace webapps {
 class MlInstallOperationTracker;
 }  // namespace webapps
 
-// WebAppConfirmationView provides views for editing the details to
-// create a web app with. (More tools > Add to desktop)
-class WebAppConfirmationView : public views::DialogDelegateView,
+// CreateShortcutConfirmationView provides views for editing the details to
+// create a "shortcut" web app with (More tools > Create Shortcut).
+class CreateShortcutConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
-  METADATA_HEADER(WebAppConfirmationView);
+  METADATA_HEADER(CreateShortcutConfirmationView);
 
-  static WebAppConfirmationView* GetDialogForTesting();
+  static CreateShortcutConfirmationView* GetDialogForTesting();
 
-  WebAppConfirmationView(
+  CreateShortcutConfirmationView(
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       web_app::AppInstallationAcceptanceCallback callback);
-  WebAppConfirmationView(const WebAppConfirmationView&) = delete;
-  WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
-  ~WebAppConfirmationView() override;
+  CreateShortcutConfirmationView(const CreateShortcutConfirmationView&) =
+      delete;
+  CreateShortcutConfirmationView& operator=(
+      const CreateShortcutConfirmationView&) = delete;
+  ~CreateShortcutConfirmationView() override;
 
   views::Checkbox* GetOpenAsWindowCheckboxForTesting() {
     return open_as_window_checkbox_.get();
@@ -98,12 +100,12 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Textfield showing the title of the app.
   raw_ptr<views::Textfield> title_tf_ = nullptr;
 
-  base::WeakPtrFactory<WebAppConfirmationView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CreateShortcutConfirmationView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(, WebAppConfirmationView, views::DialogDelegateView)
+BEGIN_VIEW_BUILDER(, CreateShortcutConfirmationView, views::DialogDelegateView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(, WebAppConfirmationView)
+DEFINE_VIEW_BUILDER(, CreateShortcutConfirmationView)
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_CREATE_SHORTCUT_CONFIRMATION_VIEW_H_

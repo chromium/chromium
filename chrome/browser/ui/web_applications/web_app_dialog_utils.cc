@@ -115,9 +115,9 @@ void OnWebAppInstallShowInstallDialog(
       }
 #endif
 
-      ShowWebAppInstallDialog(initiator_web_contents, std::move(web_app_info),
-                              std::move(install_tracker),
-                              std::move(web_app_acceptance_callback));
+      ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),
+                               std::move(install_tracker),
+                               std::move(web_app_acceptance_callback));
       return;
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();

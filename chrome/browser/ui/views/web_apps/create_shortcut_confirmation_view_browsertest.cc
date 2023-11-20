@@ -8,7 +8,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/web_apps/web_app_confirmation_view.h"
+#include "chrome/browser/ui/views/web_apps/create_shortcut_confirmation_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -31,14 +31,15 @@ struct Params {
   bool tab_strip_enabled;
 };
 
-class WebAppConfirmViewBrowserTest
+class CreateShortcutConfirmationViewBrowserTest
     : public DialogBrowserTest,
       public ::testing::WithParamInterface<Params> {
  public:
-  WebAppConfirmViewBrowserTest() = default;
-  WebAppConfirmViewBrowserTest(const WebAppConfirmViewBrowserTest&) = delete;
-  WebAppConfirmViewBrowserTest& operator=(const WebAppConfirmViewBrowserTest&) =
-      delete;
+  CreateShortcutConfirmationViewBrowserTest() = default;
+  CreateShortcutConfirmationViewBrowserTest(
+      const CreateShortcutConfirmationViewBrowserTest&) = delete;
+  CreateShortcutConfirmationViewBrowserTest& operator=(
+      const CreateShortcutConfirmationViewBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -58,7 +59,7 @@ class WebAppConfirmViewBrowserTest
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+    web_app::ShowCreateShortcutDialog(web_contents, std::move(app_info),
                                      std::move(install_tracker),
                                      base::BindLambdaForTesting(callback));
   }
@@ -94,7 +95,8 @@ class WebAppConfirmViewBrowserTest
   base::test::ScopedFeatureList feature_list;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
+IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
+                       ShowCreateShortcutDialog) {
   auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
       web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
   app_info->title = u"Test app";
@@ -118,7 +120,7 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
           ->RegisterCurrentInstallForWebContents(
               webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-  web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+  web_app::ShowCreateShortcutDialog(web_contents, std::move(app_info),
                                    std::move(install_tracker),
                                    base::BindLambdaForTesting(callback));
   EXPECT_TRUE(is_accepted);
@@ -132,8 +134,8 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest,
-                       VerifyWebAppInstallDialogContents) {
+IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
+                       VerifyCreateShortcutDialogContents) {
   auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
       web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
   app_info->title = u"Test app";
@@ -151,12 +153,12 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest,
           ->RegisterCurrentInstallForWebContents(
               webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-  web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+  web_app::ShowCreateShortcutDialog(web_contents, std::move(app_info),
                                    std::move(install_tracker),
                                    install_result.GetCallback());
 
-  WebAppConfirmationView* dialog =
-      WebAppConfirmationView::GetDialogForTesting();
+  CreateShortcutConfirmationView* dialog =
+      CreateShortcutConfirmationView::GetDialogForTesting();
 
   ASSERT_TRUE(dialog);
   EXPECT_TRUE(dialog->GetVisible());
@@ -177,11 +179,13 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest,
             web_app::mojom::UserDisplayMode::kBrowser);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
+                       InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
+IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
+                       NormalizeTitles) {
   web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                                /*auto_open_in_window=*/true);
 
@@ -217,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+    web_app::ShowCreateShortcutDialog(web_contents, std::move(app_info),
                                      std::move(install_tracker),
                                      base::BindLambdaForTesting(callback));
     EXPECT_TRUE(is_accepted) << test_case.input;
@@ -226,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppConfirmViewBrowserTest,
+                         CreateShortcutConfirmationViewBrowserTest,
                          ::testing::Values(Params{false, false},
                                            Params{false, true},
                                            Params{true, false},

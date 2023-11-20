@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_confirmation_view.h"
+#include "chrome/browser/ui/views/web_apps/create_shortcut_confirmation_view.h"
 
 #include <memory>
 #include <string>
@@ -43,7 +43,7 @@
 
 namespace {
 
-WebAppConfirmationView* g_dialog_for_testing = nullptr;
+CreateShortcutConfirmationView* g_dialog_for_testing = nullptr;
 bool g_auto_accept_web_app_for_testing = false;
 bool g_auto_check_open_in_window_for_testing = false;
 const char* g_title_to_use_for_app = nullptr;
@@ -92,13 +92,14 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
 }  // namespace
 
 // static
-WebAppConfirmationView* WebAppConfirmationView::GetDialogForTesting() {
+CreateShortcutConfirmationView*
+CreateShortcutConfirmationView::GetDialogForTesting() {
   return g_dialog_for_testing;
 }
 
-WebAppConfirmationView::~WebAppConfirmationView() = default;
+CreateShortcutConfirmationView::~CreateShortcutConfirmationView() = default;
 
-WebAppConfirmationView::WebAppConfirmationView(
+CreateShortcutConfirmationView::CreateShortcutConfirmationView(
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     web_app::AppInstallationAcceptanceCallback callback)
@@ -137,18 +138,21 @@ WebAppConfirmationView::WebAppConfirmationView(
 
   // Builds the header row child views.
   auto builder =
-      views::Builder<WebAppConfirmationView>(this)
+      views::Builder<CreateShortcutConfirmationView>(this)
           .SetButtonLabel(
               ui::DIALOG_BUTTON_OK,
               l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
           .SetModalType(ui::MODAL_TYPE_CHILD)
           .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
-          .SetAcceptCallback(base::BindOnce(&WebAppConfirmationView::OnAccept,
-                                            weak_ptr_factory_.GetWeakPtr()))
-          .SetCloseCallback(base::BindOnce(&WebAppConfirmationView::OnClose,
-                                           weak_ptr_factory_.GetWeakPtr()))
-          .SetCancelCallback(base::BindOnce(&WebAppConfirmationView::OnCancel,
-                                            weak_ptr_factory_.GetWeakPtr()))
+          .SetAcceptCallback(
+              base::BindOnce(&CreateShortcutConfirmationView::OnAccept,
+                             weak_ptr_factory_.GetWeakPtr()))
+          .SetCloseCallback(
+              base::BindOnce(&CreateShortcutConfirmationView::OnClose,
+                             weak_ptr_factory_.GetWeakPtr()))
+          .SetCancelCallback(
+              base::BindOnce(&CreateShortcutConfirmationView::OnCancel,
+                             weak_ptr_factory_.GetWeakPtr()))
           .set_margins(layout_provider->GetDialogInsetsForContentType(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
@@ -221,33 +225,33 @@ WebAppConfirmationView::WebAppConfirmationView(
   title_tf_->SelectAll(true);
 }
 
-views::View* WebAppConfirmationView::GetInitiallyFocusedView() {
+views::View* CreateShortcutConfirmationView::GetInitiallyFocusedView() {
   return title_tf_;
 }
 
-bool WebAppConfirmationView::ShouldShowCloseButton() const {
+bool CreateShortcutConfirmationView::ShouldShowCloseButton() const {
   return false;
 }
 
-bool WebAppConfirmationView::IsDialogButtonEnabled(
+bool CreateShortcutConfirmationView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button == ui::DIALOG_BUTTON_OK ? !GetTrimmedTitle().empty() : true;
 }
 
-void WebAppConfirmationView::ContentsChanged(
+void CreateShortcutConfirmationView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   DCHECK_EQ(title_tf_, sender);
   DialogModelChanged();
 }
 
-std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
+std::u16string CreateShortcutConfirmationView::GetTrimmedTitle() const {
   std::u16string title(title_tf_->GetText());
   base::TrimWhitespace(title, base::TRIM_ALL, &title);
   return title;
 }
 
-void WebAppConfirmationView::OnAccept() {
+void CreateShortcutConfirmationView::OnAccept() {
   CHECK(web_app_info_);
   web_app_info_->title = GetTrimmedTitle();
   if (AllowOpenInWindowOptions()) {
@@ -278,32 +282,32 @@ void WebAppConfirmationView::OnAccept() {
   std::move(callback_).Run(true, std::move(web_app_info_));
 }
 
-void WebAppConfirmationView::OnClose() {
+void CreateShortcutConfirmationView::OnClose() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   RunCloseCallbackIfExists();
 }
 
-void WebAppConfirmationView::OnCancel() {
+void CreateShortcutConfirmationView::OnCancel() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
   RunCloseCallbackIfExists();
 }
 
-void WebAppConfirmationView::RunCloseCallbackIfExists() {
+void CreateShortcutConfirmationView::RunCloseCallbackIfExists() {
   if (callback_) {
     CHECK(web_app_info_);
     std::move(callback_).Run(false, std::move(web_app_info_));
   }
 }
 
-BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
+BEGIN_METADATA(CreateShortcutConfirmationView, views::DialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
 END_METADATA
 
 namespace web_app {
 
-void ShowWebAppInstallDialog(
+void ShowCreateShortcutDialog(
     content::WebContents* web_contents,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -311,7 +315,7 @@ void ShowWebAppInstallDialog(
   CHECK(web_app_info);
   CHECK(web_app_info->manifest_id.is_valid());
   CHECK(install_tracker);
-  auto* dialog = new WebAppConfirmationView(
+  auto* dialog = new CreateShortcutConfirmationView(
       std::move(web_app_info), std::move(install_tracker), std::move(callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 
@@ -322,7 +326,7 @@ void ShowWebAppInstallDialog(
   }
 }
 
-void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
+void SetAutoAcceptWebAppDialogForTesting(bool auto_accept, // IN-TEST
                                          bool auto_open_in_window) {
   g_auto_accept_web_app_for_testing = auto_accept;
   g_auto_check_open_in_window_for_testing = auto_open_in_window;

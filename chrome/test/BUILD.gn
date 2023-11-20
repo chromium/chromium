@@ -3748,8 +3748,8 @@ if (!is_android) {
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.cc",
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h",
         "../browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
+        "../browser/ui/views/web_apps/create_shortcut_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
         "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
       ]
@@ -5447,8 +5447,8 @@ if (!is_android) {
           "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
           "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
           "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
+          "../browser/ui/views/web_apps/create_shortcut_confirmation_view_browsertest.cc",
           "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
-          "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
           "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
 
           # Exclude tests that depend on native messaging.
