@@ -7,14 +7,16 @@
 
 #include "components/reporting/util/status_macros.h"
 
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
+
 namespace reporting {
 namespace {
-int ReturnIfOtherTypes(int foo) {
+#if DCHECK_IS_ON()
+void DCheckOtherTypes(char foo) {
   // Should fail because foo is not neither Status or StatusOr.
-  RETURN_IF_ERROR_STATUS(foo);  // expected-error {{variable has incomplete type 'void'}}
-                                // expected-error@components/reporting/util/status_macros.h:* {{RETURN_IF_ERROR_STATUS only accepts either Status or base::unexpected<Status>}}
-
-  return 0;
+  DCHECK_OK(foo);  // expected-error@components/reporting/util/status_macros.h:* {{{CHECK,DCHECK,ASSERT,EXPECT}_OK do not accept a type other than Status or StatusOr.}}
 }
+#endif  // DCHECK_IS_ON()
 }  // namespace
 }  // namespace reporting

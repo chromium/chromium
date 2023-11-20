@@ -8,12 +8,13 @@
 #include "base/types/always_false.h"
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/statusor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::internal {
 // Helper functions for the macro RETURN_IF_ERROR_STATUS. Overloads of the
 // following functions to return if the given status is OK. If yes, the return
-// value is empty. If not, the desired return value is returned.
+// value is nullopt. If not, the desired return value is returned.
 absl::optional<Status> ShouldReturnStatus(const Status& status);
 absl::optional<Status> ShouldReturnStatus(Status&& status);
 absl::optional<base::unexpected<Status>> ShouldReturnStatus(
@@ -25,7 +26,7 @@ template <typename T>
 void ShouldReturnStatus(T) {
   static_assert(base::AlwaysFalse<T>,
                 "RETURN_IF_ERROR_STATUS only accepts either Status or "
-                "base::unexpected<Status>");
+                "base::unexpected<Status>.");
 }
 }  // namespace reporting::internal
 
@@ -48,5 +49,43 @@ void ShouldReturnStatus(T) {
       return std::move(_status).value();                                     \
     }                                                                        \
   } while (0)
+
+namespace reporting::internal {
+
+// Helper functions and classes for the macros *_OK. Overloads of the
+// following functions to return if the given Status or StatusOr is OK. The
+// template classes are needed here because template functions can't be
+// partially specialized.
+template <typename T>
+struct StatusOKHelper {
+  static bool IsOK(const T&) {
+    static_assert(base::AlwaysFalse<T>,
+                  "{CHECK,DCHECK,ASSERT,EXPECT}_OK do not accept a type other "
+                  "than Status or StatusOr.");
+  }
+};
+
+template <typename T>
+struct StatusOKHelper<StatusOr<T>> {
+  static bool IsOK(const StatusOr<T>& status_or) {
+    return status_or.has_value();
+  }
+};
+
+template <>
+struct StatusOKHelper<Status> {
+  static bool IsOK(const Status& status) { return status.ok(); }
+};
+
+template <typename T>
+bool IsOK(const T& s) {
+  return StatusOKHelper<T>::IsOK(s);
+}
+}  // namespace reporting::internal
+
+#define CHECK_OK(value) CHECK(internal::IsOK(value))
+#define DCHECK_OK(value) DCHECK(internal::IsOK(value))
+#define ASSERT_OK(value) ASSERT_TRUE(internal::IsOK(value))
+#define EXPECT_OK(value) EXPECT_TRUE(internal::IsOK(value))
 
 #endif  // COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_

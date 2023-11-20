@@ -324,7 +324,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
@@ -358,7 +358,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -432,7 +432,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
