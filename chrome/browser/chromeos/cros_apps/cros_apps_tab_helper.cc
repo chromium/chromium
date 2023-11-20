@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -34,21 +37,22 @@ CrosAppsTabHelper::~CrosAppsTabHelper() = default;
 
 void CrosAppsTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle->GetWebContents()->GetBrowserContext());
+
+  auto enable_fns =
+      CrosAppsApiRegistry::GetInstance(profile)
+          .GetBlinkFeatureEnablementFunctionsFor(navigation_handle);
+
+  if (enable_fns.empty()) {
     return;
   }
 
-  // TODO(b/295267987): Check `navigation_handle` is for a ChromeOS Apps and
-  // set features accordingly.
-
-  if (chromeos::features::IsBlinkExtensionEnabled()) {
-    navigation_handle->GetMutableRuntimeFeatureStateContext()
-        .SetBlinkExtensionChromeOSEnabled(true);
-  }
-
-  if (chromeos::features::IsBlinkExtensionDiagnosticsEnabled()) {
-    navigation_handle->GetMutableRuntimeFeatureStateContext()
-        .SetBlinkExtensionDiagnosticsEnabled(true);
+  auto& runtime_feature_state_context =
+      navigation_handle->GetMutableRuntimeFeatureStateContext();
+  runtime_feature_state_context.SetBlinkExtensionChromeOSEnabled(true);
+  for (const auto& enable_fn : enable_fns) {
+    (runtime_feature_state_context.*enable_fn)(true);
   }
 }
 
