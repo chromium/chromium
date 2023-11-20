@@ -6,7 +6,6 @@
 #![forbid(unsafe_code)]
 
 mod add;
-mod download;
 mod gen;
 mod update;
 mod util;
@@ -97,35 +96,12 @@ fn main() -> Result<()> {
         )
         .subcommand(
             clap::Command::new("update")
-                .about("Download all third-party crate dependencies in //third_party/rust")
+                .about("Update the Cargo.lock to newer versions for //third_party/rust")
                 .arg(
                     Arg::new("cargo-path")
                         .long("cargo-path")
                         .value_name("CARGO_PATH")
                         .help("Path to the cargo executable"),
-                ),
-        )
-        .subcommand(
-            clap::Command::new("download")
-                .about("Download the crate with the given name and version to third_party/rust.")
-                .arg(arg!(<name> "Name of the crate to download"))
-                .arg(
-                    arg!(<version> "Version of the crate to download")
-                        .value_parser(clap::value_parser!(semver::Version)),
-                )
-                .arg(
-                    arg!(--"security-critical" <yesno> "Whether the crate is considered to be \
-                        security critical."
-                    )
-                    .value_parser(["yes", "no"])
-                    .required(true),
-                )
-                .arg(
-                    arg!(--"shipped" <yesno> "Whether the crate contributes to code shipped to \
-                        users."
-                    )
-                    .value_parser(["yes", "no"])
-                    .required(true),
                 ),
         )
         .get_matches();
@@ -137,16 +113,6 @@ fn main() -> Result<()> {
         Some(("gen", args)) => gen::generate(args, &paths),
         Some(("update", args)) => update::update(args, &paths),
         Some(("vendor", args)) => vendor::vendor(args, &paths),
-        Some(("download", args)) => {
-            let security = download::SecurityCritical::from(
-                args.get_one::<String>("security-critical").unwrap() == "yes",
-            );
-            let shipped =
-                download::Shipped::from(args.get_one::<String>("shipped").unwrap() == "yes");
-            let name = args.get_one::<String>("name").unwrap();
-            let version = args.get_one::<semver::Version>("version").unwrap().clone();
-            download::download(name, version, security, shipped, &paths)
-        }
         _ => Err(anyhow!(
             "Invalid or missing subcommand: must be one of: \
              add, gen, update, vendor"

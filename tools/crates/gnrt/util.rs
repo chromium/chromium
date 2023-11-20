@@ -12,10 +12,6 @@ use std::{fmt::Write, path::PathBuf};
 
 use anyhow::{format_err, Context, Result};
 
-pub fn check_output(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Output> {
-    cmd.output().with_context(|| format!("failed to start {cmd_msg}"))
-}
-
 pub fn check_spawn(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Child> {
     cmd.spawn().with_context(|| format!("failed to start {cmd_msg}"))
 }
