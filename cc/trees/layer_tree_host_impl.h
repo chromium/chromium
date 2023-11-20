@@ -251,7 +251,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     viz::SharedBitmapId shared_bitmap_id;
     base::WritableSharedMemoryMapping shared_mapping;
     // Backing for gpu compositing.
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // The name with which to refer to the resource in frames submitted to the
     // display compositor.

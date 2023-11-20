@@ -4643,7 +4643,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
   // For gpu compositing, a SharedImage mailbox will be allocated and the
   // UIResource will be uploaded into it.
-  gpu::Mailbox mailbox;
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   // For gpu compositing, we also calculate the GL texture target.
   // TODO(ericrk): Remove references to GL from this code.
@@ -4682,12 +4682,11 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
-      auto client_shared_image = sii->CreateSharedImage(
+      client_shared_image = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
       CHECK(client_shared_image);
-      mailbox = client_shared_image->mailbox();
     } else {
       DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
       SkImageInfo src_info =
@@ -4751,14 +4750,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
-      auto client_shared_image = sii->CreateSharedImage(
+      client_shared_image = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(pixmap.addr()),
               pixmap.computeByteSize()));
       CHECK(client_shared_image);
-      mailbox = client_shared_image->mailbox();
     }
   }
 
@@ -4776,7 +4774,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                     ->GenUnverifiedSyncToken();
 
     transferable = viz::TransferableResource::MakeGpu(
-        mailbox, texture_target, sync_token, upload_size, format,
+        client_shared_image, texture_target, sync_token, upload_size, format,
         overlay_candidate, viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
@@ -4800,7 +4798,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   data.format = format;
   data.shared_bitmap_id = shared_bitmap_id;
   data.shared_mapping = std::move(shm.mapping);
-  data.mailbox = mailbox;
+  data.shared_image = std::move(client_shared_image);
   data.resource_id_for_export = id;
   ui_resource_map_[uid] = std::move(data);
 
@@ -4829,13 +4827,13 @@ void LayerTreeHostImpl::DeleteUIResourceBacking(
     UIResourceData data,
     const gpu::SyncToken& sync_token) {
   // Resources are either software or gpu backed, not both.
-  DCHECK(!(data.shared_mapping.IsValid() && !data.mailbox.IsZero()));
+  DCHECK(!(data.shared_mapping.IsValid() && data.shared_image));
   if (data.shared_mapping.IsValid())
     layer_tree_frame_sink_->DidDeleteSharedBitmap(data.shared_bitmap_id);
-  if (!data.mailbox.IsZero()) {
+  if (data.shared_image) {
     auto* sii =
         layer_tree_frame_sink_->context_provider()->SharedImageInterface();
-    sii->DestroySharedImage(sync_token, data.mailbox);
+    sii->DestroySharedImage(sync_token, std::move(data.shared_image));
   }
   // |data| goes out of scope and deletes anything it owned.
 }
