@@ -111,7 +111,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
             &GetPrimaryMainFrame());
-    prefetch_document_manager->EnableNoVarySearchSupport();
 
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -452,6 +451,54 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
 }
+
+// Struct describing the settings for No-Vary-Search experiment's flags used to
+// support shipping and origin trial.
+struct NoVarySearchExperimentConfigTestInfo {
+  bool shipped_by_default;
+  bool origin_trial_enabled;
+  bool experiment_expected_status;
+};
+
+class PrefetchDocumentManagerNoVarySearchTest
+    : public PrefetchDocumentManagerTest,
+      public testing::WithParamInterface<NoVarySearchExperimentConfigTestInfo> {
+};
+
+// Tests that the NoVarySearch feature is properly enabled/disabled when
+// setting shipping and Origin Trial flags.
+TEST_P(PrefetchDocumentManagerNoVarySearchTest,
+       NoVarySearchFeatureStatusCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  bool shipped_by_default = GetParam().shipped_by_default;
+  bool origin_trial_enabled = GetParam().origin_trial_enabled;
+  bool experiment_expected_status = GetParam().experiment_expected_status;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kPrefetchNoVarySearch,
+      {{network::features::kPrefetchNoVarySearchShippedByDefault.name,
+        shipped_by_default ? "true" : "false"}});
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &GetPrimaryMainFrame());
+
+  if (origin_trial_enabled) {
+    prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
+  }
+
+  EXPECT_EQ(prefetch_document_manager->NoVarySearchSupportEnabled(),
+            experiment_expected_status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrefetchDocumentManagerTest,
+    PrefetchDocumentManagerNoVarySearchTest,
+    ::testing::Values(NoVarySearchExperimentConfigTestInfo{false, false, false},
+                      NoVarySearchExperimentConfigTestInfo{false, true, true},
+                      NoVarySearchExperimentConfigTestInfo{true, false, true},
+                      NoVarySearchExperimentConfigTestInfo{true, true, true}));
 
 }  // namespace
 }  // namespace content

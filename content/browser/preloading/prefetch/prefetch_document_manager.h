@@ -103,7 +103,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Whether the prefetch attempt for target |url| failed or discarded
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
 
-  void EnableNoVarySearchSupport();
+  void EnableNoVarySearchSupportFromOriginTrial();
   bool NoVarySearchSupportEnabled() const;
 
   // Returns a tuple: (can_prefetch_now, prefetch_to_evict). 'can_prefetch_now'

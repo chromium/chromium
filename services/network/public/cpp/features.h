@@ -134,6 +134,12 @@ BASE_DECLARE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
 
+// If this feature param is true, No-Vary-Search will not only be parsed but
+// also respected by default, without needing to be turned on for a document
+// using an origin trial token.
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<bool> kPrefetchNoVarySearchShippedByDefault;
+
 // Enables UMA to track received GetCookiesString IPCs. This feature is enabled
 // by default, it is just here to allow some tests to disable it. These tests
 // make use of TaskEnvironment::FastForward with very long delays (days) which

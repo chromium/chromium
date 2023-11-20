@@ -67,6 +67,8 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
       WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
       document_token_(
           static_cast<RenderFrameHostImpl*>(rfh)->GetDocumentToken()),
+      no_vary_search_support_enabled_(
+          network::features::kPrefetchNoVarySearchShippedByDefault.Get()),
       prefetch_destruction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
@@ -389,10 +391,16 @@ void PrefetchDocumentManager::OnPrefetchSuccessful(
   }
 }
 
-void PrefetchDocumentManager::EnableNoVarySearchSupport() {
+void PrefetchDocumentManager::EnableNoVarySearchSupportFromOriginTrial() {
   no_vary_search_support_enabled_ = true;
 }
 
+// In order to ship No-Vary-Search header and keep the Origin Trial and be
+// able to remotely go back to Origin Trial in case we unship, we use
+// the suggested approach at
+// go/graduating-from-finch#optional-leave-a-finch-hook of using a separate
+// base feature to control shipping - in our case we will continue to use the
+// existing base feature kPrefetchNoVarySearch.
 bool PrefetchDocumentManager::NoVarySearchSupportEnabled() const {
   return no_vary_search_support_enabled_ &&
          base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch);

@@ -366,7 +366,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
     if (enable_no_vary_search_header)
-      prefetch_document_manager->EnableNoVarySearchSupport();
+      prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
 
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type, referrer, no_vary_search_hint, nullptr);

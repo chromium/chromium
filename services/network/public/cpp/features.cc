@@ -374,6 +374,9 @@ BASE_FEATURE(kPrefetchNoVarySearch,
              "PrefetchNoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kPrefetchNoVarySearchShippedByDefault{
+    &kPrefetchNoVarySearch, "shipped_by_default", true};
+
 // Enables the backend of the compression dictionary transport feature.
 // When this feature is enabled, the following will happen:
 //   * The network service loads the metadata database.

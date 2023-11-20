@@ -121,6 +121,21 @@ void SetParseErrorMessage(String* out_error, String message) {
   }
 }
 
+// In order to ship No-Vary-Search hint and keep the Origin Trial and be
+// able to remotely go back to Origin Trial in case we unship, we use
+// the suggested approach at
+// go/graduating-from-finch#optional-leave-a-finch-hook of using a separate
+// base feature to control shipping - in our case we will use the
+// new feature SpeculationRulesNoVarySearchHintControlShipping.
+bool IsSpeculationRulesNoVarySearchHintEnabled(ExecutionContext* context) {
+  // SpeculationRulesNoVarySearchHint controls the Origin Trial.
+  // SpeculationRulesNoVarySearchHintControlShipping controls shipping to all.
+  return RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
+             context) ||
+         RuntimeEnabledFeatures::
+             SpeculationRulesNoVarySearchHintShippedByDefaultEnabled(context);
+}
+
 SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
@@ -130,19 +145,16 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
   // If input has any key other than "source", "urls", "where", "requires",
-  // "target_hint", "referrer_policy", "relative_to", and "eagerness", then
-  // return null.
-  const char* const kKnownKeys[] = {
-      "source",          "urls",       "where", "requires", "target_hint",
-      "referrer_policy", "relative_to"};
+  // "target_hint", "referrer_policy", "relative_to", "eagerness" and
+  // "expects_no_vary_search", then return null.
+  const char* const kKnownKeys[] = {"source",      "urls",
+                                    "where",       "requires",
+                                    "target_hint", "referrer_policy",
+                                    "relative_to", "expects_no_vary_search"};
   const auto kConditionalKnownKeys = [context]() {
     Vector<const char*, 4> conditional_known_keys;
     if (speculation_rules::EagernessEnabled(context)) {
       conditional_known_keys.push_back("eagerness");
-    }
-    if (RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
-            context)) {
-      conditional_known_keys.push_back("expects_no_vary_search");
     }
     return conditional_known_keys;
   }();
@@ -384,9 +396,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   }
 
   network::mojom::blink::NoVarySearchPtr no_vary_search = nullptr;
-  if (JSONValue* no_vary_search_value = input->Get("expects_no_vary_search")) {
-    CHECK(RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
-        context));
+  if (JSONValue* no_vary_search_value = input->Get("expects_no_vary_search");
+      no_vary_search_value &&
+      IsSpeculationRulesNoVarySearchHintEnabled(context)) {
     String no_vary_search_str;
     if (!no_vary_search_value->AsString(&no_vary_search_str)) {
       SetParseErrorMessage(out_error,

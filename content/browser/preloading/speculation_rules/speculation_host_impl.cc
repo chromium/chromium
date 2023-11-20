@@ -81,7 +81,7 @@ void SpeculationHostImpl::EnableNoVarySearchSupport() {
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &render_frame_host());
   CHECK(prefetch_document_manager);
-  prefetch_document_manager->EnableNoVarySearchSupport();
+  prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
 }
 
 void SpeculationHostImpl::InitiatePreview(const GURL& url) {
