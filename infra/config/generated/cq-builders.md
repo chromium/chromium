@@ -595,7 +595,7 @@ as required builders.
 
 ### chromium
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
-  * Experiment percentage: 5.0
+  * Experiment percentage: 10.0
 
 * [android-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/android-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size-siso""))
   * Experiment percentage: 10.0
