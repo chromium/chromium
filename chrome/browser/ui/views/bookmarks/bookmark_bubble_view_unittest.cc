@@ -17,7 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
@@ -133,10 +133,10 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
   }
 
   void SimulateProductImageIsAvailable(bool with_valid_image) {
-    MockShoppingListUiTabHelper::CreateForWebContents(
+    MockCommerceUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
-        MockShoppingListUiTabHelper::FromWebContents(
+    mock_tab_helper_ = static_cast<MockCommerceUiTabHelper*>(
+        MockCommerceUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
     EXPECT_CALL(*mock_tab_helper_, GetProductImage);
     if (with_valid_image) {
@@ -157,7 +157,7 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
   raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
   views::UniqueWidgetPtr anchor_widget_;
   raw_ptr<BookmarkModel, DanglingUntriaged> bookmark_model_;
-  raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
+  raw_ptr<MockCommerceUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 };
 
 class BookmarkBubbleViewTest : public BookmarkBubbleViewTestBase {
@@ -292,10 +292,10 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
   const bool is_feature_enabled = GetParam();
   mock_shopping_service->SetIsShoppingListEligible(is_feature_enabled);
 
-  MockShoppingListUiTabHelper::CreateForWebContents(
+  MockCommerceUiTabHelper::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
-  auto* mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
-      MockShoppingListUiTabHelper::FromWebContents(
+  auto* mock_tab_helper_ = static_cast<MockCommerceUiTabHelper*>(
+      MockCommerceUiTabHelper::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents()));
   const gfx::Image image = mock_tab_helper_->GetValidProductImage();
   ON_CALL(*mock_tab_helper_, GetProductImage)

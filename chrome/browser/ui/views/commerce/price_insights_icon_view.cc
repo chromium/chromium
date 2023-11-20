@@ -9,7 +9,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -78,7 +78,7 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
     return;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
 
   if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
                          PageActionIconType::kPriceInsights)) {
@@ -99,7 +99,7 @@ PriceInsightsIconView::GetLabelTypeForPage() {
     return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
   return tab_helper->GetPriceInsightsIconLabelTypeForPage();
@@ -157,7 +157,7 @@ void PriceInsightsIconView::OnExecuting(
     return;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
   tab_helper->OnPriceInsightsIconClicked();
@@ -173,7 +173,7 @@ bool PriceInsightsIconView::ShouldShow() const {
     return false;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
 
   return tab_helper && tab_helper->ShouldShowPriceInsightsIconView();
 }
