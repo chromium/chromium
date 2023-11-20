@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event_view_controller.h"
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/autocomplete_match_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event.h"
 
 @implementation OmniboxAutocompleteEventViewController
@@ -12,8 +13,8 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title = self.event.title;
-  [self.tableView registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:NSStringFromClass([UITableViewCell class])];
+  [self.tableView registerClass:[AutocompleteMatchCell class]
+         forCellReuseIdentifier:kAutocompleteMatchCellReuseIdentifier];
 }
 
 - (NSInteger)tableView:(UITableView*)tableView
@@ -23,15 +24,12 @@
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [tableView
-      dequeueReusableCellWithIdentifier:NSStringFromClass(
-                                            [UITableViewCell class])];
-  UIListContentConfiguration* config = cell.defaultContentConfiguration;
+  AutocompleteMatchCell* cell = [tableView
+      dequeueReusableCellWithIdentifier:kAutocompleteMatchCellReuseIdentifier];
 
-  AutocompleteMatchFormatter* matcher = self.event.matches[indexPath.row];
-
-  config.attributedText = matcher.text;
-  cell.contentConfiguration = config;
+  AutocompleteMatchFormatter* matchFormatter =
+      self.event.matches[indexPath.row];
+  [cell setupWithAutocompleteMatchFormatter:matchFormatter];
 
   return cell;
 }

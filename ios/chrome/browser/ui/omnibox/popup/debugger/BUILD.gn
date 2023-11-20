@@ -4,6 +4,8 @@
 
 source_set("debugger") {
   sources = [
+    "autocomplete_match_cell.h",
+    "autocomplete_match_cell.mm",
     "omnibox_autocomplete_event.h",
     "omnibox_autocomplete_event.mm",
     "omnibox_autocomplete_event_view_controller.h",
@@ -13,6 +15,10 @@ source_set("debugger") {
   deps = [
     "//base",
     "//components/omnibox/browser",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/omnibox/popup:popup_internal",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_internal",
+    "//ios/chrome/common/ui/util",
   ]
 }
