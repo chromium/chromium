@@ -26,13 +26,16 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace cc::slim {
 
@@ -105,7 +108,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
     UploadedUIResource(const UploadedUIResource&);
     UploadedUIResource& operator=(const UploadedUIResource&);
 
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gfx::Size size;
     bool is_opaque = true;
     viz::ResourceId viz_resource_id;
