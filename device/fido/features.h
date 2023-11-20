@@ -102,10 +102,6 @@ BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
 
-// Delegate to Windows UI with webauthn.dll version six.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
-
 // Allow sites to opt into experimenting with conditional UI presentations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);

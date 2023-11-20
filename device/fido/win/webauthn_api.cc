@@ -316,8 +316,7 @@ WinWebAuthnApi::WinWebAuthnApi() = default;
 WinWebAuthnApi::~WinWebAuthnApi() = default;
 
 bool WinWebAuthnApi::SupportsHybrid() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnWindowsUIv6) &&
-         IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
+  return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
 }
 
 std::pair<CtapDeviceResponseCode,
