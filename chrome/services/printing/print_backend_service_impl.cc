@@ -951,7 +951,12 @@ PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
       });
 
   mojom::PrinterCapabilitiesValueResultPtr value_result;
-  xml_parser_remote_->ParseXmlForPrinterCapabilities(xml, &value_result);
+  if (!xml_parser_remote_->ParseXmlForPrinterCapabilities(xml, &value_result)) {
+    DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
+                << printer_name
+                << ", error: ParseXmlForPrinterCapabilities failed";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
   if (value_result->is_result_code()) {
     DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
                 << printer_name
