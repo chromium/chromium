@@ -4544,6 +4544,13 @@ targets.legacy_basic_suite(
         ),
         "components_browsertests": None,
         "components_unittests": None,
+        "compositor_unittests": targets.legacy_test_config(
+            test = "compositor_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter",
+            ],
+        ),
         "content_browsertests": targets.legacy_test_config(
             args = [
                 "--test-launcher-bot-mode",

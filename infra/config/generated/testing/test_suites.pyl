@@ -3890,6 +3890,13 @@
       },
       'components_browsertests': {},
       'components_unittests': {},
+      'compositor_unittests': {
+        'test': 'compositor_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter',
+        ],
+      },
       'content_browsertests': {
         'args': [
           '--test-launcher-bot-mode',

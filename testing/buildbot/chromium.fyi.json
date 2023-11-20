@@ -5339,6 +5339,56 @@
       {
         "args": [
           "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter",
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15c5042i",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "compositor_unittests iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15c5042i",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "compositor_unittests",
+        "test_id_prefix": "ninja://ui/compositor:compositor_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
           "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
           "--platform",
           "iPhone 14",
