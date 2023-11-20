@@ -634,46 +634,6 @@ TEST_P(ScrollbarsTest, OverlayScrolblarNotCreatedInUnscrollableAxis) {
   ASSERT_FALSE(scrollable_area->HorizontalScrollbar());
 }
 
-TEST_P(ScrollbarsTest, scrollbarIsNotHandlingTouchpadScroll) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <style>
-     #scrollable { height: 100px; width: 100px; overflow: scroll; }
-     #content { height: 200px; width: 200px;}
-    </style>
-    <div id='scrollable'>
-     <div id='content'></div>
-    </div>
-  )HTML");
-  Compositor().BeginFrame();
-
-  Document& document = GetDocument();
-  Element* scrollable = document.getElementById(AtomicString("scrollable"));
-
-  auto* scrollable_area = GetScrollableArea(*scrollable);
-  DCHECK(scrollable_area->VerticalScrollbar());
-  WebGestureEvent scroll_begin(
-      WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
-      base::TimeTicks::Now(), WebGestureDevice::kTouchpad);
-  scroll_begin.SetPositionInWidget(
-      gfx::PointF(scrollable->OffsetLeft() + scrollable->OffsetWidth() - 2,
-                  scrollable->OffsetTop()));
-  scroll_begin.SetPositionInScreen(
-      gfx::PointF(scrollable->OffsetLeft() + scrollable->OffsetWidth() - 2,
-                  scrollable->OffsetTop()));
-  scroll_begin.data.scroll_begin.delta_x_hint = 0;
-  scroll_begin.data.scroll_begin.delta_y_hint = 10;
-  scroll_begin.SetFrameScale(1);
-  GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_begin);
-  DCHECK(!GetEventHandler().IsScrollbarHandlingGestures());
-  bool should_update_capture = false;
-  DCHECK(!scrollable_area->VerticalScrollbar()->GestureEvent(
-      scroll_begin, &should_update_capture));
-}
-
 TEST_P(ScrollbarsTest, HidingScrollbarsOnScrollableAreaDisablesScrollbars) {
   // This test is specifically checking the behavior when overlay scrollbars
   // are enabled.

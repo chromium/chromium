@@ -181,11 +181,6 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       const WebGestureEvent&,
       HitTestRequest::HitTestRequestType);
 
-  // Handle the provided scroll gesture event, propagating down to child frames
-  // as necessary.
-  WebInputEventResult HandleGestureScrollEvent(const WebGestureEvent&);
-  bool IsScrollbarHandlingGestures() const;
-
   bool BestNodeForHitTestResult(TouchAdjustmentCandidateType candidate_type,
                                 const HitTestLocation& location,
                                 const HitTestResult&,

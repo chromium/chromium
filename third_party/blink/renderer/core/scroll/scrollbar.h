@@ -135,10 +135,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   bool IsWindowActive() const;
 
-  // Return if the gesture event was handled. |shouldUpdateCapture|
-  // will be set to true if the handler should update the capture
-  // state for this scrollbar.
-  bool GestureEvent(const WebGestureEvent&, bool* should_update_capture);
+  // Return if the gesture event (tap/press) was handled.
+  bool HandleGestureTapOrPress(const WebGestureEvent&);
 
   bool HandlePointerEvent(const WebPointerEvent&);
 

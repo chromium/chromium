@@ -1648,21 +1648,8 @@ WebInputEventResult EventHandler::HandleGestureEventInFrame(
   return gesture_manager_->HandleGestureEventInFrame(targeted_event);
 }
 
-WebInputEventResult EventHandler::HandleGestureScrollEvent(
-    const WebGestureEvent& gesture_event) {
-  TRACE_EVENT0("input", "EventHandler::handleGestureScrollEvent");
-  if (!frame_->GetPage())
-    return WebInputEventResult::kNotHandled;
-
-  return scroll_manager_->HandleGestureScrollEvent(gesture_event);
-}
-
 void EventHandler::SetMouseDownMayStartAutoscroll() {
   mouse_event_manager_->SetMouseDownMayStartAutoscroll();
-}
-
-bool EventHandler::IsScrollbarHandlingGestures() const {
-  return scroll_manager_->IsScrollbarHandlingGestures();
 }
 
 bool EventHandler::ShouldApplyTouchAdjustment(
