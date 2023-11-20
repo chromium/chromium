@@ -13,7 +13,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -242,35 +241,6 @@ public class WebApkUmaRecorder {
     public static void recordUserThemeWhenLaunch(@WebApkUserTheme int themeSetting) {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.Launch.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
-    }
-
-    /**
-     * Log necessary disk usage and cache size UMAs when WebAPK installation fails.
-     */
-    public static void logSpaceUsageUMAWhenInstallationFails() {
-        new AsyncTask<Void>() {
-            long mAvailableSpaceInByte;
-            long mCacheSizeInByte;
-            @Override
-            protected Void doInBackground() {
-                mAvailableSpaceInByte = getAvailableSpaceAboveLowSpaceLimit();
-                mCacheSizeInByte = getCacheDirSize();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                logSpaceUsageUMAOnDataAvailable(mAvailableSpaceInByte, mCacheSizeInByte);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private static void logSpaceUsageUMAOnDataAvailable(long spaceSize, long cacheSize) {
-        RecordHistogram.recordSparseHistogram(
-                "WebApk.Install.AvailableSpace.Fail", roundByteToMb(spaceSize));
-
-        RecordHistogram.recordSparseHistogram("WebApk.Install.AvailableSpaceAfterFreeUpCache.Fail",
-                roundByteToMb(spaceSize + cacheSize));
     }
 
     private static int roundByteToMb(long bytes) {

@@ -66,32 +66,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the write result (boolean) in WebApkDatabase.</summary>
 </histogram>
 
-<histogram name="WebApk.Install.AvailableSpace.Fail" units="MB"
-    expires_after="2023-12-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the available space that can be used when installing a WebAPK from
-    Google Play fails. The space recorded is the available space beyond the
-    system's minimum free space threshold, with a range between -1000 and 1000
-    MB. Negative values mean that there is less free space available than the
-    system's minimum, by the given amount.
-  </summary>
-</histogram>
-
-<histogram name="WebApk.Install.AvailableSpaceAfterFreeUpCache.Fail" units="MB"
-    expires_after="2023-12-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the available space that can be used when installing a WebAPK from
-    Google Play fails after freeing up cache. The space recorded is the
-    available space beyond the system's minimum free space threshold, with a
-    range between -1000 and 1000 MB. Negative values mean that there is less
-    free space available than the system's minimum, by the given amount.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Install.GooglePlayErrorCode"
     enum="WebApkInstallGooglePlayErrorCode" expires_after="2024-05-12">
   <owner>hartmanng@chromium.org</owner>
