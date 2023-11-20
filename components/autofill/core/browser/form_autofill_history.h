@@ -62,12 +62,8 @@ class FormAutofillHistory {
     // `field_id`.
     const FieldFillingEntry& GetFieldFillingEntry(FieldGlobalId field_id) const;
 
-    friend bool operator==(const FillOperation& lhs, const FillOperation& rhs) {
-      return lhs.iterator_ == rhs.iterator_;
-    }
-    friend bool operator!=(const FillOperation& lhs, const FillOperation& rhs) {
-      return !(lhs == rhs);
-    }
+    friend bool operator==(const FillOperation& lhs,
+                           const FillOperation& rhs) = default;
 
    private:
     friend class FormAutofillHistory;

@@ -15,11 +15,10 @@ namespace autofill {
 // abstract the data from the metadata.
 struct AutofillMetadata {
  public:
-  AutofillMetadata() {}
-  ~AutofillMetadata() {}
+  AutofillMetadata() = default;
+  ~AutofillMetadata() = default;
 
-  bool operator==(const AutofillMetadata&) const;
-  bool operator!=(const AutofillMetadata&) const;
+  bool operator==(const AutofillMetadata&) const = default;
 
   // Returns whether the metadata is deletable: if it has not been used for
   // longer than |kDisusedAddressDeletionTimeDelta|.

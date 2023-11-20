@@ -335,16 +335,6 @@ void ProfileTokenQuality::ResetObservationsForDifferingTokens(
   }
 }
 
-bool ProfileTokenQuality::Observation::operator==(
-    const ProfileTokenQuality::Observation& other) const {
-  return type == other.type && form_hash == other.form_hash;
-}
-
-bool ProfileTokenQuality::Observation::operator!=(
-    const ProfileTokenQuality::Observation& other) const {
-  return !operator==(other);
-}
-
 ProfileTokenQuality::FormSignatureHash
 ProfileTokenQuality::GetFormSignatureHash(FormSignature form_signature) const {
   // Just take the lowest 8 bits of the `form_signature`.

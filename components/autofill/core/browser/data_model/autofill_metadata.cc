@@ -11,16 +11,6 @@
 
 namespace autofill {
 
-bool AutofillMetadata::operator==(const AutofillMetadata& metadata) const {
-  return id == metadata.id && use_count == metadata.use_count &&
-         use_date == metadata.use_date &&
-         billing_address_id == metadata.billing_address_id;
-}
-
-bool AutofillMetadata::operator!=(const AutofillMetadata& metadata) const {
-  return !(*this == metadata);
-}
-
 bool AutofillMetadata::IsDeletable() const {
   return IsAutofillEntryWithUseDateDeletable(use_date);
 }

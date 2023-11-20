@@ -22,7 +22,7 @@ class AutocompleteKey {
   const std::u16string& name() const { return name_; }
   const std::u16string& value() const { return value_; }
 
-  bool operator==(const AutocompleteKey& key) const;
+  bool operator==(const AutocompleteKey& key) const = default;
   bool operator<(const AutocompleteKey& key) const;
 
  private:
@@ -42,8 +42,7 @@ class AutocompleteEntry {
   const base::Time& date_created() const { return date_created_; }
   const base::Time& date_last_used() const { return date_last_used_; }
 
-  bool operator==(const AutocompleteEntry& entry) const;
-  bool operator!=(const AutocompleteEntry& entry) const;
+  bool operator==(const AutocompleteEntry& entry) const = default;
   bool operator<(const AutocompleteEntry& entry) const;
 
  private:

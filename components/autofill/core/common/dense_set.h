@@ -87,9 +87,8 @@ class Bitset {
     return x;
   }
 
-  friend constexpr bool operator==(const Bitset& lhs, const Bitset& rhs) {
-    return lhs.words_ == rhs.words_;
-  }
+  friend constexpr bool operator==(const Bitset& lhs,
+                                   const Bitset& rhs) = default;
 
   constexpr base::span<const Word, kNumWords> data() const { return words_; }
 
@@ -137,9 +136,7 @@ class Bitset<Word, 1u> {
     return x;
   }
 
-  friend constexpr bool operator==(Bitset lhs, Bitset rhs) {
-    return lhs.word_ == rhs.word_;
-  }
+  friend constexpr bool operator==(Bitset lhs, Bitset rhs) = default;
 
   constexpr base::span<const Word, 1> data() const {
     return base::span<const Word, 1>(&word_, 1u);
@@ -355,13 +352,7 @@ class DenseSet {
     return bitset_.data();
   }
 
-  friend bool operator==(const DenseSet& a, const DenseSet& b) {
-    return a.bitset_ == b.bitset_;
-  }
-
-  friend bool operator!=(const DenseSet& a, const DenseSet& b) {
-    return !(a == b);
-  }
+  friend bool operator==(const DenseSet& a, const DenseSet& b) = default;
 
   // Iterators.
 

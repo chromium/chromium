@@ -29,15 +29,6 @@ Suggestion::Text& Suggestion::Text::operator=(Text&& other) = default;
 
 Suggestion::Text::~Text() = default;
 
-bool Suggestion::Text::operator==(const Suggestion::Text& text) const {
-  return value == text.value && is_primary == text.is_primary &&
-         should_truncate == text.should_truncate;
-}
-
-bool Suggestion::Text::operator!=(const Suggestion::Text& text) const {
-  return !operator==(text);
-}
-
 Suggestion::Suggestion() = default;
 
 Suggestion::Suggestion(std::u16string main_text)

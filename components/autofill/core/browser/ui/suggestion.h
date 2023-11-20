@@ -45,8 +45,7 @@ struct Suggestion {
     Text& operator=(const Text& other);
     Text& operator=(Text&& other);
     ~Text();
-    bool operator==(const Suggestion::Text& text) const;
-    bool operator!=(const Suggestion::Text& text) const;
+    bool operator==(const Suggestion::Text& text) const = default;
 
     // The text value to be shown.
     std::u16string value;

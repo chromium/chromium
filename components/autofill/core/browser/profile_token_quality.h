@@ -211,8 +211,7 @@ class ProfileTokenQuality {
     std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
 
-    bool operator==(const Observation& other) const;
-    bool operator!=(const Observation& other) const;
+    bool operator==(const Observation& other) const = default;
   };
 
   // Returns a low-entry hash of the `form_signature`.

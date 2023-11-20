@@ -201,12 +201,6 @@ ServerFieldTypeSet GetUserVisibleTypes() {
   return user_visible_type;
 }
 
-bool ProfileValueDifference::operator==(
-    const ProfileValueDifference& right) const {
-  return (type == right.type) && (first_value == right.first_value) &&
-         (second_value == right.second_value);
-}
-
 AutofillProfileComparator::AutofillProfileComparator(
     const base::StringPiece& app_locale)
     : app_locale_(app_locale.data(), app_locale.size()) {}

@@ -82,16 +82,6 @@ FrameTokenWithPredecessor& FrameTokenWithPredecessor::operator=(
     FrameTokenWithPredecessor&&) = default;
 FrameTokenWithPredecessor::~FrameTokenWithPredecessor() = default;
 
-bool operator==(const FrameTokenWithPredecessor& a,
-                const FrameTokenWithPredecessor& b) {
-  return a.token == b.token && a.predecessor == b.predecessor;
-}
-
-bool operator!=(const FrameTokenWithPredecessor& a,
-                const FrameTokenWithPredecessor& b) {
-  return !(a == b);
-}
-
 FormData::FormData() = default;
 
 FormData::FormData(const FormData&) = default;
