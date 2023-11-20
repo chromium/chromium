@@ -42,7 +42,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
         toolbar_controller_->toolbar_container_view_.get());
     overflow_button_ = toolbar_controller_->overflow_button_;
     dummy_button_size_ = overflow_button_->GetPreferredSize();
-    element_ids_ = toolbar_controller_->element_ids_;
+    responsive_elements_ = toolbar_controller_->responsive_elements_;
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
     overflow_threshold_width_ = GetOverflowThresholdWidth();
@@ -107,8 +107,11 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
     ASSERT_NE(element, nullptr);
 
     // This element must have been managed by controller.
-    EXPECT_TRUE(std::find(element_ids_.begin(), element_ids_.end(), id) !=
-                element_ids_.end());
+    EXPECT_TRUE(
+        std::find_if(responsive_elements_.begin(), responsive_elements_.end(),
+                     [id](ToolbarController::ResponsiveElementInfo element) {
+                       return element.overflow_identifier == id;
+                     }) != responsive_elements_.end());
 
     SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
     while (element->GetVisible()) {
@@ -122,14 +125,13 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   auto CheckMenuMatchesOverflowedElements() {
     return Steps(Check(base::BindLambdaForTesting([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
-      std::vector<ui::ElementIdentifier> overflowed_elements =
-          GetOverflowedElements();
+      const auto& overflowed_elements = GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
       EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
       for (size_t i = 0; i < menu->GetItemCount(); ++i) {
         if (menu->GetLabelAt(i).compare(toolbar_controller_->GetMenuText(
-                overflowed_elements[i])) != 0) {
+                *overflowed_elements[i])) != 0) {
           return false;
         }
       }
@@ -140,8 +142,8 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   auto ActivateMenuItemWithElementId(ui::ElementIdentifier id) {
     return Do(base::BindLambdaForTesting([=]() {
       int command_id = -1;
-      for (size_t i = 0; i < element_ids_.size(); ++i) {
-        if (element_ids_[i] == id) {
+      for (size_t i = 0; i < responsive_elements_.size(); ++i) {
+        if (responsive_elements_[i].overflow_identifier == id) {
           command_id = i;
           break;
         }
@@ -169,11 +171,13 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
 
   const views::View* overflow_button() const { return overflow_button_; }
   int element_flex_order_start() const { return element_flex_order_start_; }
-  const std::vector<ui::ElementIdentifier>& element_ids() const {
-    return element_ids_;
+  const std::vector<ToolbarController::ResponsiveElementInfo>&
+  responsive_elements() const {
+    return responsive_elements_;
   }
   int overflow_threshold_width() const { return overflow_threshold_width_; }
-  std::vector<ui::ElementIdentifier> GetOverflowedElements() {
+  std::vector<const ToolbarController::ResponsiveElementInfo*>
+  GetOverflowedElements() {
     return toolbar_controller_->GetOverflowedElements();
   }
   const ui::SimpleMenuModel* GetOverflowMenu() {
@@ -187,7 +191,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   raw_ptr<ToolbarController> toolbar_controller_;
   raw_ptr<views::View> toolbar_container_view_;
   raw_ptr<views::View> overflow_button_;
-  std::vector<ui::ElementIdentifier> element_ids_;
+  std::vector<ToolbarController::ResponsiveElementInfo> responsive_elements_;
   int element_flex_order_start_;
   gfx::Size dummy_button_size_;
 
@@ -197,8 +201,9 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest, FlexOrderCorrect) {
   int order_start = element_flex_order_start();
-  for (ui::ElementIdentifier id : element_ids()) {
-    const views::View* toolbar_element = FindToolbarElementWithId(id);
+  for (const auto& element : responsive_elements()) {
+    const views::View* toolbar_element =
+        FindToolbarElementWithId(element.overflow_identifier);
     if (toolbar_element) {
       EXPECT_EQ(order_start++,
                 toolbar_element->GetProperty(views::kFlexBehaviorKey)->order());
