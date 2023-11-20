@@ -8,9 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 
 class Profile;
@@ -21,7 +18,7 @@ struct DisplayMetadata;
 
 // The client to display downloads in holding space. Created only when the
 // downloads integration V2 feature is enabled.
-class HoldingSpaceDisplayClient : public DisplayClient, public ProfileObserver {
+class HoldingSpaceDisplayClient : public DisplayClient {
  public:
   explicit HoldingSpaceDisplayClient(Profile* profile);
   HoldingSpaceDisplayClient(const HoldingSpaceDisplayClient&) = delete;
@@ -35,21 +32,12 @@ class HoldingSpaceDisplayClient : public DisplayClient, public ProfileObserver {
                    const DisplayMetadata& display_metadata) override;
   void Remove(const std::string& guid) override;
 
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
-
-  // Reset when `OnProfileWillBeDestroyed()` is called to prevent the dangling
-  // pointer issue.
-  raw_ptr<Profile> profile_ = nullptr;
-
   // GUID to holding space item ID mappings.
   // Adds a mapping when displaying a new download.
   // Removes a mapping when:
   // 1. A displayed download is removed; OR
   // 2. An in-progress download completes.
   std::map<std::string, std::string> item_ids_by_guids_;
-
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace ash::download_status

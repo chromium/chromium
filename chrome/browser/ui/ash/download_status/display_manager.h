@@ -45,7 +45,6 @@ class DisplayManager {
   // Responsible for displaying download updates.
   // All clients are ready when `DisplayManager` is created to ensure
   // consistency in the received display metadata among clients.
-  // TODO(http://b/279831939): Add the client for download notifications.
   std::vector<std::unique_ptr<DisplayClient>> clients_;
 };
 

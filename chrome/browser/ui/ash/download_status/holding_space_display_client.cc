@@ -19,11 +19,8 @@
 namespace ash::download_status {
 
 HoldingSpaceDisplayClient::HoldingSpaceDisplayClient(Profile* profile)
-    : profile_(profile) {
+    : DisplayClient(profile) {
   CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
-  CHECK(profile_);
-
-  profile_observation_.Observe(profile);
 }
 
 HoldingSpaceDisplayClient::~HoldingSpaceDisplayClient() = default;
@@ -35,7 +32,7 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   auto item_id_by_guid = item_ids_by_guids_.find(guid);
 
   HoldingSpaceKeyedService* const service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile_);
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile());
   const HoldingSpaceProgress progress(display_metadata.received_bytes,
                                       display_metadata.total_bytes);
 
@@ -79,15 +76,10 @@ void HoldingSpaceDisplayClient::Remove(const std::string& guid) {
   if (auto iter = item_ids_by_guids_.find(guid);
       iter != item_ids_by_guids_.end()) {
     HoldingSpaceKeyedServiceFactory::GetInstance()
-        ->GetService(profile_)
+        ->GetService(profile())
         ->RemoveItem(iter->second);
     item_ids_by_guids_.erase(iter);
   }
-}
-
-void HoldingSpaceDisplayClient::OnProfileWillBeDestroyed(Profile* profile) {
-  profile_observation_.Reset();
-  profile_ = nullptr;
 }
 
 }  // namespace ash::download_status

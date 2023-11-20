@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
+#include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -145,6 +146,7 @@ DisplayManager::DisplayManager(Profile* profile) {
   CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
 
   clients_.push_back(std::make_unique<HoldingSpaceDisplayClient>(profile));
+  clients_.push_back(std::make_unique<NotificationDisplayClient>(profile));
 }
 
 DisplayManager::~DisplayManager() = default;
