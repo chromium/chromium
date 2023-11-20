@@ -108,10 +108,6 @@ BASE_FEATURE(kWebViewThreadSafeMediaDefault,
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 BASE_FEATURE(kAImageReader, "AImageReader", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If webview-draw-functor-uses-vulkan is set, use vulkan for composite and
-// raster.
-BASE_FEATURE(kWebViewVulkan, "WebViewVulkan", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used to limit AImageReader max queue size to 1 since many devices especially
 // android Tv devices do not support more than 1 images.
 BASE_FEATURE(kLimitAImageReaderMaxSizeToOne,
@@ -254,7 +250,7 @@ BASE_FEATURE(kVaapiWebPImageDecodeAcceleration,
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.
-// Note Android WebView uses kWebViewVulkan instead of this.
+// Note Android WebView uses kWebViewDrawFunctorUsesVulkan instead of this.
 BASE_FEATURE(kVulkan,
              "Vulkan",
 #if BUILDFLAG(IS_ANDROID)
@@ -472,8 +468,7 @@ bool IsUsingVulkan() {
   // WebView checks, which do not use (and disables) kVulkan.
   // Do this above the Android version check because there are test devices
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewDrawFunctorUsesVulkan) &&
-      base::FeatureList::IsEnabled(kWebViewVulkan)) {
+          switches::kWebViewDrawFunctorUsesVulkan)) {
     return true;
   }
 

@@ -222,8 +222,8 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }
 
-    // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
-    // kVulkan in case it becomes enabled by default.
+    // WebView uses kWebViewDrawFunctorUsesVulkan to control vulkan.
+    // Pre-emptively disable kVulkan in case it becomes enabled by default.
     features.DisableIfNotSet(::features::kVulkan);
 
     features.DisableIfNotSet(::features::kWebPayments);

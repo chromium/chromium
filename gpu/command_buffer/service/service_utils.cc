@@ -251,8 +251,7 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
-  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
-      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
     return VulkanImplementationName::kForcedNative;
   }
 #endif

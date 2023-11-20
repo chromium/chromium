@@ -9,7 +9,6 @@
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
-#include "android_webview/browser/gfx/vulkan_gl_interop.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/threading/platform_thread.h"
@@ -48,18 +47,9 @@ class AwDrawFnImpl {
   void RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params);
 
  private:
-  // With direct mode, we will render frames with Vulkan API directly.
-  void DrawVkDirect(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
-                    sk_sp<SkColorSpace> color_space,
-                    const HardwareRendererDrawParams& params,
-                    const OverlaysParams& overlays_params);
-  void PostDrawVkDirect(AwDrawFn_PostDrawVkParams* params);
-
   CompositorFrameConsumer* GetCompositorFrameConsumer() {
     return &render_thread_manager_;
   }
-
-  const bool is_interop_mode_;
 
   int functor_handle_;
 
@@ -70,8 +60,6 @@ class AwDrawFnImpl {
 
   std::optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
       scoped_secondary_cb_draw_;
-
-  std::optional<VulkanGLInterop> interop_;
 
   // Latched on first DrawGL / InitVk call.
   std::optional<base::PlatformThreadId> render_thread_id_;

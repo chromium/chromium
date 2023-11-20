@@ -149,10 +149,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(
-                GpuFeatures.WEBVIEW_VULKAN,
-                "Use Vulkan for composite. Requires Android device and OS support. May crash "
-                        + "if enabled on unsupported device."),
-        Flag.baseFeature(
                 GpuFeatures.WEBVIEW_SURFACE_CONTROL,
                 "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
                         + "support."),
