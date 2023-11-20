@@ -1179,11 +1179,28 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
 
-  // Returns cached intrinsic logical widths for this layout box.
-  MinMaxSizes CachedIntrinsicLogicalWidths() const {
+  // Returns the cached intrinsic logical widths when no children depend on the
+  // block constraints.
+  MinMaxSizesResult CachedIndefiniteIntrinsicLogicalWidths() const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    return intrinsic_logical_widths_;
+    DCHECK(!IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
+    return {intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints()};
+  }
+
+  // Returns the cached intrinsic logical widths if the initial block-size
+  // matches.
+  absl::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
+      LayoutUnit initial_block_size) const {
+    NOT_DESTROYED();
+    DCHECK(!IntrinsicLogicalWidthsDirty());
+    if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
+      return MinMaxSizesResult{
+          intrinsic_logical_widths_,
+          IntrinsicLogicalWidthsDependsOnBlockConstraints()};
+    }
+    return absl::nullopt;
   }
 
   // LayoutNG can use this function to update our cache of intrinsic logical
@@ -1191,31 +1208,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // regular code.
   //
   // Also clears the "dirty" flag for the intrinsic logical widths.
-  void SetIntrinsicLogicalWidthsFromNG(
-      LayoutUnit intrinsic_logical_widths_initial_block_size,
-      bool depends_on_block_constraints,
-      bool child_depends_on_block_constraints,
-      const MinMaxSizes& sizes) {
+  void SetIntrinsicLogicalWidths(LayoutUnit initial_block_size,
+                                 bool depends_on_block_constraints,
+                                 bool child_depends_on_block_constraints,
+                                 const MinMaxSizes& sizes) {
     NOT_DESTROYED();
-    intrinsic_logical_widths_initial_block_size_ =
-        intrinsic_logical_widths_initial_block_size;
+    intrinsic_logical_widths_ = sizes;
+    intrinsic_logical_widths_initial_block_size_ = initial_block_size;
     SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
         depends_on_block_constraints);
     SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
         child_depends_on_block_constraints);
-    intrinsic_logical_widths_ = sizes;
     ClearIntrinsicLogicalWidthsDirty();
-  }
-
-  // Returns what initial block-size was used in the intrinsic logical widths
-  // phase. This is used for caching purposes when %-block-size children with
-  // aspect-ratios are present.
-  //
-  // For non-LayoutNG code this is always LayoutUnit::Min(), and should not be
-  // used for caching purposes.
-  LayoutUnit IntrinsicLogicalWidthsInitialBlockSize() const {
-    NOT_DESTROYED();
-    return intrinsic_logical_widths_initial_block_size_;
   }
 
   // Make it public.

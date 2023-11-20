@@ -974,20 +974,17 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   bool can_use_cached_intrinsic_inline_sizes =
       CanUseCachedIntrinsicInlineSizes(constraint_space, float_input, *this);
 
+  // Ensure the cache is invalid if we know we can't use our cached sizes.
+  if (!can_use_cached_intrinsic_inline_sizes) {
+    box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
+  }
+
   // Use our cached sizes if we don't have a descendant which depends on our
   // block constraints.
   if (can_use_cached_intrinsic_inline_sizes &&
       !box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints()) {
-    MinMaxSizes sizes = box_->CachedIntrinsicLogicalWidths();
-    bool depends_on_block_constraints =
-        box_->IntrinsicLogicalWidthsDependsOnBlockConstraints();
-    return MinMaxSizesResult(sizes, depends_on_block_constraints);
+    return box_->CachedIndefiniteIntrinsicLogicalWidths();
   }
-
-  // Determine if we are dependent on the block-constraints.
-  bool self_depends_on_block_constraints =
-      DependsOnBlockConstraints() ||
-      UseParentPercentageResolutionBlockSizeForChildren();
 
   const FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       constraint_space, *this, /* break_token */ nullptr,
@@ -998,14 +995,11 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   // We might still be able to use the cached values if our children don't
   // depend on the *input* %-block-size.
   if (can_use_cached_intrinsic_inline_sizes &&
-      initial_block_size == box_->IntrinsicLogicalWidthsInitialBlockSize() &&
       !UseParentPercentageResolutionBlockSizeForChildren()) {
-    DCHECK(box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
-    MinMaxSizes sizes = box_->CachedIntrinsicLogicalWidths();
-    return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
+    if (auto result = box_->CachedIntrinsicLogicalWidths(initial_block_size)) {
+      return *result;
+    }
   }
-
-  box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
   const BoxStrut border_padding =
       fragment_geometry.border + fragment_geometry.padding;
@@ -1017,8 +1011,11 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   if (auto min_size = ContentMinimumInlineSize(*this, border_padding))
     result.sizes.min_size = *min_size;
 
+  // Determine if we are dependent on the block-constraints.
   bool depends_on_block_constraints =
-      self_depends_on_block_constraints && result.depends_on_block_constraints;
+      (DependsOnBlockConstraints() ||
+       UseParentPercentageResolutionBlockSizeForChildren()) &&
+      result.depends_on_block_constraints;
 
   if (!Style().AspectRatio().IsAuto() &&
       BlockLengthUnresolvable(constraint_space, Style().LogicalHeight())) {
@@ -1035,7 +1032,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
         Style().LogicalMaxHeight().IsPercentOrCalcOrStretch();
   }
 
-  box_->SetIntrinsicLogicalWidthsFromNG(
+  box_->SetIntrinsicLogicalWidths(
       initial_block_size, depends_on_block_constraints,
       /* child_depends_on_block_constraints */
       result.depends_on_block_constraints, result.sizes);

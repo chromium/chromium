@@ -24,7 +24,6 @@ class ComputedStyle;
 class Document;
 class LayoutObject;
 class LayoutBox;
-struct MinMaxSizes;
 struct PhysicalSize;
 
 // The input to the min/max inline size calculation algorithm for child nodes.
@@ -34,19 +33,6 @@ struct MinMaxSizesFloatInput {
   explicit MinMaxSizesFloatInput() = default;
   LayoutUnit float_left_inline_size;
   LayoutUnit float_right_inline_size;
-};
-
-// The output of the min/max inline size calculation algorithm. Contains the
-// min/max sizes, and if this calculation will change if the block constraints
-// change.
-struct MinMaxSizesResult {
-  MinMaxSizesResult() = default;
-  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_block_constraints)
-      : sizes(sizes),
-        depends_on_block_constraints(depends_on_block_constraints) {}
-
-  MinMaxSizes sizes;
-  bool depends_on_block_constraints = false;
 };
 
 // Represents the input to a layout algorithm for a given node. The layout
