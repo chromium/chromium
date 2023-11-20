@@ -30,9 +30,8 @@ public class LaunchHostBrowserSelector {
     private Activity mParentActivity;
 
     /**
-     * Called once {@link #selectHostBrowser()} has selected the host browser either
-     * via a shared preferences/<meta-data> lookup or via the user selecting the host
-     * browser from a dialog.
+     * Called once {@link #selectHostBrowser()} has selected the host browser either via a shared
+     * preferences/<meta-data> lookup or via the user selecting the host browser from a dialog.
      */
     public static interface Callback {
         void onBrowserSelected(String hostBrowserPackageName, boolean dialogShown);
@@ -45,6 +44,7 @@ public class LaunchHostBrowserSelector {
 
     /**
      * Creates install Intent.
+     *
      * @param packageName Package to install.
      * @return The intent.
      */
@@ -56,8 +56,8 @@ public class LaunchHostBrowserSelector {
     }
 
     /**
-     * Selects host browser to launch, showing a dialog to select browser if necessary. Calls
-     * {@link selectCallback} with the result.
+     * Selects host browser to launch, showing a dialog to select browser if necessary. Calls {@link
+     * selectCallback} with the result.
      */
     public void selectHostBrowser(Callback selectCallback) {
         Bundle metadata = WebApkUtils.readMetaData(mContext);
@@ -85,9 +85,7 @@ public class LaunchHostBrowserSelector {
         }
     }
 
-    /**
-     * Launches the Play Store with the host browser's page.
-     */
+    /** Launches the Play Store with the host browser's page. */
     private void installBrowser(String hostBrowserPackageName) {
         try {
             mParentActivity.startActivity(createInstallIntent(hostBrowserPackageName));
@@ -107,6 +105,7 @@ public class LaunchHostBrowserSelector {
                         selectCallback.onBrowserSelected(
                                 selectedHostBrowser, true /* dialogShown */);
                     }
+
                     @Override
                     public void onQuit() {
                         selectCallback.onBrowserSelected(null, true /* dialogShown */);
@@ -138,14 +137,19 @@ public class LaunchHostBrowserSelector {
                         HostBrowserUtils.writeHostBrowserToSharedPref(mContext, packageName);
                         selectCallback.onBrowserSelected(null, true /* dialogShown */);
                     }
+
                     @Override
                     public void onConfirmQuit() {
                         selectCallback.onBrowserSelected(null, true /* dialogShown */);
                     }
                 };
 
-        InstallHostBrowserDialog.show(mParentActivity, listener, mContext.getString(R.string.name),
-                lastResortHostBrowserPackageName, lastResortHostBrowserApplicationName,
+        InstallHostBrowserDialog.show(
+                mParentActivity,
+                listener,
+                mContext.getString(R.string.name),
+                lastResortHostBrowserPackageName,
+                lastResortHostBrowserApplicationName,
                 R.drawable.last_resort_runtime_host_logo);
     }
 }

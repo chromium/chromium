@@ -23,15 +23,11 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.net.URISyntaxException;
 
-/**
- * Helper class for WebAPK JUnit tests.
- */
+/** Helper class for WebAPK JUnit tests. */
 public class WebApkTestHelper {
     private static final String SHARE_TARGET_ACTIVITY_CLASS_NAME_PREFIX = "TestShareTargetActivity";
 
-    /**
-     * Returns the simplest intent for launching a WebAPK.
-     */
+    /** Returns the simplest intent for launching a WebAPK. */
     public static Intent createMinimalWebApkIntent(String webApkPackageName, String url) {
         Intent intent = new Intent();
         intent.setPackage(RuntimeEnvironment.application.getPackageName());
@@ -42,10 +38,11 @@ public class WebApkTestHelper {
 
     /**
      * Registers WebAPK. This function also creates an empty resource for the WebAPK.
+     *
      * @param packageName The package to register
      * @param metaData Bundle with application-level meta data from WebAPK's Android Manifest.
      * @param shareTargetMetaData Bundles with meta data for the share target activities. Null if
-     *                            the WebAPK does not have any share target activities.
+     *     the WebAPK does not have any share target activities.
      */
     public static void registerWebApkWithMetaData(
             String packageName, Bundle metaData, Bundle[] shareTargetMetaData) {
@@ -66,14 +63,18 @@ public class WebApkTestHelper {
             shareTargetActivityClassNames = new String[shareTargetMetaData.length];
             for (int i = 0; i < shareTargetMetaData.length; ++i) {
                 shareTargetActivityClassNames[i] = getGeneratedShareTargetActivityClassName(i);
-                packageManager.addResolveInfoForIntent(shareIntent,
-                        newResolveInfo(packageName, shareTargetActivityClassNames[i],
+                packageManager.addResolveInfoForIntent(
+                        shareIntent,
+                        newResolveInfo(
+                                packageName,
+                                shareTargetActivityClassNames[i],
                                 shareTargetMetaData[i]));
             }
         }
 
-        packageManager.addPackage(newPackageInfo(
-                packageName, metaData, shareTargetActivityClassNames, shareTargetMetaData));
+        packageManager.addPackage(
+                newPackageInfo(
+                        packageName, metaData, shareTargetActivityClassNames, shareTargetMetaData));
     }
 
     /** Returns generated share activity class name for the given index. */
@@ -97,13 +98,14 @@ public class WebApkTestHelper {
 
     /** Sets the resource for the given package name. */
     public static void setResource(String packageName, Resources res) {
-        ShadowPackageManager packageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         ShadowPackageManager.resources.put(packageName, res);
     }
 
-    private static PackageInfo newPackageInfo(String webApkPackageName, Bundle metaData,
-            String[] shareTargetActivityClassNames, Bundle[] shareTargetMetaData) {
+    private static PackageInfo newPackageInfo(
+            String webApkPackageName,
+            Bundle metaData,
+            String[] shareTargetActivityClassNames,
+            Bundle[] shareTargetMetaData) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
         applicationInfo.metaData = metaData;
         PackageInfo packageInfo = new PackageInfo();
@@ -113,8 +115,11 @@ public class WebApkTestHelper {
         if (shareTargetMetaData != null) {
             packageInfo.activities = new ActivityInfo[shareTargetMetaData.length];
             for (int i = 0; i < shareTargetMetaData.length; ++i) {
-                packageInfo.activities[i] = newActivityInfo(webApkPackageName,
-                        shareTargetActivityClassNames[i], shareTargetMetaData[i]);
+                packageInfo.activities[i] =
+                        newActivityInfo(
+                                webApkPackageName,
+                                shareTargetActivityClassNames[i],
+                                shareTargetMetaData[i]);
             }
         }
 

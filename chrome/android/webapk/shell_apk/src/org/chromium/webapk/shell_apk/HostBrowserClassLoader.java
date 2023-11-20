@@ -15,9 +15,7 @@ import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import java.io.File;
 import java.util.Scanner;
 
-/**
- * Creates ClassLoader for WebAPK-specific dex file in Chrome APK's assets.
- */
+/** Creates ClassLoader for WebAPK-specific dex file in Chrome APK's assets. */
 public class HostBrowserClassLoader {
     /** Directory for storing cached dex files. */
     public static final String DEX_DIR_NAME = "dex";
@@ -33,6 +31,7 @@ public class HostBrowserClassLoader {
 
     /**
      * Gets / creates ClassLoader for WebAPK dex.
+     *
      * @param context WebAPK's context.
      * @param canaryClassname Class to load to check that ClassLoader is valid.
      * @return The ClassLoader.
@@ -55,6 +54,7 @@ public class HostBrowserClassLoader {
 
     /**
      * Creates ClassLoader for WebAPK dex.
+     *
      * @param context WebAPK's context.
      * @param remoteContext Host browser's context.
      * @param canaryClassName Class to load to check that ClassLoader is valid.
@@ -81,9 +81,7 @@ public class HostBrowserClassLoader {
         return dexLoader.load(remoteContext, dexAssetName, canaryClassName, localDexDir);
     }
 
-    /**
-     * Returns whether {@link sClassLoader} can be reused.
-     */
+    /** Returns whether {@link sClassLoader} can be reused. */
     public static boolean canReuseClassLoaderInstance(Context context, Context remoteContext) {
         // WebAPK may still be running when the host browser gets upgraded. Prevent ClassLoader from
         // getting reused in this scenario.
@@ -97,6 +95,7 @@ public class HostBrowserClassLoader {
     /**
      * Checks if there is a new "runtime dex" version number. If there is a new version number,
      * updates SharedPreferences.
+     *
      * @param preferences WebAPK's SharedPreferences.
      * @param remoteContext
      * @return The new "runtime dex" version number. -1 if there is no new version number.
@@ -121,9 +120,7 @@ public class HostBrowserClassLoader {
         return runtimeDexVersion;
     }
 
-    /**
-     * Returns version code of {@link context}'s APK.
-     */
+    /** Returns version code of {@link context}'s APK. */
     private static int getVersionCode(Context context) {
         try {
             return context.getPackageManager()
@@ -137,6 +134,7 @@ public class HostBrowserClassLoader {
 
     /**
      * Returns the first integer in an asset file's contents.
+     *
      * @param context
      * @param assetName The name of the asset.
      * @return The first integer.
@@ -160,9 +158,7 @@ public class HostBrowserClassLoader {
         return value;
     }
 
-    /**
-     * Asserts that current thread is the UI thread.
-     */
+    /** Asserts that current thread is the UI thread. */
     private static void assertRunningOnUiThread() {
         assert Looper.getMainLooper().equals(Looper.myLooper());
     }

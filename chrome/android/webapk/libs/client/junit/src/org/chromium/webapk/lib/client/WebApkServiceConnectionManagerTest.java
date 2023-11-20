@@ -178,8 +178,8 @@ public class WebApkServiceConnectionManagerTest {
     }
 
     /**
-     * Context which records order of {@link Context#bindService()} and
-     * {@link Context#unbindService()} calls.
+     * Context which records order of {@link Context#bindService()} and {@link
+     * Context#unbindService()} calls.
      */
     private static class BindUnbindRecordingContext extends ContextWrapper {
         private String mRecordPackage;

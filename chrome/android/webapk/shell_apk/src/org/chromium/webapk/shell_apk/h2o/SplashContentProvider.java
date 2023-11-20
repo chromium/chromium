@@ -24,9 +24,9 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** ContentProvider for screenshot of splash screen. */
-public class SplashContentProvider
-        extends ContentProvider implements ContentProvider.PipeDataWriter<Void> {
-    /** Holds value which gets cleared after {@link ExpiringData#CLEAR_DATA_INTERVAL_MS}.  */
+public class SplashContentProvider extends ContentProvider
+        implements ContentProvider.PipeDataWriter<Void> {
+    /** Holds value which gets cleared after {@link ExpiringData#CLEAR_DATA_INTERVAL_MS}. */
     private static class ExpiringData {
         /** Time in milliseconds after constructing the object to clear the cached data. */
         private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10000;
@@ -51,14 +51,12 @@ public class SplashContentProvider
 
     /**
      * Maximum size in bytes of screenshot to transfer to browser. The screenshot should be
-     * downsampled to fit. Capping the maximum size of the screenshot decreases bitmap encoding
-     * time and image transfer time.
+     * downsampled to fit. Capping the maximum size of the screenshot decreases bitmap encoding time
+     * and image transfer time.
      */
     public static final int MAX_TRANSFER_SIZE_BYTES = 1024 * 1024 * 12;
 
-    /**
-     * The encoding type of the last image vended by the ContentProvider.
-     */
+    /** The encoding type of the last image vended by the ContentProvider. */
     private static Bitmap.CompressFormat sEncodingFormat;
 
     private static AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
@@ -70,8 +68,12 @@ public class SplashContentProvider
      * Temporarily caches the passed-in splash screen screenshot. To preserve memory, the cached
      * data is cleared after a delay.
      */
-    public static void cache(Context context, byte[] splashBytes,
-            Bitmap.CompressFormat encodingFormat, int splashWidth, int splashHeight) {
+    public static void cache(
+            Context context,
+            byte[] splashBytes,
+            Bitmap.CompressFormat encodingFormat,
+            int splashWidth,
+            int splashHeight) {
         SharedPreferences.Editor editor = WebApkSharedPreferences.getPrefs(context).edit();
         editor.putInt(WebApkSharedPreferences.PREF_SPLASH_WIDTH, splashWidth);
         editor.putInt(WebApkSharedPreferences.PREF_SPLASH_HEIGHT, splashHeight);
@@ -86,8 +88,8 @@ public class SplashContentProvider
     }
 
     /**
-     * Sets the cached splash screen screenshot and returns the old one.
-     * Thread safety: Can be called from any thread.
+     * Sets the cached splash screen screenshot and returns the old one. Thread safety: Can be
+     * called from any thread.
      */
     private static byte[] getAndSetCachedData(byte[] newSplashBytes) {
         ExpiringData newData = null;
@@ -129,8 +131,9 @@ public class SplashContentProvider
                 // not SplashActivity.
                 Bitmap splashScreenshot = recreateAndScreenshotSplash();
                 if (splashScreenshot != null) {
-                    sEncodingFormat = SplashUtils.selectBitmapEncoding(
-                            splashScreenshot.getWidth(), splashScreenshot.getHeight());
+                    sEncodingFormat =
+                            SplashUtils.selectBitmapEncoding(
+                                    splashScreenshot.getWidth(), splashScreenshot.getHeight());
                     splashScreenshot.compress(sEncodingFormat, 100, out);
                 }
             }
@@ -174,7 +177,11 @@ public class SplashContentProvider
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         throw new UnsupportedOperationException();
     }

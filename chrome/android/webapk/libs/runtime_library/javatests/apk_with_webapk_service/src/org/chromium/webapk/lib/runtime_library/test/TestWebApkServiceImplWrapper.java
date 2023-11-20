@@ -11,9 +11,7 @@ import android.os.IBinder;
 
 import org.chromium.webapk.lib.runtime_library.WebApkServiceImpl;
 
-/**
- * Simple service which uses {@link WebApkServiceImpl} for testing.
- */
+/** Simple service which uses {@link WebApkServiceImpl} for testing. */
 public class TestWebApkServiceImplWrapper extends Service {
     @Override
     public IBinder onBind(Intent intent) {

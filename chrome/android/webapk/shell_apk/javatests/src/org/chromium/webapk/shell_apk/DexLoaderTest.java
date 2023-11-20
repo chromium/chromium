@@ -196,6 +196,7 @@ public class DexLoaderTest {
 
     /**
      * Returns the Context of the APK which contains dex with canary class implementation.
+     *
      * @param context The test application's Context.
      * @return Context of the APK whcih provide DexOptimizerService.
      */

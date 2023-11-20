@@ -22,13 +22,11 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 /**
- * Each WebAPK has several services. This class manages static global connections between the
- * Chrome application and the "WebAPK services."
+ * Each WebAPK has several services. This class manages static global connections between the Chrome
+ * application and the "WebAPK services."
  */
 public class WebApkServiceConnectionManager {
-    /**
-     * Interface for getting notified once Chrome is connected to a WebAPK service.
-     */
+    /** Interface for getting notified once Chrome is connected to a WebAPK service. */
     public interface ConnectionCallback {
         /**
          * Called once Chrome is connected to the WebAPK service.
@@ -148,24 +146,27 @@ public class WebApkServiceConnectionManager {
         mConnections.put(webApkPackage, newConnection);
         newConnection.addCallback(callback);
 
-        Callable<Boolean> backgroundTask = () -> {
-            Intent intent = createConnectIntent(webApkPackage);
-            try {
-                if (appContext.bindService(intent, newConnection, Context.BIND_AUTO_CREATE)) {
-                    return true;
-                } else {
-                    appContext.unbindService(newConnection);
-                }
-            } catch (SecurityException e) {
-                Log.w(TAG, "Security exception binding.", e);
-            }
-            return false;
-        };
-        Callback<Boolean> uiThreadReply = (bindSuccessful) -> {
-            if (!bindSuccessful) {
-                newConnection.onServiceConnected(null, null);
-            }
-        };
+        Callable<Boolean> backgroundTask =
+                () -> {
+                    Intent intent = createConnectIntent(webApkPackage);
+                    try {
+                        if (appContext.bindService(
+                                intent, newConnection, Context.BIND_AUTO_CREATE)) {
+                            return true;
+                        } else {
+                            appContext.unbindService(newConnection);
+                        }
+                    } catch (SecurityException e) {
+                        Log.w(TAG, "Security exception binding.", e);
+                    }
+                    return false;
+                };
+        Callback<Boolean> uiThreadReply =
+                (bindSuccessful) -> {
+                    if (!bindSuccessful) {
+                        newConnection.onServiceConnected(null, null);
+                    }
+                };
 
         postTaskAndReply(backgroundTask, uiThreadReply);
     }
@@ -188,17 +189,19 @@ public class WebApkServiceConnectionManager {
             connectionToDisconnect.onServiceConnected(null, null);
         }
 
-        Callable<Boolean> backgroundTask = () -> {
-            for (Connection connectionToDisconnect : connectionsToDisconnect) {
-                appContext.unbindService(connectionToDisconnect);
-            }
-            return true;
-        };
-        Callback<Boolean> uiThreadReply = (unused) -> {
-            if (mConnections.isEmpty() && mNumPendingPostedTasks == 0) {
-                destroyTaskRunner();
-            }
-        };
+        Callable<Boolean> backgroundTask =
+                () -> {
+                    for (Connection connectionToDisconnect : connectionsToDisconnect) {
+                        appContext.unbindService(connectionToDisconnect);
+                    }
+                    return true;
+                };
+        Callback<Boolean> uiThreadReply =
+                (unused) -> {
+                    if (mConnections.isEmpty() && mNumPendingPostedTasks == 0) {
+                        destroyTaskRunner();
+                    }
+                };
 
         postTaskAndReply(backgroundTask, uiThreadReply);
     }
@@ -210,19 +213,23 @@ public class WebApkServiceConnectionManager {
     private void postTaskAndReply(
             final Callable<Boolean> backgroundTask, final Callback<Boolean> uiThreadReply) {
         ++mNumPendingPostedTasks;
-        getTaskRunner().postTask(() -> {
-            Boolean result = false;
-            try {
-                result = backgroundTask.call();
-            } catch (Exception e) {
-            }
+        getTaskRunner()
+                .postTask(
+                        () -> {
+                            Boolean result = false;
+                            try {
+                                result = backgroundTask.call();
+                            } catch (Exception e) {
+                            }
 
-            final Boolean finalResult = result;
-            PostTask.postTask(mUiThreadTaskTraits, () -> {
-                --mNumPendingPostedTasks;
-                uiThreadReply.onResult(finalResult);
-            });
-        });
+                            final Boolean finalResult = result;
+                            PostTask.postTask(
+                                    mUiThreadTaskTraits,
+                                    () -> {
+                                        --mNumPendingPostedTasks;
+                                        uiThreadReply.onResult(finalResult);
+                                    });
+                        });
     }
 
     /**

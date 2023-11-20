@@ -82,9 +82,9 @@ public class HostBrowserUtilsTest {
     }
 
     /**
-     * Tests that both {@link #computeHostBrowserPackageClearCachedDataOnChange()}
-     * and {@link #getCachedHostBrowserPackage()} return null if there isn't any
-     * browser installed on the device.
+     * Tests that both {@link #computeHostBrowserPackageClearCachedDataOnChange()} and {@link
+     * #getCachedHostBrowserPackage()} return null if there isn't any browser installed on the
+     * device.
      */
     @Test
     public void testReturnsNullWhenNoBrowserInstalled() {
@@ -97,15 +97,13 @@ public class HostBrowserUtilsTest {
         Assert.assertNull(HostBrowserUtils.getCachedHostBrowserPackage(mContext));
     }
 
-    /**
-     * Tests the order of precedence for bound WebAPKs for
-     * {@link #computeHostBrowserPackageClearCachedDataOnChange()}. The expected order of precedence
-     * is:
-     * 1) Browser specified in shared preferences if it is still installed.
-     * 2) Bound browser specified in AndroidManifest.xml
-     * The default browser and the number of installed browsers which support WebAPKs should
-     * have no effect.
-     */
+    // Tests the order of precedence for bound WebAPKs for
+    // {@link #computeHostBrowserPackageClearCachedDataOnChange()}. The expected order of precedence
+    // is:
+    // 1) Browser specified in shared preferences if it is still installed.
+    // 2) Bound browser specified in AndroidManifest.xml
+    // The default browser and the number of installed browsers which support WebAPKs should
+    // have no effect.
     @Test
     public void testComputeHostBrowserBoundWebApkPrecedence() {
         if (!mIsBoundWebApk) return;
@@ -149,14 +147,12 @@ public class HostBrowserUtilsTest {
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
     }
 
-    /**
-     * Tests the order of precedence for unbound WebAPKs for
-     * {@link #computeHostBrowserPackageClearCachedDataOnChange()}. The expected order of precedence
-     * is:
-     * 1) Browser specified in shared preferences if it is still installed.
-     * 2) Default browser if the default browser supports WebAPKs.
-     * 3) The browser which supports WebAPKs if there is just one.
-     */
+    // Tests the order of precedence for unbound WebAPKs for
+    // {@link #computeHostBrowserPackageClearCachedDataOnChange()}. The expected order of precedence
+    // is:
+    // 1) Browser specified in shared preferences if it is still installed.
+    // 2) Default browser if the default browser supports WebAPKs.
+    // 3) The browser which supports WebAPKs if there is just one.
     @Test
     public void testComputeHostBrowserUnboundWebApkPrecedence() {
         if (mIsBoundWebApk) return;
@@ -246,9 +242,9 @@ public class HostBrowserUtilsTest {
     }
 
     /**
-     * Tests that neither {@link #computeHostBrowserPackageClearCachedDataOnChange()} nor
-     * {@link #getCachedHostBrowserPackage()} return the cached browser in
-     * {@link HostBrowserUtils#sHostPackage} if the cached browser was uninstalled.
+     * Tests that neither {@link #computeHostBrowserPackageClearCachedDataOnChange()} nor {@link
+     * #getCachedHostBrowserPackage()} return the cached browser in {@link
+     * HostBrowserUtils#sHostPackage} if the cached browser was uninstalled.
      */
     @Test
     public void testDoesNotReturnTheCurrentHostBrowserAfterUninstall() {

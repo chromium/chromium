@@ -12,4 +12,4 @@
 # //chrome/android/webapk/shell_apk:webapk is changed. This includes
 # Java files, Android resource files and AndroidManifest.xml. Does not affect
 # Chrome.apk
-current_shell_apk_version = 166
+current_shell_apk_version = 167

@@ -40,9 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Contains utility methods for interacting with WebAPKs.
- */
+/** Contains utility methods for interacting with WebAPKs. */
 public class WebApkUtils {
     private static final String TAG = "cr_WebApkUtils";
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
@@ -72,8 +70,10 @@ public class WebApkUtils {
     public static Bundle readMetaData(Context context) {
         ApplicationInfo ai = null;
         try {
-            ai = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(), PackageManager.GET_META_DATA);
+            ai =
+                    context.getPackageManager()
+                            .getApplicationInfo(
+                                    context.getPackageName(), PackageManager.GET_META_DATA);
         } catch (NameNotFoundException e) {
             return null;
         }
@@ -94,7 +94,7 @@ public class WebApkUtils {
 
         if (intentStartUrl.startsWith(startUrl)
                 && !TextUtils.isEmpty(
-                           Uri.parse(intentStartUrl).getQueryParameter(loggedIntentUrlParam))) {
+                        Uri.parse(intentStartUrl).getQueryParameter(loggedIntentUrlParam))) {
             return intentStartUrl;
         }
 
@@ -111,8 +111,9 @@ public class WebApkUtils {
         // disabled browsers.
         List<ResolveInfo> resolveInfos =
                 packageManager.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL);
-        resolveInfos.addAll(packageManager.queryIntentActivities(
-                browserIntent, PackageManager.MATCH_DEFAULT_ONLY));
+        resolveInfos.addAll(
+                packageManager.queryIntentActivities(
+                        browserIntent, PackageManager.MATCH_DEFAULT_ONLY));
 
         Map<String, ResolveInfo> result = new HashMap<>();
         for (ResolveInfo resolveInfo : resolveInfos) {
@@ -145,8 +146,9 @@ public class WebApkUtils {
         }
         try {
             PackageManager packageManager = context.getPackageManager();
-            ApplicationInfo appInfo = packageManager.getApplicationInfo(
-                    remotePackageName, PackageManager.GET_META_DATA);
+            ApplicationInfo appInfo =
+                    packageManager.getApplicationInfo(
+                            remotePackageName, PackageManager.GET_META_DATA);
             return appInfo.uid;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -167,12 +169,18 @@ public class WebApkUtils {
                 TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.headline_size_medium));
         int dialogContentPadding = res.getDimensionPixelSize(R.dimen.dialog_content_padding);
         int titleBottomPadding = res.getDimensionPixelSize(R.dimen.title_bottom_padding);
-        titleView.setPaddingRelative(dialogContentPadding, dialogContentPadding,
-                dialogContentPadding, titleBottomPadding);
+        titleView.setPaddingRelative(
+                dialogContentPadding,
+                dialogContentPadding,
+                dialogContentPadding,
+                titleBottomPadding);
 
         int dialogContentTopPadding = res.getDimensionPixelSize(R.dimen.dialog_content_top_padding);
-        contentView.setPaddingRelative(dialogContentPadding, dialogContentTopPadding,
-                dialogContentPadding, dialogContentPadding);
+        contentView.setPaddingRelative(
+                dialogContentPadding,
+                dialogContentTopPadding,
+                dialogContentPadding,
+                dialogContentPadding);
     }
 
     /**
@@ -198,8 +206,9 @@ public class WebApkUtils {
     }
 
     /**
-     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.)
-     * should be used depending on the given background color.
+     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.) should be
+     * used depending on the given background color.
+     *
      * @param backgroundColor The background color value which is being queried.
      * @return Whether light colored elements should be used.
      */
@@ -226,7 +235,7 @@ public class WebApkUtils {
     /**
      * Sets the status bar icons to dark or light.
      *
-     * TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
+     * <p>TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
      *
      * @param rootView The root view used to request updates to the system UI theming.
      * @param useDarkIcons Whether the status bar icons should be dark.
@@ -258,9 +267,7 @@ public class WebApkUtils {
         }
     }
 
-    /**
-     * Returns the Intent to query a list of installed browser apps.
-     */
+    /** Returns the Intent to query a list of installed browser apps. */
     public static Intent getQueryInstalledBrowsersIntent() {
         return new Intent()
                 .setAction(Intent.ACTION_VIEW)
@@ -276,7 +283,7 @@ public class WebApkUtils {
         return R.drawable.notification_badge;
     }
 
-    /** Computes the screen lock orientation from the passed-in metadata and the display size.  */
+    /** Computes the screen lock orientation from the passed-in metadata and the display size. */
     public static int computeNaturalScreenLockOrientationFromMetaData(
             Context context, Bundle metadata) {
         String orientation = metadata.getString(WebApkMetaDataKeys.ORIENTATION);
@@ -354,8 +361,10 @@ public class WebApkUtils {
     private static boolean isAutomotive(Context context) {
         boolean isAutomotive;
         try {
-            isAutomotive = context.getApplicationContext().getPackageManager().hasSystemFeature(
-                    PackageManager.FEATURE_AUTOMOTIVE);
+            isAutomotive =
+                    context.getApplicationContext()
+                            .getPackageManager()
+                            .hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE);
         } catch (SecurityException e) {
             Log.e(TAG, "Unable to query for Automotive system feature", e);
 

@@ -89,13 +89,11 @@ public final class LaunchTest {
         mShadowPackageManager = Shadows.shadowOf(mPackageManager);
     }
 
-    /**
-     * Test launching via a deep link on Android N+.
-     * Check:
-     * 1) That the host browser was launched.
-     * 2) Which activities were launched between the activity which handled
-     * the intent and the host browser getting launched.
-     */
+    // Test launching via a deep link on Android N+.
+    // Check:
+    // 1) That the host browser was launched.
+    // 2) Which activities were launched between the activity which handled
+    // the intent and the host browser getting launched.
     @Test
     public void testDeepLink() {
         registerWebApk(/* isNewStyleWebApk= */ true);
@@ -211,8 +209,8 @@ public final class LaunchTest {
     }
 
     /**
-     * Tests that the target share activity is propagated to the host browser launch intent in
-     * the scenario where there are several hops between the share intent getting handled and the
+     * Tests that the target share activity is propagated to the host browser launch intent in the
+     * scenario where there are several hops between the share intent getting handled and the
      * browser getting launched.
      */
     @Test
@@ -249,8 +247,8 @@ public final class LaunchTest {
 
     /**
      * Tests that the EXTRA_SOURCE intent extra in the launch intent is propagated to the host
-     * browser launch intent in the scenario where there are several activity hops between
-     * the deep link getting handled and the host browser getting launched.
+     * browser launch intent in the scenario where there are several activity hops between the deep
+     * link getting handled and the host browser getting launched.
      */
     @Test
     public void testSourcePropagated() {
@@ -277,10 +275,9 @@ public final class LaunchTest {
     }
 
     /**
-     * Check that the WebAPK does not propagate the {@link EXTRA_RELAUNCH} extra. When
-     * the host browser relaunches the WebAPK, the host browser might copy over all of
-     * the extras and not remove the relaunch intent. Check that this scenario does not
-     * yield an infinite loop.
+     * Check that the WebAPK does not propagate the {@link EXTRA_RELAUNCH} extra. When the host
+     * browser relaunches the WebAPK, the host browser might copy over all of the extras and not
+     * remove the relaunch intent. Check that this scenario does not yield an infinite loop.
      */
     @Test
     public void testDoesNotPropagateRelaunchDirective() {
@@ -396,12 +393,10 @@ public final class LaunchTest {
                 DEFAULT_START_URL);
     }
 
-    /**
-     * Test launching old-style WebAPK via deep link:
-     * Check that:
-     * 1) Chrome is launched.
-     * 2) No activities have been enabled/disabled.
-     */
+    // Test launching old-style WebAPK via deep link:
+    // Check that:
+    // 1) Chrome is launched.
+    // 2) No activities have been enabled/disabled.
     @Test
     public void testDeepLinkOldStyle() {
         registerWebApk(/* isNewStyleWebApk= */ false);
@@ -421,12 +416,10 @@ public final class LaunchTest {
         assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
     }
 
-    /**
-     * Test launching old-style WebAPK via main intent.
-     * Check that:
-     * 1) Chrome is launched.
-     * 2) No activities have been enabled/disabled.
-     */
+    // Test launching old-style WebAPK via main intent.
+    // Check that:
+    // 1) Chrome is launched.
+    // 2) No activities have been enabled/disabled.
     @Test
     public void testMainIntentOldStyle() {
         registerWebApk(/* isNewStyleWebApk= */ false);
@@ -446,8 +439,8 @@ public final class LaunchTest {
     }
 
     /**
-     * Test {@link H2OOpaqueMainActivity#checkComponentEnabled()} when:
-     * - Component enabled setting is default
+     * Test {@link H2OOpaqueMainActivity#checkComponentEnabled()} when component enabled setting is
+     * default
      */
     @Test
     public void testCheckH2OOpaqueMainActivityEnabled() {
@@ -464,8 +457,8 @@ public final class LaunchTest {
     }
 
     /**
-     * Test {@link H2OMainActivity#checkComponentEnabled()} when:
-     * - Component enabled setting is default
+     * Test {@link H2OMainActivity#checkComponentEnabled()} when component enabled setting is
+     * default.
      */
     @Test
     public void testCheckH2OMainActivityEnabled() {
@@ -482,8 +475,8 @@ public final class LaunchTest {
     }
 
     /**
-     * Tests that we add site settings shortcuts both when
-     * opaque main activity is enabled and when it is not enabled.
+     * Tests that we add site settings shortcuts both when opaque main activity is enabled and when
+     * it is not enabled.
      */
     @Test
     public void testAddsSiteSettings() {

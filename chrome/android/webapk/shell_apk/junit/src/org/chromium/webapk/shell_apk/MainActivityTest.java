@@ -24,10 +24,11 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.h2o.H2OMainActivity;
 import org.chromium.webapk.test.WebApkTestHelper;
 
-/** Unit tests for {@link MainActivity}.
+/**
+ * Unit tests for {@link MainActivity}.
  *
- * Note: In real word, |loggedIntentUrlParam| is set to be nonempty iff intent url is outside of the
- * scope specified in the Android manifest, so in the test we always have these two conditions
+ * <p>Note: In real word, |loggedIntentUrlParam| is set to be nonempty iff intent url is outside of
+ * the scope specified in the Android manifest, so in the test we always have these two conditions
  * together.
  */
 @RunWith(RobolectricTestRunner.class)
