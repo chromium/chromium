@@ -109,9 +109,12 @@ void FederatedAuthRevokeRequest::SetCallbackAndStart(
              /*should_delay_callback=*/true);
     return;
   }
-  // Reject if we know that there are no sharing permissions with the given IdP.
-  if (!permission_delegate_->HasSharingPermission(
-          origin_, embedding_origin_, config_origin, absl::nullopt)) {
+  // Reject if we know that there are no sharing permissions with the given IdP
+  // and the IdP doesn't have third party cookies access on the RP site.
+  if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+          *render_frame_host_, options_->config->config_url, embedding_origin_,
+          origin_, /*account_id=*/absl::nullopt, permission_delegate_,
+          api_permission_delegate)) {
     Complete(RevokeStatus::kError, RevokeStatusForMetrics::kNoAccountToRevoke,
              /*should_delay_callback=*/true);
     return;

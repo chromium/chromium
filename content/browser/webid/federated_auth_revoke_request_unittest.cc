@@ -37,6 +37,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 using FedCmEntry = ukm::builders::Blink_FedCm;
+using LoginState = content::IdentityRequestAccount::LoginState;
 using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 using blink::mojom::RevokeStatus;
@@ -186,13 +187,34 @@ class TestPermissionDelegate : public MockPermissionDelegate {
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
       const absl::optional<std::string>& account_id) override {
-    return true;
+    url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
+    url::Origin idp_origin_with_data = url::Origin::Create(GURL(kProviderUrl));
+    bool has_granted_permission_per_profile =
+        relying_party_requester == rp_origin_with_data &&
+        relying_party_embedder == rp_origin_with_data &&
+        identity_provider == idp_origin_with_data;
+    return has_granted_permission_per_profile &&
+           (account_id
+                ? accounts_with_sharing_permission_.count(account_id.value())
+                : !accounts_with_sharing_permission_.empty());
   }
 
   absl::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override {
     return true;
   }
+
+  void SetConfig(const Config& config) {
+    accounts_with_sharing_permission_.clear();
+    for (const AccountConfig& account_config : config.accounts) {
+      if (account_config.was_granted_sharing_permission) {
+        accounts_with_sharing_permission_.insert(account_config.id);
+      }
+    }
+  }
+
+ private:
+  std::set<std::string> accounts_with_sharing_permission_;
 };
 
 }  // namespace
@@ -222,6 +244,8 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
 
   void RunRevokeTest(const Config& config,
                      RevokeStatus expected_revoke_status) {
+    permission_delegate_->SetConfig(config);
+
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
     network_manager_ = network_manager.get();
@@ -317,6 +341,34 @@ TEST_F(FederatedAuthRevokeRequestTest, NotTrustworthyIdP) {
       "Blink.FedCm.Status.Revoke2",
       RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
   ExpectRevokeStatusUKM(RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy,
+                        FedCmEntry::kEntryName);
+}
+
+TEST_F(FederatedAuthRevokeRequestTest,
+       NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  const char kAccountId[] = "account";
+
+  Config config = kValidConfig;
+  config.accounts = {{kAccountId, /*login_state=*/LoginState::kSignIn,
+                      /*was_granted_sharing_permission=*/false}};
+
+  // Pretend the IdP was given third-party cookies access.
+  EXPECT_CALL(*api_permission_delegate_,
+              HasThirdPartyCookiesAccess(_, GURL(kProviderUrl),
+                                         url::Origin::Create(GURL(kRpUrl))))
+      .WillOnce(Return(true));
+
+  RunRevokeTest(config, RevokeStatus::kSuccess);
+  EXPECT_TRUE(network_manager_->has_fetched_well_known_);
+  EXPECT_TRUE(network_manager_->has_fetched_config_);
+  EXPECT_TRUE(network_manager_->has_fetched_revoke_);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke2",
+                                       RevokeStatusForMetrics::kSuccess, 1);
+  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess,
                         FedCmEntry::kEntryName);
 }
 

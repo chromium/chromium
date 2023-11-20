@@ -337,14 +337,21 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
-bool IdpHasThirdPartyCookiesAccess(
+bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     RenderFrameHost& host,
     const GURL& provider_url,
     const url::Origin& embedder_origin,
+    const url::Origin& requester_origin,
+    const absl::optional<std::string>& account_id,
+    FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
-  return IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&
-         api_permission_delegate->HasThirdPartyCookiesAccess(host, provider_url,
-                                                             embedder_origin);
+  bool has_access = IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&
+                    api_permission_delegate->HasThirdPartyCookiesAccess(
+                        host, provider_url, embedder_origin);
+  return sharing_permission_delegate->HasSharingPermission(
+             requester_origin, embedder_origin,
+             url::Origin::Create(provider_url), account_id) ||
+         has_access;
 }
 
 }  // namespace content::webid

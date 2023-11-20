@@ -961,16 +961,16 @@ void FederatedAuthRequestImpl::RequestUserInfo(
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
   auto user_info_request = FederatedAuthUserInfoRequest::Create(
-      std::move(network_manager), permission_delegate_.get(),
-      &render_frame_host(), fedcm_metrics_.get(), std::move(provider));
+      std::move(network_manager), permission_delegate_,
+      api_permission_delegate_, &render_frame_host(), fedcm_metrics_.get(),
+      std::move(provider));
   FederatedAuthUserInfoRequest* user_info_request_ptr = user_info_request.get();
   user_info_requests_.insert(std::move(user_info_request));
 
   user_info_request_ptr->SetCallbackAndStart(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteUserInfoRequest,
                      weak_ptr_factory_.GetWeakPtr(), user_info_request_ptr,
-                     std::move(callback)),
-      api_permission_delegate_.get());
+                     std::move(callback)));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -2488,13 +2488,10 @@ bool FederatedAuthRequestImpl::GetSingleReturningAccount(
       // `approved_clients` list provided by IDP. However, in this case we have
       // to trust the browser observed sign-in unless the IDP can be exempted.
       // For example, they have third party cookies access on the RP site.
-      if (!permission_delegate_->HasSharingPermission(
-              origin(), GetEmbeddingOrigin(),
-              url::Origin::Create(idp_info.first), account.id) &&
-          !webid::IdpHasThirdPartyCookiesAccess(render_frame_host(),
-                                                /*provider_url=*/idp_info.first,
-                                                GetEmbeddingOrigin(),
-                                                api_permission_delegate_)) {
+      if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+              render_frame_host(), /*provider_url=*/idp_info.first,
+              GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
+              api_permission_delegate_)) {
         continue;
       }
 
@@ -2544,15 +2541,11 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
   }
 
   bool has_sharing_permission_for_any_account =
-      permission_delegate_->HasSharingPermission(
-          origin(), GetEmbeddingOrigin(), url::Origin::Create(config_url),
-          absl::nullopt);
+      webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+          render_frame_host(), config_url, GetEmbeddingOrigin(), origin(),
+          /*account_id=*/absl::nullopt, permission_delegate_,
+          api_permission_delegate_);
 
-  // The ExemptIdPWithThirdPartyCookie feature does not apply to `mediation:
-  // silent` to avoid unexpected conversion rate drop. Because if an IdP loses
-  // 3PC access on an RP, the request will fail silently. In contrast, with
-  // `mediation: optional`, users can still grant explicit permission on the
-  // account UI if the IdP loses 3PC access.
   if (!has_sharing_permission_for_any_account) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
@@ -2666,15 +2659,15 @@ void FederatedAuthRequestImpl::Revoke(
   auto network_manager = CreateNetworkManager();
 
   revoke_request_ = FederatedAuthRevokeRequest::Create(
-      std::move(network_manager), permission_delegate_.get(),
-      &render_frame_host(), fedcm_metrics_.get(), std::move(options),
+      std::move(network_manager), permission_delegate_, &render_frame_host(),
+      fedcm_metrics_.get(), std::move(options),
       should_complete_request_immediately_);
   FederatedAuthRevokeRequest* revoke_request_ptr = revoke_request_.get();
 
   revoke_request_ptr->SetCallbackAndStart(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRevokeRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      api_permission_delegate_.get());
+      api_permission_delegate_);
 }
 
 void FederatedAuthRequestImpl::RecordErrorMetrics(

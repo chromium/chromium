@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -223,9 +224,10 @@ class TestPermissionDelegate : public MockPermissionDelegate {
         relying_party_requester == rp_origin_with_data &&
         relying_party_embedder == rp_origin_with_data &&
         identity_provider == idp_origin_with_data;
-    return has_granted_permission_per_profile && account_id
-               ? accounts_with_sharing_permission_.count(account_id.value())
-               : !accounts_with_sharing_permission_.empty();
+    return has_granted_permission_per_profile &&
+           (account_id
+                ? accounts_with_sharing_permission_.count(account_id.value())
+                : !accounts_with_sharing_permission_.empty());
   }
 
   absl::optional<bool> GetIdpSigninStatus(
@@ -293,9 +295,9 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     UserInfoCallbackHelper callback_helper;
     request_ = FederatedAuthUserInfoRequest::Create(
         std::move(network_manager), permission_delegate_.get(),
-        iframe_render_frame_host_, metrics_.get(), std::move(idp_ptr));
-    request_->SetCallbackAndStart(callback_helper.callback(),
-                                  api_permission_delegate_.get());
+        api_permission_delegate_.get(), iframe_render_frame_host_,
+        metrics_.get(), std::move(idp_ptr));
+    request_->SetCallbackAndStart(callback_helper.callback());
     callback_helper.WaitForCallback();
 
     EXPECT_EQ(expected_user_info_status, callback_helper.user_info_status_);
@@ -432,6 +434,55 @@ TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
                       /*was_granted_sharing_permission=*/true}};
   RunUserInfoTest(config, RequestUserInfoStatus::kSuccess,
                   {kAccount1Id, kAccount2Id});
+}
+
+TEST_F(FederatedAuthUserInfoRequestTest,
+       NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  const char kAccountId[] = "account";
+
+  Config config = kValidConfig;
+  config.accounts = {{kAccountId, /*login_state=*/LoginState::kSignIn,
+                      /*was_granted_sharing_permission=*/false}};
+
+  // Pretend the IdP was given third-party cookies access.
+  EXPECT_CALL(*api_permission_delegate_,
+              HasThirdPartyCookiesAccess(_, GURL(kProviderUrl),
+                                         url::Origin::Create(GURL(kRpUrl))))
+      .WillRepeatedly(Return(true));
+
+  RunUserInfoTest(config, RequestUserInfoStatus::kSuccess, {kAccountId});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequestResult::kSuccess, 1);
+}
+
+TEST_F(FederatedAuthUserInfoRequestTest,
+       NoSharingPermissionButIdpHasThirdPartyCookiesAccessButNotSignin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  const char kAccountId[] = "account";
+
+  Config config = kValidConfig;
+  config.accounts = {{kAccountId, /*login_state=*/absl::nullopt,
+                      /*was_granted_sharing_permission=*/false}};
+
+  // Pretend the IdP was given third-party cookies access.
+  EXPECT_CALL(*api_permission_delegate_,
+              HasThirdPartyCookiesAccess(_, GURL(kProviderUrl),
+                                         url::Origin::Create(GURL(kRpUrl))))
+      .WillRepeatedly(Return(true));
+
+  RunUserInfoTest(config, RequestUserInfoStatus::kError, {});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequestResult::kNoReturningUserFromFetchedAccounts,
+      1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
