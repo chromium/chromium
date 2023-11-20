@@ -48,6 +48,7 @@ crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-bloc
 crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-001.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-002.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-004.html [ Failure ]
+crbug.com/1499775 external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-with-tab.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure ]
@@ -66,8 +67,6 @@ crbug.com/1499775 external/wpt/mathml/presentation-markup/operators/operator-dic
 crbug.com/1499775 external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/1499775 wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]
 crbug.com/1499775 external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Timeout ]
-crbug.com/1499775 external/wpt/attribution-reporting/request-format.sub.https.html?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source [ Failure ]  # Flaky output
-crbug.com/1499775 external/wpt/attribution-reporting/request-format.sub.https.html?method=xhr&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source [ Failure ]  # Flaky output
 crbug.com/1499775 external/wpt/background-fetch/abort.https.window.html [ Timeout ]
 crbug.com/1499775 external/wpt/background-fetch/fetch-uploads.https.window.html [ Timeout ]
 crbug.com/1499775 external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
