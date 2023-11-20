@@ -73,7 +73,7 @@ namespace printing {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING) && !BUILDFLAG(IS_CHROMEOS)
 constexpr gfx::SizeF kLetterPhysicalSize = gfx::SizeF(612, 792);
 constexpr gfx::RectF kLetterPrintableArea = gfx::RectF(5, 5, 602, 782);
 constexpr gfx::SizeF kLegalPhysicalSize = gfx::SizeF(612, 1008);
@@ -84,7 +84,7 @@ constexpr gfx::RectF kLegalPrintableArea = gfx::RectF(5, 5, 602, 998);
 // Letter, and similarly is 556 x 952 for Legal.
 constexpr gfx::SizeF kLetterExpectedContentSize = gfx::SizeF(556, 736);
 constexpr gfx::SizeF kLegalExpectedContentSize = gfx::SizeF(556, 952);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
@@ -118,6 +118,7 @@ using OnDidCompositeForContentAnalysis =
     base::RepeatingCallback<void(bool allowed)>;
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 void CancelPrintPreview(content::WebContents* preview_dialog) {
   // This script locates and clicks the Cancel button for a Print Preview
   // dialog.
@@ -137,6 +138,7 @@ void CancelPrintPreview(content::WebContents* preview_dialog) {
   // as monitoring for the Print Preview to be done if that is needed.
   std::ignore = content::ExecJs(preview_dialog, kScript);
 }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace
 
@@ -471,6 +473,7 @@ class SystemAccessProcessPrintBrowserTestBase
       disabled_features.push_back(features::kEnableCloudScanAfterPreview);
     }
 #endif
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
       enabled_features.push_back(
           {features::kEnableOopPrintDrivers,
@@ -480,6 +483,7 @@ class SystemAccessProcessPrintBrowserTestBase
     } else {
       disabled_features.push_back(features::kEnableOopPrintDrivers);
     }
+#endif
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -600,6 +604,7 @@ class SystemAccessProcessPrintBrowserTestBase
 #endif
   }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   // `PrintBackendServiceTestImpl` does a debug check on shutdown that there
   // are no residual persistent printing contexts left in the service.  For
   // tests which are known to break this (either by design, for test simplicity
@@ -619,6 +624,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void OnRegisterSystemPrintClient(bool succeeded) override {
     system_print_registration_succeeded_ = succeeded;
   }
+#endif
 
   void OnDidPrintDocument() override {
     ++did_print_document_count_;
@@ -881,9 +887,11 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   void SetCheckForPrintPreviewDone(bool check) {
     check_for_print_preview_done_ = check;
   }
+#endif
 
   const absl::optional<bool> system_print_registration_succeeded() const {
     return system_print_registration_succeeded_;
@@ -1164,7 +1172,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(PrintBackendFeatureVariation::kOopSandboxedService,
                     PrintBackendFeatureVariation::kOopUnsandboxedService));
 
-#endif
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 class SystemAccessProcessInBrowserPrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase {
@@ -1178,6 +1186,8 @@ class SystemAccessProcessInBrowserPrintBrowserTest
   bool EnableContentAnalysisAfterDialog() override { return false; }
 #endif
 };
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 class SystemAccessProcessPrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
@@ -1238,8 +1248,6 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   EXPECT_EQ(kLetterExpectedContentSize, snooped_params->params->content_size);
 #endif
 }
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        UpdatePrintSettingsPrintableArea) {

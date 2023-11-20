@@ -13,7 +13,6 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
-#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
@@ -36,6 +35,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "ui/base/ui_base_types.h"
@@ -116,11 +120,13 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     // Avoid getting blocked by modal print error dialogs. Must be called after
     // the UI thread is up and running.
     SetShowPrintErrorDialogForTest(base::DoNothing());
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
       print_backend_service_ =
           printing::PrintBackendServiceTestImpl::LaunchForTesting(
               test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
     }
+#endif
     PDFExtensionTestBase::SetUpOnMainThread();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -152,7 +158,9 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 #endif
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     printing::PrintBackendServiceManager::ResetForTesting();
+#endif
     SetShowPrintErrorDialogForTest(base::NullCallback());
   }
   void TearDown() override {
@@ -161,16 +169,20 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
       return {printing::features::kEnableOopPrintDrivers};
     }
+#endif
     return {};
   }
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    if (UseService()) {
-      return {};
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (!UseService()) {
+      return {printing::features::kEnableOopPrintDrivers};
     }
-    return {printing::features::kEnableOopPrintDrivers};
+#endif
+    return {};
   }
 
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
@@ -227,8 +239,10 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
   std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
+#endif
   bool observing_print_job_ = false;
   bool print_job_destroyed_ = false;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
@@ -377,7 +391,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-INSTANTIATE_TEST_SUITE_P(All, PDFExtensionPrintingTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionPrintingTest,
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+                         testing::Bool()
+#else
+                         testing::Values(false)
+#endif
+);
 
 class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
  public:
