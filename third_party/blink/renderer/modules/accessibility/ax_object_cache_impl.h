@@ -153,7 +153,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     // document lifecycle check is necessary but this is short-lived code.
     if (!serialize_post_lifecycle_ && GetDocument().Lifecycle().GetState() <
                                           DocumentLifecycle::kPrePaintClean) {
-      pause_tree_updates_until_more_loaded_content_ = false;
       UpdateAXForAllDocuments();
     }
     ax_tree_source_->Freeze();
@@ -862,6 +861,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // ProcessDeferredAccessibilityEvents(). Will be set to false when more
   // content is loaded or the load is completed.
   bool pause_tree_updates_until_more_loaded_content_ = false;
+  // If null, then any new connected node will unpause tree updates.
+  // Otherwise, tree updates will unpause once the node is fully parsed.
+  WeakMember<Node> node_to_parse_before_more_tree_updates_;
 
   HeapVector<Member<AXEventParams>> notifications_to_post_main_;
   HeapVector<Member<AXEventParams>> notifications_to_post_popup_;

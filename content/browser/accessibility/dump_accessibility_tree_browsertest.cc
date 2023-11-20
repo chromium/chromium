@@ -202,6 +202,7 @@ INSTANTIATE_TEST_SUITE_P(
     DumpAccessibilityTreeTestPassToString());
 
 // TODO(crbug.com/1428967): Flaky on asan of linux, chromeos and win.
+// This is not fixed by rebuilding the subtree when parsing is complete.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_ASAN(AccessibilityCSSAltText)) {
   RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
@@ -226,10 +227,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("content-visibility-auto-crash.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on ASan builders.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_ASAN(AccessibilityCSSContentVisibilityAutoAriaHidden)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSContentVisibilityAutoAriaHidden) {
+  RunCSSTest(FILE_PATH_LITERAL("content-visibility-auto-aria-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSContentVisibilityAutoAriaHidden) {
   RunCSSTest(FILE_PATH_LITERAL("content-visibility-auto-aria-hidden.html"));
 }
 
@@ -247,9 +251,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSCounterText) {
   RunCSSTest(FILE_PATH_LITERAL("counter-text.html"));
 }
 
-// TODO(crbug.com/1480429): Flaky
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilityCSSDisplayContents)) {
+                       AccessibilityCSSDisplayContents) {
+  RunCSSTest(FILE_PATH_LITERAL("display-contents.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSDisplayContents) {
   RunCSSTest(FILE_PATH_LITERAL("display-contents.html"));
 }
 
@@ -270,10 +278,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("head-style-script-display-block.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on ASan builders.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_ASAN(AccessibilityCSSHeadStyleScriptContentVisibilityHidden)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSHeadStyleScriptContentVisibilityHidden) {
+  RunCSSTest(
+      FILE_PATH_LITERAL("head-style-script-content-visibility-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSHeadStyleScriptContentVisibilityHidden) {
   RunCSSTest(
       FILE_PATH_LITERAL("head-style-script-content-visibility-hidden.html"));
 }
@@ -1552,6 +1564,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("table-canvas-fallback.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityTableCanvasFallback) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-canvas-fallback.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableColumnHidden) {
   RunAriaTest(FILE_PATH_LITERAL("table-column-hidden.html"));
@@ -1702,6 +1719,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvasFallback) {
   RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCanvasFallback) {
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
+}
+
 // TODO(crbug.com/1193963): fails on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityCaption DISABLED_AccessibilityCaption
@@ -1829,15 +1851,20 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+// This is not fixed by rebuilding the subtree when parsing is complete.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_ASAN(AccessibilityContenteditableDocsLi)) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_ASAN(AccessibilityContenteditableLiContainsPresentation)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableLiContainsPresentation) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityContenteditableLiContainsPresentation) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
 }
@@ -1915,6 +1942,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // TODO(crbug.com/1485244): Fails on ASAN/LSAN bots.
+// This is not fixed by rebuilding the subtree when parsing is complete.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_AccessibilityCustomElementWithAriaOwnsOutside \
   DISABLED_AccessibilityCustomElementWithAriaOwnsOutside
@@ -2291,15 +2319,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputCheckBox) {
   RunHtmlTest(FILE_PATH_LITERAL("input-checkbox.html"));
 }
 
-// TODO(crbug.com/1428967): Flaky on asan and linux-chromeos-dbg.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AccessibilityInputCheckBoxInMenu \
-  DISABLED_AccessibilityInputCheckBoxInMenu
-#else
-#define MAYBE_AccessibilityInputCheckBoxInMenu AccessibilityInputCheckBoxInMenu
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputCheckBoxInMenu) {
+                       AccessibilityInputCheckBoxInMenu) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-checkbox-in-menu.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityInputCheckBoxInMenu) {
   RunHtmlTest(FILE_PATH_LITERAL("input-checkbox-in-menu.html"));
 }
 
@@ -2922,9 +2948,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityParam) {
   RunHtmlTest(FILE_PATH_LITERAL("param.html"));
 }
 
-// TODO(crbug.com/1476950) Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityPopoverApi) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
+  RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityPopoverApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
 }
 
@@ -2938,14 +2967,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("popover-collapsed.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on ASan and chromeos builders.
-#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
-#define MAYBE_AccessibilityPopoverHint DISABLED_AccessibilityPopoverHint
-#else
-#define MAYBE_AccessibilityPopoverHint AccessibilityPopoverHint
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityPopoverHint) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverHint) {
+  RunPopoverHintTest(FILE_PATH_LITERAL("popover-hint.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityPopoverHint) {
   RunPopoverHintTest(FILE_PATH_LITERAL("popover-hint.html"));
 }
 
@@ -3068,14 +3095,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
-// Flaky on Android and linux-chromeos-dbg - crbug.com/1367886
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AccessibilitySelectInCanvas DISABLED_AccessibilitySelectInCanvas
-#else
-#define MAYBE_AccessibilitySelectInCanvas AccessibilitySelectInCanvas
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelectInCanvas) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectInCanvas) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-in-canvas.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilitySelectInCanvas) {
   RunHtmlTest(FILE_PATH_LITERAL("select-in-canvas.html"));
 }
 
@@ -3137,6 +3162,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
 }
 
 // TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+// This is not fixed by rebuilding the subtree when parsing is complete.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_ASAN(AccessibilitySpanLineBreak)) {
   RunHtmlTest(FILE_PATH_LITERAL("span-line-break.html"));
@@ -3206,22 +3232,23 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgDescInGroup) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-desc-in-group.html"));
 }
 
-// TODO(crbug.com/1480429): Flaky
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AccessibilitySvgElementsNotMapped \
-  DISABLED_AccessibilitySvgElementsNotMapped
-#else
-#define MAYBE_AccessibilitySvgElementsNotMapped \
-  AccessibilitySvgElementsNotMapped
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgElementsNotMapped) {
+                       AccessibilitySvgElementsNotMapped) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-elements-not-mapped.html"));
 }
 
-// TODO(crbug.com/1367886):  Enable once thread flakiness is resolved.
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilitySvgElementsNotMapped) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-elements-not-mapped.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilitySvgTextAlternativeComputation) {
+                       AccessibilitySvgTextAlternativeComputation) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 
@@ -3276,6 +3303,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableLayout) {
   RunHtmlTest(FILE_PATH_LITERAL("table-layout.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityTableLayout) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-layout.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTablePresentation) {
   RunHtmlTest(FILE_PATH_LITERAL("table-presentation.html"));
@@ -3320,17 +3352,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("table-headers-row-role-dynamic.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on ASan builders.
-// TODO(https://crbug.com/1503056): Flaky on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
-#define MAYBE_AccessibilityTableMultipleRowAndColumnHeaders \
-  DISABLED_AccessibilityTableMultipleRowAndColumnHeaders
-#else
-#define MAYBE_AccessibilityTableMultipleRowAndColumnHeaders \
-  AccessibilityTableMultipleRowAndColumnHeaders
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityTableMultipleRowAndColumnHeaders) {
+                       AccessibilityTableMultipleRowAndColumnHeaders) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-multiple-row-and-column-headers.html"));
+}
+
+// TODO(https://crbug.com/1367886): De-flake and reenable.
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityTableMultipleRowAndColumnHeaders) {
   RunHtmlTest(FILE_PATH_LITERAL("table-multiple-row-and-column-headers.html"));
 }
 
@@ -3534,9 +3563,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 // DisplayLocking tests
 //
 
-// TODO(https://crbug.com/1367886): Flaky on ASan builders.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(DisplayLockingActivatable)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingActivatable) {
+  RunDisplayLockingTest(FILE_PATH_LITERAL("activatable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       DisplayLockingActivatable) {
   RunDisplayLockingTest(FILE_PATH_LITERAL("activatable.html"));
 }
 
@@ -3550,9 +3582,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunDisplayLockingTest(FILE_PATH_LITERAL("viewport-activation.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on ASan builders.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(DisplayLockingAll)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingAll) {
+  RunDisplayLockingTest(FILE_PATH_LITERAL("all.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       DisplayLockingAll) {
   RunDisplayLockingTest(FILE_PATH_LITERAL("all.html"));
 }
 

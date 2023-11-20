@@ -882,6 +882,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
   // Next flush all accessibility events and dirty objects, for both the main
   // and popup document, and update tree if needed.
   if (IsDirty() || HasDirtyObjects()) {
+    node_to_parse_before_more_tree_updates_ = nullptr;
     pause_tree_updates_until_more_loaded_content_ = false;
     ProcessDeferredAccessibilityEvents(GetDocument());
   }
@@ -2407,12 +2408,29 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
 
 void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (IsParsingMainDocument()) {
-    // Whitespace at the end of the document is problematic during page loads,
+    // Pausing tree updates during page loads until ready to process more:
+    // 1. An unrendeered subtree, which will not receive NodeIsAttached()
+    // signals for incrementally loaded content, and therefore is unsafe to
+    // finish parsing until it has completely loaded.
+    // 2. Whitespace at the end of the document is a problem during page loads,
     // because there is not yet enough context around the whitespace to
     // determine whether it's relevant. This will pause processing of the
     // a11y tree until the document is either completely loaded or it does
     // not end in whitespace.
-    pause_tree_updates_until_more_loaded_content_ = false;
+    if (node_to_parse_before_more_tree_updates_) {
+      CHECK(pause_tree_updates_until_more_loaded_content_);
+      // For case #1, keep the pause  if the expected node isn't fully parsed.
+      if (node_to_parse_before_more_tree_updates_
+              ->IsFinishedParsingChildren()) {
+        node_to_parse_before_more_tree_updates_ = nullptr;
+        pause_tree_updates_until_more_loaded_content_ = false;
+      }
+    } else {
+      // For case #2, any new content means there's enough context around
+      // the whitespace to process updates.
+      pause_tree_updates_until_more_loaded_content_ = false;
+    }
+    // Start a new tree update pause if we are on a whitespace node.
     if (Text* text = DynamicTo<Text>(node)) {
       if (text->ContainsOnlyWhitespaceOrEmpty()) {
         pause_tree_updates_until_more_loaded_content_ = true;
@@ -2450,6 +2468,15 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
   // using AXLayoutObjects.
   AXObject* obj = Get(node);
   if (!obj) {
+    if (!node->GetLayoutObject() && !node->IsFinishedParsingChildren() &&
+        !node_to_parse_before_more_tree_updates_) {
+      // Unrendered subtrees that are not fully parsed are unsafe to
+      // process until they are complete, because there are no NodeIsAttached()
+      // signals for incrementally loaded content.
+      node_to_parse_before_more_tree_updates_ = node;
+      pause_tree_updates_until_more_loaded_content_ = true;
+    }
+
     // No AX subtree to invalidate: just add an AXObject for this node.
     // It will automatically add its subtree.
     ChildrenChanged(LayoutTreeBuilderTraversal::Parent(*node));
@@ -2932,6 +2959,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
       return;
     }
     pause_tree_updates_until_more_loaded_content_ = false;
+    node_to_parse_before_more_tree_updates_ = nullptr;
   }
 
   if (GetPopupDocumentIfShowing()) {
@@ -5284,6 +5312,8 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);
   visitor->Trace(aria_notifications_);
+  visitor->Trace(node_to_parse_before_more_tree_updates_);
+
   AXObjectCache::Trace(visitor);
 }
 
