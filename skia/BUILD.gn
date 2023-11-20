@@ -783,7 +783,8 @@ if (current_cpu == "x64") {
     if (!is_win) {
       cflags = [
         "-w",
-        "-march=haswell",
+        "-mavx2",
+        "-mf16c",
         "-std=c11",
       ]
     } else {
@@ -796,7 +797,11 @@ if (current_cpu == "x64") {
     if (!is_win) {
       cflags = [
         "-w",
-        "-march=skylake-avx512",
+        "-mavx512f",
+        "-mavx512dq",
+        "-mavx512cd",
+        "-mavx512bw",
+        "-mavx512vl",
         "-std=c11",
       ]
     } else {
