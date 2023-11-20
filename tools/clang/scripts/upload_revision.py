@@ -374,7 +374,7 @@ def main():
       RUST_UPDATE_PY_PATH,
       no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)
-  Git('cl', 'upload', '-f', '--bypass-hooks', no_run=args.no_git)
+  Git('cl', 'upload', '-f', '--bypass-hooks', '--squash', no_run=args.no_git)
   if not args.skip_clang:
     Git('cl',
         'try',
