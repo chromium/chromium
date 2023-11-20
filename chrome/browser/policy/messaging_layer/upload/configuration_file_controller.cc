@@ -50,11 +50,9 @@ ConfigurationFileController::~ConfigurationFileController() = default;
 // in Chrome.
 ConfigurationFileController::ConfigurationFileController(
     UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb)
-    : verifier_(SignatureVerifier(SignatureVerifier::VerificationKey())) {
-  ConfigurationFileController(std::move(update_config_in_missive_cb),
-                              ListOfBlockedDestinations(),
-                              version_info::GetMajorVersionNumberAsInt());
-}
+    : ConfigurationFileController(std::move(update_config_in_missive_cb),
+                                  ListOfBlockedDestinations(),
+                                  version_info::GetMajorVersionNumberAsInt()) {}
 
 int32_t ConfigurationFileController::HandleConfigurationFile(
     reporting::ConfigFile config_file) {
