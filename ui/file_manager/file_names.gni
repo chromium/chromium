@@ -100,7 +100,6 @@ static_js_files = [
   "file_manager/foreground/js/spinner_controller.js",
   "file_manager/foreground/js/task_history.js",
   "file_manager/foreground/js/thumbnail_loader.js",
-  "file_manager/foreground/js/toolbar_controller.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/dlp_metadata_provider.js",
@@ -333,6 +332,7 @@ ts_files = [
   "file_manager/foreground/js/quick_view_uma.ts",
   "file_manager/foreground/js/sort_menu_controller.ts",
   "file_manager/foreground/js/task_controller.ts",
+  "file_manager/foreground/js/toolbar_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
 
   # 3-line header to avoid conflict.
