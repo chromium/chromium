@@ -4,9 +4,7 @@
 
 package org.chromium.components.webapk.lib.common;
 
-/**
- * Stores WebAPK related constants.
- */
+/** Stores WebAPK related constants. */
 public final class WebApkConstants {
     public static final String WEBAPK_PACKAGE_PREFIX = "org.chromium.webapk";
 }
