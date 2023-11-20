@@ -8,7 +8,7 @@
 #include <swdevice.h>
 #include <wrl.h>
 #include <cstdio>
-#include <iostream>
+#include <limits>
 #include <vector>
 
 VOID WINAPI CreationCallback(_In_ HSWDEVICE hSwDevice,
@@ -49,8 +49,7 @@ int __cdecl main(int argc, char** argv) {
                                SWDeviceCapabilitiesDriverRequired;
 
   // Set configuration properties to send to the driver.
-  display::test::DriverProperties p({display::test::MonitorConfig::k1024x768,
-                                     display::test::MonitorConfig::k1920x1080});
+  display::test::DriverProperties p;
 
   DEVPROPERTY properties[1];
   DEVPROPERTY& property = properties[0];
@@ -79,15 +78,49 @@ int __cdecl main(int argc, char** argv) {
   }
   printf("Device created\n\n");
 
-  // Now wait for user to indicate the device should be stopped
-  printf("Press 'x' to exit and destory the software device\n");
   bool bExit = false;
+  int monitor_id = 0;
   do {
+    printf(
+        "Press 'x' to exit and destroy the software device, or 'a' to add a "
+        "1024x768 monitor, 'A' to add a 1920x1080 monitor, or enter a monitor "
+        "ID from the following list to destroy it:\n");
+    std::vector<display::test::MonitorConfig> current_configs =
+        p.requested_configs();
+    for (const auto& requested : current_configs) {
+      printf("%i\n", requested.product_code());
+    }
     // Wait for key press
     int key = _getch();
 
     if (key == 'x' || key == 'X') {
       bExit = true;
+    }
+    if (key == 'a' || key == 'A') {
+      if (current_configs.size() >=
+          display::test::DriverProperties::kMaxMonitors) {
+        printf("Error: Max number of monitors reached.");
+        break;
+      }
+      auto mode = display::test::MonitorConfig::k1024x768;
+      if (key == 'A') {
+        mode = display::test::MonitorConfig::k1920x1080;
+      }
+      mode.set_product_code((monitor_id++) %
+                            std::numeric_limits<unsigned short>::max());
+      current_configs.push_back(mode);
+      p = display::test::DriverProperties(current_configs);
+      property.Buffer = &p;
+      SwDevicePropertySet(hSwDevice, 1, properties);
+      printf("Properties updated.\n");
+    }
+    if (key >= '0' && key <= '9') {
+      std::erase_if(current_configs,
+                    [&](auto& c) { return c.product_code() == key - '0'; });
+      p = display::test::DriverProperties(current_configs);
+      property.Buffer = &p;
+      SwDevicePropertySet(hSwDevice, 1, properties);
+      printf("Properties updated.\n");
     }
   } while (!bExit);
 
