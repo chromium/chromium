@@ -371,6 +371,34 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignRetailerIdMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
+TEST_F(CampaignsManagerTest, GetDemoModeCampaignCanonicalizedRetailerId) {
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate,
+                         R"(
+          "demoMode": {
+            "retailers": ["best-buy", "best_buy"],
+            "storeIds": ["2", "4", "6"],
+            "countries": ["US"],
+            "capability": {
+              "isCloudGamingDevice": true,
+              "isFeatureAwareDevice": true
+            }
+          }
+      )"));
+
+  MockDemoMode(
+      /*in_demo_mode=*/true,
+      /*cloud_gaming_device=*/true,
+      /*feature_aware_device=*/true,
+      /*store_id=*/"2",
+      /*retailer_id=*/"bestbuy",
+      /*country=*/"US");
+
+  // Verify that the campaign is selected if there is not in demo mode.
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignCountryMismatch) {
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));

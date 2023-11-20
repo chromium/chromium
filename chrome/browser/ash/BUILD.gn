@@ -4082,6 +4082,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/update_engine:proto",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/dbus/virtual_file_provider",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/early_prefs:writer",
     "//chromeos/ash/components/fwupd",

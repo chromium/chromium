@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/version.h"
+#include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -131,6 +132,24 @@ bool CampaignsMatcher::MatchDemoModeTier(
   return true;
 }
 
+bool CampaignsMatcher::MatchRetailers(
+    const base::Value::List* retailers) const {
+  if (!retailers) {
+    return true;
+  }
+
+  base::Value::List canonicalized_retailers;
+  for (auto& retailer : *retailers) {
+    if (retailer.is_string()) {
+      canonicalized_retailers.Append(
+          ash::demo_mode::CanonicalizeDimension(retailer.GetString()));
+    }
+  }
+
+  return MatchPref(&canonicalized_retailers, ash::prefs::kDemoModeRetailerId,
+                   local_state_);
+}
+
 bool CampaignsMatcher::MatchDemoModeAppVersion(
     const DemoModeTargeting& targeting) const {
   const auto* min_version = targeting.GetAppMinVersion();
@@ -178,9 +197,8 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
     return false;
   }
 
-  return MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
-                   local_state_) &&
-         MatchPref(targeting.GetRetailers(), ash::prefs::kDemoModeRetailerId,
+  return MatchRetailers(targeting.GetRetailers()) &&
+         MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
                    local_state_) &&
          MatchPref(targeting.GetCountries(), ash::prefs::kDemoModeCountry,
                    local_state_);
