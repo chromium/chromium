@@ -30,6 +30,8 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_re
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
 
 # Chrome specific failures
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-not-displayed.tentative.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-base-url-2.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-button-border-left-color-001.html [ Failure ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=forwarddelete&block=blockquote [ Timeout ]
