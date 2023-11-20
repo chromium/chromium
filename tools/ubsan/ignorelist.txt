@@ -2,11 +2,6 @@
 # UBSan ignorelist.
 
 #############################################################################
-# YASM does some funny things that UBsan doesn't like.
-# https://crbug.com/489901
-src:*/third_party/yasm/*
-
-#############################################################################
 # Ignore system libraries.
 src:*/usr/*
 
