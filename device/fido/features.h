@@ -118,11 +118,6 @@ BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 
-// Serialize WebAuthn requests to JSON on the desktop. Useful for future
-// projects but only concretely used for better logging at the time of writing.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnJSONSerializeRequests);
-
 // Cache prelinking information on Android.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCachePaaSK);

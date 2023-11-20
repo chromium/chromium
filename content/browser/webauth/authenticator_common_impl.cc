@@ -883,10 +883,8 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
               : device::AuthenticatorSelectionCriteria();
   req_state_->make_credential_options =
       device::MakeCredentialOptions(authenticator_selection_criteria);
-  if (base::FeatureList::IsEnabled(device::kWebAuthnJSONSerializeRequests)) {
-    req_state_->make_credential_options->json =
-        base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
-  }
+  req_state_->make_credential_options->json =
+      base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
 
   const bool might_create_resident_key =
       req_state_->make_credential_options->resident_key !=
@@ -1320,10 +1318,8 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   req_state_->ctap_get_assertion_options.emplace();
   req_state_->ctap_get_assertion_options->is_off_the_record_context =
       GetBrowserContext()->IsOffTheRecord();
-  if (base::FeatureList::IsEnabled(device::kWebAuthnJSONSerializeRequests)) {
-    req_state_->ctap_get_assertion_options->json =
-        base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
-  }
+  req_state_->ctap_get_assertion_options->json =
+      base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
 
   if (options->extensions->prf) {
     req_state_->requested_extensions.insert(RequestExtension::kPRF);
