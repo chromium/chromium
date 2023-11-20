@@ -111,12 +111,11 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
         //     deletion of A. In most cases the redundant deletion does not even
         //     get sent as the processor already knows A got deleted remotely.
         //  2) Remote entity B got uploaded by another client through race
-        //     condition (i.e. not knowing about A, yet). In practice, this only
-        //     happens when two clients simultaneously convert a server profile
-        //     into local profiles. If the other client goes offline before
-        //     receiving A, this client is responsible for deleting A from the
-        //     server and thus must issue a deletion. (In most cases, the other
-        //     client does not go offline and thus both clients issue a deletion
+        //     condition (i.e. not knowing about A, yet). If the other client
+        //     goes offline before receiving A, this client is responsible for
+        //     deleting A from the server and thus must issue a deletion. (In
+        //     most cases, the other client does not go offline and thus both
+        //     clients issue a deletion)
         //     of A independently).
         //  3) (a paranoid case) Remote entity B got uploaded by another client
         //     by an error, i.e. already as a duplicate given their local state.

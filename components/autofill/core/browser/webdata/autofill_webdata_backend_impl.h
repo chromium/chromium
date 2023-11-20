@@ -114,18 +114,15 @@ class AutofillWebDataBackendImpl
                                                    const std::u16string& value,
                                                    WebDatabase* db);
 
-  // Adds an Autofill profile to the web database. Valid only for local
-  // profiles.
+  // Adds an Autofill profile to the web database.
   WebDatabase::State AddAutofillProfile(const AutofillProfile& profile,
                                         WebDatabase* db);
 
-  // Updates an Autofill profile in the web database. Valid only for local
-  // profiles.
+  // Updates an Autofill profile in the web database.
   WebDatabase::State UpdateAutofillProfile(const AutofillProfile& profile,
                                            WebDatabase* db);
 
-  // Removes an Autofill profile from the web database. Valid only for local
-  // profiles.
+  // Removes an Autofill profile from the web database.
   WebDatabase::State RemoveAutofillProfile(
       const std::string& guid,
       AutofillProfile::Source profile_source,
@@ -226,15 +223,15 @@ class AutofillWebDataBackendImpl
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
 
-  // Removes Autofill records from the database. Valid only for local
-  // cards/profiles.
+  // Removes Autofill records from the database. Valid only for local cards and
+  // kLocalOrSyncable profiles.
   WebDatabase::State RemoveAutofillDataModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
       WebDatabase* db);
 
-  // Removes origin URLs associated with Autofill profiles and credit cards
-  // from the database. Valid only for local cards/profiles.
+  // Removes origin URLs associated with local credit cards from the database.
+  // Autofill profiles don't store an origin, so this doesn't apply to them.
   WebDatabase::State RemoveOriginURLsModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
