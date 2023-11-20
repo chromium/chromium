@@ -6127,11 +6127,11 @@ bool Element::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
   if (!Element::IsFocusable(update_behavior)) {
     return false;
   }
-  // Note that IsKeyboardFocusableScroller() will get
-  // called twice, once in IsFocusable (via SupportsFocus) and the other
-  // here. Note that IsKeyboardFocusableScroller is slow.
-  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
-         IsKeyboardFocusableScroller(update_behavior);
+  if (!HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) &&
+      CanBeKeyboardFocusableScroller(update_behavior)) {
+    return IsKeyboardFocusableScroller(update_behavior);
+  }
+  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
 }
 
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
@@ -6149,7 +6149,7 @@ bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         IsKeyboardFocusableScroller(update_behavior) ||
+         CanBeKeyboardFocusableScroller(update_behavior) ||
          SupportsSpatialNavigationFocus();
 }
 
