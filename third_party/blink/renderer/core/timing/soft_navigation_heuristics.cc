@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -44,8 +45,40 @@ void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
                       GetFrameIdForTracing(frame), "url", url, "navigationId",
                       window->GetNavigationId());
 }
-
 }  // namespace
+
+namespace internal {
+void RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
+    base::TimeTicks user_interaction_ts,
+    base::TimeTicks reference_ts) {
+  if (user_interaction_ts.is_null()) {
+    if (reference_ts.is_null()) {
+      base::UmaHistogramEnumeration(
+          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
+          SoftNavigationFromReferenceInvalidTimingReasons::
+              kUserInteractionTsAndReferenceTsBothNull);
+    } else {
+      base::UmaHistogramEnumeration(
+          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
+          SoftNavigationFromReferenceInvalidTimingReasons::
+              kNullUserInteractionTsAndNotNullReferenceTs);
+    }
+  } else {
+    if (reference_ts.is_null()) {
+      base::UmaHistogramEnumeration(
+          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
+          SoftNavigationFromReferenceInvalidTimingReasons::
+              kNullReferenceTsAndNotNullUserInteractionTs);
+
+    } else {
+      base::UmaHistogramEnumeration(
+          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
+          SoftNavigationFromReferenceInvalidTimingReasons::
+              kUserInteractionTsAndReferenceTsBothNotNull);
+    }
+  }
+}
+}  // namespace internal
 
 // static
 const char SoftNavigationHeuristics::kSupplementName[] =
@@ -332,6 +365,13 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   auto soft_navigation_start_time =
       loader->GetTiming().MonotonicTimeToPseudoWallTime(
           soft_navigation_interaction_data_.user_interaction_timestamp);
+
+  if (soft_navigation_start_time.is_zero()) {
+    internal::
+        RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
+            soft_navigation_interaction_data_.user_interaction_timestamp,
+            loader->GetTiming().ReferenceMonotonicTime());
+  }
 
   LocalDOMWindow* window = frame->DomWindow();
 
