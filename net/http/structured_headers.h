@@ -60,6 +60,11 @@ inline absl::optional<std::string> SerializeDictionary(
   return quiche::structured_headers::SerializeDictionary(value);
 }
 
+inline absl::string_view ItemTypeToString(
+    net::structured_headers::Item::ItemType type) {
+  return quiche::structured_headers::ItemTypeToString(type);
+}
+
 }  // namespace net::structured_headers
 
 #endif  // NET_HTTP_STRUCTURED_HEADERS_H_
