@@ -377,7 +377,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the IBAN with the specified |guid|, or nullptr if there is no IBAN
   // with the specified |guid|.
-  virtual Iban* GetIbanByGUID(const std::string& guid);
+  virtual const Iban* GetIbanByGUID(const std::string& guid);
 
   // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
   // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.
@@ -429,7 +429,7 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
   // Returns local IBANs.
-  virtual std::vector<Iban*> GetLocalIbans() const;
+  virtual std::vector<const Iban*> GetLocalIbans() const;
   // Returns server IBANs.
   virtual std::vector<const Iban*> GetServerIbans() const;
   // Returns all IBANs, server and local.

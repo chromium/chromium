@@ -3067,7 +3067,8 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   iban.set_identifier(Iban::Guid(guid));
   iban.set_record_type(Iban::kLocalIban);
 
-  const std::vector<Iban*>& results = personal_data_manager_->GetLocalIbans();
+  const std::vector<const Iban*>& results =
+      personal_data_manager_->GetLocalIbans();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 

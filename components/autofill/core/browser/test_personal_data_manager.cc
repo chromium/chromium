@@ -83,7 +83,7 @@ void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
         GetProfileStorage(profile->source());
     profiles.erase(base::ranges::find(profiles, profile,
                                       &std::unique_ptr<AutofillProfile>::get));
-  } else if (Iban* iban = GetIbanByGUID(guid)) {
+  } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
         base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
   }
@@ -114,10 +114,10 @@ std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
 }
 
 std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
-  Iban* old_iban = GetIbanByGUID(iban.guid());
+  const Iban* old_iban = GetIbanByGUID(iban.guid());
   CHECK(old_iban);
-  *old_iban = iban;
-  NotifyPersonalDataObserver();
+  local_ibans_.push_back(std::make_unique<Iban>(iban));
+  RemoveByGUID(old_iban->guid());
   return iban.guid();
 }
 

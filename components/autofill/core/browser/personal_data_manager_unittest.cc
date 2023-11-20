@@ -1170,7 +1170,7 @@ TEST_F(PersonalDataManagerTest, AddLocalIbans) {
   // same value.
   personal_data_->AddAsLocalIban(iban2_with_different_nickname);
 
-  std::vector<Iban*> ibans = {&iban1, &iban2};
+  std::vector<const Iban*> ibans = {&iban1, &iban2};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 }
 
@@ -1181,7 +1181,7 @@ TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
   AddLocalIban(iban);
 
   // Verify the `iban` has been added successfully.
-  std::vector<Iban*> ibans = {&iban};
+  std::vector<const Iban*> ibans = {&iban};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // Update the `iban` with new value.
@@ -1208,7 +1208,7 @@ TEST_F(PersonalDataManagerTest, RemoveLocalIbans) {
   AddLocalIban(iban);
 
   // Verify the `iban` has been added successfully.
-  std::vector<Iban*> ibans = {&iban};
+  std::vector<const Iban*> ibans = {&iban};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   RemoveByGUIDFromPersonalDataManager(iban.guid());
@@ -1245,7 +1245,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   // Expect that the new IBAN is added.
   ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
 
-  std::vector<Iban*> ibans;
+  std::vector<const Iban*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
   // Verify that we've loaded the IBAN from the web database.
