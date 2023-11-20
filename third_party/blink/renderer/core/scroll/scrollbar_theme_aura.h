@@ -78,6 +78,8 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
                                   const WebMouseEvent&) override;
   virtual gfx::Size ButtonSize(const Scrollbar&) const;
 
+  float Proportion(EScrollbarWidth scrollbar_width) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, ButtonSizeHorizontal);
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, ButtonSizeVertical);
