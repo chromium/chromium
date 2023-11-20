@@ -20,7 +20,7 @@
  * Other modules should only access exports defined in this file.
  * XXX: Add ESlint rule for this (https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-restricted-paths.md)
  */
-export {BidiServer} from './BidiServer.js';
+export {BidiServer, MapperOptions} from './BidiServer.js';
 export type {
   ICdpConnection,
   ICdpConnection as CdpConnection,
