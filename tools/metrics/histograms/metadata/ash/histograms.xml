@@ -3987,18 +3987,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Login.TimeUntilGoodADF" units="microseconds"
-    expires_after="2024-07-09">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Time between user logged in (i.e. a successful cryptohome mount) and when
-    good ADF (&lt;= 20%) is observed for more than 5 seconds.
-
-    This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Login.TotalFirstSessionDuration" units="minutes"
     expires_after="2024-05-12">
   <owner>raging@google.com</owner>
@@ -6134,31 +6122,6 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="on every frame"/>
     <variant name=".InSession"
         summary="on every frame after 1 min into session"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow{Stage}" units="%"
-    expires_after="2023-10-30">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Tracks the percent of dropped frames in a 1 second sliding window.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-
-    The metric is reported {Stage}.
-  </summary>
-  <token key="Stage">
-    <variant name="" summary="all the time"/>
-    <variant name=".BeforeLogin" summary="before login"/>
-    <variant name=".DuringLogin"
-        summary="after cryptohome mount but before login animations finish"/>
-    <variant name=".InSession" summary="after post-login animation finishes"/>
-    <variant name=".InSession2"
-        summary="after observing good ADF for 5 seconds"/>
   </token>
 </histogram>
 

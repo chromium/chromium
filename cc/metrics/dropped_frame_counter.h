@@ -91,7 +91,6 @@ class CC_EXPORT DroppedFrameCounter {
   void AddPartialFrame();
   void AddDroppedFrame();
   void ReportFrames();
-  void ReportFramesForUI();
   void ReportFramesOnEveryFrameForUI();
 
   void OnBeginFrame(const viz::BeginFrameArgs& args);

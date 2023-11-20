@@ -30,7 +30,6 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow(double percent) override;
   void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
@@ -45,13 +44,6 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
 
   State state_ = State::kBeforeLogin;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // True when trying to determine session init time by checking ADF numbers.
-  bool check_session_init_ = false;
-
-  // Whether session is considered as fully initialized. This flag is set after
-  // observing good ADF for 5s during login.
-  bool session_initialized_ = false;
 
   // Login time and session start time of the primary user.
   absl::optional<base::TimeTicks> user_logged_in_time_;
