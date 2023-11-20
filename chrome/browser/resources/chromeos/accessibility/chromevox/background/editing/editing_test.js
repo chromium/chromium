@@ -2370,8 +2370,9 @@ AX_TEST_F(
     });
 
 // Regression test that large text areas produce output.
+// TODO(crbug.com/1503691): re-enable this test once its flakiness is resolved.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'GiantTextAreaPerformance',
+    'ChromeVoxEditingTest', 'DISABLED_GiantTextAreaPerformance',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
