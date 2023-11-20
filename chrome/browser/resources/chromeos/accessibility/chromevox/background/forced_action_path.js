@@ -408,10 +408,5 @@ BridgeHelper.registerHandler(
     () => ForcedActionPath.destroy());
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
-    BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, evt => {
-      if (!ForcedActionPath.instance) {
-        // Continue propagating.
-        return true;
-      }
-      return ForcedActionPath.instance.onKeyDown(evt);
-    });
+    BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,
+    evt => ForcedActionPath.instance?.onKeyDown(evt) ?? true);
