@@ -121,12 +121,13 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Returns true if the interception is in progress (running the heuristic or
   // showing on screen).
   bool is_interception_in_progress() const {
-    return is_interception_in_progress_;
+    return state_->is_interception_in_progress_;
   }
 
   void SetInterceptedAccountProfileSeparationPoliciesForTesting(
       absl::optional<policy::ProfileSeparationPolicies> value) {
-    intercepted_account_profile_separation_policies_response_for_testing_ =
+    state_
+        ->intercepted_account_profile_separation_policies_response_for_testing_ =
         std::move(value);
   }
 
@@ -162,6 +163,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
 
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
@@ -282,53 +284,66 @@ class DiceWebSigninInterceptor : public KeyedService,
   bool IsFullExtendedAccountInfoAvailable(
       const AccountInfo& account_info) const;
 
+  // Struct to ease the resetting of the `DiceWebSigninInterceptor` class
+  // through the `DiceWebSigninInterceptor::Reset()` method.
+  // It should hold the data that are variable between different intereceptions.
+  struct ResetableState {
+    ResetableState();
+    ~ResetableState();
+
+    // Used in the profile that was created after the interception succeeded.
+    std::unique_ptr<DiceInterceptedSessionStartupHelper>
+        session_startup_helper_;
+
+    // Members below are related to the interception in progress.
+    base::WeakPtr<content::WebContents> web_contents_;
+    bool is_interception_in_progress_ = false;
+    CoreAccountId account_id_;
+    bool new_account_interception_ = false;
+    bool intercepted_account_management_accepted_ = false;
+    absl::optional<WebSigninInterceptor::SigninInterceptionType>
+        interception_type_;
+    signin_metrics::AccessPoint access_point_ =
+        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+
+    // Timeout for waiting for full information to be available (see
+    // `ProcessInterceptionOrWait()`).
+    base::CancelableOnceCallback<void()> interception_info_available_timeout_;
+
+    std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+    // Used to retain the interception UI bubble until profile creation
+    // completes.
+    std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+        interception_bubble_handle_;
+
+    // Used for metrics.
+    base::TimeTicks interception_start_time_;
+    bool was_interception_ui_displayed_ = false;
+
+    // Used to fetch the cloud user level policy value of the profile separation
+    // policies. This can only fetch one policy value for one account at the
+    // time.
+    std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
+        account_level_signin_restriction_policy_fetcher_;
+    // Value of  the profile separation policies for the intercepted account. If
+    // no value is set, then we have not yet received the policy value.
+    absl::optional<policy::ProfileSeparationPolicies>
+        intercepted_account_profile_separation_policies_;
+    // Value that should be return when trying to the value of the profile
+    // separation policies for the intercepted account. This should never be
+    // used in place of `intercepted_account_profile_separation_policies_`.
+    absl::optional<policy::ProfileSeparationPolicies>
+        intercepted_account_profile_separation_policies_response_for_testing_;
+  };
+
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
-
-  // Used in the profile that was created after the interception succeeded.
-  std::unique_ptr<DiceInterceptedSessionStartupHelper> session_startup_helper_;
-
-  // Members below are related to the interception in progress.
-  base::WeakPtr<content::WebContents> web_contents_;
-  bool is_interception_in_progress_ = false;
-  CoreAccountId account_id_;
-  bool new_account_interception_ = false;
-  bool intercepted_account_management_accepted_ = false;
-  absl::optional<WebSigninInterceptor::SigninInterceptionType>
-      interception_type_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};
-  signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 
-  // Timeout for waiting for full information to be available (see
-  // `ProcessInterceptionOrWait()`).
-  base::CancelableOnceCallback<void()> interception_info_available_timeout_;
-
-  std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
-  // Used to retain the interception UI bubble until profile creation completes.
-  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
-      interception_bubble_handle_;
-
-  // Used for metrics.
-  base::TimeTicks interception_start_time_;
-  bool was_interception_ui_displayed_ = false;
-
-  // Used to fetch the cloud user level policy value of the profile separation
-  // policies. This can only fetch one policy value for one account at the time.
-  std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
-      account_level_signin_restriction_policy_fetcher_;
-  // Value of  the profile separation policies for the intercepted account. If
-  // no value is set, then we have not yet received the policy value.
-  absl::optional<policy::ProfileSeparationPolicies>
-      intercepted_account_profile_separation_policies_;
-  // Value that should be return when trying to the value of the profile
-  // separation policies for the intercepted account. This should never be used
-  // in place of `intercepted_account_profile_separation_policies_`.
-  absl::optional<policy::ProfileSeparationPolicies>
-      intercepted_account_profile_separation_policies_response_for_testing_;
+  std::unique_ptr<ResetableState> state_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_H_

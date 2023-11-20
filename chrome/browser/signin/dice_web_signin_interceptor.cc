@@ -264,13 +264,17 @@ DiceWebSigninInterceptor::DiceWebSigninInterceptor(
     std::unique_ptr<WebSigninInterceptor::Delegate> delegate)
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      state_(std::make_unique<ResetableState>()) {
   DCHECK(profile_);
   DCHECK(identity_manager_);
   DCHECK(delegate_);
 }
 
 DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
+
+DiceWebSigninInterceptor::ResetableState::ResetableState() = default;
+DiceWebSigninInterceptor::ResetableState::~ResetableState() = default;
 
 // static
 void DiceWebSigninInterceptor::RegisterProfilePrefs(
@@ -313,7 +317,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       profile_, identity_manager_, email, is_new_account,
       /*intercepted_profile_separation_policies=*/absl::nullopt,
       /*expects_intercepted_profile_separation_policies_for_testing=*/
-      intercepted_account_profile_separation_policies_response_for_testing_
+      state_
+          ->intercepted_account_profile_separation_policies_response_for_testing_
           .has_value());
 
   // If we do not have all the information to enforce or not enterprise profile
@@ -358,7 +363,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   signin::Tribool should_show_chrome_signin_bubble =
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
-                                        access_point_);
+                                        state_->access_point_);
   // If the access point is not set, it is unclear if we have to show the bubble
   // or not, so we must return nullopt.
   if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
@@ -394,16 +399,16 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     signin_metrics::AccessPoint access_point,
     bool is_new_account,
     bool is_sync_signin) {
-  if (is_interception_in_progress_) {
+  if (state_->is_interception_in_progress_) {
     // Multiple concurrent interceptions are not supported.
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress);
     return;
   }
 
-  DCHECK_EQ(interception_start_time_, base::TimeTicks());
-  interception_start_time_ = base::TimeTicks::Now();
-  access_point_ = access_point;
+  DCHECK_EQ(state_->interception_start_time_, base::TimeTicks());
+  state_->interception_start_time_ = base::TimeTicks::Now();
+  state_->access_point_ = access_point;
 
   if (!web_contents) {
     // The tab has been closed (typically during the token exchange, which may
@@ -452,10 +457,10 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
                           &entry);
-  account_id_ = account_id;
-  is_interception_in_progress_ = true;
-  new_account_interception_ = is_new_account;
-  web_contents_ = web_contents->GetWeakPtr();
+  state_->account_id_ = account_id;
+  state_->is_interception_in_progress_ = true;
+  state_->new_account_interception_ = is_new_account;
+  state_->web_contents_ = web_contents->GetWeakPtr();
 
   if (heuristic_outcome &&
       !SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
@@ -465,11 +470,11 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   }
 
   // Start a timeout for the async operations we're kicking off.
-  interception_info_available_timeout_.Reset(
+  state_->interception_info_available_timeout_.Reset(
       base::BindOnce(&DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout,
                      base::Unretained(this)));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, interception_info_available_timeout_.callback(),
+      FROM_HERE, state_->interception_info_available_timeout_.callback(),
       base::Seconds(5));
 
   // Process the interception (maybe kicking off async fetches).
@@ -482,21 +487,22 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle,
     bool is_new_profile,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  DCHECK(!session_startup_helper_);
+  DCHECK(!state_->session_startup_helper_);
   DCHECK(bubble_handle);
-  interception_bubble_handle_ = std::move(bubble_handle);
-  account_id_ = account_id;
-  interception_type_ = interception_type;
-  session_startup_helper_ =
+  state_->interception_bubble_handle_ = std::move(bubble_handle);
+  state_->account_id_ = account_id;
+  state_->interception_type_ = interception_type;
+  state_->session_startup_helper_ =
       std::make_unique<DiceInterceptedSessionStartupHelper>(
           profile_, is_new_profile, account_id, intercepted_contents);
-  session_startup_helper_->Startup(
+  state_->session_startup_helper_->Startup(
       base::BindOnce(&DiceWebSigninInterceptor::OnNewBrowserCreated,
                      base::Unretained(this), is_new_profile));
 }
 
 void DiceWebSigninInterceptor::Shutdown() {
-  if (is_interception_in_progress_ && !was_interception_ui_displayed_) {
+  if (state_->is_interception_in_progress_ &&
+      !state_->was_interception_ui_displayed_) {
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortShutdown);
   }
@@ -504,20 +510,17 @@ void DiceWebSigninInterceptor::Shutdown() {
 }
 
 void DiceWebSigninInterceptor::Reset() {
-  web_contents_ = nullptr;
-  interception_info_available_timeout_.Cancel();
+  absl::optional<policy::ProfileSeparationPolicies> policies_for_testing =
+      state_
+          ->intercepted_account_profile_separation_policies_response_for_testing_;
+
+  state_ = std::make_unique<ResetableState>();
+  // Make sure this testing value is copied and not reset.
+  state_
+      ->intercepted_account_profile_separation_policies_response_for_testing_ =
+      policies_for_testing;
+
   account_info_update_observation_.Reset();
-  is_interception_in_progress_ = false;
-  account_id_ = CoreAccountId();
-  new_account_interception_ = false;
-  intercepted_account_management_accepted_ = false;
-  interception_type_ = absl::nullopt;
-  dice_signed_in_profile_creator_.reset();
-  interception_start_time_ = base::TimeTicks();
-  was_interception_ui_displayed_ = false;
-  interception_bubble_handle_.reset();
-  account_level_signin_restriction_policy_fetcher_.reset();
-  intercepted_account_profile_separation_policies_.reset();
 }
 
 const ProfileAttributesEntry*
@@ -546,8 +549,9 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   // In case of re-auth, do not show the enterprise separation dialog if the
   // user already consented to enterprise management.
-  if (!new_account_interception_ && primary_core_account_info.account_id ==
-                                        intercepted_account_info.account_id) {
+  if (!state_->new_account_interception_ &&
+      primary_core_account_info.account_id ==
+          intercepted_account_info.account_id) {
     return !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   }
   if (!signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
@@ -558,12 +562,13 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
   if (!signin_util::IsProfileSeparationEnforcedByProfile(
           profile_, intercepted_account_info.email) &&
       !signin_util::IsProfileSeparationEnforcedByPolicies(
-          intercepted_account_profile_separation_policies_.value_or(
+          state_->intercepted_account_profile_separation_policies_.value_or(
               policy::ProfileSeparationPolicies()))) {
     return false;
   }
 
-  return new_account_interception_ && intercepted_account_info.IsManaged();
+  return state_->new_account_interception_ &&
+         intercepted_account_info.IsManaged();
 }
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
@@ -575,7 +580,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
-  if (intercepted_account_profile_separation_policies_
+  if (state_->intercepted_account_profile_separation_policies_
           .value_or(policy::ProfileSeparationPolicies())
           .profile_separation_settings()
           .value_or(policy::ProfileSeparationSettings::SUGGESTED) !=
@@ -646,10 +651,10 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
 void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
-  was_interception_ui_displayed_ = true;
-  interception_type_ = bubble_parameters.interception_type;
-  interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
-      web_contents_.get(), bubble_parameters, std::move(callback));
+  state_->was_interception_ui_displayed_ = true;
+  state_->interception_type_ = bubble_parameters.interception_type;
+  state_->interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
+      state_->web_contents_.get(), bubble_parameters, std::move(callback));
 }
 
 void DiceWebSigninInterceptor::EnsureObservingExtendedAccountInfo() {
@@ -662,7 +667,7 @@ void DiceWebSigninInterceptor::EnsureObservingExtendedAccountInfo() {
 void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
     const AccountInfo& info,
     bool timed_out) {
-  DCHECK_EQ(info.account_id, account_id_);
+  DCHECK_EQ(info.account_id, state_->account_id_);
 
   if (!IsRequiredExtendedAccountInfoAvailable(info)) {
     // We can't process the interception with the information currently
@@ -691,10 +696,12 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
       IsFullExtendedAccountInfoAvailable(info);
   bool have_all_enterprise_info =
       EnterpriseSeparationMaybeRequired(
-          profile_, identity_manager_, info.email, new_account_interception_,
-          intercepted_account_profile_separation_policies_,
+          profile_, identity_manager_, info.email,
+          state_->new_account_interception_,
+          state_->intercepted_account_profile_separation_policies_,
           /*expects_intercepted_profile_separation_policies_for_testing=*/
-          intercepted_account_profile_separation_policies_response_for_testing_
+          state_
+              ->intercepted_account_profile_separation_policies_response_for_testing_
               .has_value())
           .has_value();
 
@@ -717,7 +724,7 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
 
   if (have_all_extended_account_info && have_all_enterprise_info) {
     // We have all the information we need - process the interception.
-    interception_info_available_timeout_.Cancel();
+    state_->interception_info_available_timeout_.Cancel();
     OnInterceptionReadyToBeProcessed(info);
     return;
   }
@@ -725,7 +732,7 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
 
 void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     const AccountInfo& info) {
-  DCHECK_EQ(info.account_id, account_id_);
+  DCHECK_EQ(info.account_id, state_->account_id_);
   DCHECK(IsRequiredExtendedAccountInfoAvailable(info));
 
   absl::optional<WebSigninInterceptor::SigninInterceptionType>
@@ -764,7 +771,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::
               kInterceptEnterpriseForcedProfileSwitch);
-    } else if (!new_account_interception_ &&
+    } else if (!state_->new_account_interception_ &&
                identity_manager_->GetPrimaryAccountId(
                    signin::ConsentLevel::kSync) == info.account_id) {
       // In case of a reauth of an account that already had sync enabled,
@@ -786,8 +793,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
           signin_util::
               ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
                   profile_,
-                  intercepted_account_profile_separation_policies_.value_or(
-                      policy::ProfileSeparationPolicies()));
+                  state_->intercepted_account_profile_separation_policies_
+                      .value_or(policy::ProfileSeparationPolicies()));
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
     }
@@ -812,7 +819,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
   } else if (ShouldShowChromeSigninBubble(identity_manager_, info.email,
-                                          access_point_)) {
+                                          state_->access_point_)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
     RecordSigninInterceptionHeuristicOutcome(
@@ -879,7 +886,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
 void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id != account_id_) {
+  if (info.account_id != state_->account_id_) {
     return;
   }
   ProcessInterceptionOrWait(info, false);
@@ -887,7 +894,7 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
 
 void DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
-  if (info.account_id != account_id_) {
+  if (info.account_id != state_->account_id_) {
     return;
   }
   RecordSigninInterceptionHeuristicOutcome(
@@ -897,13 +904,14 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved(
 
 void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
   account_info_update_observation_.Reset();
-  if (!intercepted_account_profile_separation_policies_.has_value()) {
-    intercepted_account_profile_separation_policies_ =
+  if (!state_->intercepted_account_profile_separation_policies_.has_value()) {
+    state_->intercepted_account_profile_separation_policies_ =
         policy::ProfileSeparationPolicies();
   }
 
   AccountInfo account_info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id_);
+      identity_manager_->FindExtendedAccountInfoByAccountId(
+          state_->account_id_);
   ProcessInterceptionOrWait(account_info, /*timed_out=*/true);
 }
 
@@ -919,15 +927,15 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
     return;
   }
 
-  DCHECK(interception_bubble_handle_);
+  DCHECK(state_->interception_bubble_handle_);
   std::u16string profile_name =
       profiles::GetDefaultNameForNewSignedInProfile(account_info);
 
-  DCHECK(!dice_signed_in_profile_creator_);
+  DCHECK(!state_->dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
-  dice_signed_in_profile_creator_ =
+  state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile_, account_id_, profile_name,
+          profile_, state_->account_id_, profile_name,
           profiles::GetPlaceholderAvatarIndex(),
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
                          base::Unretained(this), profile_color));
@@ -982,12 +990,12 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
     return;
   }
 
-  DCHECK(interception_bubble_handle_);
-  DCHECK(!dice_signed_in_profile_creator_);
+  DCHECK(state_->interception_bubble_handle_);
+  DCHECK(!state_->dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
-  dice_signed_in_profile_creator_ =
+  state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile_, account_id_, profile_path,
+          profile_, state_->account_id_, profile_path,
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
                          base::Unretained(this), absl::nullopt));
 }
@@ -995,8 +1003,8 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
     absl::optional<SkColor> profile_color,
     Profile* new_profile) {
-  DCHECK(dice_signed_in_profile_creator_);
-  dice_signed_in_profile_creator_.reset();
+  DCHECK(state_->dice_signed_in_profile_creator_);
+  state_->dice_signed_in_profile_creator_.reset();
 
   if (!new_profile) {
     Reset();
@@ -1027,28 +1035,28 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
 
     // TODO(crbug/1450011): Move this to DiceSignedInProfileCreator when
     // DisallowManagedProfileSignout is fully released.
-    if (intercepted_account_management_accepted_ &&
+    if (state_->intercepted_account_management_accepted_ &&
         base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
       auto* primary_account_mutator =
           IdentityManagerFactory::GetForProfile(new_profile)
               ->GetPrimaryAccountMutator();
       primary_account_mutator->SetPrimaryAccount(
-          account_id_, signin::ConsentLevel::kSignin,
+          state_->account_id_, signin::ConsentLevel::kSignin,
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
     }
   }
 
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      new_profile, intercepted_account_management_accepted_);
+      new_profile, state_->intercepted_account_management_accepted_);
 
   // Work is done in this profile, the flow continues in the
   // DiceWebSigninInterceptor that is attached to the new profile.
   // We pass relevant parameters from this instance to the new one.
   DiceWebSigninInterceptorFactory::GetForProfile(new_profile)
       ->CreateBrowserAfterSigninInterception(
-          account_id_, web_contents_.get(),
-          std::move(interception_bubble_handle_), is_new_profile,
-          *interception_type_);
+          state_->account_id_, state_->web_contents_.get(),
+          std::move(state_->interception_bubble_handle_), is_new_profile,
+          *state_->interception_type_);
   Reset();
 }
 
@@ -1060,31 +1068,31 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
       /*enforced_by_policy=*/!signin_util::IsProfileSeparationEnforcedByProfile(
           profile_, account_info.email) &&
           !signin_util::IsProfileSeparationEnforcedByPolicies(
-              intercepted_account_profile_separation_policies_.value_or(
+              state_->intercepted_account_profile_separation_policies_.value_or(
                   policy::ProfileSeparationPolicies())),
       /*created=*/create == SigninInterceptionResult::kAccepted);
 
   // Make sure existing account is a non-signed in profile.
   if (create == SigninInterceptionResult::kAccepted) {
-    intercepted_account_management_accepted_ = true;
+    state_->intercepted_account_management_accepted_ = true;
     // In case of a reauth if there was no consent for management, do not create
     // a new profile.
-    if (!new_account_interception_ &&
+    if (!state_->new_account_interception_ &&
         GetPrimaryAccountInfo(identity_manager_).account_id ==
             account_info.account_id) {
       chrome::enterprise_util::SetUserAcceptedAccountManagement(
-          profile_, intercepted_account_management_accepted_);
+          profile_, state_->intercepted_account_management_accepted_);
       Reset();
     } else {
       OnProfileCreationChoice(account_info, profile_color,
                               SigninInterceptionResult::kAccepted);
     }
   } else if (create == SigninInterceptionResult::kAcceptedWithExistingProfile) {
-    intercepted_account_management_accepted_ = true;
+    state_->intercepted_account_management_accepted_ = true;
     DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
               account_info.account_id);
     chrome::enterprise_util::SetUserAcceptedAccountManagement(
-        profile_, intercepted_account_management_accepted_);
+        profile_, state_->intercepted_account_management_accepted_);
     Reset();
   } else {
     DCHECK_EQ(SigninInterceptionResult::kDeclined, create)
@@ -1100,9 +1108,9 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
 }
 
 void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
-  DCHECK(interception_bubble_handle_);
-  interception_bubble_handle_.reset();  // Close the bubble now.
-  session_startup_helper_.reset();
+  DCHECK(state_->interception_bubble_handle_);
+  state_->interception_bubble_handle_.reset();  // Close the bubble now.
+  state_->session_startup_helper_.reset();
 
   // TODO(https://crbug.com/1225171): Remove |IsGuestSession| if Guest option is
   // no more supported.
@@ -1112,8 +1120,8 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
 
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
   DCHECK(browser);
-  delegate_->ShowFirstRunExperienceInNewProfile(browser, account_id_,
-                                                *interception_type_);
+  delegate_->ShowFirstRunExperienceInNewProfile(browser, state_->account_id_,
+                                                *state_->interception_type_);
 }
 
 // static
@@ -1127,10 +1135,10 @@ std::string DiceWebSigninInterceptor::GetPersistentEmailHash(
 
 void DiceWebSigninInterceptor::UpdateDiceWebSigninInterceptDeclinedPref(
     const std::string& email) {
-  CHECK(interception_type_.has_value());
+  CHECK(state_->interception_type_.has_value());
 
   const char* pref_name =
-      interception_type_.value() ==
+      state_->interception_type_.value() ==
               WebSigninInterceptor::SigninInterceptionType::kChromeSignin
           ? kChromeSigninInterceptionDeclinedPref
           : kProfileCreationInterceptionDeclinedPref;
@@ -1174,28 +1182,30 @@ void DiceWebSigninInterceptor::
         const AccountInfo& account_info,
         base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
             callback) {
-  if (account_level_signin_restriction_policy_fetcher_ != nullptr) {
+  if (state_->account_level_signin_restriction_policy_fetcher_ != nullptr) {
     // A fetch is already in progress, don't start a new one.
-    DCHECK_EQ(account_info.account_id, account_id_);
+    DCHECK_EQ(account_info.account_id, state_->account_id_);
     return;
   }
 
-  if (intercepted_account_profile_separation_policies_response_for_testing_
+  if (state_
+          ->intercepted_account_profile_separation_policies_response_for_testing_
           .has_value()) {
     std::move(callback).Run(
-        intercepted_account_profile_separation_policies_response_for_testing_
+        state_
+            ->intercepted_account_profile_separation_policies_response_for_testing_
             .value());
     return;
   }
 
-  DCHECK(!interception_info_available_timeout_.IsCancelled());
+  DCHECK(!state_->interception_info_available_timeout_.IsCancelled());
 
-  account_level_signin_restriction_policy_fetcher_ =
+  state_->account_level_signin_restriction_policy_fetcher_ =
       std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
           g_browser_process->browser_policy_connector(),
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory());
-  account_level_signin_restriction_policy_fetcher_
+  state_->account_level_signin_restriction_policy_fetcher_
       ->GetManagedAccountsSigninRestriction(
           identity_manager_, account_info.account_id, std::move(callback),
           policy::utils::IsPolicyTestingEnabled(profile_->GetPrefs(),
@@ -1211,7 +1221,7 @@ void DiceWebSigninInterceptor::
     OnAccountLevelManagedAccountsSigninRestrictionReceived(
         const AccountInfo& account_info,
         const policy::ProfileSeparationPolicies& profile_separation_policies) {
-  intercepted_account_profile_separation_policies_ =
+  state_->intercepted_account_profile_separation_policies_ =
       profile_separation_policies;
   ProcessInterceptionOrWait(account_info, /*timed_out=*/false);
 }
@@ -1223,7 +1233,7 @@ void DiceWebSigninInterceptor::RecordSigninInterceptionHeuristicOutcome(
 
   // Record the latency, except in the case where this is a duplicate request
   // for the same interception.
-  DCHECK_NE(interception_start_time_, base::TimeTicks());
+  DCHECK_NE(state_->interception_start_time_, base::TimeTicks());
   if (outcome ==
       SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress) {
     // This is a special-case where we immediately abort the intercept request
@@ -1233,8 +1243,9 @@ void DiceWebSigninInterceptor::RecordSigninInterceptionHeuristicOutcome(
     base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
                             base::Milliseconds(0));
   } else {
-    base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
-                            base::TimeTicks::Now() - interception_start_time_);
+    base::UmaHistogramTimes(
+        "Signin.Intercept.HeuristicLatency",
+        base::TimeTicks::Now() - state_->interception_start_time_);
   }
 }
 

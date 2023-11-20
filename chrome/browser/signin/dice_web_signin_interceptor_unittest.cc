@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -108,8 +109,9 @@ MatchBubbleParameters(
 void MakeValidAccountInfo(
     AccountInfo* info,
     const std::string& hosted_domain = kNoHostedDomainFound) {
-  if (info->IsValid())
+  if (info->IsValid()) {
     return;
+  }
   info->full_name = "fullname";
   info->given_name = "givenname";
   info->hosted_domain = hosted_domain;
@@ -399,7 +401,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
   ASSERT_EQ(identity_test_env()->identity_manager()->GetPrimaryAccountId(
                 signin::ConsentLevel::kSignin),
             primary_account_info.account_id);
-  interceptor()->new_account_interception_ = true;
+  interceptor()->state_->new_account_interception_ = true;
   // Consumer account not intercepted.
   EXPECT_FALSE(
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
@@ -422,7 +424,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   account_info_1.hosted_domain = "example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info_1);
 
-  interceptor()->new_account_interception_ = true;
+  interceptor()->state_->new_account_interception_ = true;
   // Primary account is not set.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
@@ -1708,6 +1710,36 @@ TEST_F(DiceWebSigninInterceptorTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced, 1);
 }
 
+TEST_F(DiceWebSigninInterceptorTest, StateResetTest) {
+  // This is a simplification of the equality check. There is no need to
+  // implement a full exhaustive check for the test.
+  auto AreStatesEqual =
+      [](const DiceWebSigninInterceptor::ResetableState* state1,
+         const DiceWebSigninInterceptor::ResetableState* state2) {
+        return state1->is_interception_in_progress_ ==
+               state2->is_interception_in_progress_;
+      };
+
+  // Create the default values to be compared to.
+  DiceWebSigninInterceptor::ResetableState default_values;
+
+  DiceWebSigninInterceptor::ResetableState* state_ =
+      interceptor()->state_.get();
+  // Ensure initial default values.
+  EXPECT_TRUE(AreStatesEqual(state_, &default_values));
+
+  // Simulate default state value modifications
+  state_->is_interception_in_progress_ = true;
+
+  ASSERT_FALSE(AreStatesEqual(state_, &default_values));
+
+  // Reset and check the default values equality.
+  interceptor()->Reset();
+
+  // Values should be properly reset to default values.
+  EXPECT_TRUE(AreStatesEqual(interceptor()->state_.get(), &default_values));
+}
+
 class DiceWebSigninInterceptorTestWithUnoEnabled
     : public DiceWebSigninInterceptorTest {
  public:
@@ -1776,8 +1808,9 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
-  // Unknown access point is treated as information not complete/compatible and
-  // should not show the bubble even if the rest of the information are valid.
+  // Unknown access point is treated as information not complete/compatible
+  // and should not show the bubble even if the rest of the information are
+  // valid.
   auto access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
   EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
                                     web_contents(), testing::_, testing::_))
