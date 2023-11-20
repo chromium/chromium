@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
+#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -351,8 +352,8 @@ std::optional<FormData> FindFormForContentEditable(
 
 // Fills or previews the fields represented by `fields`.
 // `initiating_element` is the element that initiated the autofill process.
-// Returns the filled blink elements.
-std::vector<blink::WebFormControlElement> ApplyFormAction(
+// Returns the filled elements.
+std::vector<FieldRef> ApplyFormAction(
     base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionType action_type,

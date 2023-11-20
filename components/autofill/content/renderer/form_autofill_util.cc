@@ -1713,6 +1713,9 @@ void GetDataListSuggestions(const WebInputElement& element,
 std::optional<FormData> ExtractFormData(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager) {
+  if (form_element.IsNull()) {
+    return std::nullopt;
+  }
   FormData extracted_form;
   // TODO(crbug.com/1007974): Make this function return std::optional too.
   bool extraction_successful = WebFormElementToFormData(
@@ -2332,7 +2335,7 @@ std::optional<FormData> FindFormForContentEditable(
   return form;
 }
 
-std::vector<WebFormControlElement> ApplyFormAction(
+std::vector<FieldRef> ApplyFormAction(
     base::span<const FormFieldData> fields,
     const WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
@@ -2363,7 +2366,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
   std::vector<std::pair<WebFormControlElement*, const FormFieldData*>>
       autofillable_elements_index_pairs;
 
-  std::vector<WebFormControlElement> matching_fields;
+  std::vector<FieldRef> matching_fields;
   matching_fields.reserve(control_elements.size());
 
   // Prepare for binary search.
@@ -2412,7 +2415,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
         initially_focused_element = &element;
       }
 
-      matching_fields.push_back(element);
+      matching_fields.emplace_back(element);
       // In preview mode, only fill the field if it changes the fields value.
       // With this, the WebAutofillState is not changed from kAutofilled to
       // kPreviewed. This prevents the highlighting to change.
@@ -2445,7 +2448,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
   // Autofill the non-initiating elements.
   for (const auto& [filled_element, field_data] :
        autofillable_elements_index_pairs) {
-    matching_fields.push_back(*filled_element);
+    matching_fields.emplace_back(*filled_element);
     fill_or_preview(*field_data, false, filled_element);
   }
 

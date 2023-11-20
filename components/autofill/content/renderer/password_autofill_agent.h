@@ -247,7 +247,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Check if the given element is a username input field.
   bool IsUsernameInputField(const blink::WebInputElement& input_element) const;
 
-  const blink::WebFormControlElement& focused_element() const {
+  blink::WebFormControlElement focused_element() const {
     CHECK(autofill_agent_);
     return autofill_agent_->focused_element();
   }

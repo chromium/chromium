@@ -336,7 +336,6 @@ BASE_FEATURE(kAutofillDetectRemovedFormControls,
 
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
-// DONOTSUMBIT: Disable.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);

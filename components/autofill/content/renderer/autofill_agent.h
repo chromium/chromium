@@ -176,8 +176,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   bool IsPrerendering() const;
 
-  const blink::WebFormControlElement& focused_element() const {
-    return last_queried_element_;
+  blink::WebFormControlElement focused_element() const {
+    return last_queried_element_.GetField();
   }
 
   FieldDataManager& field_data_manager() const {
@@ -384,10 +384,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   std::unique_ptr<PasswordGenerationAgent> password_generation_agent_;
 
   // The element corresponding to the last request sent for form field Autofill.
-  blink::WebFormControlElement last_queried_element_;
+  FieldRef last_queried_element_;
 
   // The elements that currently are being previewed.
-  std::vector<blink::WebFormControlElement> previewed_elements_;
+  std::vector<FieldRef> previewed_elements_;
 
   // Records the last autofill action (Fill or Undo) done by the agent. Used in
   // ClearPreviewedForm to get the default state of previewed fields
@@ -395,7 +395,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojom::ActionType last_action_type_ = mojom::ActionType::kFill;
 
   // Last form which was interacted with by the user.
-  blink::WebFormElement last_interacted_form_;
+  FormRef last_interacted_form_;
 
   // When dealing with an unowned form, we keep track of the unowned fields
   // the user has modified so we can determine when submission occurs.
