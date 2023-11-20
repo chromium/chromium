@@ -20,10 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "content/public/common/content_switches.h"
-#endif
-
 using testing::NotNull;
 
 namespace headless {
@@ -268,8 +264,8 @@ class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
 
 #if BUILDFLAG(IS_WIN)
     // Screencast tests fail on Windows unless GPU compositing is disabled,
-    // see https://crbug.com/1411976 and https://crbug.com/1502651 .
-    command_line->AppendSwitch(::switches::kDisableGpuCompositing);
+    // see https://crbug.com/1411976 and https://crbug.com/1502651.
+    UseSoftwareCompositing();
 #endif
   }
 };
