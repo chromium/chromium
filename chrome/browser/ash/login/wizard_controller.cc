@@ -2287,6 +2287,10 @@ void WizardController::OnFactorSetupSuccessScreenExit(
     case FactorSetupSuccessScreen::Result::kNotApplicable:
     case FactorSetupSuccessScreen::Result::kProceed:
       ShowFingerprintSetupScreen();
+      break;
+    case FactorSetupSuccessScreen::Result::kTimedOut:
+      ShowLoginScreen();
+      return;
   }
 }
 

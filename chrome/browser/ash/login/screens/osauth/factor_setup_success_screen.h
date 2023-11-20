@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 
@@ -19,12 +20,13 @@ class WizardContext;
 
 // Screen to inform the user that their authentication factors were
 // successfully updated during prior operations.
-class FactorSetupSuccessScreen : public BaseScreen {
+class FactorSetupSuccessScreen : public BaseOSAuthSetupScreen {
  public:
   using TView = FactorSetupSuccessScreenView;
   enum class Result {
     kNotApplicable,
     kProceed,
+    kTimedOut,
   };
 
   static std::string GetResultString(Result result);
@@ -38,12 +40,17 @@ class FactorSetupSuccessScreen : public BaseScreen {
   FactorSetupSuccessScreen& operator=(const FactorSetupSuccessScreen&) = delete;
 
  private:
-  // BaseScreen:
+  // BaseOauthSetupScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  void InspectContext(UserContext* user_context);
+  void DoShow();
+  void OnTimeout();
+
+  std::unique_ptr<base::OneShotTimer> expiration_timer_;
   base::WeakPtr<FactorSetupSuccessScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   base::WeakPtrFactory<FactorSetupSuccessScreen> weak_ptr_factory_{this};
