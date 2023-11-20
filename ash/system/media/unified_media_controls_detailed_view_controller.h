@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "components/global_media_controls/public/constants.h"
 
 namespace ash {
 
@@ -22,8 +23,9 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
   // If `show_devices_for_item_id` is not empty, when the
   // MediaNotificationListView shows the MediaItemUIView for this ID, it will
   // expand the casting device list too.
-  explicit UnifiedMediaControlsDetailedViewController(
+  UnifiedMediaControlsDetailedViewController(
       UnifiedSystemTrayController* tray_controller,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       const std::string& show_devices_for_item_id = "");
   ~UnifiedMediaControlsDetailedViewController() override;
 
@@ -35,9 +37,8 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
   friend class UnifiedMediaControlsDetailedViewControllerTest;
 
   static bool detailed_view_has_shown_;
-
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-
+  const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
   const std::string show_devices_for_item_id_;
 };
 

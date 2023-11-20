@@ -27,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/notification_theme.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -395,10 +396,15 @@ void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
   title_view->SetPaintToLayer();
   title_view->layer()->SetFillsBoundsOpaquely(false);
   pin_button_ = title_view->pin_button();
+  global_media_controls::GlobalMediaControlsEntryPoint entry_point =
+      item_id.empty()
+          ? global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray
+          : global_media_controls::GlobalMediaControlsEntryPoint::kPresentation;
 
   content_view_ = bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth, /*should_clip_height=*/true, item_id));
+          kMenuSeparatorWidth, /*should_clip_height=*/true, entry_point,
+          item_id));
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
     bubble_view->SetPreferredWidth(kWideTrayMenuWidth);
     content_view_->SetBorder(views::CreateEmptyBorder(

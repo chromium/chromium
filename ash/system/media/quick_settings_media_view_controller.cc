@@ -10,11 +10,14 @@
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/quick_settings_media_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/views/view.h"
+
+using global_media_controls::GlobalMediaControlsEntryPoint;
 
 namespace ash {
 
@@ -101,7 +104,8 @@ void QuickSettingsMediaViewController::HideMediaItem(const std::string& id) {
 
 void QuickSettingsMediaViewController::OnMediaItemUIClicked(
     const std::string& id) {
-  tray_controller_->ShowMediaControlsDetailedView();
+  tray_controller_->ShowMediaControlsDetailedView(
+      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
 }
 
 void QuickSettingsMediaViewController::OnMediaItemUIDestroyed(
@@ -111,7 +115,8 @@ void QuickSettingsMediaViewController::OnMediaItemUIDestroyed(
 
 void QuickSettingsMediaViewController::OnMediaItemUIShowDevices(
     const std::string& id) {
-  tray_controller_->ShowMediaControlsDetailedView(id);
+  tray_controller_->ShowMediaControlsDetailedView(
+      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayerCastButton, id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

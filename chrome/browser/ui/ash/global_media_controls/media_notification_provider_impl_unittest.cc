@@ -180,6 +180,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   CreateNotificationListView() {
     auto view = provider_->GetMediaNotificationListView(
         1, /*should_clip_height=*/true,
+        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray,
         /*show_devices_for_item_id=*/"");
     return base::WrapUnique(
         static_cast<global_media_controls::MediaItemUIListView*>(
@@ -290,6 +291,7 @@ class CastStartStopMediaNotificationProviderImplTest
     // items.
     list_view_ = provider_->GetMediaNotificationListView(
         1, /*should_clip_height=*/true,
+        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray,
         /*show_devices_for_item_id=*/"");
   }
 

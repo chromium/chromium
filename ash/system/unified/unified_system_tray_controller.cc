@@ -72,6 +72,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "components/global_media_controls/public/constants.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -79,6 +80,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
+
+using global_media_controls::GlobalMediaControlsEntryPoint;
 
 namespace ash {
 
@@ -315,9 +318,10 @@ void UnifiedSystemTrayController::ShowCalendarView(
 }
 
 void UnifiedSystemTrayController::ShowMediaControlsDetailedView(
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     const std::string& show_devices_for_item_id) {
   ShowDetailedView(std::make_unique<UnifiedMediaControlsDetailedViewController>(
-      this, show_devices_for_item_id));
+      this, entry_point, show_devices_for_item_id));
 }
 
 void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
@@ -368,7 +372,8 @@ void UnifiedSystemTrayController::ShowMediaControls() {
 }
 
 void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
-  ShowMediaControlsDetailedView();
+  ShowMediaControlsDetailedView(
+      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
 }
 
 void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {

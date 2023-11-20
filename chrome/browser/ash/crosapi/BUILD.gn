@@ -362,6 +362,7 @@ source_set("crosapi") {
     "//components/eye_dropper",
     "//components/feature_engagement",
     "//components/flags_ui",
+    "//components/global_media_controls",
     "//components/keyed_service/content",
     "//components/language/core/browser:browser",
     "//components/live_caption:utils",

@@ -1042,6 +1042,9 @@ chromium-metrics-reviews@google.com.
 <enum name="GlobalMediaControlsEntryPoint">
   <int value="0" label="Toolbar icon"/>
   <int value="1" label="Presentation API"/>
+  <int value="2" label="ChromeOS system tray"/>
+  <int value="3" label="ChromeOS quick settings mini player"/>
+  <int value="4" label="ChromeOS quick settings mini player (Cast button)"/>
 </enum>
 
 <enum name="HighlightedTabDiscardStatus">

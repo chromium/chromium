@@ -16,6 +16,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/global_media_controls/public/constants.h"
 
 namespace views {
 class View;
@@ -109,6 +110,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView(
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       const std::string& show_devices_for_item_id = "");
   // Show the detailed view of Calendar. Called from the view.
   void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,

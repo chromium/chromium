@@ -12,6 +12,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "components/global_media_controls/public/constants.h"
 
 namespace crosapi {
 
@@ -52,7 +53,9 @@ void MediaUIAsh::ShowDevicePicker(const std::string& item_id) {
     tray->ShowBubble();
     tray->bubble()
         ->unified_system_tray_controller()
-        ->ShowMediaControlsDetailedView(item_id);
+        ->ShowMediaControlsDetailedView(
+            global_media_controls::GlobalMediaControlsEntryPoint::kPresentation,
+            item_id);
   }
 }
 

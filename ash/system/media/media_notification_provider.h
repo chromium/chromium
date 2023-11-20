@@ -60,6 +60,7 @@ class ASH_EXPORT MediaNotificationProvider {
   virtual std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
       bool should_clip_height,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       const std::string& show_devices_for_item_id = "") = 0;
 
   // Used for ash to notify the bubble is closing.
