@@ -115,6 +115,12 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   bool IsLinkedManager(AndroidAutofillManager* manager) const;
 
+  // Checks whether a `form_` is linked and whether it's the same form as
+  // `form`, having same identifier.
+  bool IsIdOfLinkedForm(FormGlobalId form_id) const;
+
+  // Same as `IsLinkedForm`, but also checks that `form` and `form_` are
+  // similar, using form similarity checks.
   bool IsLinkedForm(const FormData& form) const;
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);

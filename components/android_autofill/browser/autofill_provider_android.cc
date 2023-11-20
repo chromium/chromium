@@ -259,6 +259,8 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(b/297228856): Remove `!form_` check when
+  // `kAndroidAutofillFormSubmissionCheckById` launches.
   if (!IsLinkedManager(manager) || !form_) {
     return;
   }
@@ -269,14 +271,10 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
   // form submission, we want to inform `AutofillManager` about the submission.
   // Otherwise no saving prompt can be offered.
   if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillFormSubmissionCheckById)) {
-    if (form_->form().global_id() != form.global_id()) {
-      return;
-    }
-  } else {
-    if (!form_->SimilarFormAs(form)) {
-      return;
-    }
+          features::kAndroidAutofillFormSubmissionCheckById)
+          ? !IsIdOfLinkedForm(form.global_id())
+          : !form_->SimilarFormAs(form)) {
+    return;
   }
 
   if (known_success || source == SubmissionSource::FORM_SUBMISSION) {
@@ -356,12 +354,15 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     const FormData& form,
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (manager != manager_.get() || !IsLinkedForm(form)) {
+  if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
     UMA_HISTOGRAM_BOOLEAN(
         "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
         manager == manager_.get());
     return;
   }
+  // TODO(crbug.com/1198811): Investigate passing the actually filled fields, in
+  // case the passed fields to be filled are different from the fields that were
+  // actually filled.
   bridge_->OnDidFillAutofillFormData();
 }
 
@@ -378,7 +379,7 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   MaybeSendPrefillRequest(manager, form_id);
 
-  if (!form_ || form_->form().global_id() != form_id) {
+  if (!IsIdOfLinkedForm(form_id)) {
     return;
   }
 
@@ -435,6 +436,10 @@ bool AutofillProviderAndroid::GetCachedIsAutofilled(
 bool AutofillProviderAndroid::IsLinkedManager(
     AndroidAutofillManager* manager) const {
   return manager == manager_.get();
+}
+
+bool AutofillProviderAndroid::IsIdOfLinkedForm(FormGlobalId form_id) const {
+  return form_ && form_->form().global_id() == form_id;
 }
 
 bool AutofillProviderAndroid::IsLinkedForm(const FormData& form) const {
