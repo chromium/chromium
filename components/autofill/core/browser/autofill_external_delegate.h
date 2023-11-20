@@ -177,6 +177,13 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);
 
+  // Used by `PopupItemId::kFieldByFieldFilling` suggestions. Fills the `field`
+  // with the info stored in the `AutofillProfile` for the field type
+  // `suggestion.field_by_field_filling_type_used`. `is_preview` has the same
+  // meaning as the one in `FillAutofillFormData()`.
+  void FillOrPreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion,
+                                                  bool is_preview);
+
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that
   // if there are Autofill warnings, they will be at the head of the vector and

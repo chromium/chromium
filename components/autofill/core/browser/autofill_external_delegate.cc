@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -26,7 +27,9 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
@@ -368,12 +371,15 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillExistingPlusAddress:
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
           mojom::TextReplacement::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.popup_item_id);
+      break;
+    case PopupItemId::kFieldByFieldFilling:
+      FillOrPreviewFieldByFieldFillingSuggestion(suggestion, /*is_preview=*/
+                                                 true);
       break;
     case PopupItemId::kVirtualCreditCardEntry:
       FillAutofillFormData(
@@ -466,10 +472,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         last_field_types_to_fill_for_address_form_section_
             [autofill_trigger_field->section] = {
                 autofill_trigger_field->Type().GetStorableType()};
-        manager_->FillOrPreviewField(
-            mojom::ActionPersistence::kFill,
-            mojom::TextReplacement::kReplaceAll, query_form_, query_field_,
-            suggestion.main_text.value, PopupItemId::kFieldByFieldFilling);
+        FillOrPreviewFieldByFieldFillingSuggestion(suggestion, /*is_preview=*/
+                                                   false);
       }
       break;
     case PopupItemId::kIbanEntry:
@@ -806,6 +810,31 @@ void AutofillExternalDelegate::OnCreditCardScanned(
   manager_->FillCreditCardForm(query_form_, query_field_, card,
                                std::u16string(),
                                {.trigger_source = trigger_source});
+}
+
+void AutofillExternalDelegate::FillOrPreviewFieldByFieldFillingSuggestion(
+    const Suggestion& suggestion,
+    bool is_preview) {
+  CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
+  CHECK(suggestion.field_by_field_filling_type_used);
+  const AutofillProfile* profile =
+      manager_->client().GetPersonalDataManager()->GetProfileByGUID(
+          suggestion.GetBackendId<Suggestion::Guid>().value());
+  if (!profile) {
+    return;
+  }
+  const std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      *profile, manager_->app_locale(),
+      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
+      manager_->client().GetAddressNormalizer());
+  if (!value_to_fill) {
+    return;
+  }
+  manager_->FillOrPreviewField(is_preview ? mojom::ActionPersistence::kPreview
+                                          : mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll, query_form_,
+                               query_field_, *value_to_fill,
+                               suggestion.popup_item_id);
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(

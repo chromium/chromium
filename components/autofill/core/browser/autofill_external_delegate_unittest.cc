@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -79,6 +80,25 @@ constexpr auto kDefaultTriggerSource =
 
 constexpr std::string_view kPlusAddressSuggestionMetric =
     "Autofill.PlusAddresses.Suggestion.Events";
+
+// Creates a `PopupItemdId::kFieldByFieldFilling` suggestion.
+// `profile_guid` is used to set `Suggestion::payload` as
+// `Suggestion::Guid(profile_guid)`. This method also sets the
+// `Suggestion::field_by_field_filling_type_used` to a default value of
+// `NAME_FIRST`, which means that selecting this suggestion will fill the field
+// with `NAME_FIRST` information stored in the profile that has `guid`.
+Suggestion CreateFieldByFieldFillingSuggestion(
+    const std::string& profile_guid) {
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      PopupItemId::kFieldByFieldFilling, u"field by field",
+      Suggestion::Guid(profile_guid));
+  // This is an arbitrary type. The delegate asserts the existence of
+  // `field_by_field_filling_type_used` for
+  // `PopupItemId::kFieldByFieldFilling` suggestions.
+  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+  return suggestion;
+}
+
 // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
 // you want to ignore the fill_event_id.
 auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
@@ -1114,13 +1134,15 @@ const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
 
 // Tests that for a certain `PopupItemId` accepted, the expected
 // `AutofillFillingMethodMetric` is recorded.
-TEST_P(FillingMethodMetricsUnitTest, recordedsFillingMethodForPopupType) {
+TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   IssueOnQuery();
   const FillingMethodMetricsTestParams& params = GetParam();
   const AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
-  const Suggestion suggestion = test::CreateAutofillSuggestion(
-      params.popup_item_id, u"baz foo", Suggestion::Guid(profile.guid()));
+  const Suggestion suggestion =
+      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          : test::CreateAutofillSuggestion(params.popup_item_id);
   // Wait until form is parsed. We only perform field by field filling if the
   // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
@@ -1173,8 +1195,11 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   const GroupFillingTestParams& params = GetParam();
   const AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
-  const Suggestion suggestion = test::CreateAutofillSuggestion(
-      params.popup_item_id, u"baz foo", Suggestion::Guid(profile.guid()));
+  const Suggestion suggestion =
+      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          : test::CreateAutofillSuggestion(params.popup_item_id, u"baz foo",
+                                           Suggestion::Guid(profile.guid()));
   auto expected_source =
 #if BUILDFLAG(IS_ANDROID)
       AutofillTriggerSource::kKeyboardAccessory;
@@ -1389,13 +1414,18 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   base::test::ScopedFeatureList features(
       features::kAutofillGranularFillingAvailable);
 
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
   IssueOnQuery();
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
   // Wait until form is parsed.
   task_environment_.RunUntilIdle();
   ON_CALL(personal_data(), IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
-  Suggestion suggestion = test::CreateAutofillSuggestion(params.popup_item_id);
+  const Suggestion suggestion =
+      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          : test::CreateAutofillSuggestion(params.popup_item_id);
 
   if (!params.is_preview) {
     external_delegate_->DidAcceptSuggestion(
@@ -1791,30 +1821,33 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateFillFieldWithValue_FieldByFieldFilling) {
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
   IssueOnQuery();
   // Wait until form is parsed. We only perform field by field filling if the
   // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
   task_environment_.RunUntilIdle();
-  const std::u16string dummy_field_by_field_string = u"field by field";
-  EXPECT_CALL(*autofill_driver_,
-              ApplyFieldAction(mojom::ActionPersistence::kFill,
-                               mojom::TextReplacement::kReplaceAll,
-                               queried_form_triggering_field_id_,
-                               dummy_field_by_field_string));
+  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(profile.guid());
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(
+      *autofill_driver_,
+      ApplyFieldAction(
+          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          queried_form_triggering_field_id_,
+          profile.GetRawInfo(*suggestion.field_by_field_filling_type_used)));
 
   external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling,
-                                     dummy_field_by_field_string),
-      SuggestionPosition{.row = 0}, kDefaultTriggerSource);
+      suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegate_FieldByFieldFilling_LogFillFieldEvent) {
   base::test::ScopedFeatureList features(
       features::kAutofillGranularFillingAvailable);
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
@@ -1823,8 +1856,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
   task_environment_.RunUntilIdle();
   external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling,
-                                     u"field by field"),
+      CreateFieldByFieldFillingSuggestion(profile.guid()),
       SuggestionPosition{.row = 0}, kDefaultTriggerSource);
   const std::vector<AutofillField::FieldLogEventType>& log_events =
       get_triggering_autofill_field()->field_log_events();
