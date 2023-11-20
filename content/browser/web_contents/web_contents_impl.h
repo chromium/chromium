@@ -2368,6 +2368,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   bool prerender2_disabled_ = false;
 
+  bool record_replay_for_recording_ = false;
+
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
 };

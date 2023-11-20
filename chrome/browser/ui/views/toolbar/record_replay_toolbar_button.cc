@@ -7,11 +7,34 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "content/public/browser/web_contents_observer.h"
+
+struct RecordReplayToolbarButtonWebContentsObserver
+  : public content::WebContentsObserver
+{
+  RecordReplayToolbarButtonWebContentsObserver(
+    content::WebContents* web_contents,
+    RecordReplayToolbarButton* button)
+    : content::WebContentsObserver(web_contents),
+      button_(button)
+  {}
+
+  void WebContentsDestroyed() override {
+    // Tell toolbar button that recording tab has closed.
+    // This will detach the observer from the button.
+    button_->RecordingTabDestroyed();
+  }
+
+  RecordReplayToolbarButton* button_;
+};
 
 RecordReplayToolbarButton::RecordReplayToolbarButton(Browser* browser)
     : ToolbarButton(base::BindRepeating(&RecordReplayToolbarButton::ButtonPressed,
                                         base::Unretained(this))),
-      browser_(browser) {
+      browser_(browser),
+      web_contents_(nullptr),
+      post_recording_web_contents_(nullptr),
+      web_contents_observer_(nullptr) {
   SetVectorIcons(kRecordReplayIcon, kRecordReplayIcon);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -20,6 +43,19 @@ RecordReplayToolbarButton::RecordReplayToolbarButton(Browser* browser)
 RecordReplayToolbarButton::~RecordReplayToolbarButton() = default;
 
 void RecordReplayToolbarButton::ButtonPressed() {
+  // Check to see if we're currently recording a tab.
+  if (web_contents_) {
+    // We are recording a tab, stop recording.
+    StopRecording();
+  } else {
+    // We are not recording a tab, start recording.
+    StartRecording();
+  }
+  RefreshIconState();
+}
+
+void RecordReplayToolbarButton::StartRecording() {
+  // Get the current active tab.  This provides the URL we'll be recording.
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   content::WebContents* old_web_contents = tab_strip_model->GetActiveWebContents();
   if (!old_web_contents) {
@@ -27,26 +63,91 @@ void RecordReplayToolbarButton::ButtonPressed() {
   }
   content::BrowserContext* browser_context = old_web_contents->GetBrowserContext();
 
-  int index = tab_strip_model->GetIndexOfWebContents(old_web_contents);
   GURL url = old_web_contents->GetVisibleURL();
 
-  // Create a new web-contents to load.
+  // Create a new recording web-contents.
+  CHECK(!web_contents_);
+  CHECK(!web_contents_observer_.get());
   content::WebContents::CreateParams new_params(browser_context);
   new_params.record_replay_for_recording = true;
   std::unique_ptr<content::WebContents> new_web_contents(
     content::WebContents::Create(new_params));
-  content::WebContents* new_web_contents_ptr = new_web_contents.get();
+  web_contents_ = new_web_contents.get();
+
+  // Create and add observer.
+  // This will notify the button when the recording tab is closed.
+  // See: `RecordingTabDestroyed()` below.
+  web_contents_observer_ =
+    std::make_unique<RecordReplayToolbarButtonWebContentsObserver>(
+      web_contents_, this);
 
   tab_strip_model->AppendWebContents(std::move(new_web_contents), true);
 
-  // Re-get the index of the old web contents just in case it changed due to the
-  // insert (it shouldn't have).)
-  index = tab_strip_model->GetIndexOfWebContents(old_web_contents);
+  // Get the index of the old non-recording web-contents, to close it.
+  int index = tab_strip_model->GetIndexOfWebContents(old_web_contents);
 
-  // [RecordReplay] NOTE: This close-type doesn't remember history.  Do we want to?
+  // Close old tab and replace with new tab.
   tab_strip_model->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
 
-  new_web_contents_ptr->GetController().LoadURL(url, content::Referrer(),
-                                                ui::PAGE_TRANSITION_TYPED,
-                                                std::string());
+  web_contents_->GetController().LoadURL(url, content::Referrer(),
+                                         ui::PAGE_TRANSITION_TYPED,
+                                         std::string());
+}
+
+void RecordReplayToolbarButton::StopRecording() {
+  // There should be a recording web-contents.
+  if (!web_contents_) {
+    // TODO: Print a warning here.  `StopRecording` called when
+    // no active recording present.
+    return;
+  }
+
+  EnsurePostRecordingWebContents();
+
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  int index = tab_strip_model->GetIndexOfWebContents(web_contents_);
+  if (index == TabStripModel::kNoTab) {
+    // TODO: Print a warning.  The web contents we have a reference to
+    // is not listed in any tab.
+    web_contents_ = nullptr;
+    web_contents_observer_.release();
+    return;
+  }
+
+  index = tab_strip_model->GetIndexOfWebContents(web_contents_);
+  tab_strip_model->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+}
+
+void RecordReplayToolbarButton::RecordingTabDestroyed() {
+  if (web_contents_) {
+    EnsurePostRecordingWebContents();
+    web_contents_ = nullptr;
+    web_contents_observer_.release();
+  }
+  RefreshIconState();
+}
+
+void RecordReplayToolbarButton::RefreshIconState() {
+  if (web_contents_) {
+    SetVectorIcons(kRecordReplayStopIcon, kRecordReplayStopIcon);
+  } else {
+    SetVectorIcons(kRecordReplayIcon, kRecordReplayIcon);
+  }
+}
+
+void RecordReplayToolbarButton::EnsurePostRecordingWebContents() {
+  if (!post_recording_web_contents_) {
+    content::WebContents::CreateParams new_params(web_contents_->GetBrowserContext());
+    std::unique_ptr<content::WebContents> post_recording_web_contents(
+      content::WebContents::Create(new_params));
+    post_recording_web_contents_ = post_recording_web_contents.get();
+    TabStripModel* tab_strip_model = browser_->tab_strip_model();
+    tab_strip_model->AppendWebContents(std::move(post_recording_web_contents), true);
+  }
+
+  // TODO: Make this URL point to `app.replay.io` URL for the recording.
+  GURL url = GURL("https://app.replay.io");
+  post_recording_web_contents_->GetController().LoadURL(url, content::Referrer(),
+                                              ui::PAGE_TRANSITION_TYPED,
+                                              std::string());
 }

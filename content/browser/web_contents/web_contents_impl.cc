@@ -1096,6 +1096,13 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
     opener = opener_rfh->frame_tree_node();
   std::unique_ptr<WebContentsImpl> new_contents(
       new WebContentsImpl(params.browser_context));
+
+  // Forward flag indicating that this web-contents is being created
+  // for a replay.io recording.
+  if (params.record_replay_for_recording) {
+    new_contents->record_replay_for_recording_ = true;
+  }
+
   new_contents->SetOpenerForNewContents(opener, params.opener_suppressed);
 
   // If the opener is sandboxed, a new popup must inherit the opener's sandbox
