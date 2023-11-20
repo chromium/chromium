@@ -21,6 +21,10 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "gin/handle.h"
+#include "gin/interceptor.h"
+#include "gin/object_template_builder.h"
+#include "gin/wrappable.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -116,24 +120,50 @@ blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;
 }
 
+class ScriptableObject : public gin::Wrappable<ScriptableObject>,
+                         public gin::NamedPropertyInterceptor {
+ public:
+  static gin::WrapperInfo kWrapperInfo;
+
+  static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
+    ScriptableObject* scriptable_object = new ScriptableObject(isolate);
+    return gin::CreateHandle(isolate, scriptable_object)
+        .ToV8()
+        .As<v8::Object>();
+  }
+
+  // gin::NamedPropertyInterceptor
+  v8::Local<v8::Value> GetNamedProperty(
+      v8::Isolate* isolate,
+      const std::string& identifier) override {
+    if (identifier == "loaded") {
+      return v8::True(isolate);
+    }
+    return v8::Local<v8::Value>();
+  }
+
+ private:
+  explicit ScriptableObject(v8::Isolate* isolate)
+      : gin::NamedPropertyInterceptor(isolate, this) {}
+
+  // gin::Wrappable
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override {
+    return gin::Wrappable<ScriptableObject>::GetObjectTemplateBuilder(isolate)
+        .AddNamedPropertyInterceptor();
+  }
+};
+
+// static
+gin::WrapperInfo ScriptableObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+
 }  // namespace
 
 TestPlugin::TestPlugin(const blink::WebPluginParams& params,
                        TestRunner* test_runner,
                        blink::WebLocalFrame* frame)
     : test_runner_(test_runner),
-      container_(nullptr),
       web_local_frame_(frame),
-      gl_(nullptr),
-      content_changed_(false),
-      framebuffer_(0),
-      touch_event_request_(
-          blink::WebPluginContainer::kTouchEventRequestTypeNone),
-      re_request_touch_events_(false),
-      print_event_details_(false),
-      print_user_gesture_status_(false),
-      can_process_drag_(false),
-      supports_keyboard_focus_(false),
       is_persistent_(params.mime_type == PluginPersistsMimeType()) {
   DCHECK_EQ(params.attribute_names.size(), params.attribute_values.size());
   size_t size = params.attribute_names.size();
@@ -212,6 +242,7 @@ void TestPlugin::Destroy() {
 
   gl_ = nullptr;
   context_provider_.reset();
+  scriptable_object_.Reset();
 
   container_ = nullptr;
 
@@ -299,6 +330,13 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 
 bool TestPlugin::IsPlaceholder() {
   return false;
+}
+
+v8::Local<v8::Object> TestPlugin::V8ScriptableObject(v8::Isolate* isolate) {
+  if (scriptable_object_.IsEmpty()) {
+    scriptable_object_.Reset(isolate, ScriptableObject::Create(isolate));
+  }
+  return scriptable_object_.Get(isolate);
 }
 
 // static

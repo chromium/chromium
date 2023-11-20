@@ -1352,6 +1352,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/permissionclient/",
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",
+      "//third_party/blink/web_tests/ppapi/",
       "//third_party/blink/web_tests/print_testharness/",
       "//third_party/blink/web_tests/printing/",
       "//third_party/blink/web_tests/register-protocol-handler/",

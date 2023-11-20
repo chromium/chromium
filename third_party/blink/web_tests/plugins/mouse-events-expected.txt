@@ -1,7 +1,19 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
-CONSOLE MESSAGE: Blink Test Plugin: MouseDown at (12,12)
-CONSOLE MESSAGE: Blink Test Plugin: MouseUp at (12,12)
-CONSOLE MESSAGE: Blink Test Plugin: MouseDown at (22,22)
-CONSOLE MESSAGE: Blink Test Plugin: MouseUp at (32,22)
+Plugin received event: MouseEnter
+* 12.00, 12.00
+Plugin received event: MouseMove
+* 12.00, 12.00
+Plugin received event: MouseDown
+* 12.00, 12.00
+Plugin received event: MouseUp
+* 12.00, 12.00
+Plugin received event: MouseMove
+* 22.00, 22.00
+Plugin received event: MouseDown
+* 22.00, 22.00
+Plugin received event: MouseMove
+* 32.00, 22.00
+Plugin received event: MouseUp
+* 32.00, 22.00
+Plugin received event: MouseLeave
+* -8.00, -8.00
 Test for bug 11517: Flash clicks/interactivity not working properly.

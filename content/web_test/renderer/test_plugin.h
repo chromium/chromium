@@ -100,6 +100,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   void DidFinishLoading() override {}
   void DidFailLoading(const blink::WebURLError& error) override {}
   bool IsPlaceholder() override;
+  v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*) override;
 
   // cc::TextureLayerClient methods:
   bool PrepareTransferableResource(
@@ -181,22 +182,24 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   gpu::Mailbox mailbox_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;
-  bool content_changed_;
-  GLuint framebuffer_;
+  bool content_changed_ = false;
+  GLuint framebuffer_ = 0;
   Scene scene_;
   scoped_refptr<cc::TextureLayer> layer_;
 
-  blink::WebPluginContainer::TouchEventRequestType touch_event_request_;
+  v8::Persistent<v8::Object> scriptable_object_;
+
+  blink::WebPluginContainer::TouchEventRequestType touch_event_request_ =
+      blink::WebPluginContainer::kTouchEventRequestTypeNone;
   // Requests touch events from the WebPluginContainerImpl multiple times to
   // tickle webkit.org/b/108381
-  bool re_request_touch_events_;
-  bool print_event_details_;
-  bool print_user_gesture_status_;
-  bool can_process_drag_;
-  bool supports_keyboard_focus_;
+  bool re_request_touch_events_ = false;
+  bool print_event_details_ = false;
+  bool print_user_gesture_status_ = false;
+  bool can_process_drag_ = false;
+  bool supports_keyboard_focus_ = false;
 
   bool is_persistent_;
-  bool can_create_without_renderer_;
 };
 
 }  // namespace content

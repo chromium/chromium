@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/gesture-util.js"></script>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.setPopupBlockingEnabled(true);
+    testRunner.waitUntilDone();
+}
+
+function test() {
+    if (!window.testRunner)
+        return;
+    // Record current window count.
+    window.windowCount = testRunner.windowCount();
+    console.log("window count: " + testRunner.windowCount());
+    // Send a mouse-click event to set the input focus to the test plugin.
+    mouseClickOn(20, 20);
+}
+
+// This function will be called when plugin receives a mousedown event.
+function popup_by_mousedown() {
+    window.open("about:blank", "_blank");
+    // Check the new opened window and logging the result.
+    console.log("window count: " + testRunner.windowCount());
+    if (testRunner.windowCount() == (window.windowCount + 1)) {
+        document.getElementById("mousedown_output").innerHTML = "PASSED";
+        window.windowCount++;
+    }
+   setTimeout(send_key_to_plugin, 100);
+}
+
+function send_key_to_plugin() {
+    // Send keyboard events to the plugin.
+    mouseClickOn(60, 60).then(()=> {
+      eventSender.keyDown('p');
+    });
+}
+
+// This function will be called when plugin receives a keydown event.
+function popup_by_keydown() {
+    // Open a new window.
+    window.open("about:blank", "_blank");
+    // Check the new opened window and logging the result.
+    console.log("window count: " + testRunner.windowCount());
+    if (testRunner.windowCount() == (window.windowCount + 1))
+        document.getElementById("keydown_output").innerHTML = "PASSED";
+    // Wait for plugin stopping and ending this test.
+    setTimeout(end_test, 100);
+}
+
+function end_test() {
+    // Change focus back to window to stop the plugin event logging.
+    window.focus();
+    // Close the test.
+     setTimeout(function() {testRunner.notifyDone();}, 1);
+}
+</script>
+</head>
+<body onload="internals.updateLayoutAndRunPostLayoutTasks(); test();">
+<embed type="application/x-blink-deprecated-test-plugin" width=100 height=40 mousedownscript="popup_by_mousedown()" windowedplugin="false"></embed><br>
+<embed type="application/x-blink-deprecated-test-plugin" width=100 height=40 keydownscript="popup_by_keydown()" windowedplugin="false"></embed><br>
+Specify a script and a mouse/keyboard event to the plugin. The specified script will be evaluated in the browser when the specified event is received by the plugin. The test is for bug https://bugs.webkit.org/show_bug.cgi?id=41292.<br>
+Opening window by mouse down is <span id="mousedown_output">FAILED</span><br>
+Opening window by key down is <span id="keydown_output">FAILED</span>
+</body>
+</html>

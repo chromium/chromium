@@ -3,7 +3,6 @@
         <script>
             if (window.testRunner) {
                 testRunner.dumpAsText();
-                testRunner.waitUntilDone();
             }
 
             function debug(str) {
@@ -14,15 +13,15 @@
     <body>
         <object>
             <p>This test verifies that an &lt;embed&gt; tag is rendered along with other fallback content when an &lt;object&gt; fails to load.  On success, you should see this text, followed by 'PASS'.</p>
-            <embed name="plugin" type="application/x-blink-test-plugin">
+            <embed name="plugin" type="application/x-webkit-test-webplugin">
         </object>
         <div id="console"></div>
         <script>
-            document.querySelector("embed").addEventListener("message", function (message) {
-              debug("PASS");
-              if (window.testRunner)
-                  testRunner.notifyDone();
-            });
+            var plugin = document.plugin;
+            if (plugin && plugin instanceof HTMLEmbedElement)
+                debug("PASS");
+            else
+                debug("FAIL");            
         </script>
     </body>
 </html>

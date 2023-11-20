@@ -62,7 +62,6 @@ http/tests/inspector-protocol/network/disabled-cache-navigation.js
 http/tests/navigation/location-change-repeated-from-blank.html
 inspector-protocol/layout-fonts/lang-fallback.js
 media/controls/doubletap-to-toggle-fullscreen.html
-plugins/refcount-leaks.html
 scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html
 scrollbars/hidden-scrollbars-invisible.html
 tables/mozilla_expected_failures/bugs/bug89315.html
