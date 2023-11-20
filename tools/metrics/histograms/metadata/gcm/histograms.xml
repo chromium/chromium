@@ -202,13 +202,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.UnregistrationRequestStatus"
-    enum="GCMUnregistrationRequestStatus" expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>Status code of the outcome of a GCM unregistration request.</summary>
-</histogram>
-
 <histogram name="GCM.WebPushReceived.DeviceState" enum="WebPushDeviceState"
     expires_after="2022-01-02">
   <owner>knollr@chromium.org</owner>
