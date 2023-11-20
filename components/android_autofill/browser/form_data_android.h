@@ -69,7 +69,7 @@ class FormDataAndroid {
 
   const FormData& form() const { return form_; }
 
-  const SessionId session_id() const { return session_id_; }
+  SessionId session_id() const { return session_id_; }
 
  private:
   // The session id of this form. It is used to generate virtual view ids for
