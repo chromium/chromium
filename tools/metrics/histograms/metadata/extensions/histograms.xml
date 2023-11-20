@@ -160,16 +160,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.AppLoadedInTab" enum="AppLoadedInTabSource"
-    expires_after="M77">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    A platform app ended up in a regular tab either by the app page or its
-    background page. Note that this happens unexpectedly right now and we wish
-    to track its usage before removing the supporting code.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AppLocation2" enum="ExtensionLocation"
     expires_after="2024-01-01">
   <owner>benwells@chromium.org</owner>
