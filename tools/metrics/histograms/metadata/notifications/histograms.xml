@@ -148,16 +148,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.AuthorDataSize" units="bytes"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The size, in bytes, of the author-provided data associated with a Web
-    Notification. Recorded when a persistent Web Notification is being shown by
-    the developer.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
     units="notifications" expires_after="2023-11-12">
   <owner>knollr@chromium.org</owner>
