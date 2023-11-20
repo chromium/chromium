@@ -347,9 +347,9 @@ TEST_P(AppListViewLauncherSearchIphTest, DISABLED_Basic) {
     event_generator->ClickLeftButton();
   }
 
-  ASSERT_TRUE(search_box_view->iph_view());
+  ASSERT_TRUE(search_box_view->GetIphView());
   ViewDrawnWaiter view_drawn_waiter;
-  view_drawn_waiter.Wait(search_box_view->iph_view());
+  view_drawn_waiter.Wait(search_box_view->GetIphView());
 
   UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

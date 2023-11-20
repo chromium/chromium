@@ -1000,7 +1000,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
   // Horizontal margins are selected to match search box icon's vertical
   // margins. Space used for iph should be ignored.
   const int iph_height =
-      iph_view() ? iph_view()->GetPreferredSize().height() : 0;
+      GetIphView() ? GetIphView()->GetPreferredSize().height() : 0;
   const int horizontal_spacing =
       (target_state_height - iph_height - GetSearchBoxIconSize()) / 2;
   const int horizontal_right_padding =
@@ -1198,6 +1198,12 @@ void SearchBoxView::CloseButtonPressed() {
 }
 
 void SearchBoxView::AssistantButtonPressed() {
+  // If Launcher search IPH view is showing, notify it that the Assistant
+  // button is pressed.
+  if (GetIphView()) {
+    GetIphView()->NotifyAssistantButtonPressedEvent();
+  }
+
   delegate_->AssistantButtonPressed();
 }
 
@@ -1657,7 +1663,7 @@ void SearchBoxView::UpdateIphViewVisibility() {
                                          ->show_assistant_button();
   const bool would_trigger_iph =
       AppListModelProvider::Get()->search_model()->would_trigger_iph();
-  const bool is_iph_showing = iph_view() != nullptr;
+  const bool is_iph_showing = GetIphView() != nullptr;
 
   const bool should_show_iph = show_assistant_button && is_iph_allowed_ &&
                                !HasValidQuery() &&

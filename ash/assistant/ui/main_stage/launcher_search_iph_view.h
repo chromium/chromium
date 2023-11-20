@@ -59,6 +59,8 @@ class LauncherSearchIphView : public views::View {
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
+  void NotifyAssistantButtonPressedEvent();
+
   std::vector<raw_ptr<ChipView>> GetChipsForTesting();
 
  private:
