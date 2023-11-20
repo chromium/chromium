@@ -1008,6 +1008,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   scrollView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
 
+  [self addChildViewController:self.incognitoGridContainerViewController];
+  [self addChildViewController:self.regularGridContainerViewController];
+  [self addChildViewController:self.remoteGridContainerViewController];
   UIStackView* gridsStack = [[UIStackView alloc] initWithArrangedSubviews:@[
     self.incognitoGridContainerViewController.view,
     self.regularGridContainerViewController.view,
@@ -1018,6 +1021,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [scrollView addSubview:gridsStack];
   [self.view addSubview:scrollView];
+  [self.incognitoGridContainerViewController
+      didMoveToParentViewController:self];
+  [self.regularGridContainerViewController didMoveToParentViewController:self];
+  [self.remoteGridContainerViewController didMoveToParentViewController:self];
 
   self.scrollView = scrollView;
   self.scrollView.scrollEnabled = YES;
