@@ -616,13 +616,15 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
     return gfx::Rect();
 
   v8::Local<v8::Array> array = value.As<v8::Array>();
+  v8::Local<v8::Context> v8_context =
+      array->GetCreationContext().ToLocalChecked();
+  v8::Context::Scope v8_context_scope(v8_context);
   if (array->Length() != 4)
     return gfx::Rect();
   std::vector<int> coords;
   for (int i = 0; i < 4; ++i) {
     v8::Local<v8::Number> index = v8::Number::New(isolate, i);
-    if (!array->Get(isolate->GetCurrentContext(), index).ToLocal(&value) ||
-        !value->IsInt32()) {
+    if (!array->Get(v8_context, index).ToLocal(&value) || !value->IsInt32()) {
       return gfx::Rect();
     }
     coords.push_back(value.As<v8::Int32>()->Value());

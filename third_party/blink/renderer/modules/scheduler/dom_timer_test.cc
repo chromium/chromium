@@ -71,6 +71,7 @@ class DOMTimerTest : public RenderingTest {
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,
                                v8::HandleScope& scope) {
+    ScriptState::Scope context_scope(ToScriptStateForMainWorld(&GetFrame()));
     NonThrowableExceptionState exception_state;
     return NativeValueTraits<IDLSequence<IDLDouble>>::NativeValue(
         scope.GetIsolate(), value, exception_state);

@@ -6610,9 +6610,9 @@ class CompositedSelectionBoundsTest
     v8::Array& expected_result = *v8::Array::Cast(*result);
     ASSERT_GE(expected_result.Length(), 10u);
 
-    v8::Local<v8::Context> context = web_view_helper_.GetAgentGroupScheduler()
-                                         .Isolate()
-                                         ->GetCurrentContext();
+    v8::Local<v8::Context> context =
+        expected_result.GetCreationContext().ToLocalChecked();
+    v8::Context::Scope v8_context_scope(context);
 
     int start_edge_start_in_layer_x = expected_result.Get(context, 1)
                                           .ToLocalChecked()
