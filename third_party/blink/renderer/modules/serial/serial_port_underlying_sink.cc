@@ -205,11 +205,13 @@ void SerialPortUnderlyingSink::OnHandleReady(MojoResult result,
 }
 
 void SerialPortUnderlyingSink::OnFlushOrDrain() {
-  DCHECK(pending_operation_);
-
-  pending_operation_->Resolve();
-  pending_operation_ = nullptr;
-  serial_port_->UnderlyingSinkClosed();
+  // If pending_operation_ is nullptr, that means SignalError happened before
+  // flush finished and SerialPort::UnderlyingSinkClosed has been called.
+  if (pending_operation_) {
+    pending_operation_->Resolve();
+    pending_operation_ = nullptr;
+    serial_port_->UnderlyingSinkClosed();
+  }
 }
 
 void SerialPortUnderlyingSink::WriteData() {
