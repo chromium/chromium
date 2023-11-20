@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 
-#import "ios/chrome/browser/lens/lens_browser_agent.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

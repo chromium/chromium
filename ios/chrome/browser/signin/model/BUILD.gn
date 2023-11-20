@@ -366,7 +366,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/lens",
+    "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

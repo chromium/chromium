@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/favicon/favicon_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
-#import "ios/chrome/browser/lens/lens_browser_agent.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"

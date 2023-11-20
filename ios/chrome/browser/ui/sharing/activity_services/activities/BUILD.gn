@@ -63,7 +63,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:test_support",
-    "//ios/chrome/browser/lens",
+    "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

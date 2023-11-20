@@ -25,7 +25,7 @@ source_set("main") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/infobars/overlays/browser_agent:browser_agent_util",
-    "//ios/chrome/browser/lens",
+    "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/policy",

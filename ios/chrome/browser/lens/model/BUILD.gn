@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("lens") {
+source_set("model") {
   sources = [
     "lens_browser_agent.h",
     "lens_browser_agent.mm",
@@ -28,7 +28,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "lens_tab_helper_unittest.mm" ]
   deps = [
-    ":lens",
+    ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/lens/lens_browser_agent.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
