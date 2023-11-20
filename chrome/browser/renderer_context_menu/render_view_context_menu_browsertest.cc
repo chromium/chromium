@@ -144,6 +144,7 @@
 #include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
@@ -655,7 +656,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
 
   // The entry is only disabled for platforms on which URL filtering is enabled.
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
+  if (supervised_user::IsUrlFilteringEnabled(
+          *browser()->profile()->GetPrefs())) {
     EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
   } else {
     EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
@@ -669,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop().RunUntilIdle();
 
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
+  if (supervised_user::IsUrlFilteringEnabled(
+          *browser()->profile()->GetPrefs())) {
     kids_management_api_mock().RestrictSubsequentClassifyUrl();
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
         .Times(1);
@@ -704,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(
   std::u16string suggested_filename = menu_observer.params().suggested_filename;
   // The save link as action is only blocked for platforms on which URL
   // filtering is enabled.
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
+  if (supervised_user::IsUrlFilteringEnabled(
+          *browser()->profile()->GetPrefs())) {
     const std::string kSuggestedFilename("");
     ASSERT_EQ(kSuggestedFilename,
               base::UTF16ToUTF8(suggested_filename).c_str());
@@ -720,7 +724,8 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
+  if (supervised_user::IsUrlFilteringEnabled(
+          *browser()->profile()->GetPrefs())) {
     kids_management_api_mock().AllowSubsequentClassifyUrl();
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
         .Times(1);

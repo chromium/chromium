@@ -28,7 +28,7 @@
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/variations/variations_switches.h"
@@ -210,8 +210,8 @@ class SupervisedUserRegionalURLFilterTest
   }
 
   bool IsUrlFilteringEnabled() const {
-    return SupervisedUserServiceFactory::GetForProfile(browser()->profile())
-        ->IsURLFilteringEnabled();
+    return supervised_user::IsUrlFilteringEnabled(
+        *browser()->profile()->GetPrefs());
   }
 
  private:

@@ -274,6 +274,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
@@ -3565,10 +3566,10 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (supervised_user_service &&
-      supervised_user_service->IsURLFilteringEnabled()) {
+  CHECK(profile);
+  if (supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs())) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     // Use the URL filter's synchronous call to check if a site has been
@@ -3923,11 +3924,10 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-
-  if (supervised_user_service &&
-      supervised_user_service->IsURLFilteringEnabled()) {
+  CHECK(profile);
+  if (supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs())) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     url_filter->GetFilteringBehaviorForURLWithAsyncChecks(

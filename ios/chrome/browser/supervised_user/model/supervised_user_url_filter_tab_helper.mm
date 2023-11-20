@@ -10,6 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
@@ -84,13 +85,14 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
     return;
   }
 
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
-
-  if (!supervised_user_service->IsURLFilteringEnabled()) {
+  if (!supervised_user::IsUrlFilteringEnabled(
+          *chrome_browser_state->GetPrefs())) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
+
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
 
   // Set up the callback taking filtering results, and perform URL filtering.
   GURL request_url = net::GURLWithNSURL(request.URL);

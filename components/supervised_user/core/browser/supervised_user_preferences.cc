@@ -185,6 +185,16 @@ bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return IsChildAccount(pref_service) && IsChildAccountSupervisionEnabled();
 }
 
+bool IsUrlFilteringEnabled(const PrefService& pref_service) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  return IsChildAccount(pref_service);
+#else
+  return IsChildAccount(pref_service) &&
+         base::FeatureList::IsEnabled(
+             kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+#endif
+}
+
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

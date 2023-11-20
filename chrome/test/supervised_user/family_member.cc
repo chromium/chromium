@@ -9,12 +9,14 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,7 +30,7 @@ CoreAccountId GetAccountId(Profile* profile) {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   CHECK(supervised_user_service) << "Incognito mode is not supported.";
-  CHECK(supervised_user_service->IsURLFilteringEnabled())
+  CHECK(supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs()))
       << "Blocklist control page is only available to user who have that "
          "feature enabled. Check if member is a subject to parental controls.";
 

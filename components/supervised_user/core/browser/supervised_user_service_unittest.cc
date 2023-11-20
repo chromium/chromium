@@ -101,21 +101,6 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
       : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
 };
 
-TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(service_->IsURLFilteringEnabled());
-#else
-  ASSERT_FALSE(service_->IsURLFilteringEnabled());
-#endif
-
-  // Enable filtering flag across platforms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
-  EXPECT_TRUE(service_->IsURLFilteringEnabled());
-}
-
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
@@ -254,19 +239,6 @@ class SupervisedUserServiceTestUnsupervised
   SupervisedUserServiceTestUnsupervised()
       : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
 };
-
-TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
-  ASSERT_FALSE(service_->IsURLFilteringEnabled());
-
-  // Enable filtering flag across platforms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS));
-
-  EXPECT_FALSE(service_->IsURLFilteringEnabled());
-}
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
