@@ -77,6 +77,20 @@ struct FeaturePromoSessionData {
   base::Time most_recent_active_time;
 };
 
+// Data that must be kept across browser restart to support the feature promo
+// policy.
+struct FeaturePromoPolicyData {
+  FeaturePromoPolicyData();
+  FeaturePromoPolicyData(const FeaturePromoPolicyData&);
+  FeaturePromoPolicyData(FeaturePromoPolicyData&&) noexcept;
+  FeaturePromoPolicyData& operator=(const FeaturePromoPolicyData&);
+  FeaturePromoPolicyData& operator=(FeaturePromoPolicyData&&) noexcept;
+  ~FeaturePromoPolicyData();
+
+  // The time of the last heavyweight promotion the user saw
+  base::Time last_heavyweight_promo_time;
+};
+
 }  // namespace user_education
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_DATA_H_

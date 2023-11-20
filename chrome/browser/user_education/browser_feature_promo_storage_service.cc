@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -50,6 +51,10 @@ constexpr char kIPHSessionStartPath[] = "in_product_help.session_start_time";
 constexpr char kIPHSessionLastActiveTimePath[] =
     "in_product_help.session_last_active_time";
 
+// Path to the time of the most recent heavyweight promo.
+constexpr char kIPHPolicyLastHeavyweightPromoPath[] =
+    "in_product_help.policy_last_heavyweight_promo_time";
+
 }  // namespace
 
 BrowserFeaturePromoStorageService::BrowserFeaturePromoStorageService(
@@ -64,6 +69,7 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
   registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
   registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time());
+  registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -195,4 +201,22 @@ void BrowserFeaturePromoStorageService::SaveSessionData(
   prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
   prefs->SetTime(kIPHSessionLastActiveTimePath,
                  session_data.most_recent_active_time);
+}
+
+user_education::FeaturePromoPolicyData
+BrowserFeaturePromoStorageService::ReadPolicyData() const {
+  user_education::FeaturePromoPolicyData data;
+  data.last_heavyweight_promo_time =
+      profile_->GetPrefs()->GetTime(kIPHPolicyLastHeavyweightPromoPath);
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SavePolicyData(
+    const user_education::FeaturePromoPolicyData& policy_data) {
+  profile_->GetPrefs()->SetTime(kIPHPolicyLastHeavyweightPromoPath,
+                                policy_data.last_heavyweight_promo_time);
+}
+
+void BrowserFeaturePromoStorageService::ResetPolicy() {
+  profile_->GetPrefs()->ClearPref(kIPHPolicyLastHeavyweightPromoPath);
 }

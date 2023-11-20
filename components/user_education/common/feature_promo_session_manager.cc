@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/user_education_features.h"
@@ -48,9 +47,13 @@ void FeaturePromoSessionManager::IdleObserver::NotifyIdleStateChanged(
   update_callbacks_.Notify(state);
 }
 
+base::Time FeaturePromoSessionManager::IdleObserver::GetCurrentTime() const {
+  return session_manager_->storage_service_->GetCurrentTime();
+}
+
 FeaturePromoSessionManager::IdlePolicy::IdlePolicy()
-    : IdlePolicy(GetV2TimeDelta(features::kMinimumIdleTimeParamName,
-                                features::kDefaultMinimumIdleTime),
+    : IdlePolicy(GetV2TimeDelta(features::kTimeToIdleParamName,
+                                features::kDefaultTimeToIdle),
                  GetV2TimeDelta(features::kIdleTimeBetweenSessionsParamName,
                                 features::kDefaultIdleTimeBetweenSessions),
                  GetV2TimeDelta(features::kMinimumValidSessionLengthParamName,
@@ -73,7 +76,9 @@ FeaturePromoSessionManager::IdlePolicy::~IdlePolicy() = default;
 bool FeaturePromoSessionManager::IdlePolicy::IsActive(
     base::Time most_recent_active_time,
     bool is_locked) const {
-  const auto inactive_time = clock()->Now() - most_recent_active_time;
+  const auto inactive_time =
+      session_manager_->storage_service_->GetCurrentTime() -
+      most_recent_active_time;
   return !is_locked && inactive_time < minimum_idle_time();
 }
 
@@ -89,8 +94,7 @@ bool FeaturePromoSessionManager::IdlePolicy::IsNewSession(
          last_session_length >= minimum_valid_session_length();
 }
 
-FeaturePromoSessionManager::FeaturePromoSessionManager()
-    : clock_(base::DefaultClock::GetInstance()) {}
+FeaturePromoSessionManager::FeaturePromoSessionManager() = default;
 FeaturePromoSessionManager::~FeaturePromoSessionManager() = default;
 
 void FeaturePromoSessionManager::Init(

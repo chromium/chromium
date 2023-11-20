@@ -5,11 +5,14 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 
 #include "base/feature_list.h"
+#include "base/time/default_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_education {
 
-FeaturePromoStorageService::FeaturePromoStorageService() = default;
+FeaturePromoStorageService::FeaturePromoStorageService()
+    : clock_(base::DefaultClock::GetInstance()) {}
+
 FeaturePromoStorageService::~FeaturePromoStorageService() = default;
 
 int FeaturePromoStorageService::GetSnoozeCount(
@@ -26,6 +29,10 @@ std::set<std::string> FeaturePromoStorageService::GetShownForApps(
   }
 
   return data->shown_for_apps;
+}
+
+base::Time FeaturePromoStorageService::GetCurrentTime() const {
+  return clock_->Now();
 }
 
 }  // namespace user_education

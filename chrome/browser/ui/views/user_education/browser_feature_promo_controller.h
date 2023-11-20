@@ -24,6 +24,7 @@ class TrackedElement;
 
 namespace user_education {
 class FeaturePromoRegistry;
+class FeaturePromoSessionPolicy;
 class FeaturePromoStorageService;
 class HelpBubbleFactoryRegistry;
 class TutorialService;
@@ -52,6 +53,7 @@ class BrowserFeaturePromoController
       user_education::FeaturePromoRegistry* registry,
       user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
       user_education::FeaturePromoStorageService* storage_service,
+      user_education::FeaturePromoSessionPolicy* session_policy,
       user_education::TutorialService* tutorial_service);
   ~BrowserFeaturePromoController() override;
 

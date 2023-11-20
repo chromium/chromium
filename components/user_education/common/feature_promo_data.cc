@@ -66,4 +66,15 @@ FeaturePromoSessionData& FeaturePromoSessionData::operator=(
     FeaturePromoSessionData&&) noexcept = default;
 FeaturePromoSessionData::~FeaturePromoSessionData() = default;
 
+FeaturePromoPolicyData::FeaturePromoPolicyData() = default;
+FeaturePromoPolicyData::FeaturePromoPolicyData(const FeaturePromoPolicyData&) =
+    default;
+FeaturePromoPolicyData::FeaturePromoPolicyData(
+    FeaturePromoPolicyData&&) noexcept = default;
+FeaturePromoPolicyData& FeaturePromoPolicyData::operator=(
+    const FeaturePromoPolicyData&) = default;
+FeaturePromoPolicyData& FeaturePromoPolicyData::operator=(
+    FeaturePromoPolicyData&&) noexcept = default;
+FeaturePromoPolicyData::~FeaturePromoPolicyData() = default;
+
 }  // namespace user_education

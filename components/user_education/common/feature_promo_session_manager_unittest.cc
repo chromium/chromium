@@ -38,11 +38,7 @@ class FeaturePromoSessionManagerTest : public testing::Test {
     previous_data.start_time = kSessionStartTime;
     previous_data.most_recent_active_time = kPreviousActiveTime;
     storage_service_.SaveSessionData(previous_data);
-    SetupSessionManager(session_manager_);
-  }
-
-  void SetupSessionManager(FeaturePromoSessionManager& manager) {
-    manager.set_clock_for_testing(&clock_);
+    storage_service_.set_clock_for_testing(&clock_);
   }
 
   test::MockIdlePolicy& mock_idle_policy() {
@@ -98,8 +94,8 @@ class FeaturePromoSessionManagerTest : public testing::Test {
   }
 
  protected:
-  test::TestFeaturePromoStorageService storage_service_;
   base::SimpleTestClock clock_;
+  test::TestFeaturePromoStorageService storage_service_;
   testing::StrictMock<test::MockFeaturePromoSessionManager> session_manager_;
 
  private:
@@ -115,11 +111,10 @@ class FeaturePromoSessionManagerTest : public testing::Test {
 };
 
 TEST_F(FeaturePromoSessionManagerTest, CreateVanillaSessionManager) {
-  FeaturePromoSessionManager manager;
-  SetupSessionManager(manager);
   auto observer_ptr =
       std::make_unique<FeaturePromoSessionManager::IdleObserver>();
   auto policy_ptr = std::make_unique<FeaturePromoSessionManager::IdlePolicy>();
+  FeaturePromoSessionManager manager;
   manager.Init(&storage_service_, std::move(observer_ptr),
                std::move(policy_ptr));
   // Last active time was over half an hour ago.
@@ -128,14 +123,13 @@ TEST_F(FeaturePromoSessionManagerTest, CreateVanillaSessionManager) {
 }
 
 TEST_F(FeaturePromoSessionManagerTest, CheckIdlePolicyDefaults) {
-  FeaturePromoSessionManager manager;
-  SetupSessionManager(manager);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(kInitialState);
   auto policy_ptr = std::make_unique<FeaturePromoSessionManager::IdlePolicy>();
 
   auto* const observer = observer_ptr.get();
 
+  FeaturePromoSessionManager manager;
   manager.Init(&storage_service_, std::move(observer_ptr),
                std::move(policy_ptr));
 

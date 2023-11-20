@@ -44,11 +44,13 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
     user_education::FeaturePromoRegistry* registry,
     user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
     user_education::FeaturePromoStorageService* storage_service,
+    user_education::FeaturePromoSessionPolicy* session_policy,
     user_education::TutorialService* tutorial_service)
     : FeaturePromoControllerCommon(feature_engagement_tracker,
                                    registry,
                                    help_bubble_registry,
                                    storage_service,
+                                   session_policy,
                                    tutorial_service),
       browser_view_(browser_view) {}
 
@@ -98,6 +100,7 @@ BrowserFeaturePromoController::MaybeCreateForBrowserView(
       &user_education_service->feature_promo_registry(),
       &user_education_service->help_bubble_factory_registry(),
       &user_education_service->feature_promo_storage_service(),
+      &user_education_service->feature_promo_session_policy(),
       &user_education_service->tutorial_service());
 }
 

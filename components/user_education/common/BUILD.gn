@@ -21,6 +21,8 @@ source_set("common") {
     "feature_promo_result.h",
     "feature_promo_session_manager.cc",
     "feature_promo_session_manager.h",
+    "feature_promo_session_policy.cc",
+    "feature_promo_session_policy.h",
     "feature_promo_specification.cc",
     "feature_promo_specification.h",
     "feature_promo_storage_service.cc",

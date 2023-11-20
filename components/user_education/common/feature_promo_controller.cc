@@ -12,11 +12,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -38,6 +38,7 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     FeaturePromoRegistry* registry,
     HelpBubbleFactoryRegistry* help_bubble_registry,
     FeaturePromoStorageService* storage_service,
+    FeaturePromoSessionPolicy* session_policy,
     TutorialService* tutorial_service)
     : in_iph_demo_mode_(
           base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)),
@@ -45,6 +46,7 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
       feature_engagement_tracker_(feature_engagement_tracker),
       bubble_factory_registry_(help_bubble_registry),
       storage_service_(storage_service),
+      session_policy_(session_policy),
       tutorial_service_(tutorial_service) {
   DCHECK(feature_engagement_tracker_);
   DCHECK(bubble_factory_registry_);
@@ -121,23 +123,16 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   CHECK(lifecycle);
   CHECK(anchor_element);
 
-  const bool is_high_priority =
-      spec->promo_subtype() ==
-      FeaturePromoSpecification::PromoSubtype::kLegalNotice;
-
-  // For demo and high-priority promos, cancel the current promo.
-  if ((is_high_priority || for_demo) && current_promo_) {
+  // If the session policy allows overriding the current promo, abort it.
+  if (current_promo_) {
     EndPromo(*GetCurrentPromoFeature(),
              FeaturePromoClosedReason::kOverrideForDemo);
   }
 
-  // For high priority promos, close any other promos or help bubbles in this
-  // context.
-  if (is_high_priority) {
-    if (auto* help_bubble = bubble_factory_registry_->GetHelpBubble(
-            anchor_element->context())) {
-      help_bubble->Close();
-    }
+  // If the session policy allows overriding other help bubbles, close them.
+  if (auto* const help_bubble =
+          bubble_factory_registry_->GetHelpBubble(anchor_element->context())) {
+    help_bubble->Close();
   }
 
   // TODO(crbug.com/1258216): Currently this must be called before
@@ -167,6 +162,10 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
     }
     return FeaturePromoResult::kError;
   }
+
+  // Update the most recent promo info.
+  last_promo_info_ = session_policy_->SpecificationToPromoInfo(*spec);
+  session_policy_->NotifyPromoShown(last_promo_info_);
 
   bubble_closed_callback_ = std::move(params.close_callback);
 
@@ -205,6 +204,14 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
       CheckScreenReaderPromptAvailable(/* for_demo =*/false),
       /* is_critical_promo =*/true);
   critical_promo_bubble_ = bubble.get();
+
+  // Update the most recent promo info. Critical promos are always high
+  // priority.
+  // TODO(dfried): we should probably verify that the bubble succeeded?
+  last_promo_info_ = session_policy_->SpecificationToPromoInfo(spec);
+  last_promo_info_.priority = FeaturePromoSessionPolicy::PromoPriority::kHigh;
+  session_policy_->NotifyPromoShown(last_promo_info_);
+
   return bubble;
 }
 
@@ -422,33 +429,23 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kBlockedByUi;
   }
 
-  const bool is_high_priority =
-      spec->promo_subtype() ==
-      FeaturePromoSpecification::PromoSubtype::kLegalNotice;
-  const bool high_priority_already_showing =
-      critical_promo_bubble_ ||
-      (current_promo_ &&
-       current_promo_->promo_subtype() ==
-           FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+  absl::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo;
+  if (critical_promo_bubble_ || current_promo_) {
+    current_promo = last_promo_info_;
+  } else if (bubble_factory_registry_->is_any_bubble_showing()) {
+    current_promo = FeaturePromoSessionPolicy::PromoInfo();
+  }
 
-  // A normal promo cannot show if a high priority promo is displayed.
-  //
-  // Demo mode does not override high-priority promos, as in many cases they are
-  // legally mandated.
-  if (high_priority_already_showing) {
-    return FeaturePromoResult::kBlockedByPromo;
+  // Defer to the session policy to determine if the promo can show.
+  if (const auto result = session_policy_->CanShowPromo(
+          session_policy_->SpecificationToPromoInfo(*spec), current_promo);
+      !result) {
+    return result;
   }
 
   // Some contexts and anchors are not appropriate for showing normal promos.
   if (!CanShowPromoForElement(anchor_element)) {
     return FeaturePromoResult::kBlockedByUi;
-  }
-
-  // Can't show a standard promo if another IPH is running or another help
-  // bubble is visible.
-  if (!is_high_priority &&
-      (current_promo_ || bubble_factory_registry_->is_any_bubble_showing())) {
-    return FeaturePromoResult::kBlockedByPromo;
   }
 
   // Check the lifecycle, but only if not in demo mode. This is especially

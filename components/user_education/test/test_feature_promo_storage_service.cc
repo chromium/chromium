@@ -42,4 +42,17 @@ void TestFeaturePromoStorageService::ResetSession() {
   session_data_ = FeaturePromoSessionData();
 }
 
+FeaturePromoPolicyData TestFeaturePromoStorageService::ReadPolicyData() const {
+  return policy_data_;
+}
+
+void TestFeaturePromoStorageService::SavePolicyData(
+    const FeaturePromoPolicyData& policy_data) {
+  policy_data_ = policy_data;
+}
+
+void TestFeaturePromoStorageService::ResetPolicy() {
+  policy_data_ = FeaturePromoPolicyData();
+}
+
 }  // namespace user_education::test

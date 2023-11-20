@@ -31,9 +31,14 @@ class TestFeaturePromoStorageService : public FeaturePromoStorageService {
   void SaveSessionData(const FeaturePromoSessionData& session_data) override;
   void ResetSession() override;
 
+  FeaturePromoPolicyData ReadPolicyData() const override;
+  void SavePolicyData(const FeaturePromoPolicyData& policy_data) override;
+  void ResetPolicy() override;
+
  private:
   std::map<const base::Feature*, FeaturePromoData> promo_data_;
   FeaturePromoSessionData session_data_;
+  FeaturePromoPolicyData policy_data_;
 };
 
 }  // namespace user_education::test

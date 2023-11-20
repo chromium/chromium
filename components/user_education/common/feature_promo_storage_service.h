@@ -8,6 +8,9 @@
 #include <set>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,11 +54,28 @@ class FeaturePromoStorageService {
   // Reset the session data.
   virtual void ResetSession() = 0;
 
+  virtual FeaturePromoPolicyData ReadPolicyData() const = 0;
+
+  virtual void SavePolicyData(const FeaturePromoPolicyData& policy_data) = 0;
+
+  // Reset the policy data.
+  virtual void ResetPolicy() = 0;
+
   // Returns the set of apps that `iph_feature` has been shown for.
   std::set<std::string> GetShownForApps(const base::Feature& iph_feature) const;
 
   // Returns the count of previous snoozes for `iph_feature`.
   int GetSnoozeCount(const base::Feature& iph_feature) const;
+
+  // Returns the current time, as per `clock_`, which defaults to
+  // `base::DefaultClock`.
+  virtual base::Time GetCurrentTime() const;
+
+  // Sets the clock used across user education for session logic.
+  void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
+
+ private:
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace user_education

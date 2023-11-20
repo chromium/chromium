@@ -14,7 +14,7 @@ PollingIdleObserver::~PollingIdleObserver() = default;
 FeaturePromoSessionManager::IdleState PollingIdleObserver::GetCurrentState()
     const {
   return FeaturePromoSessionManager::IdleState{
-      clock()->Now() - base::Seconds(ui::CalculateIdleTime()),
+      GetCurrentTime() - base::Seconds(ui::CalculateIdleTime()),
       ui::CheckIdleStateIsLocked()};
 }
 
@@ -25,7 +25,7 @@ void PollingIdleObserver::StartObserving() {
 void PollingIdleObserver::OnIdleStateChange(
     const ui::IdlePollingService::State& state) {
   NotifyIdleStateChanged(FeaturePromoSessionManager::IdleState{
-      clock()->Now() - state.idle_time, state.locked});
+      GetCurrentTime() - state.idle_time, state.locked});
 }
 
 }  // namespace user_education
