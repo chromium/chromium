@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -34,7 +35,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   EmbeddedPermissionPromptInteractiveTest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    feature_list_.InitWithFeatures({permissions::features::kPermissionElement,
+    feature_list_.InitWithFeatures({features::kPermissionElement,
                                     permissions::features::kOneTimePermission},
                                    {});
     ready_element_visible_.where = kReadyElementQuery;

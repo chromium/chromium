@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/permissions/features.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -53,8 +53,7 @@ void ClickElementWithId(content::WebContents* web_contents,
 class PermissionElementBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionElement);
+    feature_list_.InitAndEnableFeature(features::kPermissionElement);
   }
 
   PermissionElementBrowserTest(const PermissionElementBrowserTest&) = delete;
