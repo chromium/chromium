@@ -1154,7 +1154,7 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   // those that requested window rotation locks.
   TabletModeControllerTestApi().AttachExternalMouse();
   EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   wm::ActivateWindow(win0.get());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());

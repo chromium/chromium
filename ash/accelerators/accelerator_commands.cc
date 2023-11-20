@@ -66,6 +66,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -185,7 +186,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
     int64_t display_id,
     display::Display::Rotation current) {
   Shell* shell = Shell::Get();
-  DCHECK(shell->tablet_mode_controller()->InTabletMode());
+  DCHECK(display::Screen::GetScreen()->InTabletMode());
 
   if (!display::HasInternalDisplay() ||
       display_id != display::Display::InternalDisplayId()) {
@@ -262,15 +263,14 @@ int64_t GetDisplayIdForRotation() {
 
 void RotateScreenImpl() {
   auto* shell = Shell::Get();
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int64_t display_id = GetDisplayIdForRotation();
   const display::ManagedDisplayInfo& display_info =
       shell->display_manager()->GetDisplayInfo(display_id);
   const auto active_rotation = display_info.GetActiveRotation();
   const auto next_rotation =
-      in_tablet_mode ? GetNextRotationInTabletMode(display_id, active_rotation)
-                     : GetNextRotationInClamshell(active_rotation);
+      display::Screen::GetScreen()->InTabletMode()
+          ? GetNextRotationInTabletMode(display_id, active_rotation)
+          : GetNextRotationInClamshell(active_rotation);
   if (active_rotation == next_rotation)
     return;
 
@@ -601,7 +601,7 @@ bool CanToggleMultitaskMenu() {
   if (!window) {
     return false;
   }
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     // In tablet mode, the window just has to be able to maximize.
     return WindowState::Get(window)->CanMaximize();
   }
@@ -1583,10 +1583,11 @@ void ToggleMirrorMode() {
 void ToggleMultitaskMenu() {
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
-  if (auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-      tablet_mode_controller->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     auto* multitask_menu_controller =
-        tablet_mode_controller->tablet_mode_window_manager()
+        Shell::Get()
+            ->tablet_mode_controller()
+            ->tablet_mode_window_manager()
             ->tablet_mode_multitask_menu_controller();
     // Does nothing if the menu is already shown.
     multitask_menu_controller->ShowMultitaskMenu(window);
@@ -1721,7 +1722,7 @@ void WindowMinimize() {
 
 void WindowSnap(AcceleratorAction action) {
   Shell* shell = Shell::Get();
-  const bool in_tablet = shell->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
   const bool in_overview = shell->overview_controller()->InOverviewSession();
   if (action == AcceleratorAction::kWindowCycleSnapLeft) {
     if (in_tablet) {

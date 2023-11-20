@@ -40,6 +40,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/animation/ink_drop.h"
@@ -131,8 +132,9 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   ContinueSectionView* GetContinueSectionView() {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+    if (display::Screen::GetScreen()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenContinueSectionView();
+    }
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
   }
 
@@ -141,14 +143,16 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   views::View* GetRecentAppsView() {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+    if (display::Screen::GetScreen()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenRecentAppsView();
+    }
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
   views::View* GetAppsGridView() {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+    if (display::Screen::GetScreen()->InTabletMode()) {
       return GetAppListTestHelper()->GetRootPagedAppsGridView();
+    }
     return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
@@ -191,8 +195,9 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   SearchBoxView* GetSearchBoxView() {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+    if (display::Screen::GetScreen()->InTabletMode()) {
       return GetAppListTestHelper()->GetSearchBoxView();
+    }
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
   }
 
@@ -342,7 +347,7 @@ class ContinueSectionViewWithReorderNudgeTest
   }
 
   AppListToastContainerView* GetToastContainerView() {
-    if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (!display::Screen::GetScreen()->InTabletMode()) {
       return GetAppListTestHelper()
           ->GetBubbleAppsPage()
           ->toast_container_for_test();

@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -24,6 +23,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -1230,7 +1230,7 @@ bool TouchExplorationController::ShouldEnableVolumeSlideGesture(
   int edge = FindEdgesWithinInset(event.location(), kMaxDistanceFromEdge);
   return edge & RIGHT_EDGE && edge != BOTTOM_RIGHT_CORNER &&
          (!Shell::HasInstance() ||
-          Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+          display::Screen::GetScreen()->InTabletMode() ||
           Shell::Get()
               ->accessibility_controller()
               ->enable_chromevox_volume_slide_gesture());

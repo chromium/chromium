@@ -57,6 +57,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -74,7 +75,7 @@ void PressHomeButton() {
 }
 
 bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 AppListModel* GetAppListModel() {
@@ -1172,11 +1173,12 @@ TEST_P(AppListControllerImplKioskTest,
   auto* controller = Shell::Get()->app_list_controller();
   EnableTabletMode();
 
-  controller->OnTabletModeStarted();
+  controller->OnDisplayTabletStateChanged(display::TabletState::kInTabletMode);
   EXPECT_FALSE(controller->IsVisible());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  controller->OnTabletModeEnded();
+  controller->OnDisplayTabletStateChanged(
+      display::TabletState::kInClamshellMode);
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
   EXPECT_FALSE(controller->IsVisible());

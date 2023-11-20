@@ -104,7 +104,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   int GetShelfSize() override;
   int GetSystemShelfInsetsInTabletMode() override;
   bool AppListTargetVisibility() const override;
-  bool IsInTabletMode() override;
+  bool IsInTabletMode() const override;
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
   void LoadIcon(const std::string& app_id) override {}

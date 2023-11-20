@@ -183,7 +183,7 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual int GetSystemShelfInsetsInTabletMode() = 0;
 
   // Returns whether tablet mode is currently enabled.
-  virtual bool IsInTabletMode() = 0;
+  virtual bool IsInTabletMode() const = 0;
 
   // Loads the icon of an app item identified by `app_id`.
   virtual void LoadIcon(const std::string& app_id) = 0;

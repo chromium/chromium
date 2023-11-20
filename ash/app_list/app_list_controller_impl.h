@@ -26,7 +26,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell_observer.h"
@@ -41,9 +40,14 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
 
 class PrefRegistrySimple;
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -67,7 +71,7 @@ class ASH_EXPORT AppListControllerImpl
       public ShellObserver,
       public OverviewObserver,
       public SplitViewObserver,
-      public TabletModeObserver,
+      public display::DisplayObserver,
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
       public AssistantStateObserver,
@@ -206,7 +210,7 @@ class ASH_EXPORT AppListControllerImpl
   void OnViewStateChanged(AppListViewState state) override;
   int GetShelfSize() override;
   int GetSystemShelfInsetsInTabletMode() override;
-  bool IsInTabletMode() override;
+  bool IsInTabletMode() const override;
 
   // Notifies observers of AppList visibility changes.
   void OnVisibilityChanged(bool visible, int64_t display_id);
@@ -228,9 +232,8 @@ class ASH_EXPORT AppListControllerImpl
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool is_visible) override;
@@ -408,6 +411,11 @@ class ASH_EXPORT AppListControllerImpl
 
   // FeatureDiscoveryDurationReporter::ReporterObserver:
   void OnReporterActivated() override;
+
+  // Called when display tablet state is changed to kInTabletMode or
+  // kInClamshellMode.
+  void OnChangedToInTabletMode();
+  void OnChangedToInClamshellMode();
 
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;

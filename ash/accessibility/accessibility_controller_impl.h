@@ -13,12 +13,12 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "ui/display/display_observer.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -33,6 +33,10 @@ namespace mojom {
 enum class Gesture;
 }  // namespace mojom
 }  // namespace ax
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class Point;
@@ -90,7 +94,7 @@ enum class A11yNotificationType {
 // Uses preferences to communicate with chrome to support mash.
 class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                                                public SessionObserver,
-                                               public TabletModeObserver {
+                                               public display::DisplayObserver {
  public:
   // Common interface for all features.
   class Feature {
@@ -541,9 +545,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Propagates the state of |feature| according to |feature->enabled()|.
   void OnFeatureChanged(A11yFeatureType feature);
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Observes either the signin screen prefs or active user prefs and loads
   // initial settings.

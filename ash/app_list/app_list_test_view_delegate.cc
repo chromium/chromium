@@ -202,7 +202,7 @@ bool AppListTestViewDelegate::AppListTargetVisibility() const {
   return true;
 }
 
-bool AppListTestViewDelegate::IsInTabletMode() {
+bool AppListTestViewDelegate::IsInTabletMode() const {
   return is_tablet_mode_;
 }
 

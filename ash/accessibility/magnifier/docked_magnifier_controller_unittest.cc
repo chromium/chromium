@@ -553,7 +553,7 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   // Verify that we're in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   std::unique_ptr<aura::Window> window =
       TestWindowBuilder()
@@ -602,7 +602,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   // Verify that we're in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   std::unique_ptr<aura::Window> window1 =
       TestWindowBuilder()

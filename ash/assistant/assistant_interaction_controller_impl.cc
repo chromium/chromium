@@ -39,6 +39,8 @@
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -52,13 +54,9 @@ constexpr char kAndroidIntentPrefix[] = "#Intent";
 
 // Helpers ---------------------------------------------------------------------
 
-ash::TabletModeController* GetTabletModeController() {
-  return Shell::Get()->tablet_mode_controller();
-}
-
 // Returns true if device is in tablet mode, false otherwise.
 bool IsTabletMode() {
-  return GetTabletModeController()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool launch_with_mic_open() {
@@ -89,7 +87,7 @@ AssistantInteractionControllerImpl::AssistantInteractionControllerImpl(
   model_.AddObserver(this);
 
   assistant_controller_observation_.Observe(AssistantController::Get());
-  tablet_mode_controller_observation_.Observe(GetTabletModeController());
+  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AssistantInteractionControllerImpl::~AssistantInteractionControllerImpl() {
@@ -528,15 +526,14 @@ void AssistantInteractionControllerImpl::OnSuggestionPressed(
       query_source);
 }
 
-void AssistantInteractionControllerImpl::OnTabletModeStarted() {
-  OnTabletModeChanged();
-}
+void AssistantInteractionControllerImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  // Ignore the state in the process of changing the tablet state.
+  if (state == display::TabletState::kEnteringTabletMode ||
+      state == display::TabletState::kExitingTabletMode) {
+    return;
+  }
 
-void AssistantInteractionControllerImpl::OnTabletModeEnded() {
-  OnTabletModeChanged();
-}
-
-void AssistantInteractionControllerImpl::OnTabletModeChanged() {
   // The default input modality is different for tablet and normal mode.
   // Change input modality to the new default input modality.
   if (!HasActiveInteraction() && !IsVisible())

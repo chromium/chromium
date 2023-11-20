@@ -54,7 +54,6 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -77,6 +76,8 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -464,7 +465,7 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
     catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
   } else {
-    bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
+    bool is_tablet = display::Screen::GetScreen()->InTabletMode();
 
     title = l10n_util::GetStringUTF16(
         type == A11yNotificationType::kSpokenFeedbackBrailleEnabled
@@ -971,7 +972,7 @@ void AccessibilityControllerImpl::FeatureWithDialog::SetEnabled(bool enabled) {
 AccessibilityControllerImpl::AccessibilityControllerImpl()
     : autoclick_delay_(AutoclickController::GetDefaultAutoclickDelay()) {
   Shell::Get()->session_controller()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
   CreateAccessibilityFeatures();
 
   accessibility_notification_controller_ =
@@ -1279,7 +1280,7 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
 }
 
 void AccessibilityControllerImpl::Shutdown() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Clean up any child windows and widgets that might be animating out.
@@ -2085,18 +2086,17 @@ void AccessibilityControllerImpl::
   skip_switch_access_notification_ = true;
 }
 
-void AccessibilityControllerImpl::OnTabletModeStarted() {
-  if (spoken_feedback().enabled())
-    ShowAccessibilityNotification(
-        A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
-                                std::vector<std::u16string>()));
-}
-
-void AccessibilityControllerImpl::OnTabletModeEnded() {
-  if (spoken_feedback().enabled())
-    ShowAccessibilityNotification(
-        A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
-                                std::vector<std::u16string>()));
+void AccessibilityControllerImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (spoken_feedback().enabled()) {
+    // Show accessibility notification when tablet mode transition is completed.
+    if (state == display::TabletState::kInTabletMode ||
+        state == display::TabletState::kInClamshellMode) {
+      ShowAccessibilityNotification(
+          A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
+                                  std::vector<std::u16string>()));
+    }
+  }
 }
 
 void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
