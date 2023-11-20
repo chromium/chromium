@@ -983,18 +983,12 @@ void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
 bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
   if (certificate_transparency_enabled_for_testing_.has_value())
     return certificate_transparency_enabled_for_testing_.value();
-#if defined(OFFICIAL_BUILD)
-// TODO(carlosil): Figure out if we can/should remove the OFFICIAL_BUILD
-// check now that enforcement does not rely on build dates.
-//    Certificate Transparency is enabled:
-//   - by default for Chrome-branded builds
-//   - on an opt-in basis for other builds and embedders, controlled with the
-//     kCertificateTransparencyAskBeforeEnabling flag
+  // Certificate Transparency is enabled:
+  //   - by default for Chrome-branded builds
+  //   - on an opt-in basis for other builds and embedders, controlled with the
+  //     kCertificateTransparencyAskBeforeEnabling flag
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAskBeforeEnabling);
-#else
-  return false;
-#endif  // defined(OFFICIAL_BUILD)
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
