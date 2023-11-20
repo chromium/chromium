@@ -144,9 +144,19 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
-  // TODO(crbug.com/1502097): Check whether this form has been cached but not
-  // interacted with since the caching and, if so, use its session id.
-  form_ = std::make_unique<FormDataAndroid>(form, GetSessionId());
+  // The form is assigned the same session id form sent to the Android framework
+  // in the prefill request iff all of the following conditions are met:
+  // - There is a cached form.
+  // - This is the first time we try to show the bottom sheet for the cached
+  //   form (on their second interaction, the user should see the keyboard).
+  // - The cached form is similar to the current form - i.e. it consists of the
+  //   same DOM elements as the cached form and their attributes have not
+  //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
+  const bool use_id_of_cached_form = cached_form_ && !has_used_cached_form_ &&
+                                     cached_form_->SimilarFormAs(form);
+  form_ = std::make_unique<FormDataAndroid>(
+      form,
+      use_id_of_cached_form ? cached_form_->session_id() : CreateSessionId());
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
     Reset();
@@ -165,6 +175,9 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
     form_->UpdateFieldTypes(*form_structure);
   }
   field_info.bounds = ToClientAreaBound(bounding_box);
+  // TODO(crbug.com/1502108): Only set to true once there is confirmation that
+  // the bottom sheet has been shown.
+  has_used_cached_form_ = true;
   bridge_->StartAutofillSession(
       *form_, field_info, manager->has_server_prediction(form.global_id()));
 }
@@ -447,7 +460,7 @@ void AutofillProviderAndroid::Reset() {
   // Autofill session is truly terminated.
 }
 
-SessionId AutofillProviderAndroid::GetSessionId() {
+SessionId AutofillProviderAndroid::CreateSessionId() {
   last_session_id_ = last_session_id_ == kMaximumSessionId
                          ? kMinimumSessionId
                          : SessionId(last_session_id_.value() + 1);
@@ -509,7 +522,8 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
     return;
   }
 
-  cached_form_ = std::make_unique<FormDataAndroid>(form_data, GetSessionId());
+  cached_form_ =
+      std::make_unique<FormDataAndroid>(form_data, CreateSessionId());
   cached_form_->UpdateFieldTypes(*form_structure);
   bridge_->SendPrefillRequest(*cached_form_);
 }

@@ -129,7 +129,7 @@ class AutofillProviderAndroid : public AutofillProvider,
   // Returns a new session id. Session ids are required when creating a
   // `FormDataAndroid` object and used to generate virtual ids that identify
   // form fields uniquely to the Android Autofill framework.
-  SessionId GetSessionId();
+  SessionId CreateSessionId();
 
   // Returns whether prefill requests are supported. This depends on the
   // Android version.
@@ -149,6 +149,12 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   // The form for which a prefill request has been sent.
   std::unique_ptr<FormDataAndroid> cached_form_;
+
+  // Indicates whether we have used the cached form to show a bottom sheet. This
+  // state is kept because a bottom sheet should only be shown once per cached
+  // form to allow the user to access the keyboard after focusing on the
+  // (cached) form a second time.
+  bool has_used_cached_form_ = false;
 
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
