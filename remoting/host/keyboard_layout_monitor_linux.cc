@@ -145,8 +145,7 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // which is a pain.
   connection_ = x11::Connection::Get();
   auto& xkb = connection_->xkb();
-  if (xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
-          .Sync()) {
+  if (xkb.present()) {
     constexpr auto kXkbAllStateComponentsMask =
         static_cast<x11::Xkb::StatePart>(0x3fff);
     xkb.SelectEvents({

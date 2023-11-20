@@ -24,7 +24,7 @@ namespace remoting {
 namespace {
 
 // Monitors were added in XRANDR 1.5.
-constexpr int kMinRandrVersion = 105;
+constexpr std::pair<uint32_t, uint32_t> kMinRandrVersion{1, 5};
 
 }  // namespace
 
@@ -45,9 +45,10 @@ void DesktopDisplayInfoLoaderX11::Init() {
     return;
   }
 
-  xrandr_version_ = ui::GetXrandrVersion();
-  if (xrandr_version_ < kMinRandrVersion) {
-    HOST_LOG << "XRANDR version (" << xrandr_version_ << ") is too old.";
+  auto randr_version = connection_->randr_version();
+  if (randr_version < kMinRandrVersion) {
+    HOST_LOG << "XRANDR version (" << randr_version.first << ", "
+             << randr_version.second << ") is too old.";
     return;
   }
 
@@ -107,7 +108,7 @@ void DesktopDisplayInfoLoaderX11::OnEvent(const x11::Event& xevent) {
 }
 
 void DesktopDisplayInfoLoaderX11::LoadMonitors() {
-  if (xrandr_version_ < kMinRandrVersion) {
+  if (connection_->randr_version() < kMinRandrVersion) {
     return;
   }
 

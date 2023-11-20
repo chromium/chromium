@@ -73,10 +73,6 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
     return;
   }
 
-  // Let the server know the client XInput version.
-  connection_->xinput().XIQueryVersion(
-      {x11::Input::major_version, x11::Input::minor_version});
-
   auto mask = CommonXIEventMaskForRootWindow();
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),

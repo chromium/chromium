@@ -33,15 +33,17 @@ namespace ui {
 
 namespace {
 
-constexpr int kMinVersionXrandr = 103;  // Need at least xrandr version 1.3.
+// Need at least xrandr version 1.3
+constexpr std::pair<uint32_t, uint32_t> kMinVersionXrandr{1, 3};
 
 constexpr const char kRandrEdidProperty[] = "EDID";
 
-std::map<x11::RandR::Output, int> GetMonitors(int version,
-                                              x11::RandR* randr,
-                                              x11::Window window) {
+std::map<x11::RandR::Output, int> GetMonitors(
+    std::pair<uint32_t, uint32_t> version,
+    x11::RandR* randr,
+    x11::Window window) {
   std::map<x11::RandR::Output, int> output_to_monitor;
-  if (version >= 105) {
+  if (version >= std::pair<uint32_t, uint32_t>{1, 5}) {
     if (auto reply = randr->GetMonitors({window}).Sync()) {
       for (size_t monitor = 0; monitor < reply->monitors.size(); monitor++) {
         for (x11::RandR::Output output : reply->monitors[monitor].outputs) {
@@ -209,19 +211,6 @@ gfx::PointF DisplayOriginPxToDip(const display::Display& parent,
 
 }  // namespace
 
-int GetXrandrVersion() {
-  auto impl = []() -> int {
-    auto future = x11::Connection::Get()->randr().QueryVersion(
-        {x11::RandR::major_version, x11::RandR::minor_version});
-    if (auto response = future.Sync()) {
-      return response->major_version * 100 + response->minor_version;
-    }
-    return 0;
-  };
-  static int version = impl();
-  return version;
-}
-
 std::vector<display::Display> GetFallbackDisplayList(
     float scale,
     size_t* primary_display_index_out) {
@@ -256,14 +245,13 @@ std::vector<display::Display> GetFallbackDisplayList(
 }
 
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
-    int version,
     const DisplayConfig& display_config,
     size_t* primary_display_index_out) {
   DCHECK(primary_display_index_out);
-  DCHECK_GE(version, kMinVersionXrandr);
   const float primary_scale = display_config.primary_scale;
 
   auto* connection = x11::Connection::Get();
+  DCHECK(connection->randr_version() >= kMinVersionXrandr);
   auto& randr = connection->randr();
   auto x_root_window = ui::GetX11RootWindow();
   std::vector<display::Display> displays;
@@ -277,7 +265,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   const int bits_per_component = DefaultBitsPerComponent();
 
   std::map<x11::RandR::Output, int> output_to_monitor =
-      GetMonitors(version, &randr, x_root_window);
+      GetMonitors(connection->randr_version(), &randr, x_root_window);
   auto output_primary = randr.GetOutputPrimary({x_root_window}).Sync();
   if (!output_primary) {
     return GetFallbackDisplayList(primary_scale, primary_display_index_out);

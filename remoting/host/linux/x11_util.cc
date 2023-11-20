@@ -27,9 +27,7 @@ ScopedXGrabServer::~ScopedXGrabServer() {
 }
 
 bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore) {
-  if (!connection->xtest()
-           .GetVersion({x11::Test::major_version, x11::Test::minor_version})
-           .Sync()) {
+  if (!connection->xtest().present()) {
     return false;
   }
 

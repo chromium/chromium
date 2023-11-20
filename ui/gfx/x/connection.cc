@@ -20,14 +20,24 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/bigreq.h"
+#include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/keyboard_state.h"
 #include "ui/gfx/x/randr.h"
+#include "ui/gfx/x/render.h"
+#include "ui/gfx/x/screensaver.h"
+#include "ui/gfx/x/shape.h"
+#include "ui/gfx/x/shm.h"
+#include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/visual_manager.h"
+#include "ui/gfx/x/xfixes.h"
+#include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
+#include "ui/gfx/x/xtest.h"
 
 namespace x11 {
 
@@ -126,20 +136,7 @@ Connection::Connection(const std::string& address)
   }
 
   ExtensionManager::Init(this);
-  auto enable_bigreq = bigreq().Enable();
-  // Xlib enables XKB on display creation, so we do that here to maintain
-  // compatibility.
-  xkb()
-      .UseExtension({Xkb::major_version, Xkb::minor_version})
-      .OnResponse(base::BindOnce([](Xkb::UseExtensionResponse response) {
-        if (!response || !response->supported) {
-          DVLOG(1) << "Xkb extension not available.";
-        }
-      }));
-  Flush();
-  if (auto response = enable_bigreq.Sync()) {
-    extended_max_request_length_ = response->maximum_request_length;
-  }
+  InitializeExtensions();
 
   const Format* formats[256];
   memset(formats, 0, sizeof(formats));
@@ -525,6 +522,48 @@ void Connection::InitRootDepthAndVisual() {
     }
   }
   NOTREACHED();
+}
+
+void Connection::InitializeExtensions() {
+  auto bigreq_future = bigreq().Enable();
+  dri3().QueryVersion(Dri3::major_version, Dri3::minor_version);
+  glx().QueryVersion(Glx::major_version, Glx::minor_version);
+  auto randr_future =
+      randr().QueryVersion(RandR::major_version, RandR::minor_version);
+  auto render_future =
+      render().QueryVersion(Render::major_version, Render::minor_version);
+  auto screensaver_future = screensaver().QueryVersion(
+      ScreenSaver::major_version, ScreenSaver::minor_version);
+  shape().QueryVersion();
+  auto shm_future = shm().QueryVersion();
+  sync().Initialize(Sync::major_version, Sync::minor_version);
+  xfixes().QueryVersion(XFixes::major_version, XFixes::minor_version);
+  auto xinput_future =
+      xinput().XIQueryVersion(Input::major_version, Input::minor_version);
+  xkb().UseExtension({Xkb::major_version, Xkb::minor_version});
+  xtest().GetVersion(Test::major_version, Test::minor_version);
+
+  Flush();
+
+  if (auto response = bigreq_future.Sync()) {
+    extended_max_request_length_ = response->maximum_request_length;
+  }
+  if (auto response = randr_future.Sync()) {
+    randr_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = render_future.Sync()) {
+    render_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = screensaver_future.Sync()) {
+    screensaver_version_ = {response->server_major_version,
+                            response->server_minor_version};
+  }
+  if (auto response = shm_future.Sync()) {
+    shm_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = xinput_future.Sync()) {
+    xinput_version_ = {response->major_version, response->minor_version};
+  }
 }
 
 void Connection::ProcessNextEvent() {

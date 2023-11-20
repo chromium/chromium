@@ -26,7 +26,7 @@ namespace {
 
 // For X11, webrtc::ScreenId is implemented as a RANDR Monitor ID, which
 // requires XRANDR 1.5.
-constexpr int kMinRandrVersion = 105;
+constexpr std::pair<uint32_t, uint32_t> kMinRandrVersion{1, 5};
 
 }  // namespace
 
@@ -94,9 +94,10 @@ ActiveDisplayMonitorX11::Core::~Core() {
 
 void ActiveDisplayMonitorX11::Core::Init() {
   connection_ = x11::Connection::Get();
-  int xrandr_version = ui::GetXrandrVersion();
+  auto xrandr_version = connection_->randr_version();
   if (xrandr_version < kMinRandrVersion) {
-    LOG(ERROR) << "XRANDR version (" << xrandr_version << ") is unsupported.";
+    LOG(ERROR) << "XRANDR version (" << xrandr_version.first << ", "
+               << xrandr_version.second << ") is unsupported.";
     return;
   }
 

@@ -64,9 +64,6 @@ SelectionChangeObserver::SelectionChangeObserver()
     : clipboard_atom_(x11::GetAtom(kClipboard)) {
   auto* connection = x11::Connection::Get();
   auto& xfixes = connection->xfixes();
-  // Let the server know the client version.  No need to sync since we don't
-  // care what version is running on the server.
-  xfixes.QueryVersion({x11::XFixes::major_version, x11::XFixes::minor_version});
   if (!xfixes.present()) {
     return;
   }

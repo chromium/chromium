@@ -320,9 +320,6 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   DeviceDataManagerX11();
   ~DeviceDataManagerX11() override;
 
-  // Initialize the XInput related system information.
-  bool InitializeXInputInternal();
-
   void InitializeValuatorsForTest(int deviceid,
                                   int start_valuator,
                                   int end_valuator,
@@ -351,9 +348,6 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
 
   static const int kMaxXIEventType = 32;
   static const int kMaxSlotNum = 10;
-
-  // Major opcode for the XInput extension. Used to identify XInput events.
-  int xi_opcode_;
 
   // A quick lookup table for determining if events from the pointer device
   // should be processed.

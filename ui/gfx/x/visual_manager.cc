@@ -18,10 +18,6 @@ VisualManager::VisualManager(Connection* connection) : connection_(connection) {
 
   auto& xfixes = connection_->xfixes();
   if (xfixes.present()) {
-    // Let the server know the client version.
-    xfixes.QueryVersion(
-        {x11::XFixes::major_version, x11::XFixes::minor_version});
-
     auto mask = x11::XFixes::SelectionEventMask::SetSelectionOwner |
                 x11::XFixes::SelectionEventMask::SelectionWindowDestroy |
                 x11::XFixes::SelectionEventMask::SelectionClientClose;

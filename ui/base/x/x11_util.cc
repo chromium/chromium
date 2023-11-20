@@ -120,19 +120,10 @@ bool GetWindowManagerName(std::string* wm_name) {
 // screen saver.
 bool IsX11ScreenSaverAvailable() {
   // X Screen Saver isn't accessible in headless mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
-    return false;
-  }
-
-  auto version = x11::Connection::Get()
-                     ->screensaver()
-                     .QueryVersion({x11::ScreenSaver::major_version,
-                                    x11::ScreenSaver::minor_version})
-                     .Sync();
-
-  return version && (version->server_major_version > 1 ||
-                     (version->server_major_version == 1 &&
-                      version->server_minor_version >= 1));
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kHeadless) &&
+         x11::Connection::Get()->screensaver_version() >=
+             std::pair<uint32_t, uint32_t>{1, 1};
 }
 
 // Returns true if the event has event_x and event_y fields.
@@ -221,8 +212,8 @@ bool IsXInput2Available() {
 }
 
 bool QueryShmSupport() {
-  static bool supported = x11::Connection::Get()->shm().QueryVersion().Sync();
-  return supported;
+  return x11::Connection::Get()->shm_version() >
+         std::pair<uint32_t, uint32_t>{0, 0};
 }
 
 int CoalescePendingMotionEvents(const x11::Event& x11_event,

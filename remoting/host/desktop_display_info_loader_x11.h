@@ -30,9 +30,6 @@ class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
   // Queries the X server and updates |monitors_|.
   void LoadMonitors();
 
-  // XRANDR version as MAJOR * 100 + MINOR, or 0 if XRANDR is not present.
-  int xrandr_version_ = 0;
-
   raw_ptr<x11::Connection> connection_ = nullptr;
   raw_ptr<x11::RandR> randr_ = nullptr;
 

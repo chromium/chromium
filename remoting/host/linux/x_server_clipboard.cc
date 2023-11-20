@@ -34,10 +34,6 @@ void XServerClipboard::Init(x11::Connection* connection,
     return;
   }
 
-  // Let the server know the client version.
-  connection_->xfixes().QueryVersion(
-      {x11::XFixes::major_version, x11::XFixes::minor_version});
-
   clipboard_window_ = connection_->GenerateId<x11::Window>();
   connection_->CreateWindow({
       .wid = clipboard_window_,

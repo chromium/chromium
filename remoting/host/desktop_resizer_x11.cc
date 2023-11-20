@@ -179,10 +179,6 @@ DesktopResizerX11::DesktopResizerX11()
   if (!has_randr_) {
     return;
   }
-  // Let the server know the client version so it sends us data consistent with
-  // xcbproto's definitions.  We don't care about the returned server version,
-  // so no need to sync.
-  randr_->QueryVersion({x11::RandR::major_version, x11::RandR::minor_version});
   randr_->SelectInput({root_, x11::RandR::NotifyMask::ScreenChange});
 }
 

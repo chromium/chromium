@@ -140,6 +140,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
  public:
   using IOErrorHandler = base::OnceClosure;
 
+  using ExtensionVersion = std::pair<uint32_t, uint32_t>;
+
   struct VisualInfo {
     raw_ptr<const Format> format;
     raw_ptr<const VisualType> visual_type;
@@ -204,6 +206,31 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   const Event* dispatching_event() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return dispatching_event_;
+  }
+
+  ExtensionVersion randr_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return randr_version_;
+  }
+
+  ExtensionVersion render_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return render_version_;
+  }
+
+  ExtensionVersion screensaver_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return screensaver_version_;
+  }
+
+  ExtensionVersion shm_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return shm_version_;
+  }
+
+  ExtensionVersion xinput_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return xinput_version_;
   }
 
   // Returns the underlying socket's FD if the connection is valid, or -1
@@ -439,6 +466,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   void InitRootDepthAndVisual();
 
+  void InitializeExtensions();
+
   void ProcessNextEvent();
 
   void ProcessNextResponse();
@@ -482,7 +511,13 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   bool synchronous_ = false;
   bool syncing_ = false;
 
+  // Extension data.
   uint32_t extended_max_request_length_ = 0;
+  ExtensionVersion randr_version_ = {0, 0};
+  ExtensionVersion render_version_ = {0, 0};
+  ExtensionVersion screensaver_version_ = {0, 0};
+  ExtensionVersion shm_version_ = {0, 0};
+  ExtensionVersion xinput_version_ = {0, 0};
 
   Setup setup_;
   raw_ptr<Screen> default_screen_ = nullptr;
