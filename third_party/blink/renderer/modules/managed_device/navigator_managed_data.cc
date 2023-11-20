@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 
 namespace blink {
@@ -20,6 +21,11 @@ namespace {
 
 const char kNotHighTrustedAppExceptionMessage[] =
     "This API is available only for managed apps.";
+
+#if BUILDFLAG(IS_ANDROID)
+const char kManagedConfigNotSupported[] =
+    "Managed Configuration API is not supported on this platform.";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -85,6 +91,7 @@ mojom::blink::DeviceAPIService* NavigatorManagedData::GetService() {
   return device_api_service_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 mojom::blink::ManagedConfigurationService*
 NavigatorManagedData::GetManagedConfigurationService() {
   if (!managed_configuration_service_.is_bound()) {
@@ -100,6 +107,7 @@ NavigatorManagedData::GetManagedConfigurationService() {
 
   return managed_configuration_service_.get();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NavigatorManagedData::OnServiceConnectionError() {
   device_api_service_.reset();
@@ -129,9 +137,15 @@ ScriptPromise NavigatorManagedData::getManagedConfiguration(
   if (!GetExecutionContext()) {
     return promise;
   }
+#if !BUILDFLAG(IS_ANDROID)
   GetManagedConfigurationService()->GetManagedConfiguration(
       keys, WTF::BindOnce(&NavigatorManagedData::OnConfigurationReceived,
                           WrapWeakPersistent(this), WrapPersistent(resolver)));
+#else
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, kManagedConfigNotSupported));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return promise;
 }
 
@@ -262,6 +276,7 @@ void NavigatorManagedData::AddedEventListener(
   }
 
   EventTarget::AddedEventListener(event_type, registered_listener);
+#if !BUILDFLAG(IS_ANDROID)
   if (event_type == event_type_names::kManagedconfigurationchange) {
     if (!configuration_observer_.is_bound()) {
       GetManagedConfigurationService()->SubscribeToManagedConfiguration(
@@ -270,6 +285,11 @@ void NavigatorManagedData::AddedEventListener(
                   TaskType::kMiscPlatformAPI)));
     }
   }
+#else
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kOther,
+      mojom::blink::ConsoleMessageLevel::kWarning, kManagedConfigNotSupported));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void NavigatorManagedData::RemovedEventListener(
