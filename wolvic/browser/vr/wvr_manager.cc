@@ -781,7 +781,7 @@ void WvrManager::ProcessWebVrFrameFromMailbox(
   DCHECK(webxr_.HaveProcessingFrame());
   webxr_.GetProcessingFrame()->state_locked = true;
 
-  bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
+  bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox, gfx::Transform());
   DCHECK(swapped);
   // Tell OnWebXrFrameAvailable to expect a new frame to arrive on
   // the SurfaceTexture, and save the associated frame index.

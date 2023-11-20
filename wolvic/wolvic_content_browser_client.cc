@@ -144,7 +144,8 @@ void WolvicContentBrowserClient::ConfigureNetworkContextParams(
         cert_verifier_creation_params) {
   base::FilePath user_data_path;
   base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_path);
-  network_context_params->http_cache_directory =
+  network_context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  network_context_params->file_paths->http_cache_directory =
       user_data_path.Append(FILE_PATH_LITERAL("Cache"));
 }
 
