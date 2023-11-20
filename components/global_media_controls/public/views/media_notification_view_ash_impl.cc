@@ -427,7 +427,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
     artwork_view_->SetVisible(true);
     artwork_view_->SetImageSize(
         ScaleImageSizeToFitView(image.size(), kArtworkSize));
-    artwork_view_->SetImage(image);
+    artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Draw the image with rounded corners.
     auto path = SkPath().addRoundRect(
