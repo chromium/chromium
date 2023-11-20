@@ -11,13 +11,17 @@
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
-#include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
 TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
   EmptyChromeClient client;
-  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto* scheduler = ThreadScheduler::Current()
+                        ->ToMainThreadScheduler()
+                        ->CreateAgentGroupScheduler();
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page =
@@ -30,7 +34,9 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
   EmptyChromeClient client;
-  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto* scheduler = ThreadScheduler::Current()
+                        ->ToMainThreadScheduler()
+                        ->CreateAgentGroupScheduler();
 
   Page* page = Page::CreateNonOrdinary(client, *scheduler);
 
@@ -42,7 +48,9 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, BrowsingContextGroupUpdate) {
   EmptyChromeClient client;
-  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto* scheduler = ThreadScheduler::Current()
+                        ->ToMainThreadScheduler()
+                        ->CreateAgentGroupScheduler();
   auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
@@ -68,7 +76,9 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
       features::kPausePagesPerBrowsingContextGroup);
 
   EmptyChromeClient client;
-  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto* scheduler = ThreadScheduler::Current()
+                        ->ToMainThreadScheduler()
+                        ->CreateAgentGroupScheduler();
 
   auto group_a = BrowsingContextGroupInfo::CreateUnique();
 

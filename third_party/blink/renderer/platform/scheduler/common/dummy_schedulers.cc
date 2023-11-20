@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -27,6 +29,12 @@ namespace scheduler {
 namespace {
 
 AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
+    v8::Isolate* isolate);
+
+std::unique_ptr<FrameScheduler> CreateDummyFrameSchedulerWithIsolate(
+    v8::Isolate* isolate);
+
+std::unique_ptr<PageScheduler> CreateDummyPageSchedulerWithIsolate(
     v8::Isolate* isolate);
 
 class DummyWidgetScheduler final : public WidgetScheduler {
@@ -64,7 +72,8 @@ class DummyWidgetScheduler final : public WidgetScheduler {
 
 class DummyFrameScheduler : public FrameScheduler {
  public:
-  DummyFrameScheduler() : page_scheduler_(CreateDummyPageScheduler()) {}
+  explicit DummyFrameScheduler(v8::Isolate* isolate)
+      : page_scheduler_(CreateDummyPageSchedulerWithIsolate(isolate)) {}
   ~DummyFrameScheduler() override = default;
 
   DummyFrameScheduler(const DummyFrameScheduler&) = delete;
@@ -158,8 +167,9 @@ class DummyFrameScheduler : public FrameScheduler {
 
 class DummyPageScheduler : public PageScheduler {
  public:
-  DummyPageScheduler()
-      : agent_group_scheduler_(CreateDummyAgentGroupScheduler()) {}
+  explicit DummyPageScheduler(v8::Isolate* isolate)
+      : agent_group_scheduler_(
+            CreateDummyAgentGroupSchedulerWithIsolate(isolate)) {}
   ~DummyPageScheduler() override = default;
 
   DummyPageScheduler(const DummyPageScheduler&) = delete;
@@ -169,7 +179,8 @@ class DummyPageScheduler : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
-    return CreateDummyFrameScheduler();
+    return CreateDummyFrameSchedulerWithIsolate(
+        agent_group_scheduler_->Isolate());
   }
 
   void OnTitleOrFaviconUpdated() override {}
@@ -199,26 +210,66 @@ class DummyPageScheduler : public PageScheduler {
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
-// TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
-class SimpleThread : public MainThread {
+class SimpleMainThread : public MainThread {
  public:
-  explicit SimpleThread(ThreadScheduler* scheduler) : scheduler_(scheduler) {}
-  ~SimpleThread() override {}
+  // We rely on base::SingleThreadTaskRunner::CurrentDefaultHandle for tasks
+  // posted on the main thread. The task runner handle may not be available on
+  // Blink's startup (== on SimpleMainThread's construction), because some tests
+  // like blink_platform_unittests do not set up a global task environment. In
+  // those cases, a task environment is set up on a test fixture's creation, and
+  // GetTaskRunner() returns the right task runner during a test.
+  //
+  // If GetTaskRunner() can be called from a non-main thread (including a worker
+  // thread running Mojo callbacks), we need to somehow get a task runner for
+  // the main thread. This is not possible with
+  // SingleThreadTaskRunner::CurrentDefaultHandle. We currently deal with this
+  // issue by setting the main thread task runner on the test startup and
+  // clearing it on the test tear-down. This is what
+  // SetMainThreadTaskRunnerForTesting() for. This function is called from
+  // Platform::SetMainThreadTaskRunnerForTesting() and
+  // Platform::UnsetMainThreadTaskRunnerForTesting().
 
-  SimpleThread(const SimpleThread&) = delete;
-  SimpleThread& operator=(const SimpleThread&) = delete;
+  explicit SimpleMainThread(ThreadScheduler* scheduler)
+      : scheduler_ptr_(scheduler) {}
+  ~SimpleMainThread() override = default;
+
+  SimpleMainThread(const SimpleMainThread&) = delete;
+  SimpleMainThread& operator=(const SimpleMainThread&) = delete;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       MainThreadTaskRunnerRestricted) const override {
+    if (main_thread_task_runner_for_testing_) {
+      return main_thread_task_runner_for_testing_;
+    }
+    DCHECK(WTF::IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
-  ThreadScheduler* Scheduler() override { return scheduler_; }
+  ThreadScheduler* Scheduler() override { return scheduler_ptr_; }
 
   bool IsCurrentThread() const { return WTF::IsMainThread(); }
 
+  void SetMainThreadTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    main_thread_task_runner_for_testing_ = std::move(task_runner);
+  }
+
  private:
-  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_;
+  bool IsSimpleMainThread() const override { return true; }
+
+  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_ptr_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      main_thread_task_runner_for_testing_;
+};
+
+class SimpleMainThreadWithScheduler : public SimpleMainThread {
+ public:
+  SimpleMainThreadWithScheduler() : SimpleMainThread(nullptr) {}
+
+  ThreadScheduler* Scheduler() override { return &scheduler_; }
+
+ private:
+  scheduler::SimpleMainThreadScheduler scheduler_;
 };
 
 class DummyWebMainThreadScheduler : public WebThreadScheduler,
@@ -271,7 +322,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   std::unique_ptr<MainThread> CreateMainThread() override {
-    return std::make_unique<SimpleThread>(this);
+    return std::make_unique<SimpleMainThread>(this);
   }
 
   AgentGroupScheduler* CreateAgentGroupScheduler() override {
@@ -328,12 +379,14 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
-    return CreateDummyPageScheduler();
+    return CreateDummyPageSchedulerWithIsolate(Isolate());
   }
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   WebThreadScheduler& GetMainThreadScheduler() override {
@@ -357,14 +410,24 @@ AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
   return MakeGarbageCollected<DummyAgentGroupScheduler>(isolate);
 }
 
+std::unique_ptr<FrameScheduler> CreateDummyFrameSchedulerWithIsolate(
+    v8::Isolate* isolate) {
+  return std::make_unique<DummyFrameScheduler>(isolate);
+}
+
+std::unique_ptr<PageScheduler> CreateDummyPageSchedulerWithIsolate(
+    v8::Isolate* isolate) {
+  return std::make_unique<DummyPageScheduler>(isolate);
+}
+
 }  // namespace
 
 std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler() {
-  return std::make_unique<DummyFrameScheduler>();
+  return CreateDummyFrameSchedulerWithIsolate(/*isolate=*/nullptr);
 }
 
 std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
-  return std::make_unique<DummyPageScheduler>();
+  return CreateDummyPageSchedulerWithIsolate(/*isolate=*/nullptr);
 }
 
 AgentGroupScheduler* CreateDummyAgentGroupScheduler() {
@@ -373,6 +436,21 @@ AgentGroupScheduler* CreateDummyAgentGroupScheduler() {
 
 std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {
   return std::make_unique<DummyWebMainThreadScheduler>();
+}
+
+std::unique_ptr<MainThread> CreateSimpleMainThread() {
+  return std::make_unique<SimpleMainThreadWithScheduler>();
+}
+
+void SetMainThreadTaskRunnerForTesting() {
+  static_cast<SimpleMainThread*>(Thread::MainThread())
+      ->SetMainThreadTaskRunnerForTesting(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+void UnsetMainThreadTaskRunnerForTesting() {
+  static_cast<SimpleMainThread*>(Thread::MainThread())
+      ->SetMainThreadTaskRunnerForTesting(nullptr);
 }
 
 }  // namespace scheduler
