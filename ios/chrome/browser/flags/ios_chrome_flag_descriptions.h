@@ -143,6 +143,16 @@ extern const char kBottomOmniboxDefaultSettingDescription[];
 extern const char kBottomOmniboxDeviceSwitcherResultsName[];
 extern const char kBottomOmniboxDeviceSwitcherResultsDescription[];
 
+// Title and description for the flag that enables the app-launch promo of
+// bottom omnibox.
+extern const char kBottomOmniboxPromoAppLaunchName[];
+extern const char kBottomOmniboxPromoAppLaunchDescription[];
+
+// Title and description for the flag that enables the FRE promo of bottom
+// omnibox.
+extern const char kBottomOmniboxPromoFREName[];
+extern const char kBottomOmniboxPromoFREDescription[];
+
 // Title and description for the flag that moves the omnibox to the bottom in
 // the steady state.
 extern const char kBottomOmniboxSteadyStateName[];

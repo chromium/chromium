@@ -166,6 +166,15 @@ const char kBottomOmniboxDeviceSwitcherResultsDescription[] =
     "Enabled by default. Retrieve device switcher results for the default "
     "omnibox position.";
 
+const char kBottomOmniboxPromoAppLaunchName[] =
+    "Bottom omnibox promo app-launch";
+const char kBottomOmniboxPromoAppLaunchDescription[] =
+    "Enables the app-launch promo for the bottom omnibox.";
+
+const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
+const char kBottomOmniboxPromoFREDescription[] =
+    "Enables the FRE promo for the bottom omnibox.";
+
 const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
 const char kBottomOmniboxSteadyStateDescription[] =
     "Move the omnibox to the bottom in steady state";

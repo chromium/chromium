@@ -266,6 +266,34 @@ bool IsBottomOmniboxDeviceSwitcherResultsEnabled() {
          base::FeatureList::IsEnabled(kBottomOmniboxDeviceSwitcherResults);
 }
 
+BASE_FEATURE(kBottomOmniboxPromoFRE,
+             "BottomOmniboxPromoFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBottomOmniboxPromoAppLaunch,
+             "BottomOmniboxPromoAppLaunch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kBottomOmniboxPromoParam[] = "BottomOmniboxPromoParam";
+const char kBottomOmniboxPromoParamForced[] = "Forced";
+
+bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type) {
+  if (!IsBottomOmniboxSteadyStateEnabled()) {
+    return false;
+  }
+  if ((type == BottomOmniboxPromoType::kFRE ||
+       type == BottomOmniboxPromoType::kAny) &&
+      base::FeatureList::IsEnabled(kBottomOmniboxPromoFRE)) {
+    return true;
+  }
+  if ((type == BottomOmniboxPromoType::kAppLaunch ||
+       type == BottomOmniboxPromoType::kAny) &&
+      base::FeatureList::IsEnabled(kBottomOmniboxPromoAppLaunch)) {
+    return true;
+  }
+  return false;
+}
+
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);

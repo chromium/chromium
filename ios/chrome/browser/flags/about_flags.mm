@@ -612,6 +612,13 @@ const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
          std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
 };
 
+const FeatureEntry::FeatureParam kBottomOmniboxPromoForced[] = {
+    {kBottomOmniboxPromoParam, kBottomOmniboxPromoParamForced}};
+const FeatureEntry::FeatureVariation kBottomOmniboxPromoVariations[] = {
+    {"Forced", kBottomOmniboxPromoForced, std::size(kBottomOmniboxPromoForced),
+     nullptr},
+};
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
@@ -1636,6 +1643,18 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGridCompositionalLayoutName,
      flag_descriptions::kTabGridCompositionalLayoutDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTabGridCompositionalLayout)},
+    {"bottom-omnibox-promo-fre", flag_descriptions::kBottomOmniboxPromoFREName,
+     flag_descriptions::kBottomOmniboxPromoFREDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoFRE,
+                                    kBottomOmniboxPromoVariations,
+                                    "BottomOmniboxPromoFRE")},
+    {"bottom-omnibox-promo-app-launch",
+     flag_descriptions::kBottomOmniboxPromoAppLaunchName,
+     flag_descriptions::kBottomOmniboxPromoAppLaunchDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoAppLaunch,
+                                    kBottomOmniboxPromoVariations,
+                                    "BottomOmniboxPromoAppLaunch")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

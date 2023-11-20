@@ -209,6 +209,30 @@ bool IsBottomOmniboxSteadyStateEnabled();
 // enabled.
 bool IsBottomOmniboxDeviceSwitcherResultsEnabled();
 
+// Feature flag to enable the bottom omnibox FRE promo.
+BASE_DECLARE_FEATURE(kBottomOmniboxPromoFRE);
+
+// Feature flag to enable the bottom omnibox app-launch promo.
+BASE_DECLARE_FEATURE(kBottomOmniboxPromoAppLaunch);
+
+// Feature param under kBottomOmniboxPromoFRE or kBottomOmniboxPromoAppLaunch to
+// skip the promo conditions for testing.
+extern const char kBottomOmniboxPromoParam[];
+extern const char kBottomOmniboxPromoParamForced[];
+
+// Type of bottom omnibox promo.
+enum class BottomOmniboxPromoType {
+  // kBottomOmniboxPromoFRE.
+  kFRE,
+  // kBottomOmniboxPromoAppLaunch.
+  kAppLaunch,
+  // Any promo type.
+  kAny,
+};
+
+// Whether the bottom omnibox promo of `type` is enabled.
+bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type);
+
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
