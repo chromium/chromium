@@ -429,7 +429,7 @@ extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
 extern const char kServiceWorkerStaticRouterName[];
 extern const char kServiceWorkerStaticRouterDescription[];
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 extern const char kCameraMicEffectsName[];
 extern const char kCameraMicEffectsDescription[];
 

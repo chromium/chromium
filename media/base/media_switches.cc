@@ -1574,12 +1574,13 @@ BASE_FEATURE(kUseFakeDeviceForMediaStream,
              "use-fake-device-for-media-stream",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables effects for camera and mic streams.
 BASE_FEATURE(kCameraMicEffects,
              "CameraMicEffects",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 // Controls whether mirroring negotiations will include the AV1 codec for video
 // encoding.

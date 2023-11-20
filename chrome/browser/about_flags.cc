@@ -10791,16 +10791,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kProcessPerSiteUpToMainFrameThreshold)},
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"camera-mic-effects", flag_descriptions::kCameraMicEffectsName,
      flag_descriptions::kCameraMicEffectsDescription,
-     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux | kOsFuchsia),
+     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
      FEATURE_VALUE_TYPE(media::kCameraMicEffects)},
 
     {"camera-mic-preview", flag_descriptions::kCameraMicPreviewName,
      flag_descriptions::kCameraMicPreviewDescription,
-     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux | kOsFuchsia),
+     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
      FEATURE_VALUE_TYPE(features::kCameraMicPreview)},
 #endif
 

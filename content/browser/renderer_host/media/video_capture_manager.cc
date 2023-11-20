@@ -453,7 +453,7 @@ void VideoCaptureManager::ConnectClient(
     EmitLogMessage(string_stream.str(), 1);
     mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
         video_effects_manager;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
     if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
       auto* content_client = GetContentClient();
       if (browser_context && content_client && content_client->browser()) {
