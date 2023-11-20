@@ -34,10 +34,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    // TODO(b/310047213): Fix tests from failing when companion enabled.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything},
-        {companion::features::internal::kSidePanelCompanion});
+    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -47,14 +44,14 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // first tab.
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    AddTabToBrowser(GURL("http://foo1.com"));
     auto* tab_one_registry =
         SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_one_registry);
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // second tab.
-    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+    AddTabToBrowser(GURL("http://foo2.com"));
     auto* tab_two_registry =
         SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_two_registry);
@@ -102,6 +99,15 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
   void ActivePageNotDistillable() {
     read_anything_coordinator_->ActivePageNotDistillable();
+  }
+
+  void AddTabToBrowser(const GURL& tab_url) {
+    AddTab(browser_view()->browser(), tab_url);
+    // Remove the companion entry if it present.
+    auto* registry =
+        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
   }
 
  protected:
