@@ -705,6 +705,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::unique_ptr<base::Value::Dict> configuration_seed_;
   DeviceMode device_mode_ = DEVICE_MODE_NOT_SET;
   std::string client_id_;
+  absl::optional<std::string> profile_id_;
   base::Time last_policy_timestamp_;
   int public_key_version_ = -1;
   bool public_key_version_valid_ = false;

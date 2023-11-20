@@ -360,18 +360,8 @@ GURL DMServerJobConfiguration::GetURL(int last_error) const {
   return url;
 }
 
-RegistrationJobConfiguration::RegistrationJobConfiguration(
-    JobType type,
-    CloudPolicyClient* client,
-    DMAuth auth_data,
-    absl::optional<std::string>&& oauth_token,
-    Callback callback)
-    : DMServerJobConfiguration(type,
-                               client,
-                               /*critical=*/false,
-                               std::move(auth_data),
-                               std::move(oauth_token),
-                               std::move(callback)) {}
+RegistrationJobConfiguration::RegistrationJobConfiguration(CreateParams params)
+    : DMServerJobConfiguration(std::move(params)) {}
 
 void RegistrationJobConfiguration::SetTimeoutDuration(base::TimeDelta timeout) {
   timeout_ = timeout;

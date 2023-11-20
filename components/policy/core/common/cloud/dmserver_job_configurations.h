@@ -159,11 +159,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
 class POLICY_EXPORT RegistrationJobConfiguration
     : public DMServerJobConfiguration {
  public:
-  RegistrationJobConfiguration(JobType type,
-                               CloudPolicyClient* client,
-                               DMAuth auth_data,
-                               absl::optional<std::string>&& oauth_token,
-                               Callback callback);
+  explicit RegistrationJobConfiguration(CreateParams params);
   RegistrationJobConfiguration(const RegistrationJobConfiguration&) = delete;
   RegistrationJobConfiguration& operator=(const RegistrationJobConfiguration&) =
       delete;
