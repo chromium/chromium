@@ -70,7 +70,6 @@ void ShowCreateShortcutDialog(
 // information to represent each app to the user.
 views::Widget* CreateSubAppsInstallDialogWidget(
     const std::u16string parent_app_name,
-    const std::u16string parent_app_scope,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     base::RepeatingClosure settings_page_callback,
     gfx::NativeWindow window);

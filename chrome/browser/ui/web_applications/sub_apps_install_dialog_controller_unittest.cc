@@ -43,8 +43,7 @@ class SubAppsInstallDialogControllerTest : public BrowserWithTestWindowTest {
 
     auto controller = std::make_unique<SubAppsInstallDialogController>();
     controller->Init(std::move(callback), /*sub_apps=*/{}, kParentAppName,
-                     kParentAppScope, parent_app_id, GetProfile(),
-                     GetContext());
+                     parent_app_id, GetProfile(), GetContext());
     return controller;
   }
 };
@@ -68,8 +67,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
   views::Widget* widget = CreateSubAppsInstallDialogWidget(
-      base::ASCIIToUTF16(std::string(kParentAppName)),
-      base::ASCIIToUTF16(std::string(kParentAppScope)), sub_apps,
+      base::ASCIIToUTF16(std::string(kParentAppName)), sub_apps,
       base::DoNothing(), GetContext());
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
@@ -107,8 +105,8 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
   webapps::AppId parent_app_id =
       web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
   auto controller = std::make_unique<SubAppsInstallDialogController>();
-  controller->Init(base::DoNothing(), sub_apps, kParentAppName, kParentAppScope,
-                   parent_app_id, GetProfile(), GetContext());
+  controller->Init(base::DoNothing(), sub_apps, kParentAppName, parent_app_id,
+                   GetProfile(), GetContext());
   views::Widget* widget = controller->GetWidgetForTesting();
 
   std::vector<views::View*> sub_app_labels;

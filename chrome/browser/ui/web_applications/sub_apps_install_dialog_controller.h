@@ -50,7 +50,6 @@ class SubAppsInstallDialogController : public views::WidgetObserver {
   void Init(base::OnceCallback<void(bool)> callback,
             const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
             const std::string& parent_app_name,
-            const std::string& parent_app_scope,
             const webapps::AppId& parent_app_id,
             Profile* profile,
             gfx::NativeWindow window);

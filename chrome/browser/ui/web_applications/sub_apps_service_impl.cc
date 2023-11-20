@@ -345,7 +345,6 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
                      weak_ptr_factory_.GetWeakPtr(), add_call_id),
       add_call_info.install_infos,
       /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
-      /*parent_app_scope=*/registrar.GetAppScope(*parent_app_id).spec(),
       *parent_app_id, GetProfile(render_frame_host()),
       /*window=*/
       content::WebContents::FromRenderFrameHost(&render_frame_host())

@@ -68,15 +68,13 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   const webapps::AppId parent_app_id = parent_app.app_id();
 
   auto controller = std::make_unique<SubAppsInstallDialogController>();
-  controller->Init(
-      base::DoNothing(), {},
-      provider().registrar_unsafe().GetAppShortName(parent_app_id),
-      provider().registrar_unsafe().GetAppScope(parent_app_id).spec(),
-      parent_app_id, profile(),
-      browser()
-          ->tab_strip_model()
-          ->GetActiveWebContents()
-          ->GetTopLevelNativeWindow());
+  controller->Init(base::DoNothing(), {},
+                   provider().registrar_unsafe().GetAppShortName(parent_app_id),
+                   parent_app_id, profile(),
+                   browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetTopLevelNativeWindow());
   views::Widget* widget = controller->GetWidgetForTesting();
   views::View* manage_permissions_link =
       widget->GetContentsView()->GetViewByID(base::to_underlying(
