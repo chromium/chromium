@@ -34,7 +34,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -128,25 +127,23 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
                              overview_grid->root_window()->bounds().height();
   gfx::SizeF scaled_size = gfx::ScaleSize(window_original_size, scale_factor);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // Adjust the scaled size to ensure that its smaller side length is equal or
-    // larger than the `minimum_size_length`, and then adjust the larger size
-    // length to preserve the ratio of the original size.
-    const float minimum_size_length =
-        expanded_desks_bar_height * kScaleFactorForMinimumSideLength;
-    const float scaled_size_height = scaled_size.height();
-    const float scaled_size_width = scaled_size.width();
-    if (scaled_size_height < minimum_size_length ||
-        scaled_size_width < minimum_size_length) {
-      if (scaled_size_height < scaled_size_width) {
-        scaled_size.set_height(minimum_size_length);
-        scaled_size.set_width(scaled_size_width / scaled_size_height *
-                              minimum_size_length);
-      } else {
-        scaled_size.set_width(minimum_size_length);
-        scaled_size.set_height(scaled_size_height / scaled_size_width *
-                               minimum_size_length);
-      }
+  // Adjust the scaled size to ensure that its smaller side length is equal or
+  // larger than the `minimum_size_length`, and then adjust the larger size
+  // length to preserve the ratio of the original size.
+  const float minimum_size_length =
+      expanded_desks_bar_height * kScaleFactorForMinimumSideLength;
+  const float scaled_size_height = scaled_size.height();
+  const float scaled_size_width = scaled_size.width();
+  if (scaled_size_height < minimum_size_length ||
+      scaled_size_width < minimum_size_length) {
+    if (scaled_size_height < scaled_size_width) {
+      scaled_size.set_height(minimum_size_length);
+      scaled_size.set_width(scaled_size_width / scaled_size_height *
+                            minimum_size_length);
+    } else {
+      scaled_size.set_width(minimum_size_length);
+      scaled_size.set_height(scaled_size_height / scaled_size_width *
+                             minimum_size_length);
     }
   }
 
@@ -360,11 +357,10 @@ void OverviewWindowDragController::StartNormalDragMode(
   auto* overview_grid = item_->overview_grid();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
-  // Expand desks bar when normal drag starts and desks bar is in zero state for
-  // feature Jellyroll.
+  // Expand desks bar when normal drag starts and desks bar is in zero state.
+  // The bar may be null if we have no desks in tablet mode.
   if (auto* desks_bar_view = overview_grid->desks_bar_view();
-      desks_bar_view && desks_bar_view->IsZeroState() &&
-      chromeos::features::IsJellyrollEnabled()) {
+      desks_bar_view && desks_bar_view->IsZeroState()) {
     desks_bar_view->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                        /*expanding_bar_view=*/true);
   }
@@ -624,19 +620,6 @@ void OverviewWindowDragController::ContinueNormalDrag(
     // can satisfy all cases.
     centerpoint = location_in_screen;
 
-    const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
-    // When `Jellyroll` is enabled, the header is shown for the item being
-    // dragged, thus no need to adjust the centerpoint in this case.
-    if (!is_jellyroll_enabled) {
-      // To make the dragged window contents appear centered around the drag
-      // location, we need to take into account the margins applied on the
-      // target bounds, and offset up the centerpoint by half that amount, so
-      // that the transformed bounds of the window contents move up to be
-      // centered around the cursor.
-      centerpoint.Offset(0, -kHeaderHeightDp / 2);
-    }
-
     const auto iter = per_grid_desks_bar_data_.find(overview_grid);
     DCHECK(iter != per_grid_desks_bar_data_.end());
     const GridDesksBarData& desks_bar_data = iter->second;
@@ -702,12 +685,12 @@ void OverviewWindowDragController::ContinueNormalDrag(
   bounds.set_y(centerpoint.y() - bounds.height() / 2.f);
   item_->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
 
-  auto* desks_bar_view = overview_grid->desks_bar_view();
-  if (desks_bar_view) {
+  // The bar may be null if we have no desks in tablet mode.
+  if (auto* desks_bar_view = overview_grid->desks_bar_view()) {
     auto* new_desk_button = desks_bar_view->new_desk_button();
 
-    // When `Jellyroll` is enabled, the header of window is shown during
-    // dragging. Overview item should be hovered on the new desk button with
+    // The header of window is shown during dragging. Overview item should be
+    // hovered on the new desk button with
     // `kVerticalOverlappedLengthToActivateNewDeskButton` overlapped vertical
     // area in order to activate the new desk button. There could be a lot of
     // mistriggers with header shown if the new desk button is activated when

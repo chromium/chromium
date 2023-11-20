@@ -7,7 +7,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -15,7 +14,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -39,17 +37,11 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
   SetBackground(views::CreateThemedSolidBackground(
-      is_jellyroll_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBaseOpaque));
+      cros_tokens::kCrosSysSystemBaseElevated));
   SetBorder(std::make_unique<views::HighlightBorder>(
       /*corner_radius=*/0,
-      is_jellyroll_enabled
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 }
 
 SplitViewDividerView::~SplitViewDividerView() = default;

@@ -21,7 +21,6 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -69,9 +68,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
     return;
   }
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  const gfx::RectF shadow_bounds_in_screen =
-      is_jellyroll_enabled ? target_bounds_ : GetTargetBoundsWithInsets();
+  const gfx::RectF shadow_bounds_in_screen = target_bounds_;
   auto* shadow_layer = shadow_->GetLayer();
   if (!shadow_visible || shadow_bounds_in_screen.IsEmpty()) {
     shadow_layer->SetVisible(false);
@@ -83,8 +80,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(
-      is_jellyroll_enabled ? kOverviewItemCornerRadius : 0);
+  shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {

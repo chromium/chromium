@@ -44,7 +44,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -873,8 +872,7 @@ void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
   const bool minimized_or_tucked = transform_window_.IsMinimizedOrTucked();
 
-  // With Jellyroll, header is visible while dragging.
-  if (minimized_or_tucked || chromeos::features::IsJellyrollEnabled()) {
+  if (minimized_or_tucked) {
     if (!item_mirror_for_dragging_) {
       item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
           item_widget_->GetNativeWindow(), is_touch_dragging);

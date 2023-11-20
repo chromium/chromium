@@ -28,7 +28,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -358,14 +357,9 @@ TEST_F(OverviewWindowDragControllerTest,
   const auto* desks_bar_view = overview_grid()->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
-  // Check the height of the desks bar view.
-  // When Jellyroll is enabled, desks bar is transformed to expanded state
-  // immediately at the beginning of the drag.
-  EXPECT_EQ(is_jellyroll_enabled
-                ? GetDesksBarViewExpandedStateHeight(desks_bar_view)
-                : kDeskBarZeroStateHeight,
+  // Check the height of the desks bar view. Desks bar is transformed to
+  // expanded state immediately at the beginning of the drag.
+  EXPECT_EQ(GetDesksBarViewExpandedStateHeight(desks_bar_view),
             desks_bar_view->bounds().height());
 
   // Now drop `window`. Check the height of the desks bar view. It should still
@@ -373,39 +367,27 @@ TEST_F(OverviewWindowDragControllerTest,
   auto* event_generator = GetEventGenerator();
   event_generator->ReleaseLeftButton();
 
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  EXPECT_EQ(is_jellyroll_enabled
-                ? GetDesksBarViewExpandedStateHeight(desks_bar_view)
-                : kDeskBarZeroStateHeight,
+  // Desks bar never goes back to zero state after it is initialized.
+  EXPECT_EQ(GetDesksBarViewExpandedStateHeight(desks_bar_view),
             desks_bar_view->bounds().height());
 
   // Click on the zero state new desk button to create a new desk. This
   // shouldn't end overview mode. The desks bar view should be transformed to
   // the expanded state.
-  auto* new_desk_button = desks_bar_view->new_desk_button();
-
-  const gfx::Point new_desk_button_center =
-      new_desk_button->GetBoundsInScreen().CenterPoint();
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  event_generator->MoveMouseTo(new_desk_button_center);
-  event_generator->ClickLeftButton();
+  LeftClickOn(desks_bar_view->new_desk_button());
   EXPECT_EQ(GetDesksBarViewExpandedStateHeight(desks_bar_view),
             desks_bar_view->bounds().height());
 
   // Now remove the newly created desk. This shouldn't end overview mode. The
-  // desks bar view should be transformed to the zero state.
+  // desks bar view should stay in expanded state.
   auto* controller = Shell::Get()->desks_controller();
   controller->RemoveDesk(controller->desks().back().get(),
                          DesksCreationRemovalSource::kButton,
                          DeskCloseType::kCombineDesks);
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_EQ(is_jellyroll_enabled ? DeskBarViewBase::State::kExpanded
-                                 : DeskBarViewBase::State::kZero,
-            desks_bar_view->state());
-  EXPECT_EQ(is_jellyroll_enabled
-                ? GetDesksBarViewExpandedStateHeight(desks_bar_view)
-                : kDeskBarZeroStateHeight,
+  EXPECT_EQ(DeskBarViewBase::State::kExpanded, desks_bar_view->state());
+  EXPECT_EQ(GetDesksBarViewExpandedStateHeight(desks_bar_view),
             desks_bar_view->bounds().height());
 }
 

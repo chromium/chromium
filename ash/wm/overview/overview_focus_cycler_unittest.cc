@@ -27,7 +27,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -737,17 +736,9 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   EXPECT_EQ(1u, desks_controller->desks().size());
   EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // When Jellyroll is enabled, desks bar never goes back to zero state after
-    // it's initialized.
-    EXPECT_FALSE(desk_bar_view->IsZeroState());
-    EXPECT_FALSE(desk_bar_view->mini_views().empty());
-  } else {
-    // Go back to zero state since there is only a single desk and mini views
-    // are empty in zero state.
-    EXPECT_TRUE(desk_bar_view->IsZeroState());
-    EXPECT_TRUE(desk_bar_view->mini_views().empty());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
+  EXPECT_FALSE(desk_bar_view->mini_views().empty());
 }
 
 TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
@@ -817,15 +808,8 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
   EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (is_jellyroll_enabled) {
-    EXPECT_FALSE(desk_bar_view->IsZeroState());
-  } else {
-    EXPECT_TRUE(desk_bar_view->IsZeroState());
-  }
-
+  // Desks bar never goes back to zero state after it's initialized.
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
 }
@@ -882,23 +866,14 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
 
   // Remove one desk to enter zero state desks bar.
-  auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
-  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->MoveMouseTo(
+      mini_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
-  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  event_generator->ClickLeftButton();
+  LeftClickOn(GetCloseDeskButtonForMiniView(mini_view));
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (is_jellyroll_enabled) {
-    ASSERT_FALSE(desks_bar_view->IsZeroState());
-  } else {
-    ASSERT_TRUE(desks_bar_view->IsZeroState());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
 
   // Both zero state default desk button and zero state new desk button can be
   // focused in overview mode.
@@ -970,22 +945,14 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
             GetHighlightedView());
 
   // Remove one desk to have only one desk left.
-  auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
-  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->MoveMouseTo(
+      mini_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
-  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  event_generator->ClickLeftButton();
+  LeftClickOn(GetCloseDeskButtonForMiniView(mini_view));
 
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    ASSERT_FALSE(desks_bar_view->IsZeroState());
-  } else {
-    ASSERT_TRUE(desks_bar_view->IsZeroState());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
 
   // Try tabbing after removing the second desk triggers us to transition to
   // zero state desks bar. There should not be a crash.
