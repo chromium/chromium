@@ -118,6 +118,7 @@ const wptRunArgs = [
 ];
 
 if (VERBOSE === 'true') {
+  // WPT logs.
   wptRunArgs.push(
     '--debug-test',
     '--log-mach',
@@ -134,7 +135,7 @@ if (CHROMEDRIVER === 'true') {
     '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
     `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
-    '--webdriver-arg=--verbose',
+    `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
     '--yes'
   );
 } else {
