@@ -48,7 +48,7 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
       std::make_unique<EmbeddedPermissionPromptContentScrimView>(
           delegate, top_level_widget);
   content_scrim_view->SetBackground(views::CreateSolidBackground(
-      SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.7f)));
+      SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.5f)));
   widget->SetContentsView(std::move(content_scrim_view));
   widget->Show();
   return widget;
