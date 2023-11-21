@@ -21,8 +21,8 @@ constexpr base::TimeDelta kOverlayScrollbarFadeDuration =
 constexpr base::TimeDelta kOverlayScrollbarThinningDuration =
     base::Milliseconds(200);
 
-// Fluent Overlay scrollbars animation times are modified to align with
-// Windows' 11 Fluent Design language.
+// Fluent overlay scrollbar animation times are set to align with the Fluent
+// design language.
 constexpr base::TimeDelta kFluentOverlayScrollbarFadeDelay =
     base::Milliseconds(750);
 constexpr base::TimeDelta kFluentOverlayScrollbarFadeDuration =
