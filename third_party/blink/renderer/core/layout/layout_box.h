@@ -341,9 +341,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Use this with caution! No type checking is done!
   LayoutBox* PreviousSiblingBox() const;
-  LayoutBox* PreviousInFlowSiblingBox() const;
   LayoutBox* NextSiblingBox() const;
-  LayoutBox* NextInFlowSiblingBox() const;
   LayoutBox* ParentBox() const;
 
   // Return the previous sibling column set or spanner placeholder. Only to be
@@ -1532,22 +1530,8 @@ inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
   return To<LayoutBox>(PreviousSibling());
 }
 
-inline LayoutBox* LayoutBox::PreviousInFlowSiblingBox() const {
-  LayoutBox* previous = PreviousSiblingBox();
-  while (previous && previous->IsOutOfFlowPositioned())
-    previous = previous->PreviousSiblingBox();
-  return previous;
-}
-
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
   return To<LayoutBox>(NextSibling());
-}
-
-inline LayoutBox* LayoutBox::NextInFlowSiblingBox() const {
-  LayoutBox* next = NextSiblingBox();
-  while (next && next->IsOutOfFlowPositioned())
-    next = next->NextSiblingBox();
-  return next;
 }
 
 inline LayoutBox* LayoutBox::ParentBox() const {
