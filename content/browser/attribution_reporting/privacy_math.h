@@ -60,6 +60,9 @@ class CONTENT_EXPORT RandomizedResponseData {
 
   const RandomizedResponse& response() const { return response_; }
 
+  friend bool operator==(const RandomizedResponseData&,
+                         const RandomizedResponseData&) = default;
+
  private:
   double rate_;
   double channel_capacity_;

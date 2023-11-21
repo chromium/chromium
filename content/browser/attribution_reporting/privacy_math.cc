@@ -186,6 +186,10 @@ absl::uint128 GetNumStatesCached(
     const attribution_reporting::TriggerSpecs& specs,
     int max_reports,
     internal::StateMap& map) {
+  if (specs.empty() || max_reports == 0) {
+    return 1;
+  }
+
   auto it = specs.begin();
   size_t num_windows = (*it).second.event_report_windows().end_times().size();
 
@@ -378,6 +382,11 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     absl::uint128 index,
     StateMap& map) {
   std::vector<FakeEventLevelReport> reports;
+
+  if (specs.empty() || max_reports == 0) {
+    return reports;
+  }
+
   auto it = specs.begin();
   GetReportsFromIndexRecursive(
       it, max_reports, (*it).second.event_report_windows().end_times().size(),

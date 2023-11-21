@@ -632,6 +632,26 @@ std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
              << ",window_index=" << r.window_index << "}";
 }
 
+std::ostream& operator<<(std::ostream& out, const RandomizedResponseData& r) {
+  out << "{rate=" << r.rate() << ",channel_capacity=" << r.channel_capacity()
+      << ",response=";
+
+  if (r.response().has_value()) {
+    out << "[";
+
+    for (const char* separator = ""; const auto& fake_report : *r.response()) {
+      out << separator << fake_report;
+      separator = ", ";
+    }
+
+    out << "]";
+  } else {
+    out << "null";
+  }
+
+  return out << "}";
+}
+
 std::ostream& operator<<(std::ostream& out, const StorableSource& source) {
   return out << "{registration=" << source.registration().ToJson()
              << ",common_info=" << source.common_info()

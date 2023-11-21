@@ -588,5 +588,42 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   ASSERT_EQ(uint64_t{123u}, response->front().trigger_data);
 }
 
+// Regression test for http://crbug.com/1504144 in which empty specs cause an
+// invalid iterator dereference and thus a crash.
+TEST(PrivacyMathTest, UnaryChannel) {
+  const struct {
+    const char* desc;
+    attribution_reporting::TriggerSpecs trigger_specs;
+    MaxEventLevelReports max_event_level_reports;
+  } kTestCases[] = {
+      {
+          .desc = "empty-specs",
+          .trigger_specs = attribution_reporting::TriggerSpecs(),
+          .max_event_level_reports = MaxEventLevelReports(20),
+      },
+      {
+          .desc = "zero-max-reports",
+          .trigger_specs = attribution_reporting::TriggerSpecs::Default(
+              SourceType::kNavigation, EventReportWindows()),
+          .max_event_level_reports = MaxEventLevelReports(0),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    EXPECT_EQ(1, GetNumStates(test_case.trigger_specs,
+                              test_case.max_event_level_reports));
+
+    EXPECT_EQ(RandomizedResponseData(
+                  /*rate=*/1,
+                  /*channel_capacity=*/0,
+                  /*response=*/std::vector<FakeEventLevelReport>()),
+              DoRandomizedResponse(test_case.trigger_specs,
+                                   test_case.max_event_level_reports,
+                                   /*epsilon=*/0));
+  }
+}
+
 }  // namespace
 }  // namespace content
