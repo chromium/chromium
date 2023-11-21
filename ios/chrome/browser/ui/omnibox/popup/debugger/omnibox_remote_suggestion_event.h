@@ -11,13 +11,17 @@
 // A class that captures the state of a RemoteSuggestionsService event
 @interface OmniboxRemoteSuggestionEvent : NSObject <OmniboxEvent>
 
+// Contains the request body of the remote suggestion service.
 @property(nonatomic, strong) NSString* requestBody;
+// Contains the response body of the remote suggestion service.
 @property(nonatomic, strong) NSString* responseBody;
+// Contains the response code of the remote suggestion service.
 @property(nonatomic, assign) NSInteger responseCode;
 
 - (instancetype)initWithUniqueIdentifier:
     (const base::UnguessableToken&)requestIdentifier;
 
+// Returns the uniqueIdentifier of the event suggestion service.
 - (const base::UnguessableToken&)uniqueIdentifier;
 
 @end

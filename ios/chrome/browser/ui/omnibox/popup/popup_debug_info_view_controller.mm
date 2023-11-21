@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
+#import "base/apple/foundation_util.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event_view_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -272,6 +274,12 @@ UITableView* SuggestionsTableView() {
     createdRequestWithIdentifier:
         (const base::UnguessableToken&)requestIdentifier
                          request:(const network::ResourceRequest*)request {
+  OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
+      initWithUniqueIdentifier:requestIdentifier];
+
+  [_events insertObject:event atIndex:0];
+
+  [_tableView reloadData];
 }
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
@@ -279,6 +287,22 @@ UITableView* SuggestionsTableView() {
         (const base::UnguessableToken&)requestIdentifier
                      requestBody:(NSString*)requestBody
                        URLLoader:(network::SimpleURLLoader*)URLLoader {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+        _events[indexOfFoundEventElement])
+        .requestBody = requestBody;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
@@ -286,6 +310,25 @@ UITableView* SuggestionsTableView() {
         (const base::UnguessableToken&)requestIdentifier
                       responseCode:(NSInteger)code
                       responseBody:(NSString*)responseBody {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    OmniboxRemoteSuggestionEvent* event =
+        base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+            _events[indexOfFoundEventElement]);
+
+    event.responseBody = responseBody;
+    event.responseCode = code;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -323,6 +366,11 @@ UITableView* SuggestionsTableView() {
     OmniboxAutocompleteEventViewController* vc =
         [[OmniboxAutocompleteEventViewController alloc] init];
     vc.event = (OmniboxAutocompleteEvent*)event;
+    [self.navigationController pushViewController:vc animated:YES];
+  } else {
+    OmniboxRemoteSuggestionEventViewController* vc =
+        [[OmniboxRemoteSuggestionEventViewController alloc] init];
+    vc.event = (OmniboxRemoteSuggestionEvent*)event;
     [self.navigationController pushViewController:vc animated:YES];
   }
 }
