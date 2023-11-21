@@ -2648,10 +2648,17 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
       masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                   accessor_->GetWeakPtr()));
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, 1);
+
   credit_card_access_manager().FetchCreditCard(
       masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                   accessor_->GetWeakPtr()));
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, 2);
 
   // Create a virtual card.
   CreditCard virtual_card = CreditCard();
@@ -2668,6 +2675,9 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
                                   accessor_->GetWeakPtr()));
 
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedVirtualCard", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, 1);
 }
 
 TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
@@ -2783,7 +2793,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
 }
 
@@ -2817,7 +2827,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kUnexpectedError, 1);
 }
 
@@ -2850,7 +2860,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
@@ -3114,7 +3124,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.VirtualCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
 }
 
@@ -3541,7 +3551,7 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.VirtualCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
 }
 
@@ -3588,7 +3598,7 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.VirtualCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
 }
 
@@ -3624,7 +3634,7 @@ TEST_F(CreditCardAccessManagerTest,
             *autofill_error_dialog_context.server_returned_description);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.VirtualCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
 }
 
@@ -3663,7 +3673,7 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      "Autofill.ServerCardUnmask.VirtualCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 

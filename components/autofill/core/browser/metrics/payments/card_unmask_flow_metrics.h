@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_FLOW_METRICS_H_
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 
 namespace autofill::autofill_metrics {
 
@@ -43,8 +44,7 @@ enum class ServerCardUnmaskFlowType {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
 
-  // Flow type was not specified because of no option was provided, or was
-  // unknown at time of logging.
+  // Flow type was unknown at time of logging.
   kUnspecified = 0,
   // Only FIDO auth was offered.
   kFidoOnly = 1,
@@ -53,14 +53,17 @@ enum class ServerCardUnmaskFlowType {
   // FIDO auth was offered first but was cancelled or failed. OTP auth was
   // offered as a fallback.
   kOtpFallbackFromFido = 3,
-  kMaxValue = kOtpFallbackFromFido,
+  // Risk-based auth with no challenge involved.
+  kRiskBased = 4,
+  kMaxValue = kRiskBased,
 };
 
 void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type);
 
-void LogServerCardUnmaskResult(ServerCardUnmaskResult unmask_result,
-                               AutofillClient::PaymentsRpcCardType card_type,
-                               ServerCardUnmaskFlowType flow_type);
+void LogServerCardUnmaskResult(
+    ServerCardUnmaskResult unmask_result,
+    absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>,
+    ServerCardUnmaskFlowType flow_type);
 void LogServerCardUnmaskFormSubmission(
     AutofillClient::PaymentsRpcCardType card_type);
 

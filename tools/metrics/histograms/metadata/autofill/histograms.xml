@@ -175,6 +175,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Otp" summary="OTP auth only"/>
   <variant name="OtpFallbackFromFido"
       summary="OTP fallback from FIDO authentication"/>
+  <variant name="RiskBased" summary="Risk-based authentication"/>
   <variant name="UnspecifiedFlowType" summary="No authentication specified"/>
 </variants>
 

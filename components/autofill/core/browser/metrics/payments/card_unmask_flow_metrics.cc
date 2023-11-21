@@ -17,9 +17,11 @@ void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type) {
       true);
 }
 
-void LogServerCardUnmaskResult(ServerCardUnmaskResult unmask_result,
-                               AutofillClient::PaymentsRpcCardType card_type,
-                               ServerCardUnmaskFlowType flow_type) {
+void LogServerCardUnmaskResult(
+    ServerCardUnmaskResult unmask_result,
+    absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
+        card_type,
+    ServerCardUnmaskFlowType flow_type) {
   std::string flow_type_suffix;
   switch (flow_type) {
     case ServerCardUnmaskFlowType::kUnspecified:
@@ -33,6 +35,9 @@ void LogServerCardUnmaskResult(ServerCardUnmaskResult unmask_result,
       break;
     case ServerCardUnmaskFlowType::kOtpFallbackFromFido:
       flow_type_suffix = ".OtpFallbackFromFido";
+      break;
+    case ServerCardUnmaskFlowType::kRiskBased:
+      flow_type_suffix = ".RiskBased";
       break;
   }
 

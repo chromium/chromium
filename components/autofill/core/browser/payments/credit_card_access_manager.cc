@@ -296,12 +296,10 @@ void CreditCardAccessManager::FetchCreditCard(
             ? "Autofill.UsedCachedVirtualCard"
             : "Autofill.UsedCachedServerCard";
     base::UmaHistogramCounts1000(metrics_name, ++it->second.cache_uses);
-    if (record_type == CreditCard::RecordType::kVirtualCard) {
-      autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit,
-          AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
-    }
+
+    autofill_metrics::LogServerCardUnmaskResult(
+        autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, record_type,
+        autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
 
     Reset();
     return;
@@ -1208,7 +1206,7 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       autofill_metrics::LogServerCardUnmaskResult(
           autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
           AutofillClient::PaymentsRpcCardType::kServerCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
+          autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
 
       Reset();
       break;
@@ -1224,7 +1222,7 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       autofill_metrics::LogServerCardUnmaskResult(
           autofill_metrics::ServerCardUnmaskResult::kUnexpectedError,
           AutofillClient::PaymentsRpcCardType::kServerCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
+          autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
 
       Reset();
       break;
@@ -1296,7 +1294,7 @@ void CreditCardAccessManager::
   }
   autofill_metrics::LogServerCardUnmaskResult(
       unmask_result, AutofillClient::PaymentsRpcCardType::kVirtualCard,
-      autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
+      autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
 
   if (response_details.autofill_error_dialog_context) {
     DCHECK(
@@ -1355,7 +1353,7 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
         record_type == CreditCard::RecordType::kVirtualCard
             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
             : AutofillClient::PaymentsRpcCardType::kServerCard,
-        autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
+        autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
 
     // `OnCreditCardFetchedCallback` makes a copy of `card` and `cvc` before it
     // asynchronously fills them into the form. Thus we can safely call
@@ -1450,7 +1448,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
           autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido;
       break;
     case UnmaskAuthFlowType::kNone:
-      flow_type = autofill_metrics::ServerCardUnmaskFlowType::kUnspecified;
+      flow_type = autofill_metrics::ServerCardUnmaskFlowType::kRiskBased;
       break;
     case UnmaskAuthFlowType::kFido:
     case UnmaskAuthFlowType::kCvcThenFido:
