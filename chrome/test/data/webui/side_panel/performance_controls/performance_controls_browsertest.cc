@@ -23,6 +23,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, App) {
   RunTest("side_panel/performance_controls/app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, BatterySaverCard) {
+  RunTest("side_panel/performance_controls/battery_saver_card_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, MemorySaverCard) {
+  RunTest("side_panel/performance_controls/memory_saver_card_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest,
                        PerformancePageApiProxy) {
   RunTest("side_panel/performance_controls/performance_page_api_proxy_test.js",

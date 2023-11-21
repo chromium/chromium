@@ -11,7 +11,11 @@ build_webui("build") {
 
   static_files = [ "performance.html" ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "battery_saver_card.ts",
+    "memory_saver_card.ts",
+  ]
 
   non_web_component_files = [ "performance_page_api_proxy.ts" ]
 
