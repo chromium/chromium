@@ -39,6 +39,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
@@ -269,7 +270,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   RaceNetworkRequestMode race_network_request_mode =
       RaceNetworkRequestMode::kDefault;
-  // Check if registered static route rules match the request.
+  // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
     auto eval_result = active_worker->router_evaluator()->Evaluate(
@@ -280,6 +281,14 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     active_worker->CountFeature(
         blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
     if (eval_result) {  // matched the rule.
+      // Set router information of matched rule for DevTools.
+      // TODO(crbug.com/1502443): Prepare the router info in ResponseHead even
+      // when the response is not set by `DidDispatchFetchEvent()`.
+      network::mojom::ServiceWorkerRouterInfoPtr router_info =
+          network::mojom::ServiceWorkerRouterInfo::New();
+      router_info->rule_id_matched = eval_result->id;
+      response_head_->service_worker_router_info = std::move(router_info);
+
       const auto& sources = eval_result->sources;
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
@@ -292,7 +301,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // ready until ServiceWorkerMainResourceLoader::StartRequest()
           // finishes, so calling the fallback at this point doesn't correctly
           // handle the fallback process. Use PostTask to run the callback after
-          // finishing StartRequset().
+          // finishing StartRequest().
           //
           // If the kServiceWorkerStaticRouterStartServiceWorker feature is
           // enabled, it starts the ServiceWorker manually since we don't

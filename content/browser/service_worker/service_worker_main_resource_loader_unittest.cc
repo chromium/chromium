@@ -26,7 +26,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
-#include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
@@ -571,6 +570,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
               info.cache_storage_cache_name);
     EXPECT_EQ(expected_info.did_service_worker_navigation_preload,
               info.did_service_worker_navigation_preload);
+    // TODO(crbug.com/1504040): Write tests about Static Routing API, in
+    // particular, checking the correctness of `service_worker_router_info`.
   }
 
   std::unique_ptr<network::ResourceRequest> CreateRequest() {
