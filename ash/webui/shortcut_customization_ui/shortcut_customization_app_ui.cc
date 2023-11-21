@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/webui/common/backend/shortcut_input_provider.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -284,6 +286,20 @@ void ShortcutCustomizationAppUI::BindInterface(
       web_ui()->GetWebContents()->GetBrowserContext())
       ->accelerator_configuration_provider()
       ->BindInterface(std::move(receiver));
+}
+
+void ShortcutCustomizationAppUI::BindInterface(
+    mojo::PendingReceiver<common::mojom::ShortcutInputProvider> receiver) {
+  auto* shortcut_input_provider =
+      shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext())
+          ->shortcut_input_provider();
+  auto* widget = views::Widget::GetWidgetForNativeWindow(
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  if (widget) {
+    shortcut_input_provider->TieProviderToWidget(widget);
+  }
+  shortcut_input_provider->BindInterface(std::move(receiver));
 }
 
 void ShortcutCustomizationAppUI::BindInterface(

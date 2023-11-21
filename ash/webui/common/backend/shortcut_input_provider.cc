@@ -10,6 +10,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -42,7 +43,8 @@ ShortcutInputProvider::~ShortcutInputProvider() {
 
 void ShortcutInputProvider::BindInterface(
     mojo::PendingReceiver<common::mojom::ShortcutInputProvider> receiver) {
-  CHECK(features::IsPeripheralCustomizationEnabled());
+  CHECK(features::IsPeripheralCustomizationEnabled() ||
+        ::features::IsShortcutCustomizationEnabled());
   if (shortcut_input_receiver_.is_bound()) {
     shortcut_input_receiver_.reset();
   }

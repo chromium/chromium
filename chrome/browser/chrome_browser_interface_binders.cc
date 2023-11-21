@@ -1390,8 +1390,8 @@ void PopulateChromeWebUIFrameBinders(
       ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI>(
-      map);
+      ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI,
+      ash::ShortcutCustomizationAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::CellularSetup, ash::settings::OSSettingsUI>(
