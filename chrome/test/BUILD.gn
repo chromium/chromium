@@ -483,7 +483,15 @@ static_library("test_support") {
   data_deps = []
 
   if (enable_pdf) {
-    public_deps += [ "//pdf" ]
+    sources += [
+      "../browser/pdf/pdf_extension_test_base.cc",
+      "../browser/pdf/pdf_extension_test_base.h",
+    ]
+
+    deps += [
+      "../browser/pdf",
+      "../browser/pdf:pdf_extension_test_utils",
+    ]
   }
 
   if (enable_printing) {
@@ -3047,8 +3055,6 @@ if (!is_android) {
         "../browser/pdf/pdf_extension_accessibility_test.cc",
         "../browser/pdf/pdf_extension_js_test.cc",
         "../browser/pdf/pdf_extension_test.cc",
-        "../browser/pdf/pdf_extension_test_base.cc",
-        "../browser/pdf/pdf_extension_test_base.h",
         "../browser/pdf/pdf_find_request_manager_browsertest.cc",
         "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       ]
@@ -5273,7 +5279,6 @@ if (!is_android) {
       sources += [
         "../browser/printing/browser_printing_context_factory_for_test.cc",
         "../browser/printing/browser_printing_context_factory_for_test.h",
-        "../browser/printing/pdf_nup_converter_client_browsertest.cc",
         "../browser/printing/print_browsertest.cc",
         "../browser/printing/print_browsertest.h",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",
@@ -5289,6 +5294,12 @@ if (!is_android) {
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
       deps += [ "//printing:test_support" ]
+
+      if (enable_pdf) {
+        sources +=
+            [ "../browser/printing/pdf_nup_converter_client_browsertest.cc" ]
+        deps += [ "//pdf" ]
+      }
 
       if (!is_chromeos) {
         sources +=
