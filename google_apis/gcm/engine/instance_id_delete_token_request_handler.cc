@@ -60,11 +60,4 @@ InstanceIDDeleteTokenRequestHandler::ParseResponse(
   return UnregistrationRequest::SUCCESS;
 }
 
-void InstanceIDDeleteTokenRequestHandler::ReportUMAs(
-    UnregistrationRequest::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("InstanceID.DeleteToken.RequestStatus",
-                            status,
-                            UnregistrationRequest::UNREGISTRATION_STATUS_COUNT);
-}
-
 }  // namespace gcm

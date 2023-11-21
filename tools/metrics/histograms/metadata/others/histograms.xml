@@ -5999,12 +5999,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InstanceID.DeleteToken.RequestStatus"
-    enum="GCMUnregistrationRequestStatus" expires_after="M77">
-  <owner>peter@chromium.org</owner>
-  <summary>Status code of the outcome of DeleteToken request.</summary>
-</histogram>
-
 <histogram name="InstanceID.GetToken.CompleteTime" units="ms"
     expires_after="2018-08-30">
   <owner>jianli@chromium.org</owner>
