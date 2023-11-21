@@ -75,7 +75,7 @@ each term depends mainly upon previously defined ones.
     class are logically chained into one bucket.
 
 ![A bucket, spanning multiple super pages, collects spans whose
-  slots are of a particular size class.](./dot/bucket.png)
+  slots are of a particular size class.](./src/partition_alloc/dot/bucket.png)
 
 * **Normal Bucket**: Any bucket whose size ceiling does not exceed
   `kMaxBucketed`. This is the common case in PartitionAlloc, and
@@ -110,7 +110,7 @@ each term depends mainly upon previously defined ones.
     It's primary user is [V8 CFI][v8-cfi].
 
 ![The singular AddressPoolManager mediates access to the separate pools
-  for each PartitionRoot.](./dot/address-space.png)
+  for each PartitionRoot.](./src/partition_alloc/dot/address-space.png)
 
 *** promo
 Pools are downgraded into a logical concept in 32-bit environments,
