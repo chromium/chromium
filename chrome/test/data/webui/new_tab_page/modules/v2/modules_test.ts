@@ -489,8 +489,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertTrue(modulesElement.$.undoToast.open);
               assertFalse(restoreCalled);
               assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Dismissed', 'foo'),
+                  1, metrics.count('NewTabPage.Modules.Dismissed'),
                   'Dismiss metric value');
+              assertEquals(
+                  1, metrics.count('NewTabPage.Modules.Dismissed.foo'));
 
               await waitAfterNextRender(modulesElement);
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
@@ -510,8 +512,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertFalse(modulesElement.$.undoToast.open);
               assertTrue(restoreCalled);
               assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Restored', 'foo'),
+                  1, metrics.count('NewTabPage.Modules.Restored'),
                   'Restore metric value');
+              assertEquals(1, metrics.count('NewTabPage.Modules.Restored.foo'));
             });
       });
 
