@@ -40,7 +40,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -1176,7 +1175,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
-            mOnTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tabId);
+            mOnTabSelectingListener.onTabSelecting(tabId);
         }
     }
 

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -148,7 +147,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         assertEquals(mPropertyModel.get(TITLE), mTitle);
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
-        verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
 
         mMediator.hideTabSwitcherView(true);
         assertFalse(mMediator.overviewVisible());
@@ -203,7 +202,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         assertEquals(mPropertyModel.get(URL), mUrl.getHost());
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
-        verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
         assertNotNull(mPropertyModel.get(TAB_THUMBNAIL));
@@ -239,7 +238,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         assertEquals(mPropertyModel.get(TITLE), mTitle);
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, -1);
-        verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
 
         mTabModelSelectorObserverCaptor
                 .getValue()
@@ -250,10 +249,10 @@ public class SingleTabSwitcherMediatorUnitTest {
 
         // The next tab selecting event should be ignored.
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, mTabId);
-        verify(mOnTabSelectingListener, times(1)).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener, times(1)).onTabSelecting(eq(mTabId));
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, mTabId);
-        verify(mOnTabSelectingListener, times(2)).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener, times(2)).onTabSelecting(eq(mTabId));
 
         mMediator.hideTabSwitcherView(true);
         assertFalse(mMediator.overviewVisible());
@@ -283,7 +282,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab2, TabSelectionType.FROM_CLOSE, mTabId2);
-        verify(mOnTabSelectingListener, times(0)).onTabSelecting(anyLong(), eq(mTabId2));
+        verify(mOnTabSelectingListener, times(0)).onTabSelecting(eq(mTabId2));
         assertEquals(mPropertyModel.get(TITLE), mTitle2);
 
         mMediator.hideTabSwitcherView(true);
@@ -319,7 +318,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         // The next tab selecting event should not be ignored after hiding and reshowing.
         mMediator.showTabSwitcherView(true);
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, -1);
-        verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
 
         mMediator.hideTabSwitcherView(true);
     }

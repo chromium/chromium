@@ -460,15 +460,6 @@ public abstract class Layout {
     }
 
     /**
-     * Called when a tab is getting selected. Typically when exiting the overview mode.
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the selected tab.
-     */
-    public void onTabSelecting(long time, int tabId) {
-        startHiding(tabId, true);
-    }
-
-    /**
      * Initialize the layout to be shown.
      * @param time   The current time of the app in ms.
      * @param animate Whether to play an entry animation.

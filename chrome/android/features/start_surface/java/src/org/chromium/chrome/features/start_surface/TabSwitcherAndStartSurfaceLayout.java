@@ -940,4 +940,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             mHideTabCallback = null;
         }
     }
+
+    private void onTabSelecting(int tabId) {
+        startHiding(tabId, true);
+    }
 }

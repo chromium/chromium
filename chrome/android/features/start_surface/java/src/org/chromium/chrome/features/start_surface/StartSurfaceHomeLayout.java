@@ -154,4 +154,8 @@ public class StartSurfaceHomeLayout extends Layout {
         if (mSceneLayer != null) return;
         mSceneLayer = new SceneLayer();
     }
+
+    private void onTabSelecting(int tabId) {
+        startHiding(tabId, true);
+    }
 }

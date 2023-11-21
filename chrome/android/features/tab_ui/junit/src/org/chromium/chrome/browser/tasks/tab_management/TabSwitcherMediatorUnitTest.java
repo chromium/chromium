@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -53,7 +52,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -126,7 +124,7 @@ public class TabSwitcherMediatorUnitTest {
     @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock TabSwitcherViewObserver mTabSwitcherViewObserver;
     @Mock CompositorViewHolder mCompositorViewHolder;
-    @Mock Layout mLayout;
+    @Mock TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     @Mock TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock TabSwitcherMediator.MessageItemsController mMessageItemsController;
     @Mock TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
@@ -243,7 +241,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.initWithNative(null);
         mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
+        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         verify(mIncognitoReauthController, times(1))
                 .addIncognitoReauthCallback(mIncognitoReauthCallbackArgumentCaptor.capture());
     }
@@ -374,7 +372,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.initWithNative(null);
         mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
+        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
 
         mMediator.prepareHideTabSwitcherView();
         verifyNoMoreInteractions(mTabGridDialogController);
@@ -463,7 +461,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.initWithNative(null);
         mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
+        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
 
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
@@ -541,7 +539,7 @@ public class TabSwitcherMediatorUnitTest {
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
 
-        verify(mLayout).onTabSelecting(anyLong(), eq(TAB1_ID));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(TAB1_ID));
     }
 
     @Test
@@ -555,10 +553,10 @@ public class TabSwitcherMediatorUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab1, TabSelectionType.FROM_CLOSE, TAB3_ID);
-        verify(mLayout, never()).onTabSelecting(anyLong(), anyInt());
+        verify(mOnTabSelectingListener, never()).onTabSelecting(anyInt());
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
-        verify(mLayout).onTabSelecting(anyLong(), eq(TAB1_ID));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(TAB1_ID));
     }
 
     @Test
@@ -570,10 +568,10 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(true).when(mTab3).isClosing();
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_UNDO, TAB3_ID);
-        verify(mLayout, never()).onTabSelecting(anyLong(), anyInt());
+        verify(mOnTabSelectingListener, never()).onTabSelecting(anyInt());
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
-        verify(mLayout).onTabSelecting(anyLong(), eq(TAB1_ID));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(TAB1_ID));
     }
 
     @Test
@@ -585,10 +583,10 @@ public class TabSwitcherMediatorUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
-        verify(mLayout, never()).onTabSelecting(anyLong(), anyInt());
+        verify(mOnTabSelectingListener, never()).onTabSelecting(anyInt());
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
-        verify(mLayout).onTabSelecting(anyLong(), eq(TAB1_ID));
+        verify(mOnTabSelectingListener).onTabSelecting(eq(TAB1_ID));
     }
 
     @Test

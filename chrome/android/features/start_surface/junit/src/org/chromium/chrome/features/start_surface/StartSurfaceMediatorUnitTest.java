@@ -2067,14 +2067,14 @@ public class StartSurfaceMediatorUnitTest {
         OnTabSelectingListener onTabSelectingListener = Mockito.mock(OnTabSelectingListener.class);
         mediator.setOnTabSelectingListener(onTabSelectingListener);
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, lastId);
-        verify(onTabSelectingListener).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener).onTabSelecting(eq(currentId));
 
         doReturn(true).when(mTab).isIncognito();
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, lastId);
-        verify(onTabSelectingListener, times(2)).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener, times(2)).onTabSelecting(eq(currentId));
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_CLOSE, lastId);
-        verify(onTabSelectingListener, times(2)).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener, times(2)).onTabSelecting(eq(currentId));
     }
 
     @Test

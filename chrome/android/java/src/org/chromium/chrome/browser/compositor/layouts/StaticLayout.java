@@ -301,11 +301,6 @@ public class StaticLayout extends Layout {
         super.doneHiding();
     }
 
-    @Override
-    public void onTabSelecting(long time, int id) {
-        // Intentional no-op.
-    }
-
     private void setPreHideState() {
         mHandler.removeCallbacks(mUnstallRunnable);
         mModel.set(LayoutTab.STATIC_TO_VIEW_BLEND, 1.0f);

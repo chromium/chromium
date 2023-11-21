@@ -1375,4 +1375,8 @@ public class TabSwitcherLayout extends Layout {
         conditionalAnimationRunner.setBitmap(null);
         return conditionalAnimationRunner;
     }
+
+    private void onTabSelecting(int tabId) {
+        startHiding(tabId, true);
+    }
 }

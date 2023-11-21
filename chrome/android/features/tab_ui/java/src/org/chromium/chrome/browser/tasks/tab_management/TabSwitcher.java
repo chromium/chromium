@@ -31,11 +31,11 @@ public interface TabSwitcher {
     interface OnTabSelectingListener {
         /**
          * Called when a tab is getting selected. Typically when exiting the overview mode.
-         * @param time  The current time of the app in ms.
+         *
          * @param tabId The ID of selected {@link Tab}.
          * @see Layout#onTabSelecting(long, int)
          */
-        void onTabSelecting(long time, int tabId);
+        void onTabSelecting(int tabId);
     }
 
     /**

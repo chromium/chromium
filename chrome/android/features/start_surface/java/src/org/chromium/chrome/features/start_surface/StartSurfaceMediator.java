@@ -63,7 +63,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -401,23 +400,23 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 };
             } else {
                 // This TabModelObserver observes both the regular and incognito TabModels.
-                mTabModelObserver = new TabModelObserver() {
-                    @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
-                        if (!mIsStartSurfaceRefactorEnabled
-                                && mTabModelSelector.isIncognitoSelected()) {
-                            return;
-                        }
+                mTabModelObserver =
+                        new TabModelObserver() {
+                            @Override
+                            public void didSelectTab(Tab tab, int type, int lastId) {
+                                if (!mIsStartSurfaceRefactorEnabled
+                                        && mTabModelSelector.isIncognitoSelected()) {
+                                    return;
+                                }
 
-                        assert mUseMagicSpace;
-                        if (type == TabSelectionType.FROM_CLOSE
-                                || type == TabSelectionType.FROM_UNDO) {
-                            return;
-                        }
-                        onTabSelecting(
-                                LayoutManagerImpl.time(), mTabModelSelector.getCurrentTabId());
-                    }
-                };
+                                assert mUseMagicSpace;
+                                if (type == TabSelectionType.FROM_CLOSE
+                                        || type == TabSelectionType.FROM_UNDO) {
+                                    return;
+                                }
+                                onTabSelecting(mTabModelSelector.getCurrentTabId());
+                            }
+                        };
             }
             if (mTabModelSelector.getModels().isEmpty()) {
                 TabModelSelectorObserver selectorObserver = new TabModelSelectorObserver() {
@@ -1255,13 +1254,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     // StartSurface.OnTabSelectingListener
     @Override
-    public void onTabSelecting(long time, int tabId) {
+    public void onTabSelecting(int tabId) {
         if (!mHideOverviewOnTabSelecting) {
             mHideOverviewOnTabSelecting = true;
             return;
         }
         assert mOnTabSelectingListener != null;
-        mOnTabSelectingListener.onTabSelecting(time, tabId);
+        mOnTabSelectingListener.onTabSelecting(tabId);
     }
 
     // LogoCoordinator.VisibilityObserver

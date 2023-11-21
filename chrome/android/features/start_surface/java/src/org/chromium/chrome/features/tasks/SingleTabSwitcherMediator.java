@@ -26,7 +26,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -100,26 +99,28 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             }
         });
 
-        mNormalTabModelObserver = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                        && mTabModelSelector.isIncognitoSelected()) {
-                    return;
-                }
+        mNormalTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
+                                && mTabModelSelector.isIncognitoSelected()) {
+                            return;
+                        }
 
-                assert overviewVisible();
+                        assert overviewVisible();
 
-                mSelectedTabDidNotChangedAfterShown = false;
-                updateSelectedTab(tab);
-                if (type == TabSelectionType.FROM_CLOSE || type == TabSelectionType.FROM_UNDO
-                        || mShouldIgnoreNextSelect) {
-                    mShouldIgnoreNextSelect = false;
-                    return;
-                }
-                mTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tab.getId());
-            }
-        };
+                        mSelectedTabDidNotChangedAfterShown = false;
+                        updateSelectedTab(tab);
+                        if (type == TabSelectionType.FROM_CLOSE
+                                || type == TabSelectionType.FROM_UNDO
+                                || mShouldIgnoreNextSelect) {
+                            mShouldIgnoreNextSelect = false;
+                            return;
+                        }
+                        mTabSelectingListener.onTabSelecting(tab.getId());
+                    }
+                };
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
@@ -352,8 +353,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         if (mSelectedTabDidNotChangedAfterShown) {
             RecordUserAction.record("MobileTabReturnedToCurrentTab.SingleTabCard");
         }
-        mTabSelectingListener.onTabSelecting(
-                LayoutManagerImpl.time(), mTabModelSelector.getCurrentTabId());
+        mTabSelectingListener.onTabSelecting(mTabModelSelector.getCurrentTabId());
     }
 
     static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
