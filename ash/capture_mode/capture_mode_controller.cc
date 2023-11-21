@@ -120,17 +120,17 @@ constexpr char kCanShowDemoToolsNudge[] =
 
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
-  BUTTON_EDIT = 0,
-  BUTTON_DELETE,
+  kButtonEdit = 0,
+  kButtonDelete,
 };
 
 // The video notification button index.
 enum GameDashboardVideoNotificationButtonIndex {
-  BUTTON_SHARE_TO_YOUTUBE = 0,
-  BUTTON_DELETE_GAME_VIDEO,
+  kButtonShareToYoutube = 0,
+  kButtonDeleteGameVideo,
 };
 enum VideoNotificationButtonIndex {
-  BUTTON_DELETE_VIDEO = 0,
+  kButtonDeleteVideo = 0,
 };
 
 // Returns the file extension for the given `recording_type` and the current
@@ -1659,11 +1659,11 @@ void CaptureModeController::HandleNotificationClicked(
       if (behavior_type == BehaviorType::kGameDashboard) {
         switch (button_index_value) {
           case GameDashboardVideoNotificationButtonIndex::
-              BUTTON_SHARE_TO_YOUTUBE:
+              kButtonShareToYoutube:
             OnShareToYouTubeButtonPressed();
             break;
           case GameDashboardVideoNotificationButtonIndex::
-              BUTTON_DELETE_GAME_VIDEO:
+              kButtonDeleteGameVideo:
             DeleteFileAsync(blocking_task_runner_, screen_capture_path,
                             std::move(on_file_deleted_callback_for_test_));
             break;
@@ -1672,7 +1672,7 @@ void CaptureModeController::HandleNotificationClicked(
             break;
         }
       } else {
-        CHECK_EQ(VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO,
+        CHECK_EQ(VideoNotificationButtonIndex::kButtonDeleteVideo,
                  button_index_value);
         DeleteFileAsync(blocking_task_runner_, screen_capture_path,
                         std::move(on_file_deleted_callback_for_test_));
@@ -1680,12 +1680,12 @@ void CaptureModeController::HandleNotificationClicked(
     } else {
       CHECK_EQ(type, CaptureModeType::kImage);
       switch (button_index_value) {
-        case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
+        case ScreenshotNotificationButtonIndex::kButtonEdit:
           delegate_->OpenScreenshotInImageEditor(screen_capture_path);
           RecordScreenshotNotificationQuickAction(
               CaptureQuickAction::kBacklight);
           break;
-        case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
+        case ScreenshotNotificationButtonIndex::kButtonDelete:
           DeleteFileAsync(blocking_task_runner_, screen_capture_path,
                           std::move(on_file_deleted_callback_for_test_));
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
