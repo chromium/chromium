@@ -105,6 +105,11 @@ class TabChangedWaiter : public TabStripModelObserver {
 // For crbug.com/1038918
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        CtrlPageUpDownSwitchesTabs) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
 
@@ -140,6 +145,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
@@ -153,6 +163,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
@@ -193,6 +208,11 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 // icon on the menu, the context menu should open up.
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   extensions::MimeHandlerViewGuest* guest =
       LoadPdfInNewTabGetMimeHandlerView(url);
@@ -241,6 +261,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 #endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        MAYBE_TouchSelectionBounds) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf#zoom=100");

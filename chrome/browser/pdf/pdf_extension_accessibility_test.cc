@@ -188,6 +188,11 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibility) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
@@ -206,6 +211,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityEnableLater) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // In this test, load the PDF file first, with accessibility off.
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -226,6 +236,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityInIframe) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
@@ -240,6 +255,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -263,6 +283,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
 #endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        MAYBE_PdfAccessibilityWordBoundaries) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -298,6 +323,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilitySelection) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest);
@@ -347,6 +377,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityContextMenuAction) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =
@@ -405,6 +440,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_view);
@@ -427,6 +467,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_RecordInaccessiblePdfUKM) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest_view =
       LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
           "/pdf/accessibility/hello-world-in-image.pdf"));
@@ -458,6 +503,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 IN_PROC_BROWSER_TEST_F(
     PDFExtensionAccessibilityTest,
     DISABLED_RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
+  // TODO(crbug.com/1445746): Remove this when it passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest_view =
       LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
           "/pdf/accessibility/hello-world-in-image.pdf"));
@@ -489,6 +539,11 @@ IN_PROC_BROWSER_TEST_F(
 // when accessibility is enabled.  (http://crbug.com/668724)
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        PdfAccessibilityTextRunCrash) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf_private/accessibility_crash_2.pdf"));
@@ -662,17 +717,32 @@ class PDFExtensionAccessibilityTextExtractionTest
 // InlineTextBoxes within a line.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        NextOnLine) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("next-on-line.pdf"));
 }
 
 // Test that a drop-cap is grouped with the correct line.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("drop-cap.pdf"));
 }
 
 // Test that simulated superscripts and subscripts don't cause a line break.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        SuperscriptSubscript) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("superscript-subscript.pdf"));
 }
 
@@ -680,6 +750,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 // cause line breaks.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        FontChange) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("font-change.pdf"));
 }
 
@@ -687,23 +762,43 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 // only whitespace characters.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        OnlyWhitespaceText) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("whitespace.pdf"));
 }
 
 // Test data of inline text boxes for PDF with weblinks.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("weblinks.pdf"));
 }
 
 // Test data of inline text boxes for PDF with highlights.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        Highlights) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("highlights.pdf"));
 }
 
 // Test data of inline text boxes for PDF with text fields.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        TextFields) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("text_fields.pdf"));
 }
 
@@ -711,6 +806,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 // text.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        ParagraphsAndHeadingUntagged) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(
       FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"));
 }
@@ -719,12 +819,22 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 // annotation links.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        LinksImagesAndText) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("text-image-link.pdf"));
 }
 
 // Test data of inline text boxes for PDF with overlapping annotations.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        OverlappingAnnots) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTextExtractionTest(FILE_PATH_LITERAL("overlapping-annots.pdf"));
 }
 
@@ -949,64 +1059,134 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("hello-world.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
                        ParagraphsAndHeadingUntagged) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, MultiPage) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("multi-page.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
                        DirectionalTextRuns) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("directional-text-runs.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextDirection) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("text-direction.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, WebLinks) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("weblinks.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
                        OverlappingLinks) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("overlapping-links.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, Highlights) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("highlights.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextFields) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("text_fields.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, Images) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("image_alt_text.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
                        LinksImagesAndText) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("text-image-link.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
                        TextRunStyleHeuristic) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("text-run-style-heuristic.pdf"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextStyle) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("text-style.pdf"));
 }
 
 // TODO(https://crbug.com/1172026)
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunPDFTest(FILE_PATH_LITERAL("xfa_fields.pdf"));
 }
 
@@ -1021,6 +1201,11 @@ using PDFExtensionAccessibilityNavigationTest = PDFExtensionAccessibilityTest;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
                        MAYBE_LinkNavigation) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Enable accessibility and load the test file.
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
@@ -1093,6 +1278,11 @@ class PDFExtensionAccessibilityPdfOcrTest
 // Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_view);
@@ -1112,6 +1302,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
 // Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_view);

@@ -79,6 +79,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
                             blink::WebMouseEvent::Button button,
                             const gfx::Point& point_in_guest);
 
+  // Returns true if the test should use the OOPIF PDF viewer instead of the
+  // GuestView PDF viewer.
+  // TODO(crbug.com/1445746): Remove once only OOPIF PDF viewer is used.
+  virtual bool UseOopif() const;
+
   // Hooks to set up feature flags.
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const;
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;

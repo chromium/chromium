@@ -491,6 +491,7 @@ static_library("test_support") {
     deps += [
       "../browser/pdf",
       "../browser/pdf:pdf_extension_test_utils",
+      "//pdf:features",
     ]
   }
 

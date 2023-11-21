@@ -250,6 +250,11 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
@@ -267,6 +272,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
@@ -287,6 +297,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
 #endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
@@ -310,6 +325,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 IN_PROC_BROWSER_TEST_P(
     PDFExtensionPrintingTest,
     DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
@@ -333,6 +353,11 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandPluginFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
@@ -355,6 +380,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 // TODO(crbug.com/1330032): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
@@ -375,6 +405,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
@@ -417,6 +452,11 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
 // defined above.
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
                        MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))

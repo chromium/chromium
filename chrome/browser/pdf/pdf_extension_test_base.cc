@@ -27,6 +27,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
@@ -190,12 +191,24 @@ void PDFExtensionTestBase::SimulateMouseClickAt(
                                 button, point_in_root_coords);
 }
 
+bool PDFExtensionTestBase::UseOopif() const {
+  return false;
+}
+
 std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetEnabledFeatures()
     const {
-  return {};
+  std::vector<base::test::FeatureRef> enabled;
+  if (UseOopif()) {
+    enabled.push_back(chrome_pdf::features::kPdfOopif);
+  }
+  return enabled;
 }
 
 std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetDisabledFeatures()
     const {
-  return {};
+  std::vector<base::test::FeatureRef> disabled;
+  if (!UseOopif()) {
+    disabled.push_back(chrome_pdf::features::kPdfOopif);
+  }
+  return disabled;
 }

@@ -115,6 +115,11 @@ class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
 // of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFAfterTurningOnPdfOcr) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
@@ -147,6 +152,11 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFBeforeTurningOnPdfOcr) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
@@ -186,6 +196,11 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // it's not related to PDF.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        TurningOnPdfOcrNotAffectingNonPdfTab) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Turn off PDF OCR first.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, false);
@@ -213,6 +228,11 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        NotEnabledWithoutScreenReader) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EnableScreenReader(false);
 
   screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
@@ -238,6 +258,11 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // WebContents in another profile.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        TurningOnPdfOcrInOneProfileNotAffectingAnotherProfile) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
