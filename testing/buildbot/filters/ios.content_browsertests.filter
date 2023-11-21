@@ -295,6 +295,9 @@
 # TODO(crbug.com/1503172): Fails due to video capture issues.
 -BackForwardCacheBrowserTest.DoesNotCacheIfDisplayMediaAccessGranted
 
+# TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
+-All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink*
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
