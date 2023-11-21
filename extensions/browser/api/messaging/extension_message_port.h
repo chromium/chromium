@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/uuid.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -83,7 +84,8 @@ class ExtensionMessagePort : public MessagePort {
 
   // MessagePort:
   void RemoveCommonFrames(const MessagePort& port) override;
-  bool HasFrame(content::RenderFrameHost* render_frame_host) const override;
+  bool HasFrame(
+      const content::GlobalRenderFrameHostToken& frame_token) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
   void DispatchOnConnect(mojom::ChannelType channel_type,
@@ -114,6 +116,7 @@ class ExtensionMessagePort : public MessagePort {
   // Unregisters a frame as a receiver / sender. When there are no registered
   // frames any more, the port closes via CloseChannel().
   bool UnregisterFrame(content::RenderFrameHost* render_frame_host);
+  bool UnregisterFrame(const content::GlobalRenderFrameHostToken& frame_token);
 
   // Unregisters all the frames whose outermost main frame is `main_frame`. When
   // there are no registered frames any more, the port closes via
@@ -184,7 +187,7 @@ class ExtensionMessagePort : public MessagePort {
   // This map is populated before the first message is sent to the destination,
   // and shrinks over time when the port is rejected by the recipient frame, or
   // when the frame is removed or unloaded.
-  std::map<content::RenderFrameHost*,
+  std::map<content::GlobalRenderFrameHostToken,
            mojo::AssociatedRemote<mojom::MessagePort>>
       frames_;
 
@@ -194,7 +197,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // The set of frames and workers that have not been connected yet. These
   // should only have items during connection setup time.
-  std::set<content::RenderFrameHost*> pending_frames_;
+  std::set<content::GlobalRenderFrameHostToken> pending_frames_;
   std::set<WorkerId> pending_service_workers_;
 
   // GUIDs of Service Workers that have pending keepalive requests inflight.

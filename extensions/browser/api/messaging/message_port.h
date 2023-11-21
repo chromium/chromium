@@ -75,7 +75,8 @@ class MessagePort
   virtual void RemoveCommonFrames(const MessagePort& port);
 
   // Checks whether the given RenderFrameHost is associated with this port.
-  virtual bool HasFrame(content::RenderFrameHost* render_frame_host) const;
+  virtual bool HasFrame(
+      const content::GlobalRenderFrameHostToken& frame_token) const;
 
   // Called right before a port is connected to a channel. If false, the port
   // is not used and the channel is closed.

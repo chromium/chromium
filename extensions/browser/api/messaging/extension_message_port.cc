@@ -156,12 +156,14 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
   raw_ptr<ExtensionMessagePort> port_;  // Owns this FrameTracker.
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // Represents target of an IPC (render frame, ServiceWorker or render process).
 struct ExtensionMessagePort::IPCTarget {
   raw_ptr<content::RenderProcessHost> render_process_host;
   raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host;
   int worker_thread_id;
 };
+#endif
 
 ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
@@ -248,7 +250,7 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     CHECK(tab);
     port->frame_tracker_->TrackTabFrames(tab);
-    port->frames_[render_frame_host] = {};
+    port->frames_[render_frame_host->GetGlobalFrameToken()] = {};
   } else {
     port->frame_tracker_->TrackExtensionProcessFrames();
     port->service_workers_[endpoint.GetWorkerId()] = {};
@@ -260,16 +262,16 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     CHECK(tab);
     port->frame_tracker_->TrackTabFrames(tab);
-    port->frames_[render_frame_host].Bind(std::move(message_port));
-    port->frames_[render_frame_host].set_disconnect_handler(base::BindOnce(
+    auto& receiver = port->frames_[render_frame_host->GetGlobalFrameToken()];
+    receiver.Bind(std::move(message_port));
+    receiver.set_disconnect_handler(base::BindOnce(
         &ExtensionMessagePort::Prune, base::Unretained(port.get())));
   } else {
     port->frame_tracker_->TrackExtensionProcessFrames();
-    port->service_workers_[endpoint.GetWorkerId()].Bind(
-        std::move(message_port));
-    port->service_workers_[endpoint.GetWorkerId()].set_disconnect_handler(
-        base::BindOnce(&ExtensionMessagePort::Prune,
-                       base::Unretained(port.get())));
+    auto& receiver = port->service_workers_[endpoint.GetWorkerId()];
+    receiver.Bind(std::move(message_port));
+    receiver.set_disconnect_handler(base::BindOnce(
+        &ExtensionMessagePort::Prune, base::Unretained(port.get())));
   }
   port->AddReceiver(std::move(message_port_host), endpoint.render_process_id(),
                     endpoint.port_context());
@@ -291,14 +293,14 @@ ExtensionMessagePort::~ExtensionMessagePort() = default;
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ExtensionMessagePort::Prune() {
-  std::vector<content::RenderFrameHost*> frames_to_unregister;
+  std::vector<content::GlobalRenderFrameHostToken> frames_to_unregister;
   for (auto& frame : frames_) {
     if (!frame.second.is_connected()) {
       frames_to_unregister.push_back(frame.first);
     }
   }
-  for (auto* frame : frames_to_unregister) {
-    if (UnregisterFrame(frame)) {
+  for (const auto& frame_token : frames_to_unregister) {
+    if (UnregisterFrame(frame_token)) {
       return;
     }
   }
@@ -309,7 +311,7 @@ void ExtensionMessagePort::Prune() {
       workers_to_unregister.push_back(worker.first);
     }
   }
-  for (auto& worker : workers_to_unregister) {
+  for (const auto& worker : workers_to_unregister) {
     if (UnregisterWorker(worker)) {
       return;
     }
@@ -322,15 +324,17 @@ void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
   CHECK(frames_.empty());
   // Avoid overlap in the set of frames to make sure that it does not matter
   // when UnregisterFrame is called.
-  base::EraseIf(pending_frames_, [&port](content::RenderFrameHost* rfh) {
-    return port.HasFrame(rfh);
-  });
+  base::EraseIf(
+      pending_frames_,
+      [&port](const content::GlobalRenderFrameHostToken& frame_token) {
+        return port.HasFrame(frame_token);
+      });
 }
 
 bool ExtensionMessagePort::HasFrame(
-    content::RenderFrameHost* render_frame_host) const {
-  return base::Contains(frames_, render_frame_host) ||
-         base::Contains(pending_frames_, render_frame_host);
+    const content::GlobalRenderFrameHostToken& frame_token) const {
+  return base::Contains(frames_, frame_token) ||
+         base::Contains(pending_frames_, frame_token);
 }
 
 bool ExtensionMessagePort::IsValidPort() {
@@ -356,9 +360,12 @@ void ExtensionMessagePort::RevalidatePort() {
   // NOTE: There is only one opener target.
   if (!frames_.empty()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    SendToIPCTarget({nullptr, frames_.begin()->first, kMainThreadId},
-                    std::make_unique<ExtensionMsg_ValidateMessagePort>(
-                        MSG_ROUTING_NONE, kMainThreadId, port_id_));
+    SendToIPCTarget(
+        {nullptr,
+         content::RenderFrameHost::FromFrameToken(frames_.begin()->first),
+         kMainThreadId},
+        std::make_unique<ExtensionMsg_ValidateMessagePort>(
+            MSG_ROUTING_NONE, kMainThreadId, port_id_));
 #else
     if (!frames_.begin()->second.is_connected()) {
       UnregisterFrame(frames_.begin()->first);
@@ -395,8 +402,8 @@ void ExtensionMessagePort::DispatchOnConnect(
     const GURL& source_url,
     std::optional<url::Origin> source_origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  for (auto* frame : pending_frames_) {
-    frames_[frame] = {};
+  for (const auto& frame_token : pending_frames_) {
+    frames_[frame_token] = {};
   }
   for (const auto& worker : pending_service_workers_) {
     service_workers_[worker] = {};
@@ -428,16 +435,18 @@ void ExtensionMessagePort::DispatchOnConnect(
   info->guest_process_id = guest_process_id;
   info->guest_render_frame_routing_id = guest_render_frame_routing_id;
 
-  for (auto* frame : pending_frames_) {
-    if (ShouldSkipFrameForBFCache(frame)) {
+  for (const auto& frame_token : pending_frames_) {
+    auto* frame = content::RenderFrameHost::FromFrameToken(frame_token);
+    if (!frame || ShouldSkipFrameForBFCache(frame)) {
       continue;
     }
 
     mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port;
     mojo::PendingAssociatedRemote<mojom::MessagePortHost> message_port_host;
 
-    frames_[frame].Bind(message_port.InitWithNewEndpointAndPassRemote());
-    frames_[frame].set_disconnect_handler(
+    auto& receiver = frames_[frame_token];
+    receiver.Bind(message_port.InitWithNewEndpointAndPassRemote());
+    receiver.set_disconnect_handler(
         base::BindOnce(&ExtensionMessagePort::Prune, base::Unretained(this)));
     AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
                 frame->GetProcess()->GetID(),
@@ -458,9 +467,9 @@ void ExtensionMessagePort::DispatchOnConnect(
       mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port;
       mojo::PendingAssociatedRemote<mojom::MessagePortHost> message_port_host;
 
-      service_workers_[worker].Bind(
-          message_port.InitWithNewEndpointAndPassRemote());
-      service_workers_[worker].set_disconnect_handler(
+      auto& receiver = service_workers_[worker];
+      receiver.Bind(message_port.InitWithNewEndpointAndPassRemote());
+      receiver.set_disconnect_handler(
           base::BindOnce(&ExtensionMessagePort::Prune, base::Unretained(this)));
       AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
                   worker.render_process_id,
@@ -642,17 +651,22 @@ void ExtensionMessagePort::RegisterFrame(
     content::RenderFrameHost* render_frame_host) {
   // Only register a RenderFrameHost whose RenderFrame has been created, to
   // ensure that we are notified of frame destruction. Without this check,
-  // |frames_| can eventually contain a stale pointer because RenderFrameDeleted
-  // is not triggered for |render_frame_host|.
+  // `pending_frames_` can contain a stale token because RenderFrameDeleted
+  // is not triggered for `render_frame_host`.
   if (render_frame_host->IsRenderFrameLive()) {
-    pending_frames_.insert(render_frame_host);
+    pending_frames_.insert(render_frame_host->GetGlobalFrameToken());
   }
 }
 
 bool ExtensionMessagePort::UnregisterFrame(
     content::RenderFrameHost* render_frame_host) {
-  frames_.erase(render_frame_host);
-  pending_frames_.erase(render_frame_host);
+  return UnregisterFrame(render_frame_host->GetGlobalFrameToken());
+}
+
+bool ExtensionMessagePort::UnregisterFrame(
+    const content::GlobalRenderFrameHostToken& frame_token) {
+  frames_.erase(frame_token);
+  pending_frames_.erase(frame_token);
   if (!IsValidPort()) {
     CloseChannel();
     return true;
@@ -665,7 +679,10 @@ bool ExtensionMessagePort::UnregisterFramesUnderMainFrame(
   CHECK(pending_frames_.empty());
   if (std::erase_if(frames_,
                     [&main_frame](const auto& item) {
-                      return item.first->GetOutermostMainFrame() == main_frame;
+                      auto* frame =
+                          content::RenderFrameHost::FromFrameToken(item.first);
+                      return !frame ||
+                             frame->GetOutermostMainFrame() == main_frame;
                     }) != 0 &&
       !IsValidPort()) {
     CloseChannel();
@@ -719,11 +736,12 @@ void ExtensionMessagePort::UnregisterWorker(int render_process_id,
 void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
   std::vector<IPCTarget> targets;
   // Build the list of targets.
-  for (const auto& frame : frames_) {
-    if (ShouldSkipFrameForBFCache(frame.first)) {
+  for (const auto& item : frames_) {
+    auto* frame = content::RenderFrameHost::FromFrameToken(item.first);
+    if (!frame || ShouldSkipFrameForBFCache(frame)) {
       continue;
     }
-    targets.push_back({nullptr, frame.first, kMainThreadId});
+    targets.push_back({nullptr, frame, kMainThreadId});
   }
 
   for (const auto& running_worker : service_workers_) {
@@ -819,13 +837,13 @@ void ExtensionMessagePort::SendToPort(SendCallback send_callback) {
   CHECK(pending_service_workers_.empty());
   std::vector<mojom::MessagePort*> targets;
   // Build the list of targets.
-  for (const auto& frame : frames_) {
-    if (ShouldSkipFrameForBFCache(frame.first)) {
+  for (const auto& item : frames_) {
+    auto* frame = content::RenderFrameHost::FromFrameToken(item.first);
+    if (!frame || ShouldSkipFrameForBFCache(frame)) {
       continue;
     }
-
-    if (frame.second.is_bound()) {
-      targets.push_back(frame.second.get());
+    if (item.second.is_bound()) {
+      targets.push_back(item.second.get());
     }
   }
 
