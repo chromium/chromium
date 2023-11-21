@@ -372,6 +372,22 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
           visibility == blink::mojom::FrameVisibility::kRenderedInViewport));
 }
 
+void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
+    content::RenderFrameHost* render_frame_host,
+    bool is_capturing_media_stream) {
+  // Ignore notifications that are received after the frame was deleted.
+  auto frame_it = frames_.find(render_frame_host);
+  if (frame_it == frames_.end()) {
+    return;
+  }
+
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(&FrameNodeImpl::SetIsCapturingMediaStream,
+                     base::Unretained(frame_node), is_capturing_media_stream));
+}
+
 void PerformanceManagerTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())
