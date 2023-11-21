@@ -14529,6 +14529,7 @@ Called by update_debug_scenarios.py.-->
 
 <enum name="DevToolsMediaType">
   <int value="0" label="Unknown"/>
+  <int value="1" label="text/javascript (Deprecated)"/>
   <int value="2" label="text/css"/>
   <int value="3" label="text/html"/>
   <int value="4" label="application/xml"/>

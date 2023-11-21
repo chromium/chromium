@@ -461,9 +461,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.NetworkPanelResponsePreviewOpened"
-    enum="DevToolsMediaType" expires_after="2023-12-31">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsMediaType" expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
   <summary>
     Records the media types of files opened in the DevTools Network panel
     response preview.
@@ -619,7 +619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
-    expires_after="2024-05-05">
+    expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
   <owner>szuend@chromium.org</owner>
   <summary>
@@ -630,9 +630,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
-    expires_after="2024-05-05">
-  <owner>yangguo@chromium.org</owner>
+    expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
   <summary>
     Records the media types of files opened in the DevTools Sources panel.
   </summary>
