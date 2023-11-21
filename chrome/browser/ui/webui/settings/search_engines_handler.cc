@@ -29,7 +29,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -228,7 +227,6 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
     dict.Set("iconURL", icon_url.spec());
 
   const bool is_search_engine_choice_settings_ui =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceSettingsUi) &&
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny);
   if (is_search_engine_choice_settings_ui &&

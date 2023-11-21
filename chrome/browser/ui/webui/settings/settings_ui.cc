@@ -100,7 +100,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -319,7 +318,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   }
 
   const bool is_search_engine_choice_settings_ui =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceSettingsUi) &&
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny);
   html_source->AddBoolean("searchEngineChoiceSettingsUi",

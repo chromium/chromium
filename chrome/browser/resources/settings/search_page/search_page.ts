@@ -52,7 +52,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
        */
       searchEngines_: Array,
 
-      // Whether the `kSearchEngineChoiceSettingsUi` feature is enabled or not.
+      // Whether the `SearchEngineChoice` or `SearchEngineChoiceFre` features
+      // are enabled or not.
       searchEngineChoiceSettingsUi_: {
         type: Boolean,
         value() {
