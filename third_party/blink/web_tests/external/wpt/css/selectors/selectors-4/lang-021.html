@@ -8,10 +8,8 @@
 
 <style>
 div.test { color: red; }
-span:lang("en-gb-oed") { color: green; }
-span span:lang("*-gb") { color: magenta; }
+span:lang("en-gb-oed") { color: magenta; }
+span span:lang("*-gb") { color: green; }
 </style>
 
-<!-- "en-GB-oed" is a grandfathered tag, matchable as a whole but not parsed
-     into subtags and matched against a range. -->
 <div class="test" lang="en-GB-oed"><span><span>This should be green</span></span></div>

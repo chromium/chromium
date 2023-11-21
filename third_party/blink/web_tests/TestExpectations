@@ -2701,6 +2701,8 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-020.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-021.html [ Failure ]

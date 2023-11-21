@@ -7,8 +7,9 @@
 <link rel="match" href="lang-000-ref.html">
 
 <style>
-div.test { color: green; }
-:lang("x") { color: red; } /* not a well-formed lang tag! */
+div.test { color: red; }
+:lang("x") { color: green; } /* not a well-formed lang tag, but matches per
+                                the Extended Filtering algorithm */
 </style>
 
 <div class="test"><span lang="x-lojban">This should be green</span></div>
