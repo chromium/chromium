@@ -62,7 +62,7 @@
     padding-inline-end: var(--settings-toolbar-padding-inline-end);
   }
 
-  :host(:focus-within[showing-search]) cr-toolbar-search-field {
+  :host([showing-search]:focus-within) cr-toolbar-search-field {
     --cr-toolbar-search-field-background: var(--cros-bg-color-elevation-3);
     box-shadow: var(--cr-elevation-1);
     min-height: var(--cr-toolbar-focused-min-height);
@@ -76,12 +76,18 @@
     --cr-toolbar-search-field-cursor: pointer;
   }
 
-  :host(:focus-within[should-show-dropdown_]) cr-toolbar-search-field {
+  :host([should-show-dropdown_]:focus-within) cr-toolbar-search-field {
     --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
     box-shadow: var(--cr-elevation-3);
     height: 56px;
     margin-top: var(--separator-height);
     padding-bottom: var(--separator-height);
+  }
+
+  :host-context([chrome-refresh-2023]):host([should-show-dropdown_]:focus-within)
+      cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
+    outline: none;
   }
 
   iron-dropdown {
