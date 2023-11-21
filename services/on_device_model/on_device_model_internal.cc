@@ -21,13 +21,8 @@ OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
     return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
   }
 
-  // TODO(sky): make Create() return base::expected.
-  auto result = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
-                                                  std::move(params));
-  if (result) {
-    return base::ok<std::unique_ptr<OnDeviceModel>>(std::move(result));
-  }
-  return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
+  return ml::OnDeviceModelExecutor::CreateWithResult(*GetChromeMLInstance(),
+                                                     std::move(params));
 }
 
 // static
