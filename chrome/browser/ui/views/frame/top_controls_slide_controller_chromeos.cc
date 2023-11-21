@@ -39,11 +39,6 @@
 
 namespace {
 
-bool IsTabletModeEnabled() {
-  return display::Screen::GetScreen()->HasScreen() &&
-         display::Screen::GetScreen()->InTabletMode();
-}
-
 bool IsSpokenFeedbackEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* accessibility_manager = ash::AccessibilityManager::Get();
@@ -67,9 +62,10 @@ cc::BrowserControlsState GetBrowserControlsStateConstraints(
     content::WebContents* contents) {
   DCHECK(contents);
 
-  if (!IsTabletModeEnabled() || contents->IsFullscreen() ||
-      contents->IsFocusedElementEditable() || contents->IsBeingDestroyed() ||
-      contents->IsCrashed() || IsSpokenFeedbackEnabled()) {
+  if (!display::Screen::GetScreen()->InTabletMode() ||
+      contents->IsFullscreen() || contents->IsFocusedElementEditable() ||
+      contents->IsBeingDestroyed() || contents->IsCrashed() ||
+      IsSpokenFeedbackEnabled()) {
     return cc::BrowserControlsState::kShown;
   }
 
@@ -601,7 +597,7 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
 
 bool TopControlsSlideControllerChromeOS::CanEnable(
     absl::optional<bool> fullscreen_state) const {
-  return IsTabletModeEnabled() &&
+  return display::Screen::GetScreen()->InTabletMode() &&
          !(fullscreen_state.value_or(browser_view_->IsFullscreen()));
 }
 

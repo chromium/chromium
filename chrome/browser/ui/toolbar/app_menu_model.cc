@@ -1775,8 +1775,7 @@ void AppMenuModel::Build() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
-  if (display::Screen::GetScreen()->HasScreen() &&
-      display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     if (features::IsChromeRefresh2023()) {
       AddItemWithStringIdAndIcon(
           IDC_TOGGLE_REQUEST_TABLET_SITE, IDS_TOGGLE_REQUEST_TABLET_SITE,

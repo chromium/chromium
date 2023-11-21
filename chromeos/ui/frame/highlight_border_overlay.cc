@@ -152,8 +152,7 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
       window_->GetProperty(chromeos::kWindowStateTypeKey);
 
   // TabletState might be nullptr in some tests.
-  const bool in_tablet_mode = display::Screen::GetScreen()->HasScreen() &&
-                              display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   if ((in_tablet_mode &&
        window_state_type != chromeos::WindowStateType::kFloated &&

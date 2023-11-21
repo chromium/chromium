@@ -146,8 +146,7 @@ void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
 
 views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (display::Screen::GetScreen()->HasScreen() &&
-      display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
   }
 
