@@ -2465,6 +2465,7 @@ source_set("ash") {
     "policy/enrollment/auto_enrollment_client_impl.h",
     "policy/enrollment/auto_enrollment_controller.cc",
     "policy/enrollment/auto_enrollment_controller.h",
+    "policy/enrollment/auto_enrollment_state.cc",
     "policy/enrollment/auto_enrollment_state.h",
     "policy/enrollment/auto_enrollment_state_message_processor.cc",
     "policy/enrollment/auto_enrollment_state_message_processor.h",

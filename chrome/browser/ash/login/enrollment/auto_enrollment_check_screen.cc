@@ -98,9 +98,9 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   // IsCompleted() would still return false, and Show would not report result
   // early. In that case auto-enrollment check should be retried.
   if (auto_enrollment_controller_->state() ==
-          policy::AutoEnrollmentState::kConnectionError ||
+          policy::kAutoEnrollmentLegacyConnectionError ||
       auto_enrollment_controller_->state() ==
-          policy::AutoEnrollmentState::kServerError) {
+          policy::kAutoEnrollmentLegacyServerError) {
     // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
     // in the logs.
     LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
@@ -147,7 +147,7 @@ void AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed(
 
 void AutoEnrollmentCheckScreen::UpdateState(
     NetworkState::PortalState new_captive_portal_state) {
-  const std::optional<policy::AutoEnrollmentState> new_auto_enrollment_state =
+  const std::optional<policy::AutoEnrollmentState>& new_auto_enrollment_state =
       auto_enrollment_controller_->state();
 
   // Configure the error screen to show the appropriate error message.
@@ -204,19 +204,19 @@ bool AutoEnrollmentCheckScreen::ShowCaptivePortalState(
 
 bool AutoEnrollmentCheckScreen::ShowAutoEnrollmentState(
     policy::AutoEnrollmentState new_auto_enrollment_state) {
-  switch (new_auto_enrollment_state) {
-    case policy::AutoEnrollmentState::kEnrollment:
-    case policy::AutoEnrollmentState::kNoEnrollment:
-    case policy::AutoEnrollmentState::kDisabled:
-      return false;
-    case policy::AutoEnrollmentState::kServerError:
+  if (new_auto_enrollment_state.has_value()) {
+    return false;
+  }
+
+  switch (new_auto_enrollment_state.error()) {
+    case policy::AutoEnrollmentLegacyError::kServerError:
       if (!ShouldBlockOnServerError())
         return false;
 
       // Fall to the same behavior like any connection error if the device is
       // enrolled.
       [[fallthrough]];
-    case policy::AutoEnrollmentState::kConnectionError:
+    case policy::AutoEnrollmentLegacyError::kConnectionError:
       ShowErrorScreen(NetworkError::ERROR_STATE_OFFLINE);
       return true;
   }
@@ -272,17 +272,19 @@ bool AutoEnrollmentCheckScreen::IsCompleted() const {
     return false;
   }
 
-  switch (auto_enrollment_controller_->state().value()) {
-    case policy::AutoEnrollmentState::kConnectionError:
+  const policy::AutoEnrollmentState state =
+      auto_enrollment_controller_->state().value();
+  if (state.has_value()) {
+    // Decision made, ready to proceed.
+    return true;
+  }
+
+  switch (state.error()) {
+    case policy::AutoEnrollmentLegacyError::kConnectionError:
       return false;
-    case policy::AutoEnrollmentState::kServerError:
+    case policy::AutoEnrollmentLegacyError::kServerError:
       // Server errors should block OOBE for enrolled devices.
       return !ShouldBlockOnServerError();
-    case policy::AutoEnrollmentState::kEnrollment:
-    case policy::AutoEnrollmentState::kNoEnrollment:
-    case policy::AutoEnrollmentState::kDisabled:
-      // Decision made, ready to proceed.
-      return true;
   }
   NOTREACHED();
   return false;

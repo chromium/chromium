@@ -5,21 +5,41 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_STATE_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_STATE_H_
 
+#include <string_view>
+
+#include "base/types/expected.h"
+
 namespace policy {
 
-// Indicates the current state of the auto-enrollment check.
-enum class AutoEnrollmentState {
-  // Failed to connect to DMServer or to synchronize the system clock.
-  kConnectionError = 2,
-  // Connection successful, but the server failed to generate a valid reply.
-  kServerError = 3,
+// Indicates the result of state determination.
+enum class AutoEnrollmentResult {
   // Check completed successfully, enrollment should be triggered.
-  kEnrollment = 4,
+  kEnrollment,
   // Check completed successfully, enrollment not applicable.
-  kNoEnrollment = 5,
+  kNoEnrollment,
   // Check completed successfully, device is disabled.
-  kDisabled = 6,
+  kDisabled,
 };
+
+// Indicates an error during state determination.
+enum class AutoEnrollmentLegacyError {
+  // Failed to connect to DMServer or to synchronize the system clock.
+  kConnectionError,
+  // Connection successful, but the server failed to generate a valid reply.
+  kServerError,
+};
+
+// Indicates the current state of the auto-enrollment check.
+using AutoEnrollmentState =
+    base::expected<AutoEnrollmentResult, AutoEnrollmentLegacyError>;
+
+static constexpr AutoEnrollmentState kAutoEnrollmentLegacyConnectionError =
+    base::unexpected(AutoEnrollmentLegacyError::kConnectionError);
+
+static constexpr AutoEnrollmentState kAutoEnrollmentLegacyServerError =
+    base::unexpected(AutoEnrollmentLegacyError::kServerError);
+
+std::string_view AutoEnrollmentStateToString(const AutoEnrollmentState& state);
 
 }  // namespace policy
 

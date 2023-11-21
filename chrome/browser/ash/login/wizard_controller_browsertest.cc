@@ -71,6 +71,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
@@ -1226,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                        ControlFlowNoForcedReEnrollmentOnFirstBoot) {
   fake_statistics_provider_.ClearMachineStatistic(system::kActivateDateKey);
-  EXPECT_NE(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -1248,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
   CheckCurrentScreen(UserCreationView::kScreenId);
-  EXPECT_EQ(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
   EXPECT_EQ(1,
             FakeInstallAttributesClient::Get()
@@ -1316,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::AutoEnrollmentState::kConnectionError);
+  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
 
   // The error screen shows up if device state could not be retrieved.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1408,7 +1409,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::AutoEnrollmentState::kConnectionError);
+  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
 
   // The error screen shows up if there's no auto-enrollment decision.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1497,7 +1498,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
     // Make AutoEnrollmentClient notify the controller that a server error
     // occurred.
     fake_auto_enrollment_client->SetState(
-        policy::AutoEnrollmentState::kServerError);
+        policy::kAutoEnrollmentLegacyServerError);
     base::RunLoop().RunUntilIdle();
 
     // The error screen shows up.
@@ -1523,7 +1524,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
                     policy::EnrollmentConfig::MODE_SERVER_FORCED)))
         .Times(1);
     fake_auto_enrollment_client->SetState(
-        policy::AutoEnrollmentState::kEnrollment);
+        policy::AutoEnrollmentResult::kEnrollment);
     mock_auto_enrollment_check_screen_->ExitScreen();
 
     ResetAutoEnrollmentCheckScreen();
@@ -1542,7 +1543,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
     // Make AutoEnrollmentClient notify the controller that a server error
     // occurred.
     fake_auto_enrollment_client->SetState(
-        policy::AutoEnrollmentState::kServerError);
+        policy::kAutoEnrollmentLegacyServerError);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(StartupUtils::IsOobeCompleted());
@@ -1607,12 +1608,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, NoEnrollment) {
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
   fetcher_factory.ReportEnrollmentState(
-      policy::AutoEnrollmentState::kNoEnrollment);
+      policy::AutoEnrollmentResult::kNoEnrollment);
 
   CheckCurrentScreen(UserCreationView::kScreenId);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_enrollment_screen_, HideImpl()).Times(0);
-  EXPECT_EQ(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
   EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kForcedReEnrollmentExplicitlyRequired,
@@ -1628,7 +1629,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ServerError) {
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
   fetcher_factory.ReportEnrollmentState(
-      policy::AutoEnrollmentState::kServerError);
+      policy::kAutoEnrollmentLegacyServerError);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
@@ -1646,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ConnectionError) {
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
   fetcher_factory.ReportEnrollmentState(
-      policy::AutoEnrollmentState::kConnectionError);
+      policy::kAutoEnrollmentLegacyConnectionError);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
@@ -1671,7 +1672,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Enrollment) {
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
   fetcher_factory.ReportEnrollmentState(
-      policy::AutoEnrollmentState::kEnrollment);
+      policy::AutoEnrollmentResult::kEnrollment);
 
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 }
@@ -1694,7 +1695,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
                    base::Value(kDisabledMessage));
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
-  fetcher_factory.ReportEnrollmentState(policy::AutoEnrollmentState::kDisabled);
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentResult::kDisabled);
 
   CheckCurrentScreen(DeviceDisabledScreenView::kScreenId);
 }
@@ -1713,7 +1715,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Timeout) {
   // Ensure that we show an error on enrollment check screen and that it is not
   // possible to enter guest mode (like in FRE).
   EXPECT_EQ(auto_enrollment_controller()->state(),
-            policy::AutoEnrollmentState::kConnectionError);
+            policy::kAutoEnrollmentLegacyConnectionError);
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
@@ -1739,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, OneFetchAtATime) {
 
   // Simulate connection error, reset factory and attempt a retry.
   fetcher_factory.ReportEnrollmentState(
-      policy::AutoEnrollmentState::kConnectionError);
+      policy::kAutoEnrollmentLegacyConnectionError);
   fetcher_factory.Reset();
   auto_enrollment_controller()->Retry();
 
@@ -1796,7 +1798,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     if (check_fre) {
       // Wait for auto-enrollment controller to encounter the connection error.
-      WaitForAutoEnrollmentState(policy::AutoEnrollmentState::kConnectionError);
+      WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
 
       // Let update screen smooth time process (time = 0ms).
       base::RunLoop().RunUntilIdle();
@@ -1921,7 +1923,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   // Make AutoEnrollmentClient notify the controller that a server error
   // occurred.
   fake_auto_enrollment_client->SetState(
-      policy::AutoEnrollmentState::kServerError);
+      policy::kAutoEnrollmentLegacyServerError);
   base::RunLoop().RunUntilIdle();
 
   // The error screen shows up if there's no auto-enrollment decision.
@@ -1945,7 +1947,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
                   policy::EnrollmentConfig::MODE_SERVER_FORCED)))
       .Times(1);
   fake_auto_enrollment_client->SetState(
-      policy::AutoEnrollmentState::kEnrollment);
+      policy::AutoEnrollmentResult::kEnrollment);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
   ResetAutoEnrollmentCheckScreen();
@@ -1966,7 +1968,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(
       system::kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(1 /* days_offset */));
-  EXPECT_NE(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -1989,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
   CheckCurrentScreen(UserCreationView::kScreenId);
-  EXPECT_EQ(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 }
 
@@ -1999,7 +2001,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(
       system::kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(1 /* days_offset */));
-  EXPECT_NE(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -2033,7 +2035,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::kNone,
             auto_enrollment_controller()->auto_enrollment_check_type());
-  EXPECT_EQ(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 }
 
@@ -2046,7 +2048,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(
       system::kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(1 /* days_offset */));
-  EXPECT_NE(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -2081,8 +2083,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
-  EXPECT_EQ(policy::AutoEnrollmentState::kConnectionError,
-            auto_enrollment_controller()->state());
+  EXPECT_EQ(auto_enrollment_controller()->state(),
+            policy::kAutoEnrollmentLegacyConnectionError);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -2094,7 +2096,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(
       system::kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(1 /* days_offset */));
-  EXPECT_NE(policy::AutoEnrollmentState::kNoEnrollment,
+  EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -2151,7 +2153,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   ResetAutoEnrollmentCheckScreen();
 
   fake_auto_enrollment_client->SetState(
-      policy::AutoEnrollmentState::kEnrollment);
+      policy::AutoEnrollmentResult::kEnrollment);
 
   // Make sure enterprise enrollment page shows up.
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
@@ -2789,7 +2791,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::AutoEnrollmentState::kConnectionError);
+  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
 
   // The error screen shows up if device state could not be retrieved.
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);

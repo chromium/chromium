@@ -119,7 +119,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       const ash::NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
-  std::optional<AutoEnrollmentState> state() const { return state_; }
+  const std::optional<AutoEnrollmentState>& state() const { return state_; }
 
   // Returns the auto-enrollment check type performed by this client.
   // The returned value will be `CheckType::kNone` before calling `Start()`.

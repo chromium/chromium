@@ -606,15 +606,15 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     const DeviceStateMode device_state_mode = GetDeviceStateMode();
     switch (device_state_mode) {
       case RESTORE_MODE_NONE:
-        return AutoEnrollmentState::kNoEnrollment;
+        return AutoEnrollmentResult::kNoEnrollment;
       case RESTORE_MODE_DISABLED:
-        return AutoEnrollmentState::kDisabled;
+        return AutoEnrollmentResult::kDisabled;
       case RESTORE_MODE_REENROLLMENT_REQUESTED:
       case RESTORE_MODE_REENROLLMENT_ENFORCED:
       case INITIAL_MODE_ENROLLMENT_ENFORCED:
       case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
       case INITIAL_MODE_ENROLLMENT_ZERO_TOUCH:
-        return AutoEnrollmentState::kEnrollment;
+        return AutoEnrollmentResult::kEnrollment;
     }
   }
 
@@ -867,11 +867,11 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
       break;
     case ServerStateAvailabilityResult::kConnectionError:
       state_ = State::kRequestServerStateAvailabilityConnectionError;
-      ReportProgress(AutoEnrollmentState::kConnectionError);
+      ReportProgress(kAutoEnrollmentLegacyConnectionError);
       break;
     case ServerStateAvailabilityResult::kServerError:
       state_ = State::kRequestServerStateAvailabilityServerError;
-      ReportProgress(AutoEnrollmentState::kServerError);
+      ReportProgress(kAutoEnrollmentLegacyServerError);
       break;
     case ServerStateAvailabilityResult::kAutoEnrollmentRetriableError:
       state_ = State::kRequestServerStateAvailabilityServerError;
@@ -912,11 +912,11 @@ void AutoEnrollmentClientImpl::OnStateRetrievalCompleted(
       break;
     case ServerStateRetrievalResult::kConnectionError:
       state_ = State::kRequestStateRetrievalConnectionError;
-      ReportProgress(AutoEnrollmentState::kConnectionError);
+      ReportProgress(kAutoEnrollmentLegacyConnectionError);
       break;
     case ServerStateRetrievalResult::kServerError:
       state_ = State::kRequestStateRetrievalServerError;
-      ReportProgress(AutoEnrollmentState::kServerError);
+      ReportProgress(kAutoEnrollmentLegacyServerError);
       break;
   }
 }
@@ -934,7 +934,7 @@ void AutoEnrollmentClientImpl::ReportFinished() const {
   if (auto_enrollment_state_result) {
     ReportProgress(auto_enrollment_state_result.value());
   } else {
-    ReportProgress(AutoEnrollmentState::kNoEnrollment);
+    ReportProgress(AutoEnrollmentResult::kNoEnrollment);
   }
 }
 
