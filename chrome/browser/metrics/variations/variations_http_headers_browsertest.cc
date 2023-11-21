@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(
       partition->GetURLLoaderFactoryForBrowserProcess().get();
   content::SimpleURLLoaderTestHelper loader_helper;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory, loader_helper.GetCallback());
+      loader_factory, loader_helper.GetCallbackDeprecated());
 
   // Wait for the response to complete.
   loader_helper.WaitForCallback();
@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_P(
           .get();
   content::SimpleURLLoaderTestHelper loader_helper;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory, loader_helper.GetCallback());
+      loader_factory, loader_helper.GetCallbackDeprecated());
 
   // Wait for the response to complete.
   loader_helper.WaitForCallback();

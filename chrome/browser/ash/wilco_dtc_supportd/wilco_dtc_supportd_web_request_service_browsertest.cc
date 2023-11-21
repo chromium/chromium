@@ -137,11 +137,11 @@ class ContextRequestPerformer {
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
 
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory_, url_loader_test_helper_.GetCallback());
+        url_loader_factory_, url_loader_test_helper_.GetCallbackDeprecated());
     url_loader_test_helper_.WaitForCallback();
   }
 
-  const std::string* response_body() const {
+  const std::optional<std::string>& response_body() const {
     DCHECK(request_performed_);
     return url_loader_test_helper_.response_body();
   }

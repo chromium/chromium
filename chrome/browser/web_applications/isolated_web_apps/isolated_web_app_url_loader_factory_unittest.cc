@@ -238,7 +238,7 @@ class IsolatedWebAppURLLoaderFactoryTest
 
     content::SimpleURLLoaderTestHelper helper;
     loader->DownloadToString(
-        factory_.get(), helper.GetCallback(),
+        factory_.get(), helper.GetCallbackDeprecated(),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
     helper.WaitForCallback();
@@ -769,7 +769,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryWebAppProviderReadyTest, Waits) {
 
   content::SimpleURLLoaderTestHelper helper;
   loader->DownloadToString(
-      factory.get(), helper.GetCallback(),
+      factory.get(), helper.GetCallbackDeprecated(),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
   task_environment()->RunUntilIdle();

@@ -107,17 +107,18 @@ int IOThreadSharedURLLoaderFactoryOwner::LoadBasicRequestOnIOThread(
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](network::SimpleURLLoader* loader,
-                        network::mojom::URLLoaderFactory* factory,
-                        network::SimpleURLLoader::BodyAsStringCallbackDeprecated
-                            body_as_string_callback) {
-                       loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-                           factory, std::move(body_as_string_callback));
-                     },
-                     base::Unretained(simple_loader.get()),
-                     base::Unretained(shared_url_loader_factory_.get()),
-                     RunOnUIThread(simple_loader_helper.GetCallback())));
+      FROM_HERE,
+      base::BindOnce(
+          [](network::SimpleURLLoader* loader,
+             network::mojom::URLLoaderFactory* factory,
+             network::SimpleURLLoader::BodyAsStringCallbackDeprecated
+                 body_as_string_callback) {
+            loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+                factory, std::move(body_as_string_callback));
+          },
+          base::Unretained(simple_loader.get()),
+          base::Unretained(shared_url_loader_factory_.get()),
+          RunOnUIThread(simple_loader_helper.GetCallbackDeprecated())));
 
   simple_loader_helper.WaitForCallback();
   return simple_loader->NetError();

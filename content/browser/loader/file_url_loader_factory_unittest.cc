@@ -100,7 +100,7 @@ class FileURLLoaderFactoryTest : public testing::Test {
 
     SimpleURLLoaderTestHelper helper;
     loader->DownloadToString(
-        factory_.get(), helper.GetCallback(),
+        factory_.get(), helper.GetCallbackDeprecated(),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
     helper.WaitForCallback();

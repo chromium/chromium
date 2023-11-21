@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(), simple_loader_helper.GetCallback());
+      url_loader_factory.get(), simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
   EXPECT_FALSE(simple_loader_helper.response_body());
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, simple_loader->NetError());
