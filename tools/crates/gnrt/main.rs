@@ -24,6 +24,18 @@ fn main() -> Result<()> {
     logger_builder.init();
 
     let args = clap::Command::new("gnrt")
+        .arg(
+            Arg::new("cargo-path")
+                .long("cargo-path")
+                .value_name("CARGO_PATH")
+                .help("Path to the cargo executable"),
+        )
+        .arg(
+            Arg::new("rustc-path")
+                .long("rustc-path")
+                .value_name("RUSTC_PATH")
+                .help("Path to the rustc executable"),
+        )
         .subcommand(
             clap::Command::new("add")
                 .about("Add a new third-party crate dependency in //third_party/rust")
@@ -33,12 +45,6 @@ fn main() -> Result<()> {
                         .required(true)
                         .value_name("NAME[@<VERSION>]")
                         .help("Name (and optional version) of the crate to add"),
-                )
-                .arg(
-                    Arg::new("cargo-path")
-                        .long("cargo-path")
-                        .value_name("CARGO_PATH")
-                        .help("Path to the cargo executable"),
                 ),
         )
         .subcommand(
@@ -46,18 +52,6 @@ fn main() -> Result<()> {
                 .about("Generate GN build rules from third_party/rust crates")
                 .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
                           immediately"))
-                .arg(
-                    Arg::new("cargo-path")
-                        .long("cargo-path")
-                        .value_name("CARGO_PATH")
-                        .help("Path to the cargo executable"),
-                )
-                .arg(
-                    Arg::new("rustc-path")
-                        .long("rustc-path")
-                        .value_name("RUSTC_PATH")
-                        .help("Path to the rustc executable"),
-                )
                 .arg(Arg::new("for-std").long("for-std").value_name("RUST_SRC_ROOT").help(
                     "Generate build files for Rust std library. RUST_SRC_ROOT (relative to \
                     the root of the Chromium repo) must point to the Rust checkout to \
@@ -79,12 +73,6 @@ fn main() -> Result<()> {
             clap::Command::new("vendor")
                 .about("Download all third-party crate dependencies in //third_party/rust")
                 .arg(
-                    Arg::new("cargo-path")
-                        .long("cargo-path")
-                        .value_name("CARGO_PATH")
-                        .help("Path to the cargo executable"),
-                )
-                .arg(
                     Arg::new("dump-template-input")
                         .long("dump-template-input")
                         .action(clap::ArgAction::SetTrue)
@@ -96,23 +84,21 @@ fn main() -> Result<()> {
         )
         .subcommand(
             clap::Command::new("update")
-                .about("Update the Cargo.lock to newer versions for //third_party/rust")
-                .arg(
-                    Arg::new("cargo-path")
-                        .long("cargo-path")
-                        .value_name("CARGO_PATH")
-                        .help("Path to the cargo executable"),
-                ),
+                .about("Update the Cargo.lock to newer versions for //third_party/rust"),
         )
         .get_matches();
 
     let paths = paths::ChromiumPaths::new().context("Could not find chromium checkout paths")?;
+    let tools = paths::ToolPaths {
+        cargo: args.get_one::<String>("cargo-path").cloned(),
+        rustc: args.get_one::<String>("rustc-path").cloned(),
+    };
 
     match args.subcommand() {
-        Some(("add", args)) => add::add(args, &paths),
-        Some(("gen", args)) => gen::generate(args, &paths),
-        Some(("update", args)) => update::update(args, &paths),
-        Some(("vendor", args)) => vendor::vendor(args, &paths),
+        Some(("add", args)) => add::add(args, &tools, &paths),
+        Some(("gen", args)) => gen::generate(args, &tools, &paths),
+        Some(("update", args)) => update::update(args, &tools, &paths),
+        Some(("vendor", args)) => vendor::vendor(args, &tools, &paths),
         _ => Err(anyhow!(
             "Invalid or missing subcommand: must be one of: \
              add, gen, update, vendor"

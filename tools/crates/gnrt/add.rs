@@ -7,15 +7,23 @@ use crate::util::{remove_checksums_from_lock, run_cargo_command, without_cargo_c
 use anyhow::{Context, Result};
 use std::collections::HashMap;
 
-pub fn add(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+pub fn add(
+    args: &clap::ArgMatches,
+    tools: &paths::ToolPaths,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
     // Add needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || add_impl(args, paths))?;
+    without_cargo_config_toml(paths, || add_impl(args, tools, paths))?;
     println!("Add successful: run gnrt vendor to download new crate versions.");
     Ok(())
 }
 
-fn add_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+fn add_impl(
+    args: &clap::ArgMatches,
+    tools: &paths::ToolPaths,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
     println!("Updating crates from {}", paths.third_party_cargo_root.display());
 
     let cargo_extra_options = vec![
@@ -25,7 +33,7 @@ fn add_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()>
     run_cargo_command(
         paths.third_party_cargo_root.into(),
         "add",
-        args,
+        tools,
         cargo_extra_options,
         HashMap::new(),
     )

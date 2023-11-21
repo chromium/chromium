@@ -9,6 +9,7 @@ Should be run from the checkout root (i.e. as `tools/crates/run_gnrt.py ...`)
 
 import argparse
 import os
+import platform
 import subprocess
 import sys
 
@@ -29,6 +30,14 @@ def main():
                         help='additional arguments to pass to gnrt, e.g. "gen"')
     args = parser.parse_args()
 
+    if sys.platform == 'darwin' and platform.machine() == 'arm64':
+        if args.rust_sysroot == 'third_party/rust-toolchain':
+            args.rust_sysroot = os.path.expanduser(
+                '~/.rustup/toolchains/nightly-aarch64-apple-darwin')
+            print('No "cargo" provided in the Chromium toolchain on Mac-ARM. '
+                  'Install cargo nightly to ~/.rustup or use --rust-sysroot:')
+            print("== To install: `rustup install nightly`")
+
     exe = ''
     if sys.platform == 'win32':
         exe = '.exe'
@@ -43,14 +52,12 @@ def main():
         os.path.join(args.out_dir, 'cargo_home'))
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
 
-    gnrt_args = args.gnrt_args
-    if gnrt_args and gnrt_args[0] == 'gen':
-        gnrt_args.extend(['--rustc-path', rustc_bin])
     return subprocess.run([
         cargo_bin, '--locked', 'run', '--release', '--manifest-path',
         GNRT_MANIFEST_PATH, '--target-dir', target_dir, '--config',
-        f'build.rustc="{rustc_bin}"', '--'
-    ] + gnrt_args).returncode
+        f'build.rustc="{rustc_bin}"', '--', f'--cargo-path={cargo_bin}',
+        f'--rustc-path={rustc_bin}'
+    ] + args.gnrt_args).returncode
 
 
 if __name__ == '__main__':

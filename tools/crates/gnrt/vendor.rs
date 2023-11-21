@@ -4,6 +4,7 @@
 
 use crate::config;
 use crate::crates;
+use crate::group::Group;
 use crate::paths;
 use crate::readme;
 use crate::util::{
@@ -15,15 +16,23 @@ use cargo_metadata::{Node, Package, PackageId};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
-pub fn vendor(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+pub fn vendor(
+    args: &clap::ArgMatches,
+    tools: &paths::ToolPaths,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
+    without_cargo_config_toml(paths, || vendor_impl(args, tools, paths))?;
     println!("Vendor successful: run gnrt gen to generate GN rules.");
     Ok(())
 }
 
-fn vendor_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+fn vendor_impl(
+    args: &clap::ArgMatches,
+    tools: &paths::ToolPaths,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
     let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
@@ -38,7 +47,7 @@ fn vendor_impl(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
     let metadata =
-        run_cargo_metadata(paths.third_party_cargo_root.into(), args, Vec::new(), HashMap::new())
+        run_cargo_metadata(paths.third_party_cargo_root.into(), tools, Vec::new(), HashMap::new())
             .context("run_cargo_metadata")?;
 
     // Running cargo commands against actual crates.io will put checksum into
@@ -199,12 +208,6 @@ fn find_least_privilege_group(
     config: &config::BuildConfig,
 ) -> Result<String> {
     // Find all ancestors that define a group.
-    #[derive(Debug, PartialEq, Eq)]
-    enum Group {
-        Safe,
-        Sandbox,
-        Test,
-    }
     let mut ancestor_groups = Vec::<Group>::new();
     for (each_id, _) in packages {
         if is_ancestor(each_id, id, packages, nodes) {
@@ -212,52 +215,24 @@ fn find_least_privilege_group(
                 .per_crate_config
                 .get(&packages[each_id].name)
                 .and_then(|config| config.group.as_ref());
-            match group.map(String::as_ref) {
-                Some("safe") => ancestor_groups.push(Group::Safe),
-                Some("sandbox") => ancestor_groups.push(Group::Sandbox),
-                Some("test") => ancestor_groups.push(Group::Test),
+            match group {
                 Some(x) => {
-                    return Err(format_err!(
+                    ancestor_groups.push(Group::new_from_str(x).with_context(||format!(
                         "Invalid config: group {} for crate {} should be one of safe|sandbox|text",
                         x,
                         packages[id].name,
-                    ));
+                    ) )?);
                 }
                 None => (),
             };
         }
     }
 
-    let least_privilege = ancestor_groups.into_iter().fold(None, |init, g| {
-        let new = if let Some(old) = init {
-            match g {
-                Group::Safe => {
-                    if old == Group::Safe {
-                        Group::Safe
-                    } else {
-                        old
-                    }
-                }
-                Group::Sandbox => {
-                    if old != Group::Test {
-                        Group::Sandbox
-                    } else {
-                        old
-                    }
-                }
-                Group::Test => Group::Test,
-            }
-        } else {
-            g
-        };
-        Some(new)
-    });
-    Ok(match least_privilege {
-        Some(Group::Safe) => String::from("safe"),
-        Some(Group::Sandbox) => String::from("sandbox"),
-        Some(Group::Test) => String::from("test"),
-        None => String::from("safe"), // TODO: Default should be sandbox??
-    })
+    let least_privilege = ancestor_groups
+        .into_iter()
+        .fold(None, |init, g| Some(init.map(|old| std::cmp::min(old, g)).unwrap_or(g)));
+    // TODO: Default should be sandbox??
+    Ok(least_privilege.unwrap_or(Group::Safe).to_string())
 }
 
 fn download_crate(

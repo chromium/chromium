@@ -8,6 +8,13 @@ use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
 
+/// Paths to the toolchain tools, if the user specified them. Otherwise they
+/// can be found from the user's PATH.
+pub struct ToolPaths {
+    pub rustc: Option<String>,
+    pub cargo: Option<String>,
+}
+
 /// Chromium source tree paths. All members other than `root` are relative to
 /// `root`.
 pub struct ChromiumPaths {
