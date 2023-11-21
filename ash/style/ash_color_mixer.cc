@@ -434,6 +434,7 @@ void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   mixer[cros_tokens::kCrosRefNeutral0] = {ui::kColorRefNeutral0};
   mixer[cros_tokens::kCrosRefNeutral8] = {ui::kColorRefNeutral8};
   mixer[cros_tokens::kCrosRefNeutral10] = {ui::kColorRefNeutral10};
+  mixer[cros_tokens::kCrosRefNeutral15] = {ui::kColorRefNeutral15};
   mixer[cros_tokens::kCrosRefNeutral20] = {ui::kColorRefNeutral20};
   mixer[cros_tokens::kCrosRefNeutral25] = {ui::kColorRefNeutral25};
   mixer[cros_tokens::kCrosRefNeutral30] = {ui::kColorRefNeutral30};
