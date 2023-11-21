@@ -21,10 +21,11 @@ import {
 } from '../../../protocol/protocol.js';
 import {Buffer} from '../../../utils/Buffer.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
-import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingMessage} from '../../OutgoingMessage.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {assertSupportedEvent} from './events.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
@@ -55,6 +56,16 @@ class EventWrapper {
   }
 }
 
+export const enum EventManagerEvents {
+  Event = 'event',
+}
+
+type EventManagerEventsMap = {
+  [EventManagerEvents.Event]: {
+    message: Promise<Result<OutgoingMessage>>;
+    event: string;
+  };
+};
 /**
  * Maps event name to a desired buffer length.
  */
@@ -62,7 +73,7 @@ const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
   [[ChromiumBidi.Log.EventNames.LogEntryAdded, 100]]
 );
 
-export class EventManager {
+export class EventManager extends EventEmitter<EventManagerEventsMap> {
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
@@ -84,14 +95,12 @@ export class EventManager {
    */
   #lastMessageSent = new Map<string, number>();
   #subscriptionManager: SubscriptionManager;
-  #bidiServer: BidiServer;
+  #browsingContextStorage: BrowsingContextStorage;
 
-  constructor(bidiServer: BidiServer) {
-    this.#bidiServer = bidiServer;
-
-    this.#subscriptionManager = new SubscriptionManager(
-      bidiServer.getBrowsingContextStorage()
-    );
+  constructor(browsingContextStorage: BrowsingContextStorage) {
+    super();
+    this.#browsingContextStorage = browsingContextStorage;
+    this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
   }
 
   /**
@@ -133,10 +142,10 @@ export class EventManager {
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
-      this.#bidiServer.emitOutgoingMessage(
-        OutgoingMessage.createFromPromise(event, channel),
-        eventName
-      );
+      this.emit(EventManagerEvents.Event, {
+        message: OutgoingMessage.createFromPromise(event, channel),
+        event: eventName,
+      });
       this.#markEventSent(eventWrapper, channel, eventName);
     }
   }
@@ -154,7 +163,7 @@ export class EventManager {
     for (const contextId of contextIds) {
       if (contextId !== null) {
         // Assert the context is known. Throw exception otherwise.
-        this.#bidiServer.getBrowsingContextStorage().getContext(contextId);
+        this.#browsingContextStorage.getContext(contextId);
       }
     }
 
@@ -167,10 +176,13 @@ export class EventManager {
           channel
         )) {
           // The order of the events is important.
-          this.#bidiServer.emitOutgoingMessage(
-            OutgoingMessage.createFromPromise(eventWrapper.event, channel),
-            eventName
-          );
+          this.emit(EventManagerEvents.Event, {
+            message: OutgoingMessage.createFromPromise(
+              eventWrapper.event,
+              channel
+            ),
+            event: eventName,
+          });
           this.#markEventSent(eventWrapper, channel, eventName);
         }
       }
@@ -266,7 +278,7 @@ export class EventManager {
             // Events without context are already in the result.
             _contextId !== null &&
             // Events from deleted contexts should not be sent.
-            this.#bidiServer.getBrowsingContextStorage().hasContext(_contextId)
+            this.#browsingContextStorage.hasContext(_contextId)
         )
         .map((_contextId) =>
           this.#getBufferedEvents(eventName, _contextId, channel)

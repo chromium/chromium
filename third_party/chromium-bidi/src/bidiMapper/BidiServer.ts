@@ -27,7 +27,10 @@ import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
-import {EventManager} from './domains/events/EventManager.js';
+import {
+  EventManager,
+  EventManagerEvents,
+} from './domains/events/EventManager.js';
 import {RealmStorage} from './domains/script/RealmStorage.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
@@ -41,6 +44,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingMessage>;
   #transport: IBidiTransport;
   #commandProcessor: CommandProcessor;
+  #eventManager: EventManager;
   #browsingContextStorage = new BrowsingContextStorage();
   #logger?: LoggerFn;
 
@@ -77,10 +81,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
+    this.#eventManager = new EventManager(this.#browsingContextStorage);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
-      new EventManager(this),
+      this.#eventManager,
       selfTargetId,
       this.#browsingContextStorage,
       new RealmStorage(),
@@ -88,6 +93,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       parser,
       this.#logger
     );
+    this.#eventManager.on(EventManagerEvents.Event, ({message, event}) => {
+      this.emitOutgoingMessage(message, event);
+    });
     this.#commandProcessor.on(
       CommandProcessorEvents.Response,
       ({message, event}) => {
@@ -145,10 +153,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   close() {
     this.#transport.close();
-  }
-
-  getBrowsingContextStorage(): BrowsingContextStorage {
-    return this.#browsingContextStorage;
   }
 
   async #topLevelContextsLoaded() {
