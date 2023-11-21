@@ -54,9 +54,8 @@ bool IsOverlayScrollbarEnabled() {
 }
 
 bool IsFluentScrollbarEnabled() {
-// Currently, the feature is only supported on Windows. Please see more details
-// here: https://crbug.com/1353432.
-#if BUILDFLAG(IS_WIN)
+// Fluent scrollbars are only used for some OSes due to UI design guidelines.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFluentScrollbar) ||
          IsFluentOverlayScrollbarEnabled();
 #else
@@ -64,9 +63,8 @@ bool IsFluentScrollbarEnabled() {
 #endif
 }
 bool IsFluentOverlayScrollbarEnabled() {
-// Currently, the feature is only supported on Windows. Please see more details
-// here: https://crbug.com/1353432.
-#if BUILDFLAG(IS_WIN)
+// Fluent scrollbars are only used for some OSes due to UI design guidelines.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFluentOverlayScrollbar);
 #else
   return false;

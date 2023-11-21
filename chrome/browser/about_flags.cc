@@ -4733,21 +4733,23 @@ const FeatureEntry kFeatureEntries[] = {
                                        kDXGIWaitableSwapChainVariations,
                                        "DXGIWaitableSwapChain"),
     },
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {
         "fluent-overlay-scrollbars",
         flag_descriptions::kFluentOverlayScrollbarsName,
         flag_descriptions::kFluentOverlayScrollbarsDescription,
-        kOsWin,
+        kOsWin | kOsLinux,
         FEATURE_VALUE_TYPE(features::kFluentOverlayScrollbar),
     },
     {
         "fluent-scrollbars",
         flag_descriptions::kFluentScrollbarsName,
         flag_descriptions::kFluentScrollbarsDescription,
-        kOsWin,
+        kOsWin | kOsLinux,
         FEATURE_VALUE_TYPE(features::kFluentScrollbar),
     },
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {
         "zero-copy-video-capture",

@@ -1632,6 +1632,7 @@ test("content_browsertests") {
     "../child/webthemeengine_impl_default_browsertest.cc",
     "../renderer/accessibility/render_accessibility_impl_browsertest.cc",
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
+    "../renderer/fluent_scrollbar_browsertest.cc",
     "../renderer/gin_browsertest.cc",
     "../renderer/media/renderer_webmediaplayer_delegate_browsertest.cc",
     "../renderer/media/too_many_web_media_players_intervention_browsertest.cc",
@@ -1954,7 +1955,6 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
-      "../renderer/fluent_scrollbar_browsertest.cc",
     ]
 
     deps += [

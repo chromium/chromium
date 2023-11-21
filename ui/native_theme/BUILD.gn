@@ -32,6 +32,9 @@ component("native_theme") {
     "native_theme.h",
     "native_theme_base.cc",
     "native_theme_base.h",
+    "native_theme_constants_fluent.h",
+    "native_theme_fluent.cc",
+    "native_theme_fluent.h",
     "native_theme_observer.cc",
     "native_theme_observer.h",
     "native_theme_utils.cc",
@@ -68,12 +71,7 @@ component("native_theme") {
   }
 
   if (is_win) {
-    sources += [
-      "caption_style_win.cc",
-      "native_theme_constants_fluent.h",
-      "native_theme_fluent.cc",
-      "native_theme_fluent.h",
-    ]
+    sources += [ "caption_style_win.cc" ]
   }
 
   if (use_aura || toolkit_views) {
@@ -153,7 +151,10 @@ source_set("test_support") {
 test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  sources = [ "native_theme_unittest.cc" ]
+  sources = [
+    "native_theme_fluent_unittest.cc",
+    "native_theme_unittest.cc",
+  ]
 
   if (use_aura) {
     sources += [ "native_theme_aura_unittest.cc" ]
@@ -162,7 +163,6 @@ test("native_theme_unittests") {
   if (is_win) {
     sources += [
       "caption_style_win_unittest.cc",
-      "native_theme_fluent_unittest.cc",
       "native_theme_win_unittest.cc",
     ]
   }
