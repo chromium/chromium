@@ -52,6 +52,7 @@ namespace {
 struct PageStateOptions {
   bool empty_web_app_info = false;
   WebAppUrlLoaderResult url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  absl::optional<GURL> manifest_id;
 };
 
 class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
@@ -204,8 +205,14 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
         fake_web_contents_manager().GetOrCreatePageState(options.install_url);
     state.opt_manifest = blink::mojom::Manifest::New();
     state.opt_manifest->start_url = options.install_url;
-    state.opt_manifest->id =
-        GenerateManifestIdFromStartUrlOnly(options.install_url);
+
+    if (mock_options.manifest_id.has_value()) {
+      state.opt_manifest->id = *mock_options.manifest_id;
+    } else {
+      state.opt_manifest->id =
+          GenerateManifestIdFromStartUrlOnly(options.install_url);
+    }
+
     state.opt_manifest->name = u"Manifest Name";
     state.return_null_info = mock_options.empty_web_app_info;
 
@@ -474,10 +481,7 @@ TEST_F(ExternalAppResolutionCommandTest,
   const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kCloseAndRelaunch;
-  SetPageState(options);
-  auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope,
-                                             kManifestId);
+  SetPageState(options, {.manifest_id = kManifestId});
 
   MockWebAppUiManager& ui_manager =
       static_cast<MockWebAppUiManager&>(fake_ui_manager());
@@ -497,7 +501,7 @@ TEST_F(ExternalAppResolutionCommandTest,
                                      AppRelaunchState::kAppRelaunched))
       .Times(1);
 
-  auto result = InstallAndWait(options, std::move(data_retriever));
+  auto result = InstallAndWait(options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   ASSERT_TRUE(result.app_id.has_value());
@@ -547,10 +551,7 @@ TEST_F(ExternalAppResolutionCommandTest,
   const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kCloseAndRelaunch;
-  SetPageState(options);
-  auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope,
-                                             kManifestId);
+  SetPageState(options, {.manifest_id = kManifestId});
 
   MockWebAppUiManager& ui_manager =
       static_cast<MockWebAppUiManager&>(fake_ui_manager());
@@ -559,7 +560,7 @@ TEST_F(ExternalAppResolutionCommandTest,
       .WillOnce(Return(0u));
   EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _)).Times(0);
 
-  auto result = InstallAndWait(options, std::move(data_retriever));
+  auto result = InstallAndWait(options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   ASSERT_TRUE(result.app_id.has_value());
