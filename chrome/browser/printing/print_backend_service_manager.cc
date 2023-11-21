@@ -133,7 +133,7 @@ void PrintBackendServiceManager::SetCrashKeys(const std::string& printer_name) {
   scoped_refptr<PrintBackend> print_backend =
       PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 }
 
 PrintBackendServiceManager::ClientId

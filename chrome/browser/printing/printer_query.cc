@@ -269,7 +269,7 @@ void PrinterQuery::UpdatePrintableArea(
   base::ScopedAllowBlocking allow_blocking;
   std::string printer_name = base::UTF16ToUTF8(print_settings->device_name());
   crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
   PRINTER_LOG(EVENT) << "Updating paper printable area in-process for "
                      << printer_name;
@@ -339,7 +339,7 @@ void PrinterQuery::UpdatePrintSettings(base::Value::Dict new_settings,
         PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
     std::string printer_name = *new_settings.FindString(kSettingDeviceName);
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
+        printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
     PrinterBasicInfo basic_info;

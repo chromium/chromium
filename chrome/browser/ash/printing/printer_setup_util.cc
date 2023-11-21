@@ -100,7 +100,7 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
 
   VLOG(1) << "Get printer capabilities start for " << printer_id;
   crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(printer_id));
+      printer_id, print_backend->GetPrinterDriverInfo(printer_id));
 
   auto caps = absl::make_optional<::printing::PrinterSemanticCapsAndDefaults>();
   if (print_backend->GetPrinterSemanticCapsAndDefaults(printer_id, &*caps) !=

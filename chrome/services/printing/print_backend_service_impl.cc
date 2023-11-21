@@ -514,7 +514,7 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
         callback) {
   DCHECK(print_backend_);
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend_->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
 
   PrinterSemanticCapsAndDefaults printer_caps;
   const mojom::ResultCode result =
@@ -536,7 +536,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
     mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
   DCHECK(print_backend_);
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend_->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
 
   PrinterBasicInfo printer_info;
   mojom::ResultCode result =
@@ -601,7 +601,7 @@ void PrintBackendServiceImpl::GetPaperPrintableArea(
     mojom::PrintBackendService::GetPaperPrintableAreaCallback callback) {
   CHECK(print_backend_);
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend_->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
 
   absl::optional<gfx::Rect> printable_area_um =
       print_backend_->GetPaperPrintableArea(printer_name, media.vendor_id,
@@ -679,7 +679,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   DCHECK(printer_name);
 
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend_->GetPrinterDriverInfo(*printer_name));
+      *printer_name, print_backend_->GetPrinterDriverInfo(*printer_name));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
   // Try to fill in advanced settings based upon basic info options.

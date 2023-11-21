@@ -220,7 +220,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
       print_backend->GetPrinterDriverInfo(device_name);
   PRINTER_LOG(EVENT) << "Driver info: " << base::JoinString(driver_info, ";");
 
-  crash_keys::ScopedPrinterInfo crash_key(driver_info);
+  crash_keys::ScopedPrinterInfo crash_key(device_name, driver_info);
 
   auto caps = absl::make_optional<PrinterSemanticCapsAndDefaults>();
   mojom::ResultCode result =
