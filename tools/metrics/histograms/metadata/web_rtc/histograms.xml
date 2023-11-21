@@ -1627,6 +1627,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Screenshare.ZeroHz.DelayMs" units="ms"
+    expires_after="2024-11-21">
+  <owner>henrika@chromium.org</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    The number of milliseconds from the point a frame is received in
+    FrameCadenceAdapterImpl::OnFrame() until it is delivered for encoding in
+    ZeroHertzAdapterMode::SendFrameNow(). Recorded for each frame which is not a
+    repeated frame when 0Hz screen share is enabled.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs" units="ms"
     expires_after="2024-04-28">
   <owner>handellm@google.com</owner>
