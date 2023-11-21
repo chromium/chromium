@@ -26,11 +26,6 @@ BASE_FEATURE(kApiReadingList,
              "ApiReadingList",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls the availability of the sidePanel.open() API.
-BASE_FEATURE(kApiSidePanelOpen,
-             "ApiSidePanelOpen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls the availability of the userScripts API.
 BASE_FEATURE(kApiUserScripts,
              "ApiUserScripts",

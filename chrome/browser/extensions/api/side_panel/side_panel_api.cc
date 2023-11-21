@@ -79,12 +79,6 @@ SidePanelGetPanelBehaviorFunction::RunFunction() {
 ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
   // Only available to extensions.
   EXTENSION_FUNCTION_VALIDATE(extension());
-  // This API is only available with the corresponding feature enabled or to
-  // the allowlisted extension.
-  EXTENSION_FUNCTION_VALIDATE(
-      base::FeatureList::IsEnabled(extensions_features::kApiSidePanelOpen) ||
-      extension()->hashed_id().value() ==
-          "3CEFE7915CDBD48D769E214807ACAA51581724A0");
 
   // `sidePanel.open()` requires a user gesture.
   if (!user_gesture()) {

@@ -159,14 +159,11 @@ class ExtensionSidePanelRegistryWaiter : public SidePanelRegistryObserver {
 
 class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
  public:
-  explicit ExtensionSidePanelBrowserTest(bool enable_open_panel = false) {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(extensions_features::kExtensionSidePanelIntegration);
-    features.push_back(features::kSidePanelPinning);
-    if (enable_open_panel) {
-      features.push_back(extensions_features::kApiSidePanelOpen);
-    }
-    feature_list_.InitWithFeatures(features, {});
+  ExtensionSidePanelBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {extensions_features::kExtensionSidePanelIntegration,
+         features::kSidePanelPinning},
+        {});
   }
 
  protected:
@@ -1372,8 +1369,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
 class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
  public:
-  ExtensionOpenSidePanelBrowserTest()
-      : ExtensionSidePanelBrowserTest(/*enable_open_panel=*/true) {}
+  ExtensionOpenSidePanelBrowserTest() = default;
   ~ExtensionOpenSidePanelBrowserTest() override = default;
 
  protected:

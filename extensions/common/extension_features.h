@@ -37,7 +37,6 @@ namespace extensions_features {
 BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 BASE_DECLARE_FEATURE(kApiEnterpriseKioskInput);
 BASE_DECLARE_FEATURE(kApiReadingList);
-BASE_DECLARE_FEATURE(kApiSidePanelOpen);
 BASE_DECLARE_FEATURE(kApiUserScripts);
 BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
