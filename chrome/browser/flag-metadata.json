@@ -4581,6 +4581,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "help-app-app-detail-page",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "help-app-apps-list",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 126

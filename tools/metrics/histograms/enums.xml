@@ -33548,6 +33548,7 @@ from previous Chrome versions.
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
   <int value="-1924837577"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:enabled"/>
+  <int value="-1923751382" label="HelpAppAppDetailPage:disabled"/>
   <int value="-1922176861"
       label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
@@ -36373,6 +36374,7 @@ from previous Chrome versions.
   <int value="-574000901" label="AVIF:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
   <int value="-572285609" label="PretokenizeCss:enabled"/>
+  <int value="-572113817" label="HelpAppAppDetailPage:enabled"/>
   <int value="-572112724" label="DialogTouchBar:disabled"/>
   <int value="-572012175" label="AssistantEnableStereoAudioInput:disabled"/>
   <int value="-571655232" label="SideSearch:enabled"/>

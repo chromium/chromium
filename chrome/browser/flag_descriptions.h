@@ -3776,6 +3776,9 @@ extern const char kGlanceablesV2Description[];
 extern const char kGlanceablesV2CalendarViewName[];
 extern const char kGlanceablesV2CalendarViewDescription[];
 
+extern const char kHelpAppAppDetailPageName[];
+extern const char kHelpAppAppDetailPageDescription[];
+
 extern const char kHelpAppAppsListName[];
 extern const char kHelpAppAppsListDescription[];
 
