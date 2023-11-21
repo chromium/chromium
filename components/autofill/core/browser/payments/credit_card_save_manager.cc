@@ -385,7 +385,6 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
 void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
     const CreditCard& card) {
-  // TODO(crbug.com/1450749): Resolve duplicate local and server card issue.
   card_save_candidate_ = card;
   show_save_prompt_.reset();
 
@@ -395,10 +394,6 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
     show_save_prompt_ = !cvc_storage_strike_db->ShouldBlockFeature(
         base::NumberToString(card_save_candidate_.instrument_id()));
   }
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1450749): Implement OfferCvcUploadSave for clank.
-  NOTIMPLEMENTED();
-#else
   // TODO(crbug.com/1481933): Refactor ConfirmSaveCreditCardToCloud to change
   // legal_message_lines_ to optional.
   client_->ConfirmSaveCreditCardToCloud(
@@ -408,7 +403,6 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
-#endif
 }
 
 bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
@@ -665,9 +659,6 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   client_->ConfirmSaveCreditCardLocally(
       card_save_candidate_,
       AutofillClient::SaveCreditCardOptions()
@@ -675,7 +666,6 @@ void CreditCardSaveManager::OfferCvcLocalSave() {
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
-#endif
 }
 
 void CreditCardSaveManager::OfferCardUploadSave() {

@@ -683,7 +683,6 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that when triggering AttemptToOfferCvcLocalSave function, SaveCard
 // dialog will be triggered with `kCvcSaveOnly` option.
 TEST_F(CreditCardSaveManagerTest,
@@ -920,7 +919,6 @@ TEST_F(
               UpdateServerCvc(credit_card.instrument_id(), kNewCvc));
   UserHasAcceptedCvcUpload({});
 }
-#endif
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
   personal_data().ClearCreditCards();
