@@ -1198,16 +1198,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchSelection.EndedWithAction" enum="BooleanSuccess"
-    expires_after="M77">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether the touch selection sequence ended with the user selecting one of
-    the text manipulation actions, such as copy, cut, or paste. after startup).
-    Sequences ending with such action are considered successful.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>

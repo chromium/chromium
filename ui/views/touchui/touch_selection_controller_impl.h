@@ -148,7 +148,6 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // Magnifier which is shown when touch dragging to adjust the selection.
   std::unique_ptr<ui::TouchSelectionMagnifierAura> touch_selection_magnifier_;
 
-  bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
   // Whether to enable toggling the menu by tapping the cursor or cursor handle.

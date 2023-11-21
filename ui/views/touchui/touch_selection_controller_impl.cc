@@ -474,8 +474,6 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
 }
 
 TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
-  UMA_HISTOGRAM_BOOLEAN("Event.TouchSelection.EndedWithAction",
-                        command_executed_);
   HideQuickMenu();
   HideMagnifier();
   aura::Env::GetInstance()->RemoveEventObserver(this);
@@ -682,7 +680,6 @@ bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
 
 void TouchSelectionControllerImpl::ExecuteCommand(int command_id,
                                                   int event_flags) {
-  command_executed_ = true;
   base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
   // Note that we only log the duration stats for the 'successful' selections,
   // i.e. selections ending with the execution of a command.
