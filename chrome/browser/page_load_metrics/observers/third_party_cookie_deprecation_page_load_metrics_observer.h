@@ -38,22 +38,28 @@ class ThirdPartyCookieDeprecationMetricsObserver
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
 
-  void OnCookiesRead(const GURL& url,
-                     const GURL& first_party_url,
-                     bool blocked_by_policy,
-                     bool is_ad_tagged) override;
+  void OnCookiesRead(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) override;
 
-  void OnCookieChange(const GURL& url,
-                      const GURL& first_party_url,
-                      const net::CanonicalCookie& cookie,
-                      bool blocked_by_policy,
-                      bool is_ad_tagged) override;
+  void OnCookieChange(
+      const GURL& url,
+      const GURL& first_party_url,
+      const net::CanonicalCookie& cookie,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) override;
 
  private:
   // Records feature cookie access metric.
-  void RecordCookieUseCounters(const GURL& url,
-                               const GURL& first_party_url,
-                               bool blocked_by_policy);
+  void RecordCookieUseCounters(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      const net::CookieSettingOverrides& cookie_setting_overrides);
 
   void RecordCookieReadUseCounters(const GURL& url,
                                    const GURL& first_party_url,

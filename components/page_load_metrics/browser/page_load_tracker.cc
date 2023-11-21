@@ -784,24 +784,28 @@ void PageLoadTracker::FrameSizeChanged(
   }
 }
 
-void PageLoadTracker::OnCookiesRead(const GURL& url,
-                                    const GURL& first_party_url,
-                                    bool blocked_by_policy,
-                                    bool is_ad_tagged) {
+void PageLoadTracker::OnCookiesRead(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool blocked_by_policy,
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   for (const auto& observer : observers_) {
     observer->OnCookiesRead(url, first_party_url, blocked_by_policy,
-                            is_ad_tagged);
+                            is_ad_tagged, cookie_setting_overrides);
   }
 }
 
-void PageLoadTracker::OnCookieChange(const GURL& url,
-                                     const GURL& first_party_url,
-                                     const net::CanonicalCookie& cookie,
-                                     bool blocked_by_policy,
-                                     bool is_ad_tagged) {
+void PageLoadTracker::OnCookieChange(
+    const GURL& url,
+    const GURL& first_party_url,
+    const net::CanonicalCookie& cookie,
+    bool blocked_by_policy,
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   for (const auto& observer : observers_) {
     observer->OnCookieChange(url, first_party_url, cookie, blocked_by_policy,
-                             is_ad_tagged);
+                             is_ad_tagged, cookie_setting_overrides);
   }
 }
 

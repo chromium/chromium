@@ -161,7 +161,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     cookie_access_details.emplace_back(network::mojom::CookieAccessDetails::New(
         access_type, kGairaUrl, url::Origin(), net::SiteForCookies(),
         CreateReportedCookies(cookies_), absl::nullopt, /*count=*/1,
-        /*is_ad_tagged=*/false));
+        /*is_ad_tagged=*/false, net::CookieSettingOverrides()));
     fetcher_->OnCookiesAccessed(std::move(cookie_access_details));
   }
 

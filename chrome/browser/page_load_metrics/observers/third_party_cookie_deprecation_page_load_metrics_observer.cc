@@ -77,8 +77,10 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,
     bool blocked_by_policy,
-    bool is_ad_tagged) {
-  RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
+  RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
+                          cookie_setting_overrides);
   RecordCookieReadUseCounters(url, first_party_url, blocked_by_policy,
                               is_ad_tagged);
 }
@@ -88,14 +90,17 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookieChange(
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
     bool blocked_by_policy,
-    bool is_ad_tagged) {
-  RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
+  RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
+                          cookie_setting_overrides);
 }
 
 void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     const GURL& url,
     const GURL& first_party_url,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
     return;
   }
@@ -107,12 +112,9 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
       "PageLoad.Clients.ThirdPartyCookieAccessBlockedByExperiment",
       is_blocked_by_experiment);
 
-  // TODO(crbug.com/1494080): Consider whether need to use the real
-  // CookieSettingOverrides rather than default to none, this helps to
-  // evaluate third party cookies are allowed by the storage access API.
   const ThirdPartyCookieAllowMechanism allow_mechanism =
       cookie_settings_->GetThirdPartyCookieAllowMechanism(
-          url, first_party_url, net::CookieSettingOverrides());
+          url, first_party_url, cookie_setting_overrides);
   if (allow_mechanism != ThirdPartyCookieAllowMechanism::kNone) {
     ReportThirdPartyCookieAllowMechanismHistogram(allow_mechanism);
   }
