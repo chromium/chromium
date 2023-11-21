@@ -228,7 +228,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
     if (@available(iOS 16.0, *)) {
       _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-      [self.tableView addInteraction:self.interactionMenu];
     }
   }
   [self setOrExtendAuthValidityTimer];
