@@ -38,8 +38,13 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+using testing::_;
+using testing::Return;
 
 namespace web_app {
 namespace {
@@ -47,6 +52,21 @@ namespace {
 struct PageStateOptions {
   bool empty_web_app_info = false;
   WebAppUrlLoaderResult url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+};
+
+class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
+ public:
+  MOCK_METHOD(void,
+              NotifyAppRelaunchState,
+              (std::string placeholder_app_id,
+               std::string final_app_id,
+               base::WeakPtr<Profile> profile,
+               AppRelaunchState relaunch_state),
+              (override));
+  MOCK_METHOD(size_t,
+              GetNumWindowsForApp,
+              (const webapps::AppId& app_id),
+              (override));
 };
 
 class ExternalAppResolutionCommandTest : public WebAppTest {
@@ -103,11 +123,17 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
         .AsTestOsIntegrationManager()
         ->SetShortcutManager(std::move(shortcut_manager));
 
+    auto ui_manager = std::make_unique<MockWebAppUiManager>();
+    ui_manager_ = ui_manager.get();
+    web_app::FakeWebAppProvider::Get(profile())->SetWebAppUiManager(
+        std::move(ui_manager));
+
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
     shortcut_manager_ = nullptr;
+    ui_manager_ = nullptr;
     WebAppTest::TearDown();
   }
 
@@ -181,7 +207,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
     state.opt_manifest->id =
         GenerateManifestIdFromStartUrlOnly(options.install_url);
     state.opt_manifest->name = u"Manifest Name";
-
     state.return_null_info = mock_options.empty_web_app_info;
 
     state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
@@ -224,6 +249,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
  private:
   base::flat_map<webapps::AppId, BitmapData> app_to_icons_data_;
   raw_ptr<TestShortcutManager> shortcut_manager_ = nullptr;
+  raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 };
 
 TEST_F(ExternalAppResolutionCommandTest, SuccessInternalDefault) {
@@ -398,6 +424,10 @@ TEST_F(ExternalAppResolutionCommandTest, ReinstallPlaceholderSucceeds) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
   data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
 
+  MockWebAppUiManager& ui_manager =
+      static_cast<MockWebAppUiManager&>(fake_ui_manager());
+  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _)).Times(0);
+
   auto result = InstallAndWait(options, std::move(data_retriever));
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
@@ -410,6 +440,141 @@ TEST_F(ExternalAppResolutionCommandTest, ReinstallPlaceholderSucceeds) {
 
   EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
   EXPECT_FALSE(IsPlaceholderAppId(placeholder_app_id));
+}
+
+TEST_F(ExternalAppResolutionCommandTest,
+       ReinstallPlaceholderSucceedsWithAppRelaunch) {
+  const std::string origin = "https://foo.example";
+  const GURL kWebAppUrl(origin);
+  const GURL kManifestId(GURL(origin + "/id"));
+  ExternalInstallOptions options(kWebAppUrl,
+                                 mojom::UserDisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  webapps::AppId placeholder_app_id;
+
+  // Install a placeholder app.
+  {
+    SetPageState(options, {.url_load_result =
+                               WebAppUrlLoaderResult::kRedirectedUrlLoaded});
+
+    auto result = InstallAndWait(options);
+
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    ASSERT_TRUE(result.app_id.has_value());
+    placeholder_app_id = result.app_id.value();
+
+    const WebApp* web_app = registrar().GetAppById(placeholder_app_id);
+    ASSERT_TRUE(web_app);
+    EXPECT_TRUE(web_app->HasOnlySource(WebAppManagement::Type::kPolicy));
+    EXPECT_TRUE(IsPlaceholderAppId(placeholder_app_id));
+  }
+
+  // Replace the placeholder with a real app.
+  const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
+  options.placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kCloseAndRelaunch;
+  SetPageState(options);
+  auto data_retriever = std::make_unique<FakeDataRetriever>();
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope,
+                                             kManifestId);
+
+  MockWebAppUiManager& ui_manager =
+      static_cast<MockWebAppUiManager&>(fake_ui_manager());
+  EXPECT_CALL(ui_manager, GetNumWindowsForApp(GenerateAppId(
+                              /*manifest_id_path=*/absl::nullopt, kWebAppUrl)))
+      .WillOnce(Return(1u));
+  EXPECT_CALL(ui_manager,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+                                     AppRelaunchState::kAppAboutToRelaunch))
+      .Times(1);
+  EXPECT_CALL(ui_manager,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+                                     AppRelaunchState::kAppClosingForRelaunch))
+      .Times(1);
+  EXPECT_CALL(ui_manager,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+                                     AppRelaunchState::kAppRelaunched))
+      .Times(1);
+
+  auto result = InstallAndWait(options, std::move(data_retriever));
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_TRUE(result.app_id.has_value());
+  EXPECT_EQ(result.app_id.value(), final_app_id);
+
+  const WebApp* web_app = registrar().GetAppById(placeholder_app_id);
+  ASSERT_FALSE(web_app);
+
+  const WebApp* final_web_app = registrar().GetAppById(final_app_id);
+  ASSERT_TRUE(final_web_app);
+  EXPECT_TRUE(final_web_app->HasOnlySource(WebAppManagement::Type::kPolicy));
+
+  EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
+  EXPECT_FALSE(IsPlaceholderAppId(placeholder_app_id));
+  EXPECT_FALSE(IsPlaceholderAppId(final_app_id));
+}
+
+TEST_F(ExternalAppResolutionCommandTest,
+       ReinstallPlaceholderAppRelaunchNoWindow) {
+  const std::string origin = "https://foo.example";
+  const GURL kWebAppUrl(origin);
+  const GURL kManifestId(GURL(origin + "/id"));
+  ExternalInstallOptions options(kWebAppUrl,
+                                 mojom::UserDisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  webapps::AppId placeholder_app_id;
+
+  // Install a placeholder app.
+  {
+    SetPageState(options, {.url_load_result =
+                               WebAppUrlLoaderResult::kRedirectedUrlLoaded});
+
+    auto result = InstallAndWait(options);
+
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    ASSERT_TRUE(result.app_id.has_value());
+    placeholder_app_id = result.app_id.value();
+
+    const WebApp* web_app = registrar().GetAppById(placeholder_app_id);
+    ASSERT_TRUE(web_app);
+    EXPECT_TRUE(web_app->HasOnlySource(WebAppManagement::Type::kPolicy));
+    EXPECT_TRUE(IsPlaceholderAppId(placeholder_app_id));
+  }
+
+  // Replace the placeholder with a real app.
+  const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
+  options.placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kCloseAndRelaunch;
+  SetPageState(options);
+  auto data_retriever = std::make_unique<FakeDataRetriever>();
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope,
+                                             kManifestId);
+
+  MockWebAppUiManager& ui_manager =
+      static_cast<MockWebAppUiManager&>(fake_ui_manager());
+  EXPECT_CALL(ui_manager, GetNumWindowsForApp(GenerateAppId(
+                              /*manifest_id_path=*/absl::nullopt, kWebAppUrl)))
+      .WillOnce(Return(0u));
+  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _)).Times(0);
+
+  auto result = InstallAndWait(options, std::move(data_retriever));
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_TRUE(result.app_id.has_value());
+  EXPECT_EQ(result.app_id.value(), final_app_id);
+
+  const WebApp* web_app = registrar().GetAppById(placeholder_app_id);
+  ASSERT_FALSE(web_app);
+
+  const WebApp* final_web_app = registrar().GetAppById(final_app_id);
+  ASSERT_TRUE(final_web_app);
+  EXPECT_TRUE(final_web_app->HasOnlySource(WebAppManagement::Type::kPolicy));
+
+  EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
+  EXPECT_FALSE(IsPlaceholderAppId(placeholder_app_id));
+  EXPECT_FALSE(IsPlaceholderAppId(final_app_id));
 }
 
 // With go/external_app_refactoring the placeholder is updated in-place and not

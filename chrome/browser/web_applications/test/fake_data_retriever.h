@@ -67,7 +67,9 @@ class FakeDataRetriever : public WebAppDataRetriever {
   // Builds minimal data for install to succeed. Data includes: empty renderer
   // info, manifest with |url| and |scope|, installability checked as |true|,
   // empty icons.
-  void BuildDefaultDataToRetrieve(const GURL& url, const GURL& scope);
+  void BuildDefaultDataToRetrieve(const GURL& url,
+                                  const GURL& scope,
+                                  const GURL& manifest_id = GURL());
 
  private:
   void ScheduleCompletionCallback();

@@ -180,6 +180,12 @@ void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void FakeWebAppUiManager::NotifyAppRelaunchState(
+    std::string placeholder_app_id,
+    std::string final_app_id,
+    base::WeakPtr<Profile> profile,
+    AppRelaunchState relaunch_state) {}
+
 content::WebContents* FakeWebAppUiManager::CreateNewTab() {
   return nullptr;
 }

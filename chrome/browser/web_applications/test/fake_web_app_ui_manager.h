@@ -97,6 +97,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::vector<std::string>& app_names,
       base::WeakPtr<Profile> profile) override;
 #endif
+  void NotifyAppRelaunchState(std::string placeholder_app_id,
+                              std::string final_app_id,
+                              base::WeakPtr<Profile> profile,
+                              AppRelaunchState relaunch_state) override;
   content::WebContents* CreateNewTab() override;
   bool IsWebContentsActiveTabInBrowser(
       content::WebContents* web_contents) override;

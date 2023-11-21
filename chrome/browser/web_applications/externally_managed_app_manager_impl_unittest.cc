@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
@@ -1704,7 +1705,8 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Reinstall placeholder
   {
-    install_options.wait_for_windows_closed = true;
+    install_options.placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kWaitForAppWindowsClosed;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/false);
@@ -1744,7 +1746,8 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   {
     webapps::AppId app_id = GenerateAppIdFromManifestId(
         GenerateManifestIdFromStartUrlOnly(kFooWebAppUrl));
-    install_options.wait_for_windows_closed = true;
+    install_options.placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kWaitForAppWindowsClosed;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/false);

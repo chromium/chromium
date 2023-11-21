@@ -213,7 +213,8 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
   }
 
   // No need to install a placeholder because there should be one already.
-  install_options.wait_for_windows_closed = true;
+  install_options.placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kWaitForAppWindowsClosed;
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
@@ -352,11 +353,18 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // When the policy gets refreshed, we should try to reinstall placeholder
     // apps but only if they are not being used. In the non-placeholder case, we
     // will not reinstall and there is no need to wait for windows being closed.
-    install_options.wait_for_windows_closed =
+    // Note: an exception to this rule is described in
+    // go/preventclose-waitforwindowsclosed.
+
+    // TODO(b/311704283): Also set the kCloseAndRelaunch behavior here once the
+    // feature is complete.
+    install_options.placeholder_resolution_behavior =
         provider_->registrar_unsafe()
-            .LookupPlaceholderAppId(install_options.install_url,
-                                    WebAppManagement::kPolicy)
-            .has_value();
+                .LookupPlaceholderAppId(install_options.install_url,
+                                        WebAppManagement::kPolicy)
+                .has_value()
+            ? PlaceholderResolutionBehavior::kWaitForAppWindowsClosed
+            : PlaceholderResolutionBehavior::kClose;
 
     absl::optional<webapps::AppId> app_id =
         provider_->registrar_unsafe().LookupExternalAppId(

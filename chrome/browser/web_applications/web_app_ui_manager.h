@@ -42,6 +42,12 @@ class AppLock;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
 
+enum class AppRelaunchState {
+  kAppClosingForRelaunch,
+  kAppAboutToRelaunch,
+  kAppRelaunched
+};
+
 using UninstallScheduledCallback = base::OnceCallback<void(bool)>;
 using UninstallCompleteCallback =
     base::OnceCallback<void(webapps::UninstallResultCode code)>;
@@ -210,6 +216,14 @@ class WebAppUiManager {
       const std::vector<std::string>& app_names,
       base::WeakPtr<Profile> profile) = 0;
 #endif
+
+  // Displays the user about the status of a force app relaunch. This happens
+  // when a placeholder with `placeholder_app_id` is installed and running, and
+  // then is updated with an app with `final_app_id`.
+  virtual void NotifyAppRelaunchState(std::string placeholder_app_id,
+                                      std::string final_app_id,
+                                      base::WeakPtr<Profile> profile,
+                                      AppRelaunchState relaunch_state) = 0;
 
   // Creates a new Browser tab on the "about:blank" URL. Creates a new browser
   // if there isn't one that is already open.

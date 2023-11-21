@@ -10,8 +10,10 @@
 #include "base/barrier_closure.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
@@ -33,12 +35,15 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -441,9 +446,75 @@ void ExternalAppResolutionCommand::
         bool uninstall_triggered) {
   CHECK(apps_lock_);
 
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
+  CHECK(provider);
+
   const bool uninstall_placeholder =
       installed_placeholder_app_id_.has_value() &&
       *installed_placeholder_app_id_ != app_id;
+
+  const bool is_placeholder_running =
+      installed_placeholder_app_id_.has_value() &&
+      (provider->ui_manager().GetNumWindowsForApp(
+           *installed_placeholder_app_id_) > 0);
+
+  const bool relaunch_app =
+      install_options_.placeholder_resolution_behavior ==
+          PlaceholderResolutionBehavior::kCloseAndRelaunch &&
+      is_placeholder_running;
+
+  switch (install_options_.placeholder_resolution_behavior) {
+    case PlaceholderResolutionBehavior::kWaitForAppWindowsClosed:
+      if (relaunch_app) {
+        Abort(webapps::InstallResultCode::kFailedPlaceholderUninstall);
+        return;
+      }
+      break;
+    case PlaceholderResolutionBehavior::kCloseAndRelaunch:
+    case PlaceholderResolutionBehavior::kClose:
+      break;
+  }
+
+  base::OnceClosure installed_callback_with_arguments_bound =
+      base::BindOnce(std::move(installed_callback_),
+                     PrepareResult(
+                         /*is_offline_install=*/false,
+                         ExternallyManagedAppManager::InstallResult(
+                             std::move(code), app_id, uninstall_triggered)));
+
+  base::OnceClosure finalized_callback;
+  if (relaunch_app) {
+    apps::AppLaunchParams app_launch_params(
+        app_id, apps::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::NEW_WINDOW,
+        apps::LaunchSource::kFromChromeInternal);
+    // First notify that the app is about to relaunch, then relaunch the app and
+    // then notify that the app was relaunched. Finally, call the command
+    // callback.
+    finalized_callback =
+        base::BindOnce(&WebAppUiManager::NotifyAppRelaunchState,
+                       provider->ui_manager().GetWeakPtr(),
+                       *installed_placeholder_app_id_, app_id,
+                       profile_->GetWeakPtr(),
+                       AppRelaunchState::kAppAboutToRelaunch)
+            .Then(
+                base::BindOnce(
+                    &WebAppCommandScheduler::LaunchAppWithCustomParams,
+                    provider->scheduler().GetWeakPtr(),
+                    std::move(app_launch_params),
+                    base::IgnoreArgs<base::WeakPtr<Browser>,
+                                     base::WeakPtr<content::WebContents>,
+                                     apps::LaunchContainer>(
+                        base::BindOnce(&WebAppUiManager::NotifyAppRelaunchState,
+                                       provider->ui_manager().GetWeakPtr(),
+                                       *installed_placeholder_app_id_, app_id,
+                                       profile_->GetWeakPtr(),
+                                       AppRelaunchState::kAppRelaunched)),
+                    FROM_HERE)
+                    .Then(std::move(installed_callback_with_arguments_bound)));
+  } else {
+    finalized_callback = std::move(installed_callback_with_arguments_bound);
+  }
 
   // If the placeholder should be uninstalled, the number of callbacks will be
   // one callback for the parent placeholder + one callback for the finishing of
@@ -454,14 +525,14 @@ void ExternalAppResolutionCommand::
                    base::ToString(number_of_expected_callbacks));
 
   base::RepeatingClosure barrier = base::BarrierClosure(
-      number_of_expected_callbacks,
-      base::BindOnce(std::move(installed_callback_),
-                     PrepareResult(/*is_offline_install=*/false,
-                                   ExternallyManagedAppManager::InstallResult(
-                                       std::move(code), std::move(app_id),
-                                       uninstall_triggered))));
+      number_of_expected_callbacks, std::move(finalized_callback));
 
   if (uninstall_placeholder) {
+    if (relaunch_app) {
+      provider->ui_manager().NotifyAppRelaunchState(
+          *installed_placeholder_app_id_, app_id, profile_->GetWeakPtr(),
+          AppRelaunchState::kAppClosingForRelaunch);
+    }
     auto& scheduler =
         WebAppProvider::GetForWebApps(&profile_.get())->scheduler();
     scheduler.RemoveInstallSource(

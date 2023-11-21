@@ -341,7 +341,8 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     }
 
     if (lock.registrar().IsInstalled(app_id.value())) {
-      if (install_options.wait_for_windows_closed &&
+      if (install_options.placeholder_resolution_behavior ==
+              PlaceholderResolutionBehavior::kWaitForAppWindowsClosed &&
           lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {
         lock.ui_manager().NotifyOnAllAppWindowsClosed(
             app_id.value(),

@@ -123,7 +123,8 @@ base::Value::Dict GetWindowedItem() {
 }
 
 ExternalInstallOptions GetWindowedInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kWindowedUrl),
                                  mojom::UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
@@ -131,7 +132,7 @@ ExternalInstallOptions GetWindowedInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -142,7 +143,8 @@ base::Value::Dict GetTabbedItem() {
 }
 
 ExternalInstallOptions GetTabbedInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kTabbedUrl),
                                  mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
@@ -150,7 +152,7 @@ ExternalInstallOptions GetTabbedInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -159,7 +161,8 @@ base::Value::Dict GetNoContainerItem() {
 }
 
 ExternalInstallOptions GetNoContainerInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kNoContainerUrl),
                                  mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
@@ -167,7 +170,7 @@ ExternalInstallOptions GetNoContainerInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -176,7 +179,8 @@ base::Value::Dict GetCreateDesktopShortcutDefaultItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kNoContainerUrl),
                                  mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
@@ -184,7 +188,7 @@ ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -195,7 +199,8 @@ base::Value::Dict GetCreateDesktopShortcutFalseItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kNoContainerUrl),
                                  mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
@@ -203,7 +208,7 @@ ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -214,7 +219,8 @@ base::Value::Dict GetCreateDesktopShortcutTrueItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kNoContainerUrl),
                                  mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
@@ -222,7 +228,7 @@ ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions(
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   return options;
 }
 
@@ -250,7 +256,8 @@ base::Value::Dict GetFallbackAppNameItem() {
 }
 
 ExternalInstallOptions GetFallbackAppNameInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kWindowedUrl),
                                  mojom::UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
@@ -258,7 +265,7 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   options.fallback_app_name = kDefaultFallbackAppName;
   return options;
 }
@@ -272,7 +279,8 @@ base::Value::Dict GetCustomAppNameItem(std::string name) {
 
 ExternalInstallOptions GetCustomAppNameInstallOptions(
     std::string name,
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kWindowedUrl),
                                  mojom::UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
@@ -280,7 +288,7 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   options.override_name = std::move(name);
   return options;
 }
@@ -297,7 +305,8 @@ base::Value::Dict GetCustomAppIconItem(bool secure = true) {
 }
 
 ExternalInstallOptions GetCustomAppIconInstallOptions(
-    bool wait_for_windows_closed = false) {
+    PlaceholderResolutionBehavior placeholder_resolution_behavior =
+        PlaceholderResolutionBehavior::kClose) {
   ExternalInstallOptions options(GURL(kWindowedUrl),
                                  mojom::UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
@@ -305,7 +314,7 @@ ExternalInstallOptions GetCustomAppIconInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.wait_for_windows_closed = wait_for_windows_closed;
+  options.placeholder_resolution_behavior = placeholder_resolution_behavior;
   options.override_icon_url = GURL(kDefaultCustomIconUrl);
   return options;
 }
@@ -1085,8 +1094,9 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   EXPECT_EQ(future.Get<1>().code,
             webapps::InstallResultCode::kSuccessNewInstall);
 
-  auto reinstall_options =
-      GetWindowedInstallOptions(/*wait_for_windows_closed=*/true);
+  auto reinstall_options = GetWindowedInstallOptions(
+      /*placeholder_resolution_behavior=*/PlaceholderResolutionBehavior::
+          kWaitForAppWindowsClosed);
   reinstall_options.install_placeholder = false;
   expected_options_list.push_back(std::move(reinstall_options));
 
@@ -1154,8 +1164,8 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   EXPECT_EQ(future.Get<1>().code,
             webapps::InstallResultCode::kSuccessNewInstall);
 
-  auto reinstall_options =
-      GetFallbackAppNameInstallOptions(/*wait_for_windows_closed=*/true);
+  auto reinstall_options = GetFallbackAppNameInstallOptions(
+      PlaceholderResolutionBehavior::kWaitForAppWindowsClosed);
   reinstall_options.install_placeholder = false;
   expected_options_list.push_back(std::move(reinstall_options));
 

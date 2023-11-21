@@ -417,6 +417,14 @@ void WebAppUiManagerImpl::DisplayRunOnOsLoginNotification(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void WebAppUiManagerImpl::NotifyAppRelaunchState(
+    std::string placeholder_app_id,
+    std::string final_app_id,
+    base::WeakPtr<Profile> profile,
+    AppRelaunchState relaunch_state) {
+  // TODO(b/311711416): Implement notification.
+}
+
 content::WebContents* WebAppUiManagerImpl::CreateNewTab() {
   NavigateParams params(profile_, GURL(url::kAboutBlankURL),
                         ui::PAGE_TRANSITION_FROM_API);

@@ -94,12 +94,17 @@ void FakeDataRetriever::SetDestructionCallback(base::OnceClosure callback) {
 }
 
 void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
-                                                   const GURL& scope) {
+                                                   const GURL& scope,
+                                                   const GURL& manifest_id) {
   SetEmptyRendererWebAppInstallInfo();
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;
-  manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
+  if (manifest_id.is_empty() || !manifest_id.is_valid()) {
+    manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
+  } else {
+    manifest->id = manifest_id;
+  }
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"Manifest Name";

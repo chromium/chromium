@@ -852,6 +852,10 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
 #endif
 }
 
+base::WeakPtr<WebAppCommandScheduler> WebAppCommandScheduler::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting option,
                                        LaunchWebAppCallback callback,
