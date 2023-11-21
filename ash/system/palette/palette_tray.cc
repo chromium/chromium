@@ -225,9 +225,6 @@ class TitleView : public views::View {
 
   ~TitleView() override = default;
 
-  // views::View:
-  const char* GetClassName() const override { return "TitleView"; }
-
  private:
   void ButtonPressed(PaletteTrayOptions option,
                      base::RepeatingClosure callback) {

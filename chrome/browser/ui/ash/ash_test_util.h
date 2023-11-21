@@ -9,23 +9,11 @@
 
 class Profile;
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace base {
 class FilePath;
 }  // namespace base
 
-namespace chromeos {
-enum class WindowStateType;
-}  // namespace chromeos
-
 namespace ash::test {
-
-// The snap window. This will activate the `window`.
-void ActivateAndSnapWindow(aura::Window* window,
-                           chromeos::WindowStateType type);
 
 // Creates a file at the root of the downloads mount point with the specified
 // `extension`. The default extension is "txt". Returns the path of the created
