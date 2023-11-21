@@ -17,6 +17,7 @@ include_rules = [
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/url_formatter",
   "+components/variations",
+  "+components/version_info/version_info.h",
   "+components/webdata",
   "+google_apis",
   "+net",

@@ -34,6 +34,10 @@ const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 const char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =
     "default_search_provider.choice_screen_random_shuffle_seed";
 
+// The Chrome milestone number at which the random seed was last set.
+const char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
+    "default_search_provider.choice_screen_shuffle_milestone";
+
 // Whether a search context menu item is allowed.
 const char kDefaultSearchProviderContextMenuAccessAllowed[] =
     "default_search_provider.context_menu_access_allowed";

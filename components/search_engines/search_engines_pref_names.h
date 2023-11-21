@@ -11,6 +11,7 @@ extern const char kDefaultSearchProviderGUID[];
 extern const char kSyncedDefaultSearchProviderGUID[];
 extern const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[];
 extern const char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[];
+extern const char kDefaultSearchProviderChoiceScreenShuffleMilestone[];
 extern const char kDefaultSearchProviderContextMenuAccessAllowed[];
 extern const char kDefaultSearchProviderKeywordsUseExtendedList[];
 extern const char kDefaultSearchProviderEnabled[];
