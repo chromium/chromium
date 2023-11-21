@@ -1196,8 +1196,8 @@ void CaptionBubble::SetTextColor() {
   title_->SetEnabledColor(text_color);
   generic_error_text_->SetEnabledColor(text_color);
 
-  generic_error_icon_->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+  generic_error_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kErrorOutlineIcon, text_color));
 
   // Update Live Translate label style
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
