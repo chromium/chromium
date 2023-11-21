@@ -1,6 +1,7 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -68,9 +69,8 @@ function toUrl(url) {
  * @param {string} s
  * @return {!String16}
  */
-function toString16(s) {
-  return /** @type {!String16} */ (
-      {data: Array.from(truncate(s), c => c.charCodeAt())});
+function toTruncatedString16(s) {
+  return /** @type {!String16} */ (stringToMojoString16(truncate(s)));
 }
 const TITLE_ID = 'title';
 const BODY_ID = 'body';
@@ -114,12 +114,12 @@ guestMessagePipe.registerHandler(
         const contents = [
           {
             id: TITLE_ID,
-            content: toString16(searchable_item.title),
+            content: toTruncatedString16(searchable_item.title),
             weight: 1.0,
           },
           {
             id: CATEGORY_ID,
-            content: toString16(searchable_item.mainCategoryName),
+            content: toTruncatedString16(searchable_item.mainCategoryName),
             weight: 0.1,
           },
         ];
@@ -127,7 +127,7 @@ guestMessagePipe.registerHandler(
           for (let i = 0; i < searchable_item.subcategoryNames.length; ++i) {
             contents.push({
               id: SUBCATEGORY_ID + i,
-              content: toString16(searchable_item.subcategoryNames[i]),
+              content: toTruncatedString16(searchable_item.subcategoryNames[i]),
               weight: 0.1,
             });
           }
@@ -137,14 +137,14 @@ guestMessagePipe.registerHandler(
           for (let i = 0; i < searchable_item.subheadings.length; ++i) {
             contents.push({
               id: SUBHEADING_ID + i,
-              content: toString16(searchable_item.subheadings[i]),
+              content: toTruncatedString16(searchable_item.subheadings[i]),
               weight: 0.4,
             });
           }
         } else if (searchable_item.body) {
           contents.push({
             id: BODY_ID,
-            content: toString16(searchable_item.body),
+            content: toTruncatedString16(searchable_item.body),
             weight: 0.2,
           });
         }
@@ -173,7 +173,7 @@ guestMessagePipe.registerHandler(
           /** @type {{query: string, maxResults:(number|undefined)}} */
           (message);
       const response = await indexRemote.find(
-          toString16(dataFromApp.query), dataFromApp.maxResults || 50);
+          toTruncatedString16(dataFromApp.query), dataFromApp.maxResults || 50);
 
       if (response.status !== ResponseStatus.kSuccess || !response.results) {
         return {results: null};
@@ -268,9 +268,9 @@ guestMessagePipe.registerHandler(
       const dataToSend = dataFromApp.map(
           searchableItem => ({
             id: truncate(searchableItem.id),
-            title: toString16(searchableItem.title),
-            mainCategory: toString16(searchableItem.mainCategoryName),
-            tags: searchableItem.tags.map(tag => toString16(tag))
+            title: toTruncatedString16(searchableItem.title),
+            mainCategory: toTruncatedString16(searchableItem.mainCategoryName),
+            tags: searchableItem.tags.map(tag => toTruncatedString16(tag))
                       .filter(tag => tag.data.length > 0),
             tagLocale: searchableItem.tagLocale || '',
             urlPathWithParameters:

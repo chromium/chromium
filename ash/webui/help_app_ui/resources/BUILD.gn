@@ -55,6 +55,7 @@ optimize_webui("browser_proxy_rollup") {
   # Exclude files that are served from chrome://resources anyway, since bundling
   # them would unnecessarily increase the overall build size.
   excludes = [
+    "chrome://resources/js/mojo_type_util.js",
     "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
     "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
   ]
