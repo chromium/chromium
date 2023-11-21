@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -460,9 +459,6 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
     gfx::Image icon_image(icon);
     const SkBitmap bitmap = icon_image.AsBitmap();
     const bool is_visible = image_util::IsIconSufficientlyVisible(bitmap);
-    UMA_HISTOGRAM_BOOLEAN("Extensions.DynamicExtensionActionIconWasVisible",
-                          is_visible);
-
     if (!is_visible && g_report_error_for_invisible_icon)
       return RespondNow(Error("Icon not sufficiently visible."));
 
