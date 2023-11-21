@@ -151,7 +151,7 @@
 
 #pragma mark - Public
 
-- (void)stopChidCoordinators {
+- (void)stopChildCoordinators {
   [self.gridViewController dismissModals];
 }
 

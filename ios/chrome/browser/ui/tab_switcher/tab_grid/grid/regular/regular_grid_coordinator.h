@@ -58,7 +58,7 @@ class Browser;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Stops all child coordinators.
-- (void)stopChidCoordinators;
+- (void)stopChildCoordinators;
 
 @end
 

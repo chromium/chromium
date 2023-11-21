@@ -337,6 +337,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.baseViewController dismissModals];
   self.baseViewController.tabGridMode = TabGridModeNormal;
 
+  [_incognitoGridCoordinator stopChildCoordinators];
+  [_regularGridCoordinator stopChildCoordinators];
+
   [self dismissPopovers];
 
   [self.inactiveTabsCoordinator hide];

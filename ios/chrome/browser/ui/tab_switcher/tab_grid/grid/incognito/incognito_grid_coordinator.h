@@ -63,7 +63,7 @@
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser;
 
 // Stops all child coordinators.
-- (void)stopChidCoordinators;
+- (void)stopChildCoordinators;
 
 @end
 
