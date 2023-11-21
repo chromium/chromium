@@ -9,7 +9,7 @@
  */
 
 import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getType} from '../../common/js/file_type.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -115,7 +115,7 @@ export class MetadataBoxController {
    */
   private onGeneralMetadataLoaded_(
       entry: Entry, isSameEntry: boolean, items: MetadataItem[]) {
-    const type = FileType.getType(entry).type;
+    const type = getType(entry).type;
     const item = items[0];
 
     if (isDirectoryEntry(entry)) {
@@ -149,7 +149,7 @@ export class MetadataBoxController {
             let mimeType = items[0] &&
                     items[0][sniffMimeType as keyof MetadataItem] as string ||
                 '';
-            const newType = FileType.getType(entry, mimeType);
+            const newType = getType(entry, mimeType);
             if (newType.encrypted) {
               mimeType =
                   strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);

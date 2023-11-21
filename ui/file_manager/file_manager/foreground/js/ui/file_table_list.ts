@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getIcon, isEncrypted} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
@@ -447,8 +447,7 @@ export function renderFileTypeIcon(
   const icon = doc.createElement('div');
   icon.className = 'detail-icon';
   const rootType = locationInfo?.rootType;
-  icon.setAttribute(
-      'file-type-icon', FileType.getIcon(entry, mimeType, rootType));
+  icon.setAttribute('file-type-icon', getIcon(entry, mimeType, rootType));
   return icon;
 }
 
@@ -498,8 +497,7 @@ export function updateListItemExternalProps(
     li.classList.toggle('dim-hosted', !!externalProps.hosted);
     if (externalProps.contentMimeType) {
       li.classList.toggle(
-          'dim-encrypted',
-          FileType.isEncrypted(entry, externalProps.contentMimeType));
+          'dim-encrypted', isEncrypted(entry, externalProps.contentMimeType));
     }
     const dlpIcon = li.querySelector('.dlp-managed-icon');
     if (dlpIcon) {

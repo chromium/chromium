@@ -7,7 +7,7 @@ import {ImageTransformParam} from 'chrome-extension://pmfjbimdmchhbnneeidfognade
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
-import {FileType} from '../../common/js/file_type.js';
+import {getMediaType, isImage, isPDF, isRaw, isVideo} from '../../common/js/file_type.js';
 
 /**
  * Loads a thumbnail using provided url. In CANVAS mode, loaded images
@@ -51,7 +51,7 @@ export class ThumbnailLoader {
     this.entry_ = entry;
 
     /** @private @const @type {string} */
-    this.mediaType_ = opt_mediaType || FileType.getMediaType(entry);
+    this.mediaType_ = opt_mediaType || getMediaType(entry);
 
     /** @private @const @type {!ThumbnailLoader.LoaderType} */
     this.loaderType_ = opt_loaderType || ThumbnailLoader.LoaderType.IMAGE;
@@ -117,8 +117,7 @@ export class ThumbnailLoader {
           if (opt_metadata.external && opt_metadata.external.thumbnailUrl &&
               // @ts-ignore: error TS2339: Property 'external' does not exist on
               // type 'Object'.
-              (!opt_metadata.external.present ||
-               !FileType.isImage(entry, mimeType))) {
+              (!opt_metadata.external.present || !isImage(entry, mimeType))) {
             // @ts-ignore: error TS2339: Property 'external' does not exist on
             // type 'Object'.
             this.thumbnailUrl_ = opt_metadata.external.thumbnailUrl;
@@ -130,10 +129,8 @@ export class ThumbnailLoader {
           }
           break;
         case ThumbnailLoader.LoadTarget.FILE_ENTRY:
-          if (FileType.isImage(entry, mimeType) ||
-              FileType.isVideo(entry, mimeType) ||
-              FileType.isRaw(entry, mimeType) ||
-              FileType.isPDF(entry, mimeType)) {
+          if (isImage(entry, mimeType) || isVideo(entry, mimeType) ||
+              isRaw(entry, mimeType) || isPDF(entry, mimeType)) {
             this.thumbnailUrl_ = entry.toURL();
             this.transform_ =
                 // @ts-ignore: error TS2339: Property 'media' does not exist on

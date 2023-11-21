@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {compareLabel, compareName} from '../../common/js/entry_utils.js';
-import {FileExtensionType, FileType} from '../../common/js/file_type.js';
+import {FileExtensionType, getType, isImage, isRaw} from '../../common/js/file_type.js';
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {collator, str, strf} from '../../common/js/translations.js';
 import {EntryLocation} from '../../externs/entry_location.js';
@@ -158,8 +158,7 @@ export class FileListModel extends ArrayDataModel {
   }
 
   /**
-   * @param {!FileExtensionType} fileType Type object returned by
-   *     FileType.getType().
+   * @param {!FileExtensionType} fileType Type object returned by getType().
    * @return {string} Localized string representation of file type.
    */
   static getFileTypeString(fileType) {
@@ -429,7 +428,7 @@ export class FileListModel extends ArrayDataModel {
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
-    if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isRaw(entry, mimeType)) {
       this.numImageFiles_++;
     }
   }
@@ -450,7 +449,7 @@ export class FileListModel extends ArrayDataModel {
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
-    if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isRaw(entry, mimeType)) {
       this.numImageFiles_--;
     }
   }
@@ -586,10 +585,10 @@ export class FileListModel extends ArrayDataModel {
         this.metadataModel_.getCache([a, b], ['contentMimeType']);
     const aType = FileListModel.getFileTypeString(
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        FileType.getType(a, properties[0].contentMimeType));
+        getType(a, properties[0].contentMimeType));
     const bType = FileListModel.getFileTypeString(
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        FileType.getType(b, properties[1].contentMimeType));
+        getType(b, properties[1].contentMimeType));
 
     const result = collator.compare(aType, bType);
     return result !== 0 ? result : compareName(a, b);

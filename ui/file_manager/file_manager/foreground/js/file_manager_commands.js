@@ -11,7 +11,7 @@ import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../..
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {entriesToURLs, isFakeEntry, isGrandRootEntryInDrives, isInteractiveVolume, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
@@ -2643,56 +2643,53 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
 /**
  * Opens containing folder of the focused file.
  */
-// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
-// within class 'CommandHandler'.
-CommandHandler.COMMANDS_['go-to-file-location'] =
-    new (class extends FilesCommand {
-      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
-      // 'any' type.
-      execute(event, fileManager) {
-        const entries =
-            CommandUtil.getCommandEntries(fileManager, event.target);
-        if (entries.length !== 1) {
-          return;
-        }
+CommandHandler
+    // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only
+    // accessible within class 'CommandHandler'.
+    .COMMANDS_['go-to-file-location'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+  // 'any' type.
+  execute(event, fileManager) {
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    if (entries.length !== 1) {
+      return;
+    }
 
-        const components = PathComponent.computeComponentsFromEntry(
-            // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-            // undefined' is not assignable to parameter of type
-            // 'FileSystemEntry | FilesAppEntry'.
-            entries[0], fileManager.volumeManager);
-        // Entries in file list table should always have its containing folder.
-        // (i.e. Its path have at least two components: its parent and itself.)
-        assert(components.length >= 2);
-        const parentComponent = components[components.length - 2];
-        // @ts-ignore: error TS18048: 'parentComponent' is possibly 'undefined'.
-        parentComponent.resolveEntry().then(entry => {
-          if (entry && entry.isDirectory) {
-            fileManager.directoryModel.changeDirectoryEntry(
-                /** @type {!(DirectoryEntry|FilesAppDirEntry)} */ (entry));
-          }
-        });
+    const components = PathComponent.computeComponentsFromEntry(
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type
+        // 'FileSystemEntry | FilesAppEntry'.
+        entries[0], fileManager.volumeManager);
+    // Entries in file list table should always have its containing folder.
+    // (i.e. Its path have at least two components: its parent and itself.)
+    assert(components.length >= 2);
+    const parentComponent = components[components.length - 2];
+    // @ts-ignore: error TS18048: 'parentComponent' is possibly 'undefined'.
+    parentComponent.resolveEntry().then(entry => {
+      if (entry && entry.isDirectory) {
+        fileManager.directoryModel.changeDirectoryEntry(
+            /** @type {!(DirectoryEntry|FilesAppDirEntry)} */ (entry));
       }
+    });
+  }
 
-      /** @override */
-      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
-      // 'any' type.
-      canExecute(event, fileManager) {
-        // Available in Recents, Audio, Images, and Videos.
-        if (!isRecentRootType(
-                fileManager.directoryModel.getCurrentRootType())) {
-          event.canExecute = false;
-          event.command.setHidden(true);
-          return;
-        }
+  /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+  // 'any' type.
+  canExecute(event, fileManager) {
+    // Available in Recents, Audio, Images, and Videos.
+    if (!isRecentRootType(fileManager.directoryModel.getCurrentRootType())) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
 
-        // Available for a single entry.
-        const entries =
-            CommandUtil.getCommandEntries(fileManager, event.target);
-        event.canExecute = entries.length === 1;
-        event.command.setHidden(!event.canExecute);
-      }
-    })();
+    // Available for a single entry.
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    event.canExecute = entries.length === 1;
+    event.command.setHidden(!event.canExecute);
+  }
+})();
 
 /**
  * Displays QuickView for current selection.
@@ -3000,7 +2997,7 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
     } else {
       // Check the selected entries for a ZIP archive in the selected set.
       for (const entry of selection.entries) {
-        if (FileType.getExtension(entry) === '.zip') {
+        if (getExtension(entry) === '.zip') {
           event.command.setHidden(false);
           event.canExecute = true;
           return;
@@ -3054,7 +3051,7 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
 
     // Hide ZIP selection for single ZIP file selected.
     if (selection.entries.length === 1 &&
-        FileType.getExtension(selection.entries[0]) === '.zip') {
+        getExtension(selection.entries[0]) === '.zip') {
       event.command.setHidden(true);
       event.canExecute = false;
       return;
@@ -3082,7 +3079,7 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
             .some(
                 // @ts-ignore: error TS7006: Parameter 'i' implicitly has an
                 // 'any' type.
-                (metadata, i) => FileType.isEncrypted(
+                (metadata, i) => isEncrypted(
                     selection.entries[i], metadata.contentMimeType));
 
     event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
@@ -3991,7 +3988,7 @@ CommandHandler.COMMANDS_['set-wallpaper'] = new (class extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
-    const type = FileType.getType(entries[0]);
+    const type = getType(entries[0]);
     if (entries.length !== 1 || type.type !== 'image') {
       event.canExecute = false;
       event.command.setHidden(true);

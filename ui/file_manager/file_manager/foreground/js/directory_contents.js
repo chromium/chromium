@@ -9,7 +9,7 @@ import {mountGuest} from '../../common/js/api.js';
 import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {isEntryInsideDrive, isFakeEntry, readEntriesRecursively} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {isType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
@@ -333,7 +333,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                 return false;
               }
               if (category !== chrome.fileManagerPrivate.FileCategory.ALL) {
-                if (!FileType.isType([category], entry)) {
+                if (!isType([category], entry)) {
                   return false;
                 }
               }

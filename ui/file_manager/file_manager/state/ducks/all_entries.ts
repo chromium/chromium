@@ -4,7 +4,7 @@
 
 import {getParentEntry} from '../../common/js/api.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getIcon} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
@@ -225,7 +225,7 @@ function getEntryIcon(
     }
   }
 
-  return FileType.getIcon(entry as Entry, undefined, locationInfo?.rootType);
+  return getIcon(entry as Entry, undefined, locationInfo?.rootType);
 }
 
 /**

@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {FileType} from '../../common/js/file_type.js';
+import {isEncrypted} from '../../common/js/file_type.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -143,7 +143,7 @@ export class FileSelection {
                 // @ts-ignore: error TS7006: Parameter 'i' implicitly has an
                 // 'any' type.
                 this.anyFilesEncrypted = props.some((p, i) => {
-                  return FileType.isEncrypted(
+                  return isEncrypted(
                       // @ts-ignore: error TS2345: Argument of type
                       // 'FileSystemEntry | undefined' is not assignable to
                       // parameter of type 'FileSystemEntry | FilesAppEntry'.

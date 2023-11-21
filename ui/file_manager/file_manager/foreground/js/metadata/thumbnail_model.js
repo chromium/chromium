@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from '../../../common/js/file_type.js';
+import {isAudio, isImage} from '../../../common/js/file_type.js';
 
 import {MetadataModel} from './metadata_model.js';
 
@@ -87,12 +87,12 @@ export class ThumbnailModel {
             };
             // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             const canUseContentThumbnail = metadataList[i].present &&
-                (FileType.isImage(
+                (isImage(
                      // @ts-ignore: error TS2532: Object is possibly
                      // 'undefined'.
                      entries[i], metadataList[i].contentMimeType) ||
                  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-                 FileType.isAudio(entries[i], metadataList[i].contentMimeType));
+                 isAudio(entries[i], metadataList[i].contentMimeType));
             if (canUseContentThumbnail) {
               contentRequestEntries.push(entries[i]);
             }

@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../common/js/file_type.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -772,9 +772,8 @@ export class FileTable extends Table {
     const locationInfo = this.volumeManager_!.getLocationInfo(entry);
     const icon =
         renderFileTypeIcon(this.ownerDocument, entry, locationInfo, mimeType);
-    if (FileType.isImage(entry, mimeType) ||
-        FileType.isVideo(entry, mimeType) ||
-        FileType.isAudio(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isVideo(entry, mimeType) ||
+        isAudio(entry, mimeType) || isRaw(entry, mimeType)) {
       icon.appendChild(this.renderThumbnail_(entry, icon));
     }
     icon.appendChild(this.renderCheckmark_());
@@ -836,8 +835,8 @@ export class FileTable extends Table {
     const metadata = this.metadataModel_!.getCache(
         [entry], ['size', 'hosted', 'contentMimeType'])[0]!;
     const size = metadata.size;
-    const special = metadata.hosted ||
-        FileType.isEncrypted(entry, metadata.contentMimeType);
+    const special =
+        metadata.hosted || isEncrypted(entry, metadata.contentMimeType);
     div.textContent = this.formatter_!.formatSize(size, special);
   }
 
@@ -858,8 +857,7 @@ export class FileTable extends Table {
         this.metadataModel_!.getCache(
                                 [entry],
                                 ['contentMimeType'])[0]!.contentMimeType;
-    div.textContent =
-        FileListModel.getFileTypeString(FileType.getType(entry, mimeType));
+    div.textContent = FileListModel.getFileTypeString(getType(entry, mimeType));
     return div;
   }
 
@@ -882,8 +880,8 @@ export class FileTable extends Table {
     this.updateDate_(label, entry);
     const metadata = this.metadataModel_!.getCache(
         [entry], ['contentMimeType', 'isDlpRestricted'])[0]!;
-    const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
-    if (isEncrypted) {
+    const encrypted = isEncrypted(entry, metadata.contentMimeType);
+    if (encrypted) {
       div.appendChild(this.renderEncryptedIcon_());
     }
     if (isDlpEnabled()) {

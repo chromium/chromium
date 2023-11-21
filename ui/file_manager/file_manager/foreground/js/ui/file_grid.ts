@@ -11,7 +11,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {decorate} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getIcon, getType, isEncrypted} from '../../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -887,7 +887,7 @@ export class FileGrid extends Grid {
 
     // If the image is JPEG or the thumbnail is larger than the grid size,
     // resize it to cover the thumbnail box.
-    const type = FileType.getType(entry, mimeType);
+    const type = getType(entry, mimeType);
     if ((type.type === 'image' && type.subtype === 'JPEG') ||
         width > gridSize() || height > gridSize()) {
       thumbnail.style.backgroundSize = 'cover';
@@ -923,7 +923,7 @@ export class FileGrid extends Grid {
    */
   private setGenericThumbnail_(
       box: HTMLDivElement, entry: Entry, mimeType?: string) {
-    if (FileType.isEncrypted(entry, mimeType)) {
+    if (isEncrypted(entry, mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
       box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
       document.querySelector<FilesTooltip>('files-tooltip')!.addTarget(box);
@@ -931,7 +931,7 @@ export class FileGrid extends Grid {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_!.getLocationInfo(entry);
       const rootType = locationInfo && locationInfo.rootType || undefined;
-      const icon = FileType.getIcon(entry, mimeType, rootType);
+      const icon = getIcon(entry, mimeType, rootType);
       box.setAttribute('generic-thumbnail', icon);
     }
   }

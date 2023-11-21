@@ -25,7 +25,6 @@ static_js_files = [
   "file_manager/common/js/array_data_model.js",
   "file_manager/common/js/async_util.js",
   "file_manager/common/js/glitch.js",
-  "file_manager/common/js/file_type.js",
   "file_manager/common/js/files_app_entry_types.js",
 
   "file_manager/common/js/filtered_volume_manager.js",
@@ -161,6 +160,7 @@ ts_files = [
   "file_manager/common/js/app_util.ts",
   "file_manager/common/js/cr_ui.ts",
   "file_manager/common/js/files_app_state.ts",
+  "file_manager/common/js/file_type.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/dialog_type.ts",
   "file_manager/common/js/entry_utils.ts",
@@ -424,6 +424,7 @@ ts_test_files = [
   # These lines will be removed at the end of the TS migration.
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
+  "file_manager/common/js/file_type_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/recent_date_bucket_unittest.ts",
@@ -602,7 +603,6 @@ unittest_files = [
   # Common:
   "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/async_util_unittest.js",
-  "file_manager/common/js/file_type_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/storage_unittest.js",

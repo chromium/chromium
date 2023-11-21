@@ -8,7 +8,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getIconOverrides} from '../../../common/js/file_type.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
@@ -1016,7 +1016,7 @@ export class SubDirectoryItem extends DirectoryItem {
       const rootType = location && location.rootType ? location.rootType : null;
       // @ts-ignore: error TS2345: Argument of type 'string | null' is not
       // assignable to parameter of type 'string | undefined'.
-      const iconOverride = FileType.getIconOverrides(dirEntry, rootType);
+      const iconOverride = getIconOverrides(dirEntry, rootType);
       // Add Downloads icon as volume so current test code passes with
       // MyFilesVolume flag enabled and disabled.
       if (iconOverride) {

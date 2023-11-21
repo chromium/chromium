@@ -15,7 +15,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
@@ -467,7 +467,7 @@ export class QuickViewController {
       tasks: chrome.fileManagerPrivate.FileTask[],
       canDelete: boolean): Promise<Partial<QuickViewParams>> {
     const firstItem = items[0];
-    const typeInfo = FileType.getType(entry, firstItem?.contentMimeType);
+    const typeInfo = getType(entry, firstItem?.contentMimeType);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const label = getEntryLabel(locationInfo, entry);

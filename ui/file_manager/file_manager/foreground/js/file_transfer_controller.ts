@@ -9,7 +9,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
@@ -457,12 +457,12 @@ export class FileTransferController {
       entries = entries.map(e => (e as TrashEntry).filesEntry);
     }
 
-    const encrypted = this.metadataModel_.getCache(entries, ['contentMimeType'])
-                          .some(
-                              (metadata, i) => entries[i] ?
-                                  FileType.isEncrypted(
-                                      entries[i]!, metadata.contentMimeType) :
-                                  false);
+    const encrypted =
+        this.metadataModel_.getCache(entries, ['contentMimeType'])
+            .some(
+                (metadata, i) => entries[i] ?
+                    isEncrypted(entries[i]!, metadata.contentMimeType) :
+                    false);
 
     const sourceURLs = entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
@@ -773,7 +773,7 @@ export class FileTransferController {
       icon.style.backgroundImage = thumbnail.style.backgroundImage;
       icon.style.backgroundSize = 'cover';
     } else {
-      icon.setAttribute('file-type-icon', FileType.getIcon(entry));
+      icon.setAttribute('file-type-icon', getIcon(entry));
     }
 
     return container;
@@ -1218,8 +1218,7 @@ export class FileTransferController {
     if (this.metadataModel_.getCache(entries, ['contentMimeType'])
             .some(
                 (metadata, i) => entries[i] ?
-                    FileType.isEncrypted(
-                        entries[i]!, metadata.contentMimeType) :
+                    isEncrypted(entries[i]!, metadata.contentMimeType) :
                     false)) {
       return false;
     }

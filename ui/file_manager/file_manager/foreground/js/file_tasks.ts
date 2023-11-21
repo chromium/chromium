@@ -13,7 +13,7 @@ import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getExtension} from '../../common/js/file_type.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
@@ -192,7 +192,7 @@ export class FileTasks {
    * @return A ViewFileType enum or 'other'.
    */
   static getViewFileType(entry: Entry): string {
-    let extension = FileType.getExtension(entry).toLowerCase();
+    let extension = getExtension(entry).toLowerCase();
     if (UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
       extension = 'other';
     }
@@ -869,7 +869,7 @@ const OFFICE_EXTENSIONS =
     new Set(['.doc', '.docx', '.xls', 'xlsm', '.xlsx', '.ppt', '.pptx']);
 
 function hasOfficeExtension(entry: Entry): boolean {
-  return OFFICE_EXTENSIONS.has(FileType.getExtension(entry));
+  return OFFICE_EXTENSIONS.has(getExtension(entry));
 }
 
 function isCrostiniEntry(entry: Entry, volumeManager: VolumeManager): boolean {

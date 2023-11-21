@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from '../../common/js/file_type.js';
+import {getExtension} from '../../common/js/file_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../externs/ts/state.js';
@@ -21,7 +21,7 @@ export class QuickViewUma {
    * Exports file type metric with the given histogram `name`.
    */
   private exportFileType_(entry: Entry, name: string) {
-    let extension = FileType.getExtension(entry).toLowerCase();
+    let extension = getExtension(entry).toLowerCase();
     if (entry.isDirectory) {
       extension = 'directory';
     } else if (extension === '') {
