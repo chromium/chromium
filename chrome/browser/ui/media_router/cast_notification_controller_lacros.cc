@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/mirroring_media_controller_host.h"
+#include "components/media_router/common/media_source.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -146,10 +148,9 @@ CastNotificationControllerLacros::CreateNotification(const MediaRoute& route) {
   data.small_image = gfx::Image(gfx::CreateVectorIcon(
       gfx::IconDescription(vector_icons::kMediaRouterIdleIcon, 32)));
 
-  return message_center::Notification{
+  message_center::Notification notification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      kNotificationId,
-      GetNotificationTitle(route.media_sink_name()),
+      kNotificationId, GetNotificationTitle(route.media_sink_name()),
       GetNotificationMessage(route, freeze_host,
                              IsAccessCodeCastFreezeUiEnabled(profile_)),
       /*icon=*/ui::ImageModel{},
@@ -161,8 +162,18 @@ CastNotificationControllerLacros::CreateNotification(const MediaRoute& route) {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               &CastNotificationControllerLacros::OnNotificationClicked,
-              weak_ptr_factory_.GetWeakPtr())),
-  };
+              weak_ptr_factory_.GetWeakPtr())));
+
+  if (GlobalMediaControlsCastStartStopEnabled(profile_) &&
+      (route.media_source().IsCastPresentationUrl() ||
+       route.media_source().IsRemotePlaybackSource())) {
+    // The session was started via the Global Media Controls UI which would
+    // still likely be open. It'd be annoying to overlay the notificatin on top
+    // of it, so add the notification to the tray silently.
+    notification.set_priority(
+        message_center::NotificationPriority::LOW_PRIORITY);
+  }
+  return notification;
 }
 
 std::vector<message_center::ButtonInfo>
