@@ -76,10 +76,7 @@ class ArcResizeLockManager : public KeyedService,
   virtual void ShowSplashScreenDialog(aura::Window* window,
                                       bool is_fully_locked);
 
-  // TODO(b/310695064): Resolve DanglingUntriaged by separating
-  // ArcAppListPrefsDelegate from ArcAppListPrefs.
-  raw_ptr<ArcResizeLockPrefDelegate, DanglingUntriaged | ExperimentalAsh>
-      pref_delegate_{nullptr};
+  raw_ptr<ArcResizeLockPrefDelegate, ExperimentalAsh> pref_delegate_{nullptr};
 
   // Using unique_ptr to allow unittest to override.
   std::unique_ptr<CompatModeButtonController> compat_mode_button_controller_;
