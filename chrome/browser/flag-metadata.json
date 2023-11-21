@@ -4663,7 +4663,7 @@
   {
     "name": "hotspot",
     "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "http-cache-partitioning",
