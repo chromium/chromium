@@ -14,6 +14,17 @@ per-file web_video_frame*=file://media/OWNERS
 per-file webaudiosourceprovider_impl.h=file://media/OWNERS
 per-file web_surface_layer_bridge*=file://media/OWNERS
 
+# Loader
+per-file child_url_loader_factory_bundle.h=file://third_party/blink/renderer/platform/loader/OWNERS
+per-file resource_*.h=file://third_party/blink/renderer/platform/loader/OWNERS
+per-file url*.h=file://third_party/blink/renderer/platform/loader/OWNERS
+per-file web_http*.h=file://third_party/blink/renderer/platform/loader/OWNERS
+per-file web_url*.h=file://third_party/blink/renderer/platform/loader/OWNERS
+per-file websocket*.h=file://third_party/blink/renderer/platform/loader/OWNERS
+
+# Worker
+per-file web_worker_fetch_context.h=file://third_party/blink/renderer/core/workers/OWNERS
+
 # Any core owner can also approve changes to runtime-enabled features.
 # Please make sure to get a review from someone with expertise on the feature
 # you are changing.
