@@ -194,9 +194,10 @@ void InputMethodTestInterfaceAsh::WaitForNextSurroundingTextChange(
     surrounding_text_change_callback_ = std::move(callback);
     return;
   }
-  const auto& [text, selection_range] = surrounding_text_changes_.front();
+  auto surrounding_text = std::move(surrounding_text_changes_.front());
   surrounding_text_changes_.pop();
-  std::move(callback).Run(text, selection_range);
+  std::move(callback).Run(surrounding_text.text,
+                          surrounding_text.selection_range);
 }
 
 void InputMethodTestInterfaceAsh::HasCapabilities(
