@@ -157,10 +157,14 @@ UIImageView* CreateCheckedCircle() {
   TableViewURLCell* urlCell =
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
+  NSString* itemIdentifier = engineItem.uniqueIdentifier;
   _faviconLoader->FaviconForPageUrl(
       engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
-        [urlCell.faviconView configureWithAttributes:attributes];
+        // Only set favicon if the cell hasn't been reused.
+        if ([urlCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
+          [urlCell.faviconView configureWithAttributes:attributes];
+        }
       });
   [urlCell
       setFaviconContainerBackgroundColor:[UIColor colorNamed:kBackgroundColor]];
