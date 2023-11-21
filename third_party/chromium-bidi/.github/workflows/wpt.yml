@@ -86,6 +86,9 @@ jobs:
           name: chromedriver-headless-wpt-metadata
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
+          name: chromedriver-headful-wpt-metadata
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
           name: mapper-headless-wpt-metadata
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
@@ -103,13 +106,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - kind: mapper
-            head: headful
-          - kind: mapper
-            head: headless
-          - kind: chromedriver
-            head: headless
+        kind: [chromedriver, mapper]
+        head: [headful, headless]
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
@@ -175,6 +173,20 @@ jobs:
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
+          HEADLESS: true
+      - name: Run WPT tests (chromedriver, headful)
+        if: matrix.head == 'headful' && matrix.kind == 'chromedriver'
+        timeout-minutes: 60
+        run: >
+          xvfb-run --auto-servernum
+          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+        env:
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROMEDRIVER: true
+          UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
+          WPT_REPORT: out/wptreport.json
+          HEADLESS: false
       - name: Generate HTML test report
         if: success() || failure()
         run: >

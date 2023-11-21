@@ -78,19 +78,13 @@ const VERBOSE = process.env.VERBOSE || 'false';
 const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 
 // Only set WPT_METADATA if it's not already set.
-let WPT_METADATA;
-if (typeof process.env.WPT_METADATA === 'undefined') {
-  if (CHROMEDRIVER === 'true') {
-    WPT_METADATA = join('wpt-metadata', 'chromedriver', 'headless');
-  } else {
-    WPT_METADATA =
-      HEADLESS === 'true'
-        ? join('wpt-metadata', 'mapper', 'headless')
-        : join('wpt-metadata', 'mapper', 'headful');
-  }
-} else {
-  WPT_METADATA = process.env.WPT_METADATA;
-}
+const WPT_METADATA =
+  process.env.WPT_METADATA ||
+  join(
+    'wpt-metadata',
+    CHROMEDRIVER === 'true' ? 'chromedriver' : 'mapper',
+    HEADLESS === 'true' ? 'headless' : 'headful'
+  );
 
 if (HEADLESS === 'true') {
   log('Running WPT in headless mode...');
@@ -130,8 +124,10 @@ if (VERBOSE === 'true') {
 
 if (CHROMEDRIVER === 'true') {
   log('Using chromedriver with mapper...');
+  if (HEADLESS === 'true') {
+    wptRunArgs.push('--binary-arg=--headless=new');
+  }
   wptRunArgs.push(
-    '--binary-arg=--headless=new',
     '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
     `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
@@ -139,7 +135,11 @@ if (CHROMEDRIVER === 'true') {
     '--yes'
   );
 } else {
-  wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
+  wptRunArgs.push(
+    `--webdriver-arg=--headless=${HEADLESS}`,
+    '--webdriver-binary',
+    join('tools', 'run-bidi-server.mjs')
+  );
   log('Using pure mapper...');
 }
 
