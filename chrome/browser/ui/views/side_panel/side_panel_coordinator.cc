@@ -1241,7 +1241,7 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
 }
 
 void SidePanelCoordinator::UpdateHeaderPinButtonState() {
-  if (!GetContentContainerView()) {
+  if (!GetContentContainerView() || !current_entry_) {
     return;
   }
 
