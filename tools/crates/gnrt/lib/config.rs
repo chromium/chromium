@@ -36,6 +36,14 @@ pub struct GnConfig {
     /// //third_party/rust crates.
     #[serde(default)]
     pub readme_file_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing placeholder crates that we
+    /// don't want to vendor. This is the Cargo.toml file.
+    #[serde(default)]
+    pub removed_cargo_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing placeholder crates that we
+    /// don't want to vendor. This is the src/lib.rs file.
+    #[serde(default)]
+    pub removed_librs_template: std::path::PathBuf,
 }
 
 /// Influences dependency resolution for a session.

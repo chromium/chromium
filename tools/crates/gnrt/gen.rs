@@ -338,7 +338,6 @@ fn generate_for_third_party(
             )?;
             let path = paths
                 .third_party
-                // TODO(danakj): Generate into `safe`, `sandbox`, or `test` directories here.
                 .join(crates::NormalizedName::from_crate_name(&dep.package_name).as_str())
                 .join(crates::Epoch::from_version(&dep.version).to_string());
             let previous = map.insert(path, build_file);

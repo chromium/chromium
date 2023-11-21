@@ -373,6 +373,9 @@ pub fn build_rule_from_std_dep(
                 _ => unreachable!(), // The for loop here is over [Normal, Build].
             };
 
+            // TODO(danakj): Crates in the 'sandbox' group should have their
+            // visibility restructed in some way. Possibly to an allowlist
+            // specified in the crate's config, and reviewed by security folks?
             rules.push(Rule {
                 name: lib_rule_name.clone(),
                 gn_visibility: GnVisibility {

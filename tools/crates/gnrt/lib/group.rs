@@ -6,7 +6,7 @@ use anyhow::Result;
 
 /// Privilege group for a crate. They are ordered with higher values being
 /// higher privilege.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, Ord, PartialOrd)]
 pub enum Group {
     /// Test-only code (or for tools that don't contribute directly to the
     /// shipping product).

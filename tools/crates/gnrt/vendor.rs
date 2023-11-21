@@ -124,7 +124,10 @@ fn vendor_impl(
         })
         .collect();
     for (_, p) in &packages {
-        if !dirs.contains(&format!("{}-{}", p.name, p.version)) {
+        if config.resolve.remove_crates.contains(&p.name) {
+            println!("Generating placeholder for removed crate {}-{}", p.name, p.version);
+            placeholder_crate(p, &nodes, paths, &config)?
+        } else if !dirs.contains(&format!("{}-{}", p.name, p.version)) {
             println!("Downloading {}-{}", p.name, p.version);
             download_crate(&p.name, &p.version, paths)?
         }
@@ -156,8 +159,8 @@ fn vendor_impl(
             find_shipped,
         )?;
 
-    for (dir, _) in &all_readme_files {
-        create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
+    for dir in all_readme_files.keys() {
+        create_dirs_if_needed(&dir).context(format!("dir: {}", dir.display()))?;
     }
 
     if args.get_flag("dump-template-input") {
@@ -224,6 +227,135 @@ fn download_crate(
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
         .with_context(|| format!("writing .cargo-checksum.json for crate {}", name))?;
+
+    Ok(())
+}
+
+fn placeholder_crate(
+    package: &cargo_metadata::Package,
+    nodes: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node>,
+    paths: &paths::ChromiumPaths,
+    config: &config::BuildConfig,
+) -> Result<()> {
+    let removed_cargo_template_path = paths
+        .third_party_config_file
+        .parent()
+        .unwrap()
+        .join(&config.gn_config.removed_cargo_template);
+    let removed_cargo_template =
+        init_handlebars(&removed_cargo_template_path).context("loading removed_cargo_template")?;
+    let removed_librs_template_path = paths
+        .third_party_config_file
+        .parent()
+        .unwrap()
+        .join(&config.gn_config.removed_librs_template);
+    let removed_librs_template =
+        init_handlebars(&removed_librs_template_path).context("loading removed_librs_template")?;
+
+    let vendor_dir = paths.third_party_cargo_root.join("vendor");
+    let crate_dir = vendor_dir.join(format!("{}-{}", package.name, package.version));
+
+    create_dirs_if_needed(&crate_dir).context("creating crate dir")?;
+    for x in std::fs::read_dir(&crate_dir)? {
+        let entry = x?;
+        if entry.metadata()?.is_dir() {
+            std::fs::remove_dir_all(&entry.path())
+                .with_context(|| format!("removing dir {}", entry.path().display()))?;
+        } else {
+            std::fs::remove_file(&entry.path())
+                .with_context(|| format!("removing file {}", entry.path().display()))?;
+        }
+    }
+
+    #[derive(serde::Serialize)]
+    struct PlaceholderCrate<'a> {
+        name: &'a str,
+        version: &'a semver::Version,
+        dependencies: Vec<PlaceholderDependency<'a>>,
+    }
+    #[derive(serde::Serialize)]
+    struct PlaceholderDependency<'a> {
+        name: &'a str,
+        version: &'a str,
+        default_features: bool,
+        features: Vec<&'a str>,
+    }
+
+    let node = nodes[&package.id];
+
+    // We need to collect all dependencies of the crate so they can be
+    // reproduced in the placeholder Cargo.toml file. Otherwise the
+    // Cargo.lock may be considered out of date and cargo will try
+    // to rewrite it to remove the missing dependencies.
+    //
+    // However we don't just want all dependencies that are listed in
+    // the Cargo.toml since they may be optional and not enabled by a
+    // feature in our build. In that case, cargo would want to add the
+    // new dependencies to the Cargo.lock.
+    //
+    // So we use the [`cargo_metadata::Node`] to find the resolved set
+    // of dependencies that are actually in use (in build or in prod).
+    //
+    // Since features (at this time) can not be changed per-platform,
+    // the resolved [`cargo_metadata::Node`] does not have feature
+    // information about dependencies. We grab that verbatim from the
+    // Cargo.toml through the [`cargo_metadata::Dependency`] type which
+    // we call `feature_dep_info`.
+    let dependencies = node
+        .deps
+        .iter()
+        .filter(|d| {
+            d.dep_kinds
+                .iter()
+                .find(|k| {
+                    k.kind == cargo_metadata::DependencyKind::Build
+                        || k.kind == cargo_metadata::DependencyKind::Normal
+                })
+                .is_some()
+        })
+        .map(|d| {
+            let feature_dep_info = package
+                .dependencies
+                .iter()
+                .find(|f| f.name == d.name)
+                .expect("dependency not in list");
+            PlaceholderDependency {
+                name: &d.name,
+                version: "*",
+                default_features: feature_dep_info.uses_default_features,
+                features: feature_dep_info.features.iter().map(String::as_str).collect(),
+            }
+        })
+        .collect();
+
+    let placeholder_crate =
+        PlaceholderCrate { name: &package.name, version: &package.version, dependencies };
+
+    {
+        let rendered = removed_cargo_template.render("template", &placeholder_crate)?;
+        let file_path = crate_dir.join("Cargo.toml");
+        let file = std::fs::File::create(&file_path).with_context(|| {
+            format!("Could not create Cargo.toml output file {}", file_path.to_string_lossy())
+        })?;
+        use std::io::Write;
+        write!(std::io::BufWriter::new(file), "{}", rendered)
+            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
+    }
+
+    create_dirs_if_needed(&crate_dir.join("src")).context("creating src dir")?;
+    {
+        let rendered = removed_librs_template.render("template", &placeholder_crate)?;
+        let file_path = crate_dir.join("src").join("lib.rs");
+        let file = std::fs::File::create(&file_path).with_context(|| {
+            format!("Could not create lib.rs output file {}", file_path.to_string_lossy())
+        })?;
+        use std::io::Write;
+        write!(std::io::BufWriter::new(file), "{}", rendered)
+            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
+    }
+
+    std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
+        .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name))?;
 
     Ok(())
 }

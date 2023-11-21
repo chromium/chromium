@@ -46,6 +46,8 @@
 [gn]
 build_file_template = "BUILD.gn.hbs"
 readme_file_template = "README.chromium.hbs"
+removed_cargo_template = "removed_Cargo.toml.hbs"
+removed_librs_template = "removed_lib.rs.hbs"
 
 [resolve]
 root = "chromium"
