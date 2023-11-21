@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
@@ -641,13 +640,8 @@ bool TouchSelectionController::ActivateSelectionIfNecessary() {
   if (active_status_ == INACTIVE ||
       response_pending_input_event_ == LONG_PRESS ||
       response_pending_input_event_ == REPEATED_TAP) {
-    if (active_status_ == SELECTION_ACTIVE) {
-      // The active selection session finishes with the start of the new one.
-      LogSelectionEnd();
-    }
     active_status_ = SELECTION_ACTIVE;
     selection_handle_dragged_ = false;
-    selection_start_time_ = base::TimeTicks::Now();
     response_pending_input_event_ = INPUT_EVENT_TYPE_NONE;
     longpress_drag_selector_.OnSelectionActivated();
     return true;
@@ -660,7 +654,6 @@ void TouchSelectionController::DeactivateSelection() {
     return;
   DCHECK(start_selection_handle_);
   DCHECK(end_selection_handle_);
-  LogSelectionEnd();
   longpress_drag_selector_.OnSelectionDeactivated();
   start_selection_handle_->SetEnabled(false);
   end_selection_handle_->SetEnabled(false);
@@ -720,19 +713,6 @@ TouchHandle::AnimationStyle TouchSelectionController::GetAnimationStyle(
   return was_active && client_->SupportsAnimation()
              ? TouchHandle::ANIMATION_SMOOTH
              : TouchHandle::ANIMATION_NONE;
-}
-
-void TouchSelectionController::LogSelectionEnd() {
-  // TODO(mfomitchev): Once we are able to tell the difference between
-  // 'successful' and 'unsuccessful' selections - log
-  // Event.TouchSelection.Duration instead and get rid of
-  // Event.TouchSelectionD.WasDraggeduration.
-  if (selection_handle_dragged_) {
-    base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
-    UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.WasDraggedDuration",
-                               duration, base::Milliseconds(500),
-                               base::Seconds(60), 60);
-  }
 }
 
 void TouchSelectionController::LogDragType(

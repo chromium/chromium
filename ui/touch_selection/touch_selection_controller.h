@@ -225,7 +225,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   bool GetEndVisible() const;
   TouchHandle::AnimationStyle GetAnimationStyle(bool was_active) const;
 
-  void LogSelectionEnd();
   void LogDragType(const TouchSelectionDraggable& draggable);
 
   const raw_ptr<TouchSelectionControllerClient, DanglingUntriaged> client_;
@@ -267,7 +266,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   gfx::RectF viewport_rect_;
 
-  base::TimeTicks selection_start_time_;
   // Whether a selection handle was dragged during the current 'selection
   // session' - i.e. since the current selection has been activated.
   bool selection_handle_dragged_;

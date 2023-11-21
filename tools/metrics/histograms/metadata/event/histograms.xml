@@ -1208,16 +1208,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchSelection.WasDraggedDuration" units="ms"
-    expires_after="M81">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Duration of touch selection sequence which involved dragging a text
-    selection handle. The duration is measured from the moment the text
-    selection handles are shown, and until they are dismissed.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>
