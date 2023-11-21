@@ -56,6 +56,7 @@ enum class IPAddressSpace : int32_t;
 enum class PrivateNetworkAccessPreflightResult;
 class URLResponseHead;
 class LoadTimingInfo;
+class ServiceWorkerRouterInfo;
 }  // namespace mojom
 }  // namespace network
 
@@ -183,6 +184,10 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // See network.mojom.URLResponseHead.service_worker_response_source.
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const;
   void SetServiceWorkerResponseSource(network::mojom::FetchResponseSource);
+
+  // See network.mojom.URLResponseHead.static_routing_info.
+  void SetServiceWorkerRouterInfo(
+      const network::mojom::ServiceWorkerRouterInfo&);
 
   // Flag whether a shared dictionary was used to decompress the response body.
   void SetDidUseSharedDictionary(bool);

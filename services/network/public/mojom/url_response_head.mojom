@@ -17,6 +17,7 @@ import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
@@ -147,6 +148,11 @@ struct URLResponseHead {
   // generated as in respondWith(new Response()). It is also empty if a service
   // worker did not respond to the request or did not call respondWith().
   array<url.mojom.Url> url_list_via_service_worker;
+
+  // Information about ServiceWorker Static Routing API. Only provided if the
+  // service worker static router has been registered and one of its rule
+  // matched to the request.
+  ServiceWorkerRouterInfo? service_worker_router_info;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
   FetchResponseType response_type = FetchResponseType.kDefault;

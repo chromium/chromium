@@ -53,6 +53,7 @@
 namespace blink {
 
 class ResourceLoadTiming;
+class ServiceWorkerRouterInfo;
 
 // A ResourceResponse is a "response" object used in blink. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-response, but it contains
@@ -228,6 +229,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const {
     return service_worker_response_source_;
   }
+
+  // See network.mojom.URLResponseHead.service_worker_router_info.
+  void SetServiceWorkerRouterInfo(scoped_refptr<ServiceWorkerRouterInfo> value);
 
   void SetServiceWorkerResponseSource(
       network::mojom::FetchResponseSource value) {
@@ -592,6 +596,10 @@ class PLATFORM_EXPORT ResourceResponse final {
   // kUnspecified if |was_fetched_via_service_worker| is false.
   network::mojom::FetchResponseSource service_worker_response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
+
+  // The information about the ServiceWorker Static Router that handled the
+  // request. Null if there was no registered Static Routers.
+  scoped_refptr<blink::ServiceWorkerRouterInfo> service_worker_router_info_;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
   network::mojom::FetchResponseType response_type_ =

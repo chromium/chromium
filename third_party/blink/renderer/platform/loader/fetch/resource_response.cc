@@ -26,11 +26,9 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
-#include <algorithm>
-#include <limits>
-#include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -38,6 +36,7 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -227,6 +226,11 @@ void ResourceResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
   DCHECK_NE(security_style_, SecurityStyle::kUnknown);
   DCHECK_NE(security_style_, SecurityStyle::kNeutral);
   ssl_info_ = ssl_info;
+}
+
+void ResourceResponse::SetServiceWorkerRouterInfo(
+    scoped_refptr<ServiceWorkerRouterInfo> value) {
+  service_worker_router_info_ = std::move(value);
 }
 
 bool ResourceResponse::IsCorsSameOrigin() const {
