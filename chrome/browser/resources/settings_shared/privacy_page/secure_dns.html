@@ -29,6 +29,13 @@
       #secureDnsInputContainer {
         margin-top: calc(var(--cr-section-padding) / 2);
       }
+
+      <if expr="chromeos_ash">
+        :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+          --cr-icon-button-margin-end: 16px;
+          --iron-icon-fill-color: var(--cros-sys-primary);
+        }
+      </if>
     </style>
 
 <if expr="not chromeos_ash">
@@ -57,6 +64,7 @@
       <settings-toggle-button
           id="secureDnsToggle"
           class="hr"
+          icon="os-settings:privacy-secure-dns"
           pref="[[secureDnsToggle_]]"
           label="$i18n{secureDnsOsSettingsTitle}"
           sub-label="[[secureDnsDescription_]]"
