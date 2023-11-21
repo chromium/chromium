@@ -2528,6 +2528,13 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       RemoveSubtreeWithFlatTraversal(node);
       return;
     }
+    if (IsA<HTMLTableElement>(node) && !node->IsFinishedParsingChildren() &&
+        !node_to_parse_before_more_tree_updates_) {
+      // Tables must be fully parsed before building, because many of the
+      // computed properties require the entire table.
+      node_to_parse_before_more_tree_updates_ = node;
+      pause_tree_updates_until_more_loaded_content_ = true;
+    }
   }
 
   DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
@@ -3574,16 +3581,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(
   if (!accessible_node)
     return;
   MarkAXObjectDirty(Get(accessible_node));
-}
-
-void AXObjectCacheImpl::FinishedParsingTable(HTMLTableElement* table) {
-  // The data table heuristic can change from false to true as a table's
-  // children are parsed; but it will never change from true to false.
-  if (AXObject* ax_object = SafeGet(table)) {
-    if (ax_object->RoleValue() == ax::mojom::blink::Role::kLayoutTable) {
-      DeferTreeUpdate(TreeUpdateReason::kUpdateTableRole, table);
-    }
-  }
 }
 
 void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {

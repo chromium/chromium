@@ -253,7 +253,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;
-  void FinishedParsingTable(HTMLTableElement*) override;
   void HandleValidationMessageVisibilityChanged(Node* form_control) override;
   void HandleEventListenerAdded(Node& node,
                                 const AtomicString& event_type) override;

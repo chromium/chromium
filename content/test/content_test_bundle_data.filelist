@@ -4832,7 +4832,6 @@ data/accessibility/html/table-layout-expected-uia-win.txt
 data/accessibility/html/table-layout-expected-win.txt
 data/accessibility/html/table-layout.html
 data/accessibility/html/table-multiple-row-and-column-headers-expected-blink.txt
-data/accessibility/html/table-multiple-row-and-column-headers-expected-fuchsia.txt
 data/accessibility/html/table-multiple-row-and-column-headers.html
 data/accessibility/html/table-presentation-expected-android-assist-data.txt
 data/accessibility/html/table-presentation-expected-android-external.txt
@@ -5395,8 +5394,8 @@ data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree-expe
 data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree.html
 data/accessibility/regression/aria-hidden-tabindex-change-expected-blink.txt
 data/accessibility/regression/aria-hidden-tabindex-change.html
-data/accessibility/regression/aria-owns-reparent-above-other-change-crash.html
 data/accessibility/regression/aria-owns-from-textarea.html
+data/accessibility/regression/aria-owns-reparent-above-other-change-crash.html
 data/accessibility/regression/aria-pressed-changes-button-role-expected-blink.txt
 data/accessibility/regression/aria-pressed-changes-button-role.html
 data/accessibility/regression/clear-children-while-computing-name-expected-blink.txt

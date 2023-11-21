@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 
-#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -652,13 +651,6 @@ const AtomicString& HTMLTableElement::Rules() const {
 
 const AtomicString& HTMLTableElement::Summary() const {
   return FastGetAttribute(html_names::kSummaryAttr);
-}
-
-void HTMLTableElement::FinishParsingChildren() {
-  HTMLElement::FinishParsingChildren();
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->FinishedParsingTable(this);
-  }
 }
 
 void HTMLTableElement::Trace(Visitor* visitor) const {

@@ -53,7 +53,6 @@ class AXObject;
 class AccessibleNode;
 class HTMLCanvasElement;
 class HTMLOptionElement;
-class HTMLTableElement;
 class HTMLFrameOwnerElement;
 class HTMLSelectElement;
 class LocalFrameView;
@@ -160,9 +159,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Changes to virtual Accessibility Object Model nodes.
   virtual void HandleAttributeChanged(const QualifiedName& attr_name,
                                       AccessibleNode*) = 0;
-
-  // Called when the DOM parser has reached the closing tag of a table element.
-  virtual void FinishedParsingTable(HTMLTableElement*) = 0;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
