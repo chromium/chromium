@@ -247,7 +247,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
-#include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -5714,9 +5714,10 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 
   if (chrome_navigation_ui_data &&
       chrome_navigation_ui_data->is_no_state_prefetching()) {
-    result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
-        chrome_navigation_ui_data->prerender_histogram_prefix(),
-        GetPrerenderCanceler(wc_getter)));
+    result.push_back(
+        std::make_unique<prerender::NoStatePrefetchURLLoaderThrottle>(
+            chrome_navigation_ui_data->prerender_histogram_prefix(),
+            GetPrerenderCanceler(wc_getter)));
   }
 
 #if BUILDFLAG(IS_ANDROID)

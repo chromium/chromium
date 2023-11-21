@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -46,7 +46,7 @@ NoStatePrefetchHelper::MaybeCreateThrottle(
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       canceler.InitWithNewPipeAndPassReceiver());
 
-  auto throttle = std::make_unique<PrerenderURLLoaderThrottle>(
+  auto throttle = std::make_unique<NoStatePrefetchURLLoaderThrottle>(
       helper->histogram_prefix(), std::move(canceler));
   helper->AddThrottle(*throttle);
   return throttle;
@@ -68,7 +68,8 @@ void NoStatePrefetchHelper::OnDestruct() {
   delete this;
 }
 
-void NoStatePrefetchHelper::AddThrottle(PrerenderURLLoaderThrottle& throttle) {
+void NoStatePrefetchHelper::AddThrottle(
+    NoStatePrefetchURLLoaderThrottle& throttle) {
   // Keep track of how many pending throttles we have, as we want to defer
   // sending the "prefetch finished" signal until they are destroyed. This is
   // important since that signal tells the browser that it can tear down this

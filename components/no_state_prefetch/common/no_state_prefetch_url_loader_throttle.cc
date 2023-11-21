@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -38,26 +38,26 @@ bool IsNoStoreResponse(const network::mojom::URLResponseHead& response_head) {
 
 }  // namespace
 
-PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
+NoStatePrefetchURLLoaderThrottle::NoStatePrefetchURLLoaderThrottle(
     const std::string& histogram_prefix,
     mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler)
     : histogram_prefix_(histogram_prefix), canceler_(std::move(canceler)) {
   DCHECK(canceler_);
 }
 
-PrerenderURLLoaderThrottle::~PrerenderURLLoaderThrottle() {
+NoStatePrefetchURLLoaderThrottle::~NoStatePrefetchURLLoaderThrottle() {
   if (destruction_closure_)
     std::move(destruction_closure_).Run();
 }
 
-void PrerenderURLLoaderThrottle::PrerenderUsed() {
+void NoStatePrefetchURLLoaderThrottle::PrerenderUsed() {
   if (original_request_priority_)
     delegate_->SetPriority(original_request_priority_.value());
   if (deferred_)
     delegate_->Resume();
 }
 
-void PrerenderURLLoaderThrottle::DetachFromCurrentSequence() {
+void NoStatePrefetchURLLoaderThrottle::DetachFromCurrentSequence() {
   if (destruction_closure_) {
     destruction_closure_ = base::BindOnce(
         [](scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -69,7 +69,7 @@ void PrerenderURLLoaderThrottle::DetachFromCurrentSequence() {
   }
 }
 
-void PrerenderURLLoaderThrottle::WillStartRequest(
+void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   request->load_flags |= net::LOAD_PREFETCH;
@@ -123,14 +123,14 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
 
   detached_timer_.Start(
       FROM_HERE, base::Milliseconds(content::kDefaultDetachableCancelDelayMs),
-      this, &PrerenderURLLoaderThrottle::OnTimedOut);
+      this, &NoStatePrefetchURLLoaderThrottle::OnTimedOut);
 }
 
-const char* PrerenderURLLoaderThrottle::NameForLoggingWillStartRequest() {
-  return "PrerenderThrottle";
+const char* NoStatePrefetchURLLoaderThrottle::NameForLoggingWillStartRequest() {
+  return "NoStatePrefetchThrottle";
 }
 
-void PrerenderURLLoaderThrottle::WillRedirectRequest(
+void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
@@ -162,7 +162,7 @@ void PrerenderURLLoaderThrottle::WillRedirectRequest(
   }
 }
 
-void PrerenderURLLoaderThrottle::WillProcessResponse(
+void NoStatePrefetchURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
@@ -175,7 +175,7 @@ void PrerenderURLLoaderThrottle::WillProcessResponse(
                               redirect_count_);
 }
 
-void PrerenderURLLoaderThrottle::OnTimedOut() {
+void NoStatePrefetchURLLoaderThrottle::OnTimedOut() {
   delegate_->CancelWithError(net::ERR_ABORTED);
 }
 

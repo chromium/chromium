@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -17,15 +17,15 @@
 namespace prerender {
 namespace {
 
-class PrerenderURLLoaderThrottleTest : public testing::Test {
+class NoStatePrefetchURLLoaderThrottleTest : public testing::Test {
  public:
-  PrerenderURLLoaderThrottleTest() = default;
-  ~PrerenderURLLoaderThrottleTest() override = default;
+  NoStatePrefetchURLLoaderThrottleTest() = default;
+  ~NoStatePrefetchURLLoaderThrottleTest() override = default;
 
-  PrerenderURLLoaderThrottleTest(const PrerenderURLLoaderThrottleTest&) =
-      delete;
-  PrerenderURLLoaderThrottleTest& operator=(
-      const PrerenderURLLoaderThrottleTest&) = delete;
+  NoStatePrefetchURLLoaderThrottleTest(
+      const NoStatePrefetchURLLoaderThrottleTest&) = delete;
+  NoStatePrefetchURLLoaderThrottleTest& operator=(
+      const NoStatePrefetchURLLoaderThrottleTest&) = delete;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -39,39 +39,41 @@ class FakeCanceler : public prerender::mojom::PrerenderCanceler {
   void CancelPrerenderForNoStatePrefetch() override {}
 };
 
-TEST_F(PrerenderURLLoaderThrottleTest, DestructionClosure) {
+TEST_F(NoStatePrefetchURLLoaderThrottleTest, DestructionClosure) {
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
-  std::unique_ptr<PrerenderURLLoaderThrottle> prerender_throttle =
-      std::make_unique<PrerenderURLLoaderThrottle>("PREFIX",
+  std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =
+      std::make_unique<NoStatePrefetchURLLoaderThrottle>("PREFIX",
                                                    std::move(pending_remote));
   bool destruction_closure_called = false;
-  prerender_throttle->set_destruction_closure(
+  no_state_prefetch_throttle->set_destruction_closure(
       base::BindLambdaForTesting([&]() { destruction_closure_called = true; }));
   EXPECT_FALSE(destruction_closure_called);
-  prerender_throttle.reset();
+  no_state_prefetch_throttle.reset();
   EXPECT_TRUE(destruction_closure_called);
 }
 
-TEST_F(PrerenderURLLoaderThrottleTest,
+TEST_F(NoStatePrefetchURLLoaderThrottleTest,
        DestructionClosureAfterDetachFromCurrentSequence) {
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
-  std::unique_ptr<PrerenderURLLoaderThrottle> prerender_throttle =
-      std::make_unique<PrerenderURLLoaderThrottle>("PREFIX",
+  std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =
+      std::make_unique<NoStatePrefetchURLLoaderThrottle>("PREFIX",
                                                    std::move(pending_remote));
   base::RunLoop run_loop;
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
-  prerender_throttle->set_destruction_closure(base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(current_task_runner->RunsTasksInCurrentSequence());
-    run_loop.Quit();
-  }));
+  no_state_prefetch_throttle->set_destruction_closure(
+      base::BindLambdaForTesting(
+        [&]() {
+          EXPECT_TRUE(current_task_runner->RunsTasksInCurrentSequence());
+          run_loop.Quit();
+        }));
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      std::move(prerender_throttle);
+      std::move(no_state_prefetch_throttle);
   throttle->DetachFromCurrentSequence();
 
   // Post a task so that the throttle is destroyed on a different sequence,

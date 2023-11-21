@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_URL_LOADER_THROTTLE_H_
-#define COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_URL_LOADER_THROTTLE_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
+#define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -16,14 +16,14 @@
 
 namespace prerender {
 
-class PrerenderURLLoaderThrottle
+class NoStatePrefetchURLLoaderThrottle
     : public blink::URLLoaderThrottle,
-      public base::SupportsWeakPtr<PrerenderURLLoaderThrottle> {
+      public base::SupportsWeakPtr<NoStatePrefetchURLLoaderThrottle> {
  public:
-  PrerenderURLLoaderThrottle(
+  NoStatePrefetchURLLoaderThrottle(
       const std::string& histogram_prefix,
       mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler);
-  ~PrerenderURLLoaderThrottle() override;
+  ~NoStatePrefetchURLLoaderThrottle() override;
 
   // Called when the prerender is used. This will unpaused requests and set the
   // priorities to the original value.
@@ -72,4 +72,4 @@ class PrerenderURLLoaderThrottle
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_URL_LOADER_THROTTLE_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
