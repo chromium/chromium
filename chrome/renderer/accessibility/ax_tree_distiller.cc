@@ -110,9 +110,12 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   base::TimeTicks start_time = base::TimeTicks::Now();
 #endif
-  // Try with the algorithm first.
+
   std::vector<ui::AXNodeID> content_node_ids;
-  DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
+  if (features::IsReadAnythingWithAlgorithmEnabled()) {
+    // Try with the algorithm first.
+    DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
+  }
 
   // If Read Anything with Screen 2x is enabled and the main content extractor
   // is bound, kick off Screen 2x run, which distills the AXTree in the
