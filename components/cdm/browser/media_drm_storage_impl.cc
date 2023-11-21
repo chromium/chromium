@@ -337,7 +337,7 @@ std::vector<base::UnguessableToken> ClearMatchingLicenseData(
     base::Value::Dict& storage_dict,
     base::Time start,
     base::Time end,
-    const base::RepeatingCallback<bool(const GURL&)>& filter) {
+    const MediaDrmStorageImpl::ClearMatchingLicensesFilterCB& filter) {
   std::vector<std::string> origins_to_delete;
   std::vector<base::UnguessableToken> origin_ids_to_unprovision;
 
@@ -661,7 +661,7 @@ void MediaDrmStorageImpl::ClearMatchingLicenses(
     PrefService* pref_service,
     base::Time start,
     base::Time end,
-    const base::RepeatingCallback<bool(const GURL&)>& filter,
+    const MediaDrmStorageImpl::ClearMatchingLicensesFilterCB& filter,
     base::OnceClosure complete_cb) {
   DVLOG(1) << __func__ << ": Clear licenses [" << start << ", " << end << "]";
 
