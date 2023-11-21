@@ -115,6 +115,8 @@ source_set("common") {
     "input/fling_controller.cc",
     "input/fling_controller.h",
     "input/fling_scheduler_base.h",
+    "input/gesture_event_queue.cc",
+    "input/gesture_event_queue.h",
     "input/gesture_event_stream_validator.cc",
     "input/gesture_event_stream_validator.h",
     "input/input_event_ack_state.cc",

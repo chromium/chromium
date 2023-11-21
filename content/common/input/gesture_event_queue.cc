@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
+#include "content/common/input/gesture_event_queue.h"
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
@@ -22,8 +22,7 @@ GestureEventQueue::GestureEventWithLatencyInfoAckStateAndScrollResultData::
         const GestureEventWithLatencyInfo& event)
     : GestureEventWithLatencyInfo(event) {}
 
-GestureEventQueue::Config::Config() {
-}
+GestureEventQueue::Config::Config() {}
 
 GestureEventQueue::GestureEventQueue(
     GestureEventQueueClient* client,
@@ -41,7 +40,7 @@ GestureEventQueue::GestureEventQueue(
   DCHECK(fling_scheduler_client);
 }
 
-GestureEventQueue::~GestureEventQueue() { }
+GestureEventQueue::~GestureEventQueue() {}
 
 bool GestureEventQueue::DebounceOrForwardEvent(
     const GestureEventWithLatencyInfo& gesture_event) {
@@ -50,8 +49,9 @@ bool GestureEventQueue::DebounceOrForwardEvent(
             WebInputEvent::Type::kGestureFlingStart);
   DCHECK_NE(gesture_event.event.GetType(),
             WebInputEvent::Type::kGestureFlingCancel);
-  if (!ShouldForwardForBounceReduction(gesture_event))
+  if (!ShouldForwardForBounceReduction(gesture_event)) {
     return false;
+  }
 
   ForwardGestureEvent(gesture_event);
   return true;
@@ -87,14 +87,16 @@ bool GestureEventQueue::FlingInProgressForTest() const {
 
 bool GestureEventQueue::ShouldForwardForBounceReduction(
     const GestureEventWithLatencyInfo& gesture_event) {
-  if (debounce_interval_ <= base::TimeDelta())
+  if (debounce_interval_ <= base::TimeDelta()) {
     return true;
+  }
 
   // Don't debounce any gesture events while a fling is in progress on the
   // browser side. A GSE event in this case ends fling progress and it shouldn't
   // get cancelled by its next GSB event.
-  if (fling_controller_.fling_in_progress())
+  if (fling_controller_.fling_in_progress()) {
     return true;
+  }
 
   switch (gesture_event.event.GetType()) {
     case WebInputEvent::Type::kGestureScrollUpdate:
@@ -171,8 +173,9 @@ void GestureEventQueue::ProcessGestureAck(
   // original order.
   for (auto& outstanding_event : sent_events_awaiting_ack_) {
     if (outstanding_event.ack_state() !=
-        blink::mojom::InputEventResultState::kUnknown)
+        blink::mojom::InputEventResultState::kUnknown) {
       continue;
+    }
     if (outstanding_event.event.GetType() == type) {
       outstanding_event.latency.AddNewLatencyFrom(latency);
       outstanding_event.set_ack_info(ack_source, ack_result);
@@ -187,13 +190,15 @@ void GestureEventQueue::ProcessGestureAck(
 void GestureEventQueue::AckCompletedEvents() {
   // Don't allow re-entrancy into this method otherwise
   // the ordering of acks won't be preserved.
-  if (processing_acks_)
+  if (processing_acks_) {
     return;
+  }
   base::AutoReset<bool> process_acks(&processing_acks_, true);
   while (!sent_events_awaiting_ack_.empty()) {
     auto iter = sent_events_awaiting_ack_.begin();
-    if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown)
+    if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown) {
       break;
+    }
     GestureEventWithLatencyInfoAckStateAndScrollResultData event = *iter;
     sent_events_awaiting_ack_.erase(iter);
 
@@ -215,21 +220,23 @@ void GestureEventQueue::AckGestureEventToClient(
 }
 
 TouchpadTapSuppressionController*
-    GestureEventQueue::GetTouchpadTapSuppressionController() {
+GestureEventQueue::GetTouchpadTapSuppressionController() {
   return fling_controller_.GetTouchpadTapSuppressionController();
 }
 
 void GestureEventQueue::SendScrollEndingEventsNow() {
   scrolling_in_progress_ = false;
-  if (debouncing_deferral_queue_.empty())
+  if (debouncing_deferral_queue_.empty()) {
     return;
+  }
   GestureQueue debouncing_deferral_queue;
   debouncing_deferral_queue.swap(debouncing_deferral_queue_);
   for (GestureQueue::const_iterator it = debouncing_deferral_queue.begin();
        it != debouncing_deferral_queue.end(); it++) {
     if (!fling_controller_.ObserveAndMaybeConsumeGestureEvent(*it)) {
-      if (it->event.GetType() == WebInputEvent::Type::kGestureScrollEnd)
+      if (it->event.GetType() == WebInputEvent::Type::kGestureScrollEnd) {
         scroll_end_filtered_by_deboucing_deferral_queue_ = false;
+      }
       ForwardGestureEvent(*it);
     }
   }

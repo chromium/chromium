@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
+#include "content/common/input/gesture_event_queue.h"
 
 #include <stddef.h>
 
@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/input/input_router_config_helper.h"
 #include "content/common/input/touchpad_tap_suppression_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -192,9 +191,7 @@ class GestureEventQueueTest : public testing::Test,
     return count;
   }
 
-  const WebGestureEvent& last_acked_event() const {
-    return last_acked_event_;
-  }
+  const WebGestureEvent& last_acked_event() const { return last_acked_event_; }
 
   void set_synchronous_ack(blink::mojom::InputEventResultState ack_result) {
     sync_ack_result_ =
@@ -229,15 +226,11 @@ class GestureEventQueueTest : public testing::Test,
     return queue()->sent_events_awaiting_ack_.at(i).event;
   }
 
-  bool ScrollingInProgress() {
-    return queue()->scrolling_in_progress_;
-  }
+  bool ScrollingInProgress() { return queue()->scrolling_in_progress_; }
 
   bool FlingInProgress() { return queue()->FlingInProgressForTest(); }
 
-  GestureEventQueue* queue() const {
-    return queue_.get();
-  }
+  GestureEventQueue* queue() const { return queue_.get(); }
 
   blink::mojom::ScrollResultDataPtr last_acked_event_scroll_result_data() {
     return std::move(last_acked_event_scroll_result_data_);
@@ -481,7 +474,7 @@ TEST_F(GestureEventQueueTest, DebounceDropsDeferredEvents) {
                                     WebInputEvent::Type::kGestureScrollUpdate};
 
   for (unsigned i = 0; i < sizeof(expected) / sizeof(WebInputEvent::Type);
-      i++) {
+       i++) {
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }

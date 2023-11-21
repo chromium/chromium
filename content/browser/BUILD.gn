@@ -1705,8 +1705,6 @@ source_set("browser") {
     "renderer_host/indexed_db_client_state_checker_factory.h",
     "renderer_host/input/fling_scheduler.cc",
     "renderer_host/input/fling_scheduler.h",
-    "renderer_host/input/gesture_event_queue.cc",
-    "renderer_host/input/gesture_event_queue.h",
     "renderer_host/input/input_device_change_observer.cc",
     "renderer_host/input/input_device_change_observer.h",
     "renderer_host/input/input_disposition_handler.h",
