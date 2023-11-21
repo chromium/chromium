@@ -164,7 +164,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   _targetUnit = ios::provider::GetDefaultTargetUnit(_sourceUnit);
   _unitType = TypeByUnit(_sourceUnit);
   _sourceUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", _unitValue];
+      [NSString localizedStringWithFormat:@"%g", _unitValue];
   _unitTypes = ios::provider::GetSupportedUnitTypes();
   _unitTypeTitle = [self titleForUnitType:_unitType];
   _formattedSourceUnit = ios::provider::GetFormattedUnit(_sourceUnit);
@@ -349,7 +349,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   NSMeasurement* targetUnitMeasurement =
       [sourceUnitMeasurement measurementByConvertingToUnit:_targetUnit];
   _targetUnitValueField = [NSString
-      localizedStringWithFormat:@"%lf", targetUnitMeasurement.doubleValue];
+      localizedStringWithFormat:@"%g", targetUnitMeasurement.doubleValue];
 }
 
 // Returns the title string based on the unit type.
@@ -522,14 +522,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
 - (void)updateSourceUnitValue:(double)sourceUnitValue reload:(BOOL)reload {
   _sourceUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", sourceUnitValue];
+      [NSString localizedStringWithFormat:@"%g", sourceUnitValue];
   self.unitValue = sourceUnitValue;
   [self reloadRow:kUnitValueFieldRow section:kSourceSection reload:reload];
 }
 
 - (void)updateTargetUnitValue:(double)targetUnitValue reload:(BOOL)reload {
   _targetUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", targetUnitValue];
+      [NSString localizedStringWithFormat:@"%g", targetUnitValue];
   [self reloadRow:kUnitValueFieldRow section:kTargetSection reload:reload];
 }
 

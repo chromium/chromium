@@ -112,11 +112,11 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(SourceUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"20.000000")];
+      assertWithMatcher:grey_textFieldValue(@"20")];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"44.092488")];
+      assertWithMatcher:grey_textFieldValue(@"44.0925")];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_UNITS_MEASUREMENTS_MASS)]
@@ -148,7 +148,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(SourceUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"20.000000")];
+      assertWithMatcher:grey_textFieldValue(@"20")];
 
   [[EarlGrey selectElementWithMatcher:TargetUnitLabelMatcher(@"Yards (yd)")]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -156,7 +156,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_textFieldValue([NSString
-                            localizedStringWithFormat:@"%lf", 35200.0])];
+                            localizedStringWithFormat:@"%g", 35200.0])];
 }
 
 // Checks that source unit value change is handled correctly.
@@ -170,7 +170,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"66.138733")];
+      assertWithMatcher:grey_textFieldValue(@"66.1387")];
 }
 
 // Checks that the source unit change is handled correctly.
@@ -182,7 +182,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"20.000000")];
+      assertWithMatcher:grey_textFieldValue(@"20")];
 }
 
 // Checks that the target unit change is handled correctly.
@@ -194,7 +194,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"20.000000")];
+      assertWithMatcher:grey_textFieldValue(@"20")];
 }
 
 @end
