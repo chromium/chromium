@@ -1174,8 +1174,11 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // GeoIP, we want to hold on to these values.
         const bool same_value_as_on_page_load =
             field->value == cached_field->value;
+        const bool had_type = cached_field->Type().GetStorableType() >
+                                  ServerFieldType::UNKNOWN_TYPE ||
+                              !cached_field->possible_types().empty();
         if (!cached_field->value.empty() &&
-            !field->IsSelectOrSelectListElement()) {
+            !field->IsSelectOrSelectListElement() && had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
         }
         const bool field_is_neither_state_nor_country =

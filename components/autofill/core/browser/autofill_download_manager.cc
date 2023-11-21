@@ -389,6 +389,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
       out << Tr{}
           << "generation_type:" << static_cast<int>(field.generation_type());
     }
+    if (field.has_initial_value_changed()) {
+      out << Tr{} << "initial_value_changed:"
+          << static_cast<int>(field.initial_value_changed());
+    }
   }
   out << CTag{"table"};
   out << CTag{"div"};

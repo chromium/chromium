@@ -6871,13 +6871,26 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsEnabled) {
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_SetsInitialValueChanged) {
   FormData form = test::GetFormData(
-      {.fields = {{.role = NAME_FIRST},
-                  {.role = NAME_LAST, .value = u"Doe"},
-                  {.role = EMAIL_ADDRESS, .value = u"test@example.com"}}});
+      {.fields = {
+           // Field 1: Expect `initial_value_changed` not set because the field
+           // had no pre-filled value.
+           {.role = NAME_FIRST},
+           // Field 2: Expect `initial_value_changed == false` because `value`
+           // doesn't change.
+           {.role = NAME_LAST, .value = u"Doe"},
+           // Field 3: Expect `initial_value_changed == true` because `value` is
+           // changed (below).
+           {.role = EMAIL_ADDRESS, .value = u"test@example.com"},
+           // Field 4: Expect `initial_value_changed` not set because the field
+           // type resolves to `UNKNOWN_TYPE`.
+           {.role = USERNAME, .value = u"username"}}});
   // Form structure preserving the state from page load.
   FormStructure cached_form_structure(form);
   // Form structure containing the state on submit.
   FormStructure form_structure(form);
+
+  cached_form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                                nullptr);
 
   // Simulate user changed non-pre-filled field value.
   form_structure.field(0)->value = u"John";
@@ -6896,12 +6909,17 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_SetsInitialValueChanged) {
   ASSERT_EQ(uploads.size(), 1UL);
   const AutofillUploadContents& upload = uploads[0];
 
-  ASSERT_EQ(upload.field_size(), 3);
+  ASSERT_EQ(upload.field_size(), 4);
+  // Field 1.
   EXPECT_FALSE(upload.field(0).has_initial_value_changed());
+  // Field 2.
   EXPECT_TRUE(upload.field(1).has_initial_value_changed());
   EXPECT_FALSE(upload.field(1).initial_value_changed());
+  // Field 3.
   EXPECT_TRUE(upload.field(2).has_initial_value_changed());
   EXPECT_TRUE(upload.field(2).initial_value_changed());
+  // Field 4.
+  EXPECT_FALSE(upload.field(3).has_initial_value_changed());
 }
 
 }  // namespace autofill
