@@ -379,15 +379,9 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
   TopSitesBackend::RecordHistogram record_or_not =
       TopSitesBackend::RECORD_HISTOGRAM_NO;
 
-  // Record the delta size into a histogram if this function is called from
-  // function OnGotMostVisitedURLs and no histogram value has been recorded
-  // before.
   if (location == CALL_LOCATION_FROM_ON_GOT_MOST_VISITED_URLS &&
       !histogram_recorded_) {
-    size_t delta_size =
-        delta.deleted.size() + delta.added.size() + delta.moved.size();
-    UMA_HISTOGRAM_COUNTS_100("History.FirstSetTopSitesDeltaSize", delta_size);
-    // Will be passed to TopSitesBackend to let it record the histogram too.
+    // Will be passed to TopSitesBackend to let it record the histogram.
     record_or_not = TopSitesBackend::RECORD_HISTOGRAM_YES;
     // Change it to true so that the histogram will not be recorded any more.
     histogram_recorded_ = true;

@@ -1857,16 +1857,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.FirstSetTopSitesDeltaSize" units="units"
-    expires_after="M77">
-  <owner>yiyaoliu@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The count of differences between cached top sites and up-to-date top sites
-    when function TopSitesImpl::SetTopSites is firstly called at startup.
-  </summary>
-</histogram>
-
 <histogram name="History.FirstUpdateTime" units="ms" expires_after="2020-02-02">
   <owner>yiyaoliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
