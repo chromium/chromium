@@ -273,6 +273,12 @@ stage_install_common() {
     find "${STAGEDIR}/${INSTALLDIR}/default_apps" -type f -exec chmod 644 '{}' \;
   fi
 
+  # CHROME_VERSION_EXTRA file containing the channel
+  if [ "$BRANDING" = "google_chrome" ]; then
+    echo "$CHANNEL" > "${STAGEDIR}/${INSTALLDIR}/CHROME_VERSION_EXTRA"
+    chmod 644 "${STAGEDIR}${INSTALLDIR}/CHROME_VERSION_EXTRA"
+  fi
+
   # launcher script and symlink
   process_template "${OUTPUTDIR}/installer/common/wrapper" \
     "${STAGEDIR}/${INSTALLDIR}/${PACKAGE}"

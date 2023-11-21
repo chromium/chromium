@@ -81,6 +81,10 @@ int ChromeMain(int argc, const char** argv) {
 #error Unknown platform.
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  PossiblyDetermineFallbackChromeChannel(argv[0]);
+#endif
+
 #if BUILDFLAG(IS_WIN)
   install_static::InitializeFromPrimaryModule();
 #if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
