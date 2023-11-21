@@ -931,16 +931,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.CompositionWithImm32BasedIme" enum="Boolean"
-    expires_after="M78">
-  <owner>lanwei@chromium.org</owner>
-  <owner>siliu@microsoft.com</owner>
-  <summary>
-    Whether the composition is composed by IMM32-based input method processor
-    when TSF is disabled on Windows. Recorded when user starts new composition.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Handwriting.Actions" enum="ImeHandwritingActions"
     expires_after="2022-04-10">
   <owner>shend@chromium.org</owner>
