@@ -171,7 +171,7 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
 void AddSessionToFakeSyncServer(
     const synced_sessions::DistantSession& session) {
   std::vector<sync_pb::SessionSpecifics> specifics_list;
-  SessionID window_id = SessionID::FromSerializedValue(1);
+  SessionID window_id = SessionID::NewUnique();
   // Tab specifics.
   std::vector<SessionID> tab_list;
   sync_sessions::SessionSyncTestHelper helper;
