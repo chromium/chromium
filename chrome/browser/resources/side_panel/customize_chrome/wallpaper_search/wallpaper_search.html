@@ -16,21 +16,23 @@
   }
 
   #error {
-    height: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     line-height: 20px;
   }
 
   #errorTitle {
+    color: var(--color-side-panel-card-primary-foreground);
+    flex-basis: 100%;
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-side-panel-card-primary-foreground);
-    margin-block-end: 8px;
   }
 
   #errorDescription {
     color: var(--color-side-panel-card-secondary-foreground);
+    flex-basis: 100%;
     font-size: 13px;
-    margin-block-end: 16px;
   }
 
   #errorCTA {
@@ -40,7 +42,7 @@
         --color-side-panel-wallpaper-search-error-button-background);
     color: var(
         --color-side-panel-wallpaper-search-error-button-text);
-    float: right;
+    margin-inline-start: auto;
     min-width: auto;
   }
 

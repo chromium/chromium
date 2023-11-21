@@ -7856,6 +7856,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION" desc="The description of the generic error displayed when wallpaper search fails.">
         Please try again later.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY" translateable="false" desc="The description of the generic error displayed when wallpaper search fails and there are previous results.">
+        Try again or select from one of the previous results below.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>
@@ -7869,7 +7872,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Recent theme <ph name="TILE_INDEX">$1<ex>2</ex></ph>
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION" desc="The description of the message displayed by wallpaper search when the browser is offline.">
-        Check your internet connection and try again.
+        Check your internet and try again.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION_WITH_HISTORY" translateable="false" desc="The description of the message displayed by wallpaper search when the browser is offline and there are previous results.">
+        Check your internet and try again. You can still select from one of the previous results below.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_TITLE" desc="The title of the message displayed by wallpaper search when the browser is offline.">
         Looks like you're offline.
@@ -7878,7 +7884,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Add optional details
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
-        You can try again tomorrow.
+        Please try again tomorrow.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
         You've reached your limit for today.

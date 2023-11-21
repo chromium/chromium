@@ -41,6 +41,7 @@ export const DESCRIPTOR_D_VALUE =
 export interface ErrorState {
   title: string;
   description: string;
+  callToAction: string;
 }
 
 export interface WallpaperSearchElement {
@@ -89,7 +90,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       errorState_: {
         type: Object,
-        computed: 'computeErrorState_(status_)',
+        computed: 'computeErrorState_(status_, history_)',
       },
       emptyHistoryContainers_: Object,
       emptyResultContainers_: Object,
@@ -207,7 +208,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kError:
         return {
           title: this.i18n('genericErrorTitle'),
-          description: this.i18n('genericErrorDescription'),
+          description: this.history_ ?
+              this.i18n('genericErrorDescriptionWithHistory') :
+              this.i18n('genericErrorDescription'),
           callToAction: this.i18n('tryAgain'),
         };
       case WallpaperSearchStatus.kRequestThrottled:
@@ -219,7 +222,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOffline:
         return {
           title: this.i18n('offlineTitle'),
-          description: this.i18n('offlineDescription'),
+          description: this.history_ ?
+              this.i18n('offlineDescriptionWithHistory') :
+              this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
         };
     }
@@ -249,7 +254,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.errorCallback_ = undefined;
       } else {
         this.errorCallback_ = () => this.fetchDescriptors_();
-        this.status_ = WallpaperSearchStatus.kError;
+        this.status_ = WindowProxy.getInstance().onLine ?
+            WallpaperSearchStatus.kError :
+            WallpaperSearchStatus.kOffline;
       }
     });
   }

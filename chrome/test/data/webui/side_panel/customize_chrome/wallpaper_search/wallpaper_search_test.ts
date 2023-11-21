@@ -549,127 +549,6 @@ suite('WallpaperSearchTest', () => {
     });
   });
 
-  suite('Error', () => {
-    test(
-        'shows error ui if no descriptors are returned by the backend',
-        async () => {
-          createWallpaperSearchElement(/*descriptors=*/ null);
-          await flushTasks();
-
-          wallpaperSearchElement.$.submitButton.click();
-          await waitAfterNextRender(wallpaperSearchElement);
-
-          assertNotStyle(
-              $$(wallpaperSearchElement, '#error')!, 'display', 'none');
-          assertStyle(
-              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-              'none');
-        });
-
-    test('reattempts failed descriptor fetch', async () => {
-      createWallpaperSearchElement();
-      await flushTasks();
-
-      assertEquals(1, handler.getCallCount('getDescriptors'));
-      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-
-      handler.setResultFor('getDescriptors', Promise.resolve({
-        status: WallpaperSearchStatus.kOk,
-        descriptors: {
-          descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-          descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-          descriptorC: ['foo', 'bar', 'baz'],
-        },
-      }));
-      await flushTasks();
-
-      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertEquals(2, handler.getCallCount('getDescriptors'));
-      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertNotStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-    });
-
-    test('shows error ui if browser if offline', async () => {
-      windowProxy.setResultFor('onLine', false);
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertEquals(1, windowProxy.getCallCount('onLine'));
-      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-    });
-
-    test('checks if browser is back online', async () => {
-      windowProxy.setResultFor('onLine', false);
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertEquals(1, windowProxy.getCallCount('onLine'));
-      windowProxy.setResultFor('onLine', true);
-
-      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertEquals(2, windowProxy.getCallCount('onLine'));
-      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertNotStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-    });
-
-    test('shows search ui if there are no errors', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertNotStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-
-      wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertNotStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-    });
-
-    [WallpaperSearchStatus.kError, WallpaperSearchStatus.kRequestThrottled]
-        .forEach((status) => {
-          test(
-              `shows error ui if search fails with status of ${status}`,
-              async () => {
-                handler.setResultFor(
-                    'getWallpaperSearchResults',
-                    Promise.resolve({status: status, results: []}));
-                createWallpaperSearchElementWithDescriptors();
-                await flushTasks();
-
-                wallpaperSearchElement.$.submitButton.click();
-                await waitAfterNextRender(wallpaperSearchElement);
-
-                assertNotStyle(
-                    $$(wallpaperSearchElement, '#error')!, 'display', 'none');
-                assertStyle(
-                    $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                    'none');
-              });
-        });
-  });
-
   suite('History', () => {
     test('show history in history card', async () => {
       createWallpaperSearchElement();
@@ -692,6 +571,240 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           (historyTiles[1]! as HTMLElement).getAttribute('aria-label'),
           'Recent theme 2');
+    });
+  });
+
+  suite('Error', () => {
+    suite('Descriptors', () => {
+      test('shows error ui for failed descriptor fetch', async () => {
+        createWallpaperSearchElement(/*descriptors=*/ null);
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test('reattempts failed descriptor fetch for generic error', async () => {
+        createWallpaperSearchElement();
+        await flushTasks();
+
+        assertEquals(1, handler.getCallCount('getDescriptors'));
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'Please try again later.');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+
+        handler.setResultFor('getDescriptors', Promise.resolve({
+          status: WallpaperSearchStatus.kOk,
+          descriptors: {
+            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: ['foo', 'bar', 'baz'],
+          },
+        }));
+        $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(2, handler.getCallCount('getDescriptors'));
+        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test('shows history description for generic error', async () => {
+        createWallpaperSearchElement();
+
+        wallpaperSearchCallbackRouterRemote.setHistory([
+          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        ]);
+        await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'Try again or select from one of the previous results below.');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test(
+          'reattempts failed descriptor fetch with offline error', async () => {
+            windowProxy.setResultFor('onLine', false);
+            createWallpaperSearchElement();
+            await flushTasks();
+
+            assertEquals(1, handler.getCallCount('getDescriptors'));
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'Check your internet and try again.');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+
+            windowProxy.setResultFor('onLine', true);
+            handler.setResultFor('getDescriptors', Promise.resolve({
+              status: WallpaperSearchStatus.kOk,
+              descriptors: {
+                descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+                descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+                descriptorC: ['foo', 'bar', 'baz'],
+              },
+            }));
+            $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+            await waitAfterNextRender(wallpaperSearchElement);
+
+            assertEquals(2, handler.getCallCount('getDescriptors'));
+            assertStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+          });
+
+      test('shows history description for offline error', async () => {
+        createWallpaperSearchElement();
+
+        windowProxy.setResultFor('onLine', false);
+        wallpaperSearchCallbackRouterRemote.setHistory([
+          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        ]);
+        await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'Check your internet and try again. ' +
+                'You can still select from one of the previous results below.');
+      });
+    });
+
+    suite('Search', () => {
+      test('shows search ui if there are no errors', async () => {
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test('shows error ui if browser offline', async () => {
+        windowProxy.setResultFor('onLine', false);
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(1, windowProxy.getCallCount('onLine'));
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'Check your internet and try again.');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test('checks if browser is back online', async () => {
+        windowProxy.setResultFor('onLine', false);
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(1, windowProxy.getCallCount('onLine'));
+        windowProxy.setResultFor('onLine', true);
+
+        $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(2, windowProxy.getCallCount('onLine'));
+        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      [[WallpaperSearchStatus.kError, 'Please try again later.'],
+       [WallpaperSearchStatus.kRequestThrottled, 'Please try again tomorrow.'],
+      ].forEach(([status, description]) => {
+        test(`shows error ${description} for status ${status}`, async () => {
+          handler.setResultFor(
+              'getWallpaperSearchResults',
+              Promise.resolve({status: status, results: []}));
+          createWallpaperSearchElementWithDescriptors();
+          await flushTasks();
+
+          wallpaperSearchElement.$.submitButton.click();
+          await waitAfterNextRender(wallpaperSearchElement);
+
+          assertNotStyle(
+              $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+          assertEquals(
+              $$<HTMLElement>(
+                  wallpaperSearchElement, '#errorDescription')!.textContent,
+              description);
+          assertStyle(
+              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+              'none');
+        });
+      });
+
+      test(`shows generic error if there is history`, async () => {
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve(
+                {status: WallpaperSearchStatus.kError, results: []}));
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        wallpaperSearchCallbackRouterRemote.setHistory([
+          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        ]);
+        await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'Try again or select from one of the previous results below.');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
     });
   });
 });

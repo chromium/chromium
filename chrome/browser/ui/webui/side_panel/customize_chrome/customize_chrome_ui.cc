@@ -132,8 +132,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       // Wallpaper search strings.
       {"genericErrorDescription",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
+      {"genericErrorDescriptionWithHistory",
+       IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY},
       {"genericErrorTitle", IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE},
       {"offlineDescription", IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION},
+      {"offlineDescriptionWithHistory",
+       IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION_WITH_HISTORY},
       {"offlineTitle", IDS_NTP_WALLPAPER_SEARCH_OFFLINE_TITLE},
       {"optionalDetailsLabel", IDS_NTP_WALLPAPER_SEARCH_OPTIONAL_DETAILS_LABEL},
       {"requestThrottledDescription",
