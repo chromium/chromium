@@ -207,3 +207,36 @@ file, rooted in the `gen` output directory, use
    [rust-analyzer](https://rust-analyzer.github.io/) it should detect the
    `rust-project.json` and use this to give you rich browsing, autocompletion,
    type annotations etc. for all the Rust within the Chromium codebase.
+
+# Using cargo
+
+If you are building a throwaway or experimental tool, you might like to use pure
+`cargo` tooling rather than `gn` and `ninja`. Even then, you may choose
+to restrict yourself to the toolchain and crates that are already approved for
+use in Chromium.
+
+Here's how.
+
+```
+export PATH_TO_CHROMIUM_SRC=~/chromium/src
+mkdir my-rust-tool
+cd my-rust-tool
+mkdir .cargo
+cat <<END > .cargo/config.toml
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "$PATH_TO_CHROMIUM_SRC/third_party/rust/chromium_crates_io/vendor"
+END
+$PATH_TO_CHROMIUM_SRC/third_party/rust-toolchain/bin/cargo init --offline
+$PATH_TO_CHROMIUM_SRC/third_party/rust-toolchain/bin/cargo run --offline
+```
+
+Most `cargo` tooling works well with this setup; one exception is `cargo add`,
+but you can still add dependencies manually to your `Cargo.toml`:
+
+```
+[dependencies]
+log = "0.4"
+```
