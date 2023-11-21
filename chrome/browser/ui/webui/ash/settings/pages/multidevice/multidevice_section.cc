@@ -758,10 +758,18 @@ void MultiDeviceSection::RegisterHierarchy(
                                       mojom::Subpage::kMultiDeviceFeatures);
 
   // Nearby Share, registered regardless of the flag.
+  int nearby_share_subpage_name = IDS_SETTINGS_NEARBY_SHARE_TITLE;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (::features::IsNameEnabled()) {
+    nearby_share_subpage_name =
+        IDS_NEARBY_SHARE_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   generator->RegisterTopLevelSubpage(
-      ::features::IsNameEnabled() ? IDS_SETTINGS_NEARBY_SHARE_TITLE_PH
-                                  : IDS_SETTINGS_NEARBY_SHARE_TITLE,
-      mojom::Subpage::kNearbyShare, mojom::SearchResultIcon::kNearbyShare,
+      nearby_share_subpage_name, mojom::Subpage::kNearbyShare,
+      mojom::SearchResultIcon::kNearbyShare,
       mojom::SearchResultDefaultRank::kMedium, mojom::kNearbyShareSubpagePath);
   static constexpr mojom::Setting kNearbyShareSettings[] = {
       mojom::Setting::kNearbyShareOnOff,
