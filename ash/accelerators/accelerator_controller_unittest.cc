@@ -3393,6 +3393,11 @@ TEST_F(AcceleratorControllerGameDashboardTests,
   EXPECT_FALSE(ProcessInController(accelerator));
   window->SetProperty(kArcGameControlsFlagsKey, ArcGameControlsFlag::kKnown);
   EXPECT_TRUE(ProcessInController(accelerator));
+  window->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ash::ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                            ArcGameControlsFlag::kEdit));
+  EXPECT_FALSE(ProcessInController(accelerator));
 }
 
 }  // namespace ash

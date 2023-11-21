@@ -43,6 +43,10 @@ absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
 void UpdateGameControlsHintButtonToolTipText(views::Button* button,
                                              ArcGameControlsFlag flags);
 
+// Returns true if `window` is not ARC game window, or Game Controls state is
+// known and not in edit mode.
+bool ShouldEnableGameDashboardButton(aura::Window* window);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_

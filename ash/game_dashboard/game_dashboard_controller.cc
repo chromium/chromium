@@ -46,13 +46,7 @@ bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
     return false;
   }
 
-  if (IsArcWindow(window)) {
-    return game_dashboard_utils::IsFlagSet(
-        window->GetProperty(kArcGameControlsFlagsKey),
-        ArcGameControlsFlag::kKnown);
-  }
-
-  return true;
+  return game_dashboard_utils::ShouldEnableGameDashboardButton(window);
 }
 
 GameDashboardController::GameDashboardController(

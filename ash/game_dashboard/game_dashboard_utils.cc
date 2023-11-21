@@ -65,4 +65,14 @@ void UpdateGameControlsHintButtonToolTipText(views::Button* button,
   button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 }
 
+bool ShouldEnableGameDashboardButton(aura::Window* window) {
+  if (!IsArcWindow(window)) {
+    return true;
+  }
+
+  const auto flags = window->GetProperty(kArcGameControlsFlagsKey);
+  return IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
+         !IsFlagSet(flags, ArcGameControlsFlag::kEdit);
+}
+
 }  // namespace ash::game_dashboard_utils
