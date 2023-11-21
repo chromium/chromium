@@ -126,9 +126,9 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
             profile_->GetPath().AppendASCII(
                 id.ToString() +
                 chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
-        base::BindOnce(
-            &NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId,
-            base::Unretained(ntp_custom_background_service_), id));
+        base::BindOnce(&WallpaperSearchBackgroundManager::
+                           SetBackgroundToLocalResourceWithId,
+                       weak_ptr_factory_.GetWeakPtr(), id));
     ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
         gfx::Image::CreateFrom1xBitmap(bitmap));
   }
@@ -169,4 +169,9 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
     return current_theme->local_background_id;
   }
   return absl::nullopt;
+}
+
+void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
+    const base::Token& id) {
+  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
 }

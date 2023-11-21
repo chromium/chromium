@@ -40,9 +40,14 @@ class WallpaperSearchBackgroundManager {
   virtual absl::optional<base::Token> SaveCurrentBackgroundToHistory();
 
  private:
+  void SetBackgroundToLocalResourceWithId(const base::Token& id);
+
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+
+  base::WeakPtrFactory<WallpaperSearchBackgroundManager> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
