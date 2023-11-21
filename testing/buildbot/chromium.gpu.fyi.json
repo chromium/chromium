@@ -5393,9 +5393,13 @@
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "context_lost_passthrough_tests VOLTEER_RELEASE_LKGM",
+        "name": "context_lost_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5403,7 +5407,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5420,14 +5424,18 @@
           "--git-revision=${got_revision}"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "expected_color_pixel_passthrough_test VOLTEER_RELEASE_LKGM",
+        "name": "expected_color_pixel_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5435,7 +5443,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5448,9 +5456,13 @@
           "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "gpu_process_launch_tests VOLTEER_RELEASE_LKGM",
+        "name": "gpu_process_launch_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5458,7 +5470,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5471,9 +5483,13 @@
           "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "hardware_accelerated_feature_tests VOLTEER_RELEASE_LKGM",
+        "name": "hardware_accelerated_feature_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5481,7 +5497,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5498,9 +5514,13 @@
           "0"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
-        "name": "info_collection_tests VOLTEER_RELEASE_LKGM",
+        "name": "info_collection_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5508,7 +5528,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5521,9 +5541,13 @@
           "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "mediapipe_passthrough_tests VOLTEER_RELEASE_LKGM",
+        "name": "mediapipe_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5531,7 +5555,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5549,14 +5573,18 @@
           "--git-revision=${got_revision}"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "pixel_skia_gold_passthrough_test VOLTEER_RELEASE_LKGM",
+        "name": "pixel_skia_gold_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5564,7 +5592,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5578,9 +5606,13 @@
           "--dont-restore-color-profile-after-test"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "screenshot_sync_passthrough_tests VOLTEER_RELEASE_LKGM",
+        "name": "screenshot_sync_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5588,7 +5620,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5602,9 +5634,13 @@
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "trace_test VOLTEER_RELEASE_LKGM",
+        "name": "trace_test VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5612,7 +5648,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5626,9 +5662,13 @@
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "webcodecs_tests VOLTEER_RELEASE_LKGM",
+        "name": "webcodecs_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5636,7 +5676,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5652,9 +5692,13 @@
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-        "name": "webgl2_conformance_gles_passthrough_tests VOLTEER_RELEASE_LKGM",
+        "name": "webgl2_conformance_gles_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5663,7 +5707,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       },
       {
         "args": [
@@ -5678,9 +5722,13 @@
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
+        "dut_pool": "chromium",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-        "name": "webgl_conformance_gles_passthrough_tests VOLTEER_RELEASE_LKGM",
+        "name": "webgl_conformance_gles_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5689,7 +5737,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_RELEASE_LKGM"
       }
     ]
   },

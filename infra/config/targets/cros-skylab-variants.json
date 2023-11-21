@@ -428,6 +428,17 @@
     "enabled": true,
     "identifier": "VOLTEER_PUBLIC_LKGM"
   },
+  "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM": {
+    "skylab": {
+      "cros_board": "volteer",
+      "bucket": "chromiumos-image-archive",
+      "dut_pool": "chromium",
+      "public_builder": "cros_test_platform_public",
+      "public_builder_bucket": "testplatform-public",
+      "use_lkgm": true
+    },
+    "identifier": "VOLTEER_PUBLIC_RELEASE_LKGM"
+  },
   "CROS_VOLTEER_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "volteer",

@@ -340,32 +340,32 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
         "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
         "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
         "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
     },
