@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Testing WebAssembly worker
+  Uncaught Error: assert_unreached: worker got an error Reached unreachable code
+Harness: the test ran to completion.
+

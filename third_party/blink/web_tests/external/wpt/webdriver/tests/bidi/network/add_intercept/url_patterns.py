@@ -67,7 +67,7 @@ async def test_pattern_patterns_matching(
     patterns,
     url_template,
 ):
-    await subscribe_events(events=["network.beforeRequestSent"],  contexts=[top_context["context"]])
+    await subscribe_events(events=["network.beforeRequestSent"], contexts=[top_context["context"]])
 
     for pattern in patterns:
         for key in pattern:
@@ -114,7 +114,7 @@ async def test_pattern_patterns_not_matching(
     pattern,
     url_template,
 ):
-    await subscribe_events(events=["network.beforeRequestSent"],  contexts=[top_context["context"]])
+    await subscribe_events(events=["network.beforeRequestSent"], contexts=[top_context["context"]])
 
     for key in pattern:
         pattern[key] = substitute_host(pattern[key])
@@ -164,7 +164,7 @@ async def test_string_patterns_matching(
     pattern,
     url_template,
 ):
-    await subscribe_events(events=["network.beforeRequestSent"],  contexts=[top_context["context"]])
+    await subscribe_events(events=["network.beforeRequestSent"], contexts=[top_context["context"]])
 
     intercept = await add_intercept(
         phases=["beforeRequestSent"],
@@ -206,7 +206,7 @@ async def test_string_patterns_not_matching(
     pattern,
     url_template,
 ):
-    await subscribe_events(events=["network.beforeRequestSent"],  contexts=[top_context["context"]])
+    await subscribe_events(events=["network.beforeRequestSent"], contexts=[top_context["context"]])
 
     await add_intercept(
         phases=["beforeRequestSent"],

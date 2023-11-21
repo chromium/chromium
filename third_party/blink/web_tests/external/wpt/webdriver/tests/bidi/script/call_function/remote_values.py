@@ -45,7 +45,7 @@ async def test_remote_value_promise(bidi_session, top_context, await_promise):
 @pytest.mark.parametrize("await_promise", [True, False])
 async def test_window_context_top_level(bidi_session, top_context,
                                         await_promise):
-    function_declaration = f"() => window"
+    function_declaration = "() => window"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -79,7 +79,7 @@ async def test_window_context_iframe_window(bidi_session, top_context,
     all_contexts = await bidi_session.browsing_context.get_tree()
     iframe_context = all_contexts[0]["children"][0]
 
-    function_declaration = f"() => window"
+    function_declaration = "() => window"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -113,7 +113,7 @@ async def test_window_context_iframe_content_window(
     iframe_context = all_contexts[0]["children"][0]
 
     # This is equivalent to `document.getElementsByTagName("iframe")[0].contentWindow`
-    function_declaration = f"() => window.frames[0]"
+    function_declaration = "() => window.frames[0]"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -146,7 +146,7 @@ async def test_window_context_same_id_after_navigation(bidi_session,
 
     url = inline(f"{domain}", domain=domain)
 
-    function_declaration = f"() => window"
+    function_declaration = "() => window"
     if await_promise:
         function_declaration = "async" + function_declaration
 

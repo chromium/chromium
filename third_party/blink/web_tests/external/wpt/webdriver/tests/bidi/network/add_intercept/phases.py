@@ -1,4 +1,3 @@
-
 import pytest
 from webdriver.bidi.modules.script import ScriptEvaluateResultException
 

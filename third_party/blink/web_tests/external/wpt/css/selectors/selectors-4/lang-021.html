@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<meta charset="utf-8">
+<title>CSS Selectors 4 - :lang matching</title>
+<link rel="author" title="Jonathan Kew" href="mailto:jkew@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#the-lang-pseudo">
+<link rel="match" href="lang-000-ref.html">
+
+<style>
+div.test { color: red; }
+span:lang("en-gb-oed") { color: green; }
+span span:lang("*-gb") { color: magenta; }
+</style>
+
+<!-- "en-GB-oed" is a grandfathered tag, matchable as a whole but not parsed
+     into subtags and matched against a range. -->
+<div class="test" lang="en-GB-oed"><span><span>This should be green</span></span></div>

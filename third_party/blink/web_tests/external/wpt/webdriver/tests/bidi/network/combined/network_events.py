@@ -97,13 +97,11 @@ async def test_same_request_id(wait_for_event, wait_for_future_safe, url, setup_
     )
 
     assert (
-        before_request_sent_events[0]["request"]["request"]
-        == response_started_events[0]["request"]["request"]
+        before_request_sent_events[0]["request"]["request"] == response_started_events[0]["request"]["request"]
     )
 
     assert (
-        before_request_sent_events[0]["request"]["request"]
-        == response_completed_events[0]["request"]["request"]
+        before_request_sent_events[0]["request"]["request"] == response_completed_events[0]["request"]["request"]
     )
 
 

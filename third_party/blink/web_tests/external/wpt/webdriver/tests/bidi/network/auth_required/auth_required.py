@@ -2,8 +2,6 @@ import asyncio
 
 import pytest
 
-from tests.support.sync import AsyncPoll
-
 from .. import assert_response_event
 
 PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"

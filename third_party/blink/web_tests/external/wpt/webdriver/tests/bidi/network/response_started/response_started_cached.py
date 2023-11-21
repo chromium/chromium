@@ -149,7 +149,7 @@ async def test_cached_redirect(
 )
 @pytest.mark.asyncio
 async def test_cached_revalidate(
-     wait_for_event, wait_for_future_safe, url, fetch, setup_network_test, method
+    wait_for_event, wait_for_future_safe, url, fetch, setup_network_test, method
 ):
     network_events = await setup_network_test(
         events=[
