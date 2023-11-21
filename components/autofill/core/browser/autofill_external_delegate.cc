@@ -708,8 +708,7 @@ bool AutofillExternalDelegate::GetDeletionConfirmationText(
     Suggestion::BackendId backend_id,
     std::u16string* title,
     std::u16string* body) {
-  return manager_->GetDeletionConfirmationText(value, popup_item_id, backend_id,
-                                               title, body);
+  return false;
 }
 
 bool AutofillExternalDelegate::RemoveSuggestion(

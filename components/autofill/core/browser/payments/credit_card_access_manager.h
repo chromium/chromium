@@ -114,11 +114,6 @@ class CreditCardAccessManager
   void UpdateCreditCardFormEventLogger();
   // Returns true when deletion is allowed. Only local cards can be deleted.
   bool DeleteCard(const CreditCard* card);
-  // Returns true if the |card| is deletable. Fills out
-  // |title| and |body| with relevant user-facing text.
-  bool GetDeletionConfirmationText(const CreditCard* card,
-                                   std::u16string* title,
-                                   std::u16string* body);
 
   // Returns false only if some form of authentication is still in progress.
   bool ShouldClearPreviewedForm();

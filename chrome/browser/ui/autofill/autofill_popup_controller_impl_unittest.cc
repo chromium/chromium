@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -34,12 +35,14 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -55,6 +58,7 @@
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -63,7 +67,7 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
@@ -71,7 +75,7 @@
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 namespace {
@@ -98,7 +102,7 @@ EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
       Field(&AutofillPopupDelegate::SuggestionPosition::sub_popup_level,
             position.sub_popup_level));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
@@ -298,7 +302,7 @@ class TestContentAutofillClientWithMockController
   show_pwd_migration_warning_callback() {
     return show_pwd_migration_warning_callback_;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   void DoHide(PopupHidingReason reason) {
@@ -383,6 +387,11 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<TestPersonalDataManager>();
+        }));
     NavigateAndCommit(GURL("https://foo.com/"));
     FocusWebContentsOnMainFrame();
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
@@ -392,7 +401,7 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   content::RenderFrameHost* main_frame() {
@@ -412,6 +421,11 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
   BrowserAutofillManagerWithMockDelegate& manager(
       content::RenderFrameHost* rfh = nullptr) {
     return *autofill_manager_injector_[rfh ? rfh : main_frame()];
+  }
+
+  TestPersonalDataManager& personal_data() {
+    return static_cast<TestPersonalDataManager&>(
+        *PersonalDataManagerFactory::GetForProfile(profile()));
   }
 
   // Shows empty suggestions with the popup_item_id ids passed as
@@ -465,7 +479,7 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
@@ -846,6 +860,121 @@ TEST_F(AutofillPopupControllerImplTest,
   picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
 }
 
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_UnrelatedPopupItemId) {
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(),
+                  {Suggestion(u"Entry", PopupItemId::kFieldByFieldFilling)});
+
+  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_InvalidUniqueId) {
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 PopupItemId::kFieldByFieldFilling, u"Entry",
+                                 Suggestion::Guid("1111"))});
+
+  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_Autocomplete) {
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
+                                         PopupItemId::kAutocompleteEntry)});
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+  EXPECT_EQ(title, u"Autocomplete entry");
+  EXPECT_EQ(body,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_LocalCreditCard) {
+  CreditCard local_card = test::GetCreditCard();
+  personal_data().AddCreditCard(local_card);
+
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(),
+                  {test::CreateAutofillSuggestion(
+                      PopupItemId::kCreditCardEntry, u"Local credit card",
+                      Suggestion::Guid(local_card.guid()))});
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+  EXPECT_EQ(title, local_card.CardNameAndLastFourDigits());
+  EXPECT_EQ(body,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_ServerCreditCard) {
+  CreditCard server_card = test::GetMaskedServerCard();
+  personal_data().AddServerCreditCard(server_card);
+
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(),
+                  {test::CreateAutofillSuggestion(
+                      PopupItemId::kCreditCardEntry, u"Server credit card",
+                      Suggestion::Guid(server_card.guid()))});
+
+  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_CompleteAutofillProfile) {
+  AutofillProfile complete_profile = test::GetFullProfile();
+  personal_data().AddProfile(complete_profile);
+
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(),
+                  {test::CreateAutofillSuggestion(
+                      PopupItemId::kAddressEntry, u"Complete autofill profile",
+                      Suggestion::Guid(complete_profile.guid()))});
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+  EXPECT_EQ(title, complete_profile.GetRawInfo(ADDRESS_HOME_CITY));
+  EXPECT_EQ(body,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       GetRemovalConfirmationText_AutofillProfile_EmptyCity) {
+  AutofillProfile profile = test::GetFullProfile();
+  profile.ClearFields({ADDRESS_HOME_CITY});
+  personal_data().AddProfile(profile);
+
+  std::u16string title;
+  std::u16string body;
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 PopupItemId::kAddressEntry,
+                                 u"Autofill profile without city",
+                                 Suggestion::Guid(profile.guid()))});
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &title, &body));
+  EXPECT_EQ(title, u"Autofill profile without city");
+  EXPECT_EQ(body,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillPopupControllerImplTest,
        AcceptPwdSuggestionInvokesWarningAndroid) {
@@ -905,7 +1034,7 @@ TEST_F(AutofillPopupControllerImplTest, AcceptAddressNoPwdWarningAndroid) {
   client().popup_controller(manager()).AcceptSuggestion(
       0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
@@ -975,7 +1104,7 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that the popup controller queries the view for its screen location.
 TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {

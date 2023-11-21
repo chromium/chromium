@@ -181,14 +181,6 @@ class BrowserAutofillManager
       const CreditCard* credit_card,
       const AutofillTriggerDetails& trigger_details);
 
-  // Returns true if the value/identifier is deletable. Fills out
-  // |title| and |body| with relevant user-facing text.
-  bool GetDeletionConfirmationText(const std::u16string& value,
-                                   PopupItemId popup_item_id,
-                                   Suggestion::BackendId backend_id,
-                                   std::u16string* title,
-                                   std::u16string* body);
-
   // Remove the credit card or Autofill profile that matches |backend_id|
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);

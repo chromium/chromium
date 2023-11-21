@@ -129,23 +129,6 @@ bool CreditCardAccessManager::DeleteCard(const CreditCard* card) {
   return allowed_to_delete;
 }
 
-bool CreditCardAccessManager::GetDeletionConfirmationText(
-    const CreditCard* card,
-    std::u16string* title,
-    std::u16string* body) {
-  if (!CreditCard::IsLocalCard(card))
-    return false;
-
-  if (title)
-    title->assign(card->CardNameAndLastFourDigits());
-  if (body) {
-    body->assign(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-  }
-
-  return true;
-}
-
 bool CreditCardAccessManager::ShouldClearPreviewedForm() {
   return !is_authentication_in_progress_;
 }

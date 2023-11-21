@@ -583,39 +583,6 @@ TEST_F(CreditCardAccessManagerTest, RemoveServerCreditCard) {
   EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
 }
 
-// Ensures GetDeletionConfirmationText(~) returns correct values for local
-// cards.
-TEST_F(CreditCardAccessManagerTest, LocalCardGetDeletionConfirmationText) {
-  CreateLocalCard(kTestGUID);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-
-  std::u16string title = std::u16string();
-  std::u16string body = std::u16string();
-  EXPECT_TRUE(credit_card_access_manager().GetDeletionConfirmationText(
-      card, &title, &body));
-
-  // |title| and |body| should be updated appropriately.
-  EXPECT_EQ(title, card->CardNameAndLastFourDigits());
-  EXPECT_EQ(body,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-}
-
-// Ensures GetDeletionConfirmationText(~) returns false for server cards.
-TEST_F(CreditCardAccessManagerTest, ServerCardGetDeletionConfirmationText) {
-  CreateServerCard(kTestGUID);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-
-  std::u16string title = std::u16string();
-  std::u16string body = std::u16string();
-  EXPECT_FALSE(credit_card_access_manager().GetDeletionConfirmationText(
-      card, &title, &body));
-
-  // |title| and |body| should remain unchanged.
-  EXPECT_EQ(title, std::u16string());
-  EXPECT_EQ(body, std::u16string());
-}
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
 // Parameters of the CreditCardAccessManagerMandatoryReauthTest:

@@ -1699,55 +1699,6 @@ void BrowserAutofillManager::OnHidePopupImpl() {
   }
 }
 
-bool BrowserAutofillManager::GetDeletionConfirmationText(
-    const std::u16string& value,
-    PopupItemId popup_item_id,
-    Suggestion::BackendId backend_id,
-    std::u16string* title,
-    std::u16string* body) {
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
-    if (title)
-      title->assign(value);
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-    }
-
-    return true;
-  }
-
-  if (popup_item_id != PopupItemId::kAddressEntry &&
-      popup_item_id != PopupItemId::kCreditCardEntry) {
-    return false;
-  }
-
-  const CreditCard* credit_card = GetCreditCard(backend_id);
-  const AutofillProfile* profile = GetProfile(backend_id);
-
-  if (credit_card) {
-    return credit_card_access_manager_->GetDeletionConfirmationText(
-        credit_card, title, body);
-  }
-
-  if (profile) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty())
-        title->swap(street_address);
-      else
-        title->assign(value);
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
-
-    return true;
-  }
-
-  return false;  // The ID was valid. The entry may have been deleted in a race.
-}
-
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
     Suggestion::BackendId backend_id) {
   const CreditCard* credit_card = GetCreditCard(backend_id);
