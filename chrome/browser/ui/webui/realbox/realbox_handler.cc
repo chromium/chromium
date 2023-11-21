@@ -674,12 +674,6 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 }
 
 // static
-void RealboxHandler::SetupDropdownWebUIDataSource(
-    content::WebUIDataSource* source,
-    Profile* profile) {
-}
-
-// static
 std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
   if (icon.name == omnibox::kAnswerCurrencyIcon.name ||

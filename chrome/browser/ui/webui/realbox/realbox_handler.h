@@ -58,8 +58,6 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
 
   static void SetupWebUIDataSource(content::WebUIDataSource* source,
                                    Profile* profile);
-  static void SetupDropdownWebUIDataSource(content::WebUIDataSource* source,
-                                           Profile* profile);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);
   static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);
