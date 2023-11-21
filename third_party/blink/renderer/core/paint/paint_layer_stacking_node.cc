@@ -240,10 +240,6 @@ static void GetOrderSortedChildren(
     sorted_children.push_back(child);
   }
 
-  if (!RuntimeEnabledFeatures::PaintFlexGridSortedByOrderEnabled()) {
-    return;
-  }
-
   std::stable_sort(sorted_children.begin(), sorted_children.end(),
                    OrderLessThan);
 }

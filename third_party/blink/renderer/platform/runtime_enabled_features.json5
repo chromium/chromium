@@ -2735,10 +2735,6 @@
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
-      name: "PaintFlexGridSortedByOrder",
-      status: "stable",
-    },
-    {
       name: "PaintUnderInvalidationChecking",
       base_feature: "none",
       settable_from_internals: true,
