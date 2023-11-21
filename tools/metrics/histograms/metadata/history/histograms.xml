@@ -1958,12 +1958,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.GetFavIconFromDB" units="ms" expires_after="M79">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>Time to check the thumbnail database for a URL's favicon.</summary>
-</histogram>
-
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
     expires_after="2024-04-28">
   <owner>calamity@chromium.org</owner>
