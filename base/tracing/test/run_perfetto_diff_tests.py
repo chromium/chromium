@@ -48,6 +48,7 @@ def main():
   completed_process = subprocess.run(cmd, capture_output=True)
 
   sys.stderr.buffer.write(completed_process.stderr)
+  sys.stdout.buffer.write(completed_process.stdout)
   return completed_process.returncode
 
 if __name__ == '__main__':
