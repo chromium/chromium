@@ -42,6 +42,29 @@ int RemovingIndexes::OneIndexStorage::IndexAfterRemoval(int index) const {
   return index;
 }
 
+RemovingIndexes::RangeStorage::RangeStorage(int start, int count)
+    : start_(start), count_(count) {}
+
+int RemovingIndexes::RangeStorage::Count() const {
+  return count_;
+}
+
+bool RemovingIndexes::RangeStorage::ContainsIndex(int index) const {
+  return start_ <= index && index < start_ + count_;
+}
+
+int RemovingIndexes::RangeStorage::IndexAfterRemoval(int index) const {
+  if (index < start_) {
+    return index;
+  }
+
+  if (index - start_ < count_) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  return index - count_;
+}
+
 RemovingIndexes::VectorStorage::VectorStorage(std::vector<int> indexes)
     : indexes_(std::move(indexes)) {}
 
@@ -92,6 +115,19 @@ RemovingIndexes& RemovingIndexes::operator=(RemovingIndexes&&) = default;
 
 RemovingIndexes::~RemovingIndexes() = default;
 
+// static
+RemovingIndexes RemovingIndexes::Range(int start, int count) {
+  if (count <= 0) {
+    return RemovingIndexes(EmptyStorage());
+  }
+
+  if (count == 1) {
+    return RemovingIndexes(OneIndexStorage(start));
+  }
+
+  return RemovingIndexes(RangeStorage(start, count));
+}
+
 int RemovingIndexes::count() const {
   return absl::visit([](const auto& storage) { return storage.Count(); },
                      removing_);
@@ -122,6 +158,12 @@ RemovingIndexes::Storage RemovingIndexes::StorageFromVector(
     return OneIndexStorage(indexes[0]);
   }
 
+  int start = indexes[0];
+  int count = static_cast<int>(indexes.size());
+  if (indexes.back() + 1 == start + count) {
+    return RangeStorage(start, count);
+  }
+
   return VectorStorage(indexes);
 }
 
@@ -138,3 +180,6 @@ RemovingIndexes::Storage RemovingIndexes::StorageFromInitializerList(
   // Use the vector overload.
   return StorageFromVector(std::vector<int>(std::move(indexes)));
 }
+
+RemovingIndexes::RemovingIndexes(Storage storage)
+    : removing_(std::move(storage)) {}

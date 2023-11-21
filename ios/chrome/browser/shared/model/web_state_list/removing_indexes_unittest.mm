@@ -18,6 +18,7 @@ TEST_F(RemovingIndexesTest, Count) {
   EXPECT_EQ(RemovingIndexes({1, 1}).count(), 1);
   EXPECT_EQ(RemovingIndexes({1, 2}).count(), 2);
   EXPECT_EQ(RemovingIndexes({2, 1, 2, 1}).count(), 2);
+  EXPECT_EQ(RemovingIndexes::Range(2, 3).count(), 3);
 }
 
 // Tests that RemovingIndexes correctly returns the correct updated value
@@ -52,6 +53,25 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalOneTab) {
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 5);  // one removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 6);  // one removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 7);  // one removals before
+
+  // kInvalidIndex should always be mapped to kInvalidIndex.
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(WebStateList::kInvalidIndex),
+            WebStateList::kInvalidIndex);
+}
+
+// Tests that RemovingIndexes correctly returns the correct updated value
+// when asked for index if a range of tabs are removed.
+TEST_F(RemovingIndexesTest, IndexAfterRemovalRangeOfTabs) {
+  RemovingIndexes removing_indexes = RemovingIndexes::Range(2, 3);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), WebStateList::kInvalidIndex);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(3), WebStateList::kInvalidIndex);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(4), WebStateList::kInvalidIndex);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(5), 2);  // three removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 3);  // three removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 4);  // three removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 5);  // three removals before
 
   // kInvalidIndex should always be mapped to kInvalidIndex.
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(WebStateList::kInvalidIndex),
@@ -100,6 +120,21 @@ TEST_F(RemovingIndexesTest, ContainsOneTab) {
   EXPECT_FALSE(removing_indexes.Contains(1));
   EXPECT_FALSE(removing_indexes.Contains(2));
   EXPECT_FALSE(removing_indexes.Contains(3));
+  EXPECT_TRUE(removing_indexes.Contains(4));
+  EXPECT_FALSE(removing_indexes.Contains(5));
+  EXPECT_FALSE(removing_indexes.Contains(6));
+  EXPECT_FALSE(removing_indexes.Contains(7));
+  EXPECT_FALSE(removing_indexes.Contains(8));
+}
+
+// Tests that RemovingIndexes correctly returns whether it contains the
+// index when a range of tabs are removed.
+TEST_F(RemovingIndexesTest, ContainsRangeOfTabs) {
+  RemovingIndexes removing_indexes = RemovingIndexes::Range(2, 3);
+  EXPECT_FALSE(removing_indexes.Contains(0));
+  EXPECT_FALSE(removing_indexes.Contains(1));
+  EXPECT_TRUE(removing_indexes.Contains(2));
+  EXPECT_TRUE(removing_indexes.Contains(3));
   EXPECT_TRUE(removing_indexes.Contains(4));
   EXPECT_FALSE(removing_indexes.Contains(5));
   EXPECT_FALSE(removing_indexes.Contains(6));
