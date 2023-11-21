@@ -2233,6 +2233,8 @@ TEST_F(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
 TEST_F(CalendarViewAnimationTest, OpenAndCloseEventList) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  // Sets the timezone to "America/Los_Angeles".
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   CreateCalendarView();
   ui::LayerAnimationStoppedWaiter animation_waiter;
