@@ -552,10 +552,9 @@ chromium-metrics-reviews@google.com.
   <owner>gayane@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
-    Represents number of days since last default browser promo was displayed
-    within last 21 days periods. This includes full screen and non-modal promo
-    and default browser promo in FRE. Recorded before every full screen promo
-    displayed.
+    Represents number of days since last default browser promo was displayed.
+    This includes full screen and non-modal promo and default browser promo in
+    FRE. Recorded before every full screen promo displayed.
   </summary>
 </histogram>
 
