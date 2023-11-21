@@ -93,6 +93,8 @@ class TestInterestGroupManagerImpl
   // comparison.
   void ExpectReports(const std::vector<Report>& expected_reports);
 
+  void set_use_real_enqueue_reports(bool use_parents_enqueue);
+
   // Alternate way of validating URLs. Returns all the URLs of the requested
   // type, removing them from the internal list in the process.
   std::vector<GURL> TakeReportUrlsOfType(ReportType report_type);
@@ -119,6 +121,7 @@ class TestInterestGroupManagerImpl
   const network::mojom::ClientSecurityStatePtr expected_client_security_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       expected_url_loader_factory_;
+  bool use_real_enqueue_reports_ = false;
 
   std::list<Report> reports_;
   std::vector<blink::InterestGroupKey> interest_groups_that_bid_;
