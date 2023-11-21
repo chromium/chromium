@@ -473,11 +473,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     return autofill_agent_->field_data_manager();
   }
 
-  // The logins we have filled so far with their associated info.
+  // A map from WebInput elements to `PasswordInfo` for all elements that
+  // password manager has fill information for.
   WebInputToPasswordInfoMap web_input_to_password_info_;
-  // A (sort-of) reverse map to |web_input_to_password_info_|.
+  // A (sort-of) reverse map to `web_input_to_password_info_`.
   PasswordToLoginMap password_to_username_;
-  // The chronologically last insertion into |web_input_to_password_info_|.
+  // The chronologically last insertion into `web_input_to_password_info_`.
   WebInputToPasswordInfoMap::iterator last_supplied_password_info_iter_;
 
   bool should_show_popup_without_passwords_ = false;
