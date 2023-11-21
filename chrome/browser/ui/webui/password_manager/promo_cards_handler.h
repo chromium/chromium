@@ -39,6 +39,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
+  void RestartChrome(const base::Value::List& args);
   void HandleGetAvailablePromoCard(const base::Value::List& args);
   void HandleRecordPromoDismissed(const base::Value::List& args);
 

@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
@@ -21,6 +22,10 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
+#endif
 
 namespace password_manager {
 
@@ -53,6 +58,10 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
       std::make_unique<PasswordManagerShortcutPromo>(profile));
   promo_cards.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
+#if BUILDFLAG(IS_MAC)
+  promo_cards.push_back(
+      std::make_unique<RelaunchChromePromo>(profile->GetPrefs()));
+#endif
   return promo_cards;
 }
 
@@ -79,6 +88,13 @@ void PromoCardsHandler::RegisterMessages() {
       "recordPromoDismissed",
       base::BindRepeating(&PromoCardsHandler::HandleRecordPromoDismissed,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "restartBrowser", base::BindRepeating(&PromoCardsHandler::RestartChrome,
+                                            base::Unretained(this)));
+}
+
+void PromoCardsHandler::RestartChrome(const base::Value::List& args) {
+  chrome::AttemptRestart();
 }
 
 void PromoCardsHandler::HandleGetAvailablePromoCard(

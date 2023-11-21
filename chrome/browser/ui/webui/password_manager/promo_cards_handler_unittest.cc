@@ -25,7 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::IsEmpty;
+using testing::Matcher;
 using ::testing::Return;
+using testing::Truly;
+using testing::UnorderedElementsAre;
 using testing::Value;
 
 namespace password_manager {
@@ -34,22 +37,14 @@ namespace {
 
 const char kTestCallbackId[] = "test-callback-id";
 
-struct PrefInfo {
-  std::string id;
-  int number_of_times_shown = 0;
-  base::Time last_time_shown;
-  bool was_dismissed = false;
-};
-
-MATCHER_P(PromoCardPrefInfo, expected, "") {
-  return Value(expected.id, *arg.GetDict().FindString("id")) &&
-         Value(expected.number_of_times_shown,
-               *arg.GetDict().FindInt("number_of_times_shown")) &&
-         Value(expected.last_time_shown,
-               base::ValueToTime(arg.GetDict().Find("last_time_shown"))
-                   .value()) &&
-         Value(expected.was_dismissed,
-               *arg.GetDict().FindBool("was_dismissed"));
+auto HasSamePromoCards(const std::vector<std::string>& promo_cards) {
+  std::vector<Matcher<const base::Value&>> matchers;
+  for (const auto& p : promo_cards) {
+    matchers.push_back(Truly([p](const base::Value& a) {
+      return p == *a.GetDict().FindString("id");
+    }));
+  }
+  return UnorderedElementsAreArray(matchers);
 }
 
 class MockPromoCard : public PasswordPromoCardBase {
@@ -154,12 +149,16 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
 
   const base::Value::List& list =
       profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
-  EXPECT_THAT(list,
-              testing::UnorderedElementsAre(
-                  PromoCardPrefInfo(PrefInfo{"password_checkup_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"passwords_on_web_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"password_shortcut_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"access_on_any_device_promo"})));
+
+  std::vector<std::string> promo_cards = {
+      "password_checkup_promo", "passwords_on_web_promo",
+      "password_shortcut_promo", "access_on_any_device_promo"};
+
+#if BUILDFLAG(IS_MAC)
+  promo_cards.emplace_back("relaunch_chrome_promo");
+#endif
+
+  EXPECT_THAT(list, HasSamePromoCards(promo_cards));
 }
 
 TEST_F(PromoCardsHandlerTest, GetAvailablePromoCard) {
