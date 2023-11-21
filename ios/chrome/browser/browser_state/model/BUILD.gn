@@ -72,7 +72,7 @@ source_set("model") {
     "//components/variations/service",
     "//google_apis",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
     "//ios/chrome/browser/browser_state_metrics/model",

@@ -52,7 +52,7 @@ source_set("model") {
     "//components/sessions",
     "//components/signin/ios/browser",
     "//components/translate/core/browser:browser",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/crash_report/model",

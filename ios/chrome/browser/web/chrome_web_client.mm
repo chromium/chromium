@@ -26,7 +26,7 @@
 #import "components/supervised_user/core/common/buildflags.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"

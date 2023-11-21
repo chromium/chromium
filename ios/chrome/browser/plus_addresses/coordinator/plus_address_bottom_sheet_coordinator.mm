@@ -6,7 +6,7 @@
 
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

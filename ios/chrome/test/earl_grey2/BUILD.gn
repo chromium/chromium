@@ -39,7 +39,7 @@ chrome_ios_eg2_test_app_host("ios_chrome_multitasking_eg2tests") {
 chrome_ios_eg2_test("ios_chrome_autofill_automation_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/autofill/automation:eg2_tests" ]
+  deps = [ "//ios/chrome/browser/autofill/model/automation:eg2_tests" ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
@@ -80,7 +80,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/autofill:eg2_tests",
+    "//ios/chrome/browser/autofill/model:eg2_tests",
     "//ios/chrome/browser/device_sharing/model:eg2_tests",
     "//ios/chrome/browser/feature_engagement/model:eg2_tests",
     "//ios/chrome/browser/find_in_page/model:eg2_tests",

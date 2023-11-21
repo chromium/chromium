@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"

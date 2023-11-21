@@ -8,7 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"

@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"

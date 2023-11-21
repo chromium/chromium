@@ -4,7 +4,7 @@
 
 #import "ios/showcase/infobars/sc_infobar_modal_save_card_coordinator.h"
 
-#import "ios/chrome/browser/autofill/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"

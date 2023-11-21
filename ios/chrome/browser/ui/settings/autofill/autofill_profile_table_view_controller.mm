@@ -21,7 +21,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

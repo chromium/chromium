@@ -10,7 +10,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/plus_addresses",
-    "//ios/chrome/browser/autofill/bottom_sheet:bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:bottom_sheet",
     "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/plus_addresses/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

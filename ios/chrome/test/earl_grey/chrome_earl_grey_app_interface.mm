@@ -35,7 +35,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"

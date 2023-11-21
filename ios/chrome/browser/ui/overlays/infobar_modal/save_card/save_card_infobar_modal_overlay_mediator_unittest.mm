@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/autofill/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"

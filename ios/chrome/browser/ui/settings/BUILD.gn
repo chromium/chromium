@@ -120,7 +120,7 @@ source_set("settings") {
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/commerce/model/push_notification",

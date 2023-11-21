@@ -16,7 +16,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
+#import "ios/chrome/browser/autofill/model/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"

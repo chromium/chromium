@@ -9,7 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/autofill/form_suggestion_client.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller.h"

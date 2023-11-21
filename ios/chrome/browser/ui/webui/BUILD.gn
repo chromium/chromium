@@ -74,7 +74,7 @@ source_set("webui") {
     "//google_apis",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/download/model/background_service:background_service",
     "//ios/chrome/browser/favicon:favicon",

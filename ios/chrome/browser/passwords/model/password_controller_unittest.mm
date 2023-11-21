@@ -46,7 +46,7 @@
 #import "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/autofill/form_suggestion_controller.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
