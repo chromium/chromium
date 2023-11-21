@@ -33,6 +33,7 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
   any_metadata->set_type_url("type.googleapis.com/" +
                              compose_response.GetTypeName());
+  execute_response.set_server_execution_id("test_id");
   compose_response.SerializeToString(any_metadata->mutable_value());
   return execute_response;
 }
@@ -139,6 +140,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
                             ->log_ai_data_request()
                             ->mutable_compose()
                             ->has_response_data());
+            EXPECT_EQ(log_entry.get()
+                          ->log_ai_data_request()
+                          ->mutable_model_execution_info()
+                          ->server_execution_id(),
+                      "test_id");
             run_loop->Quit();
           },
           &run_loop));

@@ -328,6 +328,12 @@ void ModelExecutionManager::OnModelExecuteResponse(
   std::unique_ptr<ModelQualityLogEntry> log_entry =
       std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request));
 
+  // Set the id if present.
+  if (execute_response->has_server_execution_id()) {
+    log_entry.get()->set_model_execution_id(
+        execute_response->server_execution_id());
+  }
+
   if (execute_response->has_error_response()) {
     scoped_logger.set_message("Error: No Response Metadata");
     // For unallowed error states, don't log request data.

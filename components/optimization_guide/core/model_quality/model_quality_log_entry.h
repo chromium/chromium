@@ -30,6 +30,12 @@ class ModelQualityLogEntry {
         ->mutable_quality_data();
   }
 
+  void set_model_execution_id(const std::string& server_execution_id) {
+    log_ai_data_request_.get()
+        ->mutable_model_execution_info()
+        ->set_server_execution_id(server_execution_id);
+  }
+
   proto::LogAiDataRequest* log_ai_data_request() {
     return log_ai_data_request_.get();
   }

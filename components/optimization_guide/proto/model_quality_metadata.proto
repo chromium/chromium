@@ -18,4 +18,6 @@ message LoggingMetadata {}
 // Data about model execution. This includes information about whether it was
 // done on a server or on a device. This includes an ID that can be mapped to
 // the ModelExecutionService logs on the server.
-message ModelExecutionInfo {}
+message ModelExecutionInfo {
+  string server_execution_id = 1;
+}
