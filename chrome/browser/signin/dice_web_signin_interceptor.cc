@@ -382,6 +382,14 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     // Enterprise and multi-user bubbles are only shown if there are multiple
     // accounts. The intercepted account may not be added to chrome yet.
     return SigninInterceptionHeuristicOutcome::kAbortSingleAccount;
+  } else if (!identity_manager_->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    // This is not the first account in the identity manager but there is no
+    // primary account, all the accounts are in the UNO web-only state, so do
+    // not intercept.
+    DCHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+    return SigninInterceptionHeuristicOutcome::
+        kAbortNotFirstAccountButNoPrimaryAccount;
   }
 
   if (HasUserDeclinedProfileCreation(email)) {

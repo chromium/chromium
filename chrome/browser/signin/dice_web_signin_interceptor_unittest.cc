@@ -1837,3 +1837,52 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   EXPECT_EQ(interceptor()->is_interception_in_progress(),
             SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
 }
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       NoInterceptionIfAcccountNotFirstButNoPrimaryAccount) {
+  // Set up first account.
+  AccountInfo first_account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&first_account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(first_account_info);
+
+  // Set up second account.
+  AccountInfo second_account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&second_account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(second_account_info);
+
+  // Accounts are valid.
+  ASSERT_TRUE(first_account_info.IsValid());
+  ASSERT_TRUE(second_account_info.IsValid());
+  // Primary account is not set, Chrome is not signed in.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Sign in interception bubble should not be shown because this is not the
+  // first account but there is no primary account.
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .Times(0);
+
+  auto expected_outcome = SigninInterceptionHeuristicOutcome::
+      kAbortNotFirstAccountButNoPrimaryAccount;
+  base::HistogramTester histogram_tester;
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), second_account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      /*is_new_account=*/true, /*is_sync_signin=*/false);
+  EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
+                                               /*is_sync_signin=*/false,
+                                               second_account_info.email,
+                                               /*entry=*/nullptr),
+            expected_outcome);
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
+                                      expected_outcome, 1);
+  histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
+                                          base::Milliseconds(0), 1);
+
+  EXPECT_EQ(interceptor()->is_interception_in_progress(),
+            SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+}

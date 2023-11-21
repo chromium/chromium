@@ -87,8 +87,11 @@ enum class SigninInterceptionHeuristicOutcome {
   // Interception aborted:
   // The user signed out while the interception was in progress.
   kAbortSignedOut = 20,
+  // This is not the first account in the identity manager but there is no
+  // primary account.
+  kAbortNotFirstAccountButNoPrimaryAccount = 21,
 
-  kMaxValue = kAbortSignedOut,
+  kMaxValue = kAbortNotFirstAccountButNoPrimaryAccount,
 };
 
 // User selection in the interception bubble.

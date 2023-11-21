@@ -296,7 +296,8 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   base::HistogramTester histogram_tester;
   // Setup profile for interception.
-  identity_test_env()->MakeAccountAvailable("alice@example.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
       "bob@example.com", kNoHostedDomainFound);
 
