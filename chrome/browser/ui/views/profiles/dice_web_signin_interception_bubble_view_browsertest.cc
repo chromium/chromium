@@ -38,6 +38,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
@@ -57,6 +58,7 @@ struct TestParam {
   bool use_dark_theme = false;
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
+  bool enable_webui_refresh = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -135,12 +137,20 @@ const TestParam kTestParams[] = {
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/false},
-    // TODO(b/301431278): Implement the dark mode and update the test.
     {"ChromeSigninDarkMode",
      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/true},
+    {.test_suffix = "ChromeSigninWebUIRefresh",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .enable_webui_refresh = true},
+    {.test_suffix = "ChromeSigninDarkModeWebUIRefresh",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .use_dark_theme = true,
+     .enable_webui_refresh = true},
 };
 
 // Returns the avatar button, which is the anchor view for the interception
@@ -159,7 +169,13 @@ class DiceWebSigninInterceptionBubblePixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  DiceWebSigninInterceptionBubblePixelTest() = default;
+  DiceWebSigninInterceptionBubblePixelTest() {
+    if (GetParam().enable_webui_refresh) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023},
+          {});
+    }
+  }
 
   // DialogBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -254,6 +270,7 @@ class DiceWebSigninInterceptionBubblePixelTest
             show_managed_disclaimer};
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 

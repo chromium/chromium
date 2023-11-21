@@ -1153,7 +1153,7 @@ void ProfileMenuViewBase::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
   SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(ui::kColorDialogBackground)));
+      color_provider->GetColor(kColorProfileMenuBackground)));
   if (features::IsChromeRefresh2023()) {
     identity_info_color_callback_.Run(color_provider);
   }

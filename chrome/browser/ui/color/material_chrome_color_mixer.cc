@@ -71,6 +71,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
 
   // Profile Menu colors.
+  mixer[kColorProfileMenuBackground] = {ui::kColorSysSurface};
   mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
   mixer[kColorProfileMenuIconButton] = {ui::kColorSysOnTonalContainer};
@@ -82,6 +83,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuSyncInfoBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorProfileMenuSyncOffIcon] = {ui::kColorMenuIcon};
   mixer[kColorProfileMenuSyncPausedIcon] = {ui::kColorSysPrimary};
+
+  // Signin bubble colors. Uses the same colors as the profle menu.
+  mixer[kColorChromeSigninBubbleBackground] = {kColorProfileMenuBackground};
+  mixer[kColorChromeSigninBubbleInfoBackground] = {
+      kColorProfileMenuSyncInfoBackground};
 
   // Tab Search colors.
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};

@@ -47,7 +47,7 @@
   margin-top: 16px;
   padding: 20px;
   border-radius: 16px;
-  background-color: var(--google-blue-50);
+  background-color: var(--color-chrome-signin-bubble-info-background);
 }
 
 #name {
@@ -64,6 +64,10 @@
 #accept-button,
 #cancel-button {
   width: 100%;
+}
+
+:host-context([chrome-refresh-2023]) cr-button {
+  color: --color-button-background-tonal;
 }
 
 #cancel-button {
