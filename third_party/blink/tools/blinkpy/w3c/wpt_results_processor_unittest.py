@@ -903,25 +903,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
     def test_process_wpt_report(self):
         report_src = self.fs.join('/mock-checkout', 'out', 'Default',
                                   'wpt_report.json')
-        self.fs.write_text_file(report_src,
-                                (json.dumps(self.wpt_report) + '\n') * 2)
-        self.processor.process_wpt_report(report_src)
-        report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
-                                   'layout-test-results', 'wpt_report.json')
-        self.processor.sink.report_invocation_level_artifacts.assert_called_once_with(
-            {
-                'wpt_report.json': {
-                    'filePath': report_dest,
-                },
-            })
-        report = json.loads(self.fs.read_text_file(report_dest))
-        self.assertEqual(report['run_info'], self.wpt_report['run_info'])
-        self.assertEqual(report['results'], self.wpt_report['results'] * 2)
-
-    def test_process_wpt_report_compact(self):
-        report_src = self.fs.join('/mock-checkout', 'out', 'Default',
-                                  'wpt_report.json')
-        self.wpt_report['run_info']['used_upstream'] = False
         self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
         self.processor.process_wpt_report(report_src)
         report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
@@ -933,25 +914,5 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 },
             })
         report = json.loads(self.fs.read_text_file(report_dest))
-        self.assertEqual(
-            report['run_info'], {
-                'os': 'linux',
-                'version': '18.04',
-                'product': 'chrome',
-                'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
-                'used_upstream': False,
-            })
-        self.assertEqual(report['results'], [{
-            'test':
-            '/a/b.html',
-            'subtests': [{
-                'name': 'subtest',
-                'status': 'FAIL',
-                'expected': 'PASS',
-            }],
-            'status':
-            'OK',
-            'duration':
-            1000,
-            'known_intermittent': ['CRASH'],
-        }])
+        self.assertEqual(report['run_info'], self.wpt_report['run_info'])
+        self.assertEqual(report['results'], self.wpt_report['results'])

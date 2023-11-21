@@ -826,8 +826,6 @@ class WPTResultsProcessor:
                 report['results'].extend(retry_report['results'])
         report_filename = self.fs.basename(report_path)
         artifact_path = self.fs.join(self.artifacts_dir, report_filename)
-        if not report['run_info'].get('used_upstream'):
-            report['results'] = self._compact_wpt_results(report['results'])
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))
         self.sink.report_invocation_level_artifacts({
@@ -835,43 +833,3 @@ class WPTResultsProcessor:
                 'filePath': artifact_path,
             },
         })
-
-    def _compact_wpt_results(self, results):
-        """Remove nonessential fields from wptreport (sub)tests.
-
-        Fields unnecessary for updating metadata include:
-           * 'message': Informational messages like stack traces.
-           * 'expected': When omitted, implies the test ran as expected.
-             Expected results are still included because the updater removes
-             stale expectations by default.
-           * 'known_intermittent': When omitted, no intermittent statuses are
-              expected.
-
-        See Also:
-            https://github.com/web-platform-tests/wpt/blob/131b8a541ba98afcef35ae757e4fb2f805714230/tools/wptrunner/wptrunner/metadata.py#L439-L450
-            https://github.com/web-platform-tests/wpt.fyi/blob/8bf23a6f68d18acab002aa6a613fc5660afb0a85/webapp/components/test-file-results-table.js#L240-L283
-        """
-        compact_results = []
-        for result in results:
-            compact_result = {'status': result['status']}
-            subsuite = result.get('subsuite', '')
-            if subsuite:
-                compact_result['subsuite'] = subsuite
-            duration = result.get('duration')
-            if duration:
-                compact_result['duration'] = duration
-            expected = result.get('expected')
-            if expected and expected != result['status']:
-                compact_result['expected'] = expected
-            intermittent = result.get('known_intermittent')
-            if intermittent:
-                compact_result['known_intermittent'] = intermittent
-            test_id = result.get('test')
-            if test_id:
-                compact_result['test'] = test_id
-                compact_result['subtests'] = self._compact_wpt_results(
-                    result['subtests'])
-            else:
-                compact_result['name'] = result['name']  # Subtest detected
-            compact_results.append(compact_result)
-        return compact_results
