@@ -391,17 +391,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="History.ClearBrowsingData.PasswordsDeletion.AdditionalDatatypesCount"
-    units="units" expires_after="M85">
-  <owner>msramek@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Recorded when the user deletes their passwords in the ClearBrowsingData
-    dialog. Counts how many other data types were selected for deletion.
-  </summary>
-</histogram>
-
 <histogram name="History.ClearBrowsingData.ShownHistoryNoticeAfterClearing"
     enum="BooleanShown" expires_after="M81">
   <owner>msramek@chromium.org</owner>
