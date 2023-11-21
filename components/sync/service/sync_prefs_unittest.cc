@@ -762,19 +762,6 @@ class SyncPrefsMigrationTest : public testing::Test {
     return pref_value->GetBool() ? PREF_TRUE : PREF_FALSE;
   }
 
-  bool BooleanUserPrefMatches(const char* pref_name,
-                              BooleanPrefState state) const {
-    const base::Value* pref_value = pref_service_.GetUserPrefValue(pref_name);
-    switch (state) {
-      case PREF_FALSE:
-        return pref_value && !pref_value->GetBool();
-      case PREF_TRUE:
-        return pref_value && pref_value->GetBool();
-      case PREF_UNSET:
-        return !pref_value;
-    }
-  }
-
   // Global prefs for syncing users, affecting all accounts.
   const char* kGlobalBookmarksPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kBookmarks);
@@ -955,9 +942,9 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_GlobalPrefsAreUnchanged) {
       kReplaceSyncPromosWithSignInPromos);
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    ASSERT_TRUE(
-        BooleanUserPrefMatches(SyncPrefs::GetPrefNameForTypeForTesting(type),
-                               BooleanPrefState::PREF_UNSET));
+    ASSERT_EQ(
+        GetBooleanUserPrefValue(SyncPrefs::GetPrefNameForTypeForTesting(type)),
+        BooleanPrefState::PREF_UNSET);
   }
 
   SyncPrefs prefs(&pref_service_);
@@ -969,9 +956,9 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_GlobalPrefsAreUnchanged) {
       /*is_using_explicit_passphrase=*/true));
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    EXPECT_TRUE(
-        BooleanUserPrefMatches(SyncPrefs::GetPrefNameForTypeForTesting(type),
-                               BooleanPrefState::PREF_UNSET));
+    EXPECT_EQ(
+        GetBooleanUserPrefValue(SyncPrefs::GetPrefNameForTypeForTesting(type)),
+        BooleanPrefState::PREF_UNSET);
   }
 }
 
@@ -1212,6 +1199,83 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_Part2RunsOnSecondAttempt) {
                      .Has(UserSelectableType::kPayments));
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsMigrationTest,
+       SyncToSignin_DisablesPasswordsIfUserDisabledGlobalPref) {
+  {
+    // One day, before kReplaceSyncPromosWithSignInPromos was enabled and the
+    // per-account prefs were used, the user disabled the temporary passwords
+    // toggle, writing to the global pref.
+    base::test::ScopedFeatureList disable_sync_to_signin;
+    disable_sync_to_signin.InitAndDisableFeature(
+        kReplaceSyncPromosWithSignInPromos);
+
+    SetBooleanUserPrefValue(kGlobalPasswordsPref, BooleanPrefState::PREF_FALSE);
+
+    ASSERT_FALSE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .Has(UserSelectableType::kPasswords));
+  }
+
+  {
+    // After kReplaceSyncPromosWithSignInPromos is enabled and
+    // GetSelectedTypesForAccount() starts being used, passwords should still be
+    // disabled.
+    base::test::ScopedFeatureList enable_sync_to_signin(
+        kReplaceSyncPromosWithSignInPromos);
+
+    SyncPrefs prefs(&pref_service_);
+    prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+
+    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kPasswords));
+  }
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       SyncToSignin_LeavesPasswordsAloneIfDisabledByPolicy) {
+  {
+    // One day, before kReplaceSyncPromosWithSignInPromos was enabled and the
+    // per-account prefs were used, passwords were disabled by a policy.
+    base::test::ScopedFeatureList disable_sync_to_signin;
+    disable_sync_to_signin.InitAndDisableFeature(
+        kReplaceSyncPromosWithSignInPromos);
+
+    pref_service_.SetManagedPref(kGlobalPasswordsPref, base::Value(false));
+
+    ASSERT_FALSE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .Has(UserSelectableType::kPasswords));
+  }
+
+  {
+    // kReplaceSyncPromosWithSignInPromos is enabled and
+    // GetSelectedTypesForAccount() starts being used.
+    base::test::ScopedFeatureList enable_sync_to_signin(
+        kReplaceSyncPromosWithSignInPromos);
+
+    SyncPrefs prefs(&pref_service_);
+    prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+
+    // The policy is still in place, so passwords is still disabled for the
+    // moment.
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kPasswords));
+
+    // The policy is lifted.
+    pref_service_.RemoveManagedPref(kGlobalPasswordsPref);
+
+    // Passwords should now be enabled.
+    EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kPasswords));
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 

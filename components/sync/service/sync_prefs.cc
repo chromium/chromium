@@ -668,7 +668,7 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
-    signin::GaiaIdHash gaia_id_hash) {
+    const signin::GaiaIdHash& gaia_id_hash) {
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(kSyncToSigninMigrationState);
@@ -710,53 +710,42 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       base::Value::Dict* account_settings =
           update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
 
-      // Mostly, the values of the "global" data type prefs get copied to the
-      // account-specific ones. But some data types get special treatment.
-      for (UserSelectableType type : UserSelectableTypeSet::All()) {
-        const char* pref_name = GetPrefNameForType(type);
-        CHECK(pref_name);
-
-        // Initial default value: From the global datatype pref (compare to
-        // GetSelectedTypes()).
-        // TODO(crbug.com/1455963): Find a better solution than manually
-        // overriding the prefs' default values.
-        bool enabled =
-            pref_service_->GetBoolean(pref_name) ||
-            pref_service_->FindPreference(pref_name)->IsDefaultValue();
-
-        // History and open tabs do *not* get migrated; they always start out
-        // "off".
-        if (type == UserSelectableType::kHistory ||
-            type == UserSelectableType::kTabs) {
-          enabled = false;
-        }
-
-        // Settings aka preferences always starts out "off".
-        if (type == UserSelectableType::kPreferences) {
-          enabled = false;
-        }
-
 #if BUILDFLAG(IS_IOS)
-        // Bookmarks and reading list remain enabled only if the user previously
-        // explicitly opted in.
-        if ((type == UserSelectableType::kBookmarks ||
-             type == UserSelectableType::kReadingList) &&
-            !pref_service_->GetBoolean(
-                prefs::internal::kBookmarksAndReadingListAccountStorageOptIn)) {
-          enabled = false;
-        }
+      // Before kReplaceSyncPromosWithSignInPromos was enabled, iOS users had a
+      // toggle that wrote to the global passwords pref. If that toggle was
+      // previously disabled, the new per-account setting must be too.
+      // Read from the user pref store, and not from PrefService::GetBoolean(),
+      // the latter might be affected by enterprise policies.
+      // An unset pref (!old_pref_value) is considered as enabled here, like in
+      // GetSelectedTypes().
+      const base::Value* old_pref_value = pref_service_->GetUserPrefValue(
+          GetPrefNameForType(UserSelectableType::kPasswords));
+      account_settings->Set(GetPrefNameForType(UserSelectableType::kPasswords),
+                            !old_pref_value || old_pref_value->GetBool());
 #endif  // BUILDFLAG(IS_IOS)
 
-        account_settings->Set(pref_name, enabled);
-      }
+      // Settings aka preferences always starts out "off" for existing
+      // signed-in non-syncing users.
+      account_settings->Set(
+          GetPrefNameForType(UserSelectableType::kPreferences), false);
 
+#if BUILDFLAG(IS_IOS)
+      // Bookmarks and reading list remain enabled only if the user previously
+      // explicitly opted in.
+      const bool was_opted_in = pref_service_->GetBoolean(
+          prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
+      account_settings->Set(GetPrefNameForType(UserSelectableType::kBookmarks),
+                            was_opted_in);
+      account_settings->Set(
+          GetPrefNameForType(UserSelectableType::kReadingList), was_opted_in);
+#endif  // BUILDFLAG(IS_IOS)
       return true;
     }
   }
 }
 
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
-    signin::GaiaIdHash gaia_id_hash,
+    const signin::GaiaIdHash& gaia_id_hash,
     bool is_using_explicit_passphrase) {
   // The migration pref shouldn't be set if the feature is disabled, but if it
   // somehow happened, do *not* run the migration, and clear the pref so that
