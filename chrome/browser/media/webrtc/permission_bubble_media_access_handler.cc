@@ -79,20 +79,10 @@ void UpdatePageSpecificContentSettings(
 
   content_settings::PageSpecificContentSettings::MicrophoneCameraState
       microphone_camera_state;
-  std::string selected_audio_device;
-  std::string selected_video_device;
   std::string requested_audio_device = request.requested_audio_device_id;
   std::string requested_video_device = request.requested_video_device_id;
 
-  // TODO(raymes): Why do we use the defaults here for the selected devices?
-  // Shouldn't we just use the devices that were actually selected?
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (audio_setting != CONTENT_SETTING_DEFAULT) {
-    selected_audio_device =
-        requested_audio_device.empty()
-            ? profile->GetPrefs()->GetString(prefs::kDefaultAudioCaptureDevice)
-            : requested_audio_device;
     microphone_camera_state.Put(
         content_settings::PageSpecificContentSettings::kMicrophoneAccessed);
     if (audio_setting != CONTENT_SETTING_ALLOW) {
@@ -102,10 +92,6 @@ void UpdatePageSpecificContentSettings(
   }
 
   if (video_setting != CONTENT_SETTING_DEFAULT) {
-    selected_video_device =
-        requested_video_device.empty()
-            ? profile->GetPrefs()->GetString(prefs::kDefaultVideoCaptureDevice)
-            : requested_video_device;
     microphone_camera_state.Put(
         content_settings::PageSpecificContentSettings::kCameraAccessed);
     if (video_setting != CONTENT_SETTING_ALLOW) {
@@ -132,8 +118,7 @@ void UpdatePageSpecificContentSettings(
       permissions::PermissionUtil::GetCanonicalOrigin(
           ContentSettingsType::MEDIASTREAM_CAMERA, request.security_origin,
           embedding_origin),
-      microphone_camera_state, selected_audio_device, selected_video_device,
-      requested_audio_device, requested_video_device);
+      microphone_camera_state);
 }
 
 }  // namespace

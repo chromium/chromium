@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -173,7 +172,6 @@ class ContentSettingBubbleModel {
     std::u16string manage_text;
     std::u16string manage_tooltip;
     ManageTextStyle manage_text_style = ManageTextStyle::kButton;
-    MediaMenuMap media_menus;
     bool show_learn_more = false;
     std::u16string done_button_text;
     std::u16string cancel_button_text;
@@ -207,8 +205,6 @@ class ContentSettingBubbleModel {
   virtual void OnManageButtonClicked() {}
   virtual void OnManageCheckboxChecked(bool is_checked) {}
   virtual void OnLearnMoreClicked() {}
-  virtual void OnMediaMenuClicked(blink::mojom::MediaStreamType type,
-                                  const std::string& selected_device_id) {}
   virtual void OnDoneButtonClicked() {}
   virtual void OnCancelButtonClicked() {}
   // Called by the view code when the bubble is closed.
@@ -287,13 +283,6 @@ class ContentSettingBubbleModel {
   }
   void set_manage_text_style(ManageTextStyle manage_text_style) {
     bubble_content_.manage_text_style = manage_text_style;
-  }
-  void add_media_menu(blink::mojom::MediaStreamType type,
-                      const MediaMenu& menu) {
-    bubble_content_.media_menus[type] = menu;
-  }
-  void set_selected_device(const blink::MediaStreamDevice& device) {
-    bubble_content_.media_menus[device.type].selected_device = device;
   }
   void set_show_learn_more(bool show_learn_more) {
     bubble_content_.show_learn_more = show_learn_more;
@@ -437,10 +426,6 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
   // and device.
   void UpdateDefaultDeviceForType(blink::mojom::MediaStreamType type,
                                   const std::string& device);
-
-  // ContentSettingBubbleModel implementation.
-  void OnMediaMenuClicked(blink::mojom::MediaStreamType type,
-                          const std::string& selected_device) override;
 
   // The content settings that are associated with the individual radio
   // buttons.

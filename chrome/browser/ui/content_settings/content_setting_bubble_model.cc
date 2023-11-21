@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -59,7 +58,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -923,25 +921,6 @@ ContentSettingPopupBubbleModel::~ContentSettingPopupBubbleModel() = default;
 
 // ContentSettingMediaStreamBubbleModel ----------------------------------------
 
-namespace {
-
-const blink::MediaStreamDevice& GetMediaDeviceById(
-    const std::string& device_id,
-    const blink::MediaStreamDevices& devices) {
-  DCHECK(!devices.empty());
-  for (const blink::MediaStreamDevice& device : devices) {
-    if (device.id == device_id)
-      return device;
-  }
-
-  // A device with the |device_id| was not found. It is likely that the device
-  // has been unplugged from the OS. Return the first device as the default
-  // device.
-  return *devices.begin();
-}
-
-}  // namespace
-
 ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
@@ -983,7 +962,6 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   SetTitle();
   SetMessage();
   SetRadioGroup();
-  SetMediaMenus();
   SetManageText();
   SetCustomLink();
   SetIsUserModifiable();
@@ -1008,12 +986,6 @@ void ContentSettingMediaStreamBubbleModel::CommitChanges() {
 
   if (content_settings->media_stream_access_origin().is_empty()) {
     return;
-  }
-
-  for (const auto& media_menu : bubble_content().media_menus) {
-    const MediaMenu& menu = media_menu.second;
-    if (menu.selected_device.id != menu.default_device.id)
-      UpdateDefaultDeviceForType(media_menu.first, menu.selected_device.id);
   }
 
   // No need for radio group in the bubble UI shown when permission is blocked
@@ -1302,83 +1274,6 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void ContentSettingMediaStreamBubbleModel::UpdateDefaultDeviceForType(
-    blink::mojom::MediaStreamType type,
-    const std::string& device) {
-  PrefService* prefs = GetProfile()->GetPrefs();
-  if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    prefs->SetString(prefs::kDefaultAudioCaptureDevice, device);
-  } else {
-    DCHECK_EQ(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, type);
-    prefs->SetString(prefs::kDefaultVideoCaptureDevice, device);
-  }
-}
-
-void ContentSettingMediaStreamBubbleModel::SetMediaMenus() {
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
-  const std::string& requested_microphone =
-      content_settings->media_stream_requested_audio_device();
-  const std::string& requested_camera =
-      content_settings->media_stream_requested_video_device();
-
-  // Add microphone menu.
-  PrefService* prefs = GetProfile()->GetPrefs();
-  MediaCaptureDevicesDispatcher* dispatcher =
-      MediaCaptureDevicesDispatcher::GetInstance();
-
-  if (MicrophoneAccessed()) {
-    const blink::MediaStreamDevices& microphones =
-        dispatcher->GetAudioCaptureDevices();
-    MediaMenu mic_menu;
-    mic_menu.label = l10n_util::GetStringUTF16(IDS_MEDIA_SELECTED_MIC_LABEL);
-    if (!microphones.empty()) {
-      std::string preferred_mic;
-      if (requested_microphone.empty()) {
-        preferred_mic = prefs->GetString(prefs::kDefaultAudioCaptureDevice);
-        mic_menu.disabled = false;
-      } else {
-        // Set the |disabled| to true in order to disable the device selection
-        // menu on the media settings bubble. This must be done if the website
-        // manages the microphone devices itself.
-        preferred_mic = requested_microphone;
-        mic_menu.disabled = true;
-      }
-
-      mic_menu.default_device = GetMediaDeviceById(preferred_mic, microphones);
-      mic_menu.selected_device = mic_menu.default_device;
-    }
-    add_media_menu(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                   mic_menu);
-  }
-
-  if (CameraAccessed()) {
-    const blink::MediaStreamDevices& cameras =
-        dispatcher->GetVideoCaptureDevices();
-    MediaMenu camera_menu;
-    camera_menu.label =
-        l10n_util::GetStringUTF16(IDS_MEDIA_SELECTED_CAMERA_LABEL);
-    if (!cameras.empty()) {
-      std::string preferred_camera;
-      if (requested_camera.empty()) {
-        preferred_camera = prefs->GetString(prefs::kDefaultVideoCaptureDevice);
-        camera_menu.disabled = false;
-      } else {
-        // Disable the menu since the website is managing the camera devices
-        // itself.
-        preferred_camera = requested_camera;
-        camera_menu.disabled = true;
-      }
-
-      camera_menu.default_device =
-          GetMediaDeviceById(preferred_camera, cameras);
-      camera_menu.selected_device = camera_menu.default_device;
-    }
-    add_media_menu(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-                   camera_menu);
-  }
-}
-
 void ContentSettingMediaStreamBubbleModel::SetManageText() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   set_manage_text(l10n_util::GetStringUTF16(IDS_MANAGE));
@@ -1391,21 +1286,6 @@ void ContentSettingMediaStreamBubbleModel::SetCustomLink() {
     set_custom_link(
         l10n_util::GetStringUTF16(IDS_MEDIASTREAM_SETTING_CHANGED_MESSAGE));
   }
-}
-
-void ContentSettingMediaStreamBubbleModel::OnMediaMenuClicked(
-    blink::mojom::MediaStreamType type,
-    const std::string& selected_device_id) {
-  DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  DCHECK_EQ(1U, bubble_content().media_menus.count(type));
-  MediaCaptureDevicesDispatcher* dispatcher =
-      MediaCaptureDevicesDispatcher::GetInstance();
-  const blink::MediaStreamDevices& devices =
-      (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-          ? dispatcher->GetAudioCaptureDevices()
-          : dispatcher->GetVideoCaptureDevices();
-  set_selected_device(GetMediaDeviceById(selected_device_id, devices));
 }
 
 // ContentSettingGeolocationBubbleModel --------------------------------------

@@ -167,13 +167,6 @@ class PageSpecificContentSettings
     virtual browsing_data::CookieHelper::IsDeletionDisabledCallback
     GetIsDeletionDisabledCallback() = 0;
 
-    // Allows the delegate to provide additional logic for detecting state
-    // changes on top of the camera/microphone permission state.
-    virtual bool IsMicrophoneCameraStateChanged(
-        MicrophoneCameraState microphone_camera_state,
-        const std::string& media_stream_selected_audio_device,
-        const std::string& media_stream_selected_video_device) = 0;
-
     // Allows the delegate to provide additional logic for getting microphone
     // and camera state on top of the microphone and camera state at the last
     // media stream request.
@@ -324,24 +317,6 @@ class PageSpecificContentSettings
     return media_stream_access_origin_;
   }
 
-  const std::string& media_stream_requested_audio_device() const {
-    return media_stream_requested_audio_device_;
-  }
-
-  const std::string& media_stream_requested_video_device() const {
-    return media_stream_requested_video_device_;
-  }
-
-  // Only public for tests.
-  const std::string& media_stream_selected_audio_device() const {
-    return media_stream_selected_audio_device_;
-  }
-
-  // Only public for tests.
-  const std::string& media_stream_selected_video_device() const {
-    return media_stream_selected_video_device_;
-  }
-
   bool camera_was_just_granted_on_site_level() {
     return camera_was_just_granted_on_site_level_;
   }
@@ -427,11 +402,7 @@ class PageSpecificContentSettings
   // camera stream access.
   void OnMediaStreamPermissionSet(
       const GURL& request_origin,
-      MicrophoneCameraState new_microphone_camera_state,
-      const std::string& media_stream_selected_audio_device,
-      const std::string& media_stream_selected_video_device,
-      const std::string& media_stream_requested_audio_device,
-      const std::string& media_stream_requested_video_device);
+      MicrophoneCameraState new_microphone_camera_state);
 
   // See |OnStorageAccessed| documentation for more info on |originating_page|.
   void OnCookiesAccessed(const content::CookieAccessDetails& details,
@@ -619,14 +590,6 @@ class PageSpecificContentSettings
 
   // The microphone and camera state at the last media stream request.
   MicrophoneCameraState microphone_camera_state_;
-  // The selected devices at the last media stream request.
-  std::string media_stream_selected_audio_device_;
-  std::string media_stream_selected_video_device_;
-
-  // The devices to be displayed in the media bubble when the media stream
-  // request is requesting certain specific devices.
-  std::string media_stream_requested_audio_device_;
-  std::string media_stream_requested_video_device_;
 
   // Contains URLs which attempted to join interest groups. Note: The UI will
   // only currently show the top frame as having attempted to join.

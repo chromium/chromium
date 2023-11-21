@@ -16,7 +16,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -208,34 +207,6 @@ browsing_data::CookieHelper::IsDeletionDisabledCallback
 PageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
   return CookiesTreeModel::GetCookieDeletionDisabledCallback(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-}
-
-bool PageSpecificContentSettingsDelegate::IsMicrophoneCameraStateChanged(
-    PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state,
-    const std::string& media_stream_selected_audio_device,
-    const std::string& media_stream_selected_video_device) {
-  PrefService* prefs = GetPrefs();
-  scoped_refptr<MediaStreamCaptureIndicator> media_indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator();
-
-  if (microphone_camera_state.Has(
-          PageSpecificContentSettings::kMicrophoneAccessed) &&
-      prefs->GetString(prefs::kDefaultAudioCaptureDevice) !=
-          media_stream_selected_audio_device &&
-      media_indicator->IsCapturingAudio(web_contents())) {
-    return true;
-  }
-
-  if (microphone_camera_state.Has(
-          PageSpecificContentSettings::kCameraAccessed) &&
-      prefs->GetString(prefs::kDefaultVideoCaptureDevice) !=
-          media_stream_selected_video_device &&
-      media_indicator->IsCapturingVideo(web_contents())) {
-    return true;
-  }
-
-  return false;
 }
 
 PageSpecificContentSettings::MicrophoneCameraState

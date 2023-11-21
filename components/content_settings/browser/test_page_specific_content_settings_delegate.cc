@@ -46,13 +46,6 @@ TestPageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
   return base::NullCallback();
 }
 
-bool TestPageSpecificContentSettingsDelegate::IsMicrophoneCameraStateChanged(
-    PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state,
-    const std::string& media_stream_selected_audio_device,
-    const std::string& media_stream_selected_video_device) {
-  return false;
-}
-
 PageSpecificContentSettings::MicrophoneCameraState
 TestPageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
   return {};

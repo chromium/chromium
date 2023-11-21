@@ -169,9 +169,7 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  content_settings->OnMediaStreamPermissionSet(last_committed_url, state,
-                                               std::string(), std::string(),
-                                               std::string(), std::string());
+  content_settings->OnMediaStreamPermissionSet(last_committed_url, state);
 }
 
 void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(

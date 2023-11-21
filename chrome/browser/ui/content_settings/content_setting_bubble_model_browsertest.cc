@@ -66,9 +66,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     // Create a bubble with the given camera and microphone access state.
     PageSpecificContentSettings::GetForFrame(
         web_contents->GetPrimaryMainFrame())
-        ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(), state,
-                                     std::string(), std::string(),
-                                     std::string(), std::string());
+        ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(),
+                                     state);
     return std::make_unique<ContentSettingMediaStreamBubbleModel>(
         browser()->content_setting_bubble_model_delegate(), web_contents);
   }
@@ -169,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
                   ->GetLastCommittedOrigin()
                   .GetURL(),
               web_contents->GetLastCommittedURL()),
-          {PageSpecificContentSettings::kMicrophoneAccessed}, std::string(),
-          std::string(), std::string(), std::string());
+          {PageSpecificContentSettings::kMicrophoneAccessed});
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(
           browser()->content_setting_bubble_model_delegate(), web_contents);

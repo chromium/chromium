@@ -173,9 +173,8 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
           PageSpecificContentSettings::kMicrophoneBlocked,
           PageSpecificContentSettings::kCameraAccessed,
           PageSpecificContentSettings::kCameraBlocked};
-  content_settings->OnMediaStreamPermissionSet(
-      GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
-      std::string(), std::string(), std::string());
+  content_settings->OnMediaStreamPermissionSet(GURL("http://google.com"),
+                                               blocked_microphone_camera_state);
 
   // Check that only the respective content types are affected.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1515,9 +1514,8 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
       blocked_microphone_camera_state = {
           PageSpecificContentSettings::kMicrophoneAccessed,
           PageSpecificContentSettings::kMicrophoneBlocked};
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
-      std::string(), std::string(), std::string());
+  pscs->OnMediaStreamPermissionSet(GURL("http://google.com"),
+                                   blocked_microphone_camera_state);
 
   EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
       ContentSettingsType::MEDIASTREAM_MIC));
@@ -1554,9 +1552,8 @@ TEST_F(PageSpecificContentSettingsTest,
       blocked_microphone_camera_state = {
           PageSpecificContentSettings::kMicrophoneAccessed,
           PageSpecificContentSettings::kMicrophoneBlocked};
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
-      std::string(), std::string(), std::string());
+  pscs->OnMediaStreamPermissionSet(GURL("http://google.com"),
+                                   blocked_microphone_camera_state);
 
   EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
       ContentSettingsType::MEDIASTREAM_MIC));
