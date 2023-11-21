@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 using SidePanelWebUIViewT_CustomizeChromeUI =
@@ -48,8 +49,10 @@ void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
-                                     icon_size),
+      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                         ? vector_icons::kEditChromeRefreshIcon
+                                         : vector_icons::kEditIcon,
+                                     ui::kColorIcon, icon_size),
       base::BindRepeating(
           &CustomizeChromeSidePanelController::CreateCustomizeChromeWebView,
           base::Unretained(this)));

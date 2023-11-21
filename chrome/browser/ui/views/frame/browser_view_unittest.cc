@@ -167,9 +167,10 @@ TEST_F(BrowserViewTest, BrowserView) {
       kActionSidePanelShowCustomizeChrome, browser_actions->root_action_item());
   EXPECT_EQ(customize_chrome_action->GetText(),
             l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
-  EXPECT_EQ(customize_chrome_action->GetImage(),
-            ui::ImageModel::FromVectorIcon(
-                vector_icons::kEditIcon, ui::kColorIcon, side_panel_icon_size));
+  EXPECT_EQ(
+      customize_chrome_action->GetImage(),
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                     ui::kColorIcon, side_panel_icon_size));
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
   browser()->RemoveUserData(BrowserActions::UserDataKey());
 

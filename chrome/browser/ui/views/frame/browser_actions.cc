@@ -31,6 +31,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
@@ -98,10 +99,12 @@ void BrowserActions::InitializeBrowserActions() {
           .AddChildren(
               SidePanelAction(
                   SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
-                  kBookmarksSidePanelIcon, kActionSidePanelShowBookmarks,
-                  &(browser_.get()), true),
+                  features::IsChromeRefresh2023()
+                      ? kBookmarksSidePanelRefreshIcon
+                      : kBookmarksSidePanelIcon,
+                  kActionSidePanelShowBookmarks, &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kReadingList,
-                              IDS_READ_LATER_TITLE, kReadLaterIcon,
+                              IDS_READ_LATER_TITLE, kReadingListIcon,
                               kActionSidePanelShowReadingList,
                               &(browser_.get()), true),
               SidePanelAction(
@@ -111,7 +114,7 @@ void BrowserActions::InitializeBrowserActions() {
                   kActionSidePanelShowAboutThisSite, &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
-                              vector_icons::kEditIcon,
+                              vector_icons::kEditChromeRefreshIcon,
                               kActionSidePanelShowCustomizeChrome,
                               &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kShoppingInsights,
@@ -127,7 +130,7 @@ void BrowserActions::InitializeBrowserActions() {
             SidePanelEntryId::kHistoryClusters,
             rename_journeys ? IDS_HISTORY_TITLE
                             : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
-            rename_journeys ? kHistoryIcon : kJourneysIcon,
+            vector_icons::kHistoryChromeRefreshIcon,
             kActionSidePanelShowHistoryCluster, &(browser_.get()), true)
             .Build());
   }
