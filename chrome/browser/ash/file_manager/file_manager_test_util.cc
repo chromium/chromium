@@ -388,10 +388,29 @@ FakeExtensionProviderOneDrive::CreateProvidedFileSystem(
   return fake_provided_file_system;
 }
 
+bool FakeExtensionProviderOneDrive::RequestMount(
+    Profile* profile,
+    ash::file_system_provider::RequestMountCallback callback) {
+  if (request_mount_impl_) {
+    std::move(request_mount_impl_).Run(std::move(callback));
+    return true;
+  }
+  return ash::file_system_provider::FakeExtensionProvider::RequestMount(
+      profile, std::move(callback));
+}
+
+void FakeExtensionProviderOneDrive::SetRequestMountImpl(
+    base::OnceCallback<void(ash::file_system_provider::RequestMountCallback)>
+        callback) {
+  request_mount_impl_ = std::move(callback);
+}
+
 FakeExtensionProviderOneDrive::FakeExtensionProviderOneDrive(
     const extensions::ExtensionId& extension_id,
     const ash::file_system_provider::Capabilities& capabilities)
     : FakeExtensionProvider(extension_id, capabilities) {}
+
+FakeExtensionProviderOneDrive::~FakeExtensionProviderOneDrive() = default;
 
 FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
     Profile* profile) {
@@ -416,6 +435,16 @@ FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
                                          file_systems[0].file_system_id()));
 
   return provided_file_system;
+}
+
+FakeExtensionProviderOneDrive* GetFakeProviderOneDrive(Profile* profile) {
+  ash::file_system_provider::Service* service =
+      ash::file_system_provider::Service::Get(profile);
+  ash::file_system_provider::ProviderId provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  return static_cast<FakeExtensionProviderOneDrive*>(
+      service->GetProvider(provider_id));
 }
 
 FakeProvidedFileSystemOneDrive::~FakeProvidedFileSystemOneDrive() = default;

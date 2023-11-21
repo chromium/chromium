@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
@@ -117,19 +118,11 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   // Observe IO tasks updates.
   io_task_controller_->AddObserver(this);
 
-  // Destination url.
-  auto odfs_info = GetODFSInfo(profile_);
-  if (!odfs_info) {
-    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kFileSystemNotFound);
-    return;
-  }
-  destination_folder_path_ = odfs_info->mount_path();
-  FileSystemURL destination_folder_url = FilePathToFileSystemURL(
-      profile_, file_system_context_, destination_folder_path_);
-  // TODO (b/243095484) Define error behavior.
+  GetODFSMetadataAndStartIOTask();
+}
+
+void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
+  FileSystemURL destination_folder_url = GetDestinationFolderUrl();
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
     // TODO(b/293363474): Remove when the underlying cause is diagnosed.
@@ -164,10 +157,20 @@ void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata_or_error.error();
   } else if (metadata_or_error->reauthentication_required) {
-    // Show the reauthentication required error notification.
-    OnEndUpload(
-        base::unexpected(GetReauthenticationRequiredMessage()),
-        OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+    if (tried_reauth_ || !base::FeatureList::IsEnabled(
+                             ash::features::kOneDriveUploadImmediateReauth)) {
+      // We do not expect this failure because it would mean we became de-auth'd
+      // right after auth. Except when the immediate-reauth feature is on, then
+      // it just means reauthentication is required and we have to ask the user.
+      OnEndUpload(
+          base::unexpected(GetReauthenticationRequiredMessage()),
+          OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+    } else {
+      // Try to reauth immediately and then try the upload again.
+      RequestODFSMount(profile_,
+                       base::BindOnce(&OneDriveUploadHandler::OnMountResponse,
+                                      weak_ptr_factory_.GetWeakPtr()));
+    }
     return;
   }
 
@@ -183,6 +186,32 @@ void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
           /*show_notification=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
+}
+
+void OneDriveUploadHandler::OnMountResponse(base::File::Error result) {
+  if (result != base::File::FILE_OK) {
+    OnEndUpload(
+        base::unexpected(GetReauthenticationRequiredMessage()),
+        OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+    return;
+  }
+  tried_reauth_ = true;
+  GetODFSMetadataAndStartIOTask();
+}
+
+FileSystemURL OneDriveUploadHandler::GetDestinationFolderUrl() {
+  auto odfs_info = GetODFSInfo(profile_);
+  if (!odfs_info) {
+    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kFileSystemNotFound);
+    return FileSystemURL();
+  }
+
+  destination_folder_path_ = odfs_info->mount_path();
+  return FilePathToFileSystemURL(profile_, file_system_context_,
+                                 destination_folder_path_);
 }
 
 void OneDriveUploadHandler::OnEndUpload(
@@ -232,7 +261,12 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       notification_manager_->SetDestinationPath(status.outputs[0].url.path());
       notification_manager_->ShowUploadProgress(100);
       DCHECK_EQ(status.outputs.size(), 1u);
-      OnEndUpload(status.outputs[0].url, OfficeFilesUploadResult::kSuccess);
+      if (tried_reauth_) {
+        OnEndUpload(status.outputs[0].url,
+                    OfficeFilesUploadResult::kSuccessAfterReauth);
+      } else {
+        OnEndUpload(status.outputs[0].url, OfficeFilesUploadResult::kSuccess);
+      }
       return;
     case file_manager::io_task::State::kCancelled:
       if (status.type == file_manager::io_task::OperationType::kCopy) {

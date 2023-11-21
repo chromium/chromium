@@ -205,15 +205,32 @@ class FakeExtensionProviderOneDrive
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
       override;
 
+  // Calls `request_mount_callback` if set.
+  bool RequestMount(
+      Profile* profile,
+      ash::file_system_provider::RequestMountCallback callback) override;
+
+  // `RequestMount()` will call this callback as its implementation.
+  void SetRequestMountImpl(
+      base::OnceCallback<
+          void(ash::file_system_provider::RequestMountCallback)>);
+
  private:
   FakeExtensionProviderOneDrive(
       const extensions::ExtensionId& extension_id,
       const ash::file_system_provider::Capabilities& capabilities);
+  ~FakeExtensionProviderOneDrive() override;
+
+  base::OnceCallback<void(ash::file_system_provider::RequestMountCallback)>
+      request_mount_impl_;
 };
 
 // Mount a `FakeProvidedFileSystemOneDrive`.
 FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
     Profile* profile);
+
+// Only call this after `CreateFakeProvidedFileSystemOneDrive()`.
+FakeExtensionProviderOneDrive* GetFakeProviderOneDrive(Profile* profile);
 
 }  // namespace test
 }  // namespace file_manager

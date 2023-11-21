@@ -211,6 +211,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               kUploadNotStartedReauthenticationRequired:
             break;
           case OfficeFilesUploadResult::kSuccess:
+          case OfficeFilesUploadResult::kSuccessAfterReauth:
             SetWrongValueLogged(upload_result);
             break;
         }
@@ -333,6 +334,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           if (upload_result.logged()) {
             switch (upload_result.value) {
               case OfficeFilesUploadResult::kSuccess:
+              case OfficeFilesUploadResult::kSuccessAfterReauth:
                 break;
               case OfficeFilesUploadResult::kOtherError:
               case OfficeFilesUploadResult::kFileSystemNotFound:

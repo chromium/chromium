@@ -1888,6 +1888,12 @@ BASE_FEATURE(kOnDeviceSpeechRecognition,
              "OnDeviceSpeechRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the OneDrive upload flow should immediately prompt the user to
+// re-authenticate without first showing a notification.
+BASE_FEATURE(kOneDriveUploadImmediateReauth,
+             "OneDriveUploadImmediateReauth",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 

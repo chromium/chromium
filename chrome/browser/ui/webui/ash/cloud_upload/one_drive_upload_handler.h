@@ -56,11 +56,18 @@ class OneDriveUploadHandler
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
 
-  // If reauth is required show an error and finish, or else start the IOTask
-  // for copy/move.
+  void GetODFSMetadataAndStartIOTask();
+
+  // If reauth is required, request a new mount without a notification. If that
+  // fails, show an error and finish, or else start the IOTask for copy/move.
   void CheckReauthenticationAndStartIOTask(
       const FileSystemURL& destination_folder_url,
       base::expected<ODFSMetadata, base::File::Error> metadata_or_error);
+
+  // Called when we have attempted to remount ODFS due to needing to reauth.
+  void OnMountResponse(base::File::Error result);
+
+  FileSystemURL GetDestinationFolderUrl();
 
   // Ends upload and runs Upload callback.
   void OnEndUpload(
@@ -106,6 +113,7 @@ class OneDriveUploadHandler
   // Total size (in bytes) required to upload.
   int64_t upload_size_ = 0;
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_;
+  bool tried_reauth_ = false;
   base::WeakPtrFactory<OneDriveUploadHandler> weak_ptr_factory_{this};
 };
 

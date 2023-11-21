@@ -46282,6 +46282,7 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="Sync error cancelled and deleted"/>
   <int value="22" label="Sync error cancelled and trashed"/>
   <int value="23" label="Upload not started: Reauthentication needed"/>
+  <int value="24" label="Success after reauthentication"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">
