@@ -27,6 +27,19 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ExclusionSpace&,
     LayoutUnit child_available_inline_size);
 
+// Final result of merging `align-content` value and `vertical-align` value.
+// This is only for boxes with `display: block` and `display: table-cell`.
+enum class BlockContentAlignment {
+  kStart,
+  kBaseline,
+  kSafeCenter,
+  kUnsafeCenter,
+  kSafeEnd,
+  kUnsafeEnd
+};
+BlockContentAlignment ComputeContentAlignmentForBlock(
+    const ComputedStyle& style);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_LAYOUT_ALGORITHM_UTILS_H_

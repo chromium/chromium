@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -405,6 +406,21 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         // 'middle', and 'bottom' vertical alignment depend on the block-size.
         if (!is_block_size_equal)
           return NGLayoutCacheStatus::kNeedsLayout;
+        break;
+    }
+  } else {
+    switch (ComputeContentAlignmentForBlock(style)) {
+      case BlockContentAlignment::kStart:
+      case BlockContentAlignment::kBaseline:
+        // Do nothing special.
+        break;
+      case BlockContentAlignment::kUnsafeCenter:
+      case BlockContentAlignment::kSafeCenter:
+      case BlockContentAlignment::kUnsafeEnd:
+      case BlockContentAlignment::kSafeEnd:
+        if (!is_block_size_equal) {
+          return NGLayoutCacheStatus::kNeedsLayout;
+        }
         break;
     }
   }

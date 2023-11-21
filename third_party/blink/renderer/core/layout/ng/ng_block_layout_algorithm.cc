@@ -1155,13 +1155,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
     FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
   }
 
-  if (Style().AlignContentBlockCenter() &&
-      !IsBreakInside(container_builder_.PreviousBreakToken())) {
-    container_builder_.MoveChildrenInBlockDirection(
-        (container_builder_.FragmentBlockSize() -
-         unconstrained_intrinsic_block_size) /
-        2);
-  }
+  AlignContent(unconstrained_intrinsic_block_size);
 
   OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
 
@@ -1182,6 +1176,46 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
   }
 
   return container_builder_.ToBoxFragment();
+}
+
+void BlockLayoutAlgorithm::AlignContent(LayoutUnit content_block_size) {
+  if (IsBreakInside(BreakToken())) {
+    // Do nothing for the second or later fragments.
+    return;
+  }
+
+  LayoutUnit free_space =
+      container_builder_.FragmentBlockSize() - content_block_size;
+  if (Style().AlignContentBlockCenter()) {
+    container_builder_.MoveChildrenInBlockDirection(free_space / 2);
+    return;
+  }
+
+  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled() ||
+      !ShouldIncludeBlockEndBorderPadding(container_builder_)) {
+    // Do nothing for the first fragment without block-end border and padding.
+    // See css/css-align/blocks/align-content-block-break-overflow-010.html
+    return;
+  }
+
+  BlockContentAlignment alignment = ComputeContentAlignmentForBlock(Style());
+  if (alignment == BlockContentAlignment::kSafeCenter ||
+      alignment == BlockContentAlignment::kSafeEnd) {
+    free_space = free_space.ClampNegativeToZero();
+  }
+  switch (alignment) {
+    case BlockContentAlignment::kStart:
+    case BlockContentAlignment::kBaseline:
+      // Nothing to do.
+      break;
+    case BlockContentAlignment::kSafeCenter:
+    case BlockContentAlignment::kUnsafeCenter:
+      container_builder_.MoveChildrenInBlockDirection(free_space / 2);
+      break;
+    case BlockContentAlignment::kSafeEnd:
+    case BlockContentAlignment::kUnsafeEnd:
+      container_builder_.MoveChildrenInBlockDirection(free_space);
+  }
 }
 
 bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(

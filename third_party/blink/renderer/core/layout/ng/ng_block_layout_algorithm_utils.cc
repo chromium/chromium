@@ -9,6 +9,93 @@
 
 namespace blink {
 
+namespace {
+
+BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
+                                              bool is_table_cell) {
+  const StyleContentAlignmentData& alignment = style.AlignContent();
+  ContentPosition position = alignment.GetPosition();
+  OverflowAlignment overflow = alignment.Overflow();
+  // https://drafts.csswg.org/css-align/#distribution-block
+  // If a <content-distribution> is specified its fallback alignment is used
+  // instead.
+  switch (alignment.Distribution()) {
+    case ContentDistributionType::kDefault:
+      break;
+    case ContentDistributionType::kSpaceBetween:
+    case ContentDistributionType::kStretch:
+      position = ContentPosition::kFlexStart;
+      break;
+    case ContentDistributionType::kSpaceAround:
+    case ContentDistributionType::kSpaceEvenly:
+      overflow = OverflowAlignment::kSafe;
+      position = ContentPosition::kCenter;
+      break;
+  }
+  if (position == ContentPosition::kLastBaseline) {
+    overflow = OverflowAlignment::kSafe;
+    position = ContentPosition::kEnd;
+  }
+
+  // https://drafts.csswg.org/css-align/#typedef-overflow-position
+  // The "smart" default value (OverflowAlignment::kDefault) is not implemented.
+  // We handle it as kUnsafe.
+  const bool is_safe = overflow == OverflowAlignment::kSafe;
+  switch (position) {
+    case ContentPosition::kCenter:
+      return is_safe ? BlockContentAlignment::kSafeCenter
+                     : BlockContentAlignment::kUnsafeCenter;
+
+    case ContentPosition::kEnd:
+    case ContentPosition::kFlexEnd:
+      return is_safe ? BlockContentAlignment::kSafeEnd
+                     : BlockContentAlignment::kUnsafeEnd;
+
+    case ContentPosition::kNormal:
+      if (!is_table_cell) {
+        return BlockContentAlignment::kStart;
+      }
+      switch (style.VerticalAlign()) {
+        case EVerticalAlign::kTop:
+          // Do nothing for 'top' vertical alignment.
+          return BlockContentAlignment::kStart;
+
+        case EVerticalAlign::kBaselineMiddle:
+        case EVerticalAlign::kSub:
+        case EVerticalAlign::kSuper:
+        case EVerticalAlign::kTextTop:
+        case EVerticalAlign::kTextBottom:
+        case EVerticalAlign::kLength:
+          // All of the above are treated as 'baseline' for the purposes of
+          // table-cell vertical alignment.
+        case EVerticalAlign::kBaseline:
+          return BlockContentAlignment::kBaseline;
+
+        case EVerticalAlign::kMiddle:
+          return BlockContentAlignment::kUnsafeCenter;
+
+        case EVerticalAlign::kBottom:
+          return BlockContentAlignment::kUnsafeEnd;
+      }
+      break;
+
+    case ContentPosition::kStart:
+    case ContentPosition::kFlexStart:
+      return BlockContentAlignment::kStart;
+
+    case ContentPosition::kBaseline:
+      return BlockContentAlignment::kBaseline;
+
+    case ContentPosition::kLastBaseline:
+    case ContentPosition::kLeft:
+    case ContentPosition::kRight:
+      NOTREACHED();
+  }
+  return BlockContentAlignment::kStart;
+}
+
+}  // namespace
+
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
     const BfcOffset& origin_bfc_offset,
@@ -47,6 +134,11 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
                                          child_available_inline_size);
 
   return inline_offset;
+}
+
+BlockContentAlignment ComputeContentAlignmentForBlock(
+    const ComputedStyle& style) {
+  return ComputeContentAlignment(style, /* is_table_cell */ false);
 }
 
 }  // namespace blink
