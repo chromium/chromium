@@ -208,8 +208,6 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
-    commerce_hint_service_ =
-        cart::CommerceHintService::FromWebContents(web_contents());
 #if !BUILDFLAG(IS_ANDROID)
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -444,8 +442,6 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<CartService, ExperimentalRenderer> service_;
 #endif
-  raw_ptr<cart::CommerceHintService, ExperimentalRenderer>
-      commerce_hint_service_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   bool satisfied_;
@@ -511,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, SkipAddToCart_FromComponent) {
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), R"###(
           {
             "guitarcenter.com": {
@@ -553,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_VisitCart) {
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
                        VisitCart_GeneralPattern_FromComponent) {
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), "{}", R"###(
           {
             "cart_page_url_regex": "(special|lol)"
@@ -575,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
                        VisitCart_PerDomain_FromComponent) {
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), R"###(
           {
             "guitarcenter.com": {
@@ -650,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromComponent) {
   )###";
   std::string product_id_json = "{\"foo.com\": \"test\"}";
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), "{}", "{}", std::move(product_id_json),
           std::move(extraction_script));
   DCHECK(is_populated);
@@ -690,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
     }
   )###";
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), "{}", global_heuristics,
           std::move(product_id_json), "");
   DCHECK(is_populated);
@@ -715,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddCartFromComponent) {
   bool is_populated =
-      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+      cart::CommerceHintService::InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), R"###(
           {
             "guitarcenter.com": {
