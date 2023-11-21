@@ -266,13 +266,6 @@
         return matches ? matches[1] : null;
     }
 
-    function shouldLogPassSubtests() {
-        if (location.hostname != 'web-platform.test') {
-            return true;
-        }
-        return false;
-    }
-
     /** Converts the testharness test status into the corresponding string. */
     function convertResult(resultStatus) {
         let retVal = '';
@@ -309,7 +302,7 @@
     }
 
     function resultLine(test) {
-        if (test.status == 0 && !shouldLogPassSubtests()) {
+        if (test.status == 0) {
             return '';
         }
         let result = `${convertResult(test.status)} ${sanitize(test.name)}`;
@@ -351,18 +344,9 @@
     }
 
     function failureMetricSummary(resultCounts) {
-        if (shouldLogPassSubtests()) {
-            const total = resultCounts[0] + resultCounts[1] + resultCounts[2] + resultCounts[3];
-            return `Found ${total} tests;` +
-                ` ${resultCounts[0]} PASS,` +
-                ` ${resultCounts[1]} FAIL,` +
-                ` ${resultCounts[2]} TIMEOUT,` +
-                ` ${resultCounts[3]} NOTRUN.\n`;
-        } else {
-            return `Found ${resultCounts[1]} FAIL,` +
-                ` ${resultCounts[2]} TIMEOUT,` +
-                ` ${resultCounts[3]} NOTRUN.\n`;
-        }
+        return `Found ${resultCounts[1]} FAIL,` +
+            ` ${resultCounts[2]} TIMEOUT,` +
+            ` ${resultCounts[3]} NOTRUN.\n`;
     }
 
 })();

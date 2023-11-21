@@ -1,36 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "The size of text-combine elements in vertical flow."
-[PASS] text-combine should not affect in horizontal flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
-[PASS] The size of text-combine elements in vertical flow.
 Harness: the test ran to completion.
 

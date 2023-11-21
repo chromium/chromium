@@ -3,11 +3,6 @@ This is a testharness.js-based test.
   assert_equals: Size of rect 4 should match expected expected "324x18" but got "398x18"
 [FAIL] range.selectNodeContents(container) has rects for each line.
   assert_equals: Size of rect 3 should match expected expected "324x18" but got "398x18"
-[PASS] range.setStart/setEnd(node, offset) has rects for each line in range.
-[PASS] range.selectNode(container) should not include rect of image.
-[PASS] range.setStart/setEnd(node, offset) should include rect of image.
-[PASS] range.selectNode(container) should not include green/blue boxes.
-[PASS] range.selectNodeContents() should select green but not blue box.
 [FAIL] transform, range.selectNodeContents() has rects for each line.
   assert_equals: Size of rect 3 should match expected expected "222x260" but got "270x316"
 [FAIL] vertical, range.selectNodeContents() has rects for each line.

@@ -5,17 +5,11 @@ CONSOLE ERROR: Chrome blocked resource http://127.0.0.1:8000/subresource_filter/
 CONSOLE ERROR: Chrome blocked resource http://127.0.0.1:8000/subresource_filter/resources/delta.png on this site because this site tends to show ads that interrupt, distract, mislead, or prevent user control. Learn more at https://www.chromestatus.com/feature/5738264052891648
 CONSOLE ERROR: Chrome blocked resource http://127.0.0.1:8000/subresource_filter/resources/delta.png on this site because this site tends to show ads that interrupt, distract, mislead, or prevent user control. Learn more at https://www.chromestatus.com/feature/5738264052891648
 This is a testharness.js-based test.
-[PASS] State transition primary to primary. 
 [FAIL] State transition primary to fallback. 
   assert_equals: Image has incorrect width for the expected final state. expected 0 but got 16
-[PASS] State transition primary to collapsed. 
-[PASS] State transition fallback to primary. 
 [FAIL] State transition fallback to fallback. 
   assert_equals: Image has incorrect width for the expected final state. expected 0 but got 16
-[PASS] State transition fallback to collapsed. 
-[PASS] State transition collapsed to primary. 
 [FAIL] State transition collapsed to fallback. 
   assert_equals: Image has incorrect width for the expected final state. expected 0 but got 16
-[PASS] State transition collapsed to collapsed. 
 Harness: the test ran to completion.
 

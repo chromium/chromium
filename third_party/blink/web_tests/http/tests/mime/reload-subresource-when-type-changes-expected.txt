@@ -1,7 +1,4 @@
 CONSOLE ERROR: Refused to execute script from 'http://127.0.0.1:8000/loading/resources/image2.png' because its MIME type ('image/png') is not executable.
 This is a testharness.js-based test.
-[PASS] Script should load as script after being loaded as image.
-[PASS] Image should load after being prefetched.
-[PASS] Image should load after failing to load as script.
 Harness: the test ran to completion.
 

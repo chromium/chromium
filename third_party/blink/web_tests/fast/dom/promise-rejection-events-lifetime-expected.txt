@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
-[PASS] evt.promise and evt.reason should live at least as long as evt
 Harness: the test ran to completion.
 

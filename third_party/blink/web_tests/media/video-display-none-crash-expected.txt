@@ -1,6 +1,5 @@
 CONSOLE ERROR: Uncaught (in promise) AbortError: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
-[PASS] Test that pause() after changing display to "none" doesn't cause a crash.
 Harness: the test ran to completion.
 

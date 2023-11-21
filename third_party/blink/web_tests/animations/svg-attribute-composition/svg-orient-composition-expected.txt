@@ -1,38 +1,7 @@
 This is a testharness.js-based test.
-[PASS] This test uses interpolation-test.js.
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0) is [180]
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0.2) is [190]
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0.6) is [210]
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (1) is [230]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (-3) is [30]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0) is [180]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0.2) is [190]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (0.6) is [210]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (1) is [230]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [130] to add [200grad] at (1.4) is [250]
 [FAIL] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0) is [140]
   assert_equals: expected "140 " but got "90 "
 [FAIL] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0.2) is [140]
   assert_equals: expected "140 " but got "90 "
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0.6) is [auto]
-[PASS] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (1) is [auto]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (-0.4) is [140]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0) is [140]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0.2) is [140]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0.6) is [auto]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (1) is [auto]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (1.4) is [auto]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (-0.4) is [88]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (0) is [120]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (0.2) is [136]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (0.6) is [168]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (1) is [200]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from replace [120] to add [180] at (1.4) is [232]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (-0.4) is [-44]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (0) is [20]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (0.2) is [52]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (0.6) is [116]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (1) is [180]
-[PASS] Web Animations: Interpolate attribute <orient> with underlying [20] from neutral to replace [180] at (1.4) is [244]
 Harness: the test ran to completion.
 

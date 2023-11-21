@@ -1,5 +1,4 @@
 CONSOLE ERROR: 'javascript' URLs may not be used as base URLs for a document.
 This is a testharness.js-based test.
-[PASS] 'javascript:' is an invalid base URL.
 Harness: the test ran to completion.
 

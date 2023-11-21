@@ -1,22 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "DOMMatrix setMatrix('translateY')"
-[PASS] DOMMatrix setMatrix(EmptyString)
-[PASS] DOMMatrix setMatrix('none')
-[PASS] DOMMatrix setMatrix('matrix')
-[PASS] DOMMatrix setMatrix('translate')
-[PASS] DOMMatrix setMatrix('translateX')
-[PASS] DOMMatrix setMatrix('translateY')
-[PASS] DOMMatrix setMatrix('scale')
-[PASS] DOMMatrix setMatrix('scaleX')
-[PASS] DOMMatrix setMatrix('scaleY')
-[PASS] DOMMatrix setMatrix('rotate')
-[PASS] DOMMatrix setMatrix('skewX')
-[PASS] DOMMatrix setMatrix('skewY')
-[PASS] DOMMatrix setMatrix(matrix3d)
-[PASS] DOMMatrix setMatrix(translate3d)
-[PASS] DOMMatrix setMatrix('translateY')
-[PASS] DOMMatrix setMatrix(multiple value)
-[PASS] DOMMatrix setMatrix() with calc function
-[PASS] DOMMatrix.setMatrix(): Exception test
 Harness: the test ran to completion.
 

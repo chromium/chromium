@@ -1,28 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "createElement(): 6.1.5. If result has children, then throw a NotSupportedError", "createElementNS(): 6.1.5. If result has children, then throw a NotSupportedError"
-[PASS] createElement(): Pre-flight check should succeed
-[PASS] createElement(): 5. Create a customized built-in element
-[PASS] createElement(): 6. Create an autonomous custom element
-[PASS] createElement(): 6.1.2. Errors in Construct(C) should be reported
-[PASS] createElement(): 6.1.3. If result does not implement the HTMLElement interface, throw a TypeError
-[PASS] createElement(): 6.1.4. If result's attribute list is not empty, then throw a NotSupportedError
-[PASS] createElement(): 6.1.5. If result has children, then throw a NotSupportedError
-[PASS] createElement(): 6.1.5. If result has children, then throw a NotSupportedError
-[PASS] createElement(): 6.1.6. If result's parent is not null, then throw a NotSupportedError
-[PASS] createElement(): 6.1.7. If result's node document is not document, then throw a NotSupportedError
-[PASS] createElement(): 6.1.8. If result's namespace is not the HTML namespace, then throw (a NotSupportedError, currently TypeError)
-[PASS] createElement(): 6.1.9. If result's local name is not equal to localName, then throw a NotSupportedError
-[PASS] createElementNS(): Pre-flight check should succeed
-[PASS] createElementNS(): 5. Create a customized built-in element
-[PASS] createElementNS(): 6. Create an autonomous custom element
-[PASS] createElementNS(): 6.1.2. Errors in Construct(C) should be reported
-[PASS] createElementNS(): 6.1.3. If result does not implement the HTMLElement interface, throw a TypeError
-[PASS] createElementNS(): 6.1.4. If result's attribute list is not empty, then throw a NotSupportedError
-[PASS] createElementNS(): 6.1.5. If result has children, then throw a NotSupportedError
-[PASS] createElementNS(): 6.1.5. If result has children, then throw a NotSupportedError
-[PASS] createElementNS(): 6.1.6. If result's parent is not null, then throw a NotSupportedError
-[PASS] createElementNS(): 6.1.7. If result's node document is not document, then throw a NotSupportedError
-[PASS] createElementNS(): 6.1.8. If result's namespace is not the HTML namespace, then throw (a NotSupportedError, currently TypeError)
-[PASS] createElementNS(): 6.1.9. If result's local name is not equal to localName, then throw a NotSupportedError
 Harness: the test ran to completion.
 

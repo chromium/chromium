@@ -1,39 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Shorthand from written subproperties: normal"
-[PASS] Sub properties set from longhand value: normal
-[PASS] Sub properties set from longhand value: none
-[PASS] Sub properties set from longhand value: all-small-caps
-[PASS] Sub properties set from longhand value: historical-ligatures
-[PASS] Sub properties set from longhand value: historical-ligatures discretionary-ligatures
-[PASS] Sub properties set from longhand value: historical-ligatures petite-caps
-[PASS] Sub properties set from longhand value: 
-[PASS] Sub properties set from longhand value: lining-nums
-[PASS] Sub properties set from longhand value: lining-nums diagonal-fractions
-[PASS] Sub properties set from longhand value: lining-nums all-small-caps
-[PASS] Sub properties set from longhand value: lining-nums discretionary-ligatures
-[PASS] Sub properties set from longhand value: lining-nums historical-ligatures ordinal all-small-caps
-[PASS] Sub properties set from longhand value: ordinal discretionary-ligatures all-petite-caps historical-ligatures diagonal-fractions
-[PASS] Shorthand from written subproperties: normal
-[PASS] Shorthand from written subproperties: normal
-[PASS] Shorthand from written subproperties: none
-[PASS] Shorthand from written subproperties: 
-[PASS] Shorthand from written subproperties: all-small-caps
-[PASS] Shorthand from written subproperties: discretionary-ligatures historical-ligatures
-[PASS] Shorthand from written subproperties: discretionary-ligatures petite-caps
-[PASS] Shorthand from written subproperties: discretionary-ligatures petite-caps lining-nums diagonal-fractions
-[PASS] Shorthand from written subproperties: lining-nums diagonal-fractions
-[PASS] Value historical-ligaturesTYPO invalid for property font-variant.
-[PASS] Value historical-ligaturesTYPO small-caps invalid for property font-variant.
-[PASS] Value discretionary-ligatures no-discretionary-ligatures invalid for property font-variant.
-[PASS] Value discretionary-ligatures small-caps no-historical-ligatures all-small-caps invalid for property font-variant.
-[PASS] Value discretionary-ligatures small-caps all-petite-caps invalid for property font-variant.
-[PASS] Value small-caps unicase invalid for property font-variant.
-[PASS] Value typotypotypo invalid for property font-variant-caps.
-[PASS] Value all-small-caps all-petite-caps invalid for property font-variant-caps.
-[PASS] Value discretionary-ligatures no-discretionary-ligatures invalid for property font-variant-ligatures.
-[PASS] Value typotypotypo invalid for property font-variant-ligatures.
-[PASS] Value none discretionary-ligatures invalid for property font-variant-ligatures.
-[PASS] Value lining-nums normal invalid for property font-variant-numeric.
-[PASS] Value lining-nums slashed-zero diagonal-fractions oldstyle-nums invalid for property font-variant-numeric.
 Harness: the test ran to completion.
 

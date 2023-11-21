@@ -26,12 +26,5 @@ CONSOLE ERROR: Pattern attribute value [``] is not a valid regular expression: U
 CONSOLE ERROR: Pattern attribute value [~~] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[~~]/v: Invalid set operation in character class
 CONSOLE ERROR: Pattern attribute value [_^^] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[_^^]/v: Invalid set operation in character class
 This is a testharness.js-based test.
-[PASS] basic <input pattern> support
-[PASS] <input pattern> is Unicode code point-aware
-[PASS] <input pattern> supports Unicode property escape syntax
-[PASS] <input pattern> supports Unicode property escape syntax for properties of strings
-[PASS] <input pattern> supports set difference syntax
-[PASS] <input pattern> supports string literal syntax
-[PASS] <input pattern> enables the RegExp v flag
 Harness: the test ran to completion.
 
