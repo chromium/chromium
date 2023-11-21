@@ -721,10 +721,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   inline bool IsElementCaptureParticipant() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
-      if (Element* element = DynamicTo<Element>(GetNode())) {
-        return element->GetRestrictionTargetId();
-      }
+    if (Element* element = DynamicTo<Element>(GetNode())) {
+      return element->GetRestrictionTargetId();
     }
     return false;
   }

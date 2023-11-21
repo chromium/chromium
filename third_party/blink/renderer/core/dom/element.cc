@@ -4961,7 +4961,7 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
 }
 
 void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
-  CHECK(RuntimeEnabledFeatures::ElementCaptureEnabled());
+  CHECK(RuntimeEnabledFeatures::ElementCaptureEnabled(GetExecutionContext()));
 
   ElementRareDataVector& rare_data = EnsureElementRareData();
   CHECK(!rare_data.GetRestrictionTargetId());
