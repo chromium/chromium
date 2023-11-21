@@ -135,6 +135,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   PhysicalSize previous_size;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
+  Member<void*> min_max_sizes_cache;
   Member<void*> result;
   HeapVector<Member<const NGLayoutResult>, 1> layout_results;
   wtf_size_t first_fragment_item_index_;
@@ -469,6 +470,7 @@ LayoutBox::LayoutBox(ContainerNode* node)
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {
+  visitor->Trace(min_max_sizes_cache_);
   visitor->Trace(measure_result_);
   visitor->Trace(layout_results_);
   visitor->Trace(overflow_);

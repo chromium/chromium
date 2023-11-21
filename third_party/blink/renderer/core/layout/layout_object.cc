@@ -1587,6 +1587,8 @@ void LayoutObject::SetIntrinsicLogicalWidthsDirty(
   bitfields_.SetIntrinsicLogicalWidthsDirty(true);
   bitfields_.SetIntrinsicLogicalWidthsDependsOnBlockConstraints(true);
   bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(true);
+  bitfields_.SetIndefiniteIntrinsicLogicalWidthsDirty(true);
+  bitfields_.SetDefiniteIntrinsicLogicalWidthsDirty(true);
   if (mark_parents == kMarkContainerChain &&
       (IsText() || !StyleRef().HasOutOfFlowPosition()))
     InvalidateContainerIntrinsicLogicalWidths();

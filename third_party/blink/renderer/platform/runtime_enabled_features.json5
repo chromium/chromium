@@ -2170,8 +2170,13 @@
       status: "stable",
     },
     {
-      name: "LayoutNewMinMaxCache",
+      name: "LayoutNewMeasureCache",
+      depends_on: ["LayoutNewMinMaxCache"],
       status: "test",
+    },
+    {
+      name: "LayoutNewMinMaxCache",
+      status: "stable",
     },
     {
       name: "LayoutNGShapeCache",

@@ -1569,6 +1569,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(b);
   }
+  bool IndefiniteIntrinsicLogicalWidthsDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.IndefiniteIntrinsicLogicalWidthsDirty();
+  }
+  void SetIndefiniteIntrinsicLogicalWidthsDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIndefiniteIntrinsicLogicalWidthsDirty(b);
+  }
+  bool DefiniteIntrinsicLogicalWidthsDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.DefiniteIntrinsicLogicalWidthsDirty();
+  }
+  void SetDefiniteIntrinsicLogicalWidthsDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetDefiniteIntrinsicLogicalWidthsDirty(b);
+  }
 
   bool NeedsLayoutOverflowRecalc() const {
     NOT_DESTROYED();
@@ -3841,6 +3857,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           intrinsic_logical_widths_dirty_(false),
           intrinsic_logical_widths_depends_on_block_constraints_(true),
           intrinsic_logical_widths_child_depends_on_block_constraints_(true),
+          indefinite_intrinsic_logical_widths_dirty_(true),
+          definite_intrinsic_logical_widths_dirty_(true),
           needs_collect_inlines_(false),
           should_check_for_paint_invalidation_(true),
           subtree_should_check_for_paint_invalidation_(false),
@@ -3953,6 +3971,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(
         intrinsic_logical_widths_child_depends_on_block_constraints_,
         IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
+
+    // Indicates if the indefinite min/max sizes cache slot is dirty.
+    ADD_BOOLEAN_BITFIELD(indefinite_intrinsic_logical_widths_dirty_,
+                         IndefiniteIntrinsicLogicalWidthsDirty);
+
+    // Indicates if the definite min/max sizes cache slots are dirty.
+    ADD_BOOLEAN_BITFIELD(definite_intrinsic_logical_widths_dirty_,
+                         DefiniteIntrinsicLogicalWidthsDirty);
 
     // This flag is set on inline container boxes that need to run the
     // Pre-layout phase in LayoutNG. See InlineNode::CollectInlines().

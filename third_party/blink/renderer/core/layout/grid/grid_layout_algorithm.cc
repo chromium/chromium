@@ -1556,7 +1556,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     // TODO(kschmi) : Add a cache slot parameter to
     //  `CreateConstraintSpaceForLayout` to avoid variables above.
     const auto space =
-        RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()
+        RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()
             ? CreateConstraintSpace(
                   LayoutResultCacheSlot::kMeasure, *subgridded_item,
                   containing_grid_area_size,

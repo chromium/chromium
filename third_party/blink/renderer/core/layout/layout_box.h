@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -1184,30 +1185,61 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit initial_block_size) const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
-      return MinMaxSizesResult{
-          intrinsic_logical_widths_,
-          IntrinsicLogicalWidthsDependsOnBlockConstraints()};
+    if (RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()) {
+      if (initial_block_size == kIndefiniteSize) {
+        if (IndefiniteIntrinsicLogicalWidthsDirty()) {
+          return absl::nullopt;
+        }
+        return MinMaxSizesResult(
+            intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+      }
+      if (min_max_sizes_cache_) {
+        if (DefiniteIntrinsicLogicalWidthsDirty()) {
+          return absl::nullopt;
+        }
+        return min_max_sizes_cache_->Find(initial_block_size);
+      }
+    } else {
+      if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
+        return MinMaxSizesResult(
+            intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+      }
     }
     return absl::nullopt;
   }
 
-  // LayoutNG can use this function to update our cache of intrinsic logical
-  // widths when the layout object is managed by NG. Should not be called by
-  // regular code.
-  //
-  // Also clears the "dirty" flag for the intrinsic logical widths.
+  // Sets the min/max sizes for this box.
   void SetIntrinsicLogicalWidths(LayoutUnit initial_block_size,
                                  bool depends_on_block_constraints,
                                  bool child_depends_on_block_constraints,
                                  const MinMaxSizes& sizes) {
     NOT_DESTROYED();
-    intrinsic_logical_widths_ = sizes;
-    intrinsic_logical_widths_initial_block_size_ = initial_block_size;
-    SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
-        depends_on_block_constraints);
-    SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
-        child_depends_on_block_constraints);
+    // Write to the "indefinite" cache slot if:
+    //  - If the initial block-size is indefinite.
+    //  - If we don't have any children which depend on the initial block-size
+    //    (it can change and we wouldn't give a different answer).
+    if (!RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled() ||
+        initial_block_size == kIndefiniteSize ||
+        !child_depends_on_block_constraints) {
+      intrinsic_logical_widths_ = sizes;
+      intrinsic_logical_widths_initial_block_size_ = initial_block_size;
+      SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
+          depends_on_block_constraints);
+      SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
+          child_depends_on_block_constraints);
+      SetIndefiniteIntrinsicLogicalWidthsDirty(false);
+    } else {
+      if (!min_max_sizes_cache_) {
+        min_max_sizes_cache_ = MakeGarbageCollected<MinMaxSizesCache>();
+      } else if (DefiniteIntrinsicLogicalWidthsDirty()) {
+        min_max_sizes_cache_->Clear();
+      }
+      min_max_sizes_cache_->Add(sizes, initial_block_size,
+                                depends_on_block_constraints);
+      SetDefiniteIntrinsicLogicalWidthsDirty(false);
+    }
     ClearIntrinsicLogicalWidthsDirty();
   }
 
@@ -1469,6 +1501,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  protected:
   MinMaxSizes intrinsic_logical_widths_;
   LayoutUnit intrinsic_logical_widths_initial_block_size_;
+  Member<MinMaxSizesCache> min_max_sizes_cache_;
 
   Member<const NGLayoutResult> measure_result_;
   NGLayoutResultList layout_results_;
