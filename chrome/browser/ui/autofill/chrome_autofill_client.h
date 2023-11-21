@@ -216,7 +216,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
                               bool should_show_prompt,
                               SaveIbanPromptCallback callback) override;
   void ConfirmUploadIbanToCloud(const Iban& iban,
-                                const LegalMessageLines& legal_message_lines,
+                                LegalMessageLines legal_message_lines,
                                 bool should_show_prompt,
                                 SaveIbanPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved) override;

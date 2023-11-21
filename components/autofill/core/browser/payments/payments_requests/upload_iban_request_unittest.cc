@@ -17,7 +17,7 @@ constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kContextToken[] = u"somecontexttoken";
 constexpr char16_t kValue[] = u"CH5604835012345678009";
-constexpr char kNickname[] = "My IBAN";
+constexpr char16_t kNickname[] = u"My IBAN";
 
 }  // namespace
 

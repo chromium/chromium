@@ -33,6 +33,12 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
        (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                                 const std::u16string&)>)),
       (override));
+  MOCK_METHOD(
+      void,
+      UploadIban,
+      (const UploadIbanRequestDetails&,
+       (base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)),
+      (override));
 };
 
 }  // namespace autofill

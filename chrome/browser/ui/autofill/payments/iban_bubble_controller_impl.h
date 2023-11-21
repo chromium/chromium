@@ -52,7 +52,7 @@ class IbanBubbleControllerImpl
   // with respect to the offer-to-upload save prompt.
   void OfferUploadSave(
       const Iban& iban,
-      const LegalMessageLines& legal_message_lines,
+      LegalMessageLines legal_message_lines,
       bool should_show_prompt,
       AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
 

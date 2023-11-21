@@ -274,7 +274,7 @@ void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
 
 void AutofillClient::ConfirmUploadIbanToCloud(
     const Iban& iban,
-    const LegalMessageLines& legal_message_lines,
+    LegalMessageLines legal_message_lines,
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {}
 

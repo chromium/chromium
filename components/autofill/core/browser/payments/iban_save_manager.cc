@@ -160,7 +160,7 @@ bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
       payments::GetBillingCustomerId(personal_data_manager_),
       payments::kUploadPaymentMethodBillableServiceNumber,
       base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
   return show_save_prompt;
 }
 
@@ -174,16 +174,14 @@ IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
 
 void IbanSaveManager::OnUserDidDecideOnLocalSave(
     AutofillClient::SaveIbanOfferUserDecision user_decision,
-    std::optional<std::u16string> nickname) {
-  if (nickname.has_value()) {
+    std::u16string_view nickname) {
+  if (!nickname.empty()) {
     std::u16string trimmed_nickname;
-    base::TrimWhitespace(nickname.value(), base::TRIM_ALL, &trimmed_nickname);
-    if (!trimmed_nickname.empty()) {
-      iban_save_candidate_.set_nickname(trimmed_nickname);
-    }
+    base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
+    iban_save_candidate_.set_nickname(trimmed_nickname);
   }
 
-  const std::string partial_iban_hash =
+  const std::string& partial_iban_hash =
       GetPartialIbanHashString(base::UTF16ToUTF8(iban_save_candidate_.value()));
   switch (user_decision) {
     case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
@@ -208,22 +206,48 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
   }
 }
 
+void IbanSaveManager::OnUserDidDecideOnUploadSave(
+    bool show_save_prompt,
+    AutofillClient::SaveIbanOfferUserDecision user_decision,
+    std::u16string_view nickname) {
+  if (!nickname.empty()) {
+    std::u16string trimmed_nickname;
+    base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
+    if (!trimmed_nickname.empty()) {
+      iban_save_candidate_.set_nickname(trimmed_nickname);
+    }
+  }
+
+  switch (user_decision) {
+    case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
+      return SendUploadRequest(show_save_prompt);
+    case AutofillClient::SaveIbanOfferUserDecision::kIgnored:
+    case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
+      GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban_save_candidate_.value())));
+      return;
+  }
+}
+
 void IbanSaveManager::OnDidGetUploadDetails(
+    bool show_save_prompt,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message) {
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Upload should only be offered when legal messages are parsed
     // successfully.
-    std::unique_ptr<LegalMessageLines> parsed_legal_message_lines =
-        std::make_unique<LegalMessageLines>();
-    if (LegalMessageLine::Parse(*legal_message,
-                                parsed_legal_message_lines.get(),
+    LegalMessageLines parsed_legal_message_lines;
+    if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
       context_token_ = context_token;
-      // TODO(b/296651801): Trigger upload bubble via ChromeAutofillClient and
-      // offer upload by using `context_token_` and
-      // `parsed_legal_message_lines`.
+      // If `show_save_prompt`'s value is false, desktop builds will still offer
+      // save in the omnibox without popping-up the bubble.
+      client_->ConfirmUploadIbanToCloud(
+          iban_save_candidate_, std::move(parsed_legal_message_lines),
+          show_save_prompt,
+          base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,
+                         weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
       return;
     }
   }
@@ -231,6 +255,38 @@ void IbanSaveManager::OnDidGetUploadDetails(
   // If the upload details request failed, attempt to offer local save.
   if (!MatchesExistingLocalIban(iban_save_candidate_)) {
     AttemptToOfferLocalSave(iban_save_candidate_);
+  }
+}
+
+void IbanSaveManager::SendUploadRequest(bool show_save_prompt) {
+  payments::PaymentsNetworkInterface::UploadIbanRequestDetails details;
+  details.app_locale = personal_data_manager_->app_locale();
+  details.billable_service_number =
+      payments::kUploadPaymentMethodBillableServiceNumber;
+  details.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+  details.context_token = context_token_;
+  details.value = iban_save_candidate_.value();
+  details.nickname = iban_save_candidate_.nickname();
+  client_->GetPaymentsNetworkInterface()->UploadIban(
+      details,
+      base::BindOnce(&IbanSaveManager::OnDidUploadIban,
+                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
+}
+
+void IbanSaveManager::OnDidUploadIban(
+    bool show_save_prompt,
+    AutofillClient::PaymentsRpcResult result) {
+  const std::string& partial_iban_hash =
+      GetPartialIbanHashString(base::UTF16ToUTF8(iban_save_candidate_.value()));
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+    // Clear all IbanSave strikes for this IBAN, so that if it's later removed
+    // the strike count starts over with respect to re-saving it.
+    GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
+  } else if (show_save_prompt) {
+    // If the upload failed and the bubble was actually shown (NOT just the
+    // icon), count that as a strike against offering upload in the future.
+    GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
   }
 }
 

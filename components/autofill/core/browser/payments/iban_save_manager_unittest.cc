@@ -109,6 +109,21 @@ class IbanSaveManagerTest : public testing::Test {
             });
   }
 
+  void SetUpUploadIbanResponse(bool is_successful) {
+    ON_CALL(*payments_network_interface(), UploadIban)
+        .WillByDefault(
+            [is_successful](
+                const payments::PaymentsNetworkInterface::
+                    UploadIbanRequestDetails& request_details,
+                base::OnceCallback<void(AutofillClient::PaymentsRpcResult)>
+                    callback) {
+              std::move(callback).Run(
+                  is_successful
+                      ? AutofillClient::PaymentsRpcResult::kSuccess
+                      : AutofillClient::PaymentsRpcResult::kPermanentFailure);
+            });
+  }
+
  protected:
   TestPersonalDataManager& personal_data() {
     return static_cast<TestPersonalDataManager&>(
@@ -422,6 +437,7 @@ TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_Success) {
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
   EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_TRUE(autofill_client_.ConfirmUploadIbanToCloudWasCalled());
   EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
@@ -437,6 +453,7 @@ TEST_F(IbanSaveManagerTest,
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
   EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmUploadIbanToCloudWasCalled());
   EXPECT_TRUE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
@@ -454,6 +471,7 @@ TEST_F(
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
   EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmUploadIbanToCloudWasCalled());
   EXPECT_TRUE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
@@ -471,6 +489,7 @@ TEST_F(IbanSaveManagerTest, OfferUploadSave_LocalIban_Success) {
   EXPECT_TRUE(
       GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(another_iban));
   EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_TRUE(autofill_client_.ConfirmUploadIbanToCloudWasCalled());
   EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
@@ -490,7 +509,92 @@ TEST_F(IbanSaveManagerTest,
   EXPECT_TRUE(
       GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(another_iban));
   EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmUploadIbanToCloudWasCalled());
   EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
+}
+
+TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/true);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  const std::string& partial_iban_hash =
+      IbanSaveManager::GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban.value()));
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  iban_save_strike_database.AddStrike(partial_iban_hash);
+
+  // Verify `kIbanValue` has been successfully added to the strike database.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      u"My teacher's IBAN");
+
+  // Verify the IBAN's strikes have been cleared.
+  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+}
+
+TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_FailureShouldAddStrike) {
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/false);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  const std::string& partial_iban_hash =
+      IbanSaveManager::GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban.value()));
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  iban_save_strike_database.AddStrike(partial_iban_hash);
+
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      u"My teacher's IBAN");
+
+  // Verify the IBAN's strikes have been added by 1.
+  EXPECT_EQ(2, iban_save_strike_database.GetStrikes(partial_iban_hash));
+}
+
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Decline_AddsStrike) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  const std::string& partial_iban_hash =
+      IbanSaveManager::GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban.value()));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined);
+
+  // Verify the IBAN's strikes have been added by 1.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  // Verify that `UploadIban` handler is not triggered.
+  EXPECT_CALL(*payments_network_interface(), UploadIban).Times(0);
+}
+
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Ignore_AddsStrike) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  const std::string& partial_iban_hash =
+      IbanSaveManager::GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban.value()));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kIgnored);
+
+  // Verify the IBAN's strikes have been added by 1.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  // Verify that `UploadIban` handler is not triggered.
+  EXPECT_CALL(*payments_network_interface(), UploadIban).Times(0);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

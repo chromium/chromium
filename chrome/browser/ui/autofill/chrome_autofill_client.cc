@@ -870,15 +870,15 @@ void ChromeAutofillClient::ConfirmSaveIbanLocally(
 
 void ChromeAutofillClient::ConfirmUploadIbanToCloud(
     const Iban& iban,
-    const LegalMessageLines& legal_message_lines,
+    LegalMessageLines legal_message_lines,
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())
-      ->OfferUploadSave(iban, legal_message_lines, should_show_prompt,
-                        std::move(callback));
+      ->OfferUploadSave(iban, std::move(legal_message_lines),
+                        should_show_prompt, std::move(callback));
 #endif
 }
 

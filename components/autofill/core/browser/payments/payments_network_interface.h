@@ -387,7 +387,7 @@ class PaymentsNetworkInterface {
     int64_t billing_customer_number = 0;
     std::u16string context_token;
     std::u16string value;
-    std::string nickname;
+    std::u16string nickname;
   };
 
   // An enum set in the GetUploadDetailsRequest indicating the source of the
@@ -556,7 +556,7 @@ class PaymentsNetworkInterface {
   // already been made. `details` contains all necessary information to build
   // an `UploadIbanRequest`. `callback` is the callback function that is
   // triggered when a response is received from the server.
-  void UploadIban(
+  virtual void UploadIban(
       const UploadIbanRequestDetails& details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
 

@@ -62,8 +62,15 @@ class IbanSaveManager {
 
   void OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      std::optional<std::u16string> nickname = absl::nullopt) {
+      std::u16string_view nickname = u"") {
     OnUserDidDecideOnLocalSave(user_decision, nickname);
+  }
+
+  void OnUserDidDecideOnUploadSaveForTesting(
+      bool show_save_prompt,
+      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      std::u16string_view nickname = u"") {
+    OnUserDidDecideOnUploadSave(show_save_prompt, user_decision, nickname);
   }
 
   // Returns the IbanSaveStrikeDatabase for `client_`.
@@ -110,23 +117,38 @@ class IbanSaveManager {
   // Returns the IbanSaveStrikeDatabase for `client_`;
   IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
 
-  // Called once the user makes a decision with respect to the local IBAN
+  // Called once the user makes a decision with respect to the local/server IBAN
   // offer-to-save-prompt. `nickname` is the nickname for the IBAN, which should
   // only be provided in the kAccepted case if the user entered a nickname.
   void OnUserDidDecideOnLocalSave(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      std::optional<std::u16string> nickname = absl::nullopt);
+      std::u16string_view nickname = u"");
+  void OnUserDidDecideOnUploadSave(
+      bool show_save_prompt,
+      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      std::u16string_view nickname = u"");
 
-  // Called when a GetIbanUploadDetails call is completed. The
-  // `legal_message` will be used for displaying the Terms of Service and
-  // Privacy Notice within the upload-save IBAN bubble view. The `context_token`
-  // will serve as the token to initiate the actual Upload IBAN request.
-  // The upload flow will be executed only when there is a successful result and
-  // the `legal_message` is parsed successfully. In all other cases, local save
-  // will be offered if applicable.
-  void OnDidGetUploadDetails(AutofillClient::PaymentsRpcResult result,
+  // Called when a GetIbanUploadDetails call is completed. `show_save_prompt`
+  // being true implies that a save prompt is shown to the user. When false,
+  // implies the offer to save will be icon-only on desktop and not shown at all
+  // on mobile. The `legal_message` will be used for displaying the Terms of
+  // Service and Privacy Notice within the upload-save IBAN bubble view. The
+  // `context_token` will serve as the token to initiate the actual Upload IBAN
+  // request. The upload flow will be executed only when there is a successful
+  // result and the `legal_message` is parsed successfully. In all other cases,
+  // local save will be offered if applicable.
+  void OnDidGetUploadDetails(bool show_save_prompt,
+                             AutofillClient::PaymentsRpcResult result,
                              const std::u16string& context_token,
                              std::unique_ptr<base::Value::Dict> legal_message);
+
+  // Construct `UploadIbanRequestDetails` and send upload IBAN request via
+  // PaymentsNetworkInterface.
+  void SendUploadRequest(bool show_save_prompt);
+
+  // Called when an UploadIban call is completed.
+  void OnDidUploadIban(bool show_save_prompt,
+                       AutofillClient::PaymentsRpcResult result);
 
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty. The record type of this IBAN candidate is
