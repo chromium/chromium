@@ -21,9 +21,9 @@
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -106,8 +106,7 @@ class PlusAddressClientRequests : public ::testing::Test {
   std::string fullConfirmEndpoint =
       base::StrCat({server_base_url, kServerCreatePlusAddressEndpoint});
   std::string token = "myToken";
-  signin::AccessTokenInfo eternal_token_info =
-      signin::AccessTokenInfo(token, base::Time::Max(), "");
+  std::string email_address = "foo@plus.plus";
 
   // Issue all requests starting at this time to test the latency metrics.
   base::Time start_time = base::Time::FromSecondsSinceUnixEpoch(1);
@@ -130,15 +129,18 @@ class PlusAddressClientRequests : public ::testing::Test {
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.CreatePlusAddress(origin, base::DoNothing());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
-  // Validate that the V1 Create request uses the right url and requests method.
+  // Validate that the V1 Create request uses the right url and request method.
   EXPECT_EQ(last_request.url, fullProfileEndpoint);
   EXPECT_EQ(last_request.method, net::HttpRequestHeaders::kPutMethod);
-  // Validate the Authorization header includes "myToken".
+  // Validate the Authorization header includes `token`.
   std::string authorization_value;
   last_request.headers.GetHeader("Authorization", &authorization_value);
   EXPECT_EQ(authorization_value, "Bearer " + token);
@@ -157,9 +159,8 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
   EXPECT_EQ(*facet_entry, origin.Serialize());
 }
 
-TEST_F(PlusAddressClientRequests,
-       CreatePlusAddressV1_EnqueuedUntilOAuthTokenFetched) {
-  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RequestsOauthToken) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
@@ -167,14 +168,14 @@ TEST_F(PlusAddressClientRequests,
   // refers to this as a facet, so matching its nomenclature.
   std::string facet = origin.Serialize();
   base::MockOnceCallback<void(const std::string&)> callback;
-  // Make a request when the PlusAddressClient has an expired OAuth token.
   EXPECT_CALL(callback, Run).Times(0);
   client.CreatePlusAddress(origin, callback.Get());
+  ASSERT_TRUE(identity_test_env.IsAccessTokenRequestPending());
 
   // Verify that CreatePlusAddress hasn't already sent the network request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
 
-  // CreatePlusAddress will  run `callback` after an OAuth token is retrieved.
+  // CreatePlusAddress will run `callback` after an OAuth token is retrieved.
   EXPECT_CALL(callback, Run).Times(1);
   identity_test_env
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
@@ -190,8 +191,9 @@ TEST_F(PlusAddressClientRequests,
 // For tests that cover successful but unexpected server responses, see the
 // PlusAddressParsing.FromV1Create tests.
 TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
@@ -200,6 +202,8 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
   base::MockOnceCallback<void(const std::string&)> on_complete;
   // Initiate a request...
   client.CreatePlusAddress(origin, on_complete.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
   // Fulfill the request and the callback should be run
   EXPECT_CALL(on_complete, Run(plus_address)).Times(1);
 
@@ -225,8 +229,9 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
 // response is too large to be downloaded.
 TEST_F(PlusAddressClientRequests,
        CreatePlusAddressV1_FailedRequestDoesntRunCallback) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
@@ -234,6 +239,8 @@ TEST_F(PlusAddressClientRequests,
   base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
   client.CreatePlusAddress(origin, on_response_parsed.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // The request fails and the callback is never run
   EXPECT_CALL(on_response_parsed, Run).Times(0);
@@ -255,8 +262,9 @@ TEST_F(PlusAddressClientRequests,
 
 TEST_F(PlusAddressClientRequests,
        CreatePlusAddressV1_HandlesConcurrentRequests) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
 
   base::MockOnceCallback<void(const std::string&)> first_request;
   base::MockOnceCallback<void(const std::string&)> second_request;
@@ -271,6 +279,8 @@ TEST_F(PlusAddressClientRequests,
   // Send two requests in quick succession
   client.CreatePlusAddress(origin_1, first_request.Get());
   client.CreatePlusAddress(origin_2, second_request.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // The first callback should be run once the server responds to its request.
   PlusAddressMap expected;
@@ -285,11 +295,15 @@ TEST_F(PlusAddressClientRequests,
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
-  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.ReservePlusAddress(origin, base::DoNothing());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullReserveEndpoint);
@@ -315,12 +329,15 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
   std::string plus_address = "plus@plus.plus";
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.ConfirmPlusAddress(origin, plus_address, base::DoNothing());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullConfirmEndpoint);
@@ -352,7 +369,8 @@ class PlusAddressCreationRequests
  public:
   PlusAddressCreationRequests()
       : client_(identity_manager, scoped_shared_url_loader_factory) {
-    client_.SetAccessTokenInfoForTesting(eternal_token_info);
+    identity_test_env.MakePrimaryAccountAvailable(
+        email_address, signin::ConsentLevel::kSignin);
     client_.SetClockForTesting(test_clock());
   }
 
@@ -382,10 +400,6 @@ class PlusAddressCreationRequests
   std::string ResponseByteSizeHistogram() {
     return ResponseByteSizeHistogramFor(GetParam());
   }
-  void ForceExpireAuthToken() {
-    client_.SetAccessTokenInfoForTesting(
-        signin::AccessTokenInfo(token, base::Time::Min(), ""));
-  }
 
   const url::Origin origin_ = url::Origin::Create(GURL("https://foobar.com"));
   const std::string plus_address_ = "plus@plus.plus";
@@ -404,6 +418,8 @@ TEST_P(PlusAddressCreationRequests, HandlesConcurrentRequests) {
   // Send two requests in quick succession.
   MakeCreationRequest(first_request.GetCallback());
   MakeCreationRequest(second_request.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // The first callback should be run once the server responds to its request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
@@ -418,14 +434,12 @@ TEST_P(PlusAddressCreationRequests, HandlesConcurrentRequests) {
   EXPECT_TRUE(second_request.IsReady());
 }
 
-TEST_P(PlusAddressCreationRequests, EnqueuedUntilOAuthTokenFetched) {
-  ForceExpireAuthToken();
-  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
-                                                signin::ConsentLevel::kSignin);
+TEST_P(PlusAddressCreationRequests, RequestsOauthToken) {
   // Make a request when the PlusAddressClient has an expired OAuth token.
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
   ASSERT_FALSE(future.IsReady());
+  ASSERT_TRUE(identity_test_env.IsAccessTokenRequestPending());
 
   // Verify that ConfirmPlusAddress hasn't already sent the network request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
@@ -449,6 +463,8 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
   // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // Fulfill the request and the appropriate callback should be run.
   AdvanceTimeTo(start_time + latency_);
@@ -471,6 +487,8 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
   // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   AdvanceTimeTo(start_time + latency_);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
@@ -493,9 +511,11 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
   // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
-  AdvanceTimeTo(start_time + latency_);
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // Return a response missing all of the expected fields.
+  AdvanceTimeTo(start_time + latency_);
   const std::string json = "{}";
   test_url_loader_factory.SimulateResponseForPendingRequest(Endpoint(), json);
 
@@ -511,6 +531,31 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
   histogram_tester.ExpectUniqueSample(ResponseByteSizeHistogram(), json.size(),
                                       1);
 }
+
+TEST_P(PlusAddressCreationRequests, RunCallbackOnOauthError) {
+  // Initiate a request...
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  MakeCreationRequest(future.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Verify that no network requests are made.
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+
+  // The callback is still run with an OAuth error.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().type(),
+            PlusAddressRequestErrorType::kOAuthError);
+
+  // Verify expected metrics.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
+              BucketsAre(base::Bucket(
+                  GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1)));
+  histogram_tester.ExpectTotalCount(LatencyHistogram(), 0);
+  histogram_tester.ExpectTotalCount(ResponseCodeHistogram(), 0);
+  histogram_tester.ExpectTotalCount(ResponseByteSizeHistogram(), 0);
+}
 INSTANTIATE_TEST_SUITE_P(
     All,
     PlusAddressCreationRequests,
@@ -524,9 +569,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.GetAllPlusAddresses(base::DoNothing());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // Validate that the V1 List request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullProfileEndpoint);
@@ -537,14 +585,14 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   EXPECT_EQ(authorization_value, "Bearer " + token);
 }
 
-TEST_F(PlusAddressClientRequests,
-       GetAllPlusAddresses_EnqueuedUntilOAuthTokenFetched) {
-  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+TEST_F(PlusAddressClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   base::test::TestFuture<const PlusAddressMap&> future;
-  // Make a request when the PlusAddressClient has an expired OAuth token.
   client.GetAllPlusAddresses(future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+  ASSERT_TRUE(identity_test_env.IsAccessTokenRequestPending());
 
   // Verify that GetAllPlusAddresses hasn't already sent the network request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
@@ -567,13 +615,17 @@ TEST_F(PlusAddressClientRequests,
 // For tests that cover successful but unexpected server responses, see the
 // PlusAddressParsing.FromV1List tests.
 TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
 
   base::test::TestFuture<const PlusAddressMap&> future;
   // Initiate a request...
   client.GetAllPlusAddresses(future.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
+
   std::string plus_address_1 = "plus1@plus.plus";
   std::string plus_address_2 = "plus2@plus.plus";
   std::string facet_1 = "asdf.example";
@@ -608,13 +660,16 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
 
 TEST_F(PlusAddressClientRequests,
        GetAllPlusAddressesV1_FailedRequestDoesntRunCallback) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
 
   base::test::TestFuture<const PlusAddressMap&> future;
   // Initiate a request...
   client.GetAllPlusAddresses(future.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
 
   // The request fails and the callback is never run
   base::TimeDelta latency = base::Milliseconds(2400);
@@ -637,12 +692,15 @@ TEST_F(PlusAddressClientRequests,
 TEST_F(
     PlusAddressClientRequests,
     DISABLED_GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
+  identity_test_env.MakePrimaryAccountAvailable(email_address,
+                                                signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_token_info);
 
   base::test::TestFuture<const PlusAddressMap&> first;
   // Send two requests in quick succession
   client.GetAllPlusAddresses(first.GetCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      token, base::Time::Max());
   EXPECT_DCHECK_DEATH(client.GetAllPlusAddresses(base::DoNothing()));
 
   // The first callback should be run once the server responds.
@@ -695,26 +753,6 @@ class PlusAddressAuthToken : public ::testing::Test {
   }
 
  protected:
-  // A blocking helper that signs the user in and gets an OAuth token with our
-  // test scope.
-  // Note: this blocks indefinitely if there are no listeners for token
-  // creation. This means it must be called after GetAuthToken.
-  void WaitForSignInAndToken() {
-    identity_test_env_.MakePrimaryAccountAvailable(
-        test_email_address_, signin::ConsentLevel::kSignin);
-    identity_test_env_
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-            test_token_, test_token_expiration_time_, "id", test_scopes_);
-  }
-
-  // A blocking helper that gets an OAuth token for our test scope that expires
-  // at `expiration_time`.
-  void WaitForToken(base::Time expiration_time) {
-    identity_test_env_
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-            test_token_, expiration_time, "id", test_scopes_);
-  }
-
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
@@ -726,6 +764,11 @@ class PlusAddressAuthToken : public ::testing::Test {
 
   base::Clock* test_clock() { return &clock_; }
 
+  // Required by `signin::IdentityTestEnvironment`.
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+
+  std::string test_email_address_ = "foo@gmail.com";
   std::string test_token_ = "access_token";
   std::string test_scope_ = "https://googleapis.com/test.scope";
   signin::ScopeSet test_scopes_ = {test_scope_};
@@ -735,52 +778,53 @@ class PlusAddressAuthToken : public ::testing::Test {
   base::HistogramTester histogram_tester;
 
  private:
-  // Required by `signin::IdentityTestEnvironment`.
-  base::test::TaskEnvironment task_environment_;
-  signin::IdentityTestEnvironment identity_test_env_;
-
   base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
-  std::string test_email_address_ = "foo@gmail.com";
 };
 
 TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
-  PlusAddressClient client(
-      identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
 
-  base::test::TestFuture<void> callback;
+  base::test::TestFuture<absl::optional<std::string>> callback;
   client.GetAuthToken(callback.GetCallback());
 
   // The callback is run only after signin.
   EXPECT_FALSE(callback.IsReady());
-  WaitForSignInAndToken();
+  identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          test_token_, test_token_expiration_time_, "unused", test_scopes_);
+
   EXPECT_TRUE(callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 1)));
 }
 
 TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
-  PlusAddressClient client(
-      identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
 
-  base::MockOnceClosure callback;
-  EXPECT_CALL(callback, Run).Times(0);
-  client.GetAuthToken(callback.Get());
+  base::test::TestFuture<absl::optional<std::string>> callback;
+  client.GetAuthToken(callback.GetCallback());
+  EXPECT_FALSE(callback.IsReady());
   histogram_tester.ExpectTotalCount(kPlusAddressOauthErrorHistogram, 0);
 }
 
 TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
-  PlusAddressClient client(
-      identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
   // Make an initial OAuth token request.
-  base::test::TestFuture<void> first_callback;
+  base::test::TestFuture<absl::optional<std::string>> first_callback;
   client.GetAuthToken(first_callback.GetCallback());
 
   // Sign in, get a token, and fast-forward to after it is expired.
-  WaitForSignInAndToken();
+  identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          test_token_, test_token_expiration_time_, "unused", test_scopes_);
   EXPECT_TRUE(first_callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 1)));
@@ -788,15 +832,82 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   AdvanceTimeTo(now);
 
   // Issue another request for an OAuth token.
-  base::test::TestFuture<void> second_callback;
+  base::test::TestFuture<absl::optional<std::string>> second_callback;
   client.GetAuthToken(second_callback.GetCallback());
 
   // Callback is only run once the new OAuth token request has completed.
   EXPECT_FALSE(second_callback.IsReady());
-  WaitForToken(/*expiration_time=*/now + base::Hours(1));
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          test_token_, now + base::Hours(1), "unused", test_scopes_);
   EXPECT_TRUE(second_callback.IsReady());
   EXPECT_THAT(histogram_tester.GetAllSamples(kPlusAddressOauthErrorHistogram),
               BucketsAre(base::Bucket(GoogleServiceAuthError::State::NONE, 2)));
+}
+
+TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
+  // GetAuthToken() is only concerned with the primary token auth state.
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      test_email_address_, signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@foo.com");
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
+
+  base::test::TestFuture<absl::optional<std::string>> callback;
+  client.GetAuthToken(callback.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      primary.account_id, test_token_, base::Time::Max());
+  EXPECT_EQ(callback.Get(), test_token_);
+}
+
+TEST_F(PlusAddressAuthToken, RequestWorks_ManyCallers) {
+  identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
+                                                 signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
+
+  // Issue several requests for an OAuth token.
+  base::test::TestFuture<absl::optional<std::string>> first;
+  base::test::TestFuture<absl::optional<std::string>> second;
+  base::test::TestFuture<absl::optional<std::string>> third;
+  client.GetAuthToken(first.GetCallback());
+  client.GetAuthToken(second.GetCallback());
+  client.GetAuthToken(third.GetCallback());
+
+  // Although we failed to get a token, each callback should still be run.
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          test_token_, base::Time::Max(), "unused", test_scopes_);
+  EXPECT_EQ(first.Get().value(), test_token_);
+  EXPECT_EQ(second.Get().value(), test_token_);
+  EXPECT_EQ(third.Get().value(), test_token_);
+}
+
+TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
+  identity_test_env_.MakePrimaryAccountAvailable(test_email_address_,
+                                                 signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager(),
+                           /* url_loader_factory= */ nullptr);
+
+  // Issue several requests for an OAuth token.
+  base::test::TestFuture<absl::optional<std::string>> first;
+  base::test::TestFuture<absl::optional<std::string>> second;
+  base::test::TestFuture<absl::optional<std::string>> third;
+  client.GetAuthToken(first.GetCallback());
+  client.GetAuthToken(second.GetCallback());
+  client.GetAuthToken(third.GetCallback());
+
+  // Although we failed to get a token, each callback should still be run.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  EXPECT_FALSE(first.Get().has_value());
+  EXPECT_FALSE(second.Get().has_value());
+  EXPECT_FALSE(third.Get().has_value());
 }
 
 }  // namespace plus_addresses
