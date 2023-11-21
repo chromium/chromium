@@ -85,25 +85,27 @@ std::string GetAccountDeviceId(const std::string& signin_scoped_device_id,
   return account_device_id;
 }
 
-std::string GetInlineLoginFlowName(Profile* profile,
-                                   const absl::optional<std::string>& email) {
-  DCHECK(profile);
-  if (!profile->IsChild()) {
-    return kCrosAddAccountFlow;
-  }
-
+bool IsPrimaryAccountBeingReauthenticated(
+    Profile* profile,
+    const absl::optional<std::string>& email) {
   std::string primary_account_email =
       IdentityManagerFactory::GetForProfile(profile)
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
-  // If provided email is for primary account - it's a reauthentication, use
-  // normal add account flow.
-  if (email && gaia::AreEmailsSame(primary_account_email, *email)) {
-    return kCrosAddAccountFlow;
+
+  return email && gaia::AreEmailsSame(primary_account_email, *email);
+}
+
+std::string GetInlineLoginFlowName(Profile* profile,
+                                   const absl::optional<std::string>& email) {
+  DCHECK(profile);
+  if (profile->IsChild() &&
+      !IsPrimaryAccountBeingReauthenticated(profile, email)) {
+    // Child user is adding / reauthenticating a secondary account.
+    return kCrosAddAccountEduFlow;
   }
 
-  // Child user is adding/reauthenticating a secondary account.
-  return kCrosAddAccountEduFlow;
+  return kCrosAddAccountFlow;
 }
 
 const SkBitmap& GetDefaultAccountIcon() {

@@ -53,6 +53,7 @@
 
 using testing::Eq;
 using testing::IsEmpty;
+using testing::IsNull;
 using testing::Ne;
 using testing::Not;
 
@@ -78,6 +79,8 @@ constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
 constexpr char kToSVersion[] = "12345678";
 constexpr char kFakeDeviceId[] = "fake-device-id";
+constexpr char kCrosAddAccountFlow[] = "crosAddAccount";
+constexpr char kCrosAddAccountEduFlow[] = "crosAddAccountEdu";
 
 struct DeviceAccountInfo {
   std::string id;
@@ -431,6 +434,79 @@ IN_PROC_BROWSER_TEST_P(
   known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
 
   EXPECT_THAT(GetDeviceIdFromWebview(), Ne(kFakeDeviceId));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForDeviceAccountReauthentication) {
+  base::Value::Dict params;
+  params.Set("email", primary_account_id().GetUserEmail());
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForRegularSecondaryAccountAddition) {
+  if (GetDeviceAccountInfo().user_type ==
+      user_manager::UserType::USER_TYPE_CHILD) {
+    return;
+  }
+
+  base::Value::Dict params;
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForRegularSecondaryAccountReauthentication) {
+  if (GetDeviceAccountInfo().user_type ==
+      user_manager::UserType::USER_TYPE_CHILD) {
+    return;
+  }
+
+  base::Value::Dict params;
+  params.Set("email", kSecondaryAccount1Email);
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForChildEduAccountAddition) {
+  if (GetDeviceAccountInfo().user_type !=
+      user_manager::UserType::USER_TYPE_CHILD) {
+    return;
+  }
+
+  base::Value::Dict params;
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountEduFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForChildEduAccountReauthentication) {
+  if (GetDeviceAccountInfo().user_type !=
+      user_manager::UserType::USER_TYPE_CHILD) {
+    return;
+  }
+
+  base::Value::Dict params;
+  params.Set("email", kSecondaryAccount1Email);
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountEduFlow));
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
