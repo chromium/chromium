@@ -999,7 +999,8 @@ void RootWindowController::StartSplitViewOverviewSession(
     absl::optional<OverviewStartAction> action,
     absl::optional<OverviewEnterExitType> type,
     WindowSnapActionSource snap_action_source) {
-  if (!OverviewController::Get()->CanEnterOverview()) {
+  if (split_view_overview_session_ ||
+      !OverviewController::Get()->CanEnterOverview()) {
     // If we can't start overview, we shouldn't start split view overview
     // either. This can happen when we restore snap state after exiting
     // overview.

@@ -314,12 +314,11 @@ bool OverviewController::CanEnterOverview() const {
   // Don't allow a window overview if the user session is not active (e.g.
   // locked or in user-adding screen) or a modal dialog is open or running in
   // kiosk app session.
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  return session_controller->GetSessionState() ==
+  Shell* shell = Shell::Get();
+  return shell->session_controller()->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
          !Shell::IsSystemModalWindowOpen() &&
-         !Shell::Get()->screen_pinning_controller()->IsPinned();
+         !shell->screen_pinning_controller()->IsPinned();
 }
 
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {

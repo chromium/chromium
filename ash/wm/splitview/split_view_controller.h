@@ -551,10 +551,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // needs to be activated. Returns nullptr if there is no such window.
   aura::Window* GetActiveWindowAfterResizingUponExit();
 
-  // Returns the maximum value of the |divider_position_|. It is the width of
+  // Returns the maximum value of the `divider_position_`, which is the width of
   // the current display's work area bounds in landscape orientation, or height
   // of the current display's work area bounds in portrait orientation.
-  int GetDividerEndPosition() const;
+  int GetDividerPositionUpperLimit() const;
 
   // Called after a to-be-snapped window `window` got snapped. It updates the
   // split view states and notifies observers about the change. It also restore
