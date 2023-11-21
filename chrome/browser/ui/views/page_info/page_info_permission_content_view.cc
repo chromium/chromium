@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
@@ -100,6 +102,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       (title_height - GetLayoutConstant(PAGE_INFO_ICON_SIZE)) / 2;
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
+
+  MaybeAddMediaPreview();
+
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
@@ -157,6 +162,11 @@ void PageInfoPermissionContentView::SetPermissionInfo(
   PreferredSizeChanged();
 }
 
+void PageInfoPermissionContentView::ChildPreferredSizeChanged(
+    views::View* child) {
+  PreferredSizeChanged();
+}
+
 void PageInfoPermissionContentView::OnToggleButtonPressed() {
   PageInfoUI::ToggleBetweenAllowAndBlock(permission_);
 
@@ -179,4 +189,27 @@ void PageInfoPermissionContentView::PermissionChanged() {
   presenter_->OnSitePermissionChanged(permission_.type, permission_.setting,
                                       permission_.requesting_origin,
                                       permission_.is_one_time);
+}
+
+void PageInfoPermissionContentView::MaybeAddMediaPreview() {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
+    return;
+  }
+
+  if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      type_ != ContentSettingsType::MEDIASTREAM_MIC) {
+    return;
+  }
+
+  AddChildView(PageInfoViewFactory::CreateSeparator(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
+
+  auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
+                       ? MediaCoordinator::ViewType::kCameraOnly
+                       : MediaCoordinator::ViewType::kMicOnly;
+  media_preview_coordinator_.emplace(view_type, *this, /*index=*/std::nullopt,
+                                     /*is_subsection=*/true);
+#endif
 }
