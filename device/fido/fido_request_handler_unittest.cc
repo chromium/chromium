@@ -621,6 +621,46 @@ TEST_F(FidoRequestHandlerTest,
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
+// This tests sets up a scenario where there are two platform authenticators
+// and the first one returns a failure for discovery, to verify that the
+// second is still used.
+TEST_F(FidoRequestHandlerTest, TestWithMultiplePlatformAuthenticators) {
+  auto device = MockFidoDevice::MakeCtap();
+  EXPECT_CALL(*device, GetId()).WillRepeatedly(testing::Return("device2"));
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetInfo,
+      test_data::kTestGetInfoResponsePlatformDevice);
+  device->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
+                                      CreateFakeSuccessDeviceResponse());
+  device->SetDeviceTransport(FidoTransportProtocol::kInternal);
+
+  auto* fake_discovery_fails =
+      fake_discovery_factory_.ForgeNextPlatformDiscovery(
+          test::FakeFidoDiscovery::StartMode::kManual);
+  auto* fake_discovery_succeeds =
+      fake_discovery_factory_.ForgeNextPlatformDiscovery(
+          test::FakeFidoDiscovery::StartMode::kManual);
+
+  TestObserver observer;
+  auto request_handler = std::make_unique<FakeFidoRequestHandler>(
+      &fake_discovery_factory_,
+      base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
+      callback().callback());
+  request_handler->set_has_platform_credential(
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
+  request_handler->set_observer(&observer);
+  fake_discovery_succeeds->AddDevice(std::move(device));
+  fake_discovery_fails->SimulateStarted(false);
+  fake_discovery_succeeds->SimulateStarted(true);
+
+  observer.WaitForAndExpectAvailableTransportsAre(
+      {FidoTransportProtocol::kInternal},
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
+
+  callback().WaitForCallback();
+  EXPECT_TRUE(callback().status());
+}
+
 #if BUILDFLAG(IS_WIN)
 
 TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
