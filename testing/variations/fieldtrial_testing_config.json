@@ -2296,6 +2296,28 @@
             ]
         }
     ],
+    "BackgroundResourceFetch": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackgroundResourceFetch",
+                        "ReduceTransferSizeUpdatedIPC"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackgroundTabLoadingFromPerformanceManager": [
         {
             "platforms": [
@@ -14450,27 +14472,6 @@
                     "enable_features": [
                         "ReduceSubresourceResponseStartedIPC",
                         "UkmReduceAddEntryIPC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReduceTransferSizeUpdatedIPC": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabeld",
-                    "enable_features": [
-                        "ReduceTransferSizeUpdatedIPC"
                     ]
                 }
             ]
