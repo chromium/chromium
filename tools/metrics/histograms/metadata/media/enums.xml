@@ -2285,33 +2285,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="GpuMemoryBuffer"/>
 </enum>
 
-<enum name="VideoPersistenceAttemptResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="No system support"/>
-  <int value="2" label="No feature"/>
-  <int value="3" label="No activity support"/>
-  <int value="4" label="Already running"/>
-  <int value="5" label="Restarting"/>
-  <int value="6" label="Finishing"/>
-  <int value="7" label="No WebContents"/>
-  <int value="8" label="(Obsolete) No video"/>
-  <int value="9" label="App tasks"/>
-</enum>
-
 <enum name="VideoPersistenceControlsType">
   <int value="0" label="Native controls"/>
   <int value="1" label="Custom controls"/>
-</enum>
-
-<enum name="VideoPersistenceEndReason">
-  <int value="0" label="Resume"/>
-  <int value="1" label="(Obsolete) Navigation"/>
-  <int value="2" label="Close"/>
-  <int value="3" label="Crash"/>
-  <int value="4" label="New tab"/>
-  <int value="5" label="Reparent"/>
-  <int value="6" label="Left fullscreen"/>
-  <int value="7" label="Left fullscreen (webcontents)"/>
 </enum>
 
 <enum name="VideoPixelFormatUnion">

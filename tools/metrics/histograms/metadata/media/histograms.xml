@@ -6033,16 +6033,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.VideoPersistence.AttemptResult"
-    enum="VideoPersistenceAttemptResult" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Every time a video persistence session could be triggered, it records the
-    result of the attempt.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoPersistence.ControlsType"
     enum="VideoPersistenceControlsType" expires_after="2021-09-19">
   <owner>peconn@chromium.org</owner>
@@ -6050,25 +6040,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the type of controls a persisted video is using. This is recorded
     every time a video enters persistence mode
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoPersistence.Duration" units="ms"
-    expires_after="M93">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the length during which a video was in a persistent state. It is
-    recorded once per video persistence session.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoPersistence.EndReason"
-    enum="VideoPersistenceEndReason" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the reason why a video persistence session has ended.
   </summary>
 </histogram>
 
