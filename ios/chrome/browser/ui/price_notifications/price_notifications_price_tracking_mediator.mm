@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,6 +16,7 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -49,12 +51,14 @@ using PriceNotificationItems =
 @interface PriceNotificationsPriceTrackingMediator () {
   // The service responsible for fetching a product's image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
+  // Only used if ReplaceSyncPromosWithSignInPromos is not enabled.
+  bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;
 }
 // The service responsible for interacting with commerce's price data
 // infrastructure.
 @property(nonatomic, assign) commerce::ShoppingService* shoppingService;
 // The service responsible for managing bookmarks.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+@property(nonatomic, readonly) bookmarks::BookmarkModel* bookmarkModel;
 // The current browser state's webstate.
 @property(nonatomic, assign) web::WebState* webState;
 // The product data for the product contained on the site the user is currently
@@ -84,7 +88,7 @@ using PriceNotificationItems =
     DCHECK(webState);
     DCHECK(pushNotificationService);
     _shoppingService = service;
-    _bookmarkModel = bookmarkModel;
+    _localOrSyncableBookmarkModel = bookmarkModel;
     _imageFetcher = std::move(fetcher);
     _webState = webState;
     _pushNotificationService = pushNotificationService;
@@ -100,6 +104,17 @@ using PriceNotificationItems =
 
   _consumer = consumer;
   [self fetchPriceTrackingData];
+}
+
+#pragma mark - Accessors
+
+- (bookmarks::BookmarkModel*)bookmarkModel {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return self.shoppingService->GetBookmarkModelUsedForSync();
+  } else {
+    return _localOrSyncableBookmarkModel;
+  }
 }
 
 #pragma mark - PriceNotificationsMutator
