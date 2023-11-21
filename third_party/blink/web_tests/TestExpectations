@@ -1585,7 +1585,6 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/permissions-policy/exper
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/geolocation-api/disconnected-frame-permission-denied.https.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/wpt_internal/geolocation-api/disconnected-frame.https.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/wpt_internal/presentation/presentation-receiver-terminate-connection.https.html [ Failure Skip Timeout ]
 
 # ========== End of Unload deprecation pending
 
