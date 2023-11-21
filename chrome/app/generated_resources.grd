@@ -6538,9 +6538,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their home page setting">
         Is this the home page you were expecting?
       </message>
-      <message name="IDS_EXTENSIONS_SETTINGS_API_TITLE_STARTUP_PAGES_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their startup pages setting">
-        Is this the startup page you were expecting?
-      </message>
       <message name="IDS_EXTENSIONS_SETTINGS_API_TITLE_SEARCH_ENGINE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their default search engine setting">
         Is this the search page you were expecting?
       </message>
@@ -6569,9 +6566,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_HOME_PAGE" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was the just home page. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE for reason for triple quotes.">
         ''' It also controls what page is shown when you click the Home button. '''
-      </message>
-      <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_HOME_AND_SEARCH" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was both the home page and the search engine. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE for reason for triple quotes.">
-        ''' It also controls what page is shown when you click the Home button or search from the Omnibox. '''
       </message>
 
       <!-- Strings for the print job confirmation dialog triggered by chrome.printing -->

@@ -380,8 +380,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     // unpredicatable behavior.
     DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
     ProxyOverriddenBubbleDelegate(profile()).ClearProfileSetForTesting();
-    for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE,
-                      BUBBLE_TYPE_STARTUP_PAGES}) {
+    for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE}) {
       SettingsApiBubbleDelegate(profile(), type).ClearProfileSetForTesting();
     }
     SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
@@ -712,8 +711,8 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
   Init();
 
-  for (int i = 0; i < 3; ++i) {
-    switch (static_cast<SettingsApiOverrideType>(i)) {
+  for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE}) {
+    switch (type) {
       case BUBBLE_TYPE_HOME_PAGE:
         // Load two extensions overriding home page and one overriding something
         // unrelated (to check for interference). Extension 2 should still win
@@ -732,23 +731,8 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
         // that is more or less the same for the search engine as it is for the
         // others.
         continue;
-      case BUBBLE_TYPE_STARTUP_PAGES:
-        // Load two extensions overriding start page and one overriding
-        // something unrelated (to check for interference). Extension 2 should
-        // still win on the startup page setting.
-        ASSERT_TRUE(LoadExtensionOverridingStart("1", kId1,
-                                                 ManifestLocation::kUnpacked));
-        ASSERT_TRUE(LoadExtensionOverridingStart("2", kId2,
-                                                 ManifestLocation::kUnpacked));
-        ASSERT_TRUE(LoadExtensionOverridingHome("3", kId3,
-                                                ManifestLocation::kUnpacked));
-        break;
-      default:
-        NOTREACHED();
-        break;
     }
 
-    SettingsApiOverrideType type = static_cast<SettingsApiOverrideType>(i);
     std::unique_ptr<TestExtensionMessageBubbleController> controller(
         new TestExtensionMessageBubbleController(
             new SettingsApiBubbleDelegate(browser()->profile(), type),

@@ -48,12 +48,6 @@ SettingsApiBubbleDelegate::~SettingsApiBubbleDelegate() {}
 
 bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
     const Extension* extension) {
-  // If the browser is showing the 'Chrome crashed' infobar, it won't be showing
-  // the startup pages, so there's no point in showing the bubble now.
-  if (type_ == BUBBLE_TYPE_STARTUP_PAGES &&
-      ExitTypeService::GetLastSessionExitType(profile()) == ExitType::kCrashed)
-    return false;
-
   if (HasBubbleInfoBeenAcknowledged(extension->id()))
     return false;
 
@@ -61,9 +55,6 @@ bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
   switch (type_) {
     case extensions::BUBBLE_TYPE_HOME_PAGE:
       override = extensions::GetExtensionOverridingHomepage(profile());
-      break;
-    case extensions::BUBBLE_TYPE_STARTUP_PAGES:
-      override = extensions::GetExtensionOverridingStartupPages(profile());
       break;
     case extensions::BUBBLE_TYPE_SEARCH_ENGINE:
       override = extensions::GetExtensionOverridingSearchEngine(profile());
@@ -95,9 +86,6 @@ std::u16string SettingsApiBubbleDelegate::GetTitle() const {
     case BUBBLE_TYPE_HOME_PAGE:
       return l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
-    case BUBBLE_TYPE_STARTUP_PAGES:
-      return l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_SETTINGS_API_TITLE_STARTUP_PAGES_BUBBLE);
     case BUBBLE_TYPE_SEARCH_ENGINE:
       return l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_SETTINGS_API_TITLE_SEARCH_ENGINE_BUBBLE);
@@ -136,19 +124,6 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
             IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_SEARCH;
       } else if (startup_change) {
         second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES;
-      } else if (search_change) {
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
-      }
-      break;
-    case BUBBLE_TYPE_STARTUP_PAGES:
-      first_line_id = anchored_to_browser_action ?
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_START_PAGES_SPECIFIC :
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_START_PAGES;
-      if (home_change && search_change) {
-        second_line_id =
-            IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_HOME_AND_SEARCH;
-      } else if (home_change) {
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_HOME_PAGE;
       } else if (search_change) {
         second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
       }
@@ -199,9 +174,7 @@ std::u16string SettingsApiBubbleDelegate::GetDismissButtonLabel() const {
 }
 
 bool SettingsApiBubbleDelegate::ShouldCloseOnDeactivate() const {
-  // Startup bubbles tend to get lost in the focus storm that happens on
-  // startup. Other types should dismiss on focus loss.
-  return type_ != BUBBLE_TYPE_STARTUP_PAGES;
+  return true;
 }
 
 bool SettingsApiBubbleDelegate::ShouldShow(
@@ -240,8 +213,6 @@ const char* SettingsApiBubbleDelegate::GetKey() const {
   switch (type_) {
     case BUBBLE_TYPE_HOME_PAGE:
       return "SettingsApiBubbleDelegate.HomePage";
-    case BUBBLE_TYPE_STARTUP_PAGES:
-      return "SettingsApiBubbleDelegate.StartupPages";
     case BUBBLE_TYPE_SEARCH_ENGINE:
       return "SettingsApiBubbleDelegate.SearchEngine";
   }
