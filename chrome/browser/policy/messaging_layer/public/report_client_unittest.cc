@@ -66,7 +66,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
                                    signature_verification_public_key_);
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
-      ASSERT_TRUE(decryptor_result.has_value()) << decryptor_result.error();
+      ASSERT_OK(decryptor_result) << decryptor_result.error();
       decryptor_ = std::move(decryptor_result.value());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();

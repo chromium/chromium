@@ -7,14 +7,14 @@
 
 #include "components/reporting/util/status_macros.h"
 
+#include "testing/gtest/include/gtest/gtest.h"
+
 namespace reporting {
 namespace {
-int ReturnIfOtherTypes(int foo) {
-  // Should fail because foo is not neither Status or StatusOr.
-  RETURN_IF_ERROR_STATUS(foo);  // expected-error {{variable has incomplete type 'void'}}
-                                // expected-error@components/reporting/util/status_macros.h:* {{RETURN_IF_ERROR_STATUS only accepts either Status or base::unexpected<Status>}}
 
-  return 0;
+void ExpectOtherTypes(char foo) {
+  // Should fail because foo is not neither Status or StatusOr.
+  EXPECT_OK(foo);  // expected-error@components/reporting/util/status_macros.h:* {{{CHECK,DCHECK,ASSERT,EXPECT}_OK do not accept a type other than Status or StatusOr.}}
 }
 }  // namespace
 }  // namespace reporting

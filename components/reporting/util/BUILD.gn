@@ -144,6 +144,23 @@ source_set("rate_limiter_slide_window") {
   ]
 }
 
+if (enable_nocompile_tests_new) {
+  nocompile_source_set("reporting_nocompile_tests") {
+    sources = [
+      "status_macros_assert_ok_nocompile.nc",
+      "status_macros_check_ok_nocompile.nc",
+      "status_macros_dcheck_ok_nocompile.nc",
+      "status_macros_expect_ok_nocompile.nc",
+      "status_macros_return_if_error_status_nocompile.nc",
+    ]
+    deps = [
+      ":status_macros",
+      "//base",
+      "//testing/gtest",
+    ]
+  }
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
@@ -180,11 +197,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-}
-
-if (enable_nocompile_tests_new) {
-  nocompile_source_set("reporting_nocompile_tests") {
-    sources = [ "status_macros_nocompile.nc" ]
-    deps = [ ":status_macros" ]
+  if (enable_nocompile_tests_new) {
+    deps += [ ":reporting_nocompile_tests" ]
   }
 }

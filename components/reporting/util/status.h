@@ -96,12 +96,6 @@ class [[nodiscard]] Status {
 
 // Prints a human-readable representation of 'x' to 'os'.
 std::ostream& operator<<(std::ostream& os, const Status& x);
-
-#define CHECK_OK(value) CHECK((value).ok())
-#define DCHECK_OK(value) DCHECK((value).ok())
-#define ASSERT_OK(value) ASSERT_TRUE((value).ok())
-#define EXPECT_OK(value) EXPECT_TRUE((value).ok())
-
 }  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_UTIL_STATUS_H_
