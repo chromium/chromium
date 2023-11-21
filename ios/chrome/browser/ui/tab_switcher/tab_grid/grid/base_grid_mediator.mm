@@ -611,28 +611,26 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
-  __block bool allTabsClosed = true;
-
   auto itemsCount = itemIDs.size();
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemsCount);
   RecordTabGridCloseTabsCount(itemsCount);
 
-  self.webStateList->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* list) {
-        for (const web::WebStateID itemID : itemIDs) {
-          int index = GetWebStateIndex(
-              list, WebStateSearchCriteria{
-                        .identifier = itemID,
-                        .pinned_state = PinnedState::kNonPinned,
-                    });
-          if (index != WebStateList::kInvalidIndex) {
-            list->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
-          }
-        }
+  WebStateList* webStateList = self.webStateList;
+  {
+    WebStateList::ScopedBatchOperation lock =
+        webStateList->StartBatchOperation();
+    for (const web::WebStateID itemID : itemIDs) {
+      const int index = GetWebStateIndex(
+          webStateList,
+          WebStateSearchCriteria{.identifier = itemID,
+                                 .pinned_state = PinnedState::kNonPinned});
+      if (index != WebStateList::kInvalidIndex) {
+        webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+      }
+    }
+  }
 
-        allTabsClosed = list->empty();
-      }));
-
+  const bool allTabsClosed = webStateList->empty();
   if (allTabsClosed) {
     if (!self.browserState->IsOffTheRecord()) {
       base::RecordAction(base::UserMetricsAction(

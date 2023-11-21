@@ -70,90 +70,76 @@ int FilterCrossDuplicates(WebStateList* keepers_web_state_list,
   return duplicate_count;
 }
 
-// Manages batch migration for the active and inactive browser.
-void PerformBatchMigration(
-    Browser* active_browser,
-    Browser* inactive_browser,
-    base::OnceCallback<void(WebStateList*, WebStateList*)> migration) {
-  __block base::OnceCallback<void(WebStateList*, WebStateList*)>
-      web_state_lists_migrations = std::move(migration);
-  active_browser->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* active_web_state_list) {
-        inactive_browser->GetWebStateList()->PerformBatchOperation(
-            base::BindOnce(^(WebStateList* inactive_web_state_list) {
-              // Perform the migration.
-              std::move(web_state_lists_migrations)
-                  .Run(active_web_state_list, inactive_web_state_list);
-            }));
-      }));
-}
-
 }  // namespace
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
   CHECK(IsInactiveTabsEnabled());
   CHECK_NE(active_browser, inactive_browser);
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the active web state list.
-        int duplicate_count = FilterCrossDuplicates(inactive_web_state_list,
-                                                    active_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive",
-            duplicate_count);
 
-        // Move all now-considered inactive tabs to the inactive web state list.
-        const base::TimeDelta inactivity_threshold =
-            InactiveTabsTimeThreshold();
-        for (int index = active_web_state_list->pinned_tabs_count();
-             index < active_web_state_list->count();) {
-          web::WebState* current_web_state =
-              active_web_state_list->GetWebStateAt(index);
-          if (!IsVisibleURLNewTabPage(current_web_state) &&
-              IsInactive(inactivity_threshold, current_web_state)) {
-            MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
-                                        inactive_web_state_list->count());
-          } else {
-            ++index;
-          }
-        }
-      }));
+  WebStateList* active_web_state_list = active_browser->GetWebStateList();
+  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
+
+  WebStateList::ScopedBatchOperation lock_active_web_state_list =
+      active_web_state_list->StartBatchOperation();
+  WebStateList::ScopedBatchOperation lock_inactive_web_state_list =
+      inactive_web_state_list->StartBatchOperation();
+
+  // Remove cross-duplicates in the active web state list.
+  const int duplicate_count =
+      FilterCrossDuplicates(inactive_web_state_list, active_web_state_list);
+  base::UmaHistogramCounts100(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", duplicate_count);
+
+  // Move all now-considered inactive tabs to the inactive web state list.
+  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
+  for (int index = active_web_state_list->pinned_tabs_count();
+       index < active_web_state_list->count();) {
+    web::WebState* current_web_state =
+        active_web_state_list->GetWebStateAt(index);
+    if (!IsVisibleURLNewTabPage(current_web_state) &&
+        IsInactive(inactivity_threshold, current_web_state)) {
+      MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
+                                  inactive_web_state_list->count());
+    } else {
+      ++index;
+    }
+  }
 }
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
   CHECK(IsInactiveTabsEnabled());
   CHECK_NE(active_browser, inactive_browser);
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the inactive web state list.
-        int duplicate_count = FilterCrossDuplicates(active_web_state_list,
-                                                    inactive_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive",
-            duplicate_count);
 
-        // Move all now-considered active tabs to the active web state list.
-        const base::TimeDelta inactivity_threshold =
-            InactiveTabsTimeThreshold();
-        int removed_web_state_number = 0;
-        for (int index = 0; index < inactive_web_state_list->count();) {
-          if (!IsInactive(inactivity_threshold,
-                          inactive_web_state_list->GetWebStateAt(index))) {
-            int insertion_index = active_web_state_list->pinned_tabs_count() +
+  WebStateList* active_web_state_list = active_browser->GetWebStateList();
+  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
+
+  WebStateList::ScopedBatchOperation lock_active_web_state_list =
+      active_web_state_list->StartBatchOperation();
+  WebStateList::ScopedBatchOperation lock_inactive_web_state_list =
+      inactive_web_state_list->StartBatchOperation();
+
+  // Remove cross-duplicates in the inactive web state list.
+  const int duplicate_count =
+      FilterCrossDuplicates(active_web_state_list, inactive_web_state_list);
+  base::UmaHistogramCounts100(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", duplicate_count);
+
+  // Move all now-considered active tabs to the active web state list.
+  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
+  int removed_web_state_number = 0;
+  for (int index = 0; index < inactive_web_state_list->count();) {
+    if (!IsInactive(inactivity_threshold,
+                    inactive_web_state_list->GetWebStateAt(index))) {
+      const int insertion_index = active_web_state_list->pinned_tabs_count() +
                                   removed_web_state_number++;
-            MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
-                                        insertion_index);
-          } else {
-            ++index;
-          }
-        }
-      }));
+      MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
+                                  insertion_index);
+    } else {
+      ++index;
+    }
+  }
 }
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
@@ -165,22 +151,23 @@ void RestoreAllInactiveTabs(Browser* inactive_browser,
   base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",
                               inactive_browser->GetWebStateList()->count());
 
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the inactive web state list.
-        int duplicate_count = FilterCrossDuplicates(active_web_state_list,
-                                                    inactive_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnRestoreAllInactive", duplicate_count);
+  WebStateList* active_web_state_list = active_browser->GetWebStateList();
+  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
 
-        // Move all tabs to the active web state list.
-        for (int index = inactive_web_state_list->count() - 1; index >= 0;
-             index--) {
-          MoveTabFromBrowserToBrowser(
-              inactive_browser, index, active_browser,
-              active_web_state_list->pinned_tabs_count());
-        }
-      }));
+  WebStateList::ScopedBatchOperation lock_active_web_state_list =
+      active_web_state_list->StartBatchOperation();
+  WebStateList::ScopedBatchOperation lock_inactive_web_state_list =
+      inactive_web_state_list->StartBatchOperation();
+
+  // Remove cross-duplicates in the inactive web state list.
+  const int duplicate_count =
+      FilterCrossDuplicates(active_web_state_list, inactive_web_state_list);
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnRestoreAllInactive",
+                              duplicate_count);
+
+  // Move all tabs to the active web state list.
+  for (int index = inactive_web_state_list->count() - 1; index >= 0; index--) {
+    MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
+                                active_web_state_list->pinned_tabs_count());
+  }
 }

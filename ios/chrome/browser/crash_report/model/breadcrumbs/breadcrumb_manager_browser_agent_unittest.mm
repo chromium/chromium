@@ -130,26 +130,28 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
 TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
-  // Insert multiple WebStates.
-  browser_->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* list) {
-        InsertWebState(browser_.get());
-        InsertWebState(browser_.get());
-      }));
+  // Insert multiple WebStates in a batch operation.
+  {
+    WebStateList::ScopedBatchOperation lock =
+        browser_->GetWebStateList()->StartBatchOperation();
+    InsertWebState(browser_.get());
+    InsertWebState(browser_.get());
+  }
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_TRUE(base::Contains(events.front(), "Inserted 2 tabs"))
       << events.front();
 
-  // Close multiple WebStates.
-  browser_->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* list) {
-        list->CloseWebStateAt(
-            /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
-        list->CloseWebStateAt(
-            /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
-      }));
+  // Close multiple WebStates in a batch operation.
+  {
+    WebStateList::ScopedBatchOperation lock =
+        browser_->GetWebStateList()->StartBatchOperation();
+    browser_->GetWebStateList()->CloseWebStateAt(
+        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    browser_->GetWebStateList()->CloseWebStateAt(
+        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+  }
 
   ASSERT_EQ(2u, events.size());
   EXPECT_TRUE(base::Contains(events.back(), "Closed 2 tabs")) << events.back();

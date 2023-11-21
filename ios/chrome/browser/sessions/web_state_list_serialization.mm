@@ -337,15 +337,18 @@ struct InsertionHelper {
   }
 };
 
-void DeserializeWebStateListInternal(
+// Helper function that deserialize into a WebStateList using a deserializer.
+// Used by the two implementation of `DeserializeWebStateList(...)`.
+std::vector<web::WebState*> DeserializeWebStateListInternal(
+    WebStateList* web_state_list,
     SessionRestorationScope scope,
     bool enable_pinned_web_states,
-    const Deserializer& deserializer,
-    std::vector<web::WebState*>* restored_web_states,
-    WebStateList* web_state_list) {
+    const Deserializer& deserializer) {
   DCHECK(web_state_list);
-  DCHECK(restored_web_states);
-  DCHECK(restored_web_states->empty());
+
+  // Lock the WebStateList.
+  WebStateList::ScopedBatchOperation lock =
+      web_state_list->StartBatchOperation();
 
   int restored_pinned_tabs_count = 0;
   const int restored_tabs_count = deserializer.GetRestoredTabsCount();
@@ -361,9 +364,14 @@ void DeserializeWebStateListInternal(
   // can happen if the storage is empty or if all items are out of `scope`.
   const DeserializationRange range = DeserializationRange::Create(
       restored_tabs_count, restored_pinned_tabs_count, scope);
+  DCHECK_GE(range.length(), 0);
   if (range.empty()) {
-    return;
+    return {};
   }
+
+  // Exactly `range.length()` WebState should be deserialized.
+  std::vector<web::WebState*> restored_web_states;
+  restored_web_states.reserve(range.length());
 
   // If there is only one tab, and it is the new tab page, clobber it before
   // restoring any tabs (this avoid having to search for the tab amongst all
@@ -410,7 +418,7 @@ void DeserializeWebStateListInternal(
   // some WebState may have an opener that is stored after them.
   for (int index = range.min; index < range.max; ++index) {
     std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
-    restored_web_states->push_back(web_state.get());  // Store pointer to item.
+    restored_web_states.push_back(web_state.get());  // Store pointer to item.
 
     const int inserted_index = web_state_list->InsertWebState(
         helper.insertion_index(index), std::move(web_state),
@@ -420,7 +428,7 @@ void DeserializeWebStateListInternal(
   }
 
   // Check that all WebStates have been restored.
-  DCHECK_EQ(range.length(), static_cast<int>(restored_web_states->size()));
+  DCHECK_EQ(range.length(), static_cast<int>(restored_web_states.size()));
 
   // Restore the opener-opened relationship while taking into account that
   // some of the WebState have not been restored due to `scope`, and that
@@ -433,11 +441,13 @@ void DeserializeWebStateListInternal(
 
     // The created WebStates are pushed in order in `restored_web_states`
     // so the opener will be at index `ref.index - range.min`.
-    web::WebState* opener = (*restored_web_states)[ref.index - range.min];
+    web::WebState* opener = restored_web_states[ref.index - range.min];
     web_state_list->SetOpenerOfWebStateAt(
         helper.insertion_index(index),
         WebStateOpener(opener, ref.navigation_index));
   }
+
+  return restored_web_states;
 }
 
 }  // namespace
@@ -565,12 +575,9 @@ std::vector<web::WebState*> DeserializeWebStateList(
     SessionRestorationScope scope,
     bool enable_pinned_web_states,
     const WebStateFactory& factory) {
-  std::vector<web::WebState*> restored_web_states;
-  web_state_list->PerformBatchOperation(base::BindOnce(
-      &DeserializeWebStateListInternal, scope, enable_pinned_web_states,
-      DeserializeFromSessionWindow(session_window, factory),
-      &restored_web_states));
-  return restored_web_states;
+  return DeserializeWebStateListInternal(
+      web_state_list, scope, enable_pinned_web_states,
+      DeserializeFromSessionWindow(session_window, factory));
 }
 
 std::vector<web::WebState*> DeserializeWebStateList(
@@ -579,9 +586,7 @@ std::vector<web::WebState*> DeserializeWebStateList(
     SessionRestorationScope scope,
     bool enable_pinned_web_states,
     const WebStateFactoryFromProto& factory) {
-  std::vector<web::WebState*> restored_web_states;
-  web_state_list->PerformBatchOperation(base::BindOnce(
-      &DeserializeWebStateListInternal, scope, enable_pinned_web_states,
-      DeserializeFromProto(std::move(storage), factory), &restored_web_states));
-  return restored_web_states;
+  return DeserializeWebStateListInternal(
+      web_state_list, scope, enable_pinned_web_states,
+      DeserializeFromProto(std::move(storage), factory));
 }

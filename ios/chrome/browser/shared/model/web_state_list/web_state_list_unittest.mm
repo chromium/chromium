@@ -906,41 +906,30 @@ TEST_F(WebStateListTest, CloseWebState) {
   EXPECT_FALSE(observer_.batch_operation_ended());
 }
 
-// Tests that batch operation can be empty.
-TEST_F(WebStateListTest, PerformBatchOperation_EmptyCallback) {
+// Tests that batch operation can do nothing.
+TEST_F(WebStateListTest, StartBatchOperation_DoNothing) {
   observer_.ResetStatistics();
 
-  web_state_list_.PerformBatchOperation({});
+  {
+    WebStateList::ScopedBatchOperation lock =
+        web_state_list_.StartBatchOperation();
+  }
 
   EXPECT_TRUE(observer_.batch_operation_started());
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
-// Tests that batch operation WebStateList is the correct one.
-TEST_F(WebStateListTest, PerformBatchOperation_CorrectWebStateList) {
-  WebStateList* captured_web_state_list = nullptr;
-  web_state_list_.PerformBatchOperation(base::BindOnce(
-      [](WebStateList** captured_web_state_list, WebStateList* web_state_list) {
-        *captured_web_state_list = web_state_list;
-      },
-      &captured_web_state_list));
-
-  EXPECT_EQ(captured_web_state_list, &web_state_list_);
-}
-
 // Tests that IsBatchInProgress() returns the correct value.
-TEST_F(WebStateListTest, PerformBatchOperation_IsBatchInProgress) {
+TEST_F(WebStateListTest, StartBatchOperation_IsBatchInProgress) {
   EXPECT_FALSE(web_state_list_.IsBatchInProgress());
 
-  bool captured_batch_in_progress = false;
-  web_state_list_.PerformBatchOperation(base::BindOnce(
-      [](bool* captured_batch_in_progress, WebStateList* web_state_list) {
-        *captured_batch_in_progress = web_state_list->IsBatchInProgress();
-      },
-      &captured_batch_in_progress));
+  {
+    WebStateList::ScopedBatchOperation lock =
+        web_state_list_.StartBatchOperation();
+    EXPECT_TRUE(web_state_list_.IsBatchInProgress());
+  }
 
   EXPECT_FALSE(web_state_list_.IsBatchInProgress());
-  EXPECT_TRUE(captured_batch_in_progress);
 }
 
 // Tests WebStates are pinned correctly while their order in the WebStateList

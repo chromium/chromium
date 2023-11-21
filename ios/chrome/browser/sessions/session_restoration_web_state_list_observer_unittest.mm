@@ -583,7 +583,10 @@ TEST_F(SessionRestorationWebStateListObserverTest, BatchOperation) {
 
   // Perform a batch operation to does nothing. The WebStateList should
   // be considered as dirty anyway.
-  web_state_list()->PerformBatchOperation(base::DoNothing());
+  {
+    WebStateList::ScopedBatchOperation lock =
+        web_state_list()->StartBatchOperation();
+  }
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
