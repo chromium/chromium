@@ -40,9 +40,9 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/x/visual_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/platform/x11/hit_test_x11.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
@@ -256,8 +256,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
       x11::EventMask::LeaveWindow | x11::EventMask::Exposure |
       x11::EventMask::VisibilityChange | x11::EventMask::StructureNotify |
       x11::EventMask::PropertyChange | x11::EventMask::PointerMotion;
-  xwindow_events_ =
-      std::make_unique<x11::XScopedEventSelector>(xwindow_, event_mask);
+  xwindow_events_ = connection_->ScopedSelectEvent(xwindow_, event_mask);
   connection_->Flush();
 
   if (IsXInput2Available()) {
@@ -1677,12 +1676,12 @@ void X11Window::UpdateCursor(DragOperation negotiated_operation) {
 
 void X11Window::OnBeginForeignDrag(x11::Window window) {
   notified_enter_ = false;
-  source_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      window, x11::EventMask::PropertyChange);
+  source_window_events_ =
+      connection_->ScopedSelectEvent(window, x11::EventMask::PropertyChange);
 }
 
 void X11Window::OnEndForeignDrag() {
-  source_window_events_.reset();
+  source_window_events_.Reset();
 }
 
 void X11Window::OnBeforeDragLeave() {

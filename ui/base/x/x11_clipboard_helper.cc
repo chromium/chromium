@@ -21,8 +21,8 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -144,8 +144,8 @@ XClipboardHelper::XClipboardHelper(
 
   connection_->SetStringProperty(x_window_, x11::Atom::WM_NAME,
                                  x11::Atom::STRING, "Chromium clipboard");
-  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      x_window_, x11::EventMask::PropertyChange);
+  x_window_events_ =
+      connection_->ScopedSelectEvent(x_window_, x11::EventMask::PropertyChange);
   connection_->AddEventObserver(this);
 
   SelectionChangeObserver::Get()->set_callback(

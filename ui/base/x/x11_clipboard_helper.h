@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   x11::Window x_window_;
 
   // Events selected on |x_window_|.
-  std::unique_ptr<x11::XScopedEventSelector> x_window_events_;
+  x11::ScopedEventSelector x_window_events_;
 
   // Object which requests and receives selection data.
   const std::unique_ptr<SelectionRequestor> selection_requestor_;

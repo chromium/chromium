@@ -31,6 +31,7 @@
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/visual_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
@@ -116,7 +117,8 @@ Connection::Connection(const std::string& address)
                                                       : display_string_.c_str(),
                               &default_screen_id_),
                   xcb_disconnect),
-      io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
+      io_error_handler_(base::BindOnce(DefaultIOErrorHandler)),
+      window_event_manager_(this) {
   DUMP_WILL_BE_CHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
@@ -277,6 +279,11 @@ void Connection::LowerWindow(Window window) {
 void Connection::DefineCursor(Window window, Cursor cursor) {
   ChangeWindowAttributes(
       ChangeWindowAttributesRequest{.window = window, .cursor = cursor});
+}
+
+ScopedEventSelector Connection::ScopedSelectEvent(Window window,
+                                                  EventMask event_mask) {
+  return ScopedEventSelector(this, window, event_mask);
 }
 
 Connection::Request::Request(ResponseCallback callback)

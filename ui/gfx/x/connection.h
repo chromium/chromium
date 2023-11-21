@@ -14,8 +14,10 @@
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
@@ -123,17 +125,6 @@ auto CompareSequenceIds(T t, U u) {
   return static_cast<SignedType>(t0 - u0);
 }
 
-// This interface is used by classes wanting to receive
-// Events directly.  For input events (mouse, keyboard, touch), a
-// PlatformEventObserver should be used instead.
-class EVENTS_EXPORT EventObserver {
- public:
-  virtual void OnEvent(const Event& xevent) = 0;
-
- protected:
-  virtual ~EventObserver() = default;
-};
-
 // Represents a socket to the X11 server.
 class COMPONENT_EXPORT(X11) Connection final : public XProto,
                                                public ExtensionManager {
@@ -232,6 +223,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return xinput_version_;
   }
+
+  WindowEventManager& window_event_manager() { return window_event_manager_; }
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -429,6 +422,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   void DefineCursor(Window window, Cursor cursor);
 
+  ScopedEventSelector ScopedSelectEvent(Window window, EventMask event_mask);
+
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
   // TODO(thomasanderson): This is a layering violation and this should be moved
@@ -548,6 +543,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   std::array<ErrorParser, 256> error_parsers_{};
 
   IOErrorHandler io_error_handler_;
+
+  WindowEventManager window_event_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

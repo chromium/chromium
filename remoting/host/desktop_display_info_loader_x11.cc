@@ -17,7 +17,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 
 namespace remoting {
 
@@ -52,7 +52,7 @@ void DesktopDisplayInfoLoaderX11::Init() {
     return;
   }
 
-  root_window_events_ = std::make_unique<x11::XScopedEventSelector>(
+  root_window_events_ = connection_->ScopedSelectEvent(
       ui::GetX11RootWindow(), x11::EventMask::StructureNotify);
   auto randr_event_mask =
       x11::RandR::NotifyMask::ScreenChange | x11::RandR::NotifyMask::CrtcChange;

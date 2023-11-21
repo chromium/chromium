@@ -14,9 +14,9 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
 
   raw_ptr<Connection> connection_;
   Window window_;
-  XScopedEventSelector event_selector_;
+  ScopedEventSelector event_selector_;
   base::flat_map<Atom, PropertyValue> properties_;
   OnChangeCallback on_change_;
 

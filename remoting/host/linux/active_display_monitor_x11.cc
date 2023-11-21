@@ -17,8 +17,8 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
 
 namespace remoting {
 
@@ -74,7 +74,7 @@ class ActiveDisplayMonitorX11::Core : public x11::EventObserver {
 
   raw_ptr<x11::Connection> connection_ = nullptr;
 
-  std::unique_ptr<x11::XScopedEventSelector> root_window_event_selector_;
+  x11::ScopedEventSelector root_window_event_selector_;
 
   x11::Atom net_active_window_atom_{};
 
@@ -101,7 +101,7 @@ void ActiveDisplayMonitorX11::Core::Init() {
     return;
   }
 
-  root_window_event_selector_ = std::make_unique<x11::XScopedEventSelector>(
+  root_window_event_selector_ = connection_->ScopedSelectEvent(
       ui::GetX11RootWindow(), x11::EventMask::PropertyChange);
 
   net_active_window_atom_ = x11::GetAtom("_NET_ACTIVE_WINDOW");

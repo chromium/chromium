@@ -357,7 +357,7 @@ class X11Window : public PlatformWindow,
   std::unique_ptr<X11MoveLoop> drag_loop_;
 
   // Events that we have selected on the source window of the incoming drag.
-  std::unique_ptr<x11::XScopedEventSelector> source_window_events_;
+  x11::ScopedEventSelector source_window_events_;
 
   // The display and the native X window hosting the root window.
   const raw_ref<x11::Connection> connection_;
@@ -368,7 +368,7 @@ class X11Window : public PlatformWindow,
   x11::Window transient_window_ = x11::Window::None;
 
   // Events selected on |xwindow_|.
-  std::unique_ptr<x11::XScopedEventSelector> xwindow_events_;
+  x11::ScopedEventSelector xwindow_events_;
 
   // The window manager state bits.
   base::flat_set<x11::Atom> window_properties_;
