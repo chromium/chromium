@@ -4780,6 +4780,12 @@ const char kReadAnythingWithScreen2xDescription[] =
     "Have Reading Mode use a local machine learning model for web page "
     "distillation.";
 
+const char kReadAnythingWithAlgorithmName[] =
+    "Reading Mode with rules based algorithm.";
+const char kReadAnythingWithAlgorithmDescription[] =
+    "Have Reading Mode use a local rules based algorithm for web page "
+    "distillation.";
+
 const char kReadAnythingWebUIToolbarName[] = "Reading Mode WebUI Toolbar";
 const char kReadAnythingWebUIToolbarDescription[] =
     "Enables the Reading Mode toolbar implemented with WebUI instead of with "

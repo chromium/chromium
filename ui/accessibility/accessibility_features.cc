@@ -311,6 +311,13 @@ bool IsReadAnythingWithScreen2xEnabled() {
              ::features::kEmergencyDisableScreenAIMainContentExtraction);
 }
 
+BASE_FEATURE(kReadAnythingWithAlgorithm,
+             "ReadAnythingWithAlgorithm",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsReadAnythingWithAlgorithmEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingWithAlgorithm);
+}
+
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode,

@@ -233,6 +233,11 @@ AX_BASE_EXPORT bool IsReadAnythingWebUIToolbarEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithScreen2x);
 AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 
+// Enable rules based algorithm for distilling content. Should be enabled by
+// default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithAlgorithm);
+AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
+
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();

@@ -2761,6 +2761,9 @@ extern const char kReadAnythingDescription[];
 extern const char kReadAnythingWithScreen2xName[];
 extern const char kReadAnythingWithScreen2xDescription[];
 
+extern const char kReadAnythingWithAlgorithmName[];
+extern const char kReadAnythingWithAlgorithmDescription[];
+
 extern const char kReadAnythingWebUIToolbarName[];
 extern const char kReadAnythingWebUIToolbarDescription[];
 

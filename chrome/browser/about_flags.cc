@@ -7416,6 +7416,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingWithScreen2x)},
 
+    {"read-anything-with-algorithm",
+     flag_descriptions::kReadAnythingWithAlgorithmName,
+     flag_descriptions::kReadAnythingWithAlgorithmDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingWithAlgorithm)},
+
     {"read-anything-webui-toolbar",
      flag_descriptions::kReadAnythingWebUIToolbarName,
      flag_descriptions::kReadAnythingWebUIToolbarDescription, kOsDesktop,
