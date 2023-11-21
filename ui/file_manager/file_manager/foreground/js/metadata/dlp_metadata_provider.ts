@@ -8,6 +8,7 @@ import {isDlpEnabled} from '../../../common/js/flags.js';
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
+import type {MetadataRequest} from './metadata_request.js';
 
 /**
  * Metadata provider for FileEntry#getMetadata.
@@ -16,14 +17,17 @@ import {MetadataProvider} from './metadata_provider.js';
  * @final
  */
 export class DlpMetadataProvider extends MetadataProvider {
+  static readonly PROPERTY_NAMES = [
+    'isDlpRestricted',
+    'sourceUrl',
+    'isRestrictedForDestination',
+  ];
+
   constructor() {
     super(DlpMetadataProvider.PROPERTY_NAMES);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
-  async get(requests) {
+  override async get(requests: MetadataRequest[]): Promise<MetadataItem[]> {
     if (!isDlpEnabled()) {
       return requests.map(() => new MetadataItem());
     }
@@ -34,7 +38,6 @@ export class DlpMetadataProvider extends MetadataProvider {
 
     // Filter out fake entries before fetching the metadata.
     const entries =
-        // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
         requests.map(r => r.entry).filter(e => !isFakeEntry(e));
 
     if (!entries.length) {
@@ -51,18 +54,15 @@ export class DlpMetadataProvider extends MetadataProvider {
 
       const results = [];
       let j = 0;
-      for (let i = 0; i < requests.length; i++) {
+      for (const request of requests) {
         const item = new MetadataItem();
         // Check if this entry was filtered, and if not, add the retrieved
         // metadata.
-        if (!isFakeEntry(requests[i].entry)) {
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          item.isDlpRestricted = dlpMetadataList[j].isDlpRestricted;
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          item.sourceUrl = dlpMetadataList[j].sourceUrl;
+        if (!isFakeEntry(request.entry)) {
+          item.isDlpRestricted = dlpMetadataList[j]!.isDlpRestricted;
+          item.sourceUrl = dlpMetadataList[j]!.sourceUrl;
           item.isRestrictedForDestination =
-              // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-              dlpMetadataList[j].isRestrictedForDestination;
+              dlpMetadataList[j]!.isRestrictedForDestination;
           j++;
         }
         results.push(item);
@@ -74,10 +74,3 @@ export class DlpMetadataProvider extends MetadataProvider {
     }
   }
 }
-
-/** @const @type {!Array<string>} */
-DlpMetadataProvider.PROPERTY_NAMES = [
-  'isDlpRestricted',
-  'sourceUrl',
-  'isRestrictedForDestination',
-];

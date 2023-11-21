@@ -76,12 +76,12 @@ export async function testDlpMetadataProviderIgnoresFakeEntries(
   ]);
 
   assertEquals(2, results.length);
-  assertEquals(results[0].isDlpRestricted, undefined);
-  assertEquals(results[0].sourceUrl, undefined);
-  assertEquals(results[0].isRestrictedForDestination, undefined);
-  assertEquals(results[1].isDlpRestricted, true);
-  assertEquals(results[1].sourceUrl, 'https://example.com');
-  assertEquals(results[1].isRestrictedForDestination, false);
+  assertEquals(results[0]!.isDlpRestricted, undefined);
+  assertEquals(results[0]!.sourceUrl, undefined);
+  assertEquals(results[0]!.isRestrictedForDestination, undefined);
+  assertEquals(results[1]!.isDlpRestricted, true);
+  assertEquals(results[1]!.sourceUrl, 'https://example.com');
+  assertEquals(results[1]!.isRestrictedForDestination, false);
 
   done();
 }

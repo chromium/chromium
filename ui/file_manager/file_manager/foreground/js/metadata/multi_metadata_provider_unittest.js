@@ -12,6 +12,7 @@ import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import {MetadataItem} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
 
@@ -112,7 +113,7 @@ export function testMultiMetadataProviderBasic(callback) {
       /** @type {!DlpMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(0, requests.length);
-          return Promise.resolve([]);
+          return Promise.resolve(/** @type {!Array<MetadataItem>} */ ([]));
         },
       }),
       volumeManager);
@@ -193,7 +194,7 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
       /** @type {!DlpMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(0, requests.length);
-          return Promise.resolve([]);
+          return Promise.resolve(/** @type {!Array<MetadataItem>} */ ([]));
         },
       }),
       volumeManager);
@@ -272,7 +273,7 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
       /** @type {!DlpMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(0, requests.length);
-          return Promise.resolve([]);
+          return Promise.resolve(/** @type {!Array<MetadataItem>} */ ([]));
         },
       }),
       volumeManager);
