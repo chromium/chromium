@@ -786,10 +786,15 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
 }
 
 void StreamingSearchPrefetchURLLoader::RunEventQueue() {
-  DCHECK(forwarding_client_);
-  DCHECK(!streaming_prefetch_request_);
+  CHECK(forwarding_client_);
+  CHECK(!streaming_prefetch_request_);
   for (auto& event : event_queue_) {
     std::move(event).Run();
+    if (!forwarding_client_) {
+      // The null forwarding client indicates that the event failed for some
+      // reason. Stop processing the remaining events.
+      break;
+    }
   }
   event_queue_.clear();
 }
