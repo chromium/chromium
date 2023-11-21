@@ -251,18 +251,18 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void OnAnimatedInFromPromiseApp(base::RepeatingClosure callback);
 
   // The container for the icon, which looks like a halo around the icon.
-  raw_ptr<views::View, ExperimentalAsh> icon_container_view_ = nullptr;
+  raw_ptr<views::View> icon_container_view_ = nullptr;
 
   // The icon part of a button can be animated independently of the rest.
   const raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
 
   // The container for the host badge icon, which looks like a halo around the
   // host badge icon.
-  raw_ptr<views::View, ExperimentalAsh> host_badge_container_view_ = nullptr;
+  raw_ptr<views::View> host_badge_container_view_ = nullptr;
 
   // The host badge icon part of a button, can be animated independently of the
   // rest.
-  raw_ptr<views::ImageView, ExperimentalAsh> host_badge_icon_view_ = nullptr;
+  raw_ptr<views::ImageView> host_badge_icon_view_ = nullptr;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
   const raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
