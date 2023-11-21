@@ -12,6 +12,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -31,6 +34,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
@@ -52,6 +56,8 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class PartialCustomTabBaseStrategy
         extends CustomTabHeightStrategy implements FullscreenManager.Observer {
+    private static boolean sDeviceSpecLogged;
+
     protected final Activity mActivity;
     protected final OnResizedCallback mOnResizedCallback;
     protected final OnActivityLayoutCallback mOnActivityLayoutCallback;
@@ -132,6 +138,27 @@ public abstract class PartialCustomTabBaseStrategy
         int COUNT = 4;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // This should be kept in sync with the definition |PcctDeviceSpec|
+    // in tools/metrics/histograms/enums.xml.
+    @IntDef({
+        DeviceSpec.LOWEND_NOPIP,
+        DeviceSpec.LOWEND_PIP,
+        DeviceSpec.HIGHEND_NOPIP,
+        DeviceSpec.HIGHEND_PIP
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface DeviceSpec {
+        int LOWEND_NOPIP = 0;
+        int LOWEND_PIP = 1;
+        int HIGHEND_NOPIP = 2;
+        int HIGHEND_PIP = 3;
+
+        // Number of elements in the enum
+        int COUNT = 4;
+    }
+
     public PartialCustomTabBaseStrategy(Activity activity,
             BrowserServicesIntentDataProvider intentData, OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback, FullscreenManager fullscreenManager,
@@ -161,6 +188,29 @@ public abstract class PartialCustomTabBaseStrategy
         // down to the initial height/width.
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
+
+        if (!sDeviceSpecLogged) {
+            logDeviceSpecForPcct(activity);
+            sDeviceSpecLogged = true;
+        }
+    }
+
+    static void logDeviceSpecForPcct(Context context) {
+        var pm = context.getPackageManager();
+        var am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        boolean pip = pm.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
+        boolean lowEnd = am.isLowRamDevice();
+        @DeviceSpec int spec;
+        if (lowEnd && !pip) {
+            spec = DeviceSpec.LOWEND_NOPIP;
+        } else if (lowEnd && pip) {
+            spec = DeviceSpec.LOWEND_PIP;
+        } else if (!lowEnd && !pip) {
+            spec = DeviceSpec.HIGHEND_NOPIP;
+        } else {
+            spec = DeviceSpec.HIGHEND_PIP;
+        }
+        RecordHistogram.recordEnumeratedHistogram("CustomTabs.DeviceSpec", spec, DeviceSpec.COUNT);
     }
 
     @Override
@@ -606,5 +656,9 @@ public abstract class PartialCustomTabBaseStrategy
 
     int getShadowOffsetForTesting() {
         return mShadowOffset;
+    }
+
+    static void resetDeviceSpecLoggedForTesting() {
+        sDeviceSpecLogged = false;
     }
 }
