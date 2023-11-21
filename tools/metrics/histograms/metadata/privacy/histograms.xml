@@ -404,7 +404,6 @@ reviewer.
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
     expires_after="2024-04-28">
   <owner>roagarwal@chromium.org</owner>
-  <owner>eokoyomon@chromium.org</owner>
   <owner>fsenra@google.com</owner>
   <summary>
     Tracks interactions with the Quick Delete feature, including the entry

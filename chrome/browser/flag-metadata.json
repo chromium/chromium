@@ -6267,7 +6267,6 @@
   {
     "name": "page-info-history-desktop",
     "owners": [
-      "eokoyomon@chromium.org",
       "dullweber@chromium.org",
       "olesiamarukhno@google.com"
     ],
@@ -6772,8 +6771,7 @@
   {
     "name": "quick-delete-for-android",
     "owners": [
-      "roagarwal@chromium.org",
-      "eokoyomon@chromium.org"
+      "zalmashni@google.com"
     ],
     "expiry_milestone": 123
   },
