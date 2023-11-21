@@ -2243,6 +2243,8 @@ void URLLoader::SetRawRequestHeadersAndNotify(
     if (!reported_cookies.empty()) {
       cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
+          url_request_->isolation_info().top_frame_origin().value_or(
+              url::Origin()),
           url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id(), /*count=*/1, is_ad_tagged_));
     }
@@ -2596,6 +2598,8 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
   if (!reported_cookies.empty()) {
     cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
+        url_request_->isolation_info().top_frame_origin().value_or(
+            url::Origin()),
         url_request_->site_for_cookies(), std::move(reported_cookies),
         devtools_request_id(), /*count=*/1, is_ad_tagged_));
     if (call_cookie_observer) {

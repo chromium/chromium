@@ -575,14 +575,17 @@ void RestrictedCookieManager::GetAllForUrl(
       url, net_options, cookie_partition_key_collection_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
-                     top_frame_origin, has_storage_access, is_ad_tagged,
-                     net_options, std::move(options), std::move(callback)));
+                     top_frame_origin,
+                     isolation_info_.top_frame_origin().value_or(url::Origin()),
+                     has_storage_access, is_ad_tagged, net_options,
+                     std::move(options), std::move(callback)));
 }
 
 void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    const url::Origin& isolated_top_frame_origin,
     bool has_storage_access,
     bool is_ad_tagged,
     const net::CookieOptions& net_options,
@@ -636,7 +639,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   auto notify_observer = [&]() {
     if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
+          mojom::CookieAccessDetails::Type::kRead, url,
+          isolated_top_frame_origin, site_for_cookies,
           std::move(on_cookies_accessed_result), absl::nullopt, /*count=*/1,
           is_ad_tagged));
     }
@@ -734,6 +738,11 @@ void RestrictedCookieManager::SetCanonicalCookie(
     status.AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
 
+  // For better safety, we use isolated_info_.top_frame_origin() instead of
+  // top_frame_origin to create the CookieAccessDetails , eventually
+  // isolation_info is always used.
+  url::Origin isolated_top_frame_origin =
+      isolation_info_.top_frame_origin().value_or(url::Origin());
   if (!status.IsInclude()) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -743,8 +752,10 @@ void RestrictedCookieManager::SetCanonicalCookie(
               mojom::CookieOrLine::NewCookie(cookie),
               net::CookieAccessResult(status)));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(result_with_access_result), absl::nullopt, /*count=*/1,
+          mojom::CookieAccessDetails::Type::kChange, url,
+          isolated_top_frame_origin, site_for_cookies,
+          std::move(result_with_access_result), absl::nullopt,
+          /*count=*/1,
           /*is_ad_tagged=*/false));
     }
     std::move(callback).Run(false);
@@ -829,13 +840,15 @@ void RestrictedCookieManager::SetCanonicalCookie(
   cookie_store_->SetCanonicalCookieAsync(
       std::move(sanitized_cookie), origin_url, options,
       base::BindOnce(&RestrictedCookieManager::SetCanonicalCookieResult,
-                     weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
-                     cookie_copy, options, std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), url,
+                     isolated_top_frame_origin, site_for_cookies, cookie_copy,
+                     options, std::move(callback)),
       cookie_access_result);
 }
 
 void RestrictedCookieManager::SetCanonicalCookieResult(
     const GURL& url,
+    const url::Origin& isolated_top_frame_origin,
     const net::SiteForCookies& site_for_cookies,
     const net::CanonicalCookie& cookie,
     const net::CookieOptions& net_options,
@@ -854,8 +867,9 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
       notify.push_back(mojom::CookieOrLineWithAccessResult::New(
           mojom::CookieOrLine::NewCookie(cookie), access_result));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(notify), absl::nullopt, /*count=*/1,
+          mojom::CookieAccessDetails::Type::kChange, url,
+          isolated_top_frame_origin, site_for_cookies, std::move(notify),
+          absl::nullopt, /*count=*/1,
           /*is_ad_tagged=*/false));
     }
   }
@@ -927,8 +941,10 @@ void RestrictedCookieManager::SetCookieFromString(
               mojom::CookieOrLine::NewCookieString(cookie),
               net::CookieAccessResult(status)));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(result_with_access_result), absl::nullopt, /*count=*/1,
+          mojom::CookieAccessDetails::Type::kChange, url,
+          isolation_info_.top_frame_origin().value_or(url::Origin()),
+          site_for_cookies, std::move(result_with_access_result), absl::nullopt,
+          /*count=*/1,
           /*is_ad_tagged=*/false));
     }
     return;

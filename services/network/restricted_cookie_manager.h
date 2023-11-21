@@ -222,6 +222,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
+      const url::Origin& isolated_top_frame_origin,
       bool has_storage_access,
       bool is_ad_tagged,
       const net::CookieOptions& net_options,
@@ -233,6 +234,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // Reports the result of setting the cookie to |network_context_client_|, and
   // invokes the user callback.
   void SetCanonicalCookieResult(const GURL& url,
+                                const url::Origin& isolated_top_frame_origin,
                                 const net::SiteForCookies& site_for_cookies,
                                 const net::CanonicalCookie& cookie,
                                 const net::CookieOptions& net_options,
