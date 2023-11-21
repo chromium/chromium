@@ -103,20 +103,6 @@
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
-    'chromium.android.fyi': {
-      'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      'android-12l-x64-fyi-dbg': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
-      'android-13-x64-fyi-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
-      'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
-      'android-chrome-pie-x86-wpt-android-specific': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-cronet-asan-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient',
-      'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
-      'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
-      'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient',
-      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-    },
-
     'chromium.cft': {
       'linux-arm64-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
@@ -751,8 +737,6 @@
 
     'tryserver.chromium.android': {
       'android-asan': 'android_clang_asan_release_trybot_reclient',
-      'android-chrome-pie-x86-wpt-android-specific': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
-      'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-clobber-rel': 'android_release_trybot_reclient',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
@@ -763,7 +747,6 @@
       'android-fieldtrial-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_reclient_android',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android_blink_rel': 'android_release_trybot_x64_reclient',
       'android_coverage': 'android_debug_trybot_java_coverage',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
@@ -1123,23 +1106,9 @@
       'android', 'clang', 'asan', 'release_trybot_reclient', 'strip_debug_info', 'minimal_symbols',
     ],
 
-    'android_cronet_debug_static_bot_riscv64_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'riscv64',
-    ],
-
     'android_cronet_release_bot_minimal_symbols_arm_no_neon': [
       'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'arm_no_neon',
       'strip_debug_info',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_riscv64_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'riscv64',
-      'strip_debug_info',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient': [
-      'android', 'cronet_android', 'release_bot_reclient', 'minimal_symbols', 'x86',
-      'clang', 'asan', 'strip_debug_info',
     ],
 
     'android_cronet_release_trybot_arm64': [
@@ -1171,11 +1140,6 @@
       'android', 'debug_static_bot_reclient',
     ],
 
-    'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell': [
-      'android', 'debug_static_bot_reclient', 'x64',
-      'webview_trichrome', 'webview_shell',
-    ],
-
     'android_debug_trybot_arm64_reclient': [
       'android', 'debug_bot_reclient', 'arm64', 'use_dummy_lastchange',
     ],
@@ -1197,11 +1161,6 @@
       'strip_debug_info',
     ],
 
-    'android_release_bot_minimal_symbols_arm64_webview_google_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'webview_google',
-    ],
-
     'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
       'strip_debug_info', 'webview_monochrome',
@@ -1215,18 +1174,6 @@
       'android', 'release_bot_reclient', 'minimal_symbols', 'x64',
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
       'no_secondary_abi', 'webview_shell'
-    ],
-
-    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
-      'chrome_google'
-    ],
-
-    'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
-      'webview_shell',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient_coverage': [
@@ -1257,11 +1204,6 @@
 
     'android_release_trybot_x86_fastbuild_webview_monochrome': [
       'android', 'release_trybot', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'webview_monochrome', 'webview_shell',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_monochrome_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_monochrome', 'webview_shell',
     ],
 
@@ -2942,10 +2884,6 @@
       'gn_args': 'is_chrome_for_testing=true'
     },
 
-    'chrome_google': {
-      'gn_args': 'chrome_public_manifest_package="com.android.chrome"',
-    },
-
     'chrome_with_codecs': {
       'mixins': ['ffmpeg_branding_chrome', 'proprietary_codecs'],
     },
@@ -3114,10 +3052,6 @@
 
     'disable_nacl': {
       'gn_args': 'enable_nacl=false',
-    },
-
-    'disable_proguard': {
-      'gn_args': 'enable_proguard_obfuscation = false',
     },
 
     'disable_seed_corpus': {
@@ -3568,10 +3502,6 @@
 
     'reven': {
       'args_file': '//build/args/chromeos/reven-vmtest.gni',
-    },
-
-    'riscv64': {
-      'gn_args': 'target_cpu="riscv64"',
     },
 
     'shared': {

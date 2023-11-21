@@ -312,6 +312,7 @@ gn_args.config(
         "enable_resource_allowlist_generation": False,
     },
     configs = [
+        "android",
         "cronet_common",
     ],
 )

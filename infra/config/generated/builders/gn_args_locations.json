@@ -41,6 +41,15 @@
     "android-pie-x86-rel": "ci/android-pie-x86-rel/gn-args.json",
     "android-x86-rel": "ci/android-x86-rel/gn-args.json"
   },
+  "chromium.android.fyi": {
+    "android-12l-x64-fyi-dbg": "ci/android-12l-x64-fyi-dbg/gn-args.json",
+    "android-13-x64-fyi-rel": "ci/android-13-x64-fyi-rel/gn-args.json",
+    "android-annotator-rel": "ci/android-annotator-rel/gn-args.json",
+    "android-chrome-pie-x86-wpt-android-specific": "ci/android-chrome-pie-x86-wpt-android-specific/gn-args.json",
+    "android-chrome-pie-x86-wpt-fyi-rel": "ci/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json",
+    "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
+    "android-webview-pie-x86-wpt-fyi-rel": "ci/android-webview-pie-x86-wpt-fyi-rel/gn-args.json"
+  },
   "chromium.angle": {
     "android-angle-chromium-arm64-builder": "ci/android-angle-chromium-arm64-builder/gn-args.json",
     "fuchsia-angle-builder": "ci/fuchsia-angle-builder/gn-args.json",
@@ -247,6 +256,8 @@
     "android-bfcache-rel": "try/android-bfcache-rel/gn-args.json",
     "android-binary-size": "try/android-binary-size/gn-args.json",
     "android-binary-size-siso": "try/android-binary-size-siso/gn-args.json",
+    "android-chrome-pie-x86-wpt-android-specific": "try/android-chrome-pie-x86-wpt-android-specific/gn-args.json",
+    "android-chrome-pie-x86-wpt-fyi-rel": "try/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json",
     "android-cronet-arm-dbg": "try/android-cronet-arm-dbg/gn-args.json",
     "android-cronet-arm64-dbg": "try/android-cronet-arm64-dbg/gn-args.json",
     "android-cronet-arm64-rel": "try/android-cronet-arm64-rel/gn-args.json",
@@ -280,6 +291,7 @@
     "android-webview-13-x64-dbg": "try/android-webview-13-x64-dbg/gn-args.json",
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",
+    "android-webview-pie-x86-wpt-fyi-rel": "try/android-webview-pie-x86-wpt-fyi-rel/gn-args.json",
     "android-x64-cast": "try/android-x64-cast/gn-args.json",
     "android-x86-rel": "try/android-x86-rel/gn-args.json",
     "android_arm64_dbg_recipe": "try/android_arm64_dbg_recipe/gn-args.json",

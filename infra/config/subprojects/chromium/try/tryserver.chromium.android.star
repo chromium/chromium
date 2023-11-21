@@ -743,11 +743,24 @@ try_.builder(
 try_.builder(
     name = "android-chrome-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-chrome-pie-x86-wpt-fyi-rel",
+            "release_try_builder",
+            "strip_debug_info",
+        ],
+    ),
 )
 
 try_.builder(
     name = "android-chrome-pie-x86-wpt-android-specific",
     mirrors = ["ci/android-chrome-pie-x86-wpt-android-specific"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-chrome-pie-x86-wpt-android-specific",
+            "release_try_builder",
+        ],
+    ),
 )
 
 try_.builder(
@@ -785,6 +798,7 @@ try_.builder(
 try_.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
+    gn_args = "ci/android-webview-pie-x86-wpt-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

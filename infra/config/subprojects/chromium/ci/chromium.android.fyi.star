@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -50,6 +51,19 @@ ci.builder(
         category = "wpt|chrome",
         short_name = "p-x86",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
 )
 
 ci.builder(
@@ -74,6 +88,19 @@ ci.builder(
         short_name = "p-x86",
     ),
     experimental = True,
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
 )
 
 ci.builder(
@@ -96,6 +123,19 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "wpt|webview",
         short_name = "p-x86",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
     ),
 )
 
@@ -225,6 +265,16 @@ ci.builder(
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "webview_trichrome",
+            "webview_shell",
+        ],
+    ),
 )
 
 # TODO(https://crbug.com/1431581): Remove after experimental is done.
@@ -256,6 +306,20 @@ ci.builder(
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
+    ),
 )
 
 ci.builder(
@@ -278,6 +342,17 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",
         short_name = "and",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_google",
+        ],
     ),
     notifies = ["annotator-rel"],
 )
@@ -392,4 +467,17 @@ ci.builder(
         category = "cronet|asan",
     ),
     contact_team_email = "cronet-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "clang",
+            "asan",
+            "strip_debug_info",
+        ],
+    ),
 )
