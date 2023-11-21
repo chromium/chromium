@@ -58,6 +58,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           std::make_unique<FieldTrialRecorder>(field_trial_register_.get())),
       profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
+  stats::BackgroundUmaRecorder::GetInstance().Initialize();
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
       base::SysInfo::Uptime());

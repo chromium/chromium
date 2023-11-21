@@ -5,6 +5,13 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 
+#include <list>
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -320,6 +327,52 @@ void RecordTrainingDataCollectionEvent(SegmentId segment_id,
 
 SegmentationSelectionFailureReason GetSuccessOrFailureReason(
     SegmentResultProvider::ResultState result_state);
+
+// Helper to collect UMA metrics and record in a non-blocking thread.
+class BackgroundUmaRecorder {
+ public:
+  // Delay to collect metrics and record. Set to short time so if Chrome dies we
+  // don't lose too many metrics.
+  constexpr static base::TimeDelta kMetricsCollectionDelay = base::Seconds(5);
+
+  static BackgroundUmaRecorder& GetInstance();
+
+  BackgroundUmaRecorder(const BackgroundUmaRecorder&) = delete;
+  BackgroundUmaRecorder& operator=(const BackgroundUmaRecorder&) = delete;
+
+  // If initialized then records metrics in a worker thread, otherwise records
+  // metrics in current thread, blocking. Can be called multiple times safely.
+  void Initialize();
+  void InitializeForTesting(
+      scoped_refptr<base::SequencedTaskRunner> bg_task_runner);
+
+  // Force flush all samples in current thread.
+  void FlushSamples();
+
+  // Add metrics to UMA.
+  void AddMetric(base::OnceClosure add_sample);
+
+  scoped_refptr<base::SequencedTaskRunner> bg_task_runner_for_testing() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+    return bg_task_runner_;
+  }
+
+ private:
+  friend class base::NoDestructor<BackgroundUmaRecorder>;
+
+  BackgroundUmaRecorder();
+  ~BackgroundUmaRecorder();
+
+  base::Lock lock_;
+  std::list<base::OnceClosure> add_samples_ GUARDED_BY(lock_);
+  bool pending_task_ GUARDED_BY(lock_){false};
+
+  scoped_refptr<base::SequencedTaskRunner> bg_task_runner_;
+  // Protects `bg_task_runner_`. If we need to record metrics from non-main
+  // thread, do not use this class and record directly.
+  SEQUENCE_CHECKER(sequence_check_);
+  base::WeakPtrFactory<BackgroundUmaRecorder> weak_factory_{this};
+};
 
 }  // namespace segmentation_platform::stats
 

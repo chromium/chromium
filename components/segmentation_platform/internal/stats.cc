@@ -4,12 +4,16 @@
 
 #include "components/segmentation_platform/internal/stats.h"
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -534,10 +538,13 @@ void RecordModelExecutionStatus(SegmentId segment_id,
 
 void RecordModelExecutionZeroValuePercent(SegmentId segment_id,
                                           const std::vector<float>& tensor) {
-  base::UmaHistogramPercentage(
+  BackgroundUmaRecorder::GetInstance().AddMetric(base::BindOnce(
+      [](const std::string& name, int value) {
+        base::UmaHistogramPercentage(name, value);
+      },
       "SegmentationPlatform.ModelExecution.ZeroValuePercent." +
           SegmentIdToHistogramVariant(segment_id),
-      ZeroValueFraction(tensor) * 100);
+      ZeroValueFraction(tensor) * 100));
 }
 
 void RecordSignalDatabaseGetSamplesDatabaseEntryCount(size_t count) {
@@ -752,6 +759,64 @@ SegmentationSelectionFailureReason GetSuccessOrFailureReason(
       return SegmentationSelectionFailureReason::kDefaultModelExecutionFailed;
     case SegmentResultProvider::ResultState::kServerModelExecutionFailed:
       return SegmentationSelectionFailureReason::kServerModelExecutionFailed;
+  }
+}
+
+// static
+BackgroundUmaRecorder& BackgroundUmaRecorder::GetInstance() {
+  static base::NoDestructor<BackgroundUmaRecorder> instance;
+  return *instance;
+}
+
+BackgroundUmaRecorder::BackgroundUmaRecorder() = default;
+
+BackgroundUmaRecorder::~BackgroundUmaRecorder() = default;
+
+void BackgroundUmaRecorder::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  if (!bg_task_runner_) {
+    // Mark user visible priority so that lock held on bg thread will not block
+    // main thread.
+    bg_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  }
+}
+
+void BackgroundUmaRecorder::InitializeForTesting(
+    scoped_refptr<base::SequencedTaskRunner> bg_task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  bg_task_runner_ = bg_task_runner;
+}
+
+void BackgroundUmaRecorder::AddMetric(base::OnceClosure add_sample) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  {
+    base::AutoLock l(lock_);
+    if (bg_task_runner_) {
+      add_samples_.push_back(std::move(add_sample));
+      if (!pending_task_) {
+        pending_task_ = true;
+        bg_task_runner_->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&BackgroundUmaRecorder::FlushSamples,
+                           weak_factory_.GetWeakPtr()),
+            kMetricsCollectionDelay);
+      }
+      return;
+    }
+  }
+  std::move(add_sample).Run();
+}
+
+void BackgroundUmaRecorder::FlushSamples() {
+  std::list<base::OnceClosure> samples;
+  {
+    base::AutoLock l(lock_);
+    samples.swap(add_samples_);
+    pending_task_ = false;
+  }
+  for (auto& it : samples) {
+    std::move(it).Run();
   }
 }
 
