@@ -14,7 +14,7 @@
 namespace extensions {
 
 InstallTracker::InstallTracker(content::BrowserContext* browser_context,
-                               extensions::ExtensionPrefs* prefs)
+                               ExtensionPrefs* prefs)
     : browser_context_(browser_context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context));

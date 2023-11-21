@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EarlyEventDispatch) {
 
   // Build "test.onMessage" event for dispatch.
   auto event = std::make_unique<Event>(
-      events::FOR_TEST, extensions::api::test::OnMessage::kEventName,
+      events::FOR_TEST, api::test::OnMessage::kEventName,
       std::move(
           base::JSONReader::Read(R"([{"data": "hello", "lastMessage": true}])")
               .value()
@@ -881,9 +881,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   const ExtensionId kId("pkplfbidichfdicaijlchgnapepdginl");
 
   // Add minimal details required to dispatch webNavigation.onCommitted event:
-  extensions::api::web_navigation::OnCommitted::Details details;
-  details.transition_type =
-      extensions::api::web_navigation::TransitionType::kTyped;
+  api::web_navigation::OnCommitted::Details details;
+  details.transition_type = api::web_navigation::TransitionType::kTyped;
   details.frame_type = api::extension_types::FrameType::kOutermostFrame;
   details.document_lifecycle = api::extension_types::DocumentLifecycle::kActive;
 
@@ -1058,9 +1057,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
   listener_v1.set_failure_message("FAILURE_V1");
   // Install version 1.0 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
   EXPECT_TRUE(listener_v1.WaitUntilSatisfied());
 
   ExtensionTestMessageListener listener_v2("Pong from version 2");
@@ -1068,9 +1066,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
 
   // Update to version 2.0.
   EXPECT_TRUE(UpdateExtension(kId, path_v2, 0));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
   EXPECT_TRUE(listener_v2.WaitUntilSatisfied());
 }
 
@@ -1097,12 +1094,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
 
   // Install version 1.0 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
-  const Extension* extension = extensions::ExtensionRegistry::Get(profile())
-                                   ->enabled_extensions()
-                                   .GetByID(kId);
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId);
 
   ExtensionTestMessageListener listener1("Pong from version 1");
   listener1.set_failure_message("FAILURE");
@@ -1112,13 +1107,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
 
   // Update to version 2.0.
   EXPECT_TRUE(UpdateExtension(kId, path_v2, 0));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
   const Extension* extension_after_update =
-      extensions::ExtensionRegistry::Get(profile())
-          ->enabled_extensions()
-          .GetByID(kId);
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId);
 
   // Service worker version 2 would be installed but it won't be controlling
   // the extension page yet.
@@ -1174,16 +1166,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateToMV3RefreshesServiceWorker) {
 
   // Install version 1.0 that is a MV2 extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
   EXPECT_TRUE(listener_v1.WaitUntilSatisfied());
 
   // Update to version 3.0 that is a MV3 extension.
   EXPECT_TRUE(UpdateExtension(kId, path_v3, 0));
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
-                  ->enabled_extensions()
-                  .GetByID(kId));
+  EXPECT_TRUE(
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(kId));
   EXPECT_TRUE(listener_v3.WaitUntilSatisfied());
 }
 

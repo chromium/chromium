@@ -360,11 +360,11 @@ std::unique_ptr<CWSInfoService::FetchContext> CWSInfoService::CreateRequests(
   new_info_requested = false;
 
   auto* extension_mgmt =
-      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
   if (!extension_mgmt) {
     return nullptr;
   }
-  extensions::ExtensionSet installed_extensions =
+  ExtensionSet installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
   if (installed_extensions.empty()) {
     return nullptr;
@@ -527,8 +527,7 @@ void CWSInfoService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-static_assert(static_cast<int>(
-                  extensions::CWSInfoService::CWSViolationType::kUnknown) == 4,
+static_assert(static_cast<int>(CWSInfoService::CWSViolationType::kUnknown) == 4,
               "GetViolationTypeFromString needs to be updated to match "
               "CWSInfoService::CWSViolationType");
 // static:

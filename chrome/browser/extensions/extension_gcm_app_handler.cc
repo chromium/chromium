@@ -50,7 +50,7 @@ ExtensionGCMAppHandler::GetFactoryInstance() {
 ExtensionGCMAppHandler::ExtensionGCMAppHandler(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
-  js_event_router_ = std::make_unique<extensions::GcmJsEventRouter>(profile_);
+  js_event_router_ = std::make_unique<GcmJsEventRouter>(profile_);
 }
 
 ExtensionGCMAppHandler::~ExtensionGCMAppHandler() = default;
@@ -145,7 +145,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
 void ExtensionGCMAppHandler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    extensions::UninstallReason reason) {
+    UninstallReason reason) {
   if (IsGCMPermissionEnabled(extension)) {
     // Let's first remove InstanceID data. GCM unregistration will be triggered
     // after the asynchronous call is returned in OnDeleteIDCompleted.

@@ -158,8 +158,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
   // Uninstall the extension that imports our module.
   std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                &error);
+                                UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the module was only referenced by that single extension, it should
@@ -290,8 +289,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
   // Uninstall the extension that imports our modules.
   std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                &error);
+                                UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the modules were only referenced by that single extension, they

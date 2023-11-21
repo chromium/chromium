@@ -368,7 +368,7 @@ class ExtensionManagementServiceTest : public testing::Test {
   std::unique_ptr<ExtensionManagement> extension_management_;
 };
 
-class MockCWSInfoService : public extensions::CWSInfoServiceInterface {
+class MockCWSInfoService : public CWSInfoServiceInterface {
  public:
   MOCK_METHOD(absl::optional<bool>,
               IsLiveInCWS,
@@ -406,18 +406,18 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 
   void CreateHostedApp(ManifestLocation location) {
     base::Value::Dict values;
-    values.SetByDottedPath(extensions::manifest_keys::kWebURLs,
+    values.SetByDottedPath(manifest_keys::kWebURLs,
                            base::Value(base::Value::Type::LIST));
-    values.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
+    values.SetByDottedPath(manifest_keys::kLaunchWebURL,
                            "http://www.example.com");
     CreateExtensionFromValues(location, &values);
   }
 
   void CreateExtensionFromValues(ManifestLocation location,
                                  base::Value::Dict* values) {
-    values->Set(extensions::manifest_keys::kName, "test");
-    values->Set(extensions::manifest_keys::kVersion, "0.1");
-    values->Set(extensions::manifest_keys::kManifestVersion, 2);
+    values->Set(manifest_keys::kName, "test");
+    values->Set(manifest_keys::kVersion, "0.1");
+    values->Set(manifest_keys::kManifestVersion, 2);
     std::string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);

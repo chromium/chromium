@@ -176,7 +176,7 @@ std::unique_ptr<MockPromptProxy> CreateMockPromptProxyForBrowser(
       browser, ScopedTestDialogAutoConfirm::ACCEPT);
 }
 
-class ManagementPolicyMock : public extensions::ManagementPolicy::Provider {
+class ManagementPolicyMock : public ManagementPolicy::Provider {
  public:
   ManagementPolicyMock() = default;
 
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
 
   const std::string extension_id("gllekhaobjnhgeagipipnkpmmmpchacm");
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
-  const extensions::Extension* extension =
+  const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension_id, extension->id());
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   base::FilePath v1_path = PackExtension(base_path.AppendASCII("v1"));
   ASSERT_FALSE(v1_path.empty());
   ASSERT_TRUE(InstallExtension(v1_path, 1));
-  const extensions::Extension* extension =
+  const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   ASSERT_EQ(extension_id, extension->id());
@@ -1017,8 +1017,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
       cache_dir.GetPath());
 
   base::FilePath crx_path = test_data_dir_.AppendASCII("crx_installer/v1.crx");
-  const extensions::Extension* extension = InstallExtension(
-      crx_path, 1, extensions::mojom::ManifestLocation::kExternalPref);
+  const Extension* extension =
+      InstallExtension(crx_path, 1, mojom::ManifestLocation::kExternalPref);
   base::FilePath extension_path = extension->path();
   EXPECT_TRUE(cache_dir.GetPath().IsParent(extension_path));
   EXPECT_TRUE(base::PathExists(extension_path));
@@ -1050,15 +1050,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DoNotSync) {
   const ExtensionPrefs* extension_prefs =
       ExtensionPrefs::Get(browser()->profile());
   EXPECT_TRUE(extension_prefs->DoNotSync(crx_installer->extension()->id()));
-  EXPECT_FALSE(extensions::util::ShouldSync(crx_installer->extension(),
-                                            browser()->profile()));
+  EXPECT_FALSE(
+      util::ShouldSync(crx_installer->extension(), browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, ManagementPolicy) {
   ManagementPolicyMock policy;
-  extensions::ExtensionSystem::Get(profile())
-      ->management_policy()
-      ->RegisterProvider(&policy);
+  ExtensionSystem::Get(profile())->management_policy()->RegisterProvider(
+      &policy);
 
   base::FilePath crx_path = test_data_dir_.AppendASCII("crx_installer/v1.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));

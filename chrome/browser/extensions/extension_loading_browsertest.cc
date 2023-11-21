@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, PRE_ChangeBackgroundScriptType) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, ChangeBackgroundScriptType) {
   // The goal of this test step is to not crash.
-  const extensions::Extension* extension =
+  const Extension* extension =
       extension_registry()->enabled_extensions().GetByID(
           kChangeBackgroundScriptTypeExtensionId);
   ASSERT_TRUE(extension);

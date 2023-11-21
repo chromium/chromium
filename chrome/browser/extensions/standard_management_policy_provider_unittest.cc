@@ -89,7 +89,7 @@ TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
   auto webstore = ExtensionBuilder("webstore hosted app")
                       .AddJSON(kHostedApp)
                       .SetLocation(ManifestLocation::kComponent)
-                      .SetID(extensions::kWebStoreAppId)
+                      .SetID(kWebStoreAppId)
                       .Build();
   EXPECT_FALSE(provider_.ExtensionMayModifySettings(webstore.get(),
                                                     policy.get(), nullptr));

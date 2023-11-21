@@ -130,8 +130,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       service_->AddProviderForTesting(std::move(provider));
@@ -239,7 +239,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
-  // extensions::ExternalLoader and depends on a functioning StatisticsProvider.
+  // ExternalLoader and depends on a functioning StatisticsProvider.
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 

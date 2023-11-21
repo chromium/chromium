@@ -209,7 +209,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
   // (GetFilePath()), so that this can be called on the non blocking threads. It
   // only handles a subset of the urls.
   if (!use_blocking_api) {
-    if (file_url.SchemeIs(extensions::kExtensionScheme)) {
+    if (file_url.SchemeIs(kExtensionScheme)) {
       std::string path = file_url.path();
       base::TrimString(path, "/", &path);  // Remove first slash
       *file_path = extension->path().AppendASCII(path);

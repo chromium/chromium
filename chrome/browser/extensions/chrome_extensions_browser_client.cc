@@ -538,8 +538,8 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
     int embedder_process_id,
     int view_instance_id) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (extensions::ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          profile)) {
     return;
   }
 
@@ -574,7 +574,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kTabContents:
       // Those types are tracked by other tags:
       // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
-      // GUEST --> extensions::ChromeGuestViewManagerDelegate.
+      // GUEST --> ChromeGuestViewManagerDelegate.
       // PANEL --> task_manager::PanelTag.
       // TAB_CONTENTS --> task_manager::TabContentsTag.
       // These tags are created and attached to the web_contents in other
@@ -710,7 +710,7 @@ void ChromeExtensionsBrowserClient::SetLastSaveFilePath(
 bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
     const std::string& extension_id,
     content::BrowserContext* context) {
-  return extensions::util::HasIsolatedStorage(extension_id, context);
+  return util::HasIsolatedStorage(extension_id, context);
 }
 
 bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
@@ -822,8 +822,7 @@ bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     const ExtensionId& extension_id,
     int vendor_id,
     int product_id) const {
-  url::Origin origin =
-      extensions::Extension::CreateOriginFromExtensionId(extension_id);
+  url::Origin origin = Extension::CreateOriginFromExtensionId(extension_id);
 
   UsbChooserContext* usb_chooser_context =
       UsbChooserContextFactory::GetForProfile(static_cast<Profile*>(context));

@@ -71,7 +71,7 @@ base::FilePath GetTestPath(const std::string& name) {
 
 base::FilePath GetContentVerifierTestPath() {
   base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(extensions::DIR_TEST_DATA, &path));
+  EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
   return path.AppendASCII("content_hash_fetcher")
       .AppendASCII("different_sized_files");
 }
@@ -212,8 +212,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
   void SetProtocolHandler(bool is_incognito) {
-    loader_factory_.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
-        browser_context(), false));
+    loader_factory_.Bind(
+        CreateExtensionNavigationURLLoaderFactory(browser_context(), false));
   }
 
   GetResult RequestOrLoad(const GURL& url,
@@ -652,7 +652,7 @@ TEST_F(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
   base::FilePath unzipped_path = temp_dir.GetPath();
 
   base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(extensions::DIR_TEST_DATA, &path));
+  EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
   scoped_refptr<Extension> extension =
       content_verifier_test_utils::UnzipToDirAndLoadExtension(

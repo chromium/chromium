@@ -107,7 +107,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   }
 
   base::FilePath extensions_install_dir =
-      profile_dir.AppendASCII(extensions::kInstallDirectoryName);
+      profile_dir.AppendASCII(kInstallDirectoryName);
   if (!base::DeletePathRecursively(extensions_install_dir)) {
     LOG(ERROR) << "Failed to clean extensions directory";
     return nullptr;
@@ -130,7 +130,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   // for the test since this is less common than for packed extensions.
   if (base::PathExists(params.unpacked_extensions_dir)) {
     base::FilePath unpacked_extensions_install_dir =
-        profile_dir.AppendASCII(extensions::kUnpackedInstallDirectoryName);
+        profile_dir.AppendASCII(kUnpackedInstallDirectoryName);
     if (!base::DeletePathRecursively(unpacked_extensions_install_dir)) {
       LOG(ERROR) << "Failed to clean unpacked extensions directory";
       return nullptr;
@@ -216,9 +216,8 @@ bool ExtensionServiceTestBase::ExtensionServiceInitParams::
   if (!SetPrefsContentFromFile(filepath.Append(chrome::kPreferencesFilename))) {
     return false;
   }
-  extensions_dir = filepath.AppendASCII(extensions::kInstallDirectoryName);
-  unpacked_extensions_dir =
-      filepath.AppendASCII(extensions::kUnpackedInstallDirectoryName);
+  extensions_dir = filepath.AppendASCII(kInstallDirectoryName);
+  unpacked_extensions_dir = filepath.AppendASCII(kUnpackedInstallDirectoryName);
   return true;
 }
 
@@ -257,9 +256,9 @@ void ExtensionServiceTestBase::InitializeExtensionService(
     const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
   profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get());
   extensions_install_dir_ =
-      profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName);
-  unpacked_install_dir_ = profile_->GetPath().AppendASCII(
-      extensions::kUnpackedInstallDirectoryName);
+      profile_->GetPath().AppendASCII(kInstallDirectoryName);
+  unpacked_install_dir_ =
+      profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName);
 
   CreateExtensionService(params);
   registry_ = ExtensionRegistry::Get(profile());

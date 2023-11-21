@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunBlockedActions) {
   runner->RunBlockedActions(extension);
   SitePermissionsHelper permissions_helper(browser()->profile());
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extension, web_contents),
-            extensions::SitePermissionsHelper::SiteInteraction::kGranted);
+            SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_FALSE(runner->WantsToRun(extension));
   EXPECT_TRUE(script_injection_listener.WaitUntilSatisfied());
   EXPECT_TRUE(DidInjectScript(*web_contents));

@@ -223,9 +223,8 @@ class ContentVerifierHashTest
   }
 
   bool ExtensionIsDisabledForCorruption() {
-    const Extension* extension = extensions::ExtensionRegistry::Get(profile())
-                                     ->disabled_extensions()
-                                     .GetByID(id());
+    const Extension* extension =
+        ExtensionRegistry::Get(profile())->disabled_extensions().GetByID(id());
     if (!extension)
       return false;
 
@@ -237,9 +236,8 @@ class ContentVerifierHashTest
   }
 
   bool ExtensionIsEnabled() {
-    return extensions::ExtensionRegistry::Get(profile())
-        ->enabled_extensions()
-        .Contains(id());
+    return ExtensionRegistry::Get(profile())->enabled_extensions().Contains(
+        id());
   }
 
   bool HasValidComputedHashes() {

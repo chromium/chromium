@@ -206,9 +206,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, base::CommandLine::ForCurrentProcess(),
-      profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName),
-      profile_->GetPath().AppendASCII(
-          extensions::kUnpackedInstallDirectoryName),
+      profile_->GetPath().AppendASCII(kInstallDirectoryName),
+      profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName),
       ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
       autoupdate_enabled, extensions_enabled, &ready_);
 

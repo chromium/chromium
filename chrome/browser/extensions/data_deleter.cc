@@ -68,8 +68,8 @@ void DeleteOrigin(Profile* profile,
 
     // Delete cookies separately from other data so that the request context
     // for extensions doesn't need to be passed into the StoragePartition.
-    extensions::ChromeExtensionCookies::Get(profile)->ClearCookies(
-        origin, subtask_done_callback);
+    ChromeExtensionCookies::Get(profile)->ClearCookies(origin,
+                                                       subtask_done_callback);
   } else {
     // We don't need to worry about the media request context because that
     // shares the same cookie store as the main request context.
@@ -108,7 +108,7 @@ void DataDeleter::StartDeleting(Profile* profile,
   GURL launch_web_url_origin;
   StoragePartition* partition = nullptr;
 
-  if (extensions::util::HasIsolatedStorage(*extension, profile)) {
+  if (util::HasIsolatedStorage(*extension, profile)) {
     has_isolated_storage = true;
     ++num_tasks;
   } else {

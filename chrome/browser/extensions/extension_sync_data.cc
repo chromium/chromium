@@ -100,7 +100,7 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      const GURL& update_url,
                                      const StringOrdinal& app_launch_ordinal,
                                      const StringOrdinal& page_ordinal,
-                                     extensions::LaunchType launch_type)
+                                     LaunchType launch_type)
     : is_app_(extension.is_app()),
       id_(extension.id()),
       uninstalled_(false),
@@ -247,8 +247,8 @@ bool ExtensionSyncData::PopulateFromAppSpecifics(
   page_ordinal_ = syncer::StringOrdinal(specifics.page_ordinal());
 
   launch_type_ = specifics.has_launch_type()
-      ? static_cast<extensions::LaunchType>(specifics.launch_type())
-      : LAUNCH_TYPE_INVALID;
+                     ? static_cast<LaunchType>(specifics.launch_type())
+                     : LAUNCH_TYPE_INVALID;
 
   // Bookmark apps and chrome apps both have "app" specifics, but only bookmark
   // apps filled out the `bookmark_app*` fields.

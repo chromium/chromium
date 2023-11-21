@@ -92,8 +92,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers) {
       service_->AddProviderForTesting(std::move(provider));
@@ -117,7 +117,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   void WaitForPendingStandaloneExtensionsInstalled() {
     service_->CheckForExternalUpdates();
     base::RunLoop().RunUntilIdle();
-    extensions::PendingExtensionManager* const pending_extension_manager =
+    PendingExtensionManager* const pending_extension_manager =
         service_->pending_extension_manager();
     while (pending_extension_manager->IsIdPending(kStandaloneAppId) ||
            pending_extension_manager->IsIdPending(kStandaloneChildAppId)) {
@@ -133,8 +133,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
     EXPECT_EQ(providers.size(), expected_count);
   }
