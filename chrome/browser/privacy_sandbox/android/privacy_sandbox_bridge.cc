@@ -15,6 +15,7 @@
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -190,4 +191,12 @@ static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
 static void JNI_PrivacySandboxBridge_TopicsToggleChanged(JNIEnv* env,
                                                          jboolean new_value) {
   GetPrivacySandboxService()->TopicsToggleChanged(new_value);
+}
+
+static void
+JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
+    JNIEnv* env) {
+  PrivacySandboxSettingsFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile())
+      ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
 }

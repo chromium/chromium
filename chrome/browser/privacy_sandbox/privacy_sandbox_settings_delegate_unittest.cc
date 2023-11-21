@@ -134,8 +134,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
        CapabilityRestrictionForSignedOutUser) {
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   // If the user is not signed in to Chrome then we don't use any age signal and
   // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
@@ -230,14 +228,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.name, "true"}});
-
-  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings3,
-      {{privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.name,
-        "true"}});
 
   EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
 }

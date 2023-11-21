@@ -310,7 +310,6 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
                               privacy_sandbox::kPrivacySandboxSettings4,
-                              privacy_sandbox::kPrivacySandboxSettings3,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},

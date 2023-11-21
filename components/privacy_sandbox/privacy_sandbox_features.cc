@@ -73,25 +73,6 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kPrivacySandboxSettings4CloseAllPrompts{
     &kPrivacySandboxSettings4, "close-all-prompts", true};
 
-BASE_FEATURE(kPrivacySandboxSettings3,
-             "PrivacySandboxSettings3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
-    &kPrivacySandboxSettings3, "consent-required", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
-    &kPrivacySandboxSettings3, "notice-required", false};
-
-const base::FeatureParam<bool>
-    kPrivacySandboxSettings3ForceShowConsentForTesting{
-        &kPrivacySandboxSettings3, "force-show-consent-for-testing", false};
-const base::FeatureParam<bool>
-    kPrivacySandboxSettings3ForceShowNoticeForTesting{
-        &kPrivacySandboxSettings3, "force-show-notice-for-testing", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
-    &kPrivacySandboxSettings3, "show-sample-data", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3DisablePromptForTesting{
-    &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
-
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              "OverridePrivacySandboxSettingsLocalTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);

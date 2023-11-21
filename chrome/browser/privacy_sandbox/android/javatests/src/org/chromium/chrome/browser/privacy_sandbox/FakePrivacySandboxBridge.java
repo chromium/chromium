@@ -195,4 +195,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public boolean getLastTopicsToggleValue() {
         return mLastTopicsToggleValue;
     }
+
+    @Override
+    public void setAllPrivacySandboxAllowedForTesting() {}
 }

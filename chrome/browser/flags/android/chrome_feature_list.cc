@@ -380,7 +380,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &features::kBlockMidiByDefault,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-    &privacy_sandbox::kPrivacySandboxSettings3,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
     &privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice,

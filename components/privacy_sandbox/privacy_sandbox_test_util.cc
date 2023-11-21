@@ -965,15 +965,8 @@ void SetupTestState(
       map, std::move(managed_provider),
       HostContentSettingsMap::POLICY_PROVIDER);
 
-  // Only adjust the Privacy Sandbox preference which should be being consulted
-  // based on feature state.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                      base::Value(privacy_sandbox_enabled));
-  } else {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabled,
-                                      base::Value(privacy_sandbox_enabled));
-  }
+  testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
+                                    base::Value(privacy_sandbox_enabled));
 }
 
 void RunTestCase(

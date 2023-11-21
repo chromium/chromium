@@ -28,7 +28,6 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
   auto config = browsing_topics::mojom::WebUIBrowsingTopicsConfiguration::New(
       base::FeatureList::IsEnabled(blink::features::kBrowsingTopics),
       base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride),
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3),
       base::FeatureList::IsEnabled(
           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
       base::FeatureList::IsEnabled(

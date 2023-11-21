@@ -746,8 +746,7 @@ class ProfileNetworkContextTrustTokensBrowsertest
         network::features::kTrustTokenOperationsRequiringOriginTrial;
     feature_list_.InitWithFeaturesAndParameters(
         // Enabled Features:
-        {{privacy_sandbox::kPrivacySandboxSettings3, {}},
-         {network::features::kPrivateStateTokens,
+        {{network::features::kPrivateStateTokens,
           {{field_trial_param.name,
             field_trial_param.GetName(
                 network::features::TrustTokenOriginTrialSpec::

@@ -1497,10 +1497,7 @@ bool PageSpecificContentSettings::HasAccessedTopics() const {
 std::vector<privacy_sandbox::CanonicalTopic>
 PageSpecificContentSettings::GetAccessedTopics() const {
   if (accessed_topics_.empty() &&
-      (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting
-           .Get() ||
-       privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting
-           .Get()) &&
+      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get() &&
       page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
     // TODO(crbug.com/1286276): Remove sample topic when API is ready.
     return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),

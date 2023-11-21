@@ -111,6 +111,10 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().topicsToggleChanged(newValue);
     }
 
+    public static void setAllPrivacySandboxAllowedForTesting() {
+        PrivacySandboxBridgeJni.get().setAllPrivacySandboxAllowedForTesting(); // IN-TEST
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -132,5 +136,7 @@ public class PrivacySandboxBridge {
         int getRequiredPromptType();
         void promptActionOccurred(int action);
         void topicsToggleChanged(boolean newValue);
+
+        void setAllPrivacySandboxAllowedForTesting(); // IN-TEST
     }
 }

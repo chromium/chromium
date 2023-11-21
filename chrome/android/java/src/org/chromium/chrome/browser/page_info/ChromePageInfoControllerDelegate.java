@@ -248,13 +248,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
-            var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
-            adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
-            rowWrapper.addView(adPersonalizationRow);
-            controllers.add(new PageInfoAdPersonalizationController(
-                    mainController, adPersonalizationRow, this));
-        }
+        var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
+        adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
+        rowWrapper.addView(adPersonalizationRow);
+        controllers.add(
+                new PageInfoAdPersonalizationController(
+                        mainController, adPersonalizationRow, this));
 
         // Add history row.
         final Tab tab = TabUtils.fromWebContents(mWebContents);

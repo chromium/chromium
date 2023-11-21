@@ -557,16 +557,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
 }
 
 class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
-    : public DialogBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public DialogBrowserTest {
  public:
-  PageInfoBubbleViewPrivacySandboxDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {GetParam() ? privacy_sandbox::kPrivacySandboxSettings4
-                    : privacy_sandbox::kPrivacySandboxSettings3},
-        {});
-  }
-
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -625,19 +617,15 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxMain) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxSubpage) {
   ShowAndVerifyUi();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
-                         testing::Bool());
 
 class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
  public:

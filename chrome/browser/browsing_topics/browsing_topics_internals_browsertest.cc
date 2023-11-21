@@ -336,7 +336,6 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             blink::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
-            privacy_sandbox::kPrivacySandboxSettings3,
             privacy_sandbox::kPrivacySandboxSettings4,
         });
   }
@@ -352,7 +351,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledInternalsBrowserTest,
 
   EXPECT_EQ(GetFeaturesAndParametersTabContent(), R"(BrowsingTopics: disabled
 PrivacySandboxAdsAPIsOverride: disabled
-PrivacySandboxSettings3: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
 BrowsingTopicsDocumentAPI: enabled
@@ -416,7 +414,6 @@ class BrowsingTopicsInternalsBrowserTest
            {"time_period_per_epoch", "15s"}}},
          {blink::features::kBrowsingTopics, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
-         {privacy_sandbox::kPrivacySandboxSettings3, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},
         /*disabled_features=*/{});
@@ -467,7 +464,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, FeaturesEnabled) {
 
   EXPECT_EQ(GetFeaturesAndParametersTabContent(), R"(BrowsingTopics: enabled
 PrivacySandboxAdsAPIsOverride: enabled
-PrivacySandboxSettings3: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
 BrowsingTopicsDocumentAPI: enabled
