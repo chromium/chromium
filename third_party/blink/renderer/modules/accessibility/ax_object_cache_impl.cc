@@ -2648,7 +2648,7 @@ AXObject* AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
   if (AXObject* ax_ancestor_for_notification = InvalidateChildren(obj)) {
     // Don't enqueue a deferred event on the same node more than once.
     CHECK(!updating_tree_);
-    CHECK(!is_frozen_);
+    CHECK(!IsFrozen());
     if (ax_ancestor_for_notification->GetNode() &&
         !nodes_with_pending_children_changed_
              .insert(ax_ancestor_for_notification->GetNode())
@@ -2976,6 +2976,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
+  // ------------ Process deferred events and update tree  --------------------
   {
     base::AutoReset<bool> processing(&processing_deferred_events_, true);
 
@@ -3021,26 +3022,34 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     UpdateTreeIfNeeded();
   }
 
-  // ***** Serialize *****
-  // Check whether there are dirty objects ready to be serialized.
-  // TODO(accessibility) It's a bit confusing that this can be true when the
-  // IsDirty() is false, but this is the case for objects marked dirty from
-  // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
-  if (HasDirtyObjects()) {
-    if (auto* client = GetWebLocalFrameClient())
-      client->AXReadyCallback();
-  }
+  // ------------------------ Freeze and serialize ---------------------------
+  {
+    // The frozen state begins immediately after processing deferred events.
+    ScopedFreezeAXCache scoped_freeze_cache(*this);
 
-  // ***** Update Inspector Views *****
-  // Accessibility is now clean for both documents: AXObjects can be safely
-  // traversed and AXObject's properties can be safely fetched.
-  // TODO(accessibility) Now that both documents are always processed at the
-  // same time, consider modifying the InspectorAccessibilityAgent so that only
-  // the callback for the main document is needed.
-  for (auto agent : agents_) {
-    agent->AXReadyCallback(document);
-    if (GetPopupDocumentIfShowing())
-      agent->AXReadyCallback(*GetPopupDocumentIfShowing());
+    // ***** Serialize *****
+    // Check whether there are dirty objects ready to be serialized.
+    // TODO(accessibility) It's a bit confusing that this can be true when the
+    // IsDirty() is false, but this is the case for objects marked dirty from
+    // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
+    if (HasDirtyObjects()) {
+      if (auto* client = GetWebLocalFrameClient()) {
+        client->AXReadyCallback();
+      }
+    }
+
+    // ***** Update Inspector Views *****
+    // Accessibility is now clean for both documents: AXObjects can be safely
+    // traversed and AXObject's properties can be safely fetched.
+    // TODO(accessibility) Now that both documents are always processed at the
+    // same time, consider modifying the InspectorAccessibilityAgent so that
+    // only the callback for the main document is needed.
+    for (auto agent : agents_) {
+      agent->AXReadyCallback(document);
+      if (GetPopupDocumentIfShowing()) {
+        agent->AXReadyCallback(*GetPopupDocumentIfShowing());
+      }
+    }
   }
 }
 
@@ -5179,6 +5188,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   ProcessDeferredAccessibilityEvents(GetDocument());
+  ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = SafeGet(node);
   return AXObject::ARIARoleName(obj ? obj->RoleValue()
                                     : ax::mojom::blink::Role::kUnknown);
@@ -5188,6 +5198,7 @@ String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   ProcessDeferredAccessibilityEvents(GetDocument());
+  ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = SafeGet(node);
   return obj ? obj->ComputedName() : "";
 }

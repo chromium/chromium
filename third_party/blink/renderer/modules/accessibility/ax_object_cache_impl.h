@@ -148,22 +148,28 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Freeze that AXObject tree and do not allow changes until Thaw() is called.
   // Prefer ScopedFreezeAXCache where possible.
   void Freeze() override {
+    if (frozen_count_++) {
+      // Already frozen.
+      return;
+    }
     // TODO(crbug.com/1477047): Remove this case once post lifecycle
     // serialization is the only remaining code path. It's unclear why the
     // document lifecycle check is necessary but this is short-lived code.
-    if (!serialize_post_lifecycle_ && GetDocument().Lifecycle().GetState() <
-                                          DocumentLifecycle::kPrePaintClean) {
+    if (!serialize_post_lifecycle_ && frozen_count_ == 1 &&
+        GetDocument().Lifecycle().GetState() <
+            DocumentLifecycle::kPrePaintClean) {
       UpdateAXForAllDocuments();
     }
     ax_tree_source_->Freeze();
-    is_frozen_ = true;
     CHECK(FocusedObject());
   }
   void Thaw() override {
-    is_frozen_ = false;
-    ax_tree_source_->Thaw();
+    CHECK_GE(frozen_count_, 1);
+    if (--frozen_count_ == 0) {
+      ax_tree_source_->Thaw();
+    }
   }
-  bool IsFrozen() const override { return is_frozen_; }
+  bool IsFrozen() const override { return frozen_count_; }
 
   //
   // Iterators.
@@ -847,8 +853,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // TODO(accessibility) Replace these with something like a document lifecycle.
   // Tree is being updated.
   bool processing_deferred_events_ = false;
-  // Tree is frozen and beign serialized.
-  bool is_frozen_ = false;  // Used with Freeze(), Thaw() and IsFrozen() above.
+  // If > 0, tree is frozen and beign serialized.
+  int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
   // Tree and cache are being destroyed.
   bool has_been_disposed_ = false;
 

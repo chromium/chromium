@@ -615,6 +615,8 @@ WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
   if (IsDetached())
     return WebString();
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
+
   HeapVector<Member<AXObject>> name_objects;
   WebString result = private_->GetName(out_name_from, &name_objects);
 
@@ -628,6 +630,8 @@ WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
 WebString WebAXObject::GetName() const {
   if (IsDetached())
     return WebString();
+
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
 
   ax::mojom::NameFrom name_from;
   HeapVector<Member<AXObject>> name_objects;

@@ -309,7 +309,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 class ScopedFreezeAXCache : public GarbageCollected<ScopedFreezeAXCache> {
  public:
   explicit ScopedFreezeAXCache(AXObjectCache& cache) : cache_(&cache) {
-    CHECK(!cache.IsFrozen());
     cache.Freeze();
   }
 
@@ -318,7 +317,6 @@ class ScopedFreezeAXCache : public GarbageCollected<ScopedFreezeAXCache> {
 
   ~ScopedFreezeAXCache() {
     CHECK(cache_);
-    CHECK(cache_->IsFrozen());
     cache_->Thaw();
   }
 
