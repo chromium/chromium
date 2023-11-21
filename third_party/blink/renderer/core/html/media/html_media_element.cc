@@ -1510,6 +1510,29 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
 void HTMLMediaElement::StartPlayerLoad() {
   DCHECK(!web_media_player_);
 
+  // OOM interventions may destroy the JavaScript context while still allowing
+  // the page to operate without JavaScript. The media element is too
+  // complicated to continue running in this state, so fail.
+  // See https://crbug.com/1345473 for more information.
+  if (!GetExecutionContext() ||
+      GetDocument().domWindow()->IsContextDestroyed()) {
+    MediaLoadingFailed(
+        WebMediaPlayer::kNetworkStateFormatError,
+        BuildElementErrorMessage(
+            "Player load failure: JavaScript context destroyed"));
+    return;
+  }
+
+  // Due to Document PiP we may have a different execution context than our
+  // opener, so we also must check that the LocalFrame of the opener is valid.
+  LocalFrame* frame = LocalFrameForPlayer();
+  if (!frame) {
+    MediaLoadingFailed(
+        WebMediaPlayer::kNetworkStateFormatError,
+        BuildElementErrorMessage("Player load failure: document has no frame"));
+    return;
+  }
+
   WebMediaPlayerSource source;
   if (src_object_stream_descriptor_) {
     source =
@@ -1542,14 +1565,6 @@ void HTMLMediaElement::StartPlayerLoad() {
 
     KURL kurl(request_url);
     source = WebMediaPlayerSource(WebURL(kurl));
-  }
-
-  LocalFrame* frame = LocalFrameForPlayer();
-  if (!frame || !GetExecutionContext()) {
-    MediaLoadingFailed(
-        WebMediaPlayer::kNetworkStateFormatError,
-        BuildElementErrorMessage("Player load failure: document has no frame"));
-    return;
   }
 
   web_media_player_ =
