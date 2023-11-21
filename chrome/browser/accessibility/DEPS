@@ -1,6 +1,7 @@
 include_rules = [
   "+components/live_caption",
   "+components/soda",
+  "+pdf/pdf_features.h",
   "+services/image_annotation",
   "+testing/gmock",
   "+testing/gtest",

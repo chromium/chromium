@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -25,6 +26,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -54,8 +56,12 @@ using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-class PDFExtensionInteractiveUITest : public PDFExtensionTestBase {
+class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
+                                      public PDFExtensionTestBase {
  public:
+  PDFExtensionInteractiveUITest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
   }
@@ -74,6 +80,8 @@ class PDFExtensionInteractiveUITest : public PDFExtensionTestBase {
     }
     return focus_observer.Wait();
   }
+
+  bool UseOopif() const override { return GetParam(); }
 };
 
 class TabChangedWaiter : public TabStripModelObserver {
@@ -103,7 +111,7 @@ class TabChangedWaiter : public TabStripModelObserver {
 }  // namespace
 
 // For crbug.com/1038918
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        CtrlPageUpDownSwitchesTabs) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -144,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   EXPECT_EQ(1, tab_strip_model->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -162,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -206,7 +214,7 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
 // icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -259,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 #else
 #define MAYBE_TouchSelectionBounds TouchSelectionBounds
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        MAYBE_TouchSelectionBounds) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -297,3 +305,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 171.0f), end_bound.edge_end(), 1.0f);
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);
