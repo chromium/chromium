@@ -134,8 +134,7 @@ static v8::Local<v8::ArrayBuffer> GetArrayBuffer(V8TestingScope& scope,
       .As<v8::ArrayBuffer>();
 }
 
-TEST(PaymentResponseTest,
-     PaymentResponseDetailsContainsSpcExtensionsDevicePublicKey) {
+TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
   ScopedSecurePaymentConfirmationExtensionsForTest extensions_flag(true);
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
@@ -147,10 +146,12 @@ TEST(PaymentResponseTest,
   input->get_assertion_authenticator_response->info->id = "rpid";
   input->get_assertion_authenticator_response->extensions =
       blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
-  input->get_assertion_authenticator_response->extensions->device_public_key =
-      mojom::blink::DevicePublicKeyResponse::New(
-          /*authenticator_output=*/WTF::Vector<uint8_t>{1, 2, 3},
-          /*signature=*/WTF::Vector<uint8_t>{4, 5, 6});
+  input->get_assertion_authenticator_response->extensions->echo_prf = true;
+  input->get_assertion_authenticator_response->extensions->prf_results =
+      mojom::blink::PRFValues::New(
+          /*id=*/absl::nullopt,
+          /*first=*/WTF::Vector<uint8_t>{1, 2, 3},
+          /*second=*/WTF::Vector<uint8_t>{4, 5, 6});
   MockPaymentStateResolver* complete_callback =
       MakeGarbageCollected<MockPaymentStateResolver>();
 
@@ -160,18 +161,19 @@ TEST(PaymentResponseTest,
 
   v8::Local<v8::Object> details =
       output->details(scope.GetScriptState()).V8Value().As<v8::Object>();
-  v8::Local<v8::Object> device_pub_key =
+  v8::Local<v8::Object> prf =
       GetClientExtensionResults(scope, details)
-          ->Get(scope.GetContext(),
-                V8String(scope.GetIsolate(), "devicePubKey"))
+          ->Get(scope.GetContext(), V8String(scope.GetIsolate(), "prf"))
           .ToLocalChecked()
           .As<v8::Object>();
-  v8::Local<v8::ArrayBuffer> authenticator_output =
-      GetArrayBuffer(scope, device_pub_key, "authenticatorOutput");
-  EXPECT_THAT(authenticator_output, ArrayBufferEqualTo(WTF::Vector{1, 2, 3}));
-  v8::Local<v8::ArrayBuffer> signature =
-      GetArrayBuffer(scope, device_pub_key, "signature");
-  EXPECT_THAT(signature, ArrayBufferEqualTo(WTF::Vector{4, 5, 6}));
+  v8::Local<v8::Object> results =
+      prf->Get(scope.GetContext(), V8String(scope.GetIsolate(), "results"))
+          .ToLocalChecked()
+          .As<v8::Object>();
+  EXPECT_THAT(GetArrayBuffer(scope, results, "first"),
+              ArrayBufferEqualTo(WTF::Vector{1, 2, 3}));
+  EXPECT_THAT(GetArrayBuffer(scope, results, "second"),
+              ArrayBufferEqualTo(WTF::Vector{4, 5, 6}));
 }
 
 TEST(PaymentResponseTest,
