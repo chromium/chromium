@@ -54,11 +54,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using RemoveCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveReply>;
 
-  // This API is still used by old WebAuthN path.
-  // TODO(b/260715686): Remove as part of UseAuthsessionForWebAuthN cleanup.
-  using CheckKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::CheckKeyReply>;
-
   using GetSupportedKeyPoliciesCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetSupportedKeyPoliciesReply>;
   using GetAccountDiskUsageCallback =
