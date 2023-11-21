@@ -125,6 +125,10 @@ class CORE_EXPORT AutoplayPolicy final
   // Returns whether the media element is eligible to autoplay muted.
   bool IsEligibleForAutoplayMuted() const;
 
+  // Returns whether the transient user activation state is active for either
+  // the frame or the opener of the media element.
+  bool HasTransientUserActivation() const;
+
   bool ShouldAutoplay();
 
   // Return true if and only if a user gesture is required to unlock this
