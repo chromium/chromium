@@ -159,6 +159,39 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     }
   });
 
+  function isMicrophoneRowActionable(): boolean {
+    const actionableAttribute =
+        privacyHubMicrophoneSubpage.shadowRoot!
+            .querySelector('#accessStatusRow')!.getAttribute('actionable');
+    return actionableAttribute === '';
+  }
+
+  test(
+      'Clicking toggle is no-op when accessStatusRow is not actionable',
+      async () => {
+        const microphoneToggle = getMicrophoneCrToggle();
+        assertTrue(microphoneToggle.checked);
+
+        assertFalse(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertTrue(microphoneToggle.checked);
+
+        // Add a microphone to make accessStatusRow actionable.
+        mediaDevices.addDevice('audioinput', 'Fake Microphone');
+        await flushTasks();
+        assertTrue(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertFalse(microphoneToggle.checked);
+
+        // Activate microphone hardware toggle to make the accessStatusRow not
+        // actionable.
+        webUIListenerCallback('microphone-hardware-toggle-changed', true);
+        flush();
+        assertFalse(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertFalse(microphoneToggle.checked);
+      });
+
   test('No microphone connected by default', () => {
     assertNull(getMicrophoneList());
     assertTrue(!!getNoMicrophoneTextElement());
