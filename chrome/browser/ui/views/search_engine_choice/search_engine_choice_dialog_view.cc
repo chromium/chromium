@@ -56,6 +56,15 @@ void ShowSearchEngineChoiceDialog(
       std::move(delegate), browser.window()->GetNativeWindow());
 }
 
+bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser) {
+  int max_dialog_height = browser.window()
+                              ->GetWebContentsModalDialogHost()
+                              ->GetMaximumDialogSize()
+                              .height();
+
+  return max_dialog_height >= kMinHeight;
+}
+
 SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
     Browser* browser,
     absl::optional<gfx::Size> boundary_dimensions_for_test,

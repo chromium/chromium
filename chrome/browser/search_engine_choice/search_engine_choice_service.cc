@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -51,7 +52,6 @@ bool IsBrowserTypeSupported(const Browser& browser) {
       return false;
   }
 }
-
 }  // namespace
 
 SearchEngineChoiceService::BrowserObserver::BrowserObserver(
@@ -202,6 +202,11 @@ SearchEngineChoiceService::ComputeDialogConditions(Browser& browser) {
   if (!IsBrowserTypeSupported(browser)) {
     return search_engines::SearchEngineChoiceScreenConditions::
         kUnsupportedBrowserType;
+  }
+
+  if (!CanWindowHeightFitSearchEngineChoiceDialog(browser)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kBrowserWindowTooSmall;
   }
 
   // To avoid conflict, the dialog should not be shown if a sign-in dialog is

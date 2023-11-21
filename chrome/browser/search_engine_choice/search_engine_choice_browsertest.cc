@@ -53,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/url_constants.h"
 
 // TODO(b/280753754): Convert these tests to interactive ui tests.
 
@@ -736,3 +737,22 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_TRUE(second_service->IsShowingDialog(second_guest_session));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       DialogNotShownForSmallHeightBrowserWindows) {
+  NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
+                        ui::PAGE_TRANSITION_FIRST);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
+  ui_test_utils::NavigateToURL(&params);
+
+  Profile* profile = browser()->profile();
+  auto* service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(profile));
+  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::
+          kBrowserWindowTooSmall,
+      1);
+}

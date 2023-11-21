@@ -48,7 +48,9 @@ enum class SearchEngineChoiceScreenConditions {
   kFeatureSuppressed = 9,
   // Some other dialog is showing and interfering with the choice one.
   kSuppressedByOtherDialog = 10,
-  kMaxValue = kSuppressedByOtherDialog,
+  // The browser window can't fit the dialog's smallest variant.
+  kBrowserWindowTooSmall = 11,
+  kMaxValue = kBrowserWindowTooSmall,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

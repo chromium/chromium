@@ -59,4 +59,12 @@ void ShowSearchEngineChoiceDialog(
     absl::optional<gfx::Size> boundary_dimensions_for_test = absl::nullopt,
     absl::optional<double> zoom_factor_for_test_ = absl::nullopt);
 
+// Implemented in
+// `chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.cc`
+// because there isn't a dependency between `chrome/browser/ui/` and
+// `chrome/browser/ui/views/`.
+// Returns whether the smallest height variant of the search engine choice
+// dialog can fit in the browser window or not.
+bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser);
+
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TAB_HELPER_H_
