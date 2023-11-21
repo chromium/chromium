@@ -274,12 +274,10 @@ void ContentAnalysisDelegate::CreateForWebContents(
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict =
       data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
-
-  bool should_allow_by_default = true;
-#if BUILDFLAG(IS_WIN)
-  should_allow_by_default =
+  bool should_allow_by_default =
       data.settings.default_action == DefaultAction::kAllow;
-#endif
+  DVLOG(1) << __func__
+           << ": should_allow_by_default=" << should_allow_by_default;
 
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
@@ -294,13 +292,13 @@ void ContentAnalysisDelegate::CreateForWebContents(
   // Only show UI if one of the two conditions is met:
   // 1. work is ongoing in the background and that the user must wait for a
   // verdict.
-  // 2. no local client is found and fail-closed setting is on.
+  // 2. work is done and fail-closed conditions are met.
   bool show_in_progress_ui =
       upload_data_status == UploadDataStatus::kInProgress && wait_for_verdict &&
       (*UIEnabledStorage());
   bool show_fail_closed_ui =
-      upload_data_status == UploadDataStatus::kNoLocalClientFound &&
-      !should_allow_by_default && (*UIEnabledStorage());
+      delegate->IsFailClosed(upload_data_status, should_allow_by_default) &&
+      (*UIEnabledStorage());
 
   DVLOG(1) << __func__ << ": show_fail_closed_ui=" << show_fail_closed_ui;
 
@@ -327,11 +325,11 @@ void ContentAnalysisDelegate::CreateForWebContents(
   // If local client cannot be found, fail open on all the OS except on Windows
   // (available integration should be installed).
   if (upload_data_status == UploadDataStatus::kNoLocalClientFound) {
-    DVLOG(1) << __func__
-             << ": handled by fail-closed settings, "
-                "should_allow_by_default="
-             << should_allow_by_default;
-    delegate->FillAllResultsWith(should_allow_by_default);
+    bool should_fail_open =
+        delegate->ShouldFailOpenWithoutLocalClient(should_allow_by_default);
+    DVLOG(1) << __func__ << ": no local client found, should_fail_open="
+             << should_fail_open;
+    delegate->FillAllResultsWith(should_fail_open);
     delegate->RunCallback();
   }
 
@@ -342,6 +340,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
     //
     // Supporting "wait for verdict" while not showing a UI makes writing
     // tests for callers of this code easier.
+    DCHECK(delegate->final_result_ != FinalContentAnalysisResult::FAIL_CLOSED);
     delegate->FillAllResultsWith(true);
     delegate->RunCallback();
   }
@@ -644,6 +643,28 @@ ContentAnalysisDelegate::UploadData() {
              : UploadDataStatus::kInProgress;
 }
 
+bool ContentAnalysisDelegate::IsFailClosed(UploadDataStatus upload_data_status,
+                                           bool should_allow_by_default) {
+  // Fail-closed can be triggered in two cases:
+  //   1. The final scan result is already updated to fail-closed (when LBUS or
+  //   CBUS cannot upload data and exceed max retry).
+  //   2. LCAC cannot connect to the local agent on Windows.
+  return final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
+         (upload_data_status == UploadDataStatus::kNoLocalClientFound &&
+          !ShouldFailOpenWithoutLocalClient(should_allow_by_default));
+}
+
+bool ContentAnalysisDelegate::ShouldFailOpenWithoutLocalClient(
+    bool should_allow_by_default) {
+// Fail-closed settings should only be applied to Windows, otherwise it should
+// fail open.
+#if BUILDFLAG(IS_WIN)
+  return should_allow_by_default;
+#else
+  return true;
+#endif
+}
+
 void ContentAnalysisDelegate::PrepareTextRequest() {
   std::string full_text;
   for (const std::string& text : data_.text)
@@ -808,19 +829,23 @@ bool ContentAnalysisDelegate::UpdateDialog() {
   bool show_ui = final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
                  data_.settings.cloud_or_local_settings.is_cloud_analysis();
 
+  DVLOG(1) << __func__ << ": show_ui=" << show_ui;
   return show_ui ? ShowFinalResultInDialog() : CancelDialog();
 }
 
 void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (!text_request_complete_ || !image_request_complete_ ||
       !files_request_complete_ || !page_request_complete_) {
+    DVLOG(1) << __func__ << ": scan request is incomplete.";
     return;
   }
 
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
-  if (final_result_ != FinalContentAnalysisResult::WARNING)
+  if (final_result_ != FinalContentAnalysisResult::WARNING) {
+    DVLOG(1) << __func__ << ": calling RunCallback()";
     RunCallback();
+  }
 
   AckAllRequests();
 
@@ -836,6 +861,7 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (!UpdateDialog() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
     // yet.
+    DVLOG(1) << __func__ << ": about to delete `this` to clean up.";
     delete this;
   }
 }
