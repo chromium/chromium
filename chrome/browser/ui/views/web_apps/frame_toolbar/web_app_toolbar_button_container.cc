@@ -91,8 +91,9 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_controller->system_app()) {
-    AddChildView(std::make_unique<SystemAppAccessibleName>(
-        app_controller->GetAppShortName()));
+    system_app_accessible_name_ =
+        AddChildView(std::make_unique<SystemAppAccessibleName>(
+            app_controller->GetAppShortName()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
