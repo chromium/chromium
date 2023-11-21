@@ -160,7 +160,8 @@ function prepareWindowsBinaries(buildId) {
 }
 
 function prepareMacOSBinaries(buildId) {
-  const dmgArchive = buildArm ? `${buildId}-arm.dmg` : `${buildId}.dmg`;
+  const buildIdDmgArchive = buildArm ? `${buildId}-arm.dmg` : `${buildId}.dmg`;
+  const dmgArchive = buildArm ? "macos-chromium-arm.dmg" : "macos-chromium.dmg";
   const outdir = buildArm ? "out/Release-ARM" : "out/Release";
   fs.rmSync(path.join(outdir, "Replay-Chromium.app"), {
     recursive: true,
@@ -174,7 +175,7 @@ function prepareMacOSBinaries(buildId) {
     "hdiutil",
     [
       "create",
-      path.join(process.cwd(), dmgArchive),
+      path.join(process.cwd(), buildIdDmgArchive),
       "-ov",
       "-volname",
       "Replay-Chromium",
@@ -185,11 +186,16 @@ function prepareMacOSBinaries(buildId) {
     ],
     { cwd: outdir, stdio: "inherit" }
   );
-  const tarArchive = buildArm ? `${buildId}-arm.tar.xz` : `${buildId}.tar.xz`;
+  const buildIdTarArchive = buildArm
+    ? `${buildId}-arm.tar.xz`
+    : `${buildId}.tar.xz`;
+  const tarArchive = buildArm
+    ? "macos-chromium-arm.tar.xz"
+    : "macos-chromium.tar.xz";
 
   spawnChecked(
     "tar",
-    ["cfJ", path.join(process.cwd(), tarArchive), "Replay-Chromium.app"],
+    ["cfJ", path.join(process.cwd(), buildIdTarArchive), "Replay-Chromium.app"],
     { cwd: outdir }
   );
   fs.renameSync(
@@ -197,7 +203,10 @@ function prepareMacOSBinaries(buildId) {
     path.join(outdir, "Chromium.app")
   );
 
-  return [dmgArchive, tarArchive];
+  fs.cpSync(buildIdDmgArchive, dmgArchive);
+  fs.cpSync(buildIdTarArchive, tarArchive);
+
+  return [buildIdDmgArchive, buildIdTarArchive];
 }
 
 async function main(options) {

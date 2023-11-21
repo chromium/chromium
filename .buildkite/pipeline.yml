@@ -49,8 +49,10 @@ steps:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "be_cmd buildMac -- node buildMac.mjs"
-      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
+      - "pushd ../backend"
+      - "be_cmd buck2-kill -- buckle kill"
+      - "be_cmd buck2-build -- buckle build --console simple //:chromium"
+      - "popd"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
@@ -77,8 +79,10 @@ steps:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "be_cmd buildMac -- node buildMac.mjs"
-      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
+      - "pushd ../backend"
+      - "be_cmd buck2-kill -- buckle kill"
+      - "be_cmd buck2-build -- buckle build --console simple //:chromium"
+      - "popd"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
@@ -132,7 +136,7 @@ steps:
     command: "be_cmd metabase-tests -- /home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
 
   # wait for all steps above, but also continue if they fail
-  - wait: ~ 
+  - wait: ~
     continue_on_failure: true
 
   - label: "Buildevents Watch"

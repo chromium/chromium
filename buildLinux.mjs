@@ -1,9 +1,6 @@
 // Script used by buildkite to build Chromium for Linux in CI
 import path from "path";
-import {
-  spawnChecked,
-  updateChromiumRepo,
-} from "./replay_build_scripts/common.mjs";
+import { spawnChecked } from "./replay_build_scripts/common.mjs";
 
 const dockerArgs = [
   "run",
