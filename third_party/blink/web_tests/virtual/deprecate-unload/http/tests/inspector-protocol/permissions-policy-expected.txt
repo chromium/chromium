@@ -1,0 +1,36 @@
+Verifies that we can successfully retrieve permissions policy state in frame tree
+[
+    [0] : {
+        allowed : false
+        feature : fullscreen
+        locator : {
+            blockReason : Header
+            frameId : <string>
+        }
+    }
+    [1] : {
+        allowed : false
+        feature : geolocation
+        locator : {
+            blockReason : Header
+            frameId : <string>
+        }
+    }
+    [2] : {
+        allowed : false
+        feature : unload
+        locator : {
+            blockReason : Header
+            frameId : <string>
+        }
+    }
+]
+{
+    error : {
+        code : -32000
+        message : No frame for given id found in this target
+    }
+    id : <number>
+    sessionId : <string>
+}
+
