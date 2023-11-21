@@ -357,26 +357,6 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
     return;
   }
 
-  if (from_downloading) {
-    // If the data is fetched from downloading, write to disk.
-    // Note: WritePhotoCache could fail. The saved file name may not be
-    // continuous.
-    DVLOG(3) << "Save photo to cache index: " << cache_index_for_store_;
-    auto current_cache_index = cache_index_for_store_;
-    ++cache_index_for_store_;
-    if (cache_index_for_store_ == kMaxNumberOfCachedImages)
-      cache_index_for_store_ = 0;
-
-    photo_cache_->WritePhotoCache(
-        /*cache_index=*/current_cache_index, cache_entry_,
-        base::BindOnce(&AmbientPhotoController::OnPhotoRawDataSaved,
-                       weak_factory_.GetWeakPtr(), from_downloading));
-  } else {
-    OnPhotoRawDataSaved(from_downloading);
-  }
-}
-
-void AmbientPhotoController::OnPhotoRawDataSaved(bool from_downloading) {
   const bool has_related = cache_entry_.has_related_photo() &&
                            !cache_entry_.related_photo().image().empty();
   const int num_callbacks = has_related ? 2 : 1;
@@ -398,6 +378,25 @@ void AmbientPhotoController::OnPhotoRawDataSaved(bool from_downloading) {
   }
 }
 
+void AmbientPhotoController::SaveCurrentPhotoToCache() {
+  // Note: WritePhotoCache could fail. The saved file name may not be
+  // continuous.
+  DVLOG(3) << "Save photo to cache index: " << cache_index_for_store_;
+  auto current_cache_index = cache_index_for_store_;
+  ++cache_index_for_store_;
+  if (cache_index_for_store_ == kMaxNumberOfCachedImages) {
+    cache_index_for_store_ = 0;
+  }
+
+  photo_cache_->WritePhotoCache(
+      /*cache_index=*/current_cache_index, cache_entry_,
+      base::BindOnce(
+          [](int cache_index) {
+            DVLOG(4) << "Done writing cache_index " << cache_index
+                     << " to photo cache";
+          },
+          current_cache_index));
+}
 void AmbientPhotoController::DecodePhotoRawData(bool from_downloading,
                                                 bool is_related_image,
                                                 base::RepeatingClosure on_done,
@@ -438,6 +437,10 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
     LOG(WARNING) << "Skipping loading duplicate image.";
     TryReadPhotoFromCache();
     return;
+  }
+
+  if (from_downloading) {
+    SaveCurrentPhotoToCache();
   }
 
   is_actively_preparing_topic_ = false;

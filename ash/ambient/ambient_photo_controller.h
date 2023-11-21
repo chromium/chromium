@@ -172,7 +172,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   void OnAllPhotoRawDataAvailable(bool from_downloading);
 
-  void OnPhotoRawDataSaved(bool from_downloading);
+  void SaveCurrentPhotoToCache();
 
   void DecodePhotoRawData(bool from_downloading,
                           bool is_related_image,

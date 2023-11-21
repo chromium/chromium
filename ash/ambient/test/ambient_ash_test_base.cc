@@ -100,8 +100,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   void WritePhotoCache(int cache_index,
                        const ::ambient::PhotoCacheEntry& cache_entry,
                        base::OnceClosure callback) override {
-    files_.insert(
-        std::pair<int, ::ambient::PhotoCacheEntry>(cache_index, cache_entry));
+    files_[cache_index] = cache_entry;
     std::move(callback).Run();
   }
 
