@@ -9,7 +9,6 @@
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -152,7 +151,6 @@ void BrowserProcessIOThread::ProcessHostCleanUp() {
           base::Seconds(kMaxSecondsToWaitForNetworkProcess), nullptr);
       // Record time spent for the method call.
       base::TimeDelta network_wait_time = base::TimeTicks::Now() - start_time;
-      UMA_HISTOGRAM_TIMES("NetworkService.ShutdownTime", network_wait_time);
       DVLOG(1) << "Waited " << network_wait_time.InMilliseconds()
                << " ms for network service";
     }
