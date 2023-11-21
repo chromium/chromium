@@ -166,6 +166,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCookieAccessDetailsNotificationDeDuping);
 
 COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kReduceTransferSizeUpdatedIPC);
+
+COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kSkipTpcdMitigationsForAds);
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics;

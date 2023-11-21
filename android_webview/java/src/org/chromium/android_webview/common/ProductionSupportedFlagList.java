@@ -790,6 +790,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.THROTTLE_UNIMPORTANT_FRAME_TIMERS,
                 "Throttles Javascript timer wake ups of unimportant frames."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.REDUCE_TRANSFER_SIZE_UPDATED_IPC,
+                "When enabled, the network service will send TransferSizeUpdatedIPC IPC only when"
+                        + " DevTools is attached or the request is for an ad request."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

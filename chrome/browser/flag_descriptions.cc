@@ -3021,6 +3021,12 @@ const char kReduceAcceptLanguageDescription[] =
     "Reduce the amount of information available in the Accept-Language request "
     "header. See https://github.com/Tanych/accept-language for more info.";
 
+const char kReduceTransferSizeUpdatedIPCName[] =
+    "Reduce TransferSizeUpdated IPC";
+const char kReduceTransferSizeUpdatedIPCDescription[] =
+    "When enabled, the network service will send TransferSizeUpdatedIPC IPC "
+    "only when DevTools is attached or the request is for an ad request.";
+
 const char kResetShortcutCustomizationsName[] =
     "Reset all shortcut customizations";
 const char kResetShortcutCustomizationsDescription[] =

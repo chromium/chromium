@@ -2419,8 +2419,53 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ASSERT_EQ(2, tab_strip->count());
 }
 
+enum class ReduceTransferSizeUpdatedIPCTestCase {
+  kEnabled,
+  kDisabled,
+};
+
+class PageLoadMetricsResourceLoadBrowserTest
+    : public PageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<
+          ReduceTransferSizeUpdatedIPCTestCase> {
+ public:
+  PageLoadMetricsResourceLoadBrowserTest() {
+    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    }
+  }
+  ~PageLoadMetricsResourceLoadBrowserTest() override = default;
+
+ protected:
+  bool IsReduceTransferSizeUpdatedIPCEnabled() const {
+    return GetParam() == ReduceTransferSizeUpdatedIPCTestCase::kEnabled;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLoadMetricsResourceLoadBrowserTest,
+    testing::ValuesIn({ReduceTransferSizeUpdatedIPCTestCase::kDisabled,
+                       ReduceTransferSizeUpdatedIPCTestCase::kEnabled}),
+    [](const testing::TestParamInfo<ReduceTransferSizeUpdatedIPCTestCase>&
+           info) {
+      switch (info.param) {
+        case ReduceTransferSizeUpdatedIPCTestCase::kEnabled:
+          return "ReduceTransferSizeUpdatedIPCEnabled";
+        case ReduceTransferSizeUpdatedIPCTestCase::kDisabled:
+          return "ReduceTransferSizeUpdatedIPCDisabled";
+      }
+    });
+
 // TODO(crbug.com/882077) Disabled due to flaky timeouts on all platforms.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        DISABLED_ReceivedAggregateResourceDataLength) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -2446,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        ChunkedResponse_OverheadDoesNotCountForBodyBytes) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
@@ -2483,7 +2528,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   EXPECT_EQ(waiter->current_network_body_bytes(), kChunkSize * kNumChunks);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
+                       ReceivedCompleteResources) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html; charset=utf-8\r\n"
@@ -2528,8 +2574,20 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
   // Data received but resource not complete
   waiter->AddMinimumCompleteResourcesExpectation(1);
   waiter->AddMinimumNetworkBytesExpectation(2000);
-  waiter->Wait();
-  script_response->Done();
+
+  if (!IsReduceTransferSizeUpdatedIPCEnabled()) {
+    // When ReduceTransferSizeUpdatedIPC is disabled, network bytes information
+    // is sent almost every time when the body data is received. So we can call
+    // Wait() before finising `script_response`,
+    waiter->Wait();
+    script_response->Done();
+  } else {
+    // But when ReduceTransferSizeUpdatedIPC is enabled, network bytes
+    // information is sent only when the resource is complete. So we need to
+    // call Wait() after finising `script_response`.
+    script_response->Done();
+    waiter->Wait();
+  }
   waiter->AddMinimumCompleteResourcesExpectation(2);
   waiter->Wait();
 

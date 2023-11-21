@@ -414,6 +414,13 @@ BASE_FEATURE(kCookieAccessDetailsNotificationDeDuping,
              "CookieAccessDetailsNotificationDeDuping",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature will reduce TransferSizeUpdated IPC from the network service.
+// When enabled, the network service will send the IPC only when DevTools is
+// attached or the request is for an ad request.
+BASE_FEATURE(kReduceTransferSizeUpdatedIPC,
+             "ReduceTransferSizeUpdatedIPC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature allows skipping TPCD mitigation checks when the cookie access
 // is tagged as being used for advertising purposes. This means that cookies
 // will continue to be blocked for cookie accesses on ad requests even if the

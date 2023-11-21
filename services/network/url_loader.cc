@@ -1923,10 +1923,13 @@ void URLLoader::DidRead(int num_bytes,
     // started sending response.
     if (!consumer_handle_.is_valid()) {
       int64_t total_encoded_bytes = url_request_->GetTotalReceivedBytes();
-      int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
-      DCHECK_LE(0, delta);
-      if (delta)
-        url_loader_client_.Get()->OnTransferSizeUpdated(delta);
+      if (ShouldSendTransferSizeUpdated()) {
+        int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
+        DCHECK_LE(0, delta);
+        if (delta) {
+          url_loader_client_.Get()->OnTransferSizeUpdated(delta);
+        }
+      }
       reported_total_encoded_bytes_ = total_encoded_bytes;
     }
   }
@@ -2876,6 +2879,11 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 5. Return false.
   return false;
+}
+
+bool URLLoader::ShouldSendTransferSizeUpdated() const {
+  return devtools_request_id() || url_request_->ad_tagged() ||
+         !base::FeatureList::IsEnabled(features::kReduceTransferSizeUpdatedIPC);
 }
 
 }  // namespace network

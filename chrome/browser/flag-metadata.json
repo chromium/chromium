@@ -6863,6 +6863,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "reduce-transfer-size-updated-ipc",
+    "owners": [ "horo@chromium.org", "net-dev@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor@chromium.org", "xingliu@chromium.org" ],
     "expiry_milestone": 90
