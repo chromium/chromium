@@ -269,7 +269,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kChromeLoadTimesWasNpnNegotiated,
           WebFeature::kGamepadButtons,
           WebFeature::kWebNfcNdefReaderScan,
-          WebFeature::kWakeLockAcquireScreenLockWithoutActivation,
+          WebFeature::kWakeLockAcquireScreenLockWithoutStickyActivation,
           WebFeature::kDataUrlInSvgUse,
           WebFeature::kExecutedNonTrivialJavaScriptURL,
           WebFeature::kV8DeprecatedStorageQuota_QueryUsageAndQuota_Method,

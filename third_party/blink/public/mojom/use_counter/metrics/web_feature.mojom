@@ -3698,7 +3698,7 @@ enum WebFeature {
 
   kServiceWorkerSkippedForSubresourceLoad = 4363,
   kClientHintsPrefersReducedMotion = 4364,
-  kWakeLockAcquireScreenLockWithoutActivation = 4365,
+  kOBSOLETE_WakeLockAcquireScreenLockWithoutActivation = 4365,
   kInteractiveWidgetOverlaysContent = 4366,
   kInteractiveWidgetResizesContent = 4367,
   kInteractiveWidgetResizesVisual = 4368,
@@ -4080,6 +4080,7 @@ enum WebFeature {
   kLinkRelOpener = 4741,
   kLinkRelOpenerTargetingSameFrame = 4742,
   kCSSSelectorPseudoHas = 4743,
+  kWakeLockAcquireScreenLockWithoutStickyActivation = 4744,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
