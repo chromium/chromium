@@ -21,7 +21,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -166,8 +165,7 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
 
  protected:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        PDFExtensionTestBase::GetDisabledFeatures();
+    auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
     // PDF OCR should not be enabled in `PDFExtensionAccessibilityTest`. If a
     // new test class is derived from this class and needs to test PDF OCR,
     // make sure that `GetDisabledFeatures()` is overridden to exclude
@@ -190,18 +188,8 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   }
 };
 
-class PDFExtensionAccessibilityTestWithOopifOverride
-    : public base::test::WithFeatureOverride,
-      public PDFExtensionAccessibilityTest {
- public:
-  PDFExtensionAccessibilityTestWithOopifOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
-};
-
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibility) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -224,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityEnableLater) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -249,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityInIframe) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -269,8 +257,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       PdfAccessibilityInOOPIF) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -297,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 #else
 #define MAYBE_PdfAccessibilityWordBoundaries PdfAccessibilityWordBoundaries
 #endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        MAYBE_PdfAccessibilityWordBoundaries) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -337,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilitySelection) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -391,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_PdfAccessibilityContextMenuAction) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -454,7 +441,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -481,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        DISABLED_RecordInaccessiblePdfUKM) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -516,8 +503,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_P(
-    PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionAccessibilityTest,
     DISABLED_RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
   // TODO(crbug.com/1445746): Remove this when it passes for OOPIF PDF.
   if (UseOopif()) {
@@ -553,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/668724)
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                        PdfAccessibilityTextRunCrash) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -575,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 // TreeDumpTests, this allows us to verify the kNextOnLine and kPreviousOnLine
 // relationships.
 class PDFExtensionAccessibilityTextExtractionTest
-    : public PDFExtensionAccessibilityTestWithOopifOverride {
+    : public PDFExtensionAccessibilityTest {
  public:
   PDFExtensionAccessibilityTextExtractionTest() = default;
   ~PDFExtensionAccessibilityTextExtractionTest() override = default;
@@ -595,8 +582,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
-        PDFExtensionAccessibilityTestWithOopifOverride::GetEnabledFeatures();
+    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
@@ -732,7 +718,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
 // Test that Previous/NextOnLineId attributes are present and properly linked on
 // InlineTextBoxes within a line.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        NextOnLine) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -743,7 +729,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 }
 
 // Test that a drop-cap is grouped with the correct line.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -753,7 +739,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
 }
 
 // Test that simulated superscripts and subscripts don't cause a line break.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        SuperscriptSubscript) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -765,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test that simple font and font-size changes in the middle of a line don't
 // cause line breaks.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        FontChange) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -777,7 +763,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test one property of pdf_private/accessibility_crash_2.pdf, where a page has
 // only whitespace characters.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        OnlyWhitespaceText) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -788,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 }
 
 // Test data of inline text boxes for PDF with weblinks.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -798,7 +784,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
 }
 
 // Test data of inline text boxes for PDF with highlights.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        Highlights) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -809,7 +795,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 }
 
 // Test data of inline text boxes for PDF with text fields.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        TextFields) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -821,7 +807,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test data of inline text boxes for PDF with multi-line and various font-sized
 // text.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        ParagraphsAndHeadingUntagged) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -834,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test data of inline text boxes for PDF with text, weblinks, images and
 // annotation links.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        LinksImagesAndText) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -845,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
 }
 
 // Test data of inline text boxes for PDF with overlapping annotations.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
                        OverlappingAnnots) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -877,8 +863,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   bool UseOopif() const override { return std::get<1>(GetParam()); }
 
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
-        PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
@@ -1219,8 +1204,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
 }
 
 // This test suite validates the navigation done using the accessibility client.
-using PDFExtensionAccessibilityNavigationTest =
-    PDFExtensionAccessibilityTestWithOopifOverride;
+using PDFExtensionAccessibilityNavigationTest = PDFExtensionAccessibilityTest;
 
 // TODO(crbug.com/1487426): Fix the flakiness on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1228,7 +1212,7 @@ using PDFExtensionAccessibilityNavigationTest =
 #else
 #define MAYBE_LinkNavigation LinkNavigation
 #endif  // BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
                        MAYBE_LinkNavigation) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -1271,29 +1255,23 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // This test suite contains simple tests for the PDF OCR feature.
 class PDFExtensionAccessibilityPdfOcrTest
-    : public PDFExtensionAccessibilityTestWithOopifOverride {
+    : public PDFExtensionAccessibilityTest {
  public:
   PDFExtensionAccessibilityPdfOcrTest() = default;
   ~PDFExtensionAccessibilityPdfOcrTest() override = default;
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
-        PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(::features::kPdfOcr);
     return enabled;
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    // `PDFExtensionAccessibilityTest` has
-    // `::features::kPdfOcr` in a list of disabled features. Now that
-    // `::features::kPdfOcr` is used in this test, don't include it in the
-    // disabled list.
-    std::vector<base::test::FeatureRef> disabled;
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return disabled;
+    // `PDFExtensionAccessibilityTest` has `::features::kPdfOcr` in a list of
+    // disabled features. Now that `::features::kPdfOcr` is used in this test,
+    // just return an empty list to exclude the feature from the list.
+    return {};
   }
 
   void ClickPdfOcrToggleButton(MimeHandlerViewGuest* guest_view) {
@@ -1311,7 +1289,7 @@ class PDFExtensionAccessibilityPdfOcrTest
 
 // TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -1335,7 +1313,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
 
 // TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -1359,13 +1337,3 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
                                 /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionAccessibilityTestWithOopifOverride);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionAccessibilityTextExtractionTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionAccessibilityNavigationTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);

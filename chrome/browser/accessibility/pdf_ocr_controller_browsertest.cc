@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -18,7 +14,6 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -76,11 +71,9 @@ Profile* CreateProfile(const base::FilePath& basename) {
 
 }  // namespace
 
-class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
-                                    public PDFExtensionTestBase {
+class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
  public:
-  PdfOcrControllerBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  PdfOcrControllerBrowserTest() = default;
   ~PdfOcrControllerBrowserTest() override = default;
 
   PdfOcrControllerBrowserTest(const PdfOcrControllerBrowserTest&) = delete;
@@ -109,8 +102,7 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  bool UseOopif() const override { return GetParam(); }
-
+ protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back(features::kPdfOcr);
@@ -121,7 +113,7 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 // TODO(crbug.com/1443345): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of a new WebContents
 // of PDF Viewer Mimehandler.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFAfterTurningOnPdfOcr) {
   // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -158,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 // TODO(crbug.com/1443345): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of an exiting
 // WebContents of PDF Viewer Mimehandler.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFBeforeTurningOnPdfOcr) {
   // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -202,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
 // Enabling PDF OCR should not affect the accessibility mode of WebContents if
 // it's not related to PDF.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        TurningOnPdfOcrNotAffectingNonPdfTab) {
   // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -234,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        NotEnabledWithoutScreenReader) {
   // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -264,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Enabling PDF OCR in one profile should not affect the accessibility mode of
 // WebContents in another profile.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        TurningOnPdfOcrInOneProfileNotAffectingAnotherProfile) {
   // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
   if (UseOopif()) {
@@ -308,7 +300,3 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfOcrControllerBrowserTest);

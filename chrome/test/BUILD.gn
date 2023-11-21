@@ -11042,10 +11042,7 @@ if (!is_android && !is_chromeos_device) {
       ]
       if (enable_pdf) {
         sources += [ "../browser/pdf/pdf_extension_interactive_uitest.cc" ]
-        deps += [
-          "../browser/pdf:pdf_extension_test_utils",
-          "//pdf:features",
-        ]
+        deps += [ "../browser/pdf:pdf_extension_test_utils" ]
       }
       if (is_chromeos) {
         sources += [
