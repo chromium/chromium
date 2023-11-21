@@ -1195,8 +1195,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 // processes and not in the devtools process or the extension's process.  This
 // is tested because this is one of the extension pages with devtools access
 // (https://developer.chrome.com/extensions/devtools).  http://crbug.com/570483
+// TODO(crbug.com/1504152): Enable once the test is fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HttpIframeInDevToolsExtensionSideBarPane \
+  DISABLED_HttpIframeInDevToolsExtensionSideBarPane
+#else
+#define MAYBE_HttpIframeInDevToolsExtensionSideBarPane \
+  HttpIframeInDevToolsExtensionSideBarPane
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       HttpIframeInDevToolsExtensionSideBarPane) {
+                       MAYBE_HttpIframeInDevToolsExtensionSideBarPane) {
   GURL web_url = embedded_test_server()->GetURL("a.com", "/title3.html");
 
   // Install the dynamically-generated extension.
