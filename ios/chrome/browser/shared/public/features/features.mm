@@ -290,6 +290,15 @@ bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type) {
   return false;
 }
 
+BASE_FEATURE(kBottomOmniboxPromoDefaultPosition,
+             "BottomOmniboxPromoDefaultPosition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kBottomOmniboxPromoDefaultPositionParam[] =
+    "BottomOmniboxPromoDefaultPositionParam";
+const char kBottomOmniboxPromoDefaultPositionParamTop[] = "Top";
+const char kBottomOmniboxPromoDefaultPositionParamBottom[] = "Bottom";
+
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -630,6 +630,20 @@ const FeatureEntry::FeatureVariation kBottomOmniboxPromoVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionTop[] = {
+    {kBottomOmniboxPromoDefaultPositionParam,
+     kBottomOmniboxPromoDefaultPositionParamTop}};
+const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionBottom[] = {
+    {kBottomOmniboxPromoDefaultPositionParam,
+     kBottomOmniboxPromoDefaultPositionParamBottom}};
+const FeatureEntry::FeatureVariation
+    kBottomOmniboxPromoDefaultPositionVariations[] = {
+        {"Top", kBottomOmniboxPromoDefaultPositionTop,
+         std::size(kBottomOmniboxPromoDefaultPositionTop), nullptr},
+        {"Bottom", kBottomOmniboxPromoDefaultPositionBottom,
+         std::size(kBottomOmniboxPromoDefaultPositionBottom), nullptr},
+};
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
@@ -1664,6 +1678,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoAppLaunch,
                                     kBottomOmniboxPromoVariations,
                                     "BottomOmniboxPromoAppLaunch")},
+    {"bottom-omnibox-promo-default-position",
+     flag_descriptions::kBottomOmniboxPromoDefaultPositionName,
+     flag_descriptions::kBottomOmniboxPromoDefaultPositionDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kBottomOmniboxPromoDefaultPosition,
+         kBottomOmniboxPromoDefaultPositionVariations,
+         "BottomOmniboxPromoDefaultPosition")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

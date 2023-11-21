@@ -171,6 +171,11 @@ const char kBottomOmniboxPromoAppLaunchName[] =
 const char kBottomOmniboxPromoAppLaunchDescription[] =
     "Enables the app-launch promo for the bottom omnibox.";
 
+const char kBottomOmniboxPromoDefaultPositionName[] =
+    "Bottom omnibox promo default position";
+const char kBottomOmniboxPromoDefaultPositionDescription[] =
+    "Changes the default omnibox position in the FRE and app-launch promos.";
+
 const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
 const char kBottomOmniboxPromoFREDescription[] =
     "Enables the FRE promo for the bottom omnibox.";

@@ -231,6 +231,15 @@ enum class BottomOmniboxPromoType {
 // Whether the bottom omnibox promo of `type` is enabled.
 bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type);
 
+// Feature flag to change the default proposed position in omnibox promos.
+BASE_DECLARE_FEATURE(kBottomOmniboxPromoDefaultPosition);
+
+// Feature param under kBottomOmniboxPromoDefaultPosition to select the default
+// position.
+extern const char kBottomOmniboxPromoDefaultPositionParam[];
+extern const char kBottomOmniboxPromoDefaultPositionParamTop[];
+extern const char kBottomOmniboxPromoDefaultPositionParamBottom[];
+
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
