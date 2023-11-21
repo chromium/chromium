@@ -971,8 +971,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
 
 void InputDeviceSettingsControllerImpl::OnMousePoliciesChanged() {
   for (const auto& [id, mouse] : mice_) {
-    mouse_pref_handler_->InitializeMouseSettings(
-        active_pref_service_, policy_handler_->mouse_policies(), mouse.get());
+    InitializeMouseSettings(mouse.get());
     DispatchMouseSettingsChanged(id);
   }
 
