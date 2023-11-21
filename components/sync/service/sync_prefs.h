@@ -87,16 +87,15 @@ class SyncPrefs {
   bool HasKeepEverythingSynced() const;
 
   // Returns the set of types that the user has selected to be synced.
-  // If Sync-the-feature is enabled, this takes HasKeepEverythingSynced() into
-  // account (i.e. returns "all types").
+  // This is only used for syncing users and takes HasKeepEverythingSynced()
+  // into account (i.e. returns "all types").
   // If some types are force-disabled by policy, they will not be included.
-  // Note: this is used for syncing users, and for signed-in not syncing users
-  // when the kReplaceSyncPromosWithSignInPromos is disabled.
+  // TODO(crbug.com/1485015): Remove `account_state` parameter and rename to
+  // GetSelectedTypesForSyncingUser().
   UserSelectableTypeSet GetSelectedTypes(SyncAccountState account_state) const;
   // Returns the set of types for the given gaia_id_hash for sign-in users.
   // If some types are force-disabled by policy, they will not be included.
-  // Note: this is used for signed-in not syncing users when the
-  // kReplaceSyncPromosWithSignInPromos is enabled only.
+  // Note: this is used for signed-in not syncing users.
   UserSelectableTypeSet GetSelectedTypesForAccount(
       const signin::GaiaIdHash& gaia_id_hash) const;
 
@@ -116,14 +115,12 @@ class SyncPrefs {
   // Changes are still made to the individual selectable type prefs even if
   // |keep_everything_synced| is true, but won't be visible until it's set to
   // false.
-  // Note: this is used for syncing users, and for signed-in not syncing
-  // users when the kReplaceSyncPromosWithSignInPromos is disabled.
+  // TODO(crbug.com/1485015): Rename to SetSelectedTypesForSyncingUser().
   void SetSelectedTypes(bool keep_everything_synced,
                         UserSelectableTypeSet registered_types,
                         UserSelectableTypeSet selected_types);
   // Used to set user's selected types prefs in Sync-the-transport mode.
-  // Note: this is used for signed-in not syncing users when the
-  // kReplaceSyncPromosWithSignInPromos is enabled only.
+  // Note: this is used for signed-in not syncing users.
   void SetSelectedTypeForAccount(UserSelectableType type,
                                  bool is_type_on,
                                  const signin::GaiaIdHash& gaia_id_hash);
@@ -217,12 +214,24 @@ class SyncPrefs {
   void SetPassphrasePromptMutedProductVersion(int major_version);
   void ClearPassphrasePromptMutedProductVersion();
 
+#if BUILDFLAG(IS_IOS)
+  // Before signed-in non-syncing users were migrated to per-account "selected
+  // type" prefs (crbug.com/1485015), an iOS user might have disabled the global
+  // passwords pref via a toggle. If so, this function makes sure the new
+  // per-account setting is also disabled.
+  // Does nothing for signed-out or syncing users.
+  void MaybeMigratePasswordsToPerAccountPref(
+      SyncAccountState account_state,
+      const signin::GaiaIdHash& gaia_id_hash);
+#endif
+
   // Migrates any user settings for pre-existing signed-in users, for the
   // feature `kReplaceSyncPromosWithSignInPromos`. For signed-out users or
   // syncing users, no migration is necessary - this also covers new users (or
   // more precisely, new profiles).
   // This should be called early during browser startup.
   // Returns whether the migration ran, i.e. whether any user settings were set.
+  // On iOS this must run after MaybeMigratePasswordsToPerAccountPref().
   bool MaybeMigratePrefsForSyncToSigninPart1(
       SyncAccountState account_state,
       const signin::GaiaIdHash& gaia_id_hash);

@@ -377,13 +377,13 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   return !Intersection(preferred_types, encrypted_types).Empty();
 }
 
+// TODO(crbug.com/1485015): Inline.
 bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
   // Note: If Sync-the-feature users are ever migrated to use the account-scoped
   // prefs, also update the migration code in sync_to_signin_migration.cc
   // accordingly!
-  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-         delegate_->GetSyncAccountStateForPrefs() ==
-             SyncPrefs::SyncAccountState::kSignedInNotSyncing;
+  return delegate_->GetSyncAccountStateForPrefs() ==
+         SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
 }  // namespace syncer

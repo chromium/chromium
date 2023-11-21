@@ -54,6 +54,8 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncSetupInProgressHandle;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -290,28 +292,36 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                     new SigninManager.SignInCallback() {
                                         @Override
                                         public void onSignInComplete() {
+                                            SyncService syncService =
+                                                    SyncServiceFactory.getForProfile(profile);
                                             if (ChromeFeatureList.isEnabled(
                                                             ChromeFeatureList.TANGIBLE_SYNC)
                                                     && getTangibleSyncGroup()
                                                             != TangibleSyncGroup.GROUP_F) {
                                                 // Groups A-E are only for enabling History and Tab
-                                                // Sync
-                                                SyncServiceFactory.getForProfile(profile)
-                                                        .setSelectedTypes(
-                                                                false,
-                                                                Set.of(
-                                                                        UserSelectableType.HISTORY,
-                                                                        UserSelectableType.TABS));
+                                                // Sync.
+                                                // setInitialSyncFeatureSetupComplete() wasn't
+                                                // called here yet, so use SyncSetupInProgressHandle
+                                                // to force setSelectedTypes() to write to the prefs
+                                                // for *syncing* users.
+                                                // TODO(crbug.com/1486437): This code path was for a
+                                                // one-time experiment, clean it up.
+                                                SyncSetupInProgressHandle handle =
+                                                        syncService.getSetupInProgressHandle();
+                                                syncService.setSelectedTypes(
+                                                        false,
+                                                        Set.of(
+                                                                UserSelectableType.HISTORY,
+                                                                UserSelectableType.TABS));
+                                                handle.close();
                                             }
                                             if (!settingsClicked) {
                                                 UnifiedConsentServiceBridge
                                                         .setUrlKeyedAnonymizedDataCollectionEnabled(
                                                                 Profile.getLastUsedRegularProfile(),
                                                                 true);
-                                                SyncServiceFactory.getForProfile(profile)
-                                                        .setInitialSyncFeatureSetupComplete(
-                                                                SyncFirstSetupCompleteSource
-                                                                        .BASIC_FLOW);
+                                                syncService.setInitialSyncFeatureSetupComplete(
+                                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
                                             }
                                             closeAndMaybeOpenSyncSettings(settingsClicked);
                                             callback.run();

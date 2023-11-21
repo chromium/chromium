@@ -141,26 +141,17 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 }
 
 TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
-                            kReadingListEnableSyncTransportModeUponSignIn,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataTypeInTransportMode,
-                            kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{});
+  // Sanity check: signed-in there are selected types.
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  ASSERT_FALSE(
+      MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().Empty());
 
-  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes());
+  // But signed out there are none.
   SetSyncAccountState(SyncPrefs::SyncAccountState::kNotSignedIn);
-
-  EXPECT_EQ(sync_user_settings->GetSelectedTypes(), UserSelectableTypeSet());
+  EXPECT_TRUE(MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().Empty());
 }
 
-TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
+TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
@@ -190,18 +181,23 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
 
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));
+}
 
-  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, false);
-  expected_disabled_types.Put(UserSelectableType::kPasswords);
-  selected_types = sync_user_settings->GetSelectedTypes();
-  EXPECT_EQ(selected_types,
-            Difference(registered_types, expected_disabled_types));
+TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  const UserSelectableTypeSet default_types =
+      sync_user_settings->GetSelectedTypes();
 
-  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, true);
-  expected_disabled_types.Remove(UserSelectableType::kPasswords);
-  selected_types = sync_user_settings->GetSelectedTypes();
-  EXPECT_EQ(selected_types,
-            Difference(registered_types, expected_disabled_types));
+  sync_user_settings->SetSelectedType(UserSelectableType::kPayments, false);
+
+  EXPECT_EQ(sync_user_settings->GetSelectedTypes(),
+            Difference(default_types, {UserSelectableType::kPayments}));
+
+  sync_user_settings->SetSelectedType(UserSelectableType::kPayments, true);
+
+  EXPECT_EQ(sync_user_settings->GetSelectedTypes(), default_types);
 }
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
@@ -553,6 +549,18 @@ TEST_F(SyncUserSettingsImplTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
   sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
   EXPECT_TRUE(
       sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
+
+// Protects against GetSelectedTypes() incorrectly requiring a
+// SetBookmarksAndReadingListAccountStorageOptIn() for syncing users.
+// TODO(crbug.com/1440628): Remove when the temporary opt-in is deleted.
+TEST_F(SyncUserSettingsImplTest, BookmarksOnByDefaultForSyncingUsers) {
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_TRUE(sync_user_settings->GetSelectedTypes().Has(
+      UserSelectableType::kBookmarks));
 }
 
 }  // namespace

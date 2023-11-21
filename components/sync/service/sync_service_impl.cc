@@ -271,8 +271,13 @@ void SyncServiceImpl::Initialize() {
     }
   }
 
-  // *After* setting up `auth_manager_`, run a prefs migration that depends on
+  // *After* setting up `auth_manager_`, run pref migrations that depend on
   // the account state.
+#if BUILDFLAG(IS_IOS)
+  sync_prefs_.MaybeMigratePasswordsToPerAccountPref(
+      GetSyncAccountStateForPrefs(),
+      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+#endif  // BUILDFLAG(IS_IOS)
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
       GetSyncAccountStateForPrefs(),
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
