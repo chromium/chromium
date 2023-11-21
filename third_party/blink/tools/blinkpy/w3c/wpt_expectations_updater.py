@@ -136,19 +136,17 @@ class WPTExpectationsUpdater:
                  'This command line argument can be used to mark tests '
                  'as flaky.')
 
-    def suites_for_builder(self,
-                           builder: str,
-                           flag_specific: Optional[str] = None) -> List[str]:
-        suites = []
+    def suites_for_builder(self, builder: str) -> Set[str]:
+        # TODO(crbug.com/1502294): Make everything a suite name (i.e., without
+        # the `(with patch)` suffix) to be consistent.
+        suites = set()
         for step in self.host.builders.step_names_for_builder(builder):
-            if self.host.builders.flag_specific_option(builder,
-                                                       step) == flag_specific:
-                suite_match = re.match(r'(?P<suite>[\w_-]*wpt_tests)', step)
-                if suite_match:
-                    suites.append(suite_match['suite'])
+            suite_match = re.match(r'(?P<suite>[\w_-]*wpt_tests)', step)
+            if suite_match:
+                suites.add(step)
         return suites
 
-    def update_expectations(self, flag_specific: Optional[str] = None):
+    def update_expectations(self):
         """Adds test expectations lines.
 
         Returns:
@@ -175,22 +173,39 @@ class WPTExpectationsUpdater:
                 'No try job information was collected.') from error
 
         tests_to_rebaseline, results = self._fetch_results_for_update(
-            build_to_status, flag_specific)
+            build_to_status)
+        # TODO(crbug.com/1475013): Decide how to organize Android expectations.
+        results_by_path = defaultdict(list)
+        for suite_results in results:
+            port = self._port_for_build_step(suite_results.builder_name,
+                                             suite_results.step_name())
+            flag_specific = port.flag_specific_config_name()
+            if flag_specific:
+                path = port.path_to_flag_specific_expectations_file(
+                    flag_specific)
+            elif port.name() == 'chrome':
+                path = self.finder.path_from_web_tests(
+                    'ChromeTestExpectations')
+            else:
+                path = port.path_to_generic_test_expectations_file()
+            results_by_path[path].append(suite_results)
 
-        # TODO(crbug.com/1502294): Add `ChromeTestExpectations` here.
-        if flag_specific:
-            path = self.port.path_to_flag_specific_expectations_file(
-                flag_specific)
-        else:
-            path = self.port.path_to_generic_test_expectations_file()
-
-        exp_lines_dict = self.write_to_test_expectations(results, path)
+        exp_lines_dict = defaultdict(list)
+        for path in sorted(results_by_path, key=self._update_order):
+            for test, lines in self.write_to_test_expectations(
+                    results_by_path[path], path).items():
+                exp_lines_dict[test].extend(lines)
         return sorted(tests_to_rebaseline), exp_lines_dict
+
+    def _update_order(self, path: str) -> int:
+        # Update generic expectations first.
+        if path == self.port.path_to_generic_test_expectations_file():
+            return 0
+        return 1
 
     def _fetch_results_for_update(
         self,
         build_to_status: BuildStatuses,
-        flag_specific: Optional[str] = None
     ) -> Tuple[Set[str], List[WebTestResults]]:
         completed_results, missing_results, final_results = [], [], []
         tests_to_rebaseline = set()
@@ -198,8 +213,7 @@ class WPTExpectationsUpdater:
         fetcher = self.host.results_fetcher
         incomplete_builds = GitCL.filter_incomplete(build_to_status)
         for build, job_status in build_to_status.items():
-            for suite in self.suites_for_builder(build.builder_name,
-                                                 flag_specific):
+            for suite in self.suites_for_builder(build.builder_name):
                 # `exclude_exonerations=(not include_unexpected_pass)` will
                 # leave out unexpected passes as well as other kinds of
                 # exonerations (e.g., experimental build). This is good enough
@@ -407,20 +421,25 @@ class WPTExpectationsUpdater:
             Dictionary mapping test names to lists of test expectation strings.
         """
         path = path or self.port.path_to_generic_test_expectations_file()
-        results_by_port = {
+        port_by_results = {
+            suite_results:
             self._port_for_build_step(suite_results.builder_name,
-                                      suite_results.step_name()): suite_results
+                                      suite_results.step_name())
             for suite_results in results
         }
-        for port in results_by_port:
+        for port in port_by_results.values():
             assert path in port.expectations_dict(), (
                 f'{path!r} not in {list(port.expectations_dict())!r} for {port!r}'
             )
+        rel_path = self.host.filesystem.relpath(path,
+                                                self.port.web_tests_dir())
+        _log.info(f'Updating {rel_path!r}')
 
         exp_by_port = TestExpectationsCache()
         # These expectations are for writing to the file. The exact port doesn't
         # matter, since they should use the same files.
-        expectations = exp_by_port.load(min(results_by_port, key=Port.name))
+        port_for_file = min(port_by_results.values(), key=Port.name)
+        expectations = exp_by_port.load(port_for_file)
         change = ExpectationsChange()
         for test in sorted(filter(self._is_wpt_test, self._tests(results))):
             # Find version specifiers needed to promote versions to their OS
@@ -429,12 +448,12 @@ class WPTExpectationsUpdater:
             # that will automatically be promoted to a generic line.
             macros = {
                 os: set(versions)
-                & self._platform_specifiers(test, results_by_port)
+                & self._platform_specifiers(test, port_by_results.values())
                 for os, versions in
-                self.port.configuration_specifier_macros().items()
+                port_for_file.configuration_specifier_macros().items()
             }
             editor = SystemConfigurationEditor(expectations, path, macros)
-            for port, suite_results in results_by_port.items():
+            for suite_results, port in port_by_results.items():
                 version = self.host.builders.version_specifier_for_port_name(
                     port.name())
                 result = suite_results.result_for_test(test)
@@ -452,10 +471,9 @@ class WPTExpectationsUpdater:
                     reason=' '.join(result.bugs or {self.UMBRELLA_BUG}),
                     marker=self.MARKER_COMMENT[len('# '):])
             change += editor.merge_versions(test)
+
         if not change.lines_added:
-            _log.info(
-                'No lines to write to %s.',
-                self.host.filesystem.relpath(path, self.port.web_tests_dir()))
+            _log.info(f'No lines to write to {rel_path}.')
         expectations.commit_changes()
         new_lines = defaultdict(list)
         for line in change.lines_added:
