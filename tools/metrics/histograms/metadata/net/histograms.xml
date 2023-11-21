@@ -5554,12 +5554,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.UdpSocketRandomBindErrorCode" enum="NetErrorCodes"
-    expires_after="M77">
-  <owner>mgersh@chromium.org</owner>
-  <summary>Chromium error code from call to RandomBind() UDP socket.</summary>
-</histogram>
-
 <histogram name="Net.UDPSocketWinClose" units="ms" expires_after="2024-03-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
