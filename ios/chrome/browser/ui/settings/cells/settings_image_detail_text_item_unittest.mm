@@ -63,9 +63,8 @@ TEST_F(SettingsImageDetailTextItemTest, ConfigureAttributedText) {
   EXPECT_NSEQ(attributeString, imageDetailCell.textLabel.attributedText);
 }
 
-// Tests that the detail text color is updated when detailTextColor is not
-// nil.
-TEST_F(SettingsImageDetailTextItemTest, setDetailTextColor) {
+// Tests that the detail text color is updated when detailTextColor is not nil.
+TEST_F(SettingsImageDetailTextItemTest, SetDetailTextColor) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];
   NSString* text = @"Test Text";
@@ -84,6 +83,25 @@ TEST_F(SettingsImageDetailTextItemTest, setDetailTextColor) {
       static_cast<SettingsImageDetailTextCell*>(cell);
 
   EXPECT_NSEQ(UIColor.blueColor, imageDetailCell.detailTextLabel.textColor);
+}
+
+// Tests that the text color is updated when textColor is not nil.
+TEST_F(SettingsImageDetailTextItemTest, SetTextColor) {
+  SettingsImageDetailTextItem* item =
+      [[SettingsImageDetailTextItem alloc] initWithType:0];
+  NSString* text = @"Test Text";
+  item.text = text;
+  item.textColor = UIColor.redColor;
+
+  id cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[SettingsImageDetailTextCell class]]);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+
+  SettingsImageDetailTextCell* imageDetailCell =
+      static_cast<SettingsImageDetailTextCell*>(cell);
+
+  EXPECT_NSEQ(UIColor.redColor, imageDetailCell.textLabel.textColor);
 }
 
 // Tests that the text, detail text and image are honoured after a call to

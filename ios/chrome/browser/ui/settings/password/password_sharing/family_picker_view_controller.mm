@@ -181,6 +181,11 @@ const CGFloat kAccessorySymbolSize = 22;
   item.detailText = recipient.email;
   item.image = CircularImageFromImage(recipient.profileImage,
                                       kAccountProfilePhotoDimension);
+  if (!recipient.isEligible) {
+    item.textColor = [UIColor colorNamed:kTextTertiaryColor];
+    item.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
+    item.imageViewAlpha = 0.4f;
+  }
   return item;
 }
 

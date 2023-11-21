@@ -18,6 +18,9 @@
 // UIImageRenderingModeAlwaysTemplate.
 @property(nonatomic, strong) UIImage* image;
 
+// The image view's alpha.
+@property(nonatomic, assign) CGFloat imageViewAlpha;
+
 // The image View's tint color.
 @property(nonatomic, strong) UIColor* imageViewTintColor;
 
@@ -26,6 +29,9 @@
 
 // The title text to display.
 @property(nonatomic, copy) NSString* text;
+
+// UIColor for the cell's textLabel. If not set, `kTextPrimaryColor` is used.
+@property(nonatomic, strong) UIColor* textColor;
 
 // The attributed text to display.
 @property(nonatomic, copy) NSAttributedString* attributedText;
