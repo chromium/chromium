@@ -11964,7 +11964,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -11989,6 +11990,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android23",

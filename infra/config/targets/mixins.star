@@ -512,6 +512,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "emulator-enable-network",
+    args = [
+        "--emulator-enable-network",
+    ],
+    swarming = targets.swarming(
+        idempotent = False,  # Set to False because network is enabled.
+    ),
+)
+
+targets.mixin(
     name = "finch-chromium-swarming-pool",
     swarming = targets.swarming(
         dimensions = {

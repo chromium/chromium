@@ -21071,7 +21071,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -21094,6 +21095,7 @@
             "device_type": "bullhead",
             "os": "Android"
           },
+          "idempotent": false,
           "output_links": [
             {
               "link": [
@@ -21582,7 +21584,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -21607,6 +21610,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android31",
@@ -21972,7 +21976,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -21997,6 +22002,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android33",
@@ -22362,7 +22368,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -22387,6 +22394,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "android_34_google_apis_x64",
@@ -22841,7 +22849,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -22866,6 +22875,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android29",
@@ -23232,7 +23242,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -23257,6 +23268,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android30",
@@ -23622,7 +23634,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android22.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android22.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -23647,6 +23660,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android22",
@@ -24013,7 +24027,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -24038,6 +24053,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android23",
@@ -24403,7 +24419,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -24428,6 +24445,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android24",
@@ -24793,7 +24811,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -24818,6 +24837,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android26",
@@ -25184,7 +25204,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
+          "--emulator-enable-network"
         ],
         "merge": {
           "args": [
@@ -25209,6 +25230,7 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
+          "idempotent": false,
           "named_caches": [
             {
               "name": "generic_android28",

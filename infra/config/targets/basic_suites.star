@@ -2067,7 +2067,11 @@ targets.legacy_basic_suite(
         "cronet_sample_test_apk": None,
         "cronet_smoketests_missing_native_library_instrumentation_apk": None,
         "cronet_smoketests_platform_only_instrumentation_apk": None,
-        "cronet_test_instrumentation_apk": None,
+        "cronet_test_instrumentation_apk": targets.legacy_test_config(
+            mixins = [
+                "emulator-enable-network",
+            ],
+        ),
         "cronet_tests_android": None,
         "cronet_unittests_android": None,
         "net_unittests": targets.legacy_test_config(

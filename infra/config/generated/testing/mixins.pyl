@@ -416,6 +416,14 @@
       },
     },
   },
+  'emulator-enable-network': {
+    'args': [
+      '--emulator-enable-network',
+    ],
+    'swarming': {
+      'idempotent': False,
+    },
+  },
   'finch-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {
