@@ -102,7 +102,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
-  const char* GetClassName() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // ShelfButtonDelegate:

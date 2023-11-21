@@ -406,12 +406,6 @@ std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   return IsShowingAppList() ? std::u16string() : GetAccessibleName();
 }
 
-// TODO(http://b/311054594): Remove GetClassName and update launcher.BubbleSmoke
-// test
-const char* HomeButton::GetClassName() const {
-  return "ash/HomeButton";
-}
-
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
     ShelfButton* button,
     bool reverse) {
