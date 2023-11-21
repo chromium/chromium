@@ -361,6 +361,12 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
     [_webView stopLoading];
     [_webView removeFromSuperview];
+
+    // Since the WKWebView is about to be released, the kvo for the `loading`
+    // state will not be received. Without manually setting loading to false,
+    // the tab will appear to be endlessly loading until the next page load
+    // completes.
+    self.webStateImpl->SetIsLoading(false);
   }
 
   // Set up the new web view.
