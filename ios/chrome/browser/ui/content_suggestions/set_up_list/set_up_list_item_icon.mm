@@ -302,9 +302,9 @@ UIView* IconInSquare(NSString* symbol,
                                 kBlue500Color);
     }
     case SetUpListItemType::kContentNotification: {
-      return _inSquare
-                 ? IconInSquare(kBellSymbol, NO, kPink500Color)
-                 : IconInCircle(kBellSymbol, _compactLayout, kPink500Color);
+      return _inSquare ? IconInSquare(kBellBadgeSymbol, NO, kPink500Color)
+                       : IconInCircle(kBellBadgeSymbol, _compactLayout,
+                                      kPink500Color);
     }
     case SetUpListItemType::kAllSet: {
       return IconForSymbol(

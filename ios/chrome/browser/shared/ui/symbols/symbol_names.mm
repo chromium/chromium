@@ -77,6 +77,7 @@ NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
 NSString* const kDefaultBrowseriOS14Symbol = @"app.badge";
 NSString* const kDiscoverSymbol = @"flame";
 NSString* const kBellSymbol = @"bell";
+NSString* const kBellBadgeSymbol = @"bell.badge";
 NSString* const kCachedDataSymbol = @"photo.on.rectangle";
 NSString* const kAutofillDataSymbol = @"wand.and.rays";
 NSString* const kSecureLocationBarSymbol = @"lock.fill";
