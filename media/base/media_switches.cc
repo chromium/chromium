@@ -969,6 +969,11 @@ BASE_FEATURE(kLiveCaptionExperimentalLanguages,
              "LiveCaptionExperimentalLanguages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable automatic downloading of speech recognition language packs.
+BASE_FEATURE(kLiveCaptionAutomaticLanguageDownload,
+             "LiveCaptionAutomaticLanguageDownload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable Live Caption from the right click menu.
 BASE_FEATURE(kLiveCaptionRightClick,
              "LiveCaptionRightClick",

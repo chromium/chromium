@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -21,6 +23,7 @@
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -84,7 +87,9 @@ class MockLiveTranslateController : public LiveTranslateController {
   std::vector<std::string> translation_requests_;
 };
 
-class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
+class LiveCaptionSpeechRecognitionHostTest
+    : public LiveCaptionBrowserTest,
+      public speech::SodaInstaller::Observer {
  public:
   LiveCaptionSpeechRecognitionHostTest() = default;
   ~LiveCaptionSpeechRecognitionHostTest() override = default;
@@ -117,6 +122,22 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  // SodaInstaller::Observer:
+  void OnSodaInstalled(speech::LanguageCode language_code) override {}
+  void OnSodaInstallError(
+      speech::LanguageCode language_code,
+      speech::SodaInstaller::ErrorCode error_code) override {
+    if (language_code != speech::LanguageCode::kNone) {
+      installed_languages_.insert(language_code);
+    }
+
+    if (installed_languages_.size() == expected_language_pack_count_) {
+      std::move(quit_waiting_callback_).Run();
+    }
+  }
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override {}
+
   void CreateLiveCaptionSpeechRecognitionHost(
       content::RenderFrameHost* frame_host) {
     mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> remote;
@@ -148,6 +169,10 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
             language, confidence_level, asr_switch_result));
   }
 
+  std::set<speech::LanguageCode> GetInstalledLanguages() {
+    return installed_languages_;
+  }
+
   void OnSpeechRecognitionError(content::RenderFrameHost* frame_host) {
     remotes_[frame_host]->OnSpeechRecognitionError();
   }
@@ -173,6 +198,13 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
         ->GetTranslationRequests();
   }
 
+  void WaitForLanguagePackInstallation(size_t expected_language_pack_count) {
+    base::RunLoop run_loop;
+    quit_waiting_callback_ = run_loop.QuitClosure();
+    expected_language_pack_count_ = expected_language_pack_count;
+    run_loop.Run();
+  }
+
  private:
   void DispatchTranscriptionCallback(bool expected_success, bool success) {
     EXPECT_EQ(expected_success, success);
@@ -181,6 +213,9 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
   std::map<content::RenderFrameHost*,
            mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>>
       remotes_;
+  base::OnceClosure quit_waiting_callback_;
+  size_t expected_language_pack_count_ = 0u;
+  std::set<speech::LanguageCode> installed_languages_;
 };
 
 // Disabled due to flaky crashes; https://crbug.com/1216304.
@@ -477,5 +512,67 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
       "cool",
       GetTranslationRequests().back());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// Verify that 3 consecutive highly confident language identification events
+// trigger an automatic download of the language pack.
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       AutomaticLanguageDownload) {
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_installer_observer{this};
+  soda_installer_observer.Observe(speech::SodaInstaller::GetInstance());
+
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
+
+  SetLiveCaptionEnabled(true);
+  OnLanguageIdentificationEvent(
+      frame_host, "de-de", media::mojom::ConfidenceLevel::kConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "de-de", media::mojom::ConfidenceLevel::kConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "de-de", media::mojom::ConfidenceLevel::kConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+
+  OnLanguageIdentificationEvent(
+      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "de-de", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+
+  OnLanguageIdentificationEvent(
+      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+  OnLanguageIdentificationEvent(
+      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+
+  size_t expected_language_pack_count = 2u;
+  WaitForLanguagePackInstallation(expected_language_pack_count);
+  std::set<speech::LanguageCode> installed_languages = GetInstalledLanguages();
+  ASSERT_EQ(expected_language_pack_count, installed_languages.size());
+
+  // The en-US language pack is downloaded by default. Only the fr-FR language
+  // pack should be automatically downloaded.
+  ASSERT_TRUE(base::Contains(installed_languages, speech::LanguageCode::kEnUs));
+  ASSERT_TRUE(base::Contains(installed_languages, speech::LanguageCode::kFrFr));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 }  // namespace captions

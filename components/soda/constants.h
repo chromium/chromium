@@ -248,6 +248,8 @@ const std::string GetInstallationFailureTimeMetricForLanguagePack(
 const std::string GetInstallationResultMetricForLanguagePack(
     const LanguageCode& language_code);
 
+// Gets a list of locales enabled by the Finch flag.
+std::vector<std::string> GetEnabledLanguages();
 }  // namespace speech
 
 #endif  // COMPONENTS_SODA_CONSTANTS_H_

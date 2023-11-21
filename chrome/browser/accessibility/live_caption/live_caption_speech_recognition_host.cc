@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/greedy_text_stabilizer.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -27,6 +29,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
@@ -41,6 +44,10 @@
 namespace {
 static constexpr int kMinTokenFrequency = 1;
 static constexpr int kWaitKValue = 1;
+
+// The number of consecutive highly confident language identification events
+// required to trigger an automatic download of the missing language pack.
+static constexpr int kLanguageIdentificationEventCountThreshold = 3;
 
 // Split the transcription into sentences. Spaces are included in the preceding
 // sentence.
@@ -144,6 +151,19 @@ std::string RemoveLastKWords(const std::string& input) {
   } else {
     return std::string();
   }
+}
+
+// Returns a boolean indicating whether the language is both enabled and not
+// already installed.
+bool IsLanguageInstallable(const std::string& language_code) {
+  for (const auto& language : g_browser_process->local_state()->GetList(
+           prefs::kSodaRegisteredLanguagePacks)) {
+    if (language.GetString() == language_code) {
+      return false;
+    }
+  }
+
+  return base::Contains(speech::GetEnabledLanguages(), language_code);
 }
 
 }  // namespace
@@ -290,6 +310,36 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
   if (event->asr_switch_result ==
       media::mojom::AsrSwitchResult::kSwitchSucceeded) {
     source_language_ = event->language;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          media::kLiveCaptionAutomaticLanguageDownload)) {
+    if (auto_detected_language_ != event->language) {
+      language_identification_event_count_ = 0;
+      auto_detected_language_ = event->language;
+    }
+
+    if (event->confidence_level ==
+        media::mojom::ConfidenceLevel::kHighlyConfident) {
+      language_identification_event_count_++;
+    } else {
+      language_identification_event_count_ = 0;
+    }
+
+    if (language_identification_event_count_ ==
+        kLanguageIdentificationEventCountThreshold) {
+      absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
+          speech::GetLanguageComponentConfig(event->language);
+
+      if (language_config.has_value() &&
+          IsLanguageInstallable(language_config.value().language_name)) {
+        // InstallLanguage will only install languages that are not already
+        // installed.
+        speech::SodaInstaller::GetInstance()->InstallLanguage(
+            language_config.value().language_name,
+            g_browser_process->local_state());
+      }
+    }
   }
 
   live_caption_controller->OnLanguageIdentificationEvent(context_.get(),

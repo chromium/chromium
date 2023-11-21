@@ -60,6 +60,7 @@ source_set("constants") {
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
     "//components/strings/",
+    "//media",
     "//ui/base",
   ]
 }

@@ -8,16 +8,22 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
+#include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
+const constexpr char* const kDefaultEnabledLanguages[] = {"fr-FR", "it-IT",
+                                                          "de-DE"};
 
 const char kUsEnglishLocale[] = "en-US";
 
@@ -144,7 +150,8 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name) {
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
-    if (config.language_name == language_name) {
+    if (base::ToLowerASCII(config.language_name) ==
+        base::ToLowerASCII(language_name)) {
       return config;
     }
   }
@@ -220,6 +227,19 @@ const std::string GetInstallationResultMetricForLanguagePack(
   DCHECK(config && config->language_name);
   return base::StrCat({"SodaInstaller.Language.", config->language_name,
                        ".InstallationResult"});
+}
+
+std::vector<std::string> GetEnabledLanguages() {
+  std::vector<std::string> enabled_languages = base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          media::kLiveCaptionExperimentalLanguages, "available_languages"),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  for (const char* const enabled_language : kDefaultEnabledLanguages) {
+    enabled_languages.push_back(enabled_language);
+  }
+
+  return enabled_languages;
 }
 
 }  // namespace speech
