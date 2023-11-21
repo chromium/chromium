@@ -493,7 +493,12 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension->id());
 
-  service_worker_context->UnregisterServiceWorker(
+  // Note: It's important that the unregistration happen immediately (rather
+  // waiting for any controllees to be closed). Otherwise, we can get into a
+  // state where the old registration is not cleared by the time we re-register
+  // the worker if the extension is being reloaded, e.g. for an update.
+  // See https://crbug.com/1501930.
+  service_worker_context->UnregisterServiceWorkerImmediately(
       extension->url(),
       blink::StorageKey::CreateFirstParty(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,

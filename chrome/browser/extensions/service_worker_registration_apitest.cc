@@ -319,12 +319,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   EXPECT_TRUE(HasActiveServiceWorker(id));
 
   // The service worker context should be that of the new version.
-  // TODO(https://crbug.com/1498035): This should be
-  //   EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
-  // However, there's a bug where the old version of the service worker is
-  // used when an extension is installed immediately with an active NTP
-  // override.
-  EXPECT_EQ(base::Value(1), GetVersionFlagFromServiceWorker(id));
+  EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
 }
 
 // Tests that updating an unpacked extension properly updates the extension's

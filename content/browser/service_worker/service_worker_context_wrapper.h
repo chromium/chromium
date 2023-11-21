@@ -175,6 +175,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void UnregisterServiceWorker(const GURL& scope,
                                const blink::StorageKey& key,
                                ResultCallback callback) override;
+  void UnregisterServiceWorkerImmediately(const GURL& scope,
+                                          const blink::StorageKey& key,
+                                          ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
       ServiceWorkerExternalRequestTimeoutType timeout_type,
@@ -443,6 +446,13 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                     const blink::StorageKey& key,
                                     bool include_installing_version,
                                     FindRegistrationCallback callback);
+
+  // Helper method for `UnregisterServiceWorker()` and
+  // `UnregisterServiceWorkerImmediately()`.
+  void UnregisterServiceWorkerImpl(const GURL& scope,
+                                   const blink::StorageKey& key,
+                                   bool is_immediate,
+                                   ResultCallback callback);
 
   void MaybeProcessPendingWarmUpRequest();
 

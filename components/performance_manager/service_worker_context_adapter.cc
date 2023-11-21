@@ -132,6 +132,13 @@ void ServiceWorkerContextAdapter::UnregisterServiceWorker(
   NOTIMPLEMENTED();
 }
 
+void ServiceWorkerContextAdapter::UnregisterServiceWorkerImmediately(
+    const GURL& scope,
+    const blink::StorageKey& key,
+    ResultCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 content::ServiceWorkerExternalRequestResult
 ServiceWorkerContextAdapter::StartingExternalRequest(
     int64_t service_worker_version_id,
