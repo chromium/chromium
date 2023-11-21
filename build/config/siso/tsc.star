@@ -20,7 +20,13 @@ def _paths(ctx, tsconfig_path, tsconfig, loaded):
         if "files" in parent and not tsconfig["files"]:
             tsconfig["files"] = parent["files"]
     if "files" in tsconfig:
-        paths.extend([path.join(tsconfig_dir, file) for file in tsconfig["files"]])
+        for file in tsconfig["files"]:
+            paths.append(path.join(tsconfig_dir, file))
+            if file.endswith(".js"):
+                # Add if d.ts version of the file exists.
+                file_dts = path.join(tsconfig_dir, file[:-2] + "d.ts")
+                if ctx.fs.exists(file_dts):
+                    paths.append(file_dts)
     return paths
 
 def _scan_inputs(ctx, tsconfig_path, tsconfig, loaded, scanned):
