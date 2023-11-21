@@ -18,6 +18,7 @@ import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
@@ -56,6 +57,7 @@ struct URLResponseHeadDevToolsInfo {
   AlternateProtocolUsage alternate_protocol_usage;
   bool was_fetched_via_spdy;
   FetchResponseSource service_worker_response_source;
+  ServiceWorkerRouterInfo? service_worker_router_info;
   SSLInfo? ssl_info;
   IPEndPoint remote_endpoint;
   bool emitted_extra_info;

@@ -5679,6 +5679,10 @@ domain Network
       # This value is used when the reason is unknown.
       unspecifiedReason
 
+  experimental type ServiceWorkerRouterInfo extends object
+    properties
+      integer ruleIdMatched
+
   # HTTP response data.
   type Response extends object
     properties
@@ -5712,6 +5716,8 @@ domain Network
       optional boolean fromServiceWorker
       # Specifies that the request was served from the prefetch cache.
       optional boolean fromPrefetchCache
+      # Infomation about how Service Worker Static Router was used.
+      experimental optional ServiceWorkerRouterInfo serviceWorkerRouterInfo
       # Total number of bytes received for this request so far.
       number encodedDataLength
       # Timing information for the given request.

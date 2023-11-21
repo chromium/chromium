@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -947,7 +948,6 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
         dict.Add("serviceWorkerResponseSource", "fallbackCode");
     }
   }
-
   if (!response.ResponseTime().is_null()) {
     dict.Add("responseTime",
              response.ResponseTime().InMillisecondsFSinceUnixEpoch());
@@ -955,12 +955,17 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   if (!response.CacheStorageCacheName().empty()) {
     dict.Add("cacheStorageCacheName", response.CacheStorageCacheName());
   }
-
   if (response.GetResourceLoadTiming()) {
     RecordTiming(dict.AddItem("timing"), *response.GetResourceLoadTiming());
   }
-  if (response.WasFetchedViaServiceWorker())
+  if (response.WasFetchedViaServiceWorker()) {
     dict.Add("fromServiceWorker", true);
+  }
+  if (response.GetServiceWorkerRouterInfo()) {
+    auto info = dict.AddDictionary("staticRoutingInfo");
+    info.Add("ruleIdMatched",
+             response.GetServiceWorkerRouterInfo()->RuleIdMatched());
+  }
 }
 
 void inspector_receive_data_event::Data(perfetto::TracedValue context,

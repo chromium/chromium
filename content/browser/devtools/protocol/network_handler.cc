@@ -1968,6 +1968,12 @@ std::unique_ptr<Network::Response> BuildResponse(
   if (!info.cache_storage_cache_name.empty()) {
     response->SetCacheStorageCacheName(info.cache_storage_cache_name);
   }
+  if (!info.service_worker_router_info.is_null()) {
+    response->SetServiceWorkerRouterInfo(
+        protocol::Network::ServiceWorkerRouterInfo::Create()
+            .SetRuleIdMatched(info.service_worker_router_info->rule_id_matched)
+            .Build());
+  }
 
   response->SetProtocol(GetProtocol(url, info));
   if (info.alternate_protocol_usage !=

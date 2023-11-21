@@ -231,6 +231,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   }
 
   // See network.mojom.URLResponseHead.service_worker_router_info.
+  const blink::ServiceWorkerRouterInfo* GetServiceWorkerRouterInfo() const {
+    return service_worker_router_info_.get();
+  }
   void SetServiceWorkerRouterInfo(scoped_refptr<ServiceWorkerRouterInfo> value);
 
   void SetServiceWorkerResponseSource(

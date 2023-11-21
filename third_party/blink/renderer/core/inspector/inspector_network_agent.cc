@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/network_resources_data.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/inspector/request_debug_header_scope.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
@@ -1060,6 +1062,13 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   }
   if (!response.CacheStorageCacheName().empty()) {
     response_object->setCacheStorageCacheName(response.CacheStorageCacheName());
+  }
+  if (response.GetServiceWorkerRouterInfo()) {
+    response_object->setServiceWorkerRouterInfo(
+        protocol::Network::ServiceWorkerRouterInfo::create()
+            .setRuleIdMatched(
+                response.GetServiceWorkerRouterInfo()->RuleIdMatched())
+            .build());
   }
 
   response_object->setFromPrefetchCache(response.WasInPrefetchCache());
