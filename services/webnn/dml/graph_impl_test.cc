@@ -1428,6 +1428,127 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
   }
 }
 
+template <typename T>
+struct ExpandTester {
+  OperandInfo<T> input;
+  OperandInfo<T> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildExpand(input_operand_id, output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
+};
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorExpand) {
+  {
+    // Test building expand 0-D scalar to 3-D tensor.
+    ExpandTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {6}},
+        .output =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 2, 4},
+                // [[[ 6,  6,  6,  6],
+                //   [ 6,  6,  6,  6]],
+                //  [[ 6,  6,  6,  6],
+                //   [ 6,  6,  6,  6]]] with shape (2, 3, 4)
+                .values = {6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+            }}
+        .Test();
+  }
+  {
+    // Test building expand with the output shape that are the same as input.
+    ExpandTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {3, 4},
+                // [[ 1,  2,  3,  4],
+                //  [ 5,  6,  7,  8],
+                //  [ 9, 10, 11, 12]] with shape (3, 4)
+                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+            },
+        .output =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {3, 4},
+                // [[ 1,  2,  3,  4],
+                //  [ 5,  6,  7,  8],
+                //  [ 9, 10, 11, 12]] with shape (3, 4)
+                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+            }}
+        .Test();
+  }
+  {
+    // Test building expand with the input shape that are broadcastable.
+    ExpandTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 1, 5},
+                // [[[1, 2, 3, 4, 5]],
+                //  [[6, 7, 8, 9, 10]]] with shape (2, 1, 5)
+                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            },
+        .output =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 3, 5},
+                // [[[ 1, 2, 3, 4, 5],
+                //   [ 1, 2, 3, 4, 5],
+                //   [ 1, 2, 3, 4, 5]]],
+                //  [[[6, 7, 8, 9, 10],
+                //    [6, 7, 8, 9, 10],
+                //    [6, 7, 8, 9, 10]]] with shape (2, 3, 5)
+                .values = {1, 2, 3, 4, 5,  1, 2, 3, 4, 5,  1, 2, 3, 4, 5,
+                           6, 7, 8, 9, 10, 6, 7, 8, 9, 10, 6, 7, 8, 9, 10},
+            }}
+        .Test();
+  }
+  {
+    // Test building expand with the input shape that are broadcastable and the
+    // rank of output shape larger than input.
+    ExpandTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 6},
+                // [[[1, 2, 3, 4,  5,  6]],
+                //  [[7, 8, 9, 10, 11, 12]]] with shape (2, 6)
+                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+            },
+        .output =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {3, 2, 6},
+                // [[[ 1, 2, 3, 4,  5,  6],
+                //   [ 7, 8, 9, 10, 11, 12]],
+                //  [[ 1, 2, 3, 4,  5,  6],
+                //   [ 7, 8, 9, 10, 11, 12]],
+                //  [[ 1, 2, 3, 4,  5,  6],
+                //   [ 7, 8, 9, 10, 11, 12]]] with shape (3, 2, 6)
+                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+            }}
+        .Test();
+  }
+}
+
 struct Pool2dAttributes {
   std::vector<uint32_t> window_dimensions;
   std::vector<uint32_t> padding;

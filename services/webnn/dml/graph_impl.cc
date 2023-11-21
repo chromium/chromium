@@ -156,6 +156,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "elu";
     case Operation::Tag::kElementWiseUnary:
       return "element-wise unary";
+    case Operation::Tag::kExpand:
+      return "expand";
     case Operation::Tag::kGemm:
       return "gemm";
     case Operation::Tag::kLeakyRelu:
@@ -1325,6 +1327,44 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForExpand(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ExpandPtr& expand,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, expand->input_operand_id);
+  auto input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = expand->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // Use identity to implement the expand operation with broadcasting strides
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-strides#broadcasting-with-strides.
+  const auto& output_dimensions = output_tensor_desc.GetDimensions();
+  if (input_tensor_desc.GetDimensions() != output_dimensions) {
+    input_tensor_desc.BroadcastTo(output_dimensions);
+  }
+  const OperatorNode* identity_node =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          input_tensor_desc, output_tensor_desc, input, graph_builder);
+  if (!identity_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create identity dml operator to implement "
+                          "expand operation."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      identity_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 // Creates a DirectML operator for the WebNN general matrix multiplication
 // (GEMM) of the expression alpha * A * B + beta * C.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
@@ -2021,6 +2061,12 @@ void GraphImpl::CreateAndBuild(
         create_operator_result = CreateOperatorNodeForElementWiseUnary(
             id_to_operand_map, operation->get_element_wise_unary(),
             graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kExpand: {
+        create_operator_result = CreateOperatorNodeForExpand(
+            id_to_operand_map, operation->get_expand(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kGemm: {

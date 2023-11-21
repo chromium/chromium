@@ -1264,6 +1264,89 @@ TEST_P(MLGraphTestMojo, EluTest) {
   }
 }
 
+struct ExpandTester {
+  OperandInfoBlink input;
+  Vector<uint32_t> new_shape;
+  OperandInfoMojo expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->expand(input_operand, new_shape, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_expand(), true);
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ExpandTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building expand 0-D scalar to 3-D tensor.
+    ExpandTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {}},
+        .new_shape = {3, 4, 5},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3, 4, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that is the same as input.
+    ExpandTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                           .dimensions = {3, 2}},
+                 .new_shape = {3, 2},
+                 .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                              .dimensions = {3, 2}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that are broadcastable.
+    ExpandTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
+                           .dimensions = {3, 1, 5}},
+                 .new_shape = {3, 4, 5},
+                 .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                              .dimensions = {3, 4, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that are broadcastable and the number of new
+    // shapes larger than input.
+    ExpandTester{
+        .input = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {2, 5}},
+        .new_shape = {3, 2, 5},
+        .expected = {.type = blink_mojom::Operand::DataType::kInt32,
+                     .dimensions = {3, 2, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct GemmTester {
   OperandInfoBlink a;
   OperandInfoBlink b;

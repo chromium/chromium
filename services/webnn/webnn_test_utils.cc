@@ -169,6 +169,12 @@ void GraphInfoBuilder::BuildElementWiseBinary(
       mojom::Operation::NewElementWiseBinary(std::move(binary)));
 }
 
+void GraphInfoBuilder::BuildExpand(uint64_t input_operand_id,
+                                   uint64_t output_operand_id) {
+  graph_info_->operations.push_back(mojom::Operation::NewExpand(
+      mojom::Expand::New(input_operand_id, output_operand_id)));
+}
+
 void GraphInfoBuilder::BuildMatmul(uint64_t a_operand_id,
                                    uint64_t b_operand_id,
                                    uint64_t output_operand_id) {

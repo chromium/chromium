@@ -163,6 +163,15 @@ blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
   return elu_mojo;
 }
 
+OperationPtr CreateExpandOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* expand) {
+  auto expand_mojo = blink_mojom::Expand::New();
+  expand_mojo->input_operand_id = GetOperatorInputId(expand, operand_to_id_map);
+  expand_mojo->output_operand_id =
+      GetOperatorOutputId(expand, operand_to_id_map);
+  return blink_mojom::Operation::NewExpand(std::move(expand_mojo));
+}
+
 blink_mojom::LeakyReluPtr CreateLeakyRelu(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* leaky_relu,
@@ -817,6 +826,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kElu:
       return blink_mojom::Operation::NewElu(
           CreateElu(operand_to_id_map, op, false));
+    case MLOperator::OperatorKind::kExpand:
+      return CreateExpandOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLeakyRelu:

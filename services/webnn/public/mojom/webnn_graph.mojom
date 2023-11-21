@@ -183,6 +183,17 @@ struct ElementWiseUnary  {
   uint64 output_operand_id;
 };
 
+// Expands the shape of input operand to the output shape according to
+// numpy-broadcasting-rule:
+// https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
+struct Expand {
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id, and the input shape must be
+  // broadcastable to the output shape.
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
 // Specifies the different ways to pad a tensor. The padding value is only
 // specified when the mode is "constant".
 struct ConstantPadding {
@@ -516,6 +527,7 @@ union Operation {
   ElementWiseBinary element_wise_binary;
   Elu elu;
   ElementWiseUnary element_wise_unary;
+  Expand expand;
   Gemm gemm;
   LeakyRelu leaky_relu;
   Matmul matmul;

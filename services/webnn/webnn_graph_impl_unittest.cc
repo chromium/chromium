@@ -1496,6 +1496,91 @@ TEST_F(WebNNGraphImplTest, EluTest) {
   }
 }
 
+struct ExpandTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildExpand(input_operand_id, output_operand_id);
+
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ExpandTest) {
+  {
+    // Test building expand with the output shapes that are the same as input.
+    ExpandTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 6}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 6}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test building expand with the output shapes that are broadcastable.
+    ExpandTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {3, 1, 5}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {3, 4, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test building expand with the output shapes that are broadcastable and the
+    // number of output shapes larger than input.
+    ExpandTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 5}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {3, 2, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input shapes are not the same as output
+    // shape and not broadcastable.
+    ExpandTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {3, 6, 2}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {4, 3, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input shapes are not broadcastable.
+    ExpandTester{
+        .input = {.type = mojom::Operand::DataType::kInt32, .dimensions = {5}},
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {5, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output data types which don't match.
+    ExpandTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildExpand(input_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct GemmTester {
   OperandInfo a;
   OperandInfo b;

@@ -535,6 +535,30 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
   return false;
 }
 
+bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
+                    const mojom::ExpandPtr& expand) {
+  auto* input = GetMojoOperand(id_to_operand_map, expand->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, expand->output_operand_id);
+  if (!input || !output || output == input) {
+    // The expand operator is invalid.
+    return false;
+  }
+  if (output->data_type != input->data_type) {
+    // The output data type doesn't match input data type.
+    return false;
+  }
+
+  auto output_shape =
+      BroadcastShapes(input->dimensions, output->dimensions, false);
+  if (!output_shape) {
+    // The input shape is not broadcastable to the output shape.
+    return false;
+  }
+  CHECK(output_shape.value() == output->dimensions);
+
+  return true;
+}
+
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
                   const mojom::GemmPtr& gemm) {
   auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
@@ -902,6 +926,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kElementWiseUnary:
       return ValidateElementWiseUnary(id_to_operand_map,
                                       operation->get_element_wise_unary());
+    case mojom::Operation::Tag::kExpand:
+      return ValidateExpand(id_to_operand_map, operation->get_expand());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
     case mojom::Operation::Tag::kLeakyRelu:
