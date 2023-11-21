@@ -50,7 +50,10 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
     GetTestVirtualTasks().push_back(&task_);
   }
 
-  void TearDown() override { GetTestVirtualTasks().clear(); }
+  void TearDown() override {
+    ui_manager_ = nullptr;
+    GetTestVirtualTasks().clear();
+  }
 
  protected:
   MockWebAppUiManager& ui_manager() { return *ui_manager_; }
@@ -92,7 +95,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   TestingProfile profile_;
   InstallIsolatedWebAppVirtualTask task_;
-  raw_ptr<MockWebAppUiManager> ui_manager_;
+  raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
 };
