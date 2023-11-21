@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Уруксат берилген</translation>
 <translation id="429312253194641664">Сайтта медиа файл ойнотулууда</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
+<translation id="4336566011000459927">Chrome бүгүн cookie файлдарын кайра чектейт</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> домениндеги бардык сайттар</translation>
 <translation id="4402755511846832236">Түзмөгүңүз активдүү колдонулуп жаткан учур сайттардан жашырылсын</translation>
 <translation id="4412992751769744546">Үчнчү жактн кукилрне урукст брүү</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Бул сайтка туташуу коопсуз эмес</translation>
 <translation id="6181444274883918285">Сайтты бөтөнчө тизмеге кошуу</translation>
 <translation id="6192792657125177640">Өзгөчө шарттар</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome эртең cookie файлдарын кайра бөгөттөйт}other{# күндөн кийин cookie файлдары кайра бөгөттөлөт}}</translation>
 <translation id="6195163219142236913">Үчүнчү тараптын cookie файлдары чектелди</translation>
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7804248752222191302">Сайт камераңызды колдонуп жатат</translation>
 <translation id="7807060072011926525">Google сунуштайт</translation>
+<translation id="7822573154188733812">Chrome сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт. <ph name="BEGIN_LINK" />Көз салуудан коргоону тескөө<ph name="END_LINK" /> үчүн параметрлерге өтүңүз.</translation>
 <translation id="7835852323729233924">Медиа ойнотулууда</translation>
 <translation id="783819812427904514">Видеонун үнүн чыгаруу</translation>
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Сиз кирген бардык сайттар каалаган жарнаманы көрсөтө алышат</translation>
 <translation id="8087000398470557479">Бул мазмун <ph name="DOMAIN_NAME" /> доменинен алынып, Google аркылуу жеткирилген.</translation>
 <translation id="8088603949666785339">Башка параметрлер: <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome эртең cookie файлдарын кайра чектейт}other{Chrome # күндөн кийин cookie файлдарын кайра чектейт}}</translation>
 <translation id="8116925261070264013">Үнсүз кылынган</translation>
 <translation id="813082847718468539">Сайттын маалыматын карап көрүү</translation>
 <translation id="8131740175452115882">Ырастоо</translation>

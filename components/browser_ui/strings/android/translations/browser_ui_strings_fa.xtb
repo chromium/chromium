@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
+<translation id="4336566011000459927">‏‫Chrome کوکی‌ها را امروز دوباره محدود خواهد کرد</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">از اینکه سایت‌ها بدانند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید جلوگیری می‌شود</translation>
 <translation id="4412992751769744546">اجازه به کوکی‌های شخص ثالث</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">اتصال شما به این سایت امن نیست</translation>
 <translation id="6181444274883918285">افزودن سایتی به استثناها</translation>
 <translation id="6192792657125177640">موارد استثنا</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{‏Chrome کوکی‌ها را فردا دوباره مسدود خواهد کرد}one{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}other{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}}</translation>
 <translation id="6195163219142236913">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804248752222191302">سایتی درحال استفاده از دوربینتان است</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
+<translation id="7822573154188733812">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید.</translation>
 <translation id="7835852323729233924">درحال پخش رسانه</translation>
 <translation id="783819812427904514">با صدا کردن ویدیو</translation>
 <translation id="7846076177841592234">لغو انتخاب</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
 <translation id="8087000398470557479">‏این محتوا از <ph name="DOMAIN_NAME" /> است و توسط Google ارائه می‌شود.</translation>
 <translation id="8088603949666785339">گزینه‌های بیشتر در <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{‏‫Chrome کوکی‌ها را فردا دوباره محدود خواهد کرد}one{‏‫Chrome کوکی‌ها را # روز دیگر دوباره محدود خواهد کرد}other{‏‫Chrome کوکی‌ها را # روز دیگر دوباره محدود خواهد کرد}}</translation>
 <translation id="8116925261070264013">صامت‌شده</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>

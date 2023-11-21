@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
+<translation id="4336566011000459927">Сегодня Chrome снова ограничит использование файлов cookie</translation>
 <translation id="4338831206024587507">Все сайты с доменом <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
 <translation id="4412992751769744546">Разрешить использование сторонних файлов cookie</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Подключение к сайту не защищено</translation>
 <translation id="6181444274883918285">Добавить исключение</translation>
 <translation id="6192792657125177640">Исключения</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Завтра Chrome снова начнет блокировать файлы cookie}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
 <translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
 <translation id="7807060072011926525">Данные от Google</translation>
+<translation id="7822573154188733812">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. <ph name="BEGIN_LINK" />Управлять Защитой от слежения<ph name="END_LINK" /> можно в настройках.</translation>
 <translation id="7835852323729233924">Воспроизведение медиаконтента</translation>
 <translation id="783819812427904514">Включить звук для видео</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8087000398470557479">Контент с сайта <ph name="DOMAIN_NAME" />. Получен с помощью Google.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: другие действия</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Завтра Chrome снова ограничит использование файлов cookie}one{Chrome снова ограничит использование файлов cookie через # день}few{Chrome снова ограничит использование файлов cookie через # дня}many{Chrome снова ограничит использование файлов cookie через # дней}other{Chrome снова ограничит использование файлов cookie через # дня}}</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>

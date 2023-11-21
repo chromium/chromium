@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
 <translation id="429312253194641664">ఒక సైట్‌లో మీడియా ప్లే చేయబడుతోంది</translation>
 <translation id="42981349822642051">విస్తరించు</translation>
+<translation id="4336566011000459927">కుక్కీలను Chrome ఈరోజు మళ్లీ పరిమితం చేస్తుంది</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> కింద ఉన్న అన్ని సైట్‌లు</translation>
 <translation id="4402755511846832236">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగిస్తున్నప్పుడు ఆ విషయాన్ని ఇతర సైట్‌లు తెలుసుకోకుండా బ్లాక్ చేయండి</translation>
 <translation id="4412992751769744546">థర్డ్ పార్టీ కుక్కీలను అనుమతించండి</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">ఈ సైట్‌తో మీకున్న కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="6181444274883918285">సైట్ మినహాయింపును జోడించండి</translation>
 <translation id="6192792657125177640">మినహాయింపులు</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{మళ్లీ రేపు Chrome, కుక్కీలను బ్లాక్ చేస్తుంది}other{కుక్కీలు # రోజులలో మళ్లీ బ్లాక్ చేయబడతాయి}}</translation>
 <translation id="6195163219142236913">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
 <translation id="7804248752222191302">ఒక సైట్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="7807060072011926525">దీనిని Google అందించినది</translation>
+<translation id="7822573154188733812">మీరు బ్రౌజ్ చేస్తున్నప్పుడు మిమ్మల్ని ట్రాక్ చేయడానికి థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా Chrome సైట్‌లను బ్లాక్ చేస్తుంది. <ph name="BEGIN_LINK" />మీ ట్రాకింగ్ నుండి రక్షణలను మేనేజ్ చేయడానికి<ph name="END_LINK" /> సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="7835852323729233924">మీడియా ప్లే అవుతోంది</translation>
 <translation id="783819812427904514">వీడియోను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="7846076177841592234">ఎంపికను రద్దు చేయండి</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>
 <translation id="8087000398470557479">ఈ కంటెంట్ Google ద్వారా డెలివర్ చేయబడిన <ph name="DOMAIN_NAME" />లోనిది.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />లో మరిన్ని ఆప్షన్‌లు</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{కుక్కీలను Chrome రేపు మళ్లీ పరిమితం చేస్తుంది}other{కుక్కీలను Chrome # రోజుల తర్వాత మళ్లీ పరిమితం చేస్తుంది}}</translation>
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
 <translation id="813082847718468539">సైట్ సమాచారాన్ని చూడండి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

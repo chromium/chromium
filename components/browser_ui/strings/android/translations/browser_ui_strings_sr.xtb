@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Дозвољено</translation>
 <translation id="429312253194641664">Сајт пушта медијски садржај</translation>
 <translation id="42981349822642051">Проширите</translation>
+<translation id="4336566011000459927">Chrome ће данас поново ограничити колачиће</translation>
 <translation id="4338831206024587507">Сви сајтови у оквиру домена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не дозволите сајтовима да знају када активно користите овај уређај</translation>
 <translation id="4412992751769744546">Дозволи колачиће треће стране</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Веза са овим сајтом није безбедна</translation>
 <translation id="6181444274883918285">Додај изузетак за сајтове</translation>
 <translation id="6192792657125177640">Изузеци</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome ће сутра поново блокирати колачиће}one{# дан док се колачићи поново не блокирају}few{# дана док се колачићи поново не блокирају}other{# дана док се колачићи поново не блокирају}}</translation>
 <translation id="6195163219142236913">Колачићи треће стране су ограничени</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7804248752222191302">Сајт користи камеру</translation>
 <translation id="7807060072011926525">Пружа Google</translation>
+<translation id="7822573154188733812">Chrome онемогућава сајтовима да вас прате помоћу колачића треће стране док прегледате. Посетите подешавања да бисте <ph name="BEGIN_LINK" />управљали заштитом од праћења<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Репродукција медија</translation>
 <translation id="783819812427904514">Укључите звук видеа</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Сваки сајт који посетите може да вам прикаже било који оглас</translation>
 <translation id="8087000398470557479">Овај садржај је са <ph name="DOMAIN_NAME" />, приказује Google.</translation>
 <translation id="8088603949666785339">Још опција у <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome ће сутра поново ограничити колачиће}one{# дан док Chrome поново не ограничи колачиће}few{# дана док Chrome поново не ограничи колачиће}other{# дана док Chrome поново не ограничи колачиће}}</translation>
 <translation id="8116925261070264013">Звук је искључен</translation>
 <translation id="813082847718468539">Погледајте информације о сајту</translation>
 <translation id="8131740175452115882">Потврди</translation>

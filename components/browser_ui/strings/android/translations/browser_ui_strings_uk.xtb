@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
 <translation id="42981349822642051">Розгорнути</translation>
+<translation id="4336566011000459927">Сьогодні Chrome знов обмежить використання файлів cookie</translation>
 <translation id="4338831206024587507">Усі сайти домену <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Блокувати сайтам інформацію про те, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4412992751769744546">Дозволити сторонні файли cookie</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Ваше з’єднання з цим сайтом не захищене</translation>
 <translation id="6181444274883918285">Додати сайт у список винятків</translation>
 <translation id="6192792657125177640">Винятки</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Завтра Chrome знову заблокує файли cookie}one{Через # день файли cookie буде знову заблоковано}few{Через # дні файли cookie буде знову заблоковано}many{Через # днів файли cookie буде знову заблоковано}other{Через # дня файли cookie буде знову заблоковано}}</translation>
 <translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804248752222191302">Сайт використовує камеру</translation>
 <translation id="7807060072011926525">Надано компанією Google</translation>
+<translation id="7822573154188733812">Chrome забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті. Перейдіть у налаштування, щоб <ph name="BEGIN_LINK" />керувати захистом від відстеження<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Відтворення медіафайлу</translation>
 <translation id="783819812427904514">Увімкнути звук у відео</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>
 <translation id="8087000398470557479">Це вміст із сайту <ph name="DOMAIN_NAME" />, який доставляє Google.</translation>
 <translation id="8088603949666785339">Інші опції для параметра "<ph name="BANNER_TITLE" />"</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Завтра Chrome знов обмежить використання файлів cookie}one{Через # день Chrome знов обмежить використання файлів cookie}few{Через # дні Chrome знов обмежить використання файлів cookie}many{Через # днів Chrome знов обмежить використання файлів cookie}other{Через # дня Chrome знов обмежить використання файлів cookie}}</translation>
 <translation id="8116925261070264013">Звук вимкнено</translation>
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
