@@ -28,8 +28,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
+#include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "printing/backend/test_print_backend.h"
@@ -214,7 +214,7 @@ class CupsPrintersHandlerTest : public testing::Test {
     printers_handler_->RegisterMessages();
     printers_handler_->AllowJavascriptForTesting();
     printing::PrintBackend::SetPrintBackendForTesting(print_backend_.get());
-    DebugDaemonClient::InitializeFake();
+    PrintscanmgrClient::InitializeFake();
     // Initialize NewWindowDelegate things.
     auto instance = std::make_unique<MockNewWindowDelegate>();
     auto primary = std::make_unique<MockNewWindowDelegate>();
@@ -235,7 +235,7 @@ class CupsPrintersHandlerTest : public testing::Test {
 
   void TearDown() override {
     new_window_provider_.reset();
-    DebugDaemonClient::Shutdown();
+    PrintscanmgrClient::Shutdown();
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
 
@@ -336,7 +336,7 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
 TEST_F(CupsPrintersHandlerTest, ViewPPD) {
   // Test the nominal case where everything works and the PPD gets downloaded.
 
-  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
   Printer printer("id");
@@ -365,7 +365,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
   // Test the nominal case where everything works and the PPD (with a license)
   // gets returned.
 
-  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
       ->SetPpdDataForTesting(kPpdDataWithHeader);
 
   Printer printer("id");
@@ -397,7 +397,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
   // the expected PPD string, so the license can't be inserted, and the PPD
   // can't be downloaded.
 
-  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
   Printer printer("id");
@@ -445,7 +445,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
 TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
   // Test the case where the printer is known but not setup.
 
-  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
   Printer printer("id");
@@ -471,9 +471,9 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
-  // Test the case where an empty PPD is returned from debugd.
+  // Test the case where an empty PPD is returned from printscanmgr.
 
-  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
       ->SetPpdDataForTesting({});
 
   Printer printer("id");

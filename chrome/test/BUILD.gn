@@ -9730,6 +9730,8 @@ test("unit_tests") {
           "../browser/ui/webui/ash/settings/pages/printing/cups_printers_handler_unittest.cc",
           "../browser/ui/webui/ash/settings/pages/printing/server_printer_url_util_unittest.cc",
         ]
+
+        deps += [ "//chromeos/ash/components/dbus/printscanmgr:printscanmgr" ]
       }
     } else {
       sources += [ "../browser/printing/print_view_manager_basic_unittest.cc" ]

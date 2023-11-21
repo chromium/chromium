@@ -44,7 +44,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -486,29 +485,36 @@ void CupsPrintersHandler::OnSetUpPrinter(const std::string& printer_id,
   }
 
   // Once the printer has been setup we can request the PPD.
-  const std::vector<uint8_t> empty_ppd;
+  printscanmgr::CupsRetrievePpdResponse empty_response;
 
-  DebugDaemonClient::Get()->CupsRetrievePrinterPpd(
-      printer_id,
+  printscanmgr::CupsRetrievePpdRequest request;
+  request.set_name(printer_id);
+  PrintscanmgrClient::Get()->CupsRetrievePrinterPpd(
+      request,
       base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
                      weak_factory_.GetWeakPtr(), printer_name, eula),
       base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
                      weak_factory_.GetWeakPtr(), printer_name, eula,
-                     empty_ppd));
+                     empty_response));
 }
 
 void CupsPrintersHandler::OnRetrieveCupsPrinterPpd(
     const std::string& printer_name,
     const std::string& eula,
-    const std::vector<uint8_t>& data) {
-  if (data.empty()) {
-    PRINTER_LOG(ERROR) << "Retrieved an empty ppd";
+    absl::optional<printscanmgr::CupsRetrievePpdResponse> response) {
+  if (!response) {
+    PRINTER_LOG(ERROR) << "No response to retrieve PPD request";
     OnRetrievePpdError(printer_name);
     return;
   }
 
-  // Convert our ppd (array of bytes) into a string.
-  std::string ppd(data.begin(), data.end());
+  if (response->ppd() == "") {
+    PRINTER_LOG(ERROR) << "Retrieved an empty PPD";
+    OnRetrievePpdError(printer_name);
+    return;
+  }
+
+  std::string ppd = response->ppd();
 
   // If we have a eula link, insert that into our PPD as a comment.
   if (!eula.empty()) {

@@ -3689,6 +3689,8 @@ static_library("ui") {
       "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
       "//chromeos/ash/components/dbus/os_install",
       "//chromeos/ash/components/dbus/pciguard:pciguard",
+      "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
+      "//chromeos/ash/components/dbus/printscanmgr:printscanmgr_proto",
       "//chromeos/ash/components/dbus/session_manager",
       "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/dbus/spaced",
