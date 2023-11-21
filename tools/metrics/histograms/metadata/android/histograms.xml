@@ -4743,7 +4743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds"
-    units="microseconds" expires_after="2023-12-01">
+    units="microseconds" expires_after="2024-06-01">
   <owner>blundell@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
