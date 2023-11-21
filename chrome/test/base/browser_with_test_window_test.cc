@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -101,10 +100,6 @@ void BrowserWithTestWindowTest::SetUp() {
   crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
-
-  // There's no session manager client, so screen lock observation won't work.
-  UserEducationServiceFactory::GetInstance()
-      ->disable_idle_polling_for_testing();
 #endif
 
   // Subclasses can provide their own Profile.
