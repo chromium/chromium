@@ -386,6 +386,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return;
         }
 
+        if (mTabObservable.get() == null) {
+            Log.w(TAG, "Not auto-triggering because Tab is null.");
+            return;
+        }
+
         Log.v(TAG, "Loading data for auto-peek");
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
@@ -425,6 +430,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetContent.showLoadingIndicator();
         mSheetController.requestShowContent(mSheetContent, true);
         PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
+        if (mTabObservable.get() == null) {
+            Log.e(TAG, "Can't launch Page Insights because Tab is null.");
+            return;
+        }
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
                 config.getShouldAttachGaiaToRequest(),
