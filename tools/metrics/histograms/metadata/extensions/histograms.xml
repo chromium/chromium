@@ -846,18 +846,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.DeclarativeSetIconWasVisible" enum="BooleanVisible"
-    expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether an icon specified in the declarativeContent.SetIcon API is
-    considered visible by our icon analysis code. This stat is emitted when we
-    create the underlying object that sets the icon when the declarative rule is
-    applied.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DeclarativeSetIconWasVisibleRendered"
     enum="BooleanVisible" expires_after="2019-09-07">
   <owner>dbertoni@chromium.org</owner>

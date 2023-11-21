@@ -417,8 +417,6 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   const SkBitmap bitmap = image.AsBitmap();
   const bool is_sufficiently_visible =
       extensions::image_util::IsIconSufficientlyVisible(bitmap);
-  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisible",
-                            is_sufficiently_visible);
   if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
     *error = kIconNotSufficientlyVisible;
     return nullptr;
