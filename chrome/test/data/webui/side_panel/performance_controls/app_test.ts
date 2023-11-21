@@ -5,21 +5,21 @@
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
 import {PerformanceAppElement} from 'chrome://performance-side-panel.top-chrome/app.js';
-import {PerformanceApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_api_proxy.js';
+import {PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestPerformanceApiProxy} from './test_performance_api_proxy.js';
+import {TestPerformancePageApiProxy} from './test_performance_page_api_proxy.js';
 
 suite('PerformanceControlsAppTest', () => {
   let performanceApp: PerformanceAppElement;
-  let testProxy: TestPerformanceApiProxy;
+  let testProxy: TestPerformancePageApiProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    testProxy = new TestPerformanceApiProxy();
-    PerformanceApiProxyImpl.setInstance(testProxy);
+    testProxy = new TestPerformancePageApiProxy();
+    PerformancePageApiProxyImpl.setInstance(testProxy);
 
     performanceApp = document.createElement('performance-app');
     document.body.appendChild(performanceApp);

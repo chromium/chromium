@@ -5,35 +5,23 @@
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
 import {PerformancePageCallbackRouter, PerformancePageHandlerRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
-import {PerformanceApiProxy, PerformanceApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_api_proxy.js';
+import {PerformancePageApiProxy, PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-type Constructor<T> = new (...args: any[]) => T;
-type Installer<T> = (instance: T) => void;
-export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
-  installer = installer ||
-      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
-  const mock = TestMock.fromClass(clazz);
-  installer!(mock);
-  return mock;
-}
-
-suite('PerformanceApiProxyTest with mocked handler', () => {
+suite('PerformancePageApiProxyTest', () => {
   suite('with mocked handler', () => {
-    let apiProxy: PerformanceApiProxy;
+    let apiProxy: PerformancePageApiProxy;
     let handlerMock: TestMock<PerformancePageHandlerRemote>;
 
     suiteSetup(async () => {
-      handlerMock = installMock(
-          PerformancePageHandlerRemote,
-          (mock: PerformancePageHandlerRemote) => {
-            PerformanceApiProxyImpl.setInstance(new PerformanceApiProxyImpl(
-                new PerformancePageCallbackRouter(), mock));
-          });
+      handlerMock = TestMock.fromClass(PerformancePageHandlerRemote);
 
-      apiProxy = PerformanceApiProxyImpl.getInstance();
+      PerformancePageApiProxyImpl.setInstance(new PerformancePageApiProxyImpl(
+        new PerformancePageCallbackRouter(),
+        handlerMock as {} as PerformancePageHandlerRemote));
+
+      apiProxy = PerformancePageApiProxyImpl.getInstance();
     });
 
     test('callback router is created', async () => {
@@ -48,7 +36,7 @@ suite('PerformanceApiProxyTest with mocked handler', () => {
 
   suite('without mocked handler', () => {
     test('getInstance constructs api proxy', async () => {
-      const apiProxy = PerformanceApiProxyImpl.getInstance();
+      const apiProxy = PerformancePageApiProxyImpl.getInstance();
       assertNotEquals(apiProxy, null);
       assertNotEquals(apiProxy.getCallbackRouter(), undefined);
     });

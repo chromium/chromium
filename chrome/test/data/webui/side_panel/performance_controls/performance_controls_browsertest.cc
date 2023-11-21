@@ -23,7 +23,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, App) {
   RunTest("side_panel/performance_controls/app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, PerformanceApiProxy) {
-  RunTest("side_panel/performance_controls/performance_api_proxy_test.js",
+IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest,
+                       PerformancePageApiProxy) {
+  RunTest("side_panel/performance_controls/performance_page_api_proxy_test.js",
           "mocha.run()");
 }

@@ -8,7 +8,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PerformanceApiProxy, PerformanceApiProxyImpl} from './performance_api_proxy.js';
+import {PerformancePageApiProxy, PerformancePageApiProxyImpl} from './performance_page_api_proxy.js';
 
 export interface PerformanceAppElement {
   $: {};
@@ -27,8 +27,8 @@ export class PerformanceAppElement extends PolymerElement {
     return {};
   }
 
-  private performanceApi_: PerformanceApiProxy =
-      PerformanceApiProxyImpl.getInstance();
+  private performanceApi_: PerformancePageApiProxy =
+      PerformancePageApiProxyImpl.getInstance();
 
   constructor() {
     super();

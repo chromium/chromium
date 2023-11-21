@@ -3,48 +3,49 @@
 // found in the LICENSE file.
 
 import {PerformancePageCallbackRouter, PerformancePageHandlerFactory, PerformancePageHandlerInterface, PerformancePageHandlerRemote} from './performance.mojom-webui.js';
+let instance: PerformancePageApiProxy | null = null;
 
-let instance: PerformanceApiProxy|null = null;
-
-export interface PerformanceApiProxy {
+export interface PerformancePageApiProxy {
   getCallbackRouter(): PerformancePageCallbackRouter;
   showUi(): void;
 }
 
-export class PerformanceApiProxyImpl implements PerformanceApiProxy {
+export class PerformancePageApiProxyImpl implements PerformancePageApiProxy {
   private callbackRouter: PerformancePageCallbackRouter;
   private handler: PerformancePageHandlerInterface;
 
   constructor(
-      callbackRouter: PerformancePageCallbackRouter,
-      handler: PerformancePageHandlerInterface) {
+    callbackRouter: PerformancePageCallbackRouter,
+    handler: PerformancePageHandlerInterface,
+  ) {
     this.callbackRouter = callbackRouter;
     this.handler = handler;
-  }
-
-  showUi() {
-    this.handler.showUI();
   }
 
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
-  static getInstance(): PerformanceApiProxy {
+  showUi() {
+    this.handler.showUI();
+  }
+
+  static getInstance(): PerformancePageApiProxy {
     if (!instance) {
       const callbackRouter = new PerformancePageCallbackRouter();
       const handler = new PerformancePageHandlerRemote();
 
       const factory = PerformancePageHandlerFactory.getRemote();
       factory.createPerformancePageHandler(
-          callbackRouter.$.bindNewPipeAndPassRemote(),
-          handler.$.bindNewPipeAndPassReceiver());
-      instance = new PerformanceApiProxyImpl(callbackRouter, handler);
+        callbackRouter.$.bindNewPipeAndPassRemote(),
+        handler.$.bindNewPipeAndPassReceiver());
+      instance = new PerformancePageApiProxyImpl(
+        callbackRouter, handler);
     }
     return instance;
   }
 
-  static setInstance(obj: PerformanceApiProxy) {
+  static setInstance(obj: PerformancePageApiProxy) {
     instance = obj;
   }
 }
