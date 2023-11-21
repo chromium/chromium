@@ -46,6 +46,7 @@ const CGFloat kStatusBarViewSpacing = 6.0f;
 const CGFloat kStatusBarWidth = 61.0f;
 const CGFloat kStatusBarHeight = 6.0f;
 const CGFloat kStatusBarCornerRadius = 3.0f;
+const CGFloat kStatusBarMarginFromBottom = 5.0f;
 
 }  // namespace
 
@@ -155,7 +156,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     _titleLabel.font =
-        CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   }
 }
 
@@ -163,7 +164,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.isAccessibilityElement = NO;
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   _titleLabel.numberOfLines = 2;
   _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -234,8 +235,11 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
     [_imageContainer.heightAnchor
         constraintEqualToAnchor:_imageContainer.widthAnchor],
-    [rightVerticalStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kIconContainerWidth],
+    [rightVerticalStackView.bottomAnchor
+        constraintEqualToAnchor:_imageContainer.bottomAnchor
+                       constant:-kStatusBarMarginFromBottom],
+    [rightVerticalStackView.topAnchor
+        constraintEqualToAnchor:_imageContainer.topAnchor],
     [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [horizontalStackView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor],
