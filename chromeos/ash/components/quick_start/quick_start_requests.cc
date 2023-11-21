@@ -74,6 +74,13 @@ constexpr char kDeviceTypeKey[] = "deviceType";
 // http://google3/java/com/google/android/gmscore/integ/client/smartdevice/src/com/google/android/gms/smartdevice/d2d/DeviceType.java;l=57
 constexpr int kDeviceTypeChrome = 7;
 
+// BootstrapState maps to values set here:
+// http://google3/java/com/google/android/gmscore/integ/modules/smartdevice/src/com/google/android/gms/smartdevice/d2d/data/BootstrapState.java
+constexpr int kBootstrapStateCancel = 1;
+
+// Key in BootstrapState message.
+constexpr char kBootstrapStateKey[] = "bootstrapState";
+
 }  // namespace
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
@@ -172,4 +179,13 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
 
   return message;
 }
+
+std::unique_ptr<QuickStartMessage> BuildBootstrapStateCancelMessage() {
+  std::unique_ptr<QuickStartMessage> message =
+      std::make_unique<QuickStartMessage>(
+          QuickStartMessageType::kBootstrapState);
+  message->GetPayload()->Set(kBootstrapStateKey, kBootstrapStateCancel);
+  return message;
+}
+
 }  // namespace ash::quick_start::requests

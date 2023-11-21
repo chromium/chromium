@@ -48,6 +48,7 @@ class TargetDeviceConnectionBroker {
     kTargetDeviceUpdate,
     kResponseTimeout,
     kUnknownError,
+    kConnectionLifecycleListenerDestroyed,
   };
 
   class AuthenticatedConnection {

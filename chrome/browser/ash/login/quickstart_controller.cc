@@ -56,6 +56,22 @@ bool IsConnectedToWiFi() {
   return nsh->ConnectedNetworkByType(NetworkTypePattern::WiFi()) != nullptr;
 }
 
+TargetDeviceBootstrapController::ConnectionClosedReason
+ConnectionClosedReasonFromAbortFlowReason(
+    QuickStartController::AbortFlowReason reason) {
+  switch (reason) {
+    case QuickStartController::AbortFlowReason::USER_CLICKED_CANCEL:
+      [[fallthrough]];
+    case QuickStartController::AbortFlowReason::USER_CLICKED_BACK:
+      return TargetDeviceBootstrapController::ConnectionClosedReason::
+          kUserAborted;
+    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
+      return TargetDeviceBootstrapController::ConnectionClosedReason::kComplete;
+    case QuickStartController::AbortFlowReason::ERROR:
+      return TargetDeviceBootstrapController::ConnectionClosedReason::
+          kUnknownError;
+  }
+}
 }  // namespace
 
 QuickStartController::QuickStartController() {
@@ -117,9 +133,11 @@ void QuickStartController::DetermineEntryPointVisibility(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuickStartController::AbortFlow() {
+void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
-  bootstrap_controller_->CloseOpenConnections();
+
+  bootstrap_controller_->CloseOpenConnections(
+      ConnectionClosedReasonFromAbortFlowReason(reason));
   bootstrap_controller_->StopAdvertising();
   ResetState();
 }
@@ -248,7 +266,7 @@ void QuickStartController::OnStatusChanged(
       // Indicates we've stopped advertising. No action required.
       return;
     case Step::ERROR:
-      AbortFlow();
+      AbortFlow(AbortFlowReason::ERROR);
       // Triggers a screen exit if there is a UiDelegate driving the UI.
       if (!ui_delegates_.empty()) {
         CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||

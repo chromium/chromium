@@ -15,6 +15,7 @@ enum class QuickStartMessageType {
   kBootstrapOptions,         // bootstrapOptions in message
   kBootstrapConfigurations,  // bootstrapConfiguration in message
   kQuickStartPayload,        // quickStartPayload in message
+  kBootstrapState,           // bootstrapState in message
 };
 
 std::ostream& operator<<(std::ostream& stream,

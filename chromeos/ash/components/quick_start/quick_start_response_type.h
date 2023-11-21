@@ -16,6 +16,7 @@ enum class QuickStartResponseType {
   kBootstrapConfigurations,
   kGetInfo,
   kAssertion,
+  kBootstrapStateCancel,
 };
 
 std::ostream& operator<<(std::ostream& stream,

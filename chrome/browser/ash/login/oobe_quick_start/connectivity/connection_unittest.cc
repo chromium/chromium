@@ -63,6 +63,9 @@ const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
 constexpr uint8_t kSuccess = 0x00;
 constexpr char kAuthToken[] = "auth_token";
 
+const char kBootstrapStateKey[] = "bootstrapState";
+constexpr int kBootstrapStateCancel = 1;
+
 // 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
     0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
@@ -198,11 +201,15 @@ class ConnectionTest : public testing::Test {
   void TestMessageMetrics(
       bool should_succeed,
       QuickStartMetrics::MessageType message_type,
-      absl::optional<QuickStartMetrics::MessageReceivedErrorCode> error_code) {
+      absl::optional<QuickStartMetrics::MessageReceivedErrorCode> error_code,
+      bool response_expected = true) {
     histogram_tester_.ExpectBucketCount("QuickStart.MessageSent.MessageType",
                                         message_type, 1);
+    int expected_message_received_count = response_expected ? 1 : 0;
     histogram_tester_.ExpectBucketCount(
-        "QuickStart.MessageReceived.DesiredMessageType", message_type, 1);
+        "QuickStart.MessageReceived.DesiredMessageType", message_type,
+        expected_message_received_count);
+
     switch (message_type) {
       case QuickStartMetrics::MessageType::kWifiCredentials:
         histogram_tester_.ExpectBucketCount(
@@ -276,6 +283,16 @@ class ConnectionTest : public testing::Test {
               "QuickStart.MessageReceived.Assertion.ErrorCode",
               error_code.value(), 1);
         }
+        break;
+      case QuickStartMetrics::MessageType::kBootstrapStateCancel:
+        // We don't expect to receive any response back after sending a
+        // BootstrapStateCancel message.
+        histogram_tester_.ExpectBucketCount(
+            "QuickStart.MessageReceived.BootstrapStateCancel.Succeeded",
+            should_succeed, 0);
+        histogram_tester_.ExpectTotalCount(
+            "QuickStart.MessageReceived.BootstrapStateCancel.ListenDuration",
+            0);
         break;
     }
   }
@@ -932,6 +949,39 @@ TEST_F(ConnectionTest, MetricsEmittedOnEmptyResponse) {
   for (const auto response_type : response_types) {
     EmulateEmptyResponseReceived(response_type);
   }
+}
+
+TEST_F(ConnectionTest, CloseFromUserAbortedNotifiesPhoneWhenAuthenticated) {
+  MarkConnectionAuthenticated();
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+
+  std::vector<uint8_t> notify_source_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kBootstrapState);
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+
+  EXPECT_EQ(parsed_payload.FindInt(kBootstrapStateKey), kBootstrapStateCancel);
+  TestMessageMetrics(
+      /*should_succeed=*/true,
+      /*message_type=*/QuickStartMetrics::MessageType::kBootstrapStateCancel,
+      /*error_code=*/absl::nullopt, /*response_expected=*/false);
+}
+
+TEST_F(ConnectionTest,
+       CloseFromUserAbortedDoesNotNotifyPhoneWhenUnauthenticated) {
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+
+  std::vector<uint8_t> notify_source_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kBootstrapState);
+  EXPECT_FALSE(read_result.has_value());
 }
 
 }  // namespace ash::quick_start

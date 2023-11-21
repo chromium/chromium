@@ -146,7 +146,8 @@ class NetworkScreen : public BaseScreen,
       chromeos::network_config::mojom::StartConnectResult result,
       const std::string& message);
 
-  void ExitQuickStartFlow();
+  void ExitQuickStartFlow(
+      quick_start::QuickStartController::AbortFlowReason reason);
   void ShowStepsWhenQuickStartOngoing();
 
   // Skip this screen or automatically continue if the device is connected to

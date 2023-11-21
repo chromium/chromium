@@ -61,7 +61,8 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() {
   StopAdvertising();
-  CloseOpenConnections();
+  CloseOpenConnections(
+      ConnectionClosedReason::kConnectionLifecycleListenerDestroyed);
   quick_start_connectivity_service_->Cleanup();
 }
 
@@ -123,11 +124,11 @@ void TargetDeviceBootstrapController::StopAdvertising() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TargetDeviceBootstrapController::CloseOpenConnections() {
+void TargetDeviceBootstrapController::CloseOpenConnections(
+    ConnectionClosedReason reason) {
   // Close any existing open connection.
   if (authenticated_connection_.MaybeValid()) {
-    authenticated_connection_->Close(
-        TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+    authenticated_connection_->Close(reason);
     authenticated_connection_.reset();
   }
 

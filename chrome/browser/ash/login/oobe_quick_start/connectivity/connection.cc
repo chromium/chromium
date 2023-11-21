@@ -109,6 +109,16 @@ void Connection::Close(
     return;
   }
 
+  // TODO(b/310241114): Notify phone when reason ==
+  // ConnectionClosedReason::kComplete.
+  if (authenticated_ &&
+      reason ==
+          TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted) {
+    // TODO(b/306422046): Verify the message is received despite closing the
+    // NearbyConnection immediately after.
+    NotifyPhoneUserAborted();
+  }
+
   connection_state_ = State::kClosing;
 
   // Update the disconnect listener to treat disconnections as the reason listed
@@ -298,6 +308,18 @@ void Connection::SendMessageAndDiscardResponse(
       timeout);
 }
 
+void Connection::SendMessageWithoutResponse(
+    std::unique_ptr<QuickStartMessage> message,
+    QuickStartResponseType message_type) {
+  std::string json_serialized_payload;
+  CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
+                                &json_serialized_payload));
+  quick_start_metrics_.RecordMessageSent(
+      QuickStartMetrics::MapResponseToMessageType(message_type));
+  nearby_connection_->Write(std::vector<uint8_t>(
+      json_serialized_payload.begin(), json_serialized_payload.end()));
+}
+
 void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
                                           QuickStartResponseType response_type,
                                           ConnectionResponseCallback callback,
@@ -420,6 +442,11 @@ void Connection::OnUserVerificationPacketDecoded(
 
 base::Value::Dict Connection::GetPrepareForUpdateInfo() {
   return session_context_.GetPrepareForUpdateInfo();
+}
+
+void Connection::NotifyPhoneUserAborted() {
+  SendMessageWithoutResponse(requests::BuildBootstrapStateCancelMessage(),
+                             QuickStartResponseType::kBootstrapStateCancel);
 }
 
 void Connection::DecodeQuickStartMessage(

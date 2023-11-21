@@ -57,6 +57,8 @@ class TargetDeviceBootstrapController
     FETCHING_CHALLENGE_BYTES_FAILED,
   };
 
+  using ConnectionClosedReason =
+      TargetDeviceConnectionBroker::ConnectionClosedReason;
   using Pin = std::string;
 
   using Payload = absl::variant<absl::monostate,
@@ -127,7 +129,7 @@ class TargetDeviceBootstrapController
   void StartAdvertisingAndMaybeGetQRCode();
 
   void StopAdvertising();
-  void CloseOpenConnections();
+  void CloseOpenConnections(ConnectionClosedReason reason);
 
   // A user may initiate Quick Start then have to download an update and reboot.
   // This function persists necessary data and notifies the source device so

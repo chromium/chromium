@@ -155,6 +155,9 @@ QuickStartDecoder::DoDecodeQuickStartMessage(const std::vector<uint8_t>& data) {
     case QuickStartMessageType::kBootstrapOptions:
       NOTIMPLEMENTED();
       break;
+    case QuickStartMessageType::kBootstrapState:
+      NOTIMPLEMENTED();
+      break;
     case QuickStartMessageType::kBootstrapConfigurations:
       return DecodeBootstrapConfigurations(*payload);
     case QuickStartMessageType::kQuickStartPayload:

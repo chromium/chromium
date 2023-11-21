@@ -40,6 +40,8 @@ constexpr const char kMessageReceivedGetInfo[] =
     "QuickStart.MessageReceived.GetInfo";
 constexpr const char kMessageReceivedAssertion[] =
     "QuickStart.MessageReceived.Assertion";
+constexpr const char kMessageReceivedBootstrapStateCancel[] =
+    "QuickStart.MessageReceived.BootstrapStateCancel";
 constexpr const char kMessageReceivedDesiredMessageTypeName[] =
     "QuickStart.MessageReceived.DesiredMessageType";
 constexpr const char kMessageSentMessageTypeName[] =
@@ -74,6 +76,8 @@ std::string MapMessageTypeToMetric(
       return kMessageReceivedGetInfo;
     case QuickStartMetrics::MessageType::kAssertion:
       return kMessageReceivedAssertion;
+    case QuickStartMetrics::MessageType::kBootstrapStateCancel:
+      return kMessageReceivedBootstrapStateCancel;
   }
 }
 
@@ -95,6 +99,8 @@ QuickStartMetrics::MessageType QuickStartMetrics::MapResponseToMessageType(
       return MessageType::kGetInfo;
     case QuickStartResponseType::kAssertion:
       return MessageType::kAssertion;
+    case QuickStartResponseType::kBootstrapStateCancel:
+      return MessageType::kBootstrapStateCancel;
   }
 }
 

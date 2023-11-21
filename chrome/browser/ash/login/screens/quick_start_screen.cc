@@ -81,7 +81,8 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
     controller_->DetachFrontend(this);
-    controller_->AbortFlow();
+    controller_->AbortFlow(quick_start::QuickStartController::AbortFlowReason::
+                               USER_CLICKED_CANCEL);
     ExitScreen();
   } else {
     BaseScreen::OnUserAction(args);

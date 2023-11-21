@@ -33,6 +33,8 @@ cbor::Value GenerateGetAssertionRequest(
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     uint64_t session_id,
     const base::span<uint8_t, 32> shared_secret);
+
+std::unique_ptr<QuickStartMessage> BuildBootstrapStateCancelMessage();
 }  // namespace ash::quick_start::requests
 
 #endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H

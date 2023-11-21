@@ -18,6 +18,7 @@ constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
 constexpr char kBootstrapConfigurationsPayloadKey[] = "bootstrapConfigurations";
 constexpr char kBootstrapOptionsPayloadKey[] = "bootstrapOptions";
 constexpr char kQuickStartPayloadKey[] = "quickStartPayload";
+constexpr char kBootstrapStateKey[] = "bootstrapState";
 
 std::string GetStringKeyForQuickStartMessageType(
     ash::quick_start::QuickStartMessageType message_type) {
@@ -32,6 +33,9 @@ std::string GetStringKeyForQuickStartMessageType(
       return kBootstrapOptionsPayloadKey;
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
       return kQuickStartPayloadKey;
+    case ash::quick_start::QuickStartMessageType::kBootstrapState:
+      // For BootstrapState, use the top-level payload.
+      return std::string();
   }
 }
 
@@ -41,6 +45,7 @@ bool IsMessagePayloadBase64Encoded(
     case ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload:
     case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
+    case ash::quick_start::QuickStartMessageType::kBootstrapState:
       return false;
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
       return true;
@@ -136,6 +141,13 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
     return std::make_unique<QuickStartMessage>(
         ash::quick_start::QuickStartMessageType::kBootstrapOptions,
         payload->Clone());
+  } else if (message.FindInt(kBootstrapStateKey)) {
+    // BootstrapState needs to have the lowest precedence since other messages
+    // may also contain a BootstrapState payload. The BootstrapState payload in
+    // those messages may be safely ignored.
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kBootstrapState,
+        message.Clone());
   } else {
     LOG(ERROR) << "Message does not contain known payload.";
     return base::unexpected(

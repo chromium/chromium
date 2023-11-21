@@ -21,6 +21,9 @@ std::ostream& operator<<(std::ostream& stream,
     case QuickStartMessageType::kQuickStartPayload:
       stream << "QuickStartPayload";
       break;
+    case QuickStartMessageType::kBootstrapState:
+      stream << "BootstrapState";
+      break;
   }
   return stream;
 }
