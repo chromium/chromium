@@ -4,7 +4,6 @@
 
 #include "net/first_party_sets/global_first_party_sets.h"
 
-#include <set>
 #include <tuple>
 
 #include "base/containers/contains.h"
@@ -19,6 +18,7 @@
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -183,12 +183,18 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
 }
 
 void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
-    const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries) {
+    const LocalSetDeclaration& local_set_declaration) {
   CHECK(manual_config_.empty());
+  if (local_set_declaration.empty()) {
+    // Nothing to do.
+    return;
+  }
+
   // We handle the manually-specified set the same way as we handle
   // replacement enterprise policy sets.
   manual_config_ = ComputeConfig(
-      /*replacement_sets=*/{manual_entries}, /*addition_sets=*/{});
+      /*replacement_sets=*/{local_set_declaration.entries()},
+      /*addition_sets=*/{});
 }
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(

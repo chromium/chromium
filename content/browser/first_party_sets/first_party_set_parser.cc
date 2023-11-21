@@ -27,6 +27,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -767,6 +768,43 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
 
   return FirstPartySetParser::PolicyParseResult(std::move(set_lists),
                                                 context.warnings());
+}
+
+// static
+net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
+    const std::string& switch_value) {
+  std::istringstream stream(switch_value);
+
+  SetsAndAliases parsed = ParseSetsFromStream(stream, /*emit_errors=*/true,
+                                              /*emit_metrics*/ false);
+
+  SetsMap entries = std::move(parsed.first);
+  Aliases aliases = std::move(parsed.second);
+
+  if (entries.empty()) {
+    return net::LocalSetDeclaration();
+  }
+
+  const net::SchemefulSite& primary = entries.begin()->second.primary();
+
+  if (base::ranges::any_of(entries,
+                           [&primary](const SetsMap::value_type& pair) {
+                             return pair.second.primary() != primary;
+                           })) {
+    // More than one set was provided. That is (currently) unsupported.
+    LOG(ERROR) << "Ignoring use-related-website-set switch due to multiple set "
+                  "declarations.";
+    return net::LocalSetDeclaration();
+  }
+
+  for (const auto& [alias, canonical] : aliases) {
+    auto it = entries.find(canonical);
+    CHECK(it != entries.end());
+    bool inserted = entries.emplace(alias, it->second).second;
+    CHECK(inserted);
+  }
+
+  return net::LocalSetDeclaration(std::move(entries));
 }
 
 std::ostream& operator<<(

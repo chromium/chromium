@@ -2403,7 +2403,6 @@ test("content_unittests") {
     "../browser/first_party_sets/first_party_sets_handler_database_helper_unittest.cc",
     "../browser/first_party_sets/first_party_sets_handler_impl_instance_unittest.cc",
     "../browser/first_party_sets/first_party_sets_loader_unittest.cc",
-    "../browser/first_party_sets/local_set_declaration_unittest.cc",
     "../browser/font_access/font_access_manager_unittest.cc",
     "../browser/font_access/font_enumeration_data_source_unittest.cc",
     "../browser/generic_sensor/web_contents_sensor_provider_proxy_unittest.cc",

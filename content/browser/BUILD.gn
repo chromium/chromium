@@ -1002,8 +1002,6 @@ source_set("browser") {
     "first_party_sets/first_party_sets_loader.h",
     "first_party_sets/first_party_sets_site_data_remover.cc",
     "first_party_sets/first_party_sets_site_data_remover.h",
-    "first_party_sets/local_set_declaration.cc",
-    "first_party_sets/local_set_declaration.h",
     "font_access/font_access_manager.cc",
     "font_access/font_access_manager.h",
     "font_access/font_enumeration_cache.cc",

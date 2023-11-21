@@ -14,6 +14,7 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,9 +107,9 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
       },
       /*aliases=*/{{b_cctld, b}});
 
-  original.ApplyManuallySpecifiedSet(
+  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
       {{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
-       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}});
+       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}}));
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -138,9 +139,9 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
       },
       /*aliases=*/{{b_cctld, b}});
 
-  original.ApplyManuallySpecifiedSet(
+  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
       {{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
-       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}});
+       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}}));
 
   net::GlobalFirstPartySets round_tripped;
 

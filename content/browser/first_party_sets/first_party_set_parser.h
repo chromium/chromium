@@ -16,6 +16,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -83,6 +84,9 @@ class CONTENT_EXPORT FirstPartySetParser {
   // returns an error.
   [[nodiscard]] static PolicyParseResult ParseSetsFromEnterprisePolicy(
       const base::Value::Dict& policy);
+
+  [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
+      const std::string& switch_value);
 };
 
 CONTENT_EXPORT std::ostream& operator<<(

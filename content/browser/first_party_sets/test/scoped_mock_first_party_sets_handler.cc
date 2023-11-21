@@ -49,7 +49,7 @@ ScopedMockFirstPartySetsHandler::FindEntry(
 
 void ScopedMockFirstPartySetsHandler::Init(
     const base::FilePath& user_data_dir,
-    const LocalSetDeclaration& local_set) {}
+    const net::LocalSetDeclaration& local_set) {}
 
 [[nodiscard]] absl::optional<net::GlobalFirstPartySets>
 ScopedMockFirstPartySetsHandler::GetSets(

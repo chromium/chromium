@@ -1623,4 +1623,53 @@ TEST_F(FirstPartySetParserTest,
           {}));
 }
 
+TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_MultipleSets) {
+  EXPECT_THAT(FirstPartySetParser::ParseFromCommandLine(
+                  R"({"primary": "https://primary1.test",)"
+                  R"("associatedSites": ["https://associated1.test"]})"
+                  "\n"
+                  R"({"primary": "https://primary2.test",)"
+                  R"("associatedSites": ["https://associated2.test"]})"),
+              IsEmpty());
+}
+
+TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_Singleton) {
+  EXPECT_THAT(FirstPartySetParser::ParseFromCommandLine(
+                  R"({"primary": "https://primary1.test"})"),
+              IsEmpty());
+}
+
+TEST(FirstPartySetParser,
+     ParseFromCommandLine_Valid_MultipleSubsetsAndAliases) {
+  net::SchemefulSite primary(GURL("https://primary.test"));
+  net::SchemefulSite associated1(GURL("https://associated1.test"));
+  net::SchemefulSite associated2(GURL("https://associated2.test"));
+  net::SchemefulSite associated2_cctld(GURL("https://associated2.cctld"));
+  net::SchemefulSite service(GURL("https://service.test"));
+
+  EXPECT_THAT(
+      FirstPartySetParser::ParseFromCommandLine(
+          R"({"primary": "https://primary.test",)"
+          R"("associatedSites":)"
+          R"(["https://associated1.test", "https://associated2.test"],)"
+          R"("serviceSites": ["https://service.test"],)"
+          R"("ccTLDs": {)"
+          R"(  "https://associated2.test": ["https://associated2.cctld"])"
+          R"(})"
+          R"(})")
+          .entries(),
+      UnorderedElementsAre(
+          Pair(primary, net::FirstPartySetEntry(
+                            primary, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated1,
+               net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)),
+          Pair(associated2,
+               net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)),
+          Pair(service, net::FirstPartySetEntry(
+                            primary, net::SiteType::kService, absl::nullopt)),
+          Pair(associated2_cctld,
+               net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                       1))));
+}
+
 }  // namespace content

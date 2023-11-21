@@ -21,7 +21,6 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/browser/first_party_sets/first_party_sets_site_data_remover.h"
-#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -31,6 +30,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -190,7 +190,7 @@ FirstPartySetsHandlerImplInstance::GetSets(
 
 void FirstPartySetsHandlerImplInstance::Init(
     const base::FilePath& user_data_dir,
-    const LocalSetDeclaration& local_set) {
+    const net::LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_) {
     return;

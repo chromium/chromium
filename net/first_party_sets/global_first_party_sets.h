@@ -5,8 +5,6 @@
 #ifndef NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
 #define NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
 
-#include <set>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
@@ -16,6 +14,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -86,10 +85,9 @@ class NET_EXPORT GlobalFirstPartySets {
       const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Modifies this instance such that it will respect the given
-  // manually-specified set. `manual_entries` should contain entries for aliases
-  // as well as "canonical" sites.
+  // manually-specified set.
   void ApplyManuallySpecifiedSet(
-      const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries);
+      const LocalSetDeclaration& local_set_declaration);
 
   // Directly sets this instance's manual config. This is unsafe, because it
   // assumes that the config was computed by this instance (or one with
