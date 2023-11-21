@@ -63,11 +63,6 @@ BASE_FEATURE(kWebAuthnAndroidCredManForHybrid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Added in M115. Remove in or after M118.
-BASE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized,
-             "WebAuthenticationPinRequiredMeansNotRecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Added in M115. Remove in or after M118
 BASE_FEATURE(kWebAuthnHybridLinkWithoutNotifications,
              "WebAuthenticationHybridLinkWithoutNotifications",

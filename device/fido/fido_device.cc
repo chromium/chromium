@@ -88,9 +88,7 @@ bool FidoDevice::IsStatusForUnrecognisedCredentialID(
          status == CtapDeviceResponseCode::kCtap2ErrRequestTooLarge ||
          // Some alwaysUv devices return this, even for up=false. See
          // crbug.com/1443039.
-         (base::FeatureList::IsEnabled(
-              kWebAuthnPinRequiredMeansNotRecognized) &&
-          status == CtapDeviceResponseCode::kCtap2ErrPinRequired);
+         status == CtapDeviceResponseCode::kCtap2ErrPinRequired;
 }
 
 }  // namespace device
