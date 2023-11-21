@@ -8,6 +8,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -19,7 +20,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/table_layout_view.h"
 
 namespace arc::input_overlay {
@@ -32,6 +36,9 @@ constexpr int kHorizontalInsets = 16;
 
 constexpr int kNameTagAndLabelsPaddingForButtonOptionsMenu = 20;
 constexpr int kNameTagAndLabelsPaddingForEditingList = 12;
+
+constexpr int kFocusRingHaloInset = -5;
+constexpr int kFocusRingHaloThickness = 2;
 
 }  // namespace
 
@@ -83,6 +90,11 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
       (for_editing_list ? kEditingListWidth : kButtonOptionsMenuWidth) -
       2 * kEditingListInsideBorderInsets - 2 * kHorizontalInsets -
       padding_width - labels_view_->GetPreferredSize().width());
+
+  // Set highlight path.
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(), /*corner_radius=*/kCornerRadius));
 }
 
 ActionEditView::~ActionEditView() = default;
@@ -99,6 +111,22 @@ void ActionEditView::OnActionInputBindingUpdated() {
 
 void ActionEditView::OnClicked() {
   ClickCallback();
+}
+
+void ActionEditView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  // Set up highlight and focus ring for `DeleteButton`.
+  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                        /*highlight_on_hover=*/true,
+                                        /*highlight_on_focus=*/false);
+
+  // `StyleUtil::SetUpInkDropForButton()` reinstalls the focus ring, so it
+  // needs to set the focus ring size after calling
+  // `StyleUtil::SetUpInkDropForButton()`.
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHaloInset(kFocusRingHaloInset);
+  focus_ring->SetHaloThickness(kFocusRingHaloThickness);
 }
 
 BEGIN_METADATA(ActionEditView)

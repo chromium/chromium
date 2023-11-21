@@ -53,6 +53,9 @@ class ActionEditView : public views::Button {
   friend class EditLabelTest;
 
   void OnClicked();
+
+  // views::View:
+  void OnThemeChanged() override;
 };
 
 }  // namespace arc::input_overlay
