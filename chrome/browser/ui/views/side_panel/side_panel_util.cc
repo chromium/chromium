@@ -238,3 +238,20 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
       {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".",
        is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
 }
+
+actions::ActionItem::InvokeActionCallback
+SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
+                                                   Browser* browser) {
+  return base::BindRepeating(
+      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
+         actions::ActionInvocationContext context) {
+        const SidePanelOpenTrigger open_trigger =
+            static_cast<SidePanelOpenTrigger>(
+                context.GetProperty(kSidePanelOpenTriggerKey));
+        CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
+        CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
+        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
+                                                               open_trigger);
+      },
+      key, browser);
+}

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
@@ -145,21 +146,10 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
   actions::ActionItem* root_action_item = browser_actions->root_action_item();
   root_action_item->AddChild(
       actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](scoped_refptr<const Extension> extension, Browser* browser,
-                 actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                const SidePanelOpenTrigger open_trigger =
-                    static_cast<SidePanelOpenTrigger>(
-                        context.GetProperty(kSidePanelOpenTriggerKey));
-                CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
-                CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-                SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                        extension->id()),
-                    open_trigger);
-              },
-              base::WrapRefCounted(extension), browser_))
+          SidePanelUtil::CreateToggleSidePanelActionCallback(
+              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
+                                  extension->id()),
+              browser_))
           .SetText(base::UTF8ToUTF16(extension->short_name()))
           .SetActionId(extension_action_id)
           .SetProperty(actions::kActionItemPinnableKey, true)

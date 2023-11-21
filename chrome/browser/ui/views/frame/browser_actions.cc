@@ -6,11 +6,13 @@
 
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,6 +28,8 @@
 #include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/performance_manager/public/features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_notes/user_notes_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -48,19 +53,8 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
 
   return actions::ActionItem::Builder(
-             base::BindRepeating(
-                 [](SidePanelEntryId id, Browser* browser,
-                    actions::ActionItem* item,
-                    actions::ActionInvocationContext context) {
-                   const SidePanelOpenTrigger open_trigger =
-                       static_cast<SidePanelOpenTrigger>(
-                           context.GetProperty(kSidePanelOpenTriggerKey));
-                   CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
-                   CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-                   SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
-                       SidePanelEntry::Key(id), open_trigger);
-                 },
-                 id, browser))
+             SidePanelUtil::CreateToggleSidePanelActionCallback(
+                 SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
@@ -194,4 +188,12 @@ void BrowserActions::InitializeBrowserActions() {
               /*include_runtime_checks=*/true));
     }
   }
+
+  // Create the lens action item. The icon and text are set appropriately in the
+  // lens side panel coordinator. They have default values here.
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
+                      vector_icons::kImageSearchIcon, kActionSidePanelShowLens,
+                      &(browser_.get()), false)
+          .Build());
 }

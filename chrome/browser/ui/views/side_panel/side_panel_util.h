@@ -43,6 +43,9 @@ class SidePanelUtil {
   static SidePanelCoordinator* GetSidePanelCoordinatorForBrowser(
       Browser* browser);
 
+  static actions::ActionItem::InvokeActionCallback
+  CreateToggleSidePanelActionCallback(SidePanelEntryKey key, Browser* browser);
+
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelShowOrChangeEntryTrigger(
