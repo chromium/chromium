@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_INTERNALS_HANDLER_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -66,8 +68,8 @@ class CONTENT_EXPORT PrivateAggregationInternalsHandlerImpl
   void OnRequestStorageModified() override;
   void OnReportHandled(
       const AggregatableReportRequest& request,
-      absl::optional<AggregationServiceStorage::RequestId> id,
-      const absl::optional<AggregatableReport>& report,
+      std::optional<AggregationServiceStorage::RequestId> id,
+      const std::optional<AggregatableReport>& report,
       base::Time actual_report_time,
       AggregationServiceObserver::ReportStatus result) override;
 

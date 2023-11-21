@@ -5,6 +5,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "sql/database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -95,7 +95,7 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
               kBudgetsTableName)),
       budgets_data_(table_manager_,
                     budgets_table_.get(),
-                    /*max_num_entries=*/absl::nullopt,
+                    /*max_num_entries=*/std::nullopt,
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(

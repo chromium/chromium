@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +43,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -91,7 +91,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
                      .Get()))),
         std::move(keyset));
 
-    absl::optional<std::vector<uint8_t>> private_key =
+    std::optional<std::vector<uint8_t>> private_key =
         base::Base64Decode(ReadStringFromFile(
             input_dir_.AppendASCII("private_key.txt"), /*trim=*/true));
     ASSERT_TRUE(private_key);
@@ -134,9 +134,9 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
             /*report_id=*/
             base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
             /*reporting_origin=*/kExampleOrigin, api_identifier,
-            /*context_id=*/absl::nullopt,
+            /*context_id=*/std::nullopt,
             // TODO(alexmt): Generate golden reports for multiple coordinators.
-            /*aggregation_coordinator_origin=*/absl::nullopt,
+            /*aggregation_coordinator_origin=*/std::nullopt,
             std::move(contributions));
 
     base::RunLoop run_loop;
@@ -145,7 +145,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
         std::move(actual_report),
         base::BindLambdaForTesting(
             [&](AggregatableReportRequest,
-                absl::optional<AggregatableReport> assembled_report,
+                std::optional<AggregatableReport> assembled_report,
                 AggregationService::AssemblyStatus status) {
               EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
               ASSERT_TRUE(assembled_report);
@@ -179,14 +179,14 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
       base::Value::Dict actual_report,
       base::Value::Dict expected_report,
       const std::string& base64_encoded_expected_cleartext_payload) {
-    absl::optional<base::Value> actual_payloads =
+    std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
     if (!actual_payloads) {
       return testing::AssertionFailure() << kKeyAggregationServicePayloads
                                          << " not present in the actual report";
     }
 
-    absl::optional<base::Value> expected_payloads =
+    std::optional<base::Value> expected_payloads =
         expected_report.Extract(kKeyAggregationServicePayloads);
     if (!expected_payloads) {
       return testing::AssertionFailure()
@@ -258,14 +258,14 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
 
     static constexpr char kKeyPayload[] = "payload";
 
-    absl::optional<base::Value> actual_encrypted_payload =
+    std::optional<base::Value> actual_encrypted_payload =
         actual_payload->Extract(kKeyPayload);
     if (!actual_encrypted_payload) {
       return testing::AssertionFailure()
              << kKeyPayload << " not present in the actual report";
     }
 
-    absl::optional<base::Value> expected_encrypted_payload =
+    std::optional<base::Value> expected_encrypted_payload =
         expected_payload->Extract(kKeyPayload);
     if (!expected_encrypted_payload) {
       return testing::AssertionFailure()
@@ -315,7 +315,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   std::vector<uint8_t> DecryptPayload(
       const std::string& base64_encoded_encrypted_payload,
       const std::string& shared_info) {
-    absl::optional<std::vector<uint8_t>> encrypted_payload =
+    std::optional<std::vector<uint8_t>> encrypted_payload =
         base::Base64Decode(base64_encoded_encrypted_payload);
     if (!encrypted_payload) {
       return {};

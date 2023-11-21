@@ -5,6 +5,7 @@
 #include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   AggregatableReportRequest request_1 =
       aggregation_service::CreateExampleRequest();
-  absl::optional<AggregatableReport> report_1 =
+  std::optional<AggregatableReport> report_1 =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request_1, {hpke_key.GetPublicKey()});
 
@@ -168,13 +168,13 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       aggregation_service::CreateExampleRequest();
   aggregation_service().NotifyReportHandled(
       std::move(request_2), AggregationServiceStorage::RequestId(2),
-      /*report=*/absl::nullopt,
+      /*report=*/std::nullopt,
       /*report_handled_time=*/now + base::Hours(2),
       AggregationServiceObserver::ReportStatus::kFailedToAssemble);
 
   AggregatableReportRequest request_3 =
       aggregation_service::CreateExampleRequest();
-  absl::optional<AggregatableReport> report_3 =
+  std::optional<AggregatableReport> report_3 =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request_3, {hpke_key.GetPublicKey()});
 
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, {hpke_key.GetPublicKey()});
 

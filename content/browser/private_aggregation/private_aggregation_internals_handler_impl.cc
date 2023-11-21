@@ -5,6 +5,7 @@
 #include "content/browser/private_aggregation/private_aggregation_internals_handler_impl.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,10 +45,10 @@ PrivateAggregationManager* GetPrivateAggregationManager(
 private_aggregation_internals::mojom::WebUIAggregatableReportPtr
 CreateWebUIAggregatableReport(
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> id,
-    absl::optional<base::Time> actual_report_time,
+    std::optional<AggregationServiceStorage::RequestId> id,
+    std::optional<base::Time> actual_report_time,
     private_aggregation_internals::mojom::ReportStatus status,
-    const absl::optional<AggregatableReport>& report) {
+    const std::optional<AggregatableReport>& report) {
   std::vector<private_aggregation_internals::mojom::
                   AggregatableHistogramContributionPtr>
       contributions;
@@ -101,9 +102,9 @@ void ForwardReportsToWebUI(
        requests_and_ids) {
     web_ui_reports.push_back(CreateWebUIAggregatableReport(
         request_and_id.request, request_and_id.id,
-        /*actual_report_time=*/absl::nullopt,
+        /*actual_report_time=*/std::nullopt,
         private_aggregation_internals::mojom::ReportStatus::kPending,
-        /*report=*/absl::nullopt));
+        /*report=*/std::nullopt));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
@@ -192,8 +193,8 @@ void PrivateAggregationInternalsHandlerImpl::OnRequestStorageModified() {
 
 void PrivateAggregationInternalsHandlerImpl::OnReportHandled(
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> id,
-    const absl::optional<AggregatableReport>& report,
+    std::optional<AggregationServiceStorage::RequestId> id,
+    const std::optional<AggregatableReport>& report,
     base::Time actual_report_time,
     AggregationServiceObserver::ReportStatus status) {
   private_aggregation_internals::mojom::ReportStatus web_report_status;

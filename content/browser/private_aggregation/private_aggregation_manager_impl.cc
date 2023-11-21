@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -106,9 +106,9 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    absl::optional<std::string> context_id,
-    absl::optional<base::TimeDelta> timeout,
-    absl::optional<url::Origin> aggregation_coordinator_origin,
+    std::optional<std::string> context_id,
+    std::optional<base::TimeDelta> timeout,
+    std::optional<url::Origin> aggregation_coordinator_origin,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   return host_->BindNewReceiver(
@@ -238,7 +238,7 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
             api_for_budgeting,
             /*is_immediate_debug_report=*/true);
 
-    absl::optional<AggregatableReportRequest> debug_request =
+    std::optional<AggregatableReportRequest> debug_request =
         AggregatableReportRequest::Create(
             report_request.payload_contents(),
             report_request.shared_info().Clone(),
