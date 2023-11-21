@@ -11,9 +11,13 @@ option java_outer_classname = "ModelQualityMetadataProto";
 
 package optimization_guide.proto;
 
+import "third_party/metrics_proto/system_profile.proto";
+
 // Contains metadata about a specific feature's AiLoggingData (e.g. training
 // opt-out, etc.).
-message LoggingMetadata {}
+message LoggingMetadata {
+  metrics.SystemProfileProto system_profile = 1;
+}
 
 // Data about model execution. This includes information about whether it was
 // done on a server or on a device. This includes an ID that can be mapped to
