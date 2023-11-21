@@ -25667,6 +25667,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="kDbCleanOutdatedDataError"/>
 </enum>
 
+<enum name="FederatedTrainingConditionResult">
+  <int value="0" label="kPass"/>
+  <int value="1" label="kFailed"/>
+  <int value="2" label="kLowBattery"/>
+  <int value="3" label="kBatterySaverMode"/>
+  <int value="4" label="kMeteredNetwork"/>
+  <int value="5" label="kMemoryPressureHigh"/>
+</enum>
+
 <enum name="FeedbackAppContactUserConsentType">
   <int value="0" label="kNoEmail"/>
   <int value="1" label="kYes"/>

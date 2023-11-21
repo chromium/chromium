@@ -51,6 +51,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FederatedService.TrainingConditionToContinue"
+    enum="FederatedTrainingConditionResult" expires_after="2024-04-28">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    Logs training condition check results during a federated round, including
+    the overall result (Pass/Failed) and particular reasons of failure. Libfcp
+    calls training condition check periodically during a round and once the
+    check fails, it aborts the round. Interpret the histogram with the following
+    formulas:
+
+    #all_calls = #Pass + #Failed; Failure rate = #Failed / (#Pass + #Failed)
+
+    weight of one reason = #this_reason / #Failed
+
+    Note: in one check, all failed conditions are logged as reasons (v.s. the
+    first failed one only). Therefore the sum of all reasons can be greater than
+    the number of Failed.
+  </summary>
+</histogram>
+
+<histogram name="FederatedService.TrainingConditionToStart"
+    enum="FederatedTrainingConditionResult" expires_after="2024-04-28">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    Logs training condition check results before a federated round, including
+    the overall result (Pass/Failed) and particular reasons of failure.
+    Interpret the histogram with the following formulas:
+
+    #all_calls = #Pass + #Failed; Failure rate = #Failed / (#Pass + #Failed)
+
+    weight of one reason = #this_reason / #Failed
+
+    Note: in one check, all failed conditions are logged as reasons (v.s. the
+    first failed one only). Therefore the sum of all reasons can be greater than
+    the number of Failed.
+  </summary>
+</histogram>
+
 <histogram name="FederatedService.{Population}.CpuTimeMicrosec"
     units="microseconds" expires_after="2024-04-28">
   <owner>amoylan@chromium.org</owner>
