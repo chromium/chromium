@@ -105,10 +105,15 @@ ComposeSession::~ComposeSession() {
     modeling_log_entry_
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
+    // Quality log would automaticlaly be uploaded on the destruction of
+    // modeling_log_entry_. However in order to more easily test the qulity
+    // uploads we are calling upload directly here.
+    if (model_quality_logs_uploader_.has_value()) {
+      model_quality_logs_uploader_.value()->UploadModelQualityLogs(
+          std::move(modeling_log_entry_));
     }
-    // Ensure that log gets uploaded on destruction.
-    modeling_log_entry_.reset();
   }
+}
 
 void ComposeSession::Bind(
     mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
@@ -133,7 +138,12 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
-
+  // Upload any previously existing modeling data.
+  if (modeling_log_entry_ && model_quality_logs_uploader_.has_value()) {
+    model_quality_logs_uploader_.value()->UploadModelQualityLogs(
+        std::move(modeling_log_entry_));
+    modeling_log_entry_ = nullptr;
+  }
   // Increase compose count regradless of status of request.
   compose_count_ += 1;
 
@@ -182,18 +192,17 @@ void ComposeSession::ComposeWithSession(const std::string& input,
     *request.mutable_generate_params() = std::move(generate_params);
   }
 
-  auto request_timer = std::make_unique<base::ElapsedTimer>();
+  base::ElapsedTimer request_timer;
   request_id_++;
 
   session_->ExecuteModel(
-      request,
-      base::BindRepeating(&ComposeSession::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(request_timer.get()), request_id_));
+      request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(request_timer), request_id_));
 }
 
 void ComposeSession::ModelExecutionCallback(
-    base::ElapsedTimer* request_timer,
+    const base::ElapsedTimer& request_timer,
     int request_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
@@ -202,7 +211,7 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
-  base::TimeDelta request_delta = request_timer->Elapsed();
+  base::TimeDelta request_delta = request_timer.Elapsed();
   current_state_->has_pending_request = false;
 
   compose::mojom::ComposeStatus status =
@@ -250,10 +259,6 @@ void ComposeSession::ModelExecutionCallback(
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
 
-    if (model_quality_logs_uploader_.has_value()) {
-      model_quality_logs_uploader_.value()->UploadModelQualityLogs(
-          std::move(modeling_log_entry_));
-    }
   }
 }
 
@@ -308,6 +313,13 @@ void ComposeSession::Undo(UndoCallback callback) {
 
   compose::mojom::ComposeStatePtr undo_state = std::move(undo_states_.top());
   undo_states_.pop();
+
+  // If we have a modeling quality log entry, upload it.
+  if (modeling_log_entry_ && model_quality_logs_uploader_.has_value()) {
+    model_quality_logs_uploader_.value()->UploadModelQualityLogs(
+        std::move(modeling_log_entry_));
+  }
+
   if (!undo_state->response ||
       undo_state->response->status != compose::mojom::ComposeStatus::kOk ||
       undo_state->response->result == "") {
@@ -339,12 +351,6 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
             ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
     if (quality) {
       quality->set_user_feedback(user_feedback);
-      auto* optimization_guide_keyed_service =
-          OptimizationGuideKeyedServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-      // TODO(b/311798158): manage lifecycle to maintain modeling_log_entry_.
-      optimization_guide_keyed_service->UploadModelQualityLogs(
-          std::move(modeling_log_entry_));
     }
   }
 }

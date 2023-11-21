@@ -1295,24 +1295,41 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
 TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
   ShowDialogAndBindMojo();
 
-  // optimization_guide::proto::ComposeQuality quality;
-  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
   base::test::TestFuture<
       std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      test_future;
+      quality_test_future;
+
   EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillOnce(testing::Invoke(
+      .WillRepeatedly(testing::Invoke(
           [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) { test_future.SetValue(std::move(response)); }));
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
 
   auto style_modifiers = compose::mojom::StyleModifiers::New();
 
   page_handler()->Compose(std::move(style_modifiers), "a user typed this",
                           /*rewrite=*/false);
 
+  style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), "a user typed that",
+                          /*rewrite=*/false);
+
+  // This take should clear the test future for the second commit.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      test_future.Take();
+      quality_test_future.Take();
+
+  EXPECT_EQ(
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
+      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->request_latency_ms());
+
+  // Close UI to submit quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  result = quality_test_future.Take();
 
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
