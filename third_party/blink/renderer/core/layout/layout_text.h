@@ -45,8 +45,6 @@ class OffsetMapping;
 struct InlineItemsData;
 struct InlineItemSpan;
 
-enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
-
 // LayoutText is the root class for anything that represents
 // a text node (see core/dom/text.h).
 //
@@ -62,12 +60,6 @@ enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
 // on the screen. It is stored into m_firstTextBox and m_lastTextBox.
 // To understand how lines are broken by the bidi algorithm, read e.g.
 // LayoutBlockFlow::LayoutInlineChildren.
-//
-//
-// This class implements the preferred logical widths computation
-// for its underlying text. The widths are stored into min_width_
-// and max_width_. They are computed lazily based on
-// LayoutObjectBitfields::intrinsic_logical_widths_dirty_.
 //
 // The previous comment applies also for painting. See e.g.
 // BlockFlowPainter::paintContents in particular the use of LineBoxListPainter.
@@ -124,9 +116,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return nullptr;
   }
-
-  void DirtyOrDeleteLineBoxesIfNeeded(bool full_layout);
-  void DirtyLineBoxes();
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const final;
@@ -236,11 +225,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // True if any character remains after CSS white-space collapsing.
   bool HasNonCollapsedText() const;
 
-  bool ContainsReversedText() const {
-    NOT_DESTROYED();
-    return contains_reversed_text_;
-  }
-
   bool IsSecure() const {
     NOT_DESTROYED();
     return StyleRef().TextSecurity() != ETextSecurity::kNone;
@@ -268,14 +252,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void AutosizingMultiplerChanged() {
     NOT_DESTROYED();
-    known_to_have_no_overflow_and_no_fallback_fonts_ = false;
-
     // The font size is changing, so we need to make sure to rebuild everything.
     valid_ng_items_ = false;
     SetNeedsCollectInlines();
   }
-
-  OnlyWhitespaceOrNbsp ContainsOnlyWhitespaceOrNbsp() const;
 
   virtual UChar PreviousCharacter() const;
 
@@ -427,34 +407,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // We put the bitfield first to minimize padding on 64-bit.
  protected:
-  // Whether or not we can be broken into multiple lines.
-  unsigned has_breakable_char_ : 1;
-  // Whether or not we have a hard break (e.g., <pre> with '\n').
-  unsigned has_break_ : 1;
-  // Whether or not we have a variable width tab character (e.g., <pre> with
-  // '\t').
-  unsigned has_tab_ : 1;
-  unsigned has_breakable_start_ : 1;
-  unsigned has_breakable_end_ : 1;
-  unsigned has_end_white_space_ : 1;
-  // This bit indicates that the text run has already dirtied specific line
-  // boxes, and this hint will enable layoutInlineChildren to avoid just
-  // dirtying everything when character data is modified (e.g., appended/
-  // inserted or removed).
-  unsigned lines_dirty_ : 1;
-
   // Whether the InlineItems associated with this object are valid. Set after
   // layout and cleared whenever the LayoutText is modified.
-  // Functionally the inverse equivalent of lines_dirty_ for LayoutNG.
   unsigned valid_ng_items_ : 1;
 
   // Whether there is any BidiControl type InlineItem associated with this
   // object. Set after layout when associating items.
   unsigned has_bidi_control_items_ : 1;
-
-  unsigned contains_reversed_text_ : 1;
-  mutable unsigned known_to_have_no_overflow_and_no_fallback_fonts_ : 1;
-  unsigned contains_only_whitespace_or_nbsp_ : 2;
 
   unsigned is_text_fragment_ : 1;
 
@@ -467,11 +426,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   unsigned has_abstract_inline_text_box_ : 1;
 
   DOMNodeId node_id_ = kInvalidDOMNodeId;
-
-  float min_width_;
-  float max_width_;
-  float first_line_min_width_;
-  float last_line_line_min_width_;
 
   String text_;
 

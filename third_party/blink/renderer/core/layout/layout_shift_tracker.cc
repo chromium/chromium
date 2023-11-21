@@ -174,10 +174,6 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return false;
     if (object.IsBR())
       return false;
-    if (layout_text->ContainsOnlyWhitespaceOrNbsp() ==
-        OnlyWhitespaceOrNbsp::kYes) {
-      return false;
-    }
     if (object.StyleRef().GetFont().ShouldSkipDrawing())
       return false;
     return true;

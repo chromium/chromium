@@ -78,9 +78,8 @@ namespace blink {
 namespace {
 
 struct SameSizeAsLayoutText : public LayoutObject {
-  uint32_t bitfields : 12;
+  uint32_t bitfields : 4;
   DOMNodeId node_id;
-  float widths[4];
   String text;
   LogicalOffset previous_starting_point;
   InlineItemSpan inline_items;
@@ -153,20 +152,10 @@ SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
 
 LayoutText::LayoutText(Node* node, String str)
     : LayoutObject(node),
-      has_tab_(false),
-      lines_dirty_(false),
       valid_ng_items_(false),
       has_bidi_control_items_(false),
-      contains_reversed_text_(false),
-      known_to_have_no_overflow_and_no_fallback_fonts_(false),
-      contains_only_whitespace_or_nbsp_(
-          static_cast<unsigned>(OnlyWhitespaceOrNbsp::kUnknown)),
       is_text_fragment_(false),
       has_abstract_inline_text_box_(false),
-      min_width_(-1),
-      max_width_(-1),
-      first_line_min_width_(0),
-      last_line_line_min_width_(0),
       text_(std::move(str)) {
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
@@ -239,7 +228,6 @@ void LayoutText::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
-    known_to_have_no_overflow_and_no_fallback_fonts_ = false;
   }
 
   const ComputedStyle& new_style = StyleRef();
@@ -853,15 +841,11 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
     return;
   }
 
-  bool dirtied_lines = false;
-
   // If the text node is empty, dirty the line where new text will be inserted.
   if (!HasInlineFragments() && Parent()) {
     Parent()->DirtyLinesFromChangedChild(this);
-    dirtied_lines = true;
   }
 
-  lines_dirty_ = dirtied_lines;
   ForceSetText(std::move(text));
 
   // TODO(layout-dev): Invalidation is currently all or nothing in LayoutNG,
@@ -884,13 +868,6 @@ static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
   if (!o->IsText())
     return false;
   return To<LayoutText>(o)->GetText().empty();
-}
-
-OnlyWhitespaceOrNbsp LayoutText::ContainsOnlyWhitespaceOrNbsp() const {
-  NOT_DESTROYED();
-  return IntrinsicLogicalWidthsDirty() ? OnlyWhitespaceOrNbsp::kUnknown
-                                       : static_cast<OnlyWhitespaceOrNbsp>(
-                                             contains_only_whitespace_or_nbsp_);
 }
 
 UChar LayoutText::PreviousCharacter() const {
@@ -1016,7 +993,6 @@ void LayoutText::TextDidChange() {
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
   ApplyTextTransform();
-  known_to_have_no_overflow_and_no_fallback_fonts_ = false;
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->TextChanged(this);
@@ -1039,27 +1015,10 @@ void LayoutText::InvalidateSubtreeLayoutForFontUpdates() {
   if (IsFontFallbackValid())
     return;
 
-  known_to_have_no_overflow_and_no_fallback_fonts_ = false;
   valid_ng_items_ = false;
   SetNeedsCollectInlines();
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kFontsChanged);
-}
-
-void LayoutText::DirtyOrDeleteLineBoxesIfNeeded(bool full_layout) {
-  NOT_DESTROYED();
-  if (full_layout)
-    DeleteTextBoxes();
-  else if (!lines_dirty_)
-    DirtyLineBoxes();
-  lines_dirty_ = false;
-  valid_ng_items_ = false;
-}
-
-void LayoutText::DirtyLineBoxes() {
-  NOT_DESTROYED();
-  lines_dirty_ = false;
-  valid_ng_items_ = false;
 }
 
 PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {

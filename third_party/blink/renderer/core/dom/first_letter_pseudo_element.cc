@@ -285,7 +285,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
   remaining_text_layout_object_->SetTextFragment(
       old_text.Impl()->Substring(length, old_text.length()), length,
       old_text.length() - length);
-  remaining_text_layout_object_->DirtyLineBoxes();
+  remaining_text_layout_object_->InvalidateInlineItems();
 
   for (auto* child = GetLayoutObject()->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -297,7 +297,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
 
     child_fragment->SetTextFragment(old_text.Impl()->Substring(0, length), 0,
                                     length);
-    child_fragment->DirtyLineBoxes();
+    child_fragment->InvalidateInlineItems();
 
     // Make sure the first-letter layoutObject is set to require a layout as it
     // needs to re-create the line boxes. The remaining text layoutObject
