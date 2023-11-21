@@ -380,27 +380,6 @@ export function decorateListItem(
   } else {
     li.removeAttribute('aria-disabled');
   }
-
-  Object.defineProperty(li, 'selected', {
-    /**
-     * @this {ListItem}
-     * @return True if the list item is selected.
-     */
-    get: function(): boolean {
-      return this.hasAttribute('selected');
-    },
-
-    /**
-     * @this {ListItem}
-     */
-    set: function(v) {
-      if (v) {
-        this.setAttribute('selected', '');
-      } else {
-        this.removeAttribute('selected');
-      }
-    },
-  });
 }
 
 /**

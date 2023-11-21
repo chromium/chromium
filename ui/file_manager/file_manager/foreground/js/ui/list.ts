@@ -356,7 +356,11 @@ export class List extends HTMLUListElement {
     this.fixedHeight_ = true;
     this.remainingSpace_ = true;
     this.batchCount_ = 0;
-    this.itemConstructor_ = createListItem;
+    this.itemConstructor_ = (label: string) => {
+      const item = createListItem();
+      item.label = label;
+      return item;
+    };
 
     const length = this.dataModel ? this.dataModel.length : 0;
     this.selectionModel = new ListSelectionModel(length);
@@ -898,10 +902,6 @@ export class List extends HTMLUListElement {
    */
   createItem(label: string): ListItem {
     const item = this.itemConstructor_(label);
-    item.label = label;
-    if (typeof item.decorate === 'function') {
-      item.decorate();
-    }
     return item;
   }
 

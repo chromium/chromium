@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 import {createList, List} from './list.js';
+import {createListItem} from './list_item.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 
@@ -98,7 +97,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
    * @param {Object} item Item to render.
    */
   renderItem(item) {
-    const result = this.document_.createElement('li');
+    const result = createListItem();
 
     // Task label.
     const labelSpan = this.document_.createElement('span');
@@ -138,12 +137,6 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     result.appendChild(iconDiv);
     // A11y - make it focusable and readable.
     result.setAttribute('tabindex', '-1');
-
-    Object.defineProperty(
-        result, 'lead', getPropertyDescriptor('lead', PropertyKind.BOOL_ATTR));
-    Object.defineProperty(
-        result, 'selected',
-        getPropertyDescriptor('selected', PropertyKind.BOOL_ATTR));
 
     return result;
   }
