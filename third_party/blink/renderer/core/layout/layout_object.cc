@@ -4597,9 +4597,14 @@ void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
   NOT_DESTROYED();
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
+  const bool was_delayed = bitfields_.ShouldDelayFullPaintInvalidation();
   bitfields_.SetShouldDelayFullPaintInvalidation(false);
-  if (reason > PaintInvalidationReasonForPrePaint()) {
+  const bool should_upgrade_reason =
+      reason > PaintInvalidationReasonForPrePaint();
+  if (was_delayed || should_upgrade_reason) {
     SetShouldCheckForPaintInvalidationWithoutLayoutChange();
+  }
+  if (should_upgrade_reason) {
     paint_invalidation_reason_for_pre_paint_ = static_cast<unsigned>(reason);
     DCHECK_EQ(reason, PaintInvalidationReasonForPrePaint());
   }
