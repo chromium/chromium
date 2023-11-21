@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -38,11 +37,11 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         mNativeAddToHomescreenMediator = AddToHomescreenMediatorJni.get().initialize(this);
     }
 
-    void startForAppMenu(@NonNull WebContents webContents, @StringRes int titleId) {
+    void startForAppMenu(@NonNull WebContents webContents, int menuItemType) {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get()
-                .startForAppMenu(mNativeAddToHomescreenMediator, webContents, titleId);
+                .startForAppMenu(mNativeAddToHomescreenMediator, webContents, menuItemType);
     }
 
     @CalledByNative
@@ -121,9 +120,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         long initialize(AddToHomescreenMediator instance);
 
         void startForAppMenu(
-                long nativeAddToHomescreenMediator,
-                WebContents webContents,
-                @StringRes int titleId);
+                long nativeAddToHomescreenMediator, WebContents webContents, int menuItemType);
 
         void addToHomescreen(long nativeAddToHomescreenMediator, String title);
 

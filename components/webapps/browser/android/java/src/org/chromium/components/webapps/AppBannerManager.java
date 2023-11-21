@@ -47,9 +47,6 @@ public class AppBannerManager {
     public static final InstallStringPair NON_PWA_PAIR =
             new InstallStringPair(R.string.menu_add_to_homescreen, R.string.add);
 
-    /** The key to use to store and retrieve (from the menu data) what was shown in the menu. */
-    public static final String MENU_TITLE_KEY = "AppMenuTitleShown";
-
     /** Retrieves information about a given package. */
     private static AppDetailsDelegate sAppDetailsDelegate;
 

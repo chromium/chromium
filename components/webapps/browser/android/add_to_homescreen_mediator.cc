@@ -13,7 +13,6 @@
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
-#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -86,8 +85,8 @@ void AddToHomescreenMediator::StartForAppBanner(
 void AddToHomescreenMediator::StartForAppMenu(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents,
-    int title_id) {
-  title_id_ = title_id;
+    int app_menu_type) {
+  app_menu_type_ = app_menu_type;
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   data_fetcher_ = std::make_unique<AddToHomescreenDataFetcher>(
@@ -190,13 +189,7 @@ void AddToHomescreenMediator::OnDataAvailable(
   bool is_webapk = params_->app_type == AddToHomescreenParams::AppType::WEBAPK;
   auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
 
-  DCHECK_NE(-1, title_id_);
-  switch (title_id_) {
-    case AppBannerSettingsHelper::APP_MENU_OPTION_UNKNOWN: {
-      entry = is_webapk ? AppTypeToMenuEntry::kUnknownMenuEntryForWebApp
-                        : AppTypeToMenuEntry::kUnknownMenuEntryForShortcut;
-      break;
-    }
+  switch (app_menu_type_) {
     case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
       entry = is_webapk ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
                         : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
@@ -207,6 +200,8 @@ void AddToHomescreenMediator::OnDataAvailable(
                         : AppTypeToMenuEntry::kInstallShownForShortcut;
       break;
     }
+    default:
+      NOTREACHED();
   }
   UMA_HISTOGRAM_ENUMERATION("Webapp.AddToHomescreenMediator.AppTypeToMenuEntry",
                             entry, AppTypeToMenuEntry::kAppTypeFinalEntry);

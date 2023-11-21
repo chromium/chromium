@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.CloseListenerManager;
+import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -344,10 +345,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Whether or not the activity is in started state. */
     private boolean mStarted;
-
-    /** The data associated with the most recently selected menu item. */
-    @Nullable
-    private Bundle mMenuItemData;
 
     /**
      * The current configuration, used to for diffing when the configuration is changed.
@@ -1795,7 +1792,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
-        mMenuItemData = menuItemData;
         if (mManualFillingComponentSupplier.hasValue()) {
             mManualFillingComponentSupplier.get().dismiss();
         }
@@ -2575,12 +2571,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.add_to_homescreen_id) {
             RecordUserAction.record("MobileMenuAddToHomescreen");
-            return doAddToHomescreenOrInstallWebApp(currentTab);
+            return doAddToHomescreenOrInstallWebApp(
+                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
         }
 
         if (id == R.id.install_webapp_id) {
             RecordUserAction.record("InstallWebAppFromMenu");
-            return doAddToHomescreenOrInstallWebApp(currentTab);
+            return doAddToHomescreenOrInstallWebApp(
+                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
         if (id == R.id.open_webapk_id) {
@@ -2932,7 +2930,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Returns whether the Add to Home screen or Install Web App action was successfully started.
      */
-    private boolean doAddToHomescreenOrInstallWebApp(Tab currentTab) {
+    private boolean doAddToHomescreenOrInstallWebApp(Tab currentTab, int menuItemType) {
         PwaBottomSheetController controller =
                 PwaBottomSheetControllerProvider.from(getWindowAndroid());
         if (controller != null
@@ -2940,8 +2938,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         currentTab.getWebContents(), InstallTrigger.MENU)) {
             return true;
         }
-        AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(), getModalDialogManager(),
-                currentTab.getWebContents(), mMenuItemData);
+        AddToHomescreenCoordinator.showForAppMenu(
+                this,
+                getWindowAndroid(),
+                getModalDialogManager(),
+                currentTab.getWebContents(),
+                menuItemType);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(currentTab.getProfile());
             tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);

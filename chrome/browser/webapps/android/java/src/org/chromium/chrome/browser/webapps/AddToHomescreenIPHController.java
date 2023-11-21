@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.webapps;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
-import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
@@ -148,12 +147,12 @@ public class AddToHomescreenIPHController {
     private void onMessageAddButtonClicked(Tab tab) {
         if (tab.isDestroyed() || mActivity == null) return;
 
-        Bundle menuItemData = new Bundle();
-        // Used for UMA.
-        menuItemData.putInt(
-                AppBannerManager.MENU_TITLE_KEY, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
         AddToHomescreenCoordinator.showForAppMenu(
-                mActivity, mWindowAndroid, mModalDialogManager, tab.getWebContents(), menuItemData);
+                mActivity,
+                mWindowAndroid,
+                mModalDialogManager,
+                tab.getWebContents(),
+                AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
         mTracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
         RecordUserAction.record("Android.AddToHomescreenIPH.Message.Clicked");
     }

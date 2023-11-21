@@ -37,7 +37,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
@@ -123,8 +122,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
-    // Keeps track of which menu item was shown when installable app is detected.
-    private int mAddAppTitleShown;
     @Nullable
     private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
@@ -851,13 +848,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         return false;
     }
 
-    /**
-     * Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items.
-     */
+    /** Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items. */
     protected void prepareAddToHomescreenMenuItem(
             Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
-        mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_UNKNOWN;
-
         MenuItem addTohomescreenItem = menu.findItem(R.id.add_to_homescreen_id);
         MenuItem installWebAppItem = menu.findItem(R.id.install_webapp_id);
         MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
@@ -886,11 +879,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
                     addTohomescreenItem.setTitle(installStrings.titleTextId);
                     addTohomescreenItem.setVisible(true);
-                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
                 } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
                     installWebAppItem.setTitle(installStrings.titleTextId);
                     installWebAppItem.setVisible(true);
-                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
                 }
             }
         }
@@ -918,11 +909,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public Bundle getBundleForMenuItem(int itemId) {
-        Bundle bundle = new Bundle();
-        if (itemId == R.id.add_to_homescreen_id) {
-            bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
-        }
-        return bundle;
+        return null;
     }
 
     /**
