@@ -22,6 +22,7 @@ namespace speech {
 const char kUsEnglishLocale[] = "en-US";
 
 const char kEnglishLocaleNoCountry[] = "en";
+const char kChineseLocaleNoCountry[] = "zh";
 
 const char kSodaBinaryInstallationResult[] =
     "SodaInstaller.BinaryInstallationResult";
@@ -187,8 +188,14 @@ LanguageCode GetLanguageCode(const std::string& language_name) {
 
 const std::u16string GetLanguageDisplayName(const std::string& language_name,
                                             const std::string& display_locale) {
-  return l10n_util::GetDisplayNameForLocaleWithoutCountry(language_name,
-                                                          display_locale, true);
+  if (language_name.substr(0, 2) == kChineseLocaleNoCountry) {
+    return l10n_util::GetDisplayNameForLocale(language_name, display_locale,
+                                              true);
+
+  } else {
+    return l10n_util::GetDisplayNameForLocaleWithoutCountry(
+        language_name, display_locale, true);
+  }
 }
 
 const std::string GetInstallationSuccessTimeMetricForLanguagePack(
