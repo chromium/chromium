@@ -7118,7 +7118,7 @@ crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-fram
 crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Failure Pass ]
 
 # Gardener 2023-11-16
-crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass ]
+crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Gerdener 2023-11-17
 crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-revoke.sub.https.html [ Timeout ]
