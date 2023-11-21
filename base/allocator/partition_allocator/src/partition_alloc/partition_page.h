@@ -80,7 +80,12 @@ using AllocationStateMap =
 #pragma pack(push, 1)
 struct SlotSpanMetadata {
  private:
-  EncodedNextFreelistEntry* freelist_head = nullptr;
+  union {
+    EncodedNextFreelistEntry* freelist_head = nullptr;
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+    PoolOffsetFreelistEntry* pool_offset_freelist_head = nullptr;
+#endif
+  };
 
  public:
   // TODO(lizeb): Make as many fields as possible private or const, to
@@ -126,6 +131,15 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE EncodedNextFreelistEntry* PopForAlloc(size_t size);
   PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  PA_ALWAYS_INLINE PoolOffsetFreelistEntry* PopPoolOffsetFreelistForAlloc(
+      size_t size);
+  PA_ALWAYS_INLINE void FreeForPoolOffsetFreelist(uintptr_t ptr,
+                                                  PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+#endif
+
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
   // since FreeInline() did it already.
@@ -134,6 +148,13 @@ struct SlotSpanMetadata {
                                        size_t number_of_freed,
                                        PartitionRoot* root)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  PA_ALWAYS_INLINE void AppendPoolOffsetFreeList(PoolOffsetFreelistEntry* head,
+                                                 PoolOffsetFreelistEntry* tail,
+                                                 size_t number_of_freed,
+                                                 PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
   void Decommit(PartitionRoot* root);
   void DecommitIfPossible(PartitionRoot* root);
@@ -170,6 +191,15 @@ struct SlotSpanMetadata {
     return freelist_head;
   }
   PA_ALWAYS_INLINE void SetFreelistHead(EncodedNextFreelistEntry* new_head);
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  PA_ALWAYS_INLINE PoolOffsetFreelistEntry* get_pool_offset_freelist_head()
+      const {
+    return pool_offset_freelist_head;
+  }
+  PA_ALWAYS_INLINE void SetPoolOffsetFreelistHead(
+      PoolOffsetFreelistEntry* new_head);
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
   // Returns size of the region used within a slot. The used region comprises
   // of actual allocated data, extras and possibly empty space in the middle.
@@ -617,6 +647,17 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
   freelist_is_sorted_ = false;
 }
 
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+PA_ALWAYS_INLINE void SetPoolOffsetFreelistHead(
+    PoolOffsetFreelistEntry* new_head) {
+  PA_DCHECK(!new_head ||
+            (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
+                (UntagPtr(new_head) & kSuperPageBaseMask));
+  pool_offset_freelist_head = new_head;
+  freelist_is_sorted = false;
+}
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
 PA_ALWAYS_INLINE EncodedNextFreelistEntry* SlotSpanMetadata::PopForAlloc(
     size_t size) {
   // Not using bucket->slot_size directly as the compiler doesn't know that
@@ -630,12 +671,30 @@ PA_ALWAYS_INLINE EncodedNextFreelistEntry* SlotSpanMetadata::PopForAlloc(
   return result;
 }
 
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+PA_ALWAYS_INLINE PoolOffsetFreelistEntry*
+SlotSpanMetadata::PopPoolOffsetFreelistForAlloc(size_t size) {
+  PA_DCHECK(size == bucket->slot_size);
+  PoolOffsetFreelistEntry* result = pool_offset_freelist_head;
+  pool_offset_freelist_head = pool_offset_freelist_head->GetNext(size);
+  num_allocated_slots++;
+  return result;
+}
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
 PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
                                              PartitionRoot* root)
     // PartitionRootLock() is not defined inside partition_page.h, but
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
   DCheckRootLockIsAcquired(root);
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  if (root->uses_pool_offset_freelists()) {
+    return FreeForPoolOffsetFreelist(slot_start, root);
+  }
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
   auto* entry = static_cast<internal::EncodedNextFreelistEntry*>(
       SlotStartAddr2Ptr(slot_start));
   // Catches an immediate double free.
@@ -658,6 +717,34 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
     PA_DCHECK(!CanStoreRawSize());
   }
 }
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+PA_ALWAYS_INLINE void SlotSpanMetadata::FreeForPoolOffsetFreelist(
+    uintptr_t slot_start,
+    PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+  DCheckRootLockIsAcquired(root);
+  auto* entry = static_cast<internal::PoolOffsetFreelistEntry*>(
+      SlotStartAddr2Ptr(slot_start));
+  // Catches an immediate double free.
+  PA_CHECK(entry != pool_offset_freelist_head);
+  // Look for double free one level deeper in debug.
+  PA_DCHECK(!pool_offset_freelist_head ||
+            entry != pool_offset_freelist_head->GetNext(bucket->slot_size));
+  entry->SetNext(pool_offset_freelist_head);
+  SetPoolOffsetFreelistHead(entry);
+  // A best effort double-free check. Works only on empty slot spans.
+  PA_CHECK(num_allocated_slots);
+  --num_allocated_slots;
+  // If the span is marked full, or became empty, take the slow path to update
+  // internal state.
+  if (PA_UNLIKELY(marked_full || num_allocated_slots == 0)) {
+    FreeSlowPath(1);
+  } else {
+    // All single-slot allocations must go through the slow path to
+    // correctly update the raw size.
+    PA_DCHECK(!CanStoreRawSize());
+  }
+}
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     EncodedNextFreelistEntry* head,
@@ -700,6 +787,50 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     PA_DCHECK(!CanStoreRawSize());
   }
 }
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+PA_ALWAYS_INLINE void SlotSpanMetadata::AppendPoolOffsetFreeList(
+    PoolOffsetFreelistEntry* head,
+    PoolOffsetFreelistEntry* tail,
+    size_t number_of_freed,
+    PartitionRoot* root) {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(!tail->GetNext(bucket->slot_size));
+  PA_DCHECK(number_of_freed);
+  PA_DCHECK(num_allocated_slots);
+  if (CanStoreRawSize()) {
+    PA_DCHECK(number_of_freed == 1);
+  }
+  {
+    size_t number_of_entries = 0;
+    for (auto* entry = head; entry;
+         entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
+      uintptr_t untagged_entry = UntagPtr(entry);
+      // Check that all entries belong to this slot span.
+      PA_DCHECK(ToSlotSpanStart(this) <= untagged_entry);
+      PA_DCHECK(untagged_entry <
+                ToSlotSpanStart(this) + bucket->get_bytes_per_span());
+    }
+    PA_DCHECK(number_of_entries == number_of_freed);
+  }
+#endif
+
+  tail->SetNext(pool_offset_freelist_head);
+  SetPoolOffsetFreelistHead(head);
+  PA_DCHECK(num_allocated_slots >= number_of_freed);
+  num_allocated_slots -= number_of_freed;
+  // If the span is marked full, or became empty, take the slow path to update
+  // internal state.
+  if (PA_UNLIKELY(marked_full || num_allocated_slots == 0)) {
+    FreeSlowPath(number_of_freed);
+  } else {
+    // All single-slot allocations must go through the slow path to
+    // correctly update the raw size.
+    PA_DCHECK(!CanStoreRawSize());
+  }
+}
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 PA_ALWAYS_INLINE bool SlotSpanMetadata::is_active() const {
   PA_DCHECK(this != get_sentinel_slot_span());
