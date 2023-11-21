@@ -1042,7 +1042,9 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in) {
 }
 
 bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker) {
-  if (!IsDefaultBrowserVideoPromoEnabled()) {
+  BOOL is_db_video_promo_enabled =
+      IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
+  if (!is_db_video_promo_enabled) {
     return false;
   }
 
