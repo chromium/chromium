@@ -91,8 +91,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 @interface BaseGridViewController () <GridCellDelegate,
                                       SuggestedActionsViewControllerDelegate,
-                                      UICollectionViewDelegate,
-                                      UICollectionViewDelegateFlowLayout,
                                       UICollectionViewDragDelegate,
                                       UICollectionViewDropDelegate,
                                       UIPointerInteractionDelegate>
@@ -652,58 +650,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - UICollectionViewDelegate
 
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                    layout:(UICollectionViewLayout*)collectionViewLayout
-    sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (self.isClosingAllOrUndoRunning) {
-    return CGSizeZero;
-  }
-  // `collectionViewLayout` should always be a flow layout.
-  UICollectionViewFlowLayout* layout =
-      ObjCCastStrict<UICollectionViewFlowLayout>(collectionViewLayout);
-  CGSize itemSize = layout.itemSize;
-  // The SuggestedActions cell can't use the item size that is set in
-  // `prepareLayout` of the layout class. For that specific cell calculate the
-  // anticipated size from the layout section insets and the content view insets
-  // and return it.
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
-    UIEdgeInsets sectionInset = layout.sectionInset;
-    UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
-    CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
-                    sectionInset.right - contentInset.left - contentInset.right;
-    CGFloat height = self.suggestedActionsViewController.contentHeight;
-    return CGSizeMake(width, height);
-  }
-  return itemSize;
-}
-
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                             layout:
-                                 (UICollectionViewLayout*)collectionViewLayout
-    referenceSizeForHeaderInSection:(NSInteger)section {
-  switch (_mode) {
-    case TabGridModeNormal:
-        return CGSizeZero;
-    case TabGridModeSelection:
-      return CGSizeZero;
-    case TabGridModeSearch: {
-      if (_searchText.length == 0) {
-        return CGSizeZero;
-      }
-
-      CGFloat height = UIContentSizeCategoryIsAccessibilityCategory(
-                           self.traitCollection.preferredContentSizeCategory)
-                           ? kGridHeaderAccessibilityHeight
-                           : kGridHeaderHeight;
-      return CGSizeMake(collectionView.bounds.size.width, height);
-    }
-    case TabGridModeInactive:
-      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
-  }
-}
-
 // This method is used instead of -didSelectItemAtIndexPath, because any
-// selection events will be signalled through the model layer and handled in
+// selection events will be signaled through the model layer and handled in
 // the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
@@ -775,6 +723,58 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // safe because the animation state of GridCells is set in
     // `configureCell:withItem:atIndex:` whenever a cell is used.
     [ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
+  }
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+
+- (CGSize)collectionView:(UICollectionView*)collectionView
+                    layout:(UICollectionViewLayout*)collectionViewLayout
+    sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.isClosingAllOrUndoRunning) {
+    return CGSizeZero;
+  }
+  // `collectionViewLayout` should always be a flow layout.
+  UICollectionViewFlowLayout* layout =
+      ObjCCastStrict<UICollectionViewFlowLayout>(collectionViewLayout);
+  CGSize itemSize = layout.itemSize;
+  // The SuggestedActions cell can't use the item size that is set in
+  // `prepareLayout` of the layout class. For that specific cell calculate the
+  // anticipated size from the layout section insets and the content view insets
+  // and return it.
+  if (indexPath.section == kSuggestedActionsSectionIndex) {
+    UIEdgeInsets sectionInset = layout.sectionInset;
+    UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
+    CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
+                    sectionInset.right - contentInset.left - contentInset.right;
+    CGFloat height = self.suggestedActionsViewController.contentHeight;
+    return CGSizeMake(width, height);
+  }
+  return itemSize;
+}
+
+- (CGSize)collectionView:(UICollectionView*)collectionView
+                             layout:
+                                 (UICollectionViewLayout*)collectionViewLayout
+    referenceSizeForHeaderInSection:(NSInteger)section {
+  switch (_mode) {
+    case TabGridModeNormal:
+      return CGSizeZero;
+    case TabGridModeSelection:
+      return CGSizeZero;
+    case TabGridModeSearch: {
+      if (_searchText.length == 0) {
+        return CGSizeZero;
+      }
+
+      CGFloat height = UIContentSizeCategoryIsAccessibilityCategory(
+                           self.traitCollection.preferredContentSizeCategory)
+                           ? kGridHeaderAccessibilityHeight
+                           : kGridHeaderHeight;
+      return CGSizeMake(collectionView.bounds.size.width, height);
+    }
+    case TabGridModeInactive:
+      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
   }
 }
 
