@@ -692,7 +692,6 @@
     },
     {
       name: "CompositeClipPathAnimation",
-      base_feature: "none",
       public: true,
     },
     {
