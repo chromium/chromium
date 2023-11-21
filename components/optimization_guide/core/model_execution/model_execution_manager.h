@@ -40,7 +40,7 @@ class ModelExecutionManager {
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      std::unique_ptr<OnDeviceModelServiceController>
+      scoped_refptr<OnDeviceModelServiceController>
           on_device_model_service_controller,
       OptimizationGuideLogger* optimization_guide_logger);
 
@@ -86,7 +86,7 @@ class ModelExecutionManager {
   std::set<std::string> oauth_scopes_;
 
   // Controller for the on-device service.
-  std::unique_ptr<OnDeviceModelServiceController>
+  scoped_refptr<OnDeviceModelServiceController>
       on_device_model_service_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);

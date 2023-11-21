@@ -9,13 +9,25 @@
 
 namespace optimization_guide {
 
+// Chrome uses a single instance of OnDeviceModelServiceController. This is done
+// for two reasons:
+// . We only want to load the model once, not once per Profile. To do otherwise
+//   would consume a significant amount of memory.
+// . To ensure we don't double count the number of crashes (if each profile had
+//   it's own connection, then the number of crashes would be double what
+//   actually happened).
 class ChromeOnDeviceModelServiceController
     : public OnDeviceModelServiceController {
  public:
   ChromeOnDeviceModelServiceController();
-  ~ChromeOnDeviceModelServiceController() override;
+
+  // Returns the OnDeviceModelServiceController, null if it one hasn't been
+  // created yet.
+  static ChromeOnDeviceModelServiceController* GetSingleInstanceMayBeNull();
 
  private:
+  ~ChromeOnDeviceModelServiceController() override;
+
   // OnDeviceModelServiceController implementation:
   void LaunchService() override;
 };

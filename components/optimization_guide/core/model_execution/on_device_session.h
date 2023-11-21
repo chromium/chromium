@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_SESSION_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_SESSION_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -12,11 +16,11 @@
 
 namespace optimization_guide {
 class OnDeviceModelExecutionConfigInterpreter;
+class OnDeviceModelServiceController;
 
 // A session backed by the on device service.
-class OnDeviceSession
-    : public optimization_guide::OptimizationGuideModelExecutor::Session,
-      public on_device_model::mojom::StreamingResponder {
+class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
+                        public on_device_model::mojom::StreamingResponder {
  public:
   using StartSessionFn = base::RepeatingCallback<void(
       mojo::PendingReceiver<on_device_model::mojom::Session>)>;
@@ -24,11 +28,11 @@ class OnDeviceSession
   OnDeviceSession(
       StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
-      const OnDeviceModelExecutionConfigInterpreter* config_interpreter);
+      const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+      base::WeakPtr<OnDeviceModelServiceController> controller);
   ~OnDeviceSession() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
-  void SetDisconnectHandler(base::OnceClosure on_disconnect) override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void ExecuteModel(
@@ -46,22 +50,25 @@ class OnDeviceSession
   // Gets the active session or restarts a session if the session is reset.
   on_device_model::mojom::Session& GetOrCreateSession();
 
-  // Calls |on_disconnect_| if it has been set.
-  void OnDisconnect();
-
-  // Cancels any pending response and resets response state.
+  // Resets response state.
   void ResetResponse();
 
-  // Sends an error to the client if there is an active response.
-  void OnError(OptimizationGuideModelExecutionError::ModelExecutionError error);
+  // Cancels any pending response and resets response state.
+  void CancelPendingResponse(
+      OptimizationGuideModelExecutionError::ModelExecutionError error =
+          OptimizationGuideModelExecutionError::ModelExecutionError::
+              kCancelled);
+
+  // Called when the connection to the service is dropped.
+  void OnDisconnect();
 
   // Sends `current_response_` to the client.
   void SendResponse(bool is_complete);
 
+  base::WeakPtr<OnDeviceModelServiceController> controller_;
   mojo::Remote<on_device_model::mojom::Session> session_;
   const proto::ModelExecutionFeature feature_;
   raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
-  base::OnceClosure on_disconnect_;
   StartSessionFn start_session_fn_;
   std::unique_ptr<ContextProcessor> context_processor_;
 
@@ -70,6 +77,10 @@ class OnDeviceSession
       callback_;
   mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
   std::string current_response_;
+
+  // If true, the context is added before execution. This is set to true if
+  // a disconnect happens.
+  bool add_context_before_execute_ = false;
 };
 
 }  // namespace optimization_guide

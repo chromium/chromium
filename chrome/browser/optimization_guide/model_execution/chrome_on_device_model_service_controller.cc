@@ -4,16 +4,37 @@
 
 #include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 
-#include "base/metrics/field_trial_params.h"
+#include "chrome/browser/browser_process.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace optimization_guide {
 
-ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController() =
-    default;
-ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() =
-    default;
+namespace {
+
+ChromeOnDeviceModelServiceController* g_instance = nullptr;
+
+}  // namespace
+
+ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController()
+    : OnDeviceModelServiceController(
+          std::make_unique<OnDeviceModelAccessController>(
+              *g_browser_process->local_state())) {
+  CHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+// static
+ChromeOnDeviceModelServiceController*
+ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull() {
+  return g_instance;
+}
+
+ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() {
+  CHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
 void ChromeOnDeviceModelServiceController::LaunchService() {
   CHECK(

@@ -5,16 +5,22 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_session.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
-OnDeviceModelServiceController::OnDeviceModelServiceController() = default;
+OnDeviceModelServiceController::OnDeviceModelServiceController(
+    std::unique_ptr<OnDeviceModelAccessController> access_controller)
+    : access_controller_(std::move(access_controller)) {}
+
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
 void OnDeviceModelServiceController::Init(
@@ -27,18 +33,31 @@ void OnDeviceModelServiceController::Init(
   config_interpreter_->UpdateConfigWithFileDir(model_path_);
 }
 
+void OnDeviceModelServiceController::Init() {
+  auto model_path_override_switch =
+      switches::GetOnDeviceModelExecutionOverride();
+  if (model_path_override_switch) {
+    auto file_path = StringToFilePath(*model_path_override_switch);
+    if (file_path) {
+      Init(*file_path,
+           std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
+    }
+  }
+}
+
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::StartSession(
     proto::ModelExecutionFeature feature) {
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideOnDeviceModel) ||
-      !config_interpreter_->HasConfigForFeature(feature)) {
+      !config_interpreter_->HasConfigForFeature(feature) ||
+      !access_controller_->ShouldStartNewSession()) {
     return nullptr;
   }
   return std::make_unique<OnDeviceSession>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
-      feature, config_interpreter_.get());
+      feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr());
 }
 
 void OnDeviceModelServiceController::StartMojoSession(
@@ -51,7 +70,9 @@ void OnDeviceModelServiceController::StartMojoSession(
         base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
                        model_remote_.BindNewPipeAndPassReceiver()));
-    model_remote_.reset_on_disconnect();
+    model_remote_.set_disconnect_handler(
+        base::BindOnce(&OnDeviceModelServiceController::OnDisconnected,
+                       base::Unretained(this)));
   }
   model_remote_->StartSession(std::move(session));
 }
@@ -75,12 +96,29 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void OnDeviceModelServiceController::OnResponseCompleted(
+    base::PassKey<OnDeviceSession>,
+    OnDeviceSession& session) {
+  access_controller_->OnResponseCompleted();
+}
+
 void OnDeviceModelServiceController::OnLoadModelResult(
     on_device_model::mojom::LoadModelResult result) {
-  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
-    // TODO(b/302402576): Add error handling.
-    LOG(ERROR) << "Failed loading model, code=" << static_cast<int>(result);
+  switch (result) {
+    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
+      access_controller_->OnGpuBlocked();
+      model_remote_.reset();
+      break;
+    case on_device_model::mojom::LoadModelResult::kSuccess:
+      break;
+    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
+      break;
   }
+}
+
+void OnDeviceModelServiceController::OnDisconnected() {
+  model_remote_.reset();
+  access_controller_->OnDisconnectedFromRemote();
 }
 
 }  // namespace optimization_guide

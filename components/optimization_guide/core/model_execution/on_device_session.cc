@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_session.h"
 
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -75,21 +76,21 @@ class OnDeviceSession::ContextProcessor
 OnDeviceSession::OnDeviceSession(
     StartSessionFn start_session_fn,
     proto::ModelExecutionFeature feature,
-    const OnDeviceModelExecutionConfigInterpreter* config_interpreter)
-    : feature_(feature),
+    const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+    base::WeakPtr<OnDeviceModelServiceController> controller)
+    : controller_(controller),
+      feature_(feature),
       config_interpreter_(config_interpreter),
       start_session_fn_(std::move(start_session_fn)) {
   // Prewarm the initial session to make sure the service is started.
   GetOrCreateSession();
 }
-OnDeviceSession::~OnDeviceSession() = default;
 
-void OnDeviceSession::SetDisconnectHandler(base::OnceClosure on_disconnect) {
-  on_disconnect_ = std::move(on_disconnect);
-}
+OnDeviceSession::~OnDeviceSession() = default;
 
 void OnDeviceSession::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
+  add_context_before_execute_ = false;
   context_.reset(request_metadata.New());
   context_->CheckTypeAndMergeFrom(request_metadata);
 
@@ -97,12 +98,13 @@ void OnDeviceSession::AddContext(
       feature_, *context_, /*want_input_context=*/true);
   if (!input) {
     // TODO(b/302402576): Add error handling.
+    context_.reset();
     LOG(ERROR) << "Error constructing input string.";
     return;
   }
 
   // Cancel any pending response.
-  OnError(ModelExecutionError::kCancelled);
+  CancelPendingResponse();
 
   // Only the latest context is used, so restart the mojo session here.
   session_.reset();
@@ -114,6 +116,14 @@ void OnDeviceSession::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
+  if (add_context_before_execute_) {
+    CHECK(context_);
+    std::unique_ptr<google::protobuf::MessageLite> context =
+        std::move(context_);
+    AddContext(*context);
+    CHECK(!add_context_before_execute_);
+  }
+
   auto request = MergeContext(request_metadata);
   auto input = config_interpreter_->ConstructInputString(
       feature_, *request, /*want_input_context=*/false);
@@ -124,7 +134,7 @@ void OnDeviceSession::ExecuteModel(
   }
 
   // Make sure to cancel any pending response.
-  OnError(ModelExecutionError::kCancelled);
+  CancelPendingResponse();
 
   // Cancel any optional context still processing.
   if (context_processor_) {
@@ -139,8 +149,7 @@ void OnDeviceSession::ExecuteModel(
           input->should_ignore_input_context),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
-      base::BindOnce(&OnDeviceSession::OnError, base::Unretained(this),
-                     ModelExecutionError::kCancelled));
+      base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));
 }
 
 // on_device_model::mojom::StreamingResponder:
@@ -150,6 +159,9 @@ void OnDeviceSession::OnResponse(const std::string& response) {
 }
 
 void OnDeviceSession::OnComplete() {
+  if (controller_) {
+    controller_->OnResponseCompleted({}, *this);
+  }
   SendResponse(/*is_complete=*/true);
   ResetResponse();
 }
@@ -164,9 +176,12 @@ on_device_model::mojom::Session& OnDeviceSession::GetOrCreateSession() {
 }
 
 void OnDeviceSession::OnDisconnect() {
-  if (on_disconnect_) {
-    std::move(on_disconnect_).Run();
+  if (context_) {
+    // Persist the current context, so that ExecuteModel() can be called
+    // without adding the same context.
+    add_context_before_execute_ = true;
   }
+  CancelPendingResponse();
 }
 
 void OnDeviceSession::ResetResponse() {
@@ -175,15 +190,16 @@ void OnDeviceSession::ResetResponse() {
   current_response_ = "";
 }
 
-void OnDeviceSession::OnError(ModelExecutionError error) {
-  if (callback_) {
-    callback_.Run(
+void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {
+  auto callback = std::move(callback_);
+  ResetResponse();
+  if (callback) {
+    callback.Run(
         base::unexpected(
             OptimizationGuideModelExecutionError::FromModelExecutionError(
                 error)),
         nullptr);
   }
-  ResetResponse();
 }
 
 void OnDeviceSession::SendResponse(bool is_complete) {
@@ -194,7 +210,7 @@ void OnDeviceSession::SendResponse(bool is_complete) {
   auto output =
       config_interpreter_->ConstructOutputMetadata(feature_, current_response_);
   if (!output) {
-    OnError(ModelExecutionError::kGenericFailure);
+    CancelPendingResponse(ModelExecutionError::kGenericFailure);
     return;
   }
 

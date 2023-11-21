@@ -76,7 +76,6 @@ class PassthroughSession : public OptimizationGuideModelExecutor::Session {
       : feature_(feature), execution_manager_(execution_manager) {}
 
   // OptimizationGuideModelExecutor::Session:
-  void SetDisconnectHandler(base::OnceClosure on_disconnect) override {}
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override {
     context_.reset(request_metadata.New());
@@ -208,7 +207,7 @@ using ModelExecutionError =
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<OnDeviceModelServiceController>
+    scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
@@ -220,18 +219,7 @@ ModelExecutionManager::ModelExecutionManager(
       identity_manager_(identity_manager),
       oauth_scopes_(features::GetOAuthScopesForModelExecution()),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {
-  auto model_path_override_switch =
-      switches::GetOnDeviceModelExecutionOverride();
-  if (model_path_override_switch) {
-    auto file_path = StringToFilePath(*model_path_override_switch);
-    if (file_path) {
-      on_device_model_service_controller_->Init(
-          *file_path,
-          std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
-    }
-  }
-}
+          std::move(on_device_model_service_controller)) {}
 
 ModelExecutionManager::~ModelExecutionManager() = default;
 

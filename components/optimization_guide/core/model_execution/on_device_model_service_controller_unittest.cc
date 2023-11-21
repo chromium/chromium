@@ -6,13 +6,17 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_stream_receiver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +25,8 @@ namespace optimization_guide {
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+
+using on_device_model::mojom::LoadModelResult;
 
 std::vector<std::string> ConcatResponses(
     const std::vector<std::string>& responses) {
@@ -97,6 +103,9 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
   // on_device_model::mojom::OnDeviceModel:
   void StartSession(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override {
+    // Mirror what the real OnDeviceModel does, which is only allow a single
+    // Session.
+    receivers_.Clear();
     receivers_.Add(std::make_unique<FakeOnDeviceSession>(), std::move(session));
   }
 
@@ -107,10 +116,14 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
 class FakeOnDeviceModelService
     : public on_device_model::mojom::OnDeviceModelService {
  public:
-  explicit FakeOnDeviceModelService(
+  FakeOnDeviceModelService(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
-          receiver)
-      : receiver_(this, std::move(receiver)) {}
+          receiver,
+      LoadModelResult result,
+      bool drop_connection_request)
+      : receiver_(this, std::move(receiver)),
+        load_model_result_(result),
+        drop_connection_request_(drop_connection_request) {}
 
  private:
   // on_device_model::mojom::OnDeviceModelService:
@@ -118,9 +131,13 @@ class FakeOnDeviceModelService
       on_device_model::mojom::LoadModelParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override {
+    if (drop_connection_request_) {
+      std::move(callback).Run(load_model_result_);
+      return;
+    }
     auto test_model = std::make_unique<FakeOnDeviceModel>();
     model_receivers_.Add(std::move(test_model), std::move(model));
-    std::move(callback).Run(on_device_model::mojom::LoadModelResult::kSuccess);
+    std::move(callback).Run(load_model_result_);
   }
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override {
@@ -129,6 +146,8 @@ class FakeOnDeviceModelService
   }
 
   mojo::Receiver<on_device_model::mojom::OnDeviceModelService> receiver_;
+  const LoadModelResult load_model_result_;
+  const bool drop_connection_request_;
   mojo::UniqueReceiverSet<on_device_model::mojom::OnDeviceModel>
       model_receivers_;
 };
@@ -136,13 +155,30 @@ class FakeOnDeviceModelService
 class FakeOnDeviceModelServiceController
     : public OnDeviceModelServiceController {
  public:
+  explicit FakeOnDeviceModelServiceController(
+      std::unique_ptr<OnDeviceModelAccessController> access_controller)
+      : OnDeviceModelServiceController(std::move(access_controller)) {}
+
   void LaunchService() override {
     service_remote_.reset();
     service_ = std::make_unique<FakeOnDeviceModelService>(
-        service_remote_.BindNewPipeAndPassReceiver());
+        service_remote_.BindNewPipeAndPassReceiver(), load_model_result_,
+        drop_connection_request_);
+  }
+
+  void set_load_model_result(LoadModelResult result) {
+    load_model_result_ = result;
+  }
+
+  void set_drop_connection_request(bool value) {
+    drop_connection_request_ = value;
   }
 
  private:
+  ~FakeOnDeviceModelServiceController() override = default;
+
+  LoadModelResult load_model_result_ = LoadModelResult::kSuccess;
+  bool drop_connection_request_ = false;
   std::unique_ptr<FakeOnDeviceModelService> service_;
 };
 
@@ -154,6 +190,19 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         {{"on_device_model_min_tokens_for_context", "10"},
          {"on_device_model_max_tokens_for_context", "22"},
          {"on_device_model_context_token_chunk_size", "4"}});
+    prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    RecreateServiceController();
+  }
+
+  void RecreateServiceController() {
+    test_controller_ = nullptr;
+    access_controller_ = nullptr;
+
+    auto access_controller =
+        std::make_unique<OnDeviceModelAccessController>(pref_service_);
+    access_controller_ = access_controller.get();
+    test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
+        std::move(access_controller));
     proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_feature(kFeature);
     auto& input_config = *config.mutable_input_config();
@@ -192,8 +241,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     auto config_interpreter =
         std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
     auto* config_interpreter_raw = config_interpreter.get();
-    test_controller_.Init(base::FilePath::FromASCII("/foo"),
-                          std::move(config_interpreter));
+    test_controller_->Init(base::FilePath::FromASCII("/foo"),
+                           std::move(config_interpreter));
     config_interpreter_raw->OverrideFeatureConfigForTesting(config);
   }
 
@@ -231,7 +280,10 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  FakeOnDeviceModelServiceController test_controller_;
+  TestingPrefServiceSimple pref_service_;
+  scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
+  // Owned by FakeOnDeviceModelServiceController.
+  raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
@@ -240,7 +292,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -251,7 +303,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -270,7 +322,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsSingleContextChunk) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -290,7 +342,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -312,7 +364,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -329,7 +381,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
-  EXPECT_FALSE(test_controller_.StartSession(
+  EXPECT_FALSE(test_controller_->StartSession(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
 }
 
@@ -341,7 +393,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
        {"on_device_model_max_tokens_for_context", "22"},
        {"on_device_model_context_token_chunk_size", "4"}});
 
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -360,36 +412,23 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, SessionDisconnectCalled) {
-  auto session = test_controller_.StartSession(kFeature);
-  EXPECT_TRUE(session);
-  // Make sure the service has launched.
-  task_environment_.RunUntilIdle();
-
-  // Wait for disconnect and restart service.
-  base::RunLoop run_loop;
-  session->SetDisconnectHandler(run_loop.QuitClosure());
-  test_controller_.LaunchService();
-  run_loop.Run();
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  test_controller_.LaunchService();
+  test_controller_->LaunchService();
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_error_);
+  ASSERT_TRUE(response_error_);
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -404,7 +443,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
-  auto session = test_controller_.StartSession(kFeature);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -420,24 +459,134 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   EXPECT_EQ(*response_received_, "Input: execute:bar\n");
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, SessionRecoversAfterDisconnect) {
-  auto session = test_controller_.StartSession(kFeature);
+TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
+  // Start a session.
+  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
-  // Make sure the service has launched.
+
+  // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
 
-  // Wait for disconnect and restart service.
-  base::RunLoop run_loop;
-  session->SetDisconnectHandler(run_loop.QuitClosure());
-  test_controller_.LaunchService();
-  run_loop.Run();
+  // Because the model returned kGpuBlocked, no more sessions should start.
+  EXPECT_FALSE(test_controller_->StartSession(kFeature));
+}
 
-  // New session should still work.
-  session = test_controller_.StartSession(kFeature);
-  ExecuteModel(*session, "foo");
+TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
+  // Start a session.
+  test_controller_->set_drop_connection_request(true);
+  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
+       ++i) {
+    auto session = test_controller_->StartSession(kFeature);
+    EXPECT_TRUE(session) << i;
+    task_environment_.RunUntilIdle();
+  }
+  auto session = test_controller_->StartSession(kFeature);
+  EXPECT_FALSE(session);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
+  // Start a session.
+  for (int i = 0; i < 10; ++i) {
+    test_controller_->set_drop_connection_request(i % 2 == 1);
+    auto session = test_controller_->StartSession(kFeature);
+    EXPECT_TRUE(session) << i;
+    task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       MultipleDisconnectsThenVersionChangeRetries) {
+  // Create enough sessions that fail to trigger no longer creating a session.
+  test_controller_->set_drop_connection_request(true);
+  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
+       ++i) {
+    auto session = test_controller_->StartSession(kFeature);
+    EXPECT_TRUE(session) << i;
+    task_environment_.RunUntilIdle();
+  }
+  EXPECT_FALSE(test_controller_->StartSession(kFeature));
+
+  // Change the pref to a different value and recreate the service.
+  access_controller_ = nullptr;
+  test_controller_.reset();
+  pref_service_.SetString(prefs::localstate::kOnDeviceModelChromeVersion,
+                          "BOGUS VERSION");
+  RecreateServiceController();
+
+  // A new session should be started because the version changed.
+  auto session = test_controller_->StartSession(kFeature);
+  EXPECT_TRUE(session);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
+  auto session = test_controller_->StartSession(kFeature);
+  EXPECT_TRUE(session);
+  AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Input: execute:foo\n");
+
+  // Launch the service again, which triggers disconnect.
+  test_controller_->LaunchService();
+  task_environment_.RunUntilIdle();
+
+  // Send some text, ensuring the context is received.
+  ExecuteModel(*session, "baz");
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(response_received_);
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "Context: ctx:foo off:0 max:10\n",
+      "Input: execute:foobaz\n",
+  });
+  EXPECT_EQ(*response_received_, expected_responses[1]);
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
+  auto session = test_controller_->StartSession(kFeature);
+  EXPECT_TRUE(session);
+  AddContext(*session, "foo");
+  task_environment_.RunUntilIdle();
+  // Send the text, this won't make it because the service is immediately
+  // killed.
+  ExecuteModel(*session, "bar");
+  test_controller_->LaunchService();
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(response_received_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
+  auto session1 = test_controller_->StartSession(kFeature);
+  EXPECT_TRUE(session1);
+  AddContext(*session1, "foo");
+  task_environment_.RunUntilIdle();
+
+  // Start another session.
+  auto session2 = test_controller_->StartSession(kFeature);
+  EXPECT_TRUE(session2);
+  AddContext(*session2, "bar");
+  task_environment_.RunUntilIdle();
+
+  ExecuteModel(*session2, "2");
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(response_received_);
+  const std::vector<std::string> expected_responses1 = {
+      "Context: ctx:bar off:0 max:10\n",
+      "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n",
+  };
+  EXPECT_EQ(*response_received_, expected_responses1[1]);
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses1));
+  response_received_.reset();
+  streamed_responses_.clear();
+
+  ExecuteModel(*session1, "1");
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(response_received_);
+  const std::vector<std::string> expected_responses2 = {
+      "Context: ctx:foo off:0 max:10\n",
+      "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n",
+  };
+  EXPECT_EQ(*response_received_, expected_responses2[1]);
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses2));
 }
 
 }  // namespace optimization_guide

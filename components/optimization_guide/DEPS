@@ -4,6 +4,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/unified_consent",
   "+components/variations",
+  "+components/version_info",
   "+google_apis",
   "+net",
   "+services/network",

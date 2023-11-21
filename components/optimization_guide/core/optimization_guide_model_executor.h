@@ -58,10 +58,6 @@ class OptimizationGuideModelExecutor {
     Session();
     virtual ~Session();
 
-    // Listens for session disconnect. Disconnects may happen if the backing
-    // model service crashes. Clients should add back context in this case.
-    virtual void SetDisconnectHandler(base::OnceClosure on_disconnect) = 0;
-
     // Adds context to this session. This will be saved for future Execute()
     // calls. Calling multiple times will replace previous calls to
     // AddContext(). Calling this while a ExecuteModel() call is still streaming

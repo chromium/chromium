@@ -382,6 +382,10 @@ int GetOnDeviceModelMinTokensForContext();
 int GetOnDeviceModelMaxTokensForContext();
 int GetOnDeviceModelContextTokenChunkSize();
 
+// Returns the number of crashes without a successful response before the
+// on-device model won't be used.
+int GetOnDeviceModelCrashCountBeforeDisable();
+
 }  // namespace features
 }  // namespace optimization_guide
 

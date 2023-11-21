@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
+
+namespace optimization_guide {
+
+using prefs::localstate::kOnDeviceModelChromeVersion;
+using prefs::localstate::kOnDeviceModelCrashCount;
+
+OnDeviceModelAccessController::OnDeviceModelAccessController(
+    PrefService& pref_service)
+    : pref_service_(pref_service) {
+  if (pref_service_->GetString(kOnDeviceModelChromeVersion) !=
+      version_info::GetVersionNumber()) {
+    // When the version changes, reset the crash count so that we try again.
+    pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
+    pref_service_->SetString(kOnDeviceModelChromeVersion,
+                             version_info::GetVersionNumber());
+  }
+}
+
+OnDeviceModelAccessController::~OnDeviceModelAccessController() = default;
+
+bool OnDeviceModelAccessController::ShouldStartNewSession() const {
+  return !is_gpu_blocked_ &&
+         pref_service_->GetInteger(kOnDeviceModelCrashCount) <
+             features::GetOnDeviceModelCrashCountBeforeDisable();
+}
+
+void OnDeviceModelAccessController::OnResponseCompleted() {
+  pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
+}
+
+void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
+  pref_service_->SetInteger(
+      kOnDeviceModelCrashCount,
+      pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1);
+}
+
+void OnDeviceModelAccessController::OnGpuBlocked() {
+  is_gpu_blocked_ = true;
+}
+
+}  // namespace optimization_guide

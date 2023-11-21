@@ -281,12 +281,22 @@ void OptimizationGuideKeyedService::Initialize() {
   if (!profile->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
+    scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+        service_controller;
+    if (base::FeatureList::IsEnabled(
+            optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
+      service_controller = optimization_guide::
+          ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull();
+      if (!service_controller) {
+        service_controller = base::MakeRefCounted<
+            optimization_guide::ChromeOnDeviceModelServiceController>();
+        service_controller->Init();
+      }
+    }
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
             url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
-            std::make_unique<
-                optimization_guide::ChromeOnDeviceModelServiceController>(),
-            optimization_guide_logger_.get());
+            std::move(service_controller), optimization_guide_logger_.get());
   }
 
   // Register for profile initialization event to initialize the model

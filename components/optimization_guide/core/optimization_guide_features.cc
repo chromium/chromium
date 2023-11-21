@@ -961,5 +961,12 @@ int GetOnDeviceModelContextTokenChunkSize() {
   return kOnDeviceModelContextTokenChunkSize.Get();
 }
 
+int GetOnDeviceModelCrashCountBeforeDisable() {
+  static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
+      &features::kOptimizationGuideOnDeviceModel,
+      "on_device_model_disable_crash_count", 3};
+  return kOnDeviceModelDisableCrashCount.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

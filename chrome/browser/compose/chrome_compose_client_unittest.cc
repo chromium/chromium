@@ -75,7 +75,6 @@ class MockModelQualityLogsUploader
 class MockSession
     : public optimization_guide::OptimizationGuideModelExecutor::Session {
  public:
-  MOCK_METHOD(void, SetDisconnectHandler, (base::OnceClosure on_disconnect));
   MOCK_METHOD(void,
               AddContext,
               (const google::protobuf::MessageLite& request_metadata));
@@ -94,9 +93,6 @@ class MockSessionWrapper
  public:
   explicit MockSessionWrapper(MockSession& session) : session_(session) {}
 
-  void SetDisconnectHandler(base::OnceClosure on_disconnect) override {
-    session_->SetDisconnectHandler(std::move(on_disconnect));
-  }
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override {
     session_->AddContext(request_metadata);
