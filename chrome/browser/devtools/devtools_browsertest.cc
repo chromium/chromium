@@ -1756,7 +1756,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectNewTabPage) {
           base::StrCat({kArbitraryPage, "#chrome://newtab/"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectChromeScheme) {
+// TODO(crbug.com/1503206): Re-enable the test once it is fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectChromeScheme DISABLED_CantInspectChromeScheme
+#else
+#define MAYBE_CantInspectChromeScheme CantInspectChromeScheme
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectChromeScheme) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
           base::StrCat({kArbitraryPage, "#chrome://version/"}));
