@@ -111,10 +111,12 @@ class PkeyTest : public testing::Test {
     }
     isolated_globals.pkey = pkey;
 
-    isolated_globals.allocator->init(PartitionOptions{
-        .aligned_alloc = PartitionOptions::kAllowed,
-        .thread_isolation = ThreadIsolationOption(isolated_globals.pkey),
-    });
+    isolated_globals.allocator->init([]() {
+      partition_alloc::PartitionOptions opts;
+      opts.aligned_alloc = PartitionOptions::kAllowed;
+      opts.thread_isolation = ThreadIsolationOption(isolated_globals.pkey);
+      return opts;
+    }());
 
     InitializeIsolatedThread();
 
