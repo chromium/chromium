@@ -63,6 +63,9 @@ base::Value::Dict GetPolicyNameToTypeMapping(
       case base::Value::Type::INTEGER:
         result.Set(policy_name.GetString(), "integer");
         break;
+      case base::Value::Type::DOUBLE:
+        result.Set(policy_name.GetString(), "number");
+        break;
       case base::Value::Type::LIST:
         result.Set(policy_name.GetString(), "list");
         break;
