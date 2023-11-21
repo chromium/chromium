@@ -6,6 +6,7 @@
 #include <cstdint>
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -19,6 +20,7 @@ constexpr gfx::Size kIconButtonSize(22, 22);
 DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
                                        Desk* desk)
     : desk_(desk) {
+  desk_->AddObserver(this);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -36,7 +38,11 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
   SetAccessibleName(u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
-DeskProfilesButton::~DeskProfilesButton() = default;
+DeskProfilesButton::~DeskProfilesButton() {
+  if (desk_) {
+    desk_->RemoveObserver(this);
+  }
+}
 
 void DeskProfilesButton::UpdateIcon() {
   CHECK(desk_);
@@ -51,6 +57,12 @@ void DeskProfilesButton::UpdateIcon() {
           desk_->lacros_profile_id())) {
     icon_image_ = summary->icon;
   }
+}
+
+void DeskProfilesButton::OnDeskDestroyed(const Desk* desk) {
+  // Note that DeskProfilesButton's parent `DeskMiniView` might outlive the
+  // `desk_`, so `desk_` need to be manually reset.
+  desk_ = nullptr;
 }
 
 }  // namespace ash

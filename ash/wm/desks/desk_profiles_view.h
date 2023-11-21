@@ -13,7 +13,7 @@
 
 namespace ash {
 
-class DeskProfilesButton : public views::ImageButton {
+class DeskProfilesButton : public views::ImageButton, public Desk::Observer {
  public:
   explicit DeskProfilesButton(views::Button::PressedCallback callback,
                               Desk* desk);
@@ -22,6 +22,11 @@ class DeskProfilesButton : public views::ImageButton {
   ~DeskProfilesButton() override;
 
   void UpdateIcon();
+
+  // Desk::Observer:
+  void OnContentChanged() override {}
+  void OnDeskDestroyed(const Desk* desk) override;
+  void OnDeskNameChanged(const std::u16string& new_name) override {}
 
  private:
   // The associated desk.
