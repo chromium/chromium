@@ -271,8 +271,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the document owning the frame this RenderFrameHost is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe> and <portal>). This will return the outer document in cases
-  // of fenced frames and portals but will not cross a browsing session boundary
+  // <fencedframe>). This will return the outer document in cases
+  // of fenced frames but will not cross a browsing session boundary
   // (ie. it will not escape a GuestView). See
   // `RenderFrameHost::GetParentOrOuterDocumentOrEmbedder` for the
   // version of this API that will cross a browsing session boundary.
@@ -293,7 +293,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the document owning the frame this RenderFrameHost is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)). See
+  // <fencedframe>, or an embedder (e.g. GuestViews)). See
   // `RenderFrameHost::GetParentOrOuterDocument` for the version of this API
   // that does not cross a browsing session boundary (ie. Not escaping a
   // GuestView). This method typically will be used for input, compositing, and
@@ -366,9 +366,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
-  // descendants, including frames in any inner frame trees, in breadth-first
-  // order. Examples of features that have inner frame trees are portals or
-  // GuestViews. Note: The RenderFrameHost parameter is not guaranteed to have a
+  // descendants, including frames in any inner frame trees (such as guest
+  // views), in breadth-first order.
+  //
+  // Note: The RenderFrameHost parameter is not guaranteed to have a
   // live RenderFrame counterpart in the renderer process. Callbacks should
   // check IsRenderFrameLive(), as sending IPC messages to it in this case will
   // fail silently.
@@ -976,9 +977,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // non-bfcache navigation in the outermost main frame).
   // This id typically has an associated PageLoad UKM event.
   // Note: this can be called on any frame, but this id for all subframes or
-  // fenced frames is the same as the id for the outermost main frame. For
-  // portals, this id for frames inside a portal is the same as the id for the
-  // main frame for the portal.
+  // fenced frames is the same as the id for the outermost main frame.
   // Should not be called while prerendering as our data collection policy
   // disallow recording UKMs until the page activation.
   // See //content/browser/preloading/prerender/README.md#ukm-source-ids for

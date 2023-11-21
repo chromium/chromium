@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/portal/portal_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
@@ -186,9 +185,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // console about CSP blocking the load.
   AddThrottle(
       MixedContentNavigationThrottle::CreateThrottleForNavigation(request));
-
-  // Block certain requests that are not permitted for portals.
-  AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Block certain requests that are not permitted for prerendering.
   AddThrottle(PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));

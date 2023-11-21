@@ -53,7 +53,6 @@ TEST_F(FrameOwnerElementTypeDeathTest, SerializeInvalid) {
   // mojom::ChildFrameOwnerElementType.
   constexpr blink::FrameOwnerElementType kUnconvertibleValues[] = {
       blink::FrameOwnerElementType::kNone,
-      blink::FrameOwnerElementType::kPortal,
       blink::FrameOwnerElementType::kFencedframe,
   };
 

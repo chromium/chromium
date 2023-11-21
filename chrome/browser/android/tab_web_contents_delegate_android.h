@@ -46,7 +46,6 @@ class TabWebContentsDelegateAndroid
 
   ~TabWebContentsDelegateAndroid() override;
 
-  void PortalWebContentsCreated(content::WebContents* portal_contents) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -100,9 +99,6 @@ class TabWebContentsDelegateAndroid
   bool IsBackForwardCacheSupported() override;
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
-  std::unique_ptr<content::WebContents> ActivatePortalWebContents(
-      content::WebContents* predecessor_contents,
-      std::unique_ptr<content::WebContents> portal_contents) override;
   device::mojom::GeolocationContext* GetInstalledWebappGeolocationContext()
       override;
 

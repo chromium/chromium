@@ -1211,36 +1211,6 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
   EXPECT_EQ(7, results.number_of_matches);
 }
 
-class FindRequestManagerPortalTest : public FindRequestManagerTest {
- public:
-  FindRequestManagerPortalTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPortals);
-  }
-  ~FindRequestManagerPortalTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that find-in-page won't show results inside a portal.
-IN_PROC_BROWSER_TEST_F(FindRequestManagerPortalTest, Portal) {
-  TestNavigationObserver navigation_observer(contents());
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                 "a.com", "/find_in_page_with_portal.html")));
-  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
-
-  auto options = blink::mojom::FindOptions::New();
-  options->run_synchronously_for_testing = true;
-  Find("result", options->Clone());
-  delegate()->WaitForFinalReply();
-
-  FindResults results = delegate()->GetFindResults();
-  EXPECT_EQ(last_request_id(), results.request_id);
-  EXPECT_EQ(2, results.number_of_matches);
-  EXPECT_EQ(1, results.active_match_ordinal);
-}
-
 class FindTestWebContentsPrerenderingDelegate
     : public FindTestWebContentsDelegate {
  public:

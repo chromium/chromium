@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "portal_recently_audible_browsertest\.cc": [
-    # Used to verify that the browser UI was duly notified about audio state
-    # changes.
-    "+chrome/browser/ui/views/frame/browser_view.h",
-    "+chrome/browser/ui/views/tabs/tab_strip.h",
-  ],
-}

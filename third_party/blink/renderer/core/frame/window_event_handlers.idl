@@ -42,7 +42,6 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onpagehide;
   attribute EventHandler onpageshow;
   attribute EventHandler onpopstate;
-  [RuntimeEnabled=Portals] attribute EventHandler onportalactivate;
   attribute EventHandler onrejectionhandled;
   attribute EventHandler onstorage;
   [RuntimeEnabled=TimeZoneChangeEvent] attribute EventHandler ontimezonechange;

@@ -6784,25 +6784,6 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
   EXPECT_EQ(ff_rfh->GetProcess(), ff_rfh_2->GetProcess());
 }
 
-class WebViewPortalTest : public WebViewTest {
- public:
-  WebViewPortalTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-  }
-  ~WebViewPortalTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Creates and activates a <portal> element inside a <webview>.
-IN_PROC_BROWSER_TEST_F(WebViewPortalTest, PortalActivationInGuest) {
-  TestHelper("testActivatePortal", "web_view/shim", NEEDS_TEST_SERVER);
-}
-
 class WebViewUsbTest : public WebViewTest {
  public:
   WebViewUsbTest() = default;

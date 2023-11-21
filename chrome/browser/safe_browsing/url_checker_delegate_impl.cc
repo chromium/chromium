@@ -59,11 +59,10 @@ void CreateSafeBrowsingUserInteractionObserver(
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
       security_interstitials::GetWebContentsForResource(resource);
-  // Don't delay the interstitial for prerender pages and portals.
+  // Don't delay the interstitial for prerender pages.
   if (!web_contents ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents) ||
-      web_contents->IsPortal()) {
+          web_contents)) {
     ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }

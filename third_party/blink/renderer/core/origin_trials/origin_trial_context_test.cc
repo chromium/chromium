@@ -45,7 +45,6 @@ const char kFrobulateThirdPartyTrialName[] = "FrobulateThirdParty";
 const char kFrobulateNavigationTrialName[] = "FrobulateNavigation";
 const char kFrobulateDeprecationTrialName[] = "FrobulateDeprecation";
 const char kFrobulateBrowserReadWriteTrialName[] = "FrobulateBrowserReadWrite";
-const char kPortalsTrialName[] = "Portals";
 const char kFrobulateEnabledOrigin[] = "https://www.example.com";
 const char kFrobulateEnabledOriginInsecure[] = "http://www.example.com";
 const char kUnrelatedSecureOrigin[] = "https://other.example.com";
@@ -660,16 +659,19 @@ TEST_F(OriginTrialContextDevtoolsTest, DependentFeatureNotEnabled) {
   UpdateSecurityOrigin(kFrobulateEnabledOrigin);
 
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(blink::features::kPortals);
+  feature_list_.InitAndDisableFeature(
+      blink::features::kSpeculationRulesPrefetchFuture);
 
-  AddTokenWithResponse(kPortalsTrialName, OriginTrialTokenStatus::kSuccess);
+  AddTokenWithResponse("SpeculationRulesPrefetchFuture",
+                       OriginTrialTokenStatus::kSuccess);
 
-  EXPECT_FALSE(IsFeatureEnabled(mojom::blink::OriginTrialFeature::kPortals));
+  EXPECT_FALSE(IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kSpeculationRulesPrefetchFuture));
   HashMap<String, OriginTrialResult> origin_trial_results =
       GetOriginTrialResultsForDevtools();
   EXPECT_EQ(origin_trial_results.size(), 1u);
   ExpectTrialResultContains(
-      origin_trial_results, kPortalsTrialName,
+      origin_trial_results, "SpeculationRulesPrefetchFuture",
       OriginTrialStatus::kTrialNotAllowed,
       {{OriginTrialTokenStatus::kSuccess, /* token_parsable */ true}});
 }

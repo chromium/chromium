@@ -1,6 +1,0 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
-++++TextView text:"Before portal" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
-++View text:"portal" textSize:16.00 style:0 bundle:[aria-label="portal", display="inline", htmlTag="portal", src="frame/button.html"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
-++++TextView text:"After portal" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

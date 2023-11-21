@@ -60,7 +60,6 @@ import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/opengraph/metadata.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
-import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
@@ -173,7 +172,6 @@ enum FrameOwnerElementType {
   kObject,
   kEmbed,
   kFrame,
-  kPortal,
   kFencedframe
 };
 
@@ -719,38 +717,6 @@ interface LocalFrameHost {
   // browser to send private aggregation requests associated with `event_type`.
   SendPrivateAggregationRequestsForFencedFrameEvent(string event_type);
 
-  // Sent by the renderer process to request the creation of a new portal.
-  // |portal| is the pipe to be used for the Portal object, |client| is the pipe
-  // used to communicate back with the caller. Returns:
-  // |initial_replicated_state| - the replicated state associated with that
-  //                              RenderFrameProxy
-  // |portal_token| - the unique identifier for the portal
-  // |frame_token| - the unique identifier of the RenderFrameProxy
-  // |devtools_frame_token| - the unique identifier of the frame node in the
-  //                          frame tree
-  [Sync] CreatePortal(
-      pending_associated_receiver<blink.mojom.Portal> portal,
-      pending_associated_remote<blink.mojom.PortalClient> client,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces)
-      => (blink.mojom.FrameReplicationState initial_replicated_state,
-          blink.mojom.PortalToken portal_token,
-          blink.mojom.RemoteFrameToken frame_token,
-          mojo_base.mojom.UnguessableToken devtools_frame_token);
-
-  // Requests that this frame adopts the portal identified by |portal_token|.
-  // Returns:
-  // |replicated_state| - the replicated state associated with that
-  //                      RenderFrameProxy
-  // |frame_token| - the unique identifier of the RenderFrameProxy
-  // |devtools_frame_token| - the unique identifier of the frame node in the
-  //                          frame tree
-  [Sync] AdoptPortal(
-      blink.mojom.PortalToken portal_token,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces)
-      => (blink.mojom.FrameReplicationState replicated_state,
-          blink.mojom.RemoteFrameToken frame_token,
-          mojo_base.mojom.UnguessableToken devtools_frame_token);
-
   // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
   // element, to the browser process requesting the creation of a new fenced
   // frame tree that will host the contents of the <fencedframe> element.
@@ -1194,26 +1160,6 @@ interface LocalMainFrame {
       blink.mojom.FrameToken accessed_window,
       network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info,
       bool is_in_same_virtual_coop_related_group);
-
-  // Called on the main frame of a page embedded in a Portal when it is
-  // activated. The frame has the option to adopt the previous page as a portal
-  // identified by |portal_token| with the interface |portal|. The activation
-  // can optionally include a message |data| dispatched with the
-  // PortalActivateEvent. The return value |was_adopted| indicates if the portal
-  // for the predecessor (identified by |portal_token|) was adopted by the
-  // current frame. The |trace_id| is used to generate activation flow events.
-  OnPortalActivated(
-      blink.mojom.PortalToken portal_token,
-      pending_associated_remote<blink.mojom.Portal> portal,
-      pending_associated_receiver<blink.mojom.PortalClient> portal_client,
-      blink.mojom.TransferableMessage data,
-      uint64 trace_id)
-      => (blink.mojom.PortalActivateResult result);
-
-  // Forwards a message from a portal's host to the main frame in the portal's
-  // guest contents.
-  ForwardMessageFromHost(blink.mojom.TransferableMessage message,
-                         url.mojom.Origin source_origin);
 
   // Notifies the renderer whether hiding/showing the browser controls is
   // enabled, what the current state should be, and whether or not to

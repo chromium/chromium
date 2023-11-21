@@ -171,10 +171,6 @@ RenderFrameHostImpl* FencedFrame::GetProspectiveOuterDocument() {
   return nullptr;
 }
 
-bool FencedFrame::IsPortal() {
-  return false;
-}
-
 FrameTree* FencedFrame::LoadingTree() {
   // TODO(crbug.com/1232528): Consider and fix the case when fenced frames are
   // being prerendered.

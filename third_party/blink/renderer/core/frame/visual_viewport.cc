@@ -986,11 +986,8 @@ bool VisualViewport::IsActiveViewport() const {
   if (!main_frame->IsLocalFrame())
     return false;
 
-  // Only the outermost main frame should have an active viewport. A portal is
-  // the only exception since it may eventually become the outermost main frame
-  // so its viewport should be active (e.g. it should be able to independently
-  // scale based on a viewport <meta> tag).
-  return main_frame->IsOutermostMainFrame() || GetPage().InsidePortal();
+  // Only the outermost main frame should have an active viewport.
+  return main_frame->IsOutermostMainFrame();
 }
 
 LocalFrame& VisualViewport::LocalMainFrame() const {

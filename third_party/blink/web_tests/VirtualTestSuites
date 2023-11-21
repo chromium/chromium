@@ -1254,21 +1254,6 @@
     "expires": "Jan 15, 2024"
   },
   {
-    "prefix": "portals",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/fetch/metadata/portal.https.sub.html",
-               "external/wpt/portals",
-               "http/tests/devtools/portals",
-               "http/tests/inspector-protocol/portals",
-               "http/tests/portals",
-               "wpt_internal/portals" ],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=Portals,PortalsCrossOrigin",
-             "--disable-features=DeprecateUnload",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "restrict-gamepad",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/gamepad" ],

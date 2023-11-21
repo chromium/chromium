@@ -865,15 +865,6 @@ class WebContents : public PageNavigator,
   // GetOuterWebContents instead.
   virtual bool IsInnerWebContentsForGuest() = 0;
 
-  // Returns whether this WebContents is a portal. This returns true even when
-  // this WebContents is not attached to its portal host's WebContents tree.
-  // This value may change over time due to portal activation and adoption.
-  virtual bool IsPortal() = 0;
-
-  // If |IsPortal()| is true, returns this WebContents' portal host's
-  // WebContents. Otherwise, returns nullptr.
-  virtual WebContents* GetPortalHostWebContents() = 0;
-
   // Returns the outer WebContents frame, the same frame that this WebContents
   // was attached in AttachToOuterWebContentsFrame().
   virtual RenderFrameHost* GetOuterWebContentsFrame() = 0;
@@ -900,6 +891,10 @@ class WebContents : public PageNavigator,
   // it for rendering).
   //
   // Always returns a non-null value.
+  //
+  // TODO(crbug.com/1498410): Consider replacing this with
+  // GuestViewBase::GetTopLevelWebContents, since that is now the only case
+  // where this would return a contents other than |this|.
   virtual WebContents* GetResponsibleWebContents() = 0;
 
   // Invoked when visible security state changes.

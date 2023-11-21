@@ -124,7 +124,6 @@ class FindRequestManager;
 class JavaScriptDialogManager;
 class MediaWebContentsObserver;
 class NFCHost;
-class Portal;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderViewHost;
@@ -435,8 +434,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
           remote_frame_host_receiver,
       bool is_full_page) override;
   bool IsInnerWebContentsForGuest() override;
-  bool IsPortal() override;
-  WebContentsImpl* GetPortalHostWebContents() override;
   RenderFrameHostImpl* GetOuterWebContentsFrame() override;
   WebContentsImpl* GetOuterWebContents() override;
   WebContentsImpl* GetOutermostWebContents() override;
@@ -1292,23 +1289,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Reattaches this inner WebContents to its outer WebContents.
   virtual void ReattachToOuterWebContentsFrame();
 
-  // Getter/setter for the Portal associated with this WebContents. If non-null
-  // then this WebContents is embedded in a portal and its outer WebContents can
-  // be found by using GetOuterWebContents().
-  void set_portal(Portal* portal) { portal_ = portal; }
-  Portal* portal() const { return portal_; }
-
-  // Sends a page message to notify every process in the frame tree if the
-  // web contents is a portal web contents.
-  void NotifyInsidePortal(bool inside_portal);
-
-  // Notifies observers that this WebContents was activated. This contents'
-  // former portal host, |predecessor_web_contents|, has become a portal pending
-  // adoption.
-  // `activation_time` is the time the activation happened, in wall time.
-  void DidActivatePortal(WebContentsImpl* predecessor_web_contents,
-                         base::TimeTicks activation_time);
-
   // Notifies observers that this WebContents completed preview activation
   // steps.
   // `activation_time` is the time the activation happened, in wall time.
@@ -1900,8 +1880,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Returns the primary frame tree, followed by any other outermost frame trees
   // in this WebContents. Outermost frame trees include, for example,
-  // prerendering frame trees, and do not include, for example, fenced frames or
-  // portals. Also note that bfcached pages do not have a distinct frame tree,
+  // prerendering frame trees, and do not include, for example, fenced frames.
+  // Also note that bfcached pages do not have a distinct frame tree,
   // so the primary frame tree in the result would be the only FrameTree
   // representing any bfcached pages.
   std::vector<FrameTree*> GetOutermostFrameTrees();
@@ -2330,11 +2310,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // DidStartNavigation/DidFinishNavigation and only set for an initial
   // navigation triggered by the browser going to about:blank.
   bool should_focus_location_bar_by_default_ = false;
-
-  // Stores the Portal object associated with this WebContents, if there is one.
-  // If non-null then this WebContents is embedded in a portal and its outer
-  // WebContents can be found by using GetOuterWebContents().
-  raw_ptr<Portal, DanglingUntriaged> portal_ = nullptr;
 
   // Stores the rect of the Windows Control Overlay, which contains system UX
   // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),

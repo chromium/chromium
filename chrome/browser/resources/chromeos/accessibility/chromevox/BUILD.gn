@@ -425,7 +425,6 @@ if (is_chromeos_ash) {
       "background/panel/i_search_test.js",
       "background/panel/panel_background_test.js",
       "background/panel/panel_node_menu_background_test.js",
-      "background/portals_test.js",
       "background/settings_test.js",
       "background/tts_background_test.js",
       "common/braille/braille_command_data_test.js",

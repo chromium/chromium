@@ -1508,12 +1508,6 @@ content::PreloadingEligibility Browser::IsPrerender2Supported(
   return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
-std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(
-    content::WebContents* predecessor_contents,
-    std::unique_ptr<content::WebContents> portal_contents) {
-  return SwapWebContents(predecessor_contents, std::move(portal_contents));
-}
-
 void Browser::UpdateInspectedWebContentsIfNecessary(
     content::WebContents* old_contents,
     content::WebContents* new_contents,
@@ -1936,22 +1930,6 @@ void Browser::WebContentsCreated(WebContents* source_contents,
 
   // Make the tab show up in the task manager.
   task_manager::WebContentsTags::CreateForTabContents(new_contents);
-}
-
-void Browser::PortalWebContentsCreated(WebContents* portal_web_contents) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("PortalsActive",
-                                                            "Enabled");
-
-  TabHelpers::AttachTabHelpers(portal_web_contents);
-
-  // Make the portal show up in the task manager.
-  WebContentsBecamePortal(portal_web_contents);
-}
-
-void Browser::WebContentsBecamePortal(WebContents* portal_web_contents) {
-  // Make the contents show up as a portal in the task manager.
-  task_manager::WebContentsTags::ClearTag(portal_web_contents);
-  task_manager::WebContentsTags::CreateForPortal(portal_web_contents);
 }
 
 void Browser::RendererUnresponsive(

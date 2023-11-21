@@ -369,13 +369,6 @@ void BrowserAccessibilityManager::DidStopLoading() {
   FireFocusEventsIfNeeded();
 }
 
-void BrowserAccessibilityManager::DidActivatePortal() {
-  if (GetTreeData().loaded) {
-    FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
-                       GetRoot());
-  }
-}
-
 bool BrowserAccessibilityManager::UseRootScrollOffsetsWhenComputingBounds() {
   return use_root_scroll_offsets_when_computing_bounds_;
 }

@@ -96,7 +96,6 @@
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_context.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -2083,89 +2082,6 @@ void RenderFrameHostImpl::OnGrantedMediaStreamAccess() {
   MaybeEvictFromBackForwardCache();
 }
 
-void RenderFrameHostImpl::OnPortalActivated(
-    std::unique_ptr<Portal> predecessor,
-    mojo::PendingAssociatedRemote<blink::mojom::Portal> pending_portal,
-    mojo::PendingAssociatedReceiver<blink::mojom::PortalClient> client_receiver,
-    blink::TransferableMessage data,
-    uint64_t trace_id,
-    base::OnceCallback<void(blink::mojom::PortalActivateResult)> callback) {
-  auto it = portals_.insert(std::move(predecessor)).first;
-
-  TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameHostImpl::OnPortalActivated",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-
-  GetAssociatedLocalMainFrame()->OnPortalActivated(
-      (*it)->portal_token(), std::move(pending_portal),
-      std::move(client_receiver), std::move(data), trace_id,
-      base::BindOnce(
-          [](base::OnceCallback<void(blink::mojom::PortalActivateResult)>
-                 callback,
-             blink::mojom::PortalActivateResult result) {
-            switch (result) {
-              case blink::mojom::PortalActivateResult::kPredecessorWillUnload:
-              case blink::mojom::PortalActivateResult::kPredecessorWasAdopted:
-                // These values are acceptable from the renderer.
-                break;
-              case blink::mojom::PortalActivateResult::
-                  kRejectedDueToPredecessorNavigation:
-              case blink::mojom::PortalActivateResult::
-                  kRejectedDueToPortalNotReady:
-              case blink::mojom::PortalActivateResult::
-                  kRejectedDueToErrorInPortal:
-              case blink::mojom::PortalActivateResult::kDisconnected:
-              case blink::mojom::PortalActivateResult::kNotImplemented:
-              case blink::mojom::PortalActivateResult::kAbortedDueToBug:
-                // The renderer is misbehaving.
-                mojo::ReportBadMessage(
-                    "Unexpected PortalActivateResult from renderer");
-                result = blink::mojom::PortalActivateResult::kAbortedDueToBug;
-                break;
-            }
-            std::move(callback).Run(result);
-          },
-          std::move(callback)));
-
-  if (browser_accessibility_manager_) {
-    browser_accessibility_manager_->DidActivatePortal();
-  }
-}
-
-void RenderFrameHostImpl::OnPortalCreatedForTesting(
-    std::unique_ptr<Portal> portal) {
-  portals_.insert(std::move(portal));
-}
-
-Portal* RenderFrameHostImpl::FindPortalByToken(
-    const blink::PortalToken& portal_token) {
-  auto it = base::ranges::find(portals_, portal_token, &Portal::portal_token);
-  return it == portals_.end() ? nullptr : it->get();
-}
-
-std::vector<Portal*> RenderFrameHostImpl::GetPortals() const {
-  std::vector<Portal*> result;
-  for (const auto& portal : portals_)
-    result.push_back(portal.get());
-  return result;
-}
-
-void RenderFrameHostImpl::DestroyPortal(Portal* portal) {
-  auto it = portals_.find(portal);
-  CHECK(it != portals_.end());
-  std::unique_ptr<Portal> owned_portal(std::move(*it));
-  portals_.erase(it);
-  // |owned_portal| is deleted as it goes out of scope.
-}
-
-void RenderFrameHostImpl::ForwardMessageFromHost(
-    blink::TransferableMessage message,
-    const url::Origin& source_origin) {
-  DCHECK_EQ(source_origin, GetLastCommittedOrigin());
-  GetAssociatedLocalMainFrame()->ForwardMessageFromHost(std::move(message),
-                                                        source_origin);
-}
-
 SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() const {
   return site_instance_.get();
 }
@@ -3095,7 +3011,6 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // https://chromium-review.googlesource.com/c/chromium/src/+/3645368
     //
     // TODO(https://crbug.com/1338603): What makes sense for GuestView?
-    // TODO(https://crbug.com/1338601): What makes sense for Portals?
     const PolicyContainerPolicies& parent_policies =
         GetParentOrOuterDocument()->policy_container_host()->policies();
 
@@ -5705,10 +5620,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
-  // TODO(crbug.com/1244137): We have to check portals explicitly as they are
-  // considered primary. Remove check after we migrate portals to MPArch.
-  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame() ||
-      frame_tree()->delegate()->IsPortal()) {
+  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
     std::move(ipc_response_callback).Run(/*success=*/false, std::u16string());
     return;
   }
@@ -5737,8 +5649,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
-  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame() ||
-      frame_tree()->delegate()->IsPortal()) {
+  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
     std::move(ipc_response_callback).Run(/*success=*/false);
     return;
   }
@@ -6035,9 +5946,7 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   // regardless if the request came from the browser so that renderers can't
   // avoid closing via navigation.
   DCHECK(is_main_frame());
-  // TODO(crbug.com/1254770): Orphaned portals use this code path. Revisit how
-  // portals handle unload when migrating off of inner WebContents.
-  DCHECK(IsOutermostMainFrame() || frame_tree()->delegate()->IsPortal());
+  DCHECK(IsOutermostMainFrame());
   if (!IsInPrimaryMainFrame() && source == ClosePageSource::kRenderer) {
     return;
   }
@@ -6234,12 +6143,9 @@ void RenderFrameHostImpl::ReportNoBinderForInterface(const std::string& error) {
 ukm::SourceId RenderFrameHostImpl::GetPageUkmSourceId() {
   CHECK(!IsInLifecycleState(LifecycleState::kPrerendering));
   // This id for all subframes or fenced frames is the same as the id for the
-  // outermost main frame. For portals, this id for frames inside a portal is
-  // the same as the id for the main frame for the portal.
-  RenderFrameHostImpl* main_frame =
-      IsNestedWithinFencedFrame() ? GetOutermostMainFrame() : GetMainFrame();
+  // outermost main frame.
   int64_t navigation_id =
-      main_frame->last_committed_cross_document_navigation_id_;
+      GetOutermostMainFrame()->last_committed_cross_document_navigation_id_;
   if (navigation_id == -1)
     return ukm::kInvalidSourceId;
   return ukm::ConvertToSourceId(navigation_id,
@@ -6697,9 +6603,9 @@ FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChildInternal(
 
   if (&child_frame_or_proxy.GetFrameTreeNode()->frame_tree() != frame_tree()) {
     // Ignore the cases when the child lives in a different frame tree.
-    // This is possible when we create a proxy for inner WebContents (e.g.
-    // for portals) so the |child_frame_or_proxy| points to the root frame
-    // of the nested WebContents, which is in a different tree.
+    // This is possible when we create a proxy for inner WebContents so the
+    // |child_frame_or_proxy| points to the root frame of the nested
+    // WebContents, which is in a different tree.
     // TODO(altimin, lfg): Reconsider what the correct behaviour here should be.
     return nullptr;
   }
@@ -8048,9 +7954,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
     // There are some relevant parameter changes to note:
     // Change the navigation target to the outermost frame.
-    // This escapes Portals but not GuestViews.
-    // - We don't especially care about Portals, because the frame won't be
-    //   user activated until it's no longer in a portal
+    // This does not escape GuestViews.
     // - We don't want _unfencedTop navigations to escape a GuestView
     //   (<webview>) and affect their embedder.
     RenderFrameHostImpl* target_frame = GetOutermostMainFrame();
@@ -8517,111 +8421,6 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
 
   fenced_frame_properties->fenced_frame_reporter_
       ->SendPrivateAggregationRequestsForEvent(event_type);
-}
-
-void RenderFrameHostImpl::CreatePortal(
-    mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
-    mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
-    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    CreatePortalCallback callback) {
-  if (!Portal::IsEnabled()) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "blink.mojom.Portal can only be used if the Portals feature is "
-        "enabled.");
-    return;
-  }
-
-  // If a Portal is nested inside a prerendered page, its owning RFH is also
-  // |kPrerendering|. In this case the creation of the Portal is deferred from
-  // the renderer.
-  if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "RenderFrameHostImpl::CreatePortal cannot be called when the RFH is "
-        "being prerendered.");
-    return;
-  }
-
-  // We don't support attaching a portal inside a nested browsing context or
-  // inside a fenced frame.
-  if (!is_main_frame() || IsFencedFrameRoot()) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "RFHI::CreatePortal called in a nested browsing context");
-    return;
-  }
-
-  // TODO(crbug.com/1051639): We need to find a long term solution to when/how
-  // portals should work in sandboxed documents.
-  if (active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "RFHI::CreatePortal called in a sandboxed browsing context");
-    return;
-  }
-
-  // Note that we don't check |GetLastCommittedOrigin|, since that is inherited
-  // by the initial empty document of a new frame.
-  // TODO(1008989): Once issue 1008989 is fixed we could move this check into
-  // |Portal::Create|.
-  if (!GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "Portal creation is restricted to the HTTP family.");
-    return;
-  }
-
-  auto portal = std::make_unique<Portal>(this);
-  portal->Bind(std::move(pending_receiver), std::move(client));
-  auto it = portals_.insert(std::move(portal)).first;
-
-  RenderFrameProxyHost* proxy_host =
-      (*it)->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
-
-  if (!proxy_host) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "Trying to attach a portal that has already been attached.");
-    return;
-  }
-
-  // Since the portal is newly created and has yet to commit a navigation, this
-  // state is default-constructed.
-  const blink::mojom::FrameReplicationState& initial_replicated_state =
-      proxy_host->frame_tree_node()->current_replication_state();
-  DCHECK(initial_replicated_state.origin.opaque());
-
-  std::move(callback).Run(initial_replicated_state.Clone(),
-                          (*it)->portal_token(), proxy_host->GetFrameToken(),
-                          (*it)->GetDevToolsFrameToken());
-}
-
-void RenderFrameHostImpl::AdoptPortal(
-    const blink::PortalToken& portal_token,
-    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    AdoptPortalCallback callback) {
-  Portal* portal = FindPortalByToken(portal_token);
-  if (!portal) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "Unknown portal_token when adopting portal.");
-    return;
-  }
-  DCHECK_EQ(portal->owner_render_frame_host(), this);
-  RenderFrameProxyHost* proxy_host =
-      portal->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
-
-  if (!proxy_host) {
-    frame_host_associated_receiver_.ReportBadMessage(
-        "Trying to attach a portal that has already been attached.");
-    return;
-  }
-
-  // |frame_sink_id| should be set to the associated frame. See
-  // https://crbug.com/966119 for details.
-  viz::FrameSinkId frame_sink_id = proxy_host->frame_tree_node()
-                                       ->render_manager()
-                                       ->GetRenderWidgetHostView()
-                                       ->GetFrameSinkId();
-  proxy_host->GetAssociatedRemoteFrame()->SetFrameSinkId(frame_sink_id);
-
-  std::move(callback).Run(
-      proxy_host->frame_tree_node()->current_replication_state().Clone(),
-      proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 }
 
 std::vector<FencedFrame*> RenderFrameHostImpl::GetFencedFrames() const {
@@ -9163,8 +8962,6 @@ void RenderFrameHostImpl::BeginNavigation(
     // driven by the iframe specific attribute as defined here:
     // https://github.com/WICG/trust-token-api#extension-iframe-activation". If
     // this changes, the code below using `GetParent()` will need to be changed.
-    // TODO(crbug.com/1254770): For portals implemented with mparch, we'll have
-    // a similar problem with `GetParent()` calls as with Fenced Frame.
     if (IsFencedFrameRoot()) {
       mojo::ReportBadMessage(
           "RFHI: Private State Token params in fenced frame nav");
@@ -16072,14 +15869,6 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
 
 bool RenderFrameHostImpl::ShouldReuseCompositing(
     SiteInstanceImpl& speculative_site_instance) const {
-  // The compositor can't be swapped from a non-top level RenderFrameHost to a
-  // top-level RenderFrameHost (or vice-versa). Since portals breaks this
-  // assumption, disable the compositor use when its enabled.
-  // This feature is being removed. See crbug.com/1498140.
-  if (base::FeatureList::IsEnabled(blink::features::kPortals)) {
-    return false;
-  }
-
   if (!ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     return false;
   }

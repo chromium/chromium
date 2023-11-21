@@ -573,7 +573,7 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
 
   if (ShouldMaintainTrivialSessionHistory()) {
     // TODO(http://crbug.com/1197384): We may want to assert that
-    // WebFrameLoadType is never kStandard in prerendered pages/portals before
+    // WebFrameLoadType is never kStandard in prerendered pages before
     // commit. DCHECK can be in FrameLoader::CommitNavigation or somewhere
     // similar.
     return true;
@@ -608,10 +608,7 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
 bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
   // This should be kept in sync with
   // NavigationControllerImpl::ShouldMaintainTrivialSessionHistory.
-  //
-  // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
-  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering() ||
-         IsInFencedFrameTree();
+  return GetDocument()->IsPrerendering() || IsInFencedFrameTree();
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {

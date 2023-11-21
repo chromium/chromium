@@ -104,7 +104,6 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -485,13 +484,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       ignored_reasons->push_back(IgnoredReason(kAXPresentational));
     return kIgnoreObject;
   }
-
-  // Objects inside a portal should be ignored. Portals don't directly expose
-  // their contents as the contents are not focusable (portals do not currently
-  // support input events). Portals do use their contents to compute a default
-  // accessible name.
-  if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
-    return kIgnoreObject;
 
   Node* node = GetNode();
   if (!node) {
@@ -1304,9 +1296,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
     return ax::mojom::blink::Role::kGenericContainer;
   }
-
-  if (IsA<HTMLPortalElement>(*GetNode()))
-    return ax::mojom::blink::Role::kPortal;
 
   if (IsA<HTMLButtonElement>(*GetNode()))
     return ButtonRoleType();
@@ -3711,20 +3700,6 @@ String AXNodeObject::TextAlternative(
   if (!GetNode() && !GetLayoutObject())
     return String();
 
-  // Exclude offscreen objects inside a portal.
-  // NOTE: If an object is found to be offscreen, this also omits its children,
-  // which may not be offscreen in some cases.
-  Page* page = GetNode() ? GetNode()->GetDocument().GetPage() : nullptr;
-  if (page && page->InsidePortal()) {
-    PhysicalRect bounds = GetBoundsInFrameCoordinates();
-    gfx::Size document_size =
-        GetNode()->GetDocument().GetLayoutView()->GetLayoutSize();
-    bool is_visible = bounds.Intersects(
-        PhysicalRect(PhysicalOffset(), PhysicalSize(document_size)));
-    if (!is_visible)
-      return String();
-  }
-
   // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control.
   // This must occur before 2C, because 2C is not applied if 2E will be:
   // 2C: "If traversal of the current node is due to recursion and the current
@@ -5031,9 +5006,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     // This fixes a scenario with Narrator Item Navigation when the user
     // navigates from the outer UI to the document when the last focused
     // element was within a nested iframe before leaving the document frame.
-    Page* page = document->GetPage();
-    // Elements inside a portal should not be focusable.
-    if (page && !page->InsidePortal()) {
+    if (Page* page = document->GetPage()) {
       page->GetFocusController().SetFocusedElement(document->documentElement(),
                                                    document->GetFrame());
     } else {

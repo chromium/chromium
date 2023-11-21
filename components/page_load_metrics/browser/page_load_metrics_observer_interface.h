@@ -577,10 +577,6 @@ class PageLoadMetricsObserverInterface {
   // Called when prefetch is likely to occur in this page load.
   virtual void OnPrefetchLikely() = 0;
 
-  // Called when the page tracked was just activated after being loaded inside a
-  // portal.
-  virtual void DidActivatePortal(base::TimeTicks activation_time) = 0;
-
   // Called when the page tracked was just activated after being prerendered.
   // |navigation_handle| is for the activation navigation.
   virtual void DidActivatePrerenderedPage(

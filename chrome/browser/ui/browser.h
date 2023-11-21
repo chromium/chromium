@@ -740,9 +740,6 @@ class Browser : public TabStripModelObserver,
   bool IsBackForwardCacheSupported() override;
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
-  std::unique_ptr<content::WebContents> ActivatePortalWebContents(
-      content::WebContents* predecessor_contents,
-      std::unique_ptr<content::WebContents> portal_contents) override;
   void UpdateInspectedWebContentsIfNecessary(
       content::WebContents* old_contents,
       content::WebContents* new_contents,
@@ -910,10 +907,6 @@ class Browser : public TabStripModelObserver,
                           const std::string& frame_name,
                           const GURL& target_url,
                           content::WebContents* new_contents) override;
-  void PortalWebContentsCreated(
-      content::WebContents* portal_web_contents) override;
-  void WebContentsBecamePortal(
-      content::WebContents* portal_web_contents) override;
   void RendererUnresponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,

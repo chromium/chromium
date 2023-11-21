@@ -121,17 +121,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
                                 "window.location.href = 'https://www.example.com/';"));
     }
 
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({"enable-features=Portals"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    public void testExitPipOnPortalActivation() throws Throwable {
-        testExitOn(
-                () ->
-                        JavaScriptUtils.executeJavaScript(
-                                getWebContents(), "document.querySelector('portal').activate();"));
-    }
-
     /** Tests that PiP is left when the video leaves fullscreen. */
     @Test
     @MediumTest

@@ -72,9 +72,6 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
-#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/dom_editor.h"
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
@@ -2447,11 +2444,6 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
   }
 }
 
-void InspectorDOMAgent::PortalRemoteFrameCreated(
-    HTMLPortalElement* portal_element) {
-  InvalidateFrameOwnerElement(portal_element);
-}
-
 static ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
   auto* element = DynamicTo<Element>(node);
   if (!element)
@@ -2666,18 +2658,6 @@ protocol::Response InspectorDOMAgent::getFrameOwner(
     }
   }
 
-  if (!found_frame) {
-    if (auto* portals =
-            DocumentPortals::Get(*inspected_frames_->Root()->GetDocument())) {
-      for (PortalContents* portal : portals->GetPortals()) {
-        Frame* portal_frame = portal->GetFrame();
-        if (IdentifiersFactory::FrameId(portal_frame) == frame_id) {
-          found_frame = portal_frame;
-          break;
-        }
-      }
-    }
-  }
   if (!found_frame) {
     return protocol::Response::ServerError(
         "Frame with the given id was not found.");

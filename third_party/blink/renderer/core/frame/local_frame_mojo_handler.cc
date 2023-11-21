@@ -55,9 +55,6 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/html/portal/dom_window_portal_host.h"
-#include "third_party/blink/renderer/core/html/portal/portal_activate_event.h"
-#include "third_party/blink/renderer/core/html/portal/portal_host.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
@@ -1272,50 +1269,6 @@ void LocalFrameMojoHandler::InstallCoopAccessMonitor(
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
       frame_, std::move(coop_reporter_params),
       is_in_same_virtual_coop_related_group);
-}
-
-void LocalFrameMojoHandler::OnPortalActivated(
-    const PortalToken& portal_token,
-    mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
-    mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
-    BlinkTransferableMessage data,
-    uint64_t trace_id,
-    OnPortalActivatedCallback callback) {
-  DCHECK(frame_->GetDocument());
-  LocalDOMWindow* dom_window = frame_->DomWindow();
-  PaintTiming::From(*frame_->GetDocument()).OnPortalActivate();
-
-  TRACE_EVENT_WITH_FLOW0("navigation", "LocalFrame::OnPortalActivated",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
-
-  DOMWindowPortalHost::portalHost(*dom_window)->OnPortalActivated();
-  frame_->GetPage()->SetInsidePortal(false);
-
-  DCHECK(!data.locked_to_sender_agent_cluster)
-      << "portal activation is always cross-agent-cluster and should be "
-         "diagnosed early";
-  MessagePortArray* ports =
-      MessagePort::EntanglePorts(*dom_window, std::move(data.ports));
-
-  PortalActivateEvent* event = PortalActivateEvent::Create(
-      frame_, portal_token, std::move(portal), std::move(portal_client),
-      std::move(data.message), ports, std::move(callback));
-
-  v8::Isolate* isolate = dom_window->GetIsolate();
-  ThreadDebugger* debugger = MainThreadDebugger::Instance(isolate);
-  if (debugger)
-    debugger->ExternalAsyncTaskStarted(data.sender_stack_trace_id);
-  dom_window->DispatchEvent(*event);
-  if (debugger)
-    debugger->ExternalAsyncTaskFinished(data.sender_stack_trace_id);
-  event->ExpireAdoptionLifetime();
-}
-
-void LocalFrameMojoHandler::ForwardMessageFromHost(
-    BlinkTransferableMessage message,
-    const scoped_refptr<const SecurityOrigin>& source_origin) {
-  PortalHost::From(*frame_->DomWindow())
-      .ReceiveMessage(std::move(message), source_origin);
 }
 
 void LocalFrameMojoHandler::UpdateBrowserControlsState(

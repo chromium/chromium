@@ -162,8 +162,7 @@ class CONTENT_EXPORT FrameTree {
     // directed.
     //
     // TODO(crbug.com/1261928): Remove this method and directly rely on
-    // GetOutermostMainFrame() once portals and guest views are migrated to
-    // MPArch.
+    // GetOutermostMainFrame() once guest views are migrated to MPArch.
     virtual FrameTree* LoadingTree() = 0;
 
     // Returns true when the active RenderWidgetHostView should be hidden.
@@ -187,9 +186,6 @@ class CONTENT_EXPORT FrameTree {
     // `testNewWindowAttachInSubFrame` webview test for an example of this).
     // Otherwise, returns null.
     virtual RenderFrameHostImpl* GetProspectiveOuterDocument() = 0;
-
-    // Returns if this FrameTree represents a portal.
-    virtual bool IsPortal() = 0;
 
     // Set the `node` frame as focused in its own FrameTree as well as possibly
     // changing the focused frame tree in the case of inner/outer FrameTrees.
@@ -264,12 +260,6 @@ class CONTENT_EXPORT FrameTree {
   bool is_primary() const { return type_ == Type::kPrimary; }
   bool is_prerendering() const { return type_ == Type::kPrerender; }
   bool is_fenced_frame() const { return type_ == Type::kFencedFrame; }
-
-  // Returns true if this frame tree is a portal.
-  //
-  // TODO(crbug.com/1254770): Once portals are migrated to MPArch, portals will
-  // have their own FrameTree::Type.
-  bool IsPortal();
 
   Delegate* delegate() { return delegate_; }
 
@@ -359,7 +349,7 @@ class CONTENT_EXPORT FrameTree {
   // CreateChildFrame mojo call, which also delivers the
   // |policy_container_bind_params|. |is_dummy_frame_for_inner_tree| is true if
   // the added frame is only to serve as a placeholder for an inner frame tree
-  // (e.g. fenced frames, portals) and will not have a live RenderFrame of its
+  // (e.g. fenced frames) and will not have a live RenderFrame of its
   // own.
   FrameTreeNode* AddFrame(
       RenderFrameHostImpl* parent,
@@ -535,7 +525,7 @@ class CONTENT_EXPORT FrameTree {
   // loading related events. Please see FrameTree::Delegate::LoadingTree for
   // more comments.
   // - For prerender frame tree -> returns the frame tree itself.
-  // - For fenced frame and primary frame tree (including portal) -> returns
+  // - For fenced frame and primary frame tree -> returns
   // the delegate's primary frame tree.
   FrameTree* LoadingTree();
 
@@ -579,7 +569,6 @@ class CONTENT_EXPORT FrameTree {
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
-  FRIEND_TEST_ALL_PREFIXES(PortalBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameMPArchBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
                            CreateRenderViewAfterProcessKillAndClosedProxy);
@@ -596,7 +585,7 @@ class CONTENT_EXPORT FrameTree {
   //
   // TODO(crbug.com/1261928, crbug.com/1261928): Remove this method and directly
   // rely on GetOutermostMainFrame() and NodesIncludingInnerTreeNodes() once
-  // portals and guest views are migrated to MPArch.
+  // guest views are migrated to MPArch.
   std::vector<FrameTreeNode*> CollectNodesForIsLoading();
 
   const raw_ptr<Delegate> delegate_;

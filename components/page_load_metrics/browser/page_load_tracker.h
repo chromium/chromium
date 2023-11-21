@@ -432,10 +432,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnRestoreFromBackForwardCache(
       content::NavigationHandle* navigation_handle);
 
-  // Called when the page tracked was just activated after being loaded inside a
-  // portal.
-  void DidActivatePortal(base::TimeTicks activation_time);
-
   // Called when the page tracked was just activated after being prerendered.
   void DidActivatePrerenderedPage(content::NavigationHandle* navigation_handle);
 

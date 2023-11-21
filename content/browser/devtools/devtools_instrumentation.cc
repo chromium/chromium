@@ -35,7 +35,6 @@
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -940,9 +939,7 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
   if (!parent) {
     FrameTreeNode* outer_delegate_node =
         frame_tree_node->render_manager()->GetOuterDelegateNode();
-    if (outer_delegate_node &&
-        (WebContentsImpl::FromFrameTreeNode(frame_tree_node)->IsPortal() ||
-         frame_tree_node->IsFencedFrameRoot())) {
+    if (outer_delegate_node && frame_tree_node->IsFencedFrameRoot()) {
       parent = outer_delegate_node->parent()->frame_tree_node();
     } else if (frame_tree_node->GetFrameType() ==
                    FrameType::kPrerenderMainFrame &&
@@ -1557,35 +1554,6 @@ bool HandleCertificateError(WebContents* web_contents,
   return !callback;
 }
 
-namespace {
-void UpdatePortals(RenderFrameHostImpl* render_frame_host_impl) {
-  if (auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
-          RenderFrameDevToolsAgentHost::GetFor(
-              render_frame_host_impl->frame_tree_node()))) {
-    agent_host->UpdatePortals();
-  }
-  UpdateChildFrameTrees(render_frame_host_impl->frame_tree_node(),
-                        /* update_target_info= */ false);
-}
-}  // namespace
-
-void PortalAttached(RenderFrameHostImpl* render_frame_host_impl) {
-  UpdatePortals(render_frame_host_impl);
-}
-
-void PortalDetached(RenderFrameHostImpl* render_frame_host_impl) {
-  UpdatePortals(render_frame_host_impl);
-}
-
-void PortalActivated(Portal& portal) {
-  WebContents* host_contents = portal.GetPortalHostContents();
-  UpdatePortals(reinterpret_cast<RenderFrameHostImpl*>(
-      host_contents->GetPrimaryMainFrame()));
-  if (auto* host = WebContentsDevToolsAgentHost::GetFor(host_contents)) {
-    host->PortalActivated(portal);
-  }
-}
-
 void FencedFrameCreated(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
     FencedFrame* fenced_frame) {
@@ -2191,51 +2159,6 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ResponseWasBlockedByORB;
   }
-}
-
-namespace {
-struct GenericIssueInfo {
-  GenericIssueInfo() = default;
-  ~GenericIssueInfo() = default;
-  GenericIssueInfo(const GenericIssueInfo& info) = default;
-
-  blink::mojom::GenericIssueErrorType error_type;
-  absl::optional<std::string> frame_id;
-};
-
-void BuildAndReportGenericIssue(RenderFrameHostImpl* render_frame_host_impl,
-                                const GenericIssueInfo& issue_info) {
-  auto generic_issue_details =
-      protocol::Audits::GenericIssueDetails::Create()
-          .SetErrorType(GenericIssueErrorTypeToProtocol(issue_info.error_type))
-          .Build();
-
-  if (issue_info.frame_id) {
-    generic_issue_details->SetFrameId(*issue_info.frame_id);
-  }
-
-  auto issue =
-      protocol::Audits::InspectorIssue::Create()
-          .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
-          .SetDetails(
-              protocol::Audits::InspectorIssueDetails::Create()
-                  .SetGenericIssueDetails(std::move(generic_issue_details))
-                  .Build())
-          .Build();
-
-  ReportBrowserInitiatedIssue(render_frame_host_impl, issue.get());
-}
-}  // namespace
-
-void DidRejectCrossOriginPortalMessage(
-    RenderFrameHostImpl* render_frame_host_impl) {
-  GenericIssueInfo issue_info;
-  issue_info.error_type =
-      blink::mojom::GenericIssueErrorType::kCrossOriginPortalPostMessageError;
-  issue_info.frame_id =
-      render_frame_host_impl->GetDevToolsFrameToken().ToString();
-
-  BuildAndReportGenericIssue(render_frame_host_impl, issue_info);
 }
 
 void UpdateDeviceRequestPrompt(RenderFrameHost* render_frame_host,

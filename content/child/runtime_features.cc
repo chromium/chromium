@@ -600,16 +600,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 // Ensures that the various ways of enabling/disabling features do not produce
 // an invalid configuration.
 void ResolveInvalidConfigurations() {
-  // Portals cannot be enabled without the support of the browser process.
-  if (!base::FeatureList::IsEnabled(blink::features::kPortals)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsPortalsEnabled())
-        << "Portals cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "=" << blink::features::kPortals.name
-        << " instead.";
-    WebRuntimeFeatures::EnablePortals(false);
-  }
-
-  // Fenced frames, like Portals, cannot be enabled without the support of the
+  // Fenced frames cannot be enabled without the support of the
   // browser process.
   if ((base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride) ||
        base::FeatureList::IsEnabled(

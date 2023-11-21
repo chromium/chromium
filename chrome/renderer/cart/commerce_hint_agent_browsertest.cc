@@ -165,8 +165,6 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     return nullptr;
   if (request.relative_url == "/shopping-cart.html")
     return nullptr;
-  if (request.relative_url == "/cart-in-portal.html")
-    return nullptr;
   if (request.relative_url == "/product-page.html")
     return nullptr;
 
@@ -1580,39 +1578,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 }
 
-class CommerceHintAgentPortalBrowserTest : public CommerceHintAgentTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPortals, {}},
-         {blink::features::kPortalsCrossOrigin, {}},
-         {
-#if !BUILDFLAG(IS_ANDROID)
-             ntp_features::kNtpChromeCartModule,
-#else
-             commerce::kCommerceHintAndroid,
-#endif
-             {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
-              // Extend timeout to avoid flakiness.
-              {"cart-extraction-timeout", "1m"}}}},
-        {optimization_guide::features::kOptimizationHints});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentPortalBrowserTest, VisitCartInPortal) {
-  // For add-to-cart by URL, normally a URL in that domain has already been
-  // committed.
-  NavigateToURL("https://www.guitarcenter.com/cart-in-portal.html");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), "loadPromise"));
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), "activate()"));
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)

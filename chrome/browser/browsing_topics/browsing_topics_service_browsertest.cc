@@ -105,31 +105,6 @@ EpochTopics CreateTestEpochTopics(
                      /*from_manually_triggered_calculation=*/false);
 }
 
-class PortalActivationWaiter : public content::WebContentsObserver {
- public:
-  explicit PortalActivationWaiter(content::WebContents* portal_contents)
-      : content::WebContentsObserver(portal_contents) {}
-
-  void Wait() {
-    if (!web_contents()->IsPortal())
-      return;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  // content::WebContentsObserver:
-  void DidActivatePortal(content::WebContents* predecessor_contents,
-                         base::TimeTicks activation_time) override {
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
-  }
-
- private:
-  base::OnceClosure quit_closure_;
-};
-
 }  // namespace
 
 // A tester class that allows waiting for the first calculation to finish.
@@ -308,7 +283,7 @@ class BrowsingTopicsAnnotationGoldenDataBrowserTest
         /*enabled_features=*/
         {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride, blink::features::kPortals},
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
   }
@@ -398,7 +373,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
         /*enabled_features=*/
         {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride, blink::features::kPortals},
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
 
@@ -1140,48 +1115,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
                                                           prerender_url);
   prerender_helper().NavigatePrimaryPage(prerender_url);
   prerender_observer.WaitForActivation();
-
-  std::string result = InvokeTopicsAPI(web_contents());
-
-  EXPECT_EQ(result, kExpectedApiResult);
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPINotAllowedInPortal) {
-  GURL main_frame_url =
-      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  GURL portal_url =
-      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
-
-  ASSERT_EQ(true, content::EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                  content::JsReplace(R"(
-                          new Promise((resolve) => {
-                            let portal = document.createElement('portal');
-                            portal.src = $1;
-                            portal.onload = () => { resolve(true); }
-                            document.body.appendChild(portal);
-                          });
-                          )",
-                                                     portal_url)));
-
-  std::vector<content::WebContents*> inner_web_contents =
-      web_contents()->GetInnerWebContents();
-  EXPECT_EQ(1u, inner_web_contents.size());
-  content::WebContents* portal_contents = inner_web_contents[0];
-
-  EXPECT_EQ(
-      "document.browsingTopics() is only allowed in the outermost page and "
-      "when the page is active.",
-      InvokeTopicsAPI(portal_contents));
-
-  // Activate the portal. The API call should succeed.
-  PortalActivationWaiter activation_waiter(portal_contents);
-  content::ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
-                              "document.querySelector('portal').activate();");
-  activation_waiter.Wait();
-
-  EXPECT_EQ(portal_contents, web_contents());
 
   std::string result = InvokeTopicsAPI(web_contents());
 

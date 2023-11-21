@@ -240,16 +240,6 @@ class LocalFrameMojoHandler
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
           coop_reporter_params,
       bool is_in_same_virtual_coop_related_group) final;
-  void OnPortalActivated(
-      const PortalToken& portal_token,
-      mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
-      mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
-      BlinkTransferableMessage data,
-      uint64_t trace_id,
-      OnPortalActivatedCallback callback) final;
-  void ForwardMessageFromHost(
-      BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& source_origin) final;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;

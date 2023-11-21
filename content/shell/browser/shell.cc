@@ -618,10 +618,6 @@ bool Shell::DidAddMessageToConsole(WebContents* source,
   return switches::IsRunWebTestsSwitchPresent();
 }
 
-void Shell::PortalWebContentsCreated(WebContents* portal_web_contents) {
-  g_platform->DidCreateOrAttachWebContents(this, portal_web_contents);
-}
-
 void Shell::RendererUnresponsive(
     WebContents* source,
     RenderWidgetHost* render_widget_host,
@@ -679,19 +675,6 @@ bool Shell::IsBackForwardCacheSupported() {
 
 PreloadingEligibility Shell::IsPrerender2Supported(WebContents& web_contents) {
   return PreloadingEligibility::kEligible;
-}
-
-std::unique_ptr<WebContents> Shell::ActivatePortalWebContents(
-    WebContents* predecessor_contents,
-    std::unique_ptr<WebContents> portal_contents) {
-  DCHECK_EQ(predecessor_contents, web_contents_.get());
-  portal_contents->SetDelegate(this);
-  web_contents_->SetDelegate(nullptr);
-  std::swap(web_contents_, portal_contents);
-  g_platform->SetContents(this);
-  g_platform->SetAddressBarURL(this, web_contents_->GetVisibleURL());
-  LoadingStateChanged(web_contents_.get(), true);
-  return portal_contents;
 }
 
 namespace {

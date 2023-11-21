@@ -242,7 +242,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
                          bool blocked_by_policy,
                          StorageType access_type) override {}
   void OnPrefetchLikely() override {}
-  void DidActivatePortal(base::TimeTicks activation_time) override {}
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override {}
   void DidActivatePreviewedPage(base::TimeTicks activation_time) override {}

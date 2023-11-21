@@ -117,10 +117,6 @@ interface PageBroadcast {
   ActivatePrerenderedPage(
       PrerenderPageActivationParams prerender_page_activation_params) => ();
 
-  // Notifies renderers when a portal web contents is activated or if a
-  // web contents is adopted as a portal.
-  SetInsidePortal(bool is_inside_portal);
-
   // Notifies the renderer when updating a set of blink preferences.
   UpdateWebPreferences(blink.mojom.WebPreferences preferences);
 

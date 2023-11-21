@@ -36,7 +36,6 @@
 #include "components/services/storage/public/mojom/test_api.test-mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_utils.h"
@@ -96,8 +95,6 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
-#include "content/test/portal/portal_activated_observer.h"
-#include "content/test/portal/portal_created_observer.h"
 #include "content/test/render_document_feature.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -10923,132 +10920,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
   EXPECT_EQ(kPrerenderingUrl, nav_observer.last_navigation_url());
   nav_observer.Wait();
   EXPECT_EQ(kFencedFrameUrl, nav_observer.last_navigation_url());
-}
-
-namespace {
-
-class PrerenderPortalBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderPortalBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals},
-        /*disabled_features=*/{});
-  }
-  ~PrerenderPortalBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-}  // namespace
-
-// Test that the Prerender skips Portal element in a prerendered page.
-IN_PROC_BROWSER_TEST_F(PrerenderPortalBrowserTest, DeferPortalForPrerender) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/title1.html");
-  const GURL kPortalUrl = GetUrl("/title2.html");
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  int host_id = AddPrerender(kPrerenderingUrl);
-
-  // Adds a Portal to the prerendered page.
-  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
-  ASSERT_TRUE(
-      ExecJs(prerendered_rfh,
-             JsReplace("{"
-                       "  let portal = document.createElement('portal');"
-                       "  portal.src = $1;"
-                       "  document.body.appendChild(portal);"
-                       "}",
-                       kPortalUrl)));
-
-  // Since we defer the Portal creation, we expect no child frames.
-  ASSERT_EQ(prerendered_rfh->GetPortals().size(), 0UL);
-
-  PortalCreatedObserver portal_created_observer(prerendered_rfh);
-  // Activates the prerender page. The Portal is created.
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  auto* primary_main_rfh =
-      static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame());
-  ASSERT_EQ(primary_main_rfh, prerendered_rfh);
-
-  Portal* portal = portal_created_observer.WaitUntilPortalCreated();
-  ASSERT_NE(nullptr, portal);
-  auto* portal_contents = portal->GetPortalContents();
-  TestNavigationObserver portal_wc_observer(portal_contents, 1);
-  portal_wc_observer.Wait();
-  ASSERT_EQ(kPortalUrl, portal_wc_observer.last_navigation_url());
-
-  // Since the Portal is now created after navigation to the prerender page, we
-  // expect one child frame.
-  ASSERT_EQ(prerendered_rfh->GetPortals().size(), 1UL);
-
-  // The rest of this test asserts the correct behavior of the Portal.
-
-  // Ensures the portal is NOT the current tab
-  ASSERT_NE(nullptr, portal_contents);
-  ASSERT_NE(portal_contents, web_contents());
-
-  // Installs the adoption script to Portal's frame.
-  auto* portal_frame = portal_contents->GetPrimaryMainFrame();
-  ASSERT_TRUE(ExecJs(portal_frame,
-                     "window.addEventListener('portalactivate', e => { "
-                     "  const portal = e.adoptPredecessor(document); "
-                     "  document.body.appendChild(portal); "
-                     "});"));
-
-  // Activates the portal. We expect successful activation of the portal, and
-  // the previous WebContents is adopted in a new portal.
-  PortalActivatedObserver activated_observer(portal);
-  PortalCreatedObserver adoption_observer(portal_frame);
-  ExecuteScriptAsync(primary_main_rfh,
-                     "document.querySelector('portal').activate();");
-  ASSERT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
-            activated_observer.WaitForActivateResult());
-  adoption_observer.WaitUntilPortalCreated();
-}
-
-// Tests that the portal is deleted when the embedding page is prerendered.
-IN_PROC_BROWSER_TEST_F(PrerenderPortalBrowserTest, DeleteDeferredPortal) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/title1.html");
-  const GURL kPortalUrl = GetUrl("/title2.html");
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  int host_id = AddPrerender(kPrerenderingUrl);
-
-  // Adds a Portal to the prerendered page.
-  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
-  ASSERT_TRUE(
-      ExecJs(prerendered_rfh,
-             JsReplace("{"
-                       "  let portal = document.createElement('portal');"
-                       "  portal.src = $1;"
-                       "  document.body.appendChild(portal);"
-                       "}",
-                       kPortalUrl)));
-
-  // Since we defer the Portal creation, we expect no child frames.
-  ASSERT_EQ(prerendered_rfh->GetPortals().size(), 0UL);
-
-  // Deletes the portal before navigating to the prerendered page. This will
-  // result in the |HTMLPortalElement| being disconnected.
-  ASSERT_TRUE(
-      ExecJs(prerendered_rfh,
-             "document.body.removeChild(document.querySelector('portal'));"));
-
-  // Activates the prerender page.
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  auto* primary_main_rfh =
-      static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame());
-  ASSERT_EQ(primary_main_rfh, prerendered_rfh);
-
-  // The activated prerender page shall have no child.
-  ASSERT_EQ(prerendered_rfh->GetPortals().size(), 0UL);
 }
 
 namespace {

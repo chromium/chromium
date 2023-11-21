@@ -3762,12 +3762,6 @@ crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoin
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 
-# Tests are failing on CodeMirror 6 update, temporarily disable to re-open the tree.
-# Restore set-breakpoint-while-blocking-main-thread.js test to previous state [ Pass ] with
-# crbug.com/1194557 annotation as soon as crbug.com/1270207 has been fixed.
-crbug.com/1270207 virtual/portals/http/tests/devtools/portals/portals-sources-activate.js [ Crash Failure Pass Timeout ]
-
-
 # Fullscreen tests are failed because of consuming user activation on fullscreen
 
 # snav tests fail because of a DCHECK
@@ -4188,10 +4182,6 @@ crbug.com/946712 http/tests/devtools/elements/styles-2/paste-property.js [ Crash
 # Sheriff 2019-04-09
 crbug.com/946335 [ Linux ] fast/filesystem/file-writer-abort-depth.html [ Crash Pass ]
 crbug.com/946335 [ Mac ] fast/filesystem/file-writer-abort-depth.html [ Crash Pass ]
-
-# The postMessage() calls intended to complete the test are blocked due to being
-# cross-origin between the portal and the host..
-crbug.com/1220891 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ Timeout ]
 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
@@ -4854,7 +4844,6 @@ crbug.com/1196317 [ Mac13-arm64 ] scrollbars/custom-scrollbar-thumb-width-change
 
 # Sheriff 2021-04-21
 crbug.com/1201225 external/wpt/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock.https.html [ Failure Pass Timeout ]
-crbug.com/1201365 [ Release Win ] virtual/portals/http/tests/inspector-protocol/portals/device-emulation-portals.js [ Pass Timeout ]
 
 # Sheriff 2021-04-22
 crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pass ]
@@ -5254,9 +5243,6 @@ crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure P
 
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Failure Pass Timeout ]
-
-# Disabled to allow devtools-frontend roll
-crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-nesting-after-adoption.js [ Crash Failure Pass Timeout ]
 
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 
@@ -6380,9 +6366,6 @@ crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
-# TODO(crbug.com/1403877): Deflake this test.
-virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
-
 # TODO(crbug.com/1419063): Deflake.
 http/tests/media/media-load-nonmedia-crossorigin.html [ Failure Pass ]
 
@@ -6623,7 +6606,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/elements/inspect-limited-children.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/responsive/responsive-neutral-keyframe.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=200 [ Failure ]
-[ Debug Mac13 ] virtual/portals/external/wpt/portals/portal-activate-data.html [ Skip Timeout ]
 [ Debug Mac13 ] accessibility/inline-text-word-boundary-causes-crash.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/custom-properties/registered-var-to-registered-animating.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/custom-properties/registered-neutral-keyframe.html [ Crash ]

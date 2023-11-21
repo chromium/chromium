@@ -101,7 +101,6 @@
         "WillModifyDOMAttr",
         "WillPopShadowRoot",
         "WillRemoveDOMNode",
-        "PortalRemoteFrameCreated"
       ]
     },
     InspectorDOMDebuggerAgent: {

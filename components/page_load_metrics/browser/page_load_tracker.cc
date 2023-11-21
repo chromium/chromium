@@ -1151,12 +1151,6 @@ void PageLoadTracker::OnPrefetchLikely() {
   }
 }
 
-void PageLoadTracker::DidActivatePortal(base::TimeTicks activation_time) {
-  for (const auto& observer : observers_) {
-    observer->DidActivatePortal(activation_time);
-  }
-}
-
 void PageLoadTracker::UpdateFeaturesUsage(
     content::RenderFrameHost* rfh,
     const std::vector<blink::UseCounterFeature>& new_features) {

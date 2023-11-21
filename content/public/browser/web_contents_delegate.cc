@@ -374,12 +374,6 @@ PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
-std::unique_ptr<WebContents> WebContentsDelegate::ActivatePortalWebContents(
-    WebContents* predecessor_contents,
-    std::unique_ptr<WebContents> portal_contents) {
-  return portal_contents;
-}
-
 void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
     WebContents* old_contents,
     WebContents* new_contents,

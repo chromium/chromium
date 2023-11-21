@@ -42,6 +42,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
       mojom::blink::FrameReplicationStatePtr replicated_state);
 
+  // TODO(crbug.com/1498140): Rename this now that the portal case no longer
+  // applies.
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,
       const RemoteFrameToken& frame_token,

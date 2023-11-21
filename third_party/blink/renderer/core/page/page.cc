@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
@@ -719,12 +718,6 @@ void CheckFrameCountConsistency(int expected_frame_count, Frame* frame) {
 
   int actual_frame_count = 0;
 
-  if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-    if (auto* portals = DocumentPortals::Get(*local_frame->GetDocument())) {
-      actual_frame_count += static_cast<int>(portals->GetPortals().size());
-    }
-  }
-
   for (; frame; frame = frame->Tree().TraverseNext()) {
     ++actual_frame_count;
 
@@ -1189,20 +1182,6 @@ void Page::ClearAutoplayFlags() {
 
 int32_t Page::AutoplayFlags() const {
   return autoplay_flags_;
-}
-
-void Page::SetInsidePortal(bool inside_portal) {
-  if (inside_portal_ == inside_portal)
-    return;
-
-  inside_portal_ = inside_portal;
-
-  if (MainFrame() && MainFrame()->IsLocalFrame())
-    DeprecatedLocalMainFrame()->PortalStateChanged();
-}
-
-bool Page::InsidePortal() const {
-  return inside_portal_;
 }
 
 void Page::SetIsMainFrameFencedFrameRoot() {

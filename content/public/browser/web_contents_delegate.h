@@ -367,23 +367,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void PrerenderWebContentsCreated(
       WebContents* prerender_web_contents) {}
 
-  // Notifies the embedder that a new WebContents has been created to contain
-  // the contents of a portal.
-  virtual void PortalWebContentsCreated(WebContents* portal_web_contents) {}
-
-  // Notifies the embedder that an existing WebContents that it manages (e.g., a
-  // browser tab) has become the contents of a portal.
-  //
-  // During portal activation, WebContentsDelegate::ActivatePortalWebContents
-  // will be called to release the delegate's management of a WebContents.
-  // Shortly afterward, the portal will assume ownership of the contents and
-  // call this function to indicate that this is complete, passing the
-  // swapped-out contents as |portal_web_contents|.
-  //
-  // Implementations will likely want to apply changes analogous to those they
-  // would apply to a new WebContents in PortalWebContentsCreated.
-  virtual void WebContentsBecamePortal(WebContents* portal_web_contents) {}
-
   // Notification that one of the frames in the WebContents is hung. |source| is
   // the WebContents that is hung, and |render_widget_host| is the
   // RenderWidgetHost that, while routing events to it, discovered the hang.
@@ -737,19 +720,13 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents);
 
-  // Requests the delegate to replace |predecessor_contents| with
-  // |portal_contents| in the container that holds |predecessor_contents|. If
-  // the delegate successfully replaces |predecessor_contents|, the return
-  // parameter passes ownership of |predecessor_contents|. Otherwise,
-  // |portal_contents| is returned.
-  virtual std::unique_ptr<WebContents> ActivatePortalWebContents(
-      WebContents* predecessor_contents,
-      std::unique_ptr<WebContents> portal_contents);
-
   // If |old_contents| is being inspected by a DevTools window, it updates the
   // window to inspect |new_contents| instead and calls |callback| after it
   // finishes asynchronously. If no window is present, or no update is
   // necessary, |callback| is run synchronously (immediately on the same stack).
+  //
+  // TODO(crbug.com/1498140): This has no remaining call sites and can be
+  // removed.
   virtual void UpdateInspectedWebContentsIfNecessary(
       WebContents* old_contents,
       WebContents* new_contents,

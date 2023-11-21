@@ -275,7 +275,7 @@ const QualifiedName& HTMLFrameOwnerElement::SubResourceAttributeName() const {
 
   // It might make more sense for this to be pure virtual and the
   // remaining subclasses that don't override this (frame, iframe,
-  // portal, fenced frame) to do so.
+  // fenced frame) to do so.
   return QualifiedName::Null();
 }
 

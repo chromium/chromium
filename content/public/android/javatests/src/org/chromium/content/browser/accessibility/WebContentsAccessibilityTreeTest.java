@@ -2104,18 +2104,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_portalWithWidgetInside() {
-        performHtmlTest("portal-with-widget-inside.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_portal() {
-        performHtmlTest("portal.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_pre() {
         performHtmlTest("pre.html");
     }

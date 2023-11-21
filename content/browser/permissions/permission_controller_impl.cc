@@ -27,11 +27,6 @@ namespace content {
 
 namespace {
 
-constexpr char kPermissionBlockedPortalsMessage[] =
-    "%s permission has been blocked because it was requested inside a "
-    "portal. "
-    "Portals don't currently support permission requests.";
-
 constexpr char kPermissionBlockedFencedFrameMessage[] =
     "%s permission has been blocked because it was requested inside a fenced "
     "frame. Fenced frames don't currently support permission requests.";
@@ -102,12 +97,6 @@ PermissionResult VerifyContextOfCurrentDocument(
 
   DCHECK(web_contents);
 
-  // Permissions are denied for portals.
-  if (web_contents->IsPortal()) {
-    return PermissionResult(PermissionStatus::DENIED,
-                            PermissionStatusSource::PORTAL);
-  }
-
   // Permissions are denied for fenced frames.
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     return PermissionResult(PermissionStatus::DENIED,
@@ -146,10 +135,6 @@ bool IsRequestAllowed(
 
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
-        case PermissionStatusSource::PORTAL:
-          LogPermissionBlockedMessage(permission, render_frame_host,
-                                      kPermissionBlockedPortalsMessage);
-          break;
         case PermissionStatusSource::FENCED_FRAME:
           LogPermissionBlockedMessage(permission, render_frame_host,
                                       kPermissionBlockedFencedFrameMessage);

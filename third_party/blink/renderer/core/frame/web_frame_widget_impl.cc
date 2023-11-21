@@ -97,8 +97,6 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
-#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
@@ -208,13 +206,6 @@ void ForEachRemoteFrameChildrenControlledByWidget(
 
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (Document* document = local_frame->GetDocument()) {
-      // Iterate on any portals owned by a local frame.
-      if (auto* portals = DocumentPortals::Get(*document)) {
-        for (PortalContents* portal : portals->GetPortals()) {
-          if (RemoteFrame* remote_frame = portal->GetFrame())
-            callback(remote_frame);
-        }
-      }
       // Iterate on any fenced frames owned by a local frame.
       if (auto* fenced_frames = DocumentFencedFrames::Get(*document)) {
         for (HTMLFencedFrameElement* fenced_frame :
@@ -1711,7 +1702,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         });
   }
 
-  // All non-top-level Widgets (child local-root frames, Portals, GuestViews,
+  // All non-top-level Widgets (child local-root frames, GuestViews,
   // etc.) propagate and consume the page scale factor as "external", meaning
   // that it comes from the top level widget's page scale.
   if (!ForTopMostMainFrame()) {
@@ -1732,8 +1723,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         visual_properties.compositing_scale_factor);
   } else {
     // Ensure the external scale factor in top-level widgets is reset as it may
-    // be leftover from when a widget was nested and was promoted to top level
-    // (e.g. portal activation).
+    // be leftover from when a widget was nested and was promoted to top level.
     widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
         1.f,
         /*is_pinch_gesture_active=*/false);
@@ -2074,7 +2064,6 @@ void WebFrameWidgetImpl::SetViewportIntersection(
     mojom::blink::ViewportIntersectionStatePtr intersection_state,
     const absl::optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
-  // TODO(https://crbug.com/1148960): Should this deal with portals?
   DCHECK(ForSubframe() || !LocalRootImpl()->GetFrame()->IsOutermostMainFrame());
 
   if (visual_properties.has_value())
@@ -2456,9 +2445,7 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
 
 void WebFrameWidgetImpl::ApplyViewportChanges(
     const ApplyViewportChangesArgs& args) {
-  // Viewport changes only change the outermost main frame. Technically a
-  // portal has a viewport but it cannot produce changes from the compositor
-  // until activated so this should be correct for portals too.
+  // Viewport changes only change the outermost main frame.
   if (!LocalRootImpl()->GetFrame()->IsOutermostMainFrame())
     return;
 

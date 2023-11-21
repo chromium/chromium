@@ -52,7 +52,6 @@ import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
-import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -73,8 +72,6 @@ enum ViewWidgetType {
   kTopLevel,
   // A GuestView used to render contents inside a <webview> element.
   kGuestView,
-  // A view used to render contents inside a <portal> element.
-  kPortal,
   // A view used to render contents inside a <fencedframe> element.
   kFencedFrame
 };
@@ -83,7 +80,7 @@ enum ViewWidgetType {
 // frames, this would be the type of the HTMLFrameOwnerElement for the remote
 // child frame in the parent process. Note that only HTMLFrameOwnerElements for
 // which CreateChildFrame is used are included here. Other
-// HTMLFrameOwnerElements such as portals do not use this.
+// HTMLFrameOwnerElements such as fenced frames do not use this.
 enum ChildFrameOwnerElementType {
   kIframe,
   kObject,

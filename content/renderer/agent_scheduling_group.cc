@@ -267,7 +267,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
 
   blink::WebView* web_view = blink::WebView::Create(
       new SelfOwnedWebViewClient(), params->hidden, params->is_prerendering,
-      params->type == mojom::ViewWidgetType::kPortal ? true : false,
+      /*is_inside_portal=*/false,
       params->type == mojom::ViewWidgetType::kFencedFrame
           ? absl::make_optional(params->fenced_frame_mode)
           : absl::nullopt,

@@ -401,8 +401,6 @@ class AppBannerManager : public content::WebContentsObserver,
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void DidActivatePortal(content::WebContents* predecessor_contents,
-                         base::TimeTicks activation_time) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* target_frame,
                                const GURL& manifest_url) override;
   void MediaStartedPlaying(const MediaPlayerInfo& media_info,

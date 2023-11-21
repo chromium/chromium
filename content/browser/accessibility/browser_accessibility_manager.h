@@ -178,7 +178,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void NavigationSucceeded();
   void NavigationFailed();
   void DidStopLoading();
-  void DidActivatePortal();
 
   // For testing only, register a function to be called when
   // a generated event is fired from this BrowserAccessibilityManager.

@@ -88,7 +88,6 @@
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -3886,11 +3885,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     }
   }
 
-  // Portals don't directly expose their contents as the contents are not
-  // focusable, but they use them to compute a default accessible name.
-  if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
-    return true;
-
   if (!element)
     return false;
 
@@ -4048,23 +4042,8 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   DCHECK(!IsDetached());
   DCHECK(GetDocument());
 
-  // Focusable: web area -- this is the only focusable non-element. Web areas
-  // inside portals are not focusable though (portal contents cannot get focus).
+  // Focusable: web area -- this is the only focusable non-element.
   if (IsWebArea()) {
-    return true;
-  }
-
-  // Objects within a portal are not focusable.
-  // Note that they are ignored but can be included in the tree.
-  bool inside_portal =
-      GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal();
-  if (inside_portal) {
-    return false;
-  }
-
-  // The portal itself is focusable. Portals are treated as buttons in platform
-  // APIs, hiding their subtree.
-  if (RoleValue() == ax::mojom::blink::Role::kPortal) {
     return true;
   }
 
@@ -7058,7 +7037,6 @@ bool AXObject::IsFrame(const Node* node) {
       return true;
     case FrameOwnerElementType::kObject:
     case FrameOwnerElementType::kEmbed:
-    case FrameOwnerElementType::kPortal:
     case FrameOwnerElementType::kNone:
       return false;
   }
@@ -7248,6 +7226,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kPluginObject:
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kRadioGroup:
+    case ax::mojom::blink::Role::kRootWebArea:
     case ax::mojom::blink::Role::kRowGroup:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kScrollView:
@@ -7302,12 +7281,9 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     // Some objects can contribute their contents to ancestor names, but
     // only have their own name if they are focusable
     case ax::mojom::blink::Role::kGenericContainer:
-      // The <body> and <html> element can pass information up to the the root
-      // for a portal name.
       if (IsA<HTMLBodyElement>(GetNode()) ||
           GetNode() == GetDocument()->documentElement()) {
-        return recursive && GetDocument()->GetPage() &&
-               GetDocument()->GetPage()->InsidePortal();
+        return false;
       }
       [[fallthrough]];
     case ax::mojom::blink::Role::kAbbr:
@@ -7395,20 +7371,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       //   Return true, so that text is generated for the object. This text will
       //   be assigned as the description of he parent Role::kRuby object.
       return !recursive;
-
-    // A root web area normally only computes its name from the document title,
-    // but a root web area inside a portal's main frame should compute its name
-    // from its contents. This name is used by the portal element that hosts
-    // this portal.
-    case ax::mojom::blink::Role::kRootWebArea: {
-      DCHECK(GetNode());
-      const Document& document = GetNode()->GetDocument();
-      bool is_portal_main_frame =
-          document.GetFrame() && document.GetFrame()->IsMainFrame() &&
-          !document.GetFrame()->IsFencedFrameRoot() && document.GetPage() &&
-          document.GetPage()->InsidePortal();
-      return is_portal_main_frame;
-    }
 
     case ax::mojom::blink::Role::kCaret:
     case ax::mojom::blink::Role::kClient:

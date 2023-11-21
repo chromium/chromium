@@ -156,7 +156,7 @@ video, canvas, img {
   overflow-clip-margin: content-box;
 }
 
-iframe, embed, object, fencedframe, portal {
+iframe, embed, object, fencedframe {
    overflow: clip !important;
    overflow-clip-margin: content-box !important;
 }

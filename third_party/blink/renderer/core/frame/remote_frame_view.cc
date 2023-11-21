@@ -47,8 +47,7 @@ LocalFrameView* RemoteFrameView::ParentFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
-                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
+  if (owner && owner->OwnerType() == FrameOwnerElementType::kFencedframe) {
     return owner->GetDocument().GetFrame()->View();
   }
 
@@ -66,8 +65,7 @@ LocalFrameView* RemoteFrameView::ParentLocalRootFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
-                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
+  if (owner && owner->OwnerType() == FrameOwnerElementType::kFencedframe) {
     return owner->GetDocument().GetFrame()->LocalFrameRoot().View();
   }
 

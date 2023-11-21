@@ -916,7 +916,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
     FrameTree& tree = root->frame_tree();
 
     // Inner tree nodes are used for several purposes, e.g. fenced frames,
-    // <webview>, portals and PDF. These may have a compositor surface as well,
+    // <webview>, and PDF. These may have a compositor surface as well,
     // in which case we need to explore not the outer node only, but the inner
     // ones as well.
     FrameTree::NodeRange node_range =
@@ -1004,15 +1004,11 @@ mojom::ViewWidgetType RenderViewHostImpl::ViewWidgetType() {
     return *view_widget_type_;
   }
 
-  bool is_portal = frame_tree_->delegate()->IsPortal();
   bool is_guest_view = delegate_->IsGuest();
   bool is_fenced_frame = frame_tree_->is_fenced_frame();
 
   if (is_fenced_frame) {
     view_widget_type_ = mojom::ViewWidgetType::kFencedFrame;
-  } else if (is_portal) {
-    DCHECK(!is_guest_view);
-    view_widget_type_ = mojom::ViewWidgetType::kPortal;
   } else if (is_guest_view) {
     view_widget_type_ = mojom::ViewWidgetType::kGuestView;
   } else {

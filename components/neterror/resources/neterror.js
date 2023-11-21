@@ -76,10 +76,9 @@ function portalSignin() {
 
 // Subframes use a different layout but the same html file.  This is to make it
 // easier to support platforms that load the error page via different
-// mechanisms (Currently just iOS). We also use the subframe style for portals
-// as they are embedded like subframes and can't be interacted with by the user.
+// mechanisms (Currently just iOS).
 let isSubFrame = false;
-if (window.top.location !== window.location || window.portalHost) {
+if (window.top.location !== window.location) {
   document.documentElement.setAttribute('subframe', '');
   isSubFrame = true;
 }

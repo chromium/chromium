@@ -1361,14 +1361,6 @@ BASE_FEATURE(kPlzDedicatedWorker,
              "PlzDedicatedWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When kPortals is enabled, allow portals to load content that is third-party
-// (cross-origin) to the hosting page. Otherwise has no effect.
-//
-// https://crbug.com/1013389
-BASE_FEATURE(kPortalsCrossOrigin,
-             "PortalsCrossOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(
     kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
     "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",

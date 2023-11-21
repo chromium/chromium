@@ -497,9 +497,6 @@ void OriginTrialContext::AddForceEnabledTrials(
 }
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
-  if (trial_name == "Portals")
-    return base::FeatureList::IsEnabled(features::kPortals);
-
   if (trial_name == "PrivacySandboxAdsAPIs")
     return base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIs);
 

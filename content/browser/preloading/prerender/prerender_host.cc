@@ -353,10 +353,6 @@ RenderFrameHostImpl* PrerenderHost::GetProspectiveOuterDocument() {
   return nullptr;
 }
 
-bool PrerenderHost::IsPortal() {
-  return false;
-}
-
 void PrerenderHost::ActivateAndShowRepostFormWarningDialog() {
   // Not supported, cancel pending reload.
   GetNavigationController().CancelPendingReload();

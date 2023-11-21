@@ -76,7 +76,6 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -2793,8 +2792,7 @@ void WebContentsImpl::AttachInnerWebContents(
   }
 
   // When attaching a GuestView as an inner WebContents, there should already be
-  // a live RenderFrame, which has to be swapped. When attaching a portal, there
-  // will not be a live RenderFrame before creating the proxy.
+  // a live RenderFrame, which has to be swapped.
   if (render_frame_host_impl->IsRenderFrameLive()) {
     inner_render_manager->SwapOuterDelegateFrame(render_frame_host_impl, proxy);
 
@@ -2943,19 +2941,6 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
   GetPrimaryMainFrame()->UpdateAXTreeData();
 }
 
-void WebContentsImpl::DidActivatePortal(
-    WebContentsImpl* predecessor_web_contents,
-    base::TimeTicks activation_time) {
-  TRACE_EVENT2("content", "WebContentsImpl::DidActivatePortal", "predecessor",
-               static_cast<void*>(predecessor_web_contents), "activation_time",
-               activation_time);
-  DCHECK(predecessor_web_contents);
-  NotifyInsidePortal(false);
-  observers_.NotifyObservers(&WebContentsObserver::DidActivatePortal,
-                             predecessor_web_contents, activation_time);
-  GetDelegate()->WebContentsBecamePortal(predecessor_web_contents);
-}
-
 void WebContentsImpl::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {
   TRACE_EVENT1("content", "WebContentsImpl::DidActivatePreviewedPage",
@@ -2963,18 +2948,6 @@ void WebContentsImpl::DidActivatePreviewedPage(
   observers_.NotifyObservers(&WebContentsObserver::DidActivatePreviewedPage,
                              activation_time);
   GetDelegate()->DidActivatePreviewedPage();
-}
-
-void WebContentsImpl::NotifyInsidePortal(bool inside_portal) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyInsidePortal",
-                        "inside_portal", inside_portal);
-  ExecutePageBroadcastMethod(base::BindRepeating(
-      [](bool inside_portal, RenderViewHostImpl* rvh) {
-        if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-          broadcast->SetInsidePortal(inside_portal);
-        }
-      },
-      inside_portal));
 }
 
 void WebContentsImpl::DidChangeVisibleSecurityState() {
@@ -3965,8 +3938,8 @@ void WebContentsImpl::FullscreenStateChanged(
       if (current == rfh) {
         return true;
       }
-      // We only look for direct parents. fencedframes and portals will not
-      // enter fullscreen.
+      // We only look for direct parents. fencedframes will not enter
+      // fullscreen.
       current = current->GetParent();
     }
     return false;
@@ -7234,14 +7207,6 @@ bool WebContentsImpl::IsGuest() {
   return !!browser_plugin_guest_;
 }
 
-bool WebContentsImpl::IsPortal() {
-  return portal();
-}
-
-WebContentsImpl* WebContentsImpl::GetPortalHostWebContents() {
-  return portal() ? portal()->GetPortalHostContents() : nullptr;
-}
-
 void WebContentsImpl::NotifyBeforeFormRepostWarningShow() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::NotifyBeforeFormRepostWarningShow");
@@ -7573,7 +7538,7 @@ void WebContentsImpl::RunJavaScriptDialog(
     JavaScriptDialogCallback response_callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunJavaScriptDialog",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->GetPage().IsPrimary() && !IsPortal());
+  DCHECK(render_frame_host->GetPage().IsPrimary());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -7684,7 +7649,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RunBeforeUnloadConfirm",
                         "render_frame_host", render_frame_host, "is_reload",
                         is_reload);
-  DCHECK(render_frame_host->GetPage().IsPrimary() && !IsPortal());
+  DCHECK(render_frame_host->GetPage().IsPrimary());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -8536,7 +8501,6 @@ void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
 
 void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetFocusedFrameTree");
-  DCHECK(!GetOuterWebContents() || !IsPortal());
   DCHECK(frame_tree_to_focus);
 
   // Only change focus if we are not currently focused.
@@ -8615,7 +8579,6 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // |this| is an outer WebContents and |node| represents an inner
     // WebContents. Transfer the focus to the inner contents if |this| is
     // focused.
-    DCHECK(!inner_contents->IsPortal());
     if (GetFocusedWebContents() == this) {
       inner_contents->SetAsFocusedWebContentsIfNecessary();
     }
@@ -8933,7 +8896,6 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
-  // TODO(crbug.com/1254770): Fix this for portals.
   bool is_inner_frame_tree = static_cast<RenderViewHostImpl*>(render_view_host)
                                  ->frame_tree()
                                  ->is_fenced_frame();
@@ -9114,7 +9076,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      const std::u16string& user_input) {
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  DCHECK((!rfh || rfh->GetPage().IsPrimary()) && !IsPortal());
+  DCHECK(!rfh || rfh->GetPage().IsPrimary());
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;
@@ -9867,8 +9829,6 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
                   },
                   std::ref(unattached_owned_nodes)));
   }
-  // TODO(mcnee): Also include orphaned portals here.
-  // See https://crbug.com/1196715
   return unattached_owned_nodes;
 }
 
@@ -10274,12 +10234,6 @@ RenderFrameHostImpl* WebContentsImpl::GetProspectiveOuterDocument() {
           : nullptr;
   if (unattached_guest_owner) {
     return unattached_guest_owner;
-  }
-
-  RenderFrameHostImpl* orphaned_portal_owner =
-      portal() ? portal()->owner_render_frame_host() : nullptr;
-  if (orphaned_portal_owner) {
-    return orphaned_portal_owner;
   }
 
   return nullptr;

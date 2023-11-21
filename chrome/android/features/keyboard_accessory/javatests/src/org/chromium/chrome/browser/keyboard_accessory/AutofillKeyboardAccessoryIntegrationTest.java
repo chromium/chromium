@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_componen
 import android.app.Activity;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -30,77 +29,30 @@ import org.junit.runner.RunWith;
 
 import org.chromium.autofill.mojom.FocusedFieldType;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeWindow;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for autofill keyboard accessory. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN})
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillKeyboardAccessoryIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/autofill/autofill_test_form.html";
-    private static final String PORTAL_TEST_PAGE =
-            "/chrome/test/data/autofill/portal_wrapper.html?url=autofill_test_form.html";
 
     private ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
-
-    /** Parameter provider for enabling/disabling triggering-related Features. */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.PORTALS).name("enablePortals"));
-        }
-    }
-
-    /** A WebContentsObserver for watching for web contents swaps. */
-    private static class SwapWebContentsObserver extends EmptyTabObserver {
-        public CallbackHelper mCallbackHelper;
-
-        public SwapWebContentsObserver() {
-            mCallbackHelper = new CallbackHelper();
-        }
-
-        @Override
-        public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-            mCallbackHelper.notifyCalled();
-        }
-    }
-
-    @IntDef({EnabledFeature.NONE, EnabledFeature.PORTALS})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface EnabledFeature {
-        int NONE = 0;
-        int PORTALS = 1;
-    }
 
     /**
      * This FakeKeyboard triggers as a regular keyboard but has no measurable height. This simulates
@@ -121,30 +73,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     private void loadTestPage(ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate)
             throws TimeoutException {
-        loadTestPage(keyboardDelegate, EnabledFeature.NONE);
-    }
-
-    private void loadTestPage(
-            ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate,
-            @EnabledFeature int enabledFeature)
-            throws TimeoutException {
-        if (enabledFeature == EnabledFeature.PORTALS) {
-            mHelper.loadTestPage(PORTAL_TEST_PAGE, false, false, keyboardDelegate);
-            SwapWebContentsObserver observer = new SwapWebContentsObserver();
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
-                    });
-            DOMUtils.clickNode(mHelper.getWebContents(), "ACTIVATE");
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        return observer.mCallbackHelper.getCallCount() == 1;
-                    });
-            // After activation, the web contents has changed. Inform |mHelper|.
-            mHelper.updateWebContentsDependentState();
-        } else {
-            mHelper.loadTestPage(TEST_PAGE, false, false, keyboardDelegate);
-        }
+        mHelper.loadTestPage(TEST_PAGE, false, false, keyboardDelegate);
         ManualFillingTestHelper.createAutofillTestProfiles();
         DOMUtils.waitForNonZeroNodeBounds(mHelper.getWebContents(), "NAME_FIRST");
     }
@@ -205,10 +134,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
      */
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testSelectSuggestionHidesKeyboardAccessory(@EnabledFeature int enabledFeature)
+    public void testSelectSuggestionHidesKeyboardAccessory()
             throws ExecutionException, TimeoutException {
-        loadTestPage(FakeKeyboard::new, enabledFeature);
+        loadTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 

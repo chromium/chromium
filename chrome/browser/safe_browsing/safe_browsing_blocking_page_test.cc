@@ -2885,11 +2885,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
       const SafeBrowsingBlockingPageDelayedWarningBrowserTest&) = delete;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        base::test::FeatureRefAndParams(blink::features::kPortals, {}),
-        base::test::FeatureRefAndParams(blink::features::kPortalsCrossOrigin,
-                                        {}),
-    };
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     if (warning_on_mouse_click_enabled()) {
       enabled_features.push_back(base::test::FeatureRefAndParams(
           kDelayedWarnings, {{"mouse", "true"}}));
@@ -3624,57 +3620,6 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(SB_THREAT_TYPE_URL_MALWARE,
                                      SB_THREAT_TYPE_URL_PHISHING,
                                      SB_THREAT_TYPE_URL_UNWANTED)));
-
-// Tests with the <portal> tag.
-class SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest
-    : public SafeBrowsingBlockingPageDelayedWarningBrowserTest {
- public:
-  SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kDelayedWarnings, blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-    InProcessBrowserTest::SetUp();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest,
-    testing::Combine(
-        testing::Values(false, true), /* IsolateAllSitesForTesting */
-        testing::Values(false, true) /* Show warning on mouse click */));
-
-// Tests that if a page embeds a portal whose contents are considered dangerous
-// by Safe Browsing, the embedder is also treated as dangerous, and the
-// interstitial isn't delayed. This is similar to
-// PortalBrowserTest.EmbedderOfDangerousPortalConsideredDangerous.
-// TODO(crbug.com/1222099): Flaky.
-IN_PROC_BROWSER_TEST_P(
-    SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest,
-    DISABLED_Portal_WarningNotDelayed) {
-  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL dangerous_url(
-      embedded_test_server()->GetURL("evil.com", "/title2.html"));
-  SetURLThreatType(dangerous_url, SB_THREAT_TYPE_URL_PHISHING);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-
-  content::TestNavigationObserver observer(contents);
-  ASSERT_TRUE(content::ExecJs(
-      contents,
-      content::JsReplace("let portal = document.createElement('portal');"
-                         "portal.src = $1;"
-                         "document.body.appendChild(portal);",
-                         dangerous_url)));
-  observer.WaitForNavigationFinished();
-  // The interstitial should be shown immediately.
-  EXPECT_TRUE(WaitForReady(browser()));
-  EXPECT_TRUE(IsShowingInterstitial(contents));
-}
 
 class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     : public policy::PolicyTest {

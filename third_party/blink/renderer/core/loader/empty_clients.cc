@@ -137,17 +137,6 @@ LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
   return nullptr;
 }
 
-std::pair<RemoteFrame*, PortalToken> EmptyLocalFrameClient::CreatePortal(
-    HTMLPortalElement*,
-    mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
-    mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) {
-  return std::pair<RemoteFrame*, PortalToken>(nullptr, PortalToken());
-}
-
-RemoteFrame* EmptyLocalFrameClient::AdoptPortal(HTMLPortalElement*) {
-  return nullptr;
-}
-
 RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(
     HTMLFencedFrameElement*,
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) {

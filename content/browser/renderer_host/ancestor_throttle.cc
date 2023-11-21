@@ -49,9 +49,10 @@ bool HeadersContainFrameAncestorsCSP(
 }
 
 // From a RenderFrameHost |rfh|, return its parent. This goes through nested
-// WebContents like Portals, but doesn't go through FencedFrames. This returns
+// WebContents, but doesn't go through FencedFrames. This returns
 // nullptr for the top-level document and FencedFrame top-level document.
 RenderFrameHostImpl* GetParentExceptForFencedFrame(RenderFrameHostImpl* frame) {
+  // TODO(crbug.com/1498140): It might suffice to use GetParent() now.
   return frame->IsFencedFrameRoot() ? nullptr
                                     : frame->GetParentOrOuterDocument();
 }
@@ -95,8 +96,7 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
     bool is_response_check) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  bool is_portal = request->frame_tree_node()->frame_tree().IsPortal();
-  if (request->IsInMainFrame() && !is_portal) {
+  if (request->IsInMainFrame()) {
     // Allow main frame navigations.
     return NavigationThrottle::PROCEED;
   }

@@ -26,27 +26,20 @@ namespace content {
 namespace {
 
 // The following functions allow traversal over all RenderFrameHosts, including
-// those across WebContentses. Excludes portals as they are not relevant for
-// find-in-page.
+// those across WebContentses.
 //
 // An inner WebContents may be embedded in an outer WebContents via an inner
 // WebContentsTreeNode of the outer WebContents's WebContentsTreeNode.
-
-// Returns all child RenderFrameHosts of |rfh| except those in portals.
 std::vector<RenderFrameHostImpl*> GetChildren(RenderFrameHostImpl* rfh) {
   std::vector<RenderFrameHostImpl*> children;
   children.reserve(rfh->child_count());
   for (size_t i = 0; i != rfh->child_count(); ++i) {
     if (auto* contents = static_cast<WebContentsImpl*>(
             WebContentsImpl::FromOuterFrameTreeNode(rfh->child_at(i)))) {
-      // Portals can't receive keyboard events or be focused, so we don't return
-      // find results inside a portal.
-      if (!contents->IsPortal()) {
-        // If the child is used for an inner WebContents then add the inner
-        // WebContents.
-        children.push_back(
-            contents->GetPrimaryFrameTree().root()->current_frame_host());
-      }
+      // If the child is used for an inner WebContents then add the inner
+      // WebContents.
+      children.push_back(
+          contents->GetPrimaryFrameTree().root()->current_frame_host());
     } else {
       children.push_back(rfh->child_at(i)->current_frame_host());
     }
@@ -393,9 +386,6 @@ void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(
       [this, func_ref](RenderFrameHostImpl* rfh) {
         if (!CheckFrame(rfh))
           return;
-        // A Portal's RenderFrameHost can't reach here because we don't observe
-        // Portals WebContents (see FindRequestManager::FindInternal()).
-        DCHECK(!WebContents::FromRenderFrameHost(rfh)->IsPortal());
         DCHECK(rfh->IsRenderFrameLive());
         DCHECK(rfh->IsActive());
         func_ref(rfh);
@@ -723,11 +713,7 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   // AddFrame() for the frame.
   contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [this](RenderFrameHostImpl* rfh) {
-        // Portals can't receive keyboard events or be focused, so we don't
-        // return find results inside a portal.
         auto* wc = WebContents::FromRenderFrameHost(rfh);
-        if (wc->IsPortal())
-          return;
         // Make sure each WebContents is only added once.
         if (rfh->IsInPrimaryMainFrame()) {
           frame_observers_.push_back(std::make_unique<FrameObserver>(wc, this));

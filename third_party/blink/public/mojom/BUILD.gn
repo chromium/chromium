@@ -1298,9 +1298,6 @@ mojom("mojom_core") {
     "fenced_frame/fenced_frame.mojom",
     "navigation/navigation_params.mojom",
 
-    # Depends on transferable_message.mojom.
-    "portal/portal.mojom",
-
     # Note that service_worker_object.mojom and service_worker.mojom depend on
     # transferable_message.mojom, and controller_service_worker.mojom and
     # service_worker_registration.mojom depend on service_worker_object.mojom,

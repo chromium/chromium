@@ -197,7 +197,7 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
 bool IsCrossOriginSubframe(content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  // Permissions are denied for fenced frames, portal and other inner pages.
+  // Permissions are denied for fenced frames and other inner pages.
   // |GetMainFrame| should be enough to get top level frame.
   auto current_origin = render_frame_host->GetLastCommittedOrigin();
   return !render_frame_host->GetMainFrame()
@@ -693,7 +693,6 @@ void PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(
     case content::PermissionStatusSource::INSECURE_ORIGIN:
     case content::PermissionStatusSource::FEATURE_POLICY:
     case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
-    case content::PermissionStatusSource::PORTAL:
     case content::PermissionStatusSource::FENCED_FRAME:
       // The permission wasn't under embargo, so don't record anything. We may
       // embargo it later.

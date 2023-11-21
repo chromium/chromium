@@ -723,9 +723,6 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     return network::mojom::RequestDestination::kFencedframe;
 
   if (frame_tree_node->IsMainFrame()) {
-    if (frame_tree_node->frame_tree().IsPortal()) {
-      return network::mojom::RequestDestination::kIframe;
-    }
     return network::mojom::RequestDestination::kDocument;
   }
 
@@ -739,7 +736,6 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     case blink::FrameOwnerElementType::kFrame:
       return network::mojom::RequestDestination::kFrame;
     // Main frames are handled above.
-    case blink::FrameOwnerElementType::kPortal:
     case blink::FrameOwnerElementType::kNone:
       NOTREACHED();
       return network::mojom::RequestDestination::kDocument;
@@ -894,7 +890,7 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
     return absl::nullopt;
   }
 
-  // Skip inactive pages (e.g. portal, prerendered pages).
+  // Skip inactive pages (e.g. prerendered pages).
   if (!rfh->GetPage().IsPrimary()) {
     return absl::nullopt;
   }
@@ -1001,7 +997,7 @@ bool IsSharedStorageWritableEligibleForNavigationRequest(
   // true.
   CHECK(!frame_tree_node->IsMainFrame());
 
-  // Apart from fenced frames' frame trees, skip non-primary pages (e.g. portal,
+  // Apart from fenced frames' frame trees, skip non-primary pages (e.g.
   // prerendered pages).
   if (frame_tree_node->fenced_frame_status() !=
           RenderFrameHostImpl::FencedFrameStatus::
@@ -3833,7 +3829,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         current_instance->GetStoragePartitionConfig());
   }
 
-  // Child frames (including fenced frames and portals) should always use the
+  // Child frames (including fenced frames) should always use the
   // same StoragePartition as their parent.
   RenderFrameHostImpl* parent = GetParentFrameOrOuterDocument();
   if (parent) {
@@ -6294,9 +6290,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
       policy_container_builder_->ParentPolicies();
   DCHECK(!parent == !parent_policies);
   bool set_parent_for_nested_frame_tree =
-      !parent &&
-      (frame_tree_node()->frame_tree().IsPortal() ||
-       frame_tree_node()->IsFencedFrameRoot()) &&
+      !parent && frame_tree_node()->IsFencedFrameRoot() &&
       frame_tree_node()->render_manager()->GetOuterDelegateNode();
   if (set_parent_for_nested_frame_tree) {
     parent = frame_tree_node()
@@ -6304,10 +6298,9 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
                  ->GetOuterDelegateNode()
                  ->current_frame_host()
                  ->GetParent();
-    // TODO(antoniosartori): If we want to keep checking frame-src for portals
-    // or fenced frames, consider storing a snapshot of the parent policies in
-    // the `policy_container_builder_` at the beginning of the
-    // navigation.
+    // TODO(antoniosartori): If we want to keep checking frame-src for fenced
+    // frames, consider storing a snapshot of the parent policies in the
+    // `policy_container_builder_` at the beginning of the navigation.
     parent_policies = &parent->policy_container_host()->policies();
   }
 
@@ -7091,11 +7084,10 @@ void NavigationRequest::DidCommitNavigation(
   // and it doesn't make sense to log this in history. Logging this in history
   // would lead to lots of visits to a particular page, which impacts the
   // visit count.
-  // Navigations in non-primary frame trees or portals don't appear in history.
+  // Navigations in non-primary frame trees don't appear in history.
   if ((should_update_history_ && IsSameDocument() && !HasUserGesture() &&
        params.url == previous_main_frame_url) ||
-      !GetRenderFrameHost()->GetPage().IsPrimary() ||
-      frame_tree_node()->frame_tree().IsPortal()) {
+      !GetRenderFrameHost()->GetPage().IsPrimary()) {
     should_update_history_ = false;
   }
   previous_main_frame_url_ = previous_main_frame_url;
@@ -7467,8 +7459,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     GetDelegate()->ReadyToCommitNavigation(this);
   }
 
-  // View-source URLs can't be prerendered or loaded in a fenced frame or a
-  // portal.
+  // View-source URLs can't be prerendered or loaded in a fenced frame.
   if (IsInPrimaryMainFrame()) {
     NavigationEntry* entry = GetNavigationEntry();
     if (entry && entry->IsViewSourceMode()) {

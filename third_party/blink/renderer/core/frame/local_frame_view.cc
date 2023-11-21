@@ -99,9 +99,6 @@
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
-#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -361,12 +358,6 @@ void LocalFrameView::ForAllChildViewsAndPlugins(
   }
 
   if (Document* document = frame_->GetDocument()) {
-    if (DocumentPortals* portals = DocumentPortals::Get(*document)) {
-      for (PortalContents* portal : portals->GetPortals()) {
-        if (Frame* frame = portal->GetFrame())
-          function(*frame->View());
-      }
-    }
     if (DocumentFencedFrames* fenced_frames =
             DocumentFencedFrames::Get(*document)) {
       for (HTMLFencedFrameElement* fenced_frame :
@@ -434,14 +425,6 @@ void LocalFrameView::ForAllRemoteFrameViews(
     }
   }
   if (Document* document = frame_->GetDocument()) {
-    if (DocumentPortals* portals = DocumentPortals::Get(*document)) {
-      for (PortalContents* portal : portals->GetPortals()) {
-        if (RemoteFrame* frame = portal->GetFrame()) {
-          if (RemoteFrameView* view = frame->View())
-            function(*view);
-        }
-      }
-    }
     if (DocumentFencedFrames* fenced_frames =
             DocumentFencedFrames::Get(*document)) {
       for (HTMLFencedFrameElement* fenced_frame :
@@ -954,8 +937,6 @@ gfx::SizeF LocalFrameView::LargeViewportSizeForViewportUnits() const {
     // controls height, compensating for page scale as well, since we want to
     // use the viewport with browser controls hidden for vh (to match Safari).
     int viewport_width = frame_->GetPage()->GetVisualViewport().Size().width();
-    // TODO(bokan): IsOutermostMainFrame may need to be reevaluated for
-    // portals.
     if (frame_->IsOutermostMainFrame() && layout_size.width() &&
         viewport_width) {
       float layout_to_viewport_width_scale_factor =
@@ -1219,8 +1200,6 @@ void LocalFrameView::ViewportSizeChanged() {
     // hiding/showing the top controls. In that case, layout might not be
     // triggered, so some things that normally hook into layout need to be
     // specially notified.
-    // TODO(bokan): IsOutermostMainFrame may need to be reevaluated for
-    // portals.
     if (GetFrame().IsOutermostMainFrame()) {
       if (auto* scrollable_area = layout_view->GetScrollableArea()) {
         scrollable_area->ClampScrollOffsetAfterOverflowChange();
@@ -4216,16 +4195,6 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     needs_occlusion_tracking |=
         child->View()->UpdateViewportIntersectionsForSubtree(flags,
                                                              monotonic_time);
-  }
-
-  if (DocumentPortals* portals = DocumentPortals::Get(*frame_->GetDocument())) {
-    for (PortalContents* portal : portals->GetPortals()) {
-      if (Frame* frame = portal->GetFrame()) {
-        needs_occlusion_tracking |=
-            frame->View()->UpdateViewportIntersectionsForSubtree(
-                flags, monotonic_time);
-      }
-    }
   }
 
   if (DocumentFencedFrames* fenced_frames =

@@ -614,9 +614,7 @@ WebViewImpl::WebViewImpl(
   SetVisibilityState(visibility, /*is_initial_state=*/true);
   page_->SetIsPrerendering(is_prerendering);
 
-  // We pass this state to Page, but it's only used by the main frame in the
-  // page.
-  SetInsidePortal(is_inside_portal);
+  // TODO(crbug.com/1498140): Remove the in_inside_portal parameter.
 
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
     page_->SetIsMainFrameFencedFrameRoot();
@@ -1374,9 +1372,8 @@ void WebViewImpl::ResizeWithBrowserControls(
   size_ = main_frame_widget_size;
 
   if (!main_frame->IsOutermostMainFrame()) {
-    // Anchoring should not be performed from embedded frames (not even
-    // portals) as anchoring should only be performed when the size/orientation
-    // is user controlled.
+    // Anchoring should not be performed from embedded frames as anchoring
+    // should only be performed when the size/orientation is user controlled.
     ResizeViewWhileAnchored(browser_controls_params, visible_viewport_size);
   } else if (is_rotation) {
     gfx::PointF viewport_anchor_coords(viewportAnchorCoordX,
@@ -2859,7 +2856,6 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
     return;
 
   if (virtual_keyboard_mode_ != description.virtual_keyboard_mode) {
-    // TODO(bokan): This should handle portals.
     DCHECK(MainFrameImpl()->IsOutermostMainFrame());
     virtual_keyboard_mode_ = description.virtual_keyboard_mode;
     mojom::blink::LocalFrameHost& frame_host =
@@ -3434,16 +3430,6 @@ void WebViewImpl::ActivatePrerenderedPage(
   }
 
   std::move(callback).Run();
-}
-
-void WebViewImpl::SetInsidePortal(bool inside_portal) {
-  GetPage()->SetInsidePortal(inside_portal);
-
-  // We may not have created the frame widget yet but that's ok because it'll
-  // be created with this value correctly initialized. This can also be null if
-  // the main frame is remote.
-  if (web_widget_)
-    web_widget_->SetIsNestedMainFrameWidget(inside_portal);
 }
 
 void WebViewImpl::RegisterRendererPreferenceWatcher(

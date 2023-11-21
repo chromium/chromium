@@ -104,8 +104,6 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
 
-  void DidActivatePortal(base::TimeTicks activation_time) override;
-
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
@@ -324,10 +322,6 @@ class UkmPageLoadMetricsObserver
   // Whether the navigation resulted in the main frame being hosted in
   // a different process.
   bool navigation_is_cross_process_ = false;
-
-  // True if this page was loaded in a portal and never activated. UKMs are
-  // not recorded for this page unless the portal is activated.
-  bool is_portal_ = false;
 
   // Difference between indices of the previous and current navigation entries
   // (i.e. item history for the current tab).

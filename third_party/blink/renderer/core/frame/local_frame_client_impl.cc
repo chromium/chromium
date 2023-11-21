@@ -865,18 +865,6 @@ LocalFrame* LocalFrameClientImpl::CreateFrame(
   return web_frame_->CreateChildFrame(name, owner_element);
 }
 
-std::pair<RemoteFrame*, PortalToken> LocalFrameClientImpl::CreatePortal(
-    HTMLPortalElement* portal,
-    mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver,
-    mojo::PendingAssociatedRemote<mojom::blink::PortalClient> portal_client) {
-  return web_frame_->CreatePortal(portal, std::move(portal_receiver),
-                                  std::move(portal_client));
-}
-
-RemoteFrame* LocalFrameClientImpl::AdoptPortal(HTMLPortalElement* portal) {
-  return web_frame_->AdoptPortal(portal);
-}
-
 RemoteFrame* LocalFrameClientImpl::CreateFencedFrame(
     HTMLFencedFrameElement* fenced_frame,
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>

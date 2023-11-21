@@ -159,7 +159,6 @@
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -270,7 +269,6 @@ class NavigationEarlyHintsManager;
 class NavigationRequest;
 class PeakGpuMemoryTracker;
 class PeerConnectionTrackerHost;
-class Portal;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
 class PushMessagingManager;
@@ -1251,10 +1249,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // primary FrameTree).
     //
     // Note that this state is also used for nested pages e.g., the
-    // RenderFrameHosts in <fencedframe> and <portal> elements, as these nested
-    // contexts do not get their own lifecycle state. A RenderFrameHost can tell
-    // if it is in a <fencedframe> however, by checking its `FrameTree`'s type.
-    // This will be true for portals as well once they are migrated to MPArch.
+    // RenderFrameHosts in <fencedframe> elements, as these nested contexts do
+    // not get their own lifecycle state. A RenderFrameHost can tell if it is in
+    // a <fencedframe> however, by checking its `FrameTree`'s type.
     kActive,
 
     // This state corresponds to when RenderFrameHost is stored in
@@ -1799,44 +1796,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // NavigationRequest's has been cancelled.
   void NavigationRequestCancelled(NavigationRequest* navigation_request);
 
-  // Called on the main frame of a page embedded in a Portal when it is
-  // activated. The frame has the option to adopt the previous page,
-  // |predecessor|, as a portal. The activation can optionally include a message
-  // |data| dispatched with the PortalActivateEvent. The |trace_id| is used for
-  // generating flow events.
-  void OnPortalActivated(
-      std::unique_ptr<Portal> predecessor,
-      mojo::PendingAssociatedRemote<blink::mojom::Portal> pending_portal,
-      mojo::PendingAssociatedReceiver<blink::mojom::PortalClient>
-          client_receiver,
-      blink::TransferableMessage data,
-      uint64_t trace_id,
-      base::OnceCallback<void(blink::mojom::PortalActivateResult)> callback);
-
-  // Called in tests that synthetically create portals but need them to be
-  // properly associated with the owning RenderFrameHost.
-  void OnPortalCreatedForTesting(std::unique_ptr<Portal> portal);
-
-  // Look up a portal by its token (as received from the renderer process).
-  Portal* FindPortalByToken(const blink::PortalToken& portal_token);
-
-  // Return portals owned by |this|.
-  std::vector<Portal*> GetPortals() const;
-
-  // Called when a Portal needs to be destroyed.
-  void DestroyPortal(Portal* portal);
-
   // Return fenced frames owned by |this|. The returned vector is in the order
   // the fenced frames were added (most recent at end).
   std::vector<FencedFrame*> GetFencedFrames() const;
 
   // Called when a fenced frame needs to be destroyed.
   void DestroyFencedFrame(FencedFrame& fenced_frame);
-
-  // Called on the main frame of a page embedded in a Portal to forward a
-  // message from the host of a portal.
-  void ForwardMessageFromHost(blink::TransferableMessage message,
-                              const url::Origin& source_origin);
 
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
@@ -2484,16 +2449,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
-  void CreatePortal(
-      mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
-      mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
-      blink::mojom::RemoteFrameInterfacesFromRendererPtr
-          remote_frame_interfaces,
-      CreatePortalCallback callback) override;
-  void AdoptPortal(const blink::PortalToken& portal_token,
-                   blink::mojom::RemoteFrameInterfacesFromRendererPtr
-                       remote_frame_interfaces,
-                   AdoptPortalCallback callback) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
@@ -3316,7 +3271,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is a strict relationship, a RenderFrameHost is never an ancestor of
   // itself.
   // This does not consider inner frame trees (i.e. not accounting for fenced
-  // frames, portals or GuestView).
+  // frames or GuestView).
   bool IsDescendantOfWithinFrameTree(RenderFrameHostImpl* ancestor);
 
   // mojom::FrameHost:
@@ -4862,10 +4817,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       service_worker_container_hosts_;
   // Keeps the track of the latest ServiceWorkerContainerHost.
   base::WeakPtr<ServiceWorkerContainerHost> last_committed_service_worker_host_;
-
-  // The portals owned by this frame. |Portal::owner_render_frame_host_| points
-  // back to |this|.
-  base::flat_set<std::unique_ptr<Portal>, base::UniquePtrComparator> portals_;
 
   // The fenced frames owned by this document, ordered with newer fenced frames
   // being appended to the end.

@@ -191,8 +191,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   PageLoadMetricsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ukm::kUkmFeature, blink::features::kPortals,
-         blink::features::kPortalsCrossOrigin},
+        {ukm::kUkmFeature},
         // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         {features::kHttpsUpgrades});
@@ -3693,86 +3692,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputDelayFromClick) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputTimestamp,
                                       1);
-}
-
-// Flaky on all platforms: https://crbug.com/1211028.
-// Tests that a portal activation records metrics.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
-  // We only record metrics for portals when the time is consistent across
-  // processes.
-  if (!base::TimeTicks::IsConsistentAcrossProcesses())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  content::WebContents* outer_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a portal to a.com.
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  static constexpr char kScript[] = R"(
-    var portal = document.createElement('portal');
-    portal.src = '%s';
-    document.body.appendChild(portal);
-  )";
-  content::WebContentsAddedObserver contents_observer;
-  content::TestNavigationObserver portal_nav_observer(a_url);
-  portal_nav_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(ExecJs(outer_contents,
-                     base::StringPrintf(kScript, a_url.spec().c_str())));
-  portal_nav_observer.WaitForNavigationFinished();
-  content::WebContents* portal_contents = contents_observer.GetWebContents();
-
-  {
-    // The portal is not activated, so no page end metrics should be recorded
-    // (although the outer contents may have recorded FCP).
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    for (const auto& kv : entries) {
-      EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name));
-    }
-  }
-
-  // Activate the portal.
-  std::string activated_listener = R"(
-    activatePromise = new Promise(resolve => {
-      window.addEventListener('portalactivate', resolve(true));
-    });
-  )";
-  EXPECT_TRUE(ExecJs(portal_contents, activated_listener));
-  EXPECT_TRUE(
-      ExecJs(outer_contents, "document.querySelector('portal').activate()"));
-
-  EXPECT_EQ(true, content::EvalJs(portal_contents, "activatePromise"));
-
-  // The activated portal contents should be the currently active contents.
-  EXPECT_EQ(portal_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(portal_contents, outer_contents);
-
-  {
-    // The portal is activated, so there should be a PageLoad entry showing
-    // that the outer contents was closed.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    for (const auto& kv : entries) {
-      ukm::TestUkmRecorder::ExpectEntryMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name,
-          PageEndReason::END_CLOSE);
-    }
-  }
-  {
-    // The portal is activated, also check the portal entry.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::Portal_Activate::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SameOriginNavigation) {

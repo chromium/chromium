@@ -4280,7 +4280,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
 enum class TestMPArchType {
   kPrerender,
   kFencedFrame,
-  kPortal,
 };
 
 class NavigationRequestMPArchBrowserTest
@@ -4299,13 +4298,6 @@ class NavigationRequestMPArchBrowserTest
       case TestMPArchType::kFencedFrame:
         fenced_frame_helper_ =
             std::make_unique<content::test::FencedFrameTestHelper>();
-        break;
-
-      case TestMPArchType::kPortal:
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/{blink::features::kPortals,
-                                  blink::features::kPortalsCrossOrigin},
-            /*disabled_features=*/{});
         break;
     }
   }
@@ -4334,8 +4326,7 @@ class NavigationRequestMPArchBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationRequestMPArchBrowserTest,
                          ::testing::Values(TestMPArchType::kPrerender,
-                                           TestMPArchType::kFencedFrame,
-                                           TestMPArchType::kPortal));
+                                           TestMPArchType::kFencedFrame));
 
 IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
                        ShouldNotUpdateHistory) {
@@ -4382,23 +4373,6 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
         ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
             web_contents()->GetPrimaryMainFrame(),
             embedded_test_server()->GetURL("/fenced_frames/title1.html")));
-        break;
-      }
-
-      case TestMPArchType::kPortal: {
-        GURL portal_url(embedded_test_server()->GetURL("/title1.html"));
-
-        // Create a portal.
-        const char script[] = R"(
-           new Promise(async resolve => {
-             let portal = document.createElement('portal');
-             portal.src = $1;
-             portal.onload = resolve;
-             document.body.appendChild(portal);
-           });
-        )";
-        ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                           content::JsReplace(script, portal_url)));
         break;
       }
     }

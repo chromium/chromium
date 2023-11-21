@@ -361,9 +361,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   int32_t AutoplayFlags() const;
 
-  void SetInsidePortal(bool inside_portal);
-  bool InsidePortal() const;
-
   void SetIsPrerendering(bool is_prerendering) {
     is_prerendering_ = is_prerendering;
   }
@@ -613,9 +610,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   VisionDeficiency vision_deficiency_ = VisionDeficiency::kNoVisionDeficiency;
 
   int32_t autoplay_flags_;
-
-  // Accessed by frames to determine whether to expose the PortalHost object.
-  bool inside_portal_ = false;
 
   // Whether the page is being prerendered by the Prerender2
   // feature. See content/browser/preloading/prerender/README.md.

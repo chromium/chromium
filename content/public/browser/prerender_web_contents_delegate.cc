@@ -78,18 +78,6 @@ void PrerenderWebContentsDelegate::WebContentsCreated(
   NOTREACHED_NORETURN();
 }
 
-void PrerenderWebContentsDelegate::PortalWebContentsCreated(
-    WebContents* portal_web_contents) {
-  // Portal is not available on a prerendered page.
-  NOTREACHED_NORETURN();
-}
-
-void PrerenderWebContentsDelegate::WebContentsBecamePortal(
-    WebContents* portal_web_contents) {
-  // Portal is not available on a prerendered page.
-  NOTREACHED_NORETURN();
-}
-
 bool PrerenderWebContentsDelegate::CanEnterFullscreenModeForTab(
     RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
@@ -144,14 +132,6 @@ bool PrerenderWebContentsDelegate::ShouldAllowRunningInsecureContent(
 PreloadingEligibility PrerenderWebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   // This should be checked in the initiator's WebContents.
-  NOTREACHED_NORETURN();
-}
-
-std::unique_ptr<WebContents>
-PrerenderWebContentsDelegate::ActivatePortalWebContents(
-    WebContents* predecessor_contents,
-    std::unique_ptr<WebContents> portal_contents) {
-  // Portal is not available on a prerendered page.
   NOTREACHED_NORETURN();
 }
 

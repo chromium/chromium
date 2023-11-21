@@ -398,11 +398,6 @@ void PageLoadMetricsForwardObserver::OnPrefetchLikely() {
   NOTREACHED();
 }
 
-void PageLoadMetricsForwardObserver::DidActivatePortal(
-    base::TimeTicks activation_time) {
-  NOTREACHED() << "Not supported.";
-}
-
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {}
 

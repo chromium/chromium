@@ -40,8 +40,6 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                           const std::string& frame_name,
                           const GURL& target_url,
                           WebContents* new_contents) override;
-  void PortalWebContentsCreated(WebContents* portal_web_contents) override;
-  void WebContentsBecamePortal(WebContents* portal_web_contents) override;
   bool CanEnterFullscreenModeForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
@@ -64,9 +62,6 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                                          const GURL& resource_url) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
-  std::unique_ptr<WebContents> ActivatePortalWebContents(
-      WebContents* predecessor_contents,
-      std::unique_ptr<WebContents> portal_contents) override;
   void UpdateInspectedWebContentsIfNecessary(
       WebContents* old_contents,
       WebContents* new_contents,

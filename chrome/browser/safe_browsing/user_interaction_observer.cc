@@ -101,7 +101,6 @@ void SafeBrowsingUserInteractionObserver::CreateForWebContents(
   // create an observer if there isn't one.
   // TODO(crbug.com/1057157): The observer should observe all unsafe resources
   // instead of the first one only.
-  DCHECK(!web_contents->IsPortal());
   content::WebContentsUserData<
       SafeBrowsingUserInteractionObserver>::CreateForWebContents(web_contents,
                                                                  resource,

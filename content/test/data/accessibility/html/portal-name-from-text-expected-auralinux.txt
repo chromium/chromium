@@ -1,4 +1,0 @@
-[document web] name='done' focusable focused
-++[section]
-++++[push button] name='Text in iframe' focusable
-++++++[document web] name='Text in iframe'

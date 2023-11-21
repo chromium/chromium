@@ -169,12 +169,6 @@ class WebContentsTester {
   virtual void TestIncrementBluetoothConnectedDeviceCount() = 0;
   virtual void TestDecrementBluetoothConnectedDeviceCount() = 0;
 
-  // Used to create portals and retrieve their WebContents.
-  virtual const blink::PortalToken& CreatePortal(
-      std::unique_ptr<WebContents> portal_web_contents) = 0;
-  virtual WebContents* GetPortalContents(
-      const blink::PortalToken& portal_token) = 0;
-
   // Indicates if this WebContents has been frozen via a call to
   // SetPageFrozen().
   virtual bool IsPageFrozen() = 0;

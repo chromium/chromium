@@ -50,11 +50,6 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
   if (!opener_rfh)
     return false;
 
-  // You can't simultaneously be a portal (an embedded child element of a
-  // document loaded via the <portal> tag) and a popup (a child document
-  // loaded in a new window).
-  DCHECK(!web_contents->IsPortal());
-
   // Connect this new page to its opener.
   auto* opener_wc = content::WebContents::FromRenderFrameHost(opener_rfh);
   auto* opener_helper = PerformanceManagerTabHelper::FromWebContents(opener_wc);
@@ -450,24 +445,9 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   DCHECK(page);
   auto* frame = GetFrameNode(render_frame_host);
 
-  // Determine the embedded type.
-  auto embedding_type = PageNode::EmbeddingType::kInvalid;
-  if (inner_web_contents->IsPortal()) {
-    embedding_type = PageNode::EmbeddingType::kPortal;
-
-    // In the case of portals there can be a temporary RFH that is created that
-    // will never actually be committed to the frame tree (for which we'll never
-    // see RenderFrameCreated and RenderFrameDestroyed notifications). Find a
-    // parent that we do know about instead. Note that this is not *always*
-    // true, because portals are reusable.
-    if (!frame)
-      frame = GetFrameNode(render_frame_host->GetParent());
-  } else {
-    embedding_type = PageNode::EmbeddingType::kGuestView;
-    // For a guest view, the RFH should already have been seen.
-    // Note that guest views can simultaneously have openers *and* be embedded.
-  }
-  DCHECK_NE(PageNode::EmbeddingType::kInvalid, embedding_type);
+  // For a guest view, the RFH should already have been seen.
+  // Note that guest views can simultaneously have openers *and* be embedded.
+  auto embedding_type = PageNode::EmbeddingType::kGuestView;
   DCHECK(frame);
 
   PerformanceManagerImpl::CallOnGraphImpl(

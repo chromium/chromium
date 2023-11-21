@@ -38,8 +38,6 @@ void TestPageBroadcast::ActivatePrerenderedPage(
   std::move(callback).Run();
 }
 
-void TestPageBroadcast::SetInsidePortal(bool is_inside_portal) {}
-
 void TestPageBroadcast::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {}
 

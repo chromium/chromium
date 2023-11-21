@@ -357,14 +357,6 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // DocumentUserData for more details).
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) {}
 
-  // Called after the contents replaces the |predecessor_contents| in its
-  // container due to portal activation. The |predecessor_contents| is now a
-  // portal pending adoption. |predecessor_contents| is non-null, but may
-  // subsequently be destroyed if it is not adopted.
-  // `activation_time` is the time the activation happened.
-  virtual void DidActivatePortal(WebContents* predecessor_web_contents,
-                                 base::TimeTicks activation_time) {}
-
   // Called after the WebContents completes the previewed page activation steps.
   // `activation_time` is the time the activation happened.
   virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) {}

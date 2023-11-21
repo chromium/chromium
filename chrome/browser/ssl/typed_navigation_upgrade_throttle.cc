@@ -102,8 +102,7 @@ bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
           ->is_using_https_as_default_scheme();
   return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
          !handle->IsSameDocument() &&
-         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
-         !handle->GetWebContents()->IsPortal();
+         handle->GetURL().SchemeIs(url::kHttpsScheme);
 }
 
 TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;

@@ -3000,29 +3000,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("progress-with-background-exposes-values.html"));
 }
 
-// TODO(crbug.com/1232138): Flaky on multiple platforms
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityPortal) {
-  RunHtmlTest(FILE_PATH_LITERAL("portal.html"));
-}
-
-// TODO(crbug.com/1367886): Flaky on multiple platforms
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityPortalNameFromText) {
-  RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-text.html"));
-}
-
-// Flaky on all platforms: crbug.com/1103753.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityPortalWithWidgetInside) {
-  RunHtmlTest(FILE_PATH_LITERAL("portal-with-widget-inside.html"));
-}
-
-// TODO(crbug.com/1367886): Flaky on multiple platforms
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityPortalNameFromVisibleText) {
-  RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-visible-text.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityQ) {
   RunHtmlTest(FILE_PATH_LITERAL("q.html"));
 }

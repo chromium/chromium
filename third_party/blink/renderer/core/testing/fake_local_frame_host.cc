@@ -282,24 +282,6 @@ void FakeLocalFrameHost::SendLegacyTechEvent(
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}
 
-void FakeLocalFrameHost::CreatePortal(
-    mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal,
-    mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client,
-    mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    CreatePortalCallback callback) {
-  std::move(callback).Run(mojom::blink::FrameReplicationState::New(),
-                          PortalToken(), RemoteFrameToken(),
-                          base::UnguessableToken());
-}
-
-void FakeLocalFrameHost::AdoptPortal(
-    const PortalToken& portal_token,
-    mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    AdoptPortalCallback callback) {
-  std::move(callback).Run(mojom::blink::FrameReplicationState::New(),
-                          RemoteFrameToken(), base::UnguessableToken());
-}
-
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,

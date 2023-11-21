@@ -204,7 +204,6 @@ class AssertPageLoadMetricsObserver final
                          bool blocked_by_policy,
                          page_load_metrics::StorageType access_type) override {}
   void OnPrefetchLikely() override {}
-  void DidActivatePortal(base::TimeTicks activation_time) override {}
   void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
                              memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}

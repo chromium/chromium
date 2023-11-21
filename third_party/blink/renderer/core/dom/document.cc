@@ -244,8 +244,6 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
-#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/html/window_name_collection.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
@@ -3875,13 +3873,6 @@ static bool AllDescendantsAreComplete(Document* document) {
       return false;
   }
 
-  if (auto* portals = DocumentPortals::Get(*document)) {
-    for (PortalContents* portal : portals->GetPortals()) {
-      auto* portal_frame = portal->GetFrame();
-      if (portal_frame && portal_frame->IsLoading())
-        return false;
-    }
-  }
   return true;
 }
 
@@ -9120,8 +9111,6 @@ void Document::ActivateForPrerendering(
     const mojom::blink::PrerenderPageActivationParams& params) {
   TRACE_EVENT0("navigation", "Document::ActivateForPrerendering");
 
-  // TODO(bokan): Portals will change this assumption since they mean an active
-  // document can be "adopted" into a portal.
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
 
