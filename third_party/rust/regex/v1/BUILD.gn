@@ -65,13 +65,5 @@ cargo_crate("lib") {
     "unicode-script",
     "unicode-segment",
   ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  testonly = true
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
   testonly = true
 }

@@ -9,9 +9,8 @@
 import("//build/rust/cargo_crate.gni")
 
 {{#each rules}}
-{{#if this.detail.crate}}
 cargo_crate("{{this.name}}") {
-  {{#with this.detail.crate}}
+  {{#with this.detail}}
   {{#if crate_name}}
   crate_name = "{{crate_name}}"
   {{/if}}
@@ -146,15 +145,4 @@ cargo_crate("{{this.name}}") {
   testonly = true
   {{/if}}
 }
-{{/if}}
-{{#if this.detail.testonly_alias}}
-group("{{this.name}}") {
-  {{#with this.detail.testonly_alias}}
-  public_deps = [":{{real_target}}"]
-  {{/with}}
-  {{#if this.gn_visibility.testonly}}
-  testonly = true
-  {{/if}}
-}
-{{/if}}
 {{/each}}

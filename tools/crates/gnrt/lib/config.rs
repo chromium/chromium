@@ -34,6 +34,7 @@ pub struct GnConfig {
     /// Path to a handlebars template for writing README.chromium files. The
     /// path is relative to the config file. Only used for
     /// //third_party/rust crates.
+    #[serde(default)]
     pub readme_file_template: std::path::PathBuf,
 }
 

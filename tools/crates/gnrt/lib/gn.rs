@@ -58,20 +58,10 @@ pub struct Rule {
     pub detail: RuleDetail,
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "snake_case")]
-#[allow(clippy::large_enum_variant)]
-pub enum RuleDetail {
-    /// A concrete build rule for a Rust bin or lib crate.
-    Crate(CrateDetail),
-    /// An alias to a concrete rule with different visibility.
-    TestonlyAlias(TestonlyAliasDetail),
-}
-
 /// A concrete build rule. Refer to //build/rust/cargo_crate.gni for fields
 /// undocumented here.
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct CrateDetail {
+pub struct RuleDetail {
     pub crate_name: Option<String>,
     pub epoch: Option<Epoch>,
     pub crate_type: String,
@@ -96,13 +86,6 @@ pub struct CrateDetail {
     /// Whether this rule depends on the main lib target in its group (e.g. a
     /// bin target alongside a lib inside a package).
     pub dep_on_lib: bool,
-}
-
-/// TODO(danakj): Alias groups will go away, then delete this.
-#[derive(Clone, Debug, Serialize)]
-pub struct TestonlyAliasDetail {
-    /// The actual GN rule to alias. This matches a `Rule`'s `name` field.
-    pub real_target: String,
 }
 
 /// Set of rule dependencies with a shared condition.
@@ -190,7 +173,7 @@ pub fn build_rule_from_std_dep(
         _ => dep.is_toplevel_dep,
     };
 
-    let mut detail_template = CrateDetail {
+    let mut detail_template = RuleDetail {
         edition: dep.edition.clone(),
         cargo_pkg_version: dep.version.to_string(),
         cargo_pkg_authors,
@@ -332,7 +315,7 @@ pub fn build_rule_from_std_dep(
         rules.push(Rule {
             name: NormalizedName::from_crate_name(&bin_target.name).to_string(),
             gn_visibility: GnVisibility { testonly: dep.group == Group::Test, public: true },
-            detail: RuleDetail::Crate(bin_detail),
+            detail: bin_detail,
         });
     }
 
@@ -390,29 +373,14 @@ pub fn build_rule_from_std_dep(
                 _ => unreachable!(), // The for loop here is over [Normal, Build].
             };
 
-            let testonly = dep.group == Group::Test;
             rules.push(Rule {
                 name: lib_rule_name.clone(),
                 gn_visibility: GnVisibility {
-                    testonly,
-                    public: allow_first_party_usage && !testonly,
+                    testonly: dep.group == Group::Test,
+                    public: allow_first_party_usage,
                 },
-                detail: RuleDetail::Crate(lib_detail),
+                detail: lib_detail,
             });
-
-            // A package may be available to first-party tests. In this case limit :lib's
-            // visibility to third-party but provide a testonly alias visible
-            // everywhere. The :lib target must still exist for third-party
-            // transitive deps, which aren't testonly.
-            if dep_kind == Normal && allow_first_party_usage && testonly {
-                rules.push(Rule {
-                    name: "test_support".to_string(),
-                    gn_visibility: GnVisibility { testonly: true, public: true },
-                    detail: RuleDetail::TestonlyAlias(TestonlyAliasDetail {
-                        real_target: lib_rule_name,
-                    }),
-                })
-            }
         }
     }
 

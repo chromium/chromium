@@ -33,13 +33,5 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/rstest_macros/v0_17:lib" ]
   build_deps = [ "//third_party/rust/rustc_version/v0_4:buildrs_support" ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  testonly = true
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
   testonly = true
 }

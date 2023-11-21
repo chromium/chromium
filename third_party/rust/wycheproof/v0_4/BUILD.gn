@@ -54,13 +54,5 @@ cargo_crate("lib") {
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:lib",
   ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  testonly = true
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
   testonly = true
 }
