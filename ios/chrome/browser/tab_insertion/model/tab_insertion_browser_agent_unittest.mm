@@ -28,8 +28,8 @@ const char kURL1[] = "https://www.some.url.com";
 // LegacySessionRestorationService).
 class TestWebStateListDelegate final : public FakeWebStateListDelegate {
  public:
-  TestWebStateListDelegate(bool force_realization_on_activation)
-      : FakeWebStateListDelegate(force_realization_on_activation) {}
+  TestWebStateListDelegate()
+      : FakeWebStateListDelegate(/*force_realization_on_activation=*/true) {}
 
   void WillAddWebState(web::WebState* web_state) final {
     if (web::UseNativeSessionRestorationCache()) {
@@ -45,8 +45,7 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
   TabInsertionBrowserAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<TestWebStateListDelegate>(
-                                  /* force_realization_on_activation */ true));
+        browser_state_.get(), std::make_unique<TestWebStateListDelegate>());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
   }
