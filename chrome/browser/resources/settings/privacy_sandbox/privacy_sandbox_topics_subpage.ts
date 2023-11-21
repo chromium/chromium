@@ -109,7 +109,8 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         state => this.onTopicsStateChanged_(state));
 
     this.$.footer.querySelectorAll('a').forEach(
-        link => link.title = this.i18n('opensInNewTab'));
+        link =>
+            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);

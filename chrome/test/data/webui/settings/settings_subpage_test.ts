@@ -86,8 +86,10 @@ suite('SettingsSubpage', function() {
     subpage.pageTitle = 'Title';
     flush();
     assertEquals(
-        subpage.i18n('subpageLearnMoreAriaLabel', subpage.pageTitle),
-        icon.ariaLabel);
+        icon.ariaLabel,
+        subpage.i18n('subpageLearnMoreAriaLabel', subpage.pageTitle));
+    assertEquals(
+        icon?.getAttribute('aria-description'), subpage.i18n('opensInNewTab'));
   });
 
   test('favicon', function() {

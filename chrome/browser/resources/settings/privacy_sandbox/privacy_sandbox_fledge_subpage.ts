@@ -147,7 +147,8 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         state => this.onFledgeStateChanged_(state));
 
     this.$.footer.querySelectorAll('a').forEach(
-        link => link.title = this.i18n('opensInNewTab'));
+        link =>
+            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_FLEDGE_SUBPAGE);

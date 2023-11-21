@@ -1804,8 +1804,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString(
       "doNotTrackDialogMessage",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT,
-                                 chrome::kDoNotTrackLearnMoreURL));
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT,
+          chrome::kDoNotTrackLearnMoreURL,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString("exceptionsLearnMoreURL",
                          chrome::kContentSettingsExceptionsLearnMoreURL);
   html_source->AddBoolean(
@@ -3337,7 +3339,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION,
           chrome::kUserBypassHelpCenterURL,
           l10n_util::GetStringUTF16(
-              IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL)));
+              IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString(
       "trackingProtectionRollbackNotice",
       l10n_util::GetStringFUTF16(

@@ -468,6 +468,10 @@ suite('TrackingProtectionSettings', function() {
   test('CheckVisibility', function() {
     // Page description
     assertTrue(isChildVisible(page, '#explanationText'));
+    assertEquals(
+        page.shadowRoot!.querySelector<HTMLAnchorElement>(
+                            'a[href]')!.getAttribute('aria-description'),
+        page.i18n('opensInNewTab'));
 
     // Advanced toggles
     assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
