@@ -1946,7 +1946,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public TabModel getCurrentTabModel() {
         TabModelSelector modelSelector = getTabModelSelector();
-        if (modelSelector == null) return EmptyTabModel.getInstance();
+        if (modelSelector == null) return EmptyTabModel.getInstance(false);
         return modelSelector.getCurrentModel();
     }
 

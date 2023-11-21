@@ -54,7 +54,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
      */
     IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
-        mDelegateModel = EmptyTabModel.getInstance();
+        mDelegateModel = EmptyTabModel.getInstance(true);
         mDelegateModelCurrentTabSupplierObserver = mCurrentTabSupplier::set;
     }
 
@@ -92,7 +92,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         mDelegateModel.destroy();
         mCurrentTabSupplier.set(null);
 
-        mDelegateModel = EmptyTabModel.getInstance();
+        mDelegateModel = EmptyTabModel.getInstance(true);
     }
 
     private boolean isEmpty() {

@@ -190,7 +190,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public @NonNull TabModel getCurrentModel() {
-        if (mTabModels.size() == 0) return EmptyTabModel.getInstance();
+        if (mTabModels.size() == 0) return EmptyTabModel.getInstance(false);
         return mTabModelSupplier.get();
     }
 
@@ -207,7 +207,7 @@ public abstract class TabModelSelectorBase
     @Override
     public TabModel getModel(boolean incognito) {
         int index = getModelIndex(incognito);
-        if (index == MODEL_NOT_FOUND) return EmptyTabModel.getInstance();
+        if (index == MODEL_NOT_FOUND) return EmptyTabModel.getInstance(false);
         return mTabModels.get(index);
     }
 

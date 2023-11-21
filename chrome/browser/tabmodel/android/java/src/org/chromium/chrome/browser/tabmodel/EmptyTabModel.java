@@ -17,10 +17,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.List;
 
-/**
- * Singleton class intended to stub out Tab model before it has been created.
- */
-public class EmptyTabModel implements TabModel {
+/** Singleton class intended to stub out Tab model before it has been created. */
+public class EmptyTabModel implements IncognitoTabModel {
+    private boolean mIsIncognito;
+
     /**
      * Used to mock TabModel. Application code should use getInstance() to construct an
      * EmptyTabModel.
@@ -28,17 +28,23 @@ public class EmptyTabModel implements TabModel {
     @VisibleForTesting
     public EmptyTabModel() {}
 
+    private EmptyTabModel(boolean isIncognito) {
+        mIsIncognito = isIncognito;
+    }
+
     // "Initialization on demand holder idiom"
     private static class LazyHolder {
-        private static final EmptyTabModel INSTANCE = new EmptyTabModel();
+        private static final EmptyTabModel INSTANCE = new EmptyTabModel(false);
+        private static final EmptyTabModel INCOGNITO_INSTANCE = new EmptyTabModel(true);
     }
 
     /**
      * Get the singleton instance of EmptyTabModel.
+     *
      * @return the instance of EmptyTabModel
      */
-    public static EmptyTabModel getInstance() {
-        return LazyHolder.INSTANCE;
+    public static EmptyTabModel getInstance(boolean isIncognito) {
+        return isIncognito ? LazyHolder.INCOGNITO_INSTANCE : LazyHolder.INSTANCE;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class EmptyTabModel implements TabModel {
 
     @Override
     public boolean isIncognito() {
-        return false;
+        return mIsIncognito;
     }
 
     @Override
@@ -169,4 +175,10 @@ public class EmptyTabModel implements TabModel {
 
     @Override
     public void openMostRecentlyClosedEntry() {}
+
+    @Override
+    public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+    @Override
+    public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
 }
