@@ -151,12 +151,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                           std::make_unique<
                               optimization_guide::proto::LogAiDataRequest>())));
             })));
-    ON_CALL(compose_dialog(), ResponseReceived(_))
-        .WillByDefault(
-            testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-              compose_future_.SetValue(std::move(response));
-            }));
-
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
@@ -224,10 +218,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return page_handler_;
   }
 
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr>& compose_future() {
-    return compose_future_;
-  }
-
   GURL GetPageUrl() { return GURL("http://foo/1"); }
 
   void TearDown() override {
@@ -287,6 +277,18 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
 
+  // This helper function is a shortcut to adding a test future to listen for
+  // compose responses.
+  void BindComposeFutureToOnResponseReceived(
+      base::test::TestFuture<compose::mojom::ComposeResponsePtr>&
+          compose_future) {
+    ON_CALL(compose_dialog(), ResponseReceived(_))
+        .WillByDefault(
+            testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+              compose_future.SetValue(std::move(response));
+            }));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -298,7 +300,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
   base::HistogramTester histogram_tester_;
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -821,9 +822,12 @@ TEST_F(ChromeComposeClientTest, TestEmptyUndo) {
 // Tests that Undo is not possible after only one Compose() invocation.
 TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
   ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available)
       << "First Compose() response should say undo not available.";
 
@@ -845,23 +849,27 @@ TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
 TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   page_handler()->SaveWebUIState("this state should be restored with undo");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
   page_handler()->SaveWebUIState("second state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  response = compose_future().Take();
+  response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
   page_handler()->SaveWebUIState("user edited the input field further");
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_future;
+
   page_handler()->RequestInitialState(open_future.GetCallback());
   compose::mojom::OpenMetadataPtr open_metadata = open_future.Take();
   EXPECT_TRUE(open_metadata->compose_state->response->undo_available)
@@ -882,17 +890,20 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
 TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
   page_handler()->SaveWebUIState("second state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  response = compose_future().Take();
+  response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
 
@@ -900,7 +911,7 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  response = compose_future().Take();
+  response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
                                            "say undo is available.";
 
@@ -923,11 +934,15 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
 // state A.
 TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
 
@@ -935,7 +950,7 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  response = compose_future().Take();
+  response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
   page_handler()->SaveWebUIState("wip web ui state");
@@ -948,7 +963,7 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
 
-  response = compose_future().Take();
+  response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
                                            "say undo is available.";
 
@@ -1034,18 +1049,21 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
 TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   // Simulate three compose request.
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  response = compose_future().Take();
+  response = compose_future.Take();
 
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  response = compose_future().Take();
+  response = compose_future.Take();
 
   // Show the dialog a second time.
   ShowDialogAndBindMojo();
@@ -1079,18 +1097,21 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   // Simulate three compose request.
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  compose::mojom::ComposeResponsePtr response = compose_future().Take();
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  response = compose_future().Take();
+  response = compose_future.Take();
 
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
                           /*rewrite=*/false);
-  response = compose_future().Take();
+  response = compose_future.Take();
 
   // Show the dialog a second time.
   ShowDialogAndBindMojo();
