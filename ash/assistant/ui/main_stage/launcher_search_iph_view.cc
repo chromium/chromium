@@ -184,6 +184,12 @@ void LauncherSearchIphView::VisibilityChanged(views::View* starting_from,
   }
 }
 
+void LauncherSearchIphView::NotifyAssistantButtonPressedEvent() {
+  if (scoped_iph_session_) {
+    scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
+  }
+}
+
 std::vector<raw_ptr<ChipView>> LauncherSearchIphView::GetChipsForTesting() {
   return chips_;
 }
@@ -197,9 +203,7 @@ void LauncherSearchIphView::RunLauncherSearchQuery(
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {
-  if (scoped_iph_session_) {
-    scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
-  }
+  NotifyAssistantButtonPressedEvent();
   delegate_->OpenAssistantPage();
 }
 

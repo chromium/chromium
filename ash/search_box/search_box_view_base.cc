@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -554,8 +555,9 @@ views::ImageView* SearchBoxViewBase::search_icon() {
   return search_icon_;
 }
 
-void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
-  if (iph_view()) {
+void SearchBoxViewBase::SetIphView(
+    std::unique_ptr<LauncherSearchIphView> view) {
+  if (GetIphView()) {
     DCHECK(false) << "SetIphView gets called with an IPH view being shown.";
 
     DeleteIphView();
@@ -564,8 +566,19 @@ void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
   iph_view_tracker_.SetView(main_container_->AddChildView(std::move(view)));
 }
 
+LauncherSearchIphView* SearchBoxViewBase::GetIphView() {
+  views::View* view = iph_view_tracker_.view();
+  if (!view) {
+    return nullptr;
+  }
+
+  CHECK(views::IsViewClass<LauncherSearchIphView>(view))
+      << "Only LaunchserSearchIph view is supported now";
+  return static_cast<LauncherSearchIphView*>(view);
+}
+
 void SearchBoxViewBase::DeleteIphView() {
-  main_container_->RemoveChildViewT(iph_view());
+  main_container_->RemoveChildViewT(GetIphView());
 }
 
 void SearchBoxViewBase::TriggerSearch() {

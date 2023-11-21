@@ -353,6 +353,38 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
+                       ClickAssistantInSearchBox) {
+  OpenAppListAndWaitForIphView();
+
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+  // Confirm that a background is installed as we check that this gets removed
+  // if IPH is not shown below.
+  EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+
+  // Confirm that assistant event is recorded. Make sure that the initial count
+  // is 0 to distinguish this from other events.
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(kNotifyEventUserActionName));
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNotifyEventUserActionName));
+
+  EXPECT_TRUE(IsAssistantPageActive());
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Dismiss the app list and show it again. IPH won't be shown this time. Note
+  // that this behavior is coming from the IPH test config.
+  DismissAppList();
+  OpenAppListForSearch();
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Launcher search iph installs a background to an assistant button in the
+  // search box. It should be removed if the iph gets dismissed.
+  EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+}
+
 // TODO(crbug.com/1500165): Consistently failing - fix and re-enable.
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        DISABLED_ClickChip) {
@@ -373,7 +405,8 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickAssistant) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       ClickAssistantInIph) {
   OpenAppListAndWaitForIphView();
 
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());

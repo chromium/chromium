@@ -431,8 +431,7 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
-  raw_ptr<const views::View> iph_view =
-      search_view_->search_box_view()->iph_view();
+  auto* iph_view = search_view_->search_box_view()->GetIphView();
   const int iph_height = iph_view ? iph_view->GetPreferredSize().height() : 0;
 
   return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
