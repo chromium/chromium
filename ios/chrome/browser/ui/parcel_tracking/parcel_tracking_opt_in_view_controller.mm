@@ -103,7 +103,6 @@ CGFloat const kRadioButtonSize = 20;
       l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE),
       textAttributes, linkAttributes);
   subtitle.delegate = self;
-  subtitle.editable = YES;
   subtitle.selectable = YES;
 }
 
@@ -162,7 +161,10 @@ CGFloat const kRadioButtonSize = 20;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
   cell.textLabel.text = title;
-  cell.textLabel.isAccessibilityElement = YES;
+  cell.isAccessibilityElement = YES;
+  cell.accessibilityLabel = cell.textLabel.text;
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/NO];
 
   cell.accessoryView =
       [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
@@ -196,6 +198,8 @@ CGFloat const kRadioButtonSize = 20;
   cell.accessoryView = [[UIImageView alloc] initWithImage:icon];
   cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
   self.primaryActionButton.enabled = YES;
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/YES];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -205,6 +209,8 @@ CGFloat const kRadioButtonSize = 20;
       initWithImage:DefaultSymbolTemplateWithPointSize(
                         kCircleSymbol, kSymbolAccessoryPointSize)];
   cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/NO];
 }
 
 #pragma mark - Private
@@ -267,6 +273,16 @@ CGFloat const kRadioButtonSize = 20;
     }
     incomingButton.configuration = updatedConfig;
   };
+}
+
+// Returns the accessibility traits for the radio button options. `selected`
+// should be true if the radio button is selected.
+- (UIAccessibilityTraits)accessibilityTraitsForButton:(BOOL)selected {
+  UIAccessibilityTraits accessibilityTraits = UIAccessibilityTraitButton;
+  if (selected) {
+    accessibilityTraits |= UIAccessibilityTraitSelected;
+  }
+  return accessibilityTraits;
 }
 
 @end
