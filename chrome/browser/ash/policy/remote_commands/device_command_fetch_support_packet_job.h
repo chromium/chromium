@@ -150,6 +150,7 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   // The details of requested support packet. Contains details like data
   // collectors, PII types, case ID etc.
   SupportPacketDetails support_packet_details_;
+  std::set<enterprise_management::FetchSupportPacketResultNote> notes_;
   // The callback to run when the execution of RemoteCommandJob has finished.
   CallbackWithResult result_callback_;
   std::unique_ptr<SupportToolHandler> support_tool_handler_;

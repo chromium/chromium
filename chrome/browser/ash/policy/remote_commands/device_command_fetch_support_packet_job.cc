@@ -44,6 +44,9 @@
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using enterprise_management::FetchSupportPacketResultCode;
+using enterprise_management::FetchSupportPacketResultNote;
+
 namespace {
 
 // The directory that the support packets will be stored.
@@ -66,8 +69,9 @@ constexpr char kCommandIdKey[] = "Command-ID";
 constexpr char kContentTypeJson[] = "application/json";
 constexpr char kFilenameKey[] = "Filename";
 
-// JSON key that's used in command result payload.
+// JSON keys that are used in command result payload.
 constexpr char kResultKey[] = "result";
+constexpr char kNotesKey[] = "notes";
 
 std::set<support_tool::DataCollectorType> GetDataCollectorTypes(
     const base::Value::List& requested_data_collectors) {
@@ -159,9 +163,17 @@ std::string GetUploadParameters(
 }
 
 std::string GetCommandResultPayload(
-    policy::EnterpriseFetchSupportPacketFailureType result_enum) {
+    FetchSupportPacketResultCode result_code,
+    const std::set<FetchSupportPacketResultNote>& notes) {
   base::Value::Dict json;
-  json.Set(kResultKey, static_cast<int>(result_enum));
+  json.Set(kResultKey, static_cast<int>(result_code));
+  if (!notes.empty()) {
+    base::Value::List notes_list;
+    for (const auto& note : notes) {
+      notes_list.Append(static_cast<int>(note));
+    }
+    json.Set(kNotesKey, std::move(notes_list));
+  }
   std::string result_payload;
   base::JSONWriter::Write(json, &result_payload);
   return result_payload;
@@ -324,8 +336,9 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
         FROM_HERE,
         base::BindOnce(
             std::move(result_callback_), ResultType::kFailure,
-            GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
-                                        kFailedOnCommandEnabledForUserCheck)));
+            GetCommandResultPayload(
+                FetchSupportPacketResultCode::FAILURE_COMMAND_NOT_ENABLED,
+                notes_)));
     return;
   }
 
@@ -382,8 +395,8 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
                   << export_error->error_message;
     std::move(result_callback_)
         .Run(ResultType::kFailure,
-             GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
-                                         kFailedOnExportingSupportPacket));
+             GetCommandResultPayload(
+                 FetchSupportPacketResultCode::FAILURE_EXPORTING_FILE, notes_));
     return;
   }
 
@@ -448,8 +461,9 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
                 << status.error_message();
   std::move(result_callback_)
       .Run(ResultType::kFailure,
-           GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
-                                       kFailedOnEnqueueingEvent));
+           GetCommandResultPayload(
+               FetchSupportPacketResultCode::FAILURE_REPORTING_PIPELINE,
+               notes_));
 }
 
 }  // namespace policy
