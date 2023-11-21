@@ -41,7 +41,7 @@ namespace gwp_asan {
 namespace internal {
 namespace {
 
-constexpr bool kCpuIs64Bit =
+[[maybe_unused]] constexpr bool kCpuIs64Bit =
 #if defined(ARCH_CPU_64_BITS)
     true;
 #else
@@ -76,17 +76,23 @@ constexpr int kDefaultTotalPages = kCpuIs64Bit ? 2048 : kDefaultMaxMetadata * 2;
 constexpr int kDefaultAllocationSamplingMultiplier = 1500;
 constexpr int kDefaultAllocationSamplingRange = 16;
 constexpr double kDefaultProcessSamplingProbability = 0.01;
-constexpr int kDefaultProcessSamplingBoost2 = 10;
-#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_ANDROID)
+constexpr int kDefaultMaxAllocations = 70;
+constexpr int kDefaultMaxMetadata = 255;
+constexpr int kDefaultTotalPages = 512;
+constexpr int kDefaultAllocationSamplingMultiplier = 2000;
+constexpr int kDefaultAllocationSamplingRange = 20;
+constexpr double kDefaultProcessSamplingProbability = 0.015;
+#else
 constexpr int kDefaultMaxAllocations = 70;
 constexpr int kDefaultMaxMetadata = 255;
 constexpr int kDefaultTotalPages = kCpuIs64Bit ? 2048 : kDefaultMaxMetadata * 2;
 constexpr int kDefaultAllocationSamplingMultiplier = 1000;
 constexpr int kDefaultAllocationSamplingRange = 16;
 constexpr double kDefaultProcessSamplingProbability = 0.015;
-constexpr int kDefaultProcessSamplingBoost2 = 10;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
+constexpr int kDefaultProcessSamplingBoost2 = 10;
 
 // The aim is to have the same memory overhead as the default GWP-ASan mode,
 // which is:
