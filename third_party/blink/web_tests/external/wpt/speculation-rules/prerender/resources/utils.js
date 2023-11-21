@@ -434,3 +434,15 @@ function failTest(reason, uid) {
   bc.postMessage({result: 'FAILED', reason});
   bc.close();
 }
+
+// Retrieves a target hint from URLSearchParams of the current window and
+// returns it. Throw an Error if it doesn't have the valid target hint param.
+function getTargetHint() {
+  const params = new URLSearchParams(window.location.search);
+  const target_hint = params.get('target_hint');
+  if (target_hint === null)
+    throw new Error('window.location does not have a target hint param');
+  if (target_hint !== '_self' && target_hint !== '_blank')
+    throw new Error('window.location does not have a valid target hint param');
+  return target_hint;
+}

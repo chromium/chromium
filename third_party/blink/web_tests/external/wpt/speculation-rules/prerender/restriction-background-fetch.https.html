@@ -16,9 +16,6 @@
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
-const params = new URLSearchParams(window.location.search);
-const target_hint = params.get('target_hint');
-
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('test-channel', uid);
@@ -47,7 +44,7 @@ promise_test(async t => {
   t.add_cleanup(() => registration.unregister());
   await wait_for_state(t, registration.installing, 'activated');
 
-  const url = `resources/background-fetch.https.html?uid=${uid}&target_hint=${target_hint}`;
+  const url = `resources/background-fetch.https.html?uid=${uid}&target_hint=${getTargetHint()}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;

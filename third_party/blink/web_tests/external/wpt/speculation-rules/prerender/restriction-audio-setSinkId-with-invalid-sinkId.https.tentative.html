@@ -15,9 +15,6 @@ Access to the setSinkId of the Audio API with an invalid value is deferred
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
-const params = new URLSearchParams(window.location.search);
-const target_hint = params.get('target_hint');
-
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('test-channel', uid);
@@ -31,7 +28,7 @@ promise_test(async t => {
     });
   });
 
-  const url = `resources/audio-setSinkId.https.html?sinkId=invalid&uid=${uid}&target_hint=${target_hint}`;
+  const url = `resources/audio-setSinkId.https.html?sinkId=invalid&uid=${uid}&target_hint=${getTargetHint()}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;

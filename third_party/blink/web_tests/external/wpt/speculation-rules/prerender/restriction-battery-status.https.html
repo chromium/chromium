@@ -13,9 +13,6 @@
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
-const params = new URLSearchParams(window.location.search);
-const target_hint = params.get('target_hint');
-
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('test-channel', uid);
@@ -27,7 +24,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/battery-status.https.html?uid=${uid}&target_hint=${target_hint}`;
+  const url = `resources/battery-status.https.html?uid=${uid}&target_hint=${getTargetHint()}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
