@@ -706,11 +706,6 @@ void ExtensionManagement::Refresh() {
         }
       }
     }
-    size_t force_pinned_count = GetForcePinnedList().size();
-    if (force_pinned_count > 0) {
-      base::UmaHistogramCounts100("Extensions.ForceToolbarPinnedCount2",
-                                  force_pinned_count);
-    }
   }
 }
 

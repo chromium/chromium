@@ -385,13 +385,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="CorruptExtensionDisabledReason" expires_after="2022-12-01">
+    enum="CorruptExtensionDisabledReason" expires_after="2024-11-20">
   <owner>lazyboy@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The reason why an extension was detected to be corrupted. Recorded each time
     an extension is disabled due to corruption detection.
+
+    Warning: this histogram was expired from 2022-12 to 2023-11; data will be
+    missing during this timeframe.
   </summary>
 </histogram>
 
@@ -1325,13 +1328,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Events.DispatchWithServiceWorkerBackground"
-    enum="ExtensionEvents" expires_after="2022-12-05">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="ExtensionEvents" expires_after="2024-11-20">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded every time an event is dispatched to a service worker based
     extension background context. When this metric is recorded,
     Extensions.Events.Dispatch will also be recorded.
+
+    Warning: this histogram was expired from 2022-12 to 2023-11; data will be
+    missing during this timeframe.
   </summary>
 </histogram>
 
@@ -1978,17 +1984,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ManifestFetchRetry"
         summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
-</histogram>
-
-<histogram name="Extensions.ForceToolbarPinnedCount2" units="extensions"
-    expires_after="2022-04-24">
-  <owner>nicolaso@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Number of force installed extensions that are &quot;force-pinned&quot; in
-    the ExtensionSettings policy. Recorded after policies are parsed, or
-    refreshed. Only recorded if non-zero.
-  </summary>
 </histogram>
 
 <histogram name="Extensions.FromWebstoreInconsistency"
