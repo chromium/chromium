@@ -817,6 +817,23 @@ TEST_F(AshNotificationViewTest, SnoozeButtonVisibility) {
   EXPECT_TRUE(GetSnoozeButton(notification_view())->GetVisible());
 }
 
+// Test to ensure the snooze button is correctly displayed after a notification
+// update.
+TEST_F(AshNotificationViewTest, SnoozeButtonVisibilityAfterNotificationUpdate) {
+  auto notification =
+      CreateTestNotification(/*has_image=*/false, /*show_snooze_button=*/true);
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Make sure the notification is expanded.
+  notification_view()->ToggleExpand();
+  ASSERT_TRUE(notification_view()->IsExpanded());
+
+  // Simulate an update to a notification which is already displayed.
+  notification_view()->UpdateWithNotification(*notification);
+  // The actions row which contains the snooze button should be visible.
+  EXPECT_TRUE(GetActionsRow(notification_view())->GetVisible());
+}
+
 TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
   auto notification = CreateTestNotification(/*has_image=*/true);
   notification_view()->UpdateWithNotification(*notification);

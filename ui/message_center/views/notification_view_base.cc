@@ -683,7 +683,12 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
     for (auto* item : action_buttons_)
       delete item;
     action_buttons_.clear();
-    actions_row_->SetVisible(expanded_ && !buttons.empty());
+
+    // The `actions_row_` also contains the snooze button in ash.
+    actions_row_->SetVisible(
+        expanded_ &&
+        (!buttons.empty() ||
+         (for_ash_notification_ && notification.should_show_snooze_button())));
   }
 
   // Hide inline reply field if it doesn't exist anymore.

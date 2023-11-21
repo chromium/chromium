@@ -835,8 +835,11 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
     return;
   }
 
+  int previous_height = found_child->GetPreferredSize().height();
   found_child->UpdateWithNotification(*notification);
-  ResetBounds();
+  if (found_child->GetPreferredSize().height() != previous_height) {
+    ResetBounds();
+  }
 }
 
 void NotificationListView::OnSlideStarted(const std::string& notification_id) {
