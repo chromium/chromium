@@ -56,7 +56,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
           IdpSigninStatusObserver,
       public content::FederatedIdentityModalDialogViewDelegate {
  public:
-  static constexpr char kWildcardDomainHint[] = "*";
+  static constexpr char kWildcardDomainHint[] = "any";
 
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
