@@ -88,6 +88,9 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
   jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
+  void KeepAccountSettingsPrefsOnlyForUsers(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& gaia_ids);
 
  private:
   // A reference to the sync service for this profile.

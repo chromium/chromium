@@ -33,6 +33,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -267,19 +268,21 @@ class SingleClientSessionsSyncTest : public SyncTest {
   // Simulates receiving list of accounts in the cookie jar from ListAccounts
   // endpoint. Adds |account_ids| into signed in accounts, notifies
   // SyncServiceImpl and waits for change to propagate to sync engine.
-  void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountId> account_ids,
+  void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountInfo> accounts,
                                       bool expected_cookie_jar_mismatch) {
-    std::vector<gaia::ListedAccount> accounts;
-    for (const CoreAccountId& account_id : account_ids) {
-      gaia::ListedAccount signed_in_account;
-      signed_in_account.id = account_id;
-      accounts.push_back(signed_in_account);
+    signin::AccountsInCookieJarInfo cookies;
+    for (const CoreAccountInfo& account : accounts) {
+      cookies.signed_in_accounts.emplace_back();
+      cookies.signed_in_accounts.back().id = account.account_id;
+      cookies.signed_in_accounts.back().gaia_id = account.gaia;
+      cookies.signed_in_accounts.back().email = account.email;
     }
     base::RunLoop run_loop;
     EXPECT_EQ(expected_cookie_jar_mismatch,
-              GetClient(0)->service()->HasCookieJarMismatch(accounts));
+              GetClient(0)->service()->HasCookieJarMismatch(
+                  cookies.signed_in_accounts));
     GetClient(0)->service()->OnAccountsInCookieUpdatedWithCallback(
-        accounts, run_loop.QuitClosure());
+        cookies, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -862,9 +865,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   // Updating the cookie jar has to travel to the sync engine. It is possible
   // something is already running or scheduled to run on the sync thread. We
   // want to block here until we know the cookie jar stats have been updated.
-  UpdateCookieJarAccountsAndWait(
-      {GetClient(0)->service()->GetAccountInfo().account_id},
-      /*expected_cookie_jar_mismatch=*/false);
+  UpdateCookieJarAccountsAndWait({GetClient(0)->service()->GetAccountInfo()},
+                                 /*expected_cookie_jar_mismatch=*/false);
 
   // Trigger a sync and wait for it.
   GURL url2 =

@@ -14,6 +14,8 @@ import org.json.JSONException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
@@ -32,7 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * <p>TODO(crbug.com/1451811): Update to no reference UI thread.
  */
-public class SyncServiceImpl implements SyncService {
+public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid
     // a dangling pointer.
     private long mSyncServiceAndroidBridge;
@@ -56,11 +58,14 @@ public class SyncServiceImpl implements SyncService {
         ThreadUtils.assertOnUiThread();
         assert ptr != 0;
         mSyncServiceAndroidBridge = ptr;
+        keepSettingsOnlyForAccountManagerAccounts();
+        AccountManagerFacadeProvider.getInstance().addObserver(this);
     }
 
     /** Signals the native SyncService is being shutdown and this object mustn't be used anymore. */
     @CalledByNative
     private void destroy() {
+        AccountManagerFacadeProvider.getInstance().removeObserver(this);
         mSyncServiceAndroidBridge = 0;
     }
 
@@ -419,6 +424,27 @@ public class SyncServiceImpl implements SyncService {
         SyncServiceImplJni.get().triggerRefresh(mSyncServiceAndroidBridge);
     }
 
+    @Override
+    /* AccountsChangeObserver implementation. */
+    public void onCoreAccountInfosChanged() {
+        keepSettingsOnlyForAccountManagerAccounts();
+    }
+
+    private void keepSettingsOnlyForAccountManagerAccounts() {
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        accounts -> {
+                            String[] gaiaIds =
+                                    accounts.stream()
+                                            .map(CoreAccountInfo::getGaiaId)
+                                            .toArray(String[]::new);
+                            SyncServiceImplJni.get()
+                                    .keepAccountSettingsPrefsOnlyForUsers(
+                                            mSyncServiceAndroidBridge, gaiaIds);
+                        });
+    }
+
     /**
      * Invokes the onResult method of the callback from native code.
      */
@@ -546,5 +572,8 @@ public class SyncServiceImpl implements SyncService {
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
 
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
+
+        void keepAccountSettingsPrefsOnlyForUsers(
+                long nativeSyncServiceAndroidBridge, String[] gaiaIds);
     }
 }

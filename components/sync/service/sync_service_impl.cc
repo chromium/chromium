@@ -1816,23 +1816,51 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+void SyncServiceImpl::OnAccountsCookieDeletedByUserAction() {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // Clear account settings. On Android and iOS this is done when accounts are
+  // removed from the OS instead.
+  user_settings_->KeepAccountSettingsPrefsOnlyForUsers({});
+#endif
+}
+
 void SyncServiceImpl::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  OnAccountsInCookieUpdatedWithCallback(
-      accounts_in_cookie_jar_info.signed_in_accounts, base::NullCallback());
+  OnAccountsInCookieUpdatedWithCallback(accounts_in_cookie_jar_info,
+                                        base::NullCallback());
 }
 
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
-    const std::vector<gaia::ListedAccount>& signed_in_accounts,
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+    // Clear settings for accounts no longer in the cookie jar. On Android
+    // and iOS this is done when the account is removed from the OS instead.
+    std::vector<signin::GaiaIdHash> hashes;
+    for (const gaia::ListedAccount& account :
+         accounts_in_cookie_jar_info.signed_in_accounts) {
+      hashes.push_back(signin::GaiaIdHash::FromGaiaId(account.gaia_id));
+    }
+    for (const gaia::ListedAccount& account :
+         accounts_in_cookie_jar_info.signed_out_accounts) {
+      hashes.push_back(signin::GaiaIdHash::FromGaiaId(account.gaia_id));
+    }
+    user_settings_->KeepAccountSettingsPrefsOnlyForUsers(hashes);
+  }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
   if (!engine_ || !engine_->IsInitialized()) {
     return;
   }
 
-  bool cookie_jar_mismatch = HasCookieJarMismatch(signed_in_accounts);
-  bool cookie_jar_empty = signed_in_accounts.empty();
+  bool cookie_jar_mismatch =
+      HasCookieJarMismatch(accounts_in_cookie_jar_info.signed_in_accounts);
+  bool cookie_jar_empty =
+      accounts_in_cookie_jar_info.signed_in_accounts.empty();
 
   DVLOG(1) << "Cookie jar mismatch: " << cookie_jar_mismatch;
   DVLOG(1) << "Cookie jar empty: " << cookie_jar_empty;

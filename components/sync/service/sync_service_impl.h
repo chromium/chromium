@@ -195,13 +195,14 @@ class SyncServiceImpl : public SyncService,
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
 
   // IdentityManager::Observer implementation.
+  void OnAccountsCookieDeletedByUserAction() override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
   // Similar to above but with a callback that will be invoked on completion.
   void OnAccountsInCookieUpdatedWithCallback(
-      const std::vector<gaia::ListedAccount>& signed_in_accounts,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       base::OnceClosure callback);
 
   // Returns true if currently signed in account is not present in the list of
