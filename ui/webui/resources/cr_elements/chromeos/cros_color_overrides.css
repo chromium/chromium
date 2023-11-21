@@ -264,6 +264,11 @@
   --cr-input-focus-outline: 2px solid var(--cros-sys-error);
 }
 
+/* Toolbar search field */
+:host-context([cros][chrome-refresh-2023]) cr-toolbar-search-field {
+  --cr-toolbar-search-field-hover-background: none;
+}
+
 /* md-select */
 :host-context(body.jelly-enabled) .md-select {
   --md-select-bg-color: var(--cros-sys-input_field_on_base);
