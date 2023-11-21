@@ -215,7 +215,13 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that interacting with the Shortcuts tile works when the tab resumption
 // tile is displayed.
-- (void)testInteractWithAnotherTile {
+// TODO(crbug.com/1504149): Test is failing on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testInteractWithAnotherTile testInteractWithAnotherTile
+#else
+#define MAYBE_testInteractWithAnotherTile DISABLED_testInteractWithAnotherTile
+#endif
+- (void)MAYBE_testInteractWithAnotherTile {
   // Check that the tile is not displayed when there is no distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 

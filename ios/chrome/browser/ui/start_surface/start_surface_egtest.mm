@@ -110,7 +110,15 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-- (void)testRemoveRecentTabRemovesReturnToRecenTabTile {
+// TODO(crbug.com/1504147): Test is failing on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile \
+  testRemoveRecentTabRemovesReturnToRecenTabTile
+#else
+#define MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile \
+  DISABLED_testRemoveRecentTabRemovesReturnToRecenTabTile
+#endif
+- (void)MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
