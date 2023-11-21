@@ -37,6 +37,10 @@ class StorageKey;
 class StorageKeyTest;
 }  // namespace blink
 
+namespace content {
+class SiteInfo;
+}  // namespace content
+
 namespace IPC {
 template <class P>
 struct ParamTraits;
@@ -301,6 +305,10 @@ class COMPONENT_EXPORT(URL) Origin {
   // |d|, and |d| is cross-origin to |a| and |c|.
   Origin DeriveNewOpaqueOrigin() const;
 
+  // Returns the nonce associated with the origin, if it is opaque, or nullptr
+  // otherwise. This is only for use in tests.
+  const base::UnguessableToken* GetNonceForTesting() const;
+
   // Creates a string representation of the object that can be used for logging
   // and debugging. It serializes the internal state, such as the nonce value
   // and precursor information.
@@ -336,6 +344,9 @@ class COMPONENT_EXPORT(URL) Origin {
   friend class blink::SecurityOrigin;
   friend class blink::SecurityOriginTest;
   friend class blink::StorageKey;
+  // SiteInfo needs the nonce to compute the site URL for some opaque origins,
+  // like data: URLs.
+  friend class content::SiteInfo;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;

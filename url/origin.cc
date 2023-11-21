@@ -261,6 +261,10 @@ Origin Origin::DeriveNewOpaqueOrigin() const {
   return Origin(Nonce(), tuple_);
 }
 
+const base::UnguessableToken* Origin::GetNonceForTesting() const {
+  return GetNonceForSerialization();
+}
+
 std::string Origin::GetDebugString(bool include_nonce) const {
   // Handle non-opaque origins first, as they are simpler.
   if (!opaque()) {

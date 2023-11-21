@@ -5495,6 +5495,60 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
 }
 
+// The site URL for a data: URL is the scheme + the serialized nonce from the
+// origin. This means that two data: URLs with the same body will have different
+// site URLs.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
+  // Force process reuse for same-site URLs, to test whether identical data:
+  // URLs share a process with each other.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // Load a main frame data: URL.
+  GURL data_url("data:text/html,dataurl");
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+
+  // Open another tab, then load the same data: URL in that tab. We need to
+  // first navigate the new tab to a different page, a_url.
+  // Shell::CreateNewWindow opens a new tab to about:blank, then loads the URL
+  // passed in. Since the about:blank is in a new tab, it gets a new process,
+  // and the passed-in URL keeps using that about:blank process. By navigating
+  // from a_url to the data: URL, we exercise the flow that will reuse the
+  // existing data: URL process, if possible.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ShellAddedObserver new_shell_observer;
+  Shell* new_shell =
+      Shell::CreateNewWindow(static_cast<NavigationControllerImpl&>(
+                                 shell()->web_contents()->GetController())
+                                 .GetBrowserContext(),
+                             a_url, nullptr, gfx::Size());
+  auto* new_contents = static_cast<WebContentsImpl*>(new_shell->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(NavigateToURL(new_shell, data_url));
+
+  auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  auto* new_frame = new_shell->web_contents()->GetPrimaryMainFrame();
+  GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
+  GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
+  EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
+  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+    // The site URL is the data scheme followed by a serialized nonce, which is
+    // unique for every data: URL instance.
+    EXPECT_NE(main_url, new_url);
+    EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
+    EXPECT_EQ(new_url.GetContent().length(),
+              base::UnguessableToken::Create().ToString().length());
+    EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
+
+  } else {
+    // Without the feature, the site URL of data: URLs is the entire data: URL,
+    // so if the data is the same in both cases, the site URLs will be the same,
+    // and they will be allowed to share a process.
+    EXPECT_EQ(main_url, new_url);
+    EXPECT_EQ(main_url, data_url);
+    EXPECT_EQ(new_frame->GetProcess(), main_frame->GetProcess());
+  }
+}
+
 // Ensures that subframes navigated to data: URLs start in a process based on
 // their creator, but end up in unique processes after a restore (since
 // SiteInstance relationships are not preserved on restore, until

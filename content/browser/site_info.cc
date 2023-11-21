@@ -820,13 +820,21 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
       DCHECK(!origin.scheme().empty());
       site_url = GURL(origin.scheme() + ":");
     } else if (url.has_scheme()) {
-      // In some cases, it is not safe to use just the scheme as a site URL, as
-      // that might allow two URLs created by different sites to share a
-      // process. See https://crbug.com/863623 and https://crbug.com/863069.
-      //
-      // TODO(alexmos,creis): This should eventually be expanded to certain
-      // other schemes, such as file:.
-      if (url.SchemeIsBlob() || url.scheme() == url::kDataScheme) {
+      if (url.SchemeIs(url::kDataScheme) &&
+          base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+        // We get here for browser-initiated navigations to data URLs.
+        // We use the serialized opaque origin as the body of the data: URL to
+        // avoid storing the entire data: URL multiple times, and to use the
+        // origin's nonce to distinguish between instances of the same URL. This
+        // means each browser-initiated data: URL will get its own process.
+        site_url = GetOriginBasedSiteURLForDataURL(origin);
+      } else if (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme)) {
+        // In some cases, it is not safe to use just the scheme as a site URL,
+        // as that might allow two URLs created by different sites to share a
+        // process. See https://crbug.com/863623 and https://crbug.com/863069.
+        //
+        // TODO(alexmos,creis): This should eventually be expanded to certain
+        // other schemes, such as file:.
         // We get here for blob URLs of form blob:null/guid.  Use the full URL
         // with the guid in that case, which isolates all blob URLs with unique
         // origins from each other.  We also get here for browser-initiated
@@ -890,6 +898,13 @@ WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
   return web_exposed_isolation_info.is_isolated()
              ? WebExposedIsolationLevel::kMaybeIsolated
              : WebExposedIsolationLevel::kNotIsolated;
+}
+
+// static
+GURL SiteInfo::GetOriginBasedSiteURLForDataURL(const url::Origin& origin) {
+  CHECK(origin.opaque());
+  return GURL(url::kDataScheme + std::string(":") +
+              origin.GetNonceForSerialization()->ToString());
 }
 
 }  // namespace content
