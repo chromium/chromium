@@ -20,7 +20,7 @@ pub fn update(
 }
 
 fn update_impl(
-    _args: &clap::ArgMatches,
+    args: &clap::ArgMatches,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -30,7 +30,7 @@ fn update_impl(
         paths.third_party_cargo_root.into(),
         "update",
         tools,
-        Vec::new(),
+        args.get_many("passthrough").map(|x| x.cloned().collect()).unwrap_or_default(),
         HashMap::new(),
     )
     .context("run_cargo_command")?;

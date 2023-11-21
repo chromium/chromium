@@ -40,11 +40,10 @@ fn main() -> Result<()> {
             clap::Command::new("add")
                 .about("Add a new third-party crate dependency in //third_party/rust")
                 .arg(
-                    Arg::new("name")
-                        .index(1)
-                        .required(true)
-                        .value_name("NAME[@<VERSION>]")
-                        .help("Name (and optional version) of the crate to add"),
+                    Arg::new("passthrough")
+                        .num_args(0..)
+                        .value_name("OPTIONS")
+                        .help("Options to pass through to 'cargo add'"),
                 ),
         )
         .subcommand(
@@ -84,7 +83,13 @@ fn main() -> Result<()> {
         )
         .subcommand(
             clap::Command::new("update")
-                .about("Update the Cargo.lock to newer versions for //third_party/rust"),
+                .about("Update the Cargo.lock to newer versions for //third_party/rust")
+                .arg(
+                    Arg::new("passthrough")
+                        .num_args(0..)
+                        .value_name("OPTIONS")
+                        .help("Options to pass through to 'cargo update'"),
+                ),
         )
         .get_matches();
 

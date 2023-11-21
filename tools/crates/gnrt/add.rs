@@ -26,15 +26,11 @@ fn add_impl(
 ) -> Result<()> {
     println!("Updating crates from {}", paths.third_party_cargo_root.display());
 
-    let cargo_extra_options = vec![
-        args.get_one::<String>("name").unwrap().clone(), // The package to add.
-    ];
-
     run_cargo_command(
         paths.third_party_cargo_root.into(),
         "add",
         tools,
-        cargo_extra_options,
+        args.get_many("passthrough").map(|x| x.cloned().collect()).unwrap_or_default(),
         HashMap::new(),
     )
     .context("run_cargo_command")?;
