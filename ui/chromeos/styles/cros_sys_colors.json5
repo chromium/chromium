@@ -214,6 +214,14 @@
       light: '$cros.ref.neutral99',
       dark:  '$cros.ref.neutral8',
     },
+    'base-highlight': {
+      light: 'blend(rgba($cros.ref.primary70.rgb, 0.36), $cros.ref.neutral100)',
+      dark: 'blend(rgba($cros.ref.primary70.rgb, 0.32), $cros.ref.neutral15)',
+    },
+    'on-base-highlight': {
+      light: '$cros.ref.secondary20',
+      dark: 'rgba($cros.ref.primary60.rgb, 0.30)',
+    },
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',
       /* In dark mode we layer primary80 @ 11% ontop of neutral80 @ 2% ontop of neutral 10. */
