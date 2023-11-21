@@ -108,8 +108,6 @@ static_library("test_support") {
     "fake_invalidation_handler.h",
     "fake_invalidation_service.cc",
     "fake_invalidation_service.h",
-    "invalidation_service_test_template.cc",
-    "invalidation_service_test_template.h",
   ]
 
   public_deps = [ ":impl" ]

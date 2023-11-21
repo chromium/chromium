@@ -39,7 +39,7 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
   void OnActiveAccountLogout() override;
 
  protected:
-  friend class FCMInvalidationServiceTestDelegate;
+  friend class FCMInvalidationServiceTest;
 
  private:
   struct Diagnostics {
