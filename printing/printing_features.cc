@@ -71,10 +71,14 @@ bool IsXpsPrintCapabilityRequired() {
 
 bool ShouldPrintUsingXps(bool source_is_pdf) {
   // Require XPS to be used out-of-process.
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   return features::kEnableOopPrintDriversJobPrint.Get() &&
          base::FeatureList::IsEnabled(source_is_pdf
                                           ? features::kUseXpsForPrintingFromPdf
                                           : features::kUseXpsForPrinting);
+#else
+  return false;
+#endif
 }
 #endif  // BUILDFLAG(IS_WIN)
 
