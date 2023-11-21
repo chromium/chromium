@@ -25250,6 +25250,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4740" label="OverrideFlashEmbedwithHTML"/>
   <int value="4741" label="LinkRelOpener"/>
   <int value="4742" label="LinkRelOpenerTargetingSameFrame"/>
+  <int value="4743" label="CSSSelectorPseudoHas"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
