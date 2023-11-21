@@ -302,7 +302,8 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
                                      : nullptr,
         /*hash_realtime_service=*/nullptr, /*ping_manager=*/nullptr,
         /*hash_realtime_selection=*/
-        hash_realtime_utils::HashRealTimeSelection::kNone);
+        hash_realtime_utils::HashRealTimeSelection::kNone,
+        /*async_check_tracker=*/nullptr);
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();

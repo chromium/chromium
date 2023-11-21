@@ -34,6 +34,7 @@ class SafeBrowsingLookupMechanismExperimenter;
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
 class PingManager;
+class AsyncCheckTracker;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
 // SafeBrowsing to determine whether a URL and also its redirect URLs are safe
@@ -155,7 +156,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       base::WeakPtr<PingManager> ping_manager,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -190,7 +192,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       base::WeakPtr<PingManager> ping_manager,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
@@ -249,6 +252,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // Tracks how many times |WillProcessResponse| is called.
   int will_process_response_count_ = 0;
+
+  // In progress async SB checker will be transferred to this object.
+  base::WeakPtr<AsyncCheckTracker> async_check_tracker_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

@@ -87,6 +87,8 @@ if (safe_browsing_mode > 0) {
 
 source_set("browser") {
   sources = [
+    "async_check_tracker.cc",
+    "async_check_tracker.h",
     "base_blocking_page.cc",
     "base_blocking_page.h",
     "base_ui_manager.cc",

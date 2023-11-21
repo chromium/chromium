@@ -207,6 +207,11 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 // new triggers
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
 
+// Controls whether asynchronous real-time check is enabled. When enabled, the
+// navigation can be committed before real-time Safe Browsing check is
+// completed.
+BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
+
 // Controls whether the lookup mechanism experiment is enabled, which runs all
 // three lookup mechanisms instead of just real-time URL lookups for ESB users.
 // The other two lookup mechanisms are run in the background, and the results

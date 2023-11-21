@@ -269,6 +269,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
@@ -5590,6 +5591,10 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
                 safe_browsing::hash_realtime_utils::GetCountryCode(
                     g_browser_process->variations_service()),
                 /*log_usage_histograms=*/true);
+    safe_browsing::AsyncCheckTracker* async_check_tracker =
+        GetAsyncCheckTracker(wc_getter, is_enterprise_lookup_enabled,
+                             is_consumer_lookup_enabled,
+                             hash_realtime_selection);
 
     return safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindOnce(
@@ -5603,7 +5608,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
         url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
         hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
         ping_manager ? ping_manager->GetWeakPtr() : nullptr,
-        hash_realtime_selection);
+        hash_realtime_selection,
+        async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr);
   }
   return nullptr;
 }
@@ -7076,6 +7082,31 @@ ChromeContentBrowserClient::GetUrlLookupService(
         profile);
   }
   return nullptr;
+}
+
+safe_browsing::AsyncCheckTracker*
+ChromeContentBrowserClient::GetAsyncCheckTracker(
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    bool is_enterprise_lookup_enabled,
+    bool is_consumer_lookup_enabled,
+    safe_browsing::hash_realtime_utils::HashRealTimeSelection
+        hash_realtime_selection) {
+  content::WebContents* contents = wc_getter.Run();
+  if (!contents || !safe_browsing_service_ ||
+      !safe_browsing_service_->ui_manager()) {
+    return nullptr;
+  }
+  if (!is_enterprise_lookup_enabled && !is_consumer_lookup_enabled &&
+      hash_realtime_selection ==
+          safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {
+    return nullptr;
+  }
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    return nullptr;
+  }
+  return safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
+      contents, safe_browsing_service_->ui_manager().get());
 }
 
 void ChromeContentBrowserClient::ReportLegacyTechEvent(

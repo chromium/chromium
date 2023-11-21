@@ -652,7 +652,10 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* ping_manager */ nullptr,
       /* hash_realtime_selection */
-      hash_real_time_selection));
+      hash_real_time_selection,
+      // TODO(crbug.com/1501194): pass in async_check_tracker to support async
+      // check on WV.
+      /* async_check_tracker */ nullptr));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -712,7 +715,10 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       /* hash_realtime_service */ nullptr,
       /* ping_manager */ nullptr,
       /* hash_realtime_selection */
-      hash_real_time_selection));
+      hash_real_time_selection,
+      // TODO(crbug.com/1501194): pass in async_check_tracker to support async
+      // check on WV.
+      /* async_check_tracker */ nullptr));
 
   return result;
 }

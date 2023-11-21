@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
@@ -271,12 +272,13 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     base::WeakPtr<PingManager> ping_manager,
-    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection) {
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+    base::WeakPtr<AsyncCheckTracker> async_check_tracker) {
   return base::WrapUnique<BrowserURLLoaderThrottle>(
-      new BrowserURLLoaderThrottle(std::move(delegate_getter),
-                                   web_contents_getter, frame_tree_node_id,
-                                   url_lookup_service, hash_realtime_service,
-                                   ping_manager, hash_realtime_selection));
+      new BrowserURLLoaderThrottle(
+          std::move(delegate_getter), web_contents_getter, frame_tree_node_id,
+          url_lookup_service, hash_realtime_service, ping_manager,
+          hash_realtime_selection, async_check_tracker));
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
@@ -286,7 +288,9 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     base::WeakPtr<PingManager> ping_manager,
-    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection) {
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+    base::WeakPtr<AsyncCheckTracker> async_check_tracker)
+    : async_check_tracker_(async_check_tracker) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
