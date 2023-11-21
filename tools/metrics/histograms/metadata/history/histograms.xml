@@ -2119,18 +2119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.TopSitesRecovery" enum="HistoryTopSitesRecoveryEnum"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The TopSites recovery code is written conservatively, with successful
-    recovery committed and any failure leading to rollback. This tracks the
-    outcomes to determine which cases are high-frequency enough to warrant
-    adding additional code to handle them (versus simply deleting the data).
-  </summary>
-</histogram>
-
 <histogram name="History.URLTableCount" units="URLs" expires_after="2024-03-31">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
