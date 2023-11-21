@@ -12,7 +12,7 @@
 #
 #    import("//build/nocompile.gni")
 #
-#    nocompile_source_set("base_nocompile") {
+#    nocompile_source_set("base_nocompile_tests") {
 #      sources = [
 #        "functional/one_not_equal_two_nocompile.nc",
 #      ]
