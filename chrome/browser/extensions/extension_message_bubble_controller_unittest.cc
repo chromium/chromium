@@ -380,7 +380,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     // unpredicatable behavior.
     DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
     ProxyOverriddenBubbleDelegate(profile()).ClearProfileSetForTesting();
-    for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE}) {
+    for (auto type : {BUBBLE_TYPE_HOME_PAGE}) {
       SettingsApiBubbleDelegate(profile(), type).ClearProfileSetForTesting();
     }
     SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
@@ -711,7 +711,7 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
   Init();
 
-  for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE}) {
+  for (auto type : {BUBBLE_TYPE_HOME_PAGE}) {
     switch (type) {
       case BUBBLE_TYPE_HOME_PAGE:
         // Load two extensions overriding home page and one overriding something
@@ -724,13 +724,6 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
         ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3,
                                                  ManifestLocation::kUnpacked));
         break;
-      case BUBBLE_TYPE_SEARCH_ENGINE:
-        // We deliberately skip testing the search engine since it relies on
-        // TemplateURLServiceFactory that isn't available while unit testing.
-        // This test is only simulating the bubble interaction with the user and
-        // that is more or less the same for the search engine as it is for the
-        // others.
-        continue;
     }
 
     std::unique_ptr<TestExtensionMessageBubbleController> controller(

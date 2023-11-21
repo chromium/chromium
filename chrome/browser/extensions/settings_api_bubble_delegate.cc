@@ -56,9 +56,6 @@ bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
     case extensions::BUBBLE_TYPE_HOME_PAGE:
       override = extensions::GetExtensionOverridingHomepage(profile());
       break;
-    case extensions::BUBBLE_TYPE_SEARCH_ENGINE:
-      override = extensions::GetExtensionOverridingSearchEngine(profile());
-      break;
   }
 
   if (!override || override != extension)
@@ -86,9 +83,6 @@ std::u16string SettingsApiBubbleDelegate::GetTitle() const {
     case BUBBLE_TYPE_HOME_PAGE:
       return l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
-    case BUBBLE_TYPE_SEARCH_ENGINE:
-      return l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_SETTINGS_API_TITLE_SEARCH_ENGINE_BUBBLE);
   }
   NOTREACHED();
   return std::u16string();
@@ -106,7 +100,6 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
     return std::u16string();
   }
 
-  bool home_change = settings->homepage.has_value();
   bool startup_change = !settings->startup_pages.empty();
   bool search_change = settings->search_engine.has_value();
 
@@ -127,17 +120,6 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
       } else if (search_change) {
         second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
       }
-      break;
-    case BUBBLE_TYPE_SEARCH_ENGINE:
-      first_line_id = anchored_to_browser_action ?
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_SEARCH_ENGINE_SPECIFIC :
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_SEARCH_ENGINE;
-      if (startup_change && home_change)
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_HOME;
-      else if (startup_change)
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES;
-      else if (home_change)
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_HOME_PAGE;
       break;
   }
   DCHECK_NE(0, first_line_id);
@@ -213,8 +195,6 @@ const char* SettingsApiBubbleDelegate::GetKey() const {
   switch (type_) {
     case BUBBLE_TYPE_HOME_PAGE:
       return "SettingsApiBubbleDelegate.HomePage";
-    case BUBBLE_TYPE_SEARCH_ENGINE:
-      return "SettingsApiBubbleDelegate.SearchEngine";
   }
   NOTREACHED();
   return "";

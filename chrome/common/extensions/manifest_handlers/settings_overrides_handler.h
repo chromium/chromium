@@ -14,7 +14,6 @@ namespace extensions {
 
 enum SettingsApiOverrideType {
   BUBBLE_TYPE_HOME_PAGE = 0,
-  BUBBLE_TYPE_SEARCH_ENGINE,
 };
 
 // SettingsOverride is associated with "chrome_settings_overrides" manifest key.
