@@ -24,9 +24,11 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
                                 std::vector<uint16_t>& free_list) {
   PA_CHECK(slot_count > 0);
 
-  constexpr PartitionOptions kConfig{
-      .backup_ref_ptr = PartitionOptions::kEnabled,
-  };
+  constexpr PartitionOptions kConfig = []() {
+    PartitionOptions opts;
+    opts.backup_ref_ptr = PartitionOptions::kEnabled;
+    return opts;
+  }();
   static internal::base::NoDestructor<PartitionRoot> root(kConfig);
 
   const size_t kSlotSize = 2 * internal::SystemPageSize();

@@ -136,11 +136,13 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   }
 
  private:
-  static constexpr partition_alloc::PartitionOptions kOpts = {
+  static constexpr partition_alloc::PartitionOptions kOpts = []() {
+    partition_alloc::PartitionOptions opts;
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .thread_cache = PartitionOptions::kEnabled,
+    opts.thread_cache = PartitionOptions::kEnabled;
 #endif
-  };
+    return opts;
+  }();
   PartitionAllocatorForTesting<internal::DisallowLeaks> allocator_{kOpts};
   internal::ThreadCacheProcessScopeForTesting scope_;
 };

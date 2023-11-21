@@ -44,10 +44,9 @@ class MemoryReclaimerTest : public ::testing::Test {
     // Otherwise, we will see no PartitionAllocator is registered.
     MemoryReclaimer::Instance()->ResetForTesting();
 
-    allocator_ =
-        std::make_unique<PartitionAllocatorForTesting>(PartitionOptions{
-            .star_scan_quarantine = PartitionOptions::kAllowed,
-        });
+    PartitionOptions opts;
+    opts.star_scan_quarantine = PartitionOptions::kAllowed;
+    allocator_ = std::make_unique<PartitionAllocatorForTesting>(opts);
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
     PartitionAllocGlobalInit(HandleOOM);
   }

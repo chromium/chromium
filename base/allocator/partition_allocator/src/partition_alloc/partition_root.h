@@ -141,6 +141,14 @@ struct PurgeFlags {
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
+  // Marked inline so that the chromium style plugin doesn't complain that a
+  // "complex constructor" has an inline body. This warning is disabled when
+  // the constructor is explicitly marked "inline". Note that this is a false
+  // positive of the plugin, since constexpr implies inline.
+  inline constexpr PartitionOptions();
+  inline constexpr PartitionOptions(const PartitionOptions& other);
+  inline constexpr ~PartitionOptions();
+
   enum class AllowToggle : uint8_t {
     kDisallowed,
     kAllowed,
@@ -187,6 +195,11 @@ struct PartitionOptions {
   EnableToggle use_pool_offset_freelists = kDisabled;
 #endif
 };
+
+constexpr PartitionOptions::PartitionOptions() = default;
+constexpr PartitionOptions::PartitionOptions(const PartitionOptions& other) =
+    default;
+constexpr PartitionOptions::~PartitionOptions() = default;
 
 // When/if free lists should be "straightened" when calling
 // PartitionRoot::PurgeMemory(..., accounting_only=false).

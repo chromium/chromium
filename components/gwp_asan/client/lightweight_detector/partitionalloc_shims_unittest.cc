@@ -30,9 +30,11 @@ namespace {
 constexpr int kSuccess = 0;
 constexpr int kFailure = 1;
 
-constexpr partition_alloc::PartitionOptions kAllocatorOptions = {
-    .backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled,
-};
+constexpr partition_alloc::PartitionOptions kAllocatorOptions = []() {
+  partition_alloc::PartitionOptions opts;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
+  return opts;
+}();
 
 static void HandleOOM(size_t) {
   LOG(FATAL) << "Out of memory.";

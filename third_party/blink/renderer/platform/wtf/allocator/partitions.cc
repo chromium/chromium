@@ -107,12 +107,11 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
                             : partition_alloc::PartitionOptions::kDisabled;
   // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
   // be handled in ReconfigureAfterFeatureListInit().
-
-  return PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-      .backup_ref_ptr = brp_setting,
-      .memory_tagging = {.enabled = memory_tagging},
-  };
+  PartitionOptions opts;
+  opts.star_scan_quarantine = PartitionOptions::kAllowed;
+  opts.backup_ref_ptr = brp_setting;
+  opts.memory_tagging = {.enabled = memory_tagging};
+  return opts;
 }
 
 }  // namespace
@@ -200,20 +199,23 @@ void Partitions::InitializeArrayBufferPartition() {
   // BackupRefPtr disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
   static base::NoDestructor<partition_alloc::PartitionAllocator>
-      array_buffer_allocator(partition_alloc::PartitionOptions{
-          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
-          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-          // When the V8 virtual memory cage is enabled, the ArrayBuffer
-          // partition must be placed inside of it. For that, PA's
-          // ConfigurablePool is created inside the V8 Cage during
-          // initialization. As such, here all we need to do is indicate that
-          // we'd like to use that Pool if it has been created by now (if it
-          // hasn't been created, the cage isn't enabled, and so we'll use the
-          // default Pool).
-          .use_configurable_pool = partition_alloc::PartitionOptions::kAllowed,
-          .memory_tagging = {.enabled =
-                                 partition_alloc::PartitionOptions::kDisabled},
-      });
+      array_buffer_allocator([]() {
+        partition_alloc::PartitionOptions opts;
+        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
+        opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+        // When the V8 virtual memory cage is enabled, the ArrayBuffer
+        // partition must be placed inside of it. For that, PA's
+        // ConfigurablePool is created inside the V8 Cage during
+        // initialization. As such, here all we need to do is indicate that
+        // we'd like to use that Pool if it has been created by now (if it
+        // hasn't been created, the cage isn't enabled, and so we'll use the
+        // default Pool).
+        opts.use_configurable_pool =
+            partition_alloc::PartitionOptions::kAllowed;
+        opts.memory_tagging = {
+            .enabled = partition_alloc::PartitionOptions::kDisabled};
+        return opts;
+      }());
 
   array_buffer_root_ = array_buffer_allocator->root();
 

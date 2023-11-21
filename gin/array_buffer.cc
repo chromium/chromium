@@ -80,12 +80,13 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 
 // static
 void ArrayBufferAllocator::InitializePartition() {
+  partition_alloc::PartitionOptions opts;
+  opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+  opts.use_configurable_pool = partition_alloc::PartitionOptions::kAllowed;
+
   static base::NoDestructor<partition_alloc::PartitionAllocator>
-      partition_allocator(partition_alloc::PartitionOptions{
-          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
-          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-          .use_configurable_pool = partition_alloc::PartitionOptions::kAllowed,
-      });
+      partition_allocator(opts);
 
   partition_ = partition_allocator->root();
 }

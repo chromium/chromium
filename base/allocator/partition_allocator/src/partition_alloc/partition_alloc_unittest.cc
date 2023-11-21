@@ -354,6 +354,12 @@ class PartitionAllocTest
     return root;
   }
 
+  PartitionOptions GetCommonPartitionOptions() {
+    PartitionOptions opts;
+    opts.ref_count_size = GetParam().ref_count_size;
+    return opts;
+  }
+
   void InitializeMainTestAllocators() {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PartitionOptions::EnableToggle enable_backup_ref_ptr =
@@ -364,16 +370,15 @@ class PartitionAllocTest
     if (pkey != -1) {
       pkey_ = pkey;
     }
+
+    PartitionOptions pkey_opts = GetCommonPartitionOptions();
+    pkey_opts.aligned_alloc = PartitionOptions::kAllowed;
+    pkey_opts.thread_isolation = ThreadIsolationOption(pkey_);
     // We always want to have a pkey allocator initialized to make sure that the
     // other pools still work. As part of the initializition, we tag some memory
     // with the new pkey, effectively making it read-only. So there's some
     // potential for breakage that this should catch.
-    InitializeTestRoot(pkey_allocator.root(),
-                       PartitionOptions{
-                           .aligned_alloc = PartitionOptions::kAllowed,
-                           .ref_count_size = GetParam().ref_count_size,
-                           .thread_isolation = ThreadIsolationOption(pkey_),
-                       },
+    InitializeTestRoot(pkey_allocator.root(), pkey_opts,
                        PartitionTestOptions{.use_memory_reclaimer = true});
 
     ThreadIsolationOption thread_isolation_opt;
@@ -386,43 +391,40 @@ class PartitionAllocTest
 #endif
     }
 #endif  // BUILDFLAG(ENABLE_PKEYS)
-    InitializeTestRoot(
-        allocator.root(),
-        PartitionOptions {
+
+    PartitionOptions opts = GetCommonPartitionOptions();
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-          // AlignedAlloc() can't be called when BRP is in the
-          // "before allocation" mode, because this mode adds extras before
-          // the allocation. Extras after the allocation are ok.
-          .aligned_alloc = PartitionOptions::kAllowed,
+    // AlignedAlloc() can't be called when BRP is in the
+    // "before allocation" mode, because this mode adds extras before
+    // the allocation. Extras after the allocation are ok.
+    opts.aligned_alloc = PartitionOptions::kAllowed;
 #endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-          .backup_ref_ptr = enable_backup_ref_ptr,
+    opts.backup_ref_ptr = enable_backup_ref_ptr;
 #endif
-          .ref_count_size = GetParam().ref_count_size,
 #if BUILDFLAG(ENABLE_PKEYS)
-          .thread_isolation = thread_isolation_opt,
+    opts.thread_isolation = thread_isolation_opt;
 #endif
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-          .memory_tagging = {
-            .enabled =
-                partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
-                        .has_mte()
-                    ? PartitionOptions::kEnabled
-                    : PartitionOptions::kDisabled,
-          }
+    opts.memory_tagging = {
+        .enabled =
+            partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
+                    .has_mte()
+                ? PartitionOptions::kEnabled
+                : PartitionOptions::kDisabled,
+    };
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
-        },
+    InitializeTestRoot(
+        allocator.root(), opts,
         PartitionTestOptions{.use_memory_reclaimer = true,
                              .uncap_empty_slot_span_memory = true,
                              .set_bucket_distribution = true});
 
+    PartitionOptions aligned_opts = GetCommonPartitionOptions();
+    aligned_opts.aligned_alloc = PartitionOptions::kAllowed;
     InitializeTestRoot(
-        aligned_allocator.root(),
-        PartitionOptions{
-            .aligned_alloc = PartitionOptions::kAllowed,
-            .ref_count_size = GetParam().ref_count_size,
-        },
+        aligned_allocator.root(), aligned_opts,
         PartitionTestOptions{.use_memory_reclaimer = true,
                              .uncap_empty_slot_span_memory = true,
                              .set_bucket_distribution = true});
@@ -4922,9 +4924,7 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
                                 PurgeFlags::kDiscardUnusedSystemPages);
   std::unique_ptr<PartitionRoot> new_root = CreateCustomTestRoot(
-      PartitionOptions{
-          .ref_count_size = GetParam().ref_count_size,
-      },
+      GetCommonPartitionOptions(),
       PartitionTestOptions{.set_bucket_distribution = true});
 
   // Realloc from |allocator.root()| into |new_root|.
@@ -5123,13 +5123,11 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
 
     EXPECT_TRUE(IsConfigurablePoolAvailable());
 
+    PartitionOptions opts = GetCommonPartitionOptions();
+    opts.use_configurable_pool = PartitionOptions::kAllowed;
     std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
-        PartitionOptions{
-            .use_configurable_pool = PartitionOptions::kAllowed,
-            .ref_count_size = GetParam().ref_count_size,
-        },
-        PartitionTestOptions{.uncap_empty_slot_span_memory = true,
-                             .set_bucket_distribution = true});
+        opts, PartitionTestOptions{.uncap_empty_slot_span_memory = true,
+                                   .set_bucket_distribution = true});
 
     const size_t count = 250;
     std::vector<void*> allocations(count, nullptr);
@@ -5157,9 +5155,7 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Use another root, since the ones from the test harness disable the empty
   // slot span size cap.
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
-      PartitionOptions{
-          .ref_count_size = GetParam().ref_count_size,
-      },
+      GetCommonPartitionOptions(),
       PartitionTestOptions{.set_bucket_distribution = true});
 
   // Allocate some memory, don't free it to keep committed memory.
@@ -5212,9 +5208,7 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 
 TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
-      PartitionOptions{
-          .ref_count_size = GetParam().ref_count_size,
-      },
+      GetCommonPartitionOptions(),
       PartitionTestOptions{.uncap_empty_slot_span_memory = true,
                            .set_bucket_distribution = true});
 

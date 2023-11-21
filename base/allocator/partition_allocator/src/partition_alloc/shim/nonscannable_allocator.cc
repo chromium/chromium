@@ -63,14 +63,13 @@ void NonScannableAllocatorImpl<quarantinable>::Free(void* ptr) {
 template <bool quarantinable>
 void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
 #if BUILDFLAG(USE_STARSCAN)
+  partition_alloc::PartitionOptions opts;
+  opts.star_scan_quarantine =
+      quarantinable ? partition_alloc::PartitionOptions::kAllowed
+                    : partition_alloc::PartitionOptions::kDisallowed;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
   allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
-                   partition_alloc::PartitionAllocator>(
-      partition_alloc::PartitionOptions{
-          .star_scan_quarantine =
-              quarantinable ? partition_alloc::PartitionOptions::kAllowed
-                            : partition_alloc::PartitionOptions::kDisallowed,
-          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-      }));
+                   partition_alloc::PartitionAllocator>(opts));
   if constexpr (quarantinable) {
     partition_alloc::internal::PCScan::RegisterNonScannableRoot(
         allocator_->root());

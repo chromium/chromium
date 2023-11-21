@@ -27,9 +27,9 @@ TEST(HardeningTest, PartialCorruption) {
   std::string important_data("very important");
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
-  PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::kAllowed,
-  });
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
+  PartitionRoot root(opts);
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
@@ -52,9 +52,9 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
   std::string important_data("very important");
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
-  PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::kAllowed,
-  });
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
+  PartitionRoot root(opts);
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
@@ -73,9 +73,9 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
 }
 
 TEST(HardeningTest, MetadataPointerCrashing) {
-  PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::kAllowed,
-  });
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
+  PartitionRoot root(opts);
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
@@ -100,9 +100,9 @@ TEST(HardeningTest, MetadataPointerCrashing) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST(HardeningTest, SuccessfulCorruption) {
-  PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::kAllowed,
-  });
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
+  PartitionRoot root(opts);
   root.UncapEmptySlotSpanMemoryForTesting();
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(
