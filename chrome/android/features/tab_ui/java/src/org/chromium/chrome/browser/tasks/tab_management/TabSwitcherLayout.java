@@ -693,7 +693,8 @@ public class TabSwitcherLayout extends Layout {
         mController.getTabSwitcherContainer().getGlobalVisibleRect(containerRect);
         final int fullscreenTop = fullscreenRect.top;
         final int topMargin = fullscreenTop - containerRect.top;
-        fullscreenRect.set(fullscreenRect.left, 0, fullscreenRect.right, fullscreenRect.bottom);
+        // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+        fullscreenRect.set(0, 0, fullscreenRect.right - fullscreenRect.left, fullscreenRect.bottom);
 
         int x = Math.round(originX);
         int y = Math.round(originY);
@@ -897,7 +898,8 @@ public class TabSwitcherLayout extends Layout {
         mController.getTabSwitcherContainer().getGlobalVisibleRect(containerRect);
         final int fullscreenTop = fullscreenRect.top;
         final int topMargin = fullscreenTop - containerRect.top;
-        fullscreenRect.set(fullscreenRect.left, 0, fullscreenRect.right, fullscreenRect.bottom);
+        // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+        fullscreenRect.set(0, 0, fullscreenRect.right - fullscreenRect.left, fullscreenRect.bottom);
 
         mTabJavaView.reset(
                 new Rect(
@@ -975,7 +977,8 @@ public class TabSwitcherLayout extends Layout {
         mController.getTabSwitcherContainer().getGlobalVisibleRect(containerRect);
         final int fullscreenTop = fullscreenRect.top;
         final int topMargin = fullscreenTop - containerRect.top;
-        fullscreenRect.set(fullscreenRect.left, 0, fullscreenRect.right, fullscreenRect.bottom);
+        // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+        fullscreenRect.set(0, 0, fullscreenRect.right - fullscreenRect.left, fullscreenRect.bottom);
 
         mTabJavaView.reset(
                 new Rect(
