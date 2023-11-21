@@ -83,26 +83,21 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                                                              jlong id,
                                                              jint type);
 
-  void GetTopLevelFolderIds(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_result_obj);
-
-  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(JNIEnv* env);
-
   void GetAllFoldersWithDepths(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_folders_obj,
       const base::android::JavaParamRef<jobject>& j_depths_obj);
 
+  void GetTopLevelFolderIds(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_result_obj);
+  std::vector<const bookmarks::BookmarkNode*> GetTopLevelFolderIdsImpl();
   base::android::ScopedJavaLocalRef<jobject> GetRootFolderId(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jobject> GetMobileFolderId(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetBookmarkGuidByIdForTesting(
       JNIEnv* env,

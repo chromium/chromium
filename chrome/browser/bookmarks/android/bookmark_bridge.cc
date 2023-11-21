@@ -303,48 +303,6 @@ bool BookmarkBridge::IsDoingExtensiveChanges(JNIEnv* env) {
   return bookmark_model_->IsDoingExtensiveChanges();
 }
 
-void BookmarkBridge::GetTopLevelFolderIds(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_result_obj) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsLoaded());
-
-  std::vector<const BookmarkNode*> top_level_folders;
-  // Query the root node for:
-  // bookmarks bar, mobile node, other node, and managed node (if it exists).
-  for (const auto& root_child : bookmark_model_->root_node()->children()) {
-    if (!root_child->IsVisible()) {
-      continue;
-    }
-    top_level_folders.push_back(root_child.get());
-  }
-
-  if (partner_bookmarks_shim_->HasPartnerBookmarks() &&
-      IsReachable(partner_bookmarks_shim_->GetPartnerBookmarksRoot())) {
-    top_level_folders.push_back(
-        partner_bookmarks_shim_->GetPartnerBookmarksRoot());
-  }
-  if (reading_list_manager_->GetRoot()) {
-    top_level_folders.push_back(reading_list_manager_->GetRoot());
-  }
-
-  for (std::vector<const BookmarkNode*>::const_iterator it =
-           top_level_folders.begin();
-       it != top_level_folders.end(); ++it) {
-    Java_BookmarkBridge_addToBookmarkIdList(env, j_result_obj, (*it)->id(),
-                                            GetBookmarkType(*it));
-  }
-}
-
-base::android::ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListFolder(
-    JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const BookmarkNode* root_node = reading_list_manager_->GetRoot();
-  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
-      env, root_node->id(), GetBookmarkType(root_node));
-  return folder_id_obj;
-}
-
 void BookmarkBridge::GetAllFoldersWithDepths(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_folders_obj,
@@ -387,6 +345,46 @@ void BookmarkBridge::GetAllFoldersWithDepths(
     for (const auto* bookmark : base::Reversed(bookmarks))
       stk.emplace(bookmark, depth + 1);
   }
+}
+
+void BookmarkBridge::GetTopLevelFolderIds(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_result_obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
+
+  std::vector<const BookmarkNode*> top_level_folders =
+      GetTopLevelFolderIdsImpl();
+
+  for (std::vector<const BookmarkNode*>::const_iterator it =
+           top_level_folders.begin();
+       it != top_level_folders.end(); ++it) {
+    Java_BookmarkBridge_addToBookmarkIdList(env, j_result_obj, (*it)->id(),
+                                            GetBookmarkType(*it));
+  }
+}
+std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl() {
+  std::vector<const BookmarkNode*> top_level_folders;
+  // Query the root node for:
+  // bookmarks bar, mobile node, other node, and managed node (if it exists).
+  for (const auto& root_child : bookmark_model_->root_node()->children()) {
+    if (!root_child->IsVisible()) {
+      continue;
+    }
+
+    top_level_folders.push_back(root_child.get());
+  }
+
+  if (partner_bookmarks_shim_->HasPartnerBookmarks() &&
+      IsReachable(partner_bookmarks_shim_->GetPartnerBookmarksRoot())) {
+    top_level_folders.push_back(
+        partner_bookmarks_shim_->GetPartnerBookmarksRoot());
+  }
+  if (reading_list_manager_->GetRoot()) {
+    top_level_folders.push_back(reading_list_manager_->GetRoot());
+  }
+
+  return top_level_folders;
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(JNIEnv* env) {
@@ -435,6 +433,15 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(JNIEnv* env) {
 
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, partner_node->id(), GetBookmarkType(partner_node));
+  return folder_id_obj;
+}
+
+base::android::ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListFolder(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* root_node = reading_list_manager_->GetRoot();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, root_node->id(), GetBookmarkType(root_node));
   return folder_id_obj;
 }
 
